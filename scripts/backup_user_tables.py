@@ -50,6 +50,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable, Iterable
 from urllib.parse import urlparse
@@ -58,6 +59,8 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 SCHEMA = "mmx.user_table_backup.v1"
+IW2_SCHEMA = "mmx.user_table_backup.v2"
+SNAPSHOT_SCHEMA = "mmx.user_table_snapshot.v1"
 RECEIPT_SCHEMA = "mmx.user_table_restore_receipt.v1"
 PROTECTED_TABLES: tuple[str, ...] = (
     "profiles",
@@ -84,6 +87,34 @@ RESTORE_ORDER: tuple[str, ...] = (
     "user_entitlements",
     "stripe_events",
 )
+# Explicit opt-in: the installed REST timer keeps its original nine-table scope.
+# A v2 archive is always the complete legacy + IW2 set from one SQL snapshot.
+IW2_TABLES = PROTECTED_TABLES + (
+    "chart_layout_revisions", "investigations", "investigation_revisions",
+    "investigation_mutation_receipts",
+)
+MAX_SNAPSHOT_BYTES = 256 * 1024 * 1024
+
+
+def table_order(names: Iterable[str]) -> tuple[str, ...]:
+    keys = set(names)
+    if keys == set(PROTECTED_TABLES):
+        return PROTECTED_TABLES
+    if keys == set(IW2_TABLES):
+        return IW2_TABLES
+    raise BackupError("table set must be exactly the legacy nine or IW2 thirteen tables")
+
+
+def manifest_table_order(manifest: dict[str, Any]) -> tuple[str, ...]:
+    if not isinstance(manifest, dict) or not isinstance(manifest.get("tables"), dict):
+        raise BackupError("invalid backup manifest")
+    order = table_order(manifest["tables"])
+    schema = SCHEMA if order == PROTECTED_TABLES else IW2_SCHEMA
+    if manifest.get("schema") != schema or manifest.get("protected_tables") != list(order):
+        raise BackupError("manifest schema/table set mismatch")
+    return order
+
+
 PRODUCTION_PROJECT_REFS: tuple[str, ...] = ("fsldfzlxyavsuwqbceod",)
 DEFAULT_PREFIX = "private/user-table-backups/"
 DEFAULT_RETENTION_DAYS = 30
@@ -306,6 +337,10 @@ def project_ref_from_url(url: str) -> str | None:
         return None
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower()
+    if host.endswith(".pooler.supabase.com"):
+        match = re.fullmatch(r"postgres\.([a-z0-9]{20})", parsed.username or "")
+        if match:
+            return match.group(1)
     match = re.match(r"^([a-z0-9]+)\.supabase\.co$", host)
     if match:
         return match.group(1)
@@ -417,7 +452,7 @@ def decrypt_payload(ciphertext: bytes, key: str) -> bytes:
 def rows_to_jsonl(rows: Iterable[dict[str, Any]]) -> bytes:
     buf = io.BytesIO()
     for row in rows:
-        buf.write(json.dumps(row, sort_keys=True, default=str).encode("utf-8"))
+        buf.write(json_value(row).encode("utf-8"))
         buf.write(b"\n")
     return buf.getvalue()
 
@@ -429,12 +464,107 @@ def jsonl_to_rows(raw: bytes) -> list[dict[str, Any]]:
     for line in raw.splitlines():
         if not line.strip():
             continue
-        rows.append(json.loads(line))
+        rows.append(json.loads(line, parse_float=Decimal))
     return rows
 
 
+def json_value(value: Any) -> str:
+    """Keep PostgreSQL JSON numeric precision through the backup round trip."""
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise BackupError("non-finite JSON number")
+        return str(value)
+    if isinstance(value, dict):
+        return "{" + ",".join(
+            json.dumps(k) + ":" + json_value(v) for k, v in sorted(value.items())
+        ) + "}"
+    if isinstance(value, list):
+        return "[" + ",".join(json_value(v) for v in value) + "]"
+    return json.dumps(value, allow_nan=False)
+
+
+def snapshot_query(project_ref: str) -> str:
+    """One SELECT gives every subquery the same PostgreSQL statement snapshot.
+
+    This contains no DDL, RPC installation, locks, or credential. Submit via the
+    existing authorized read-only SQL transport; preserve its response in memory.
+    """
+    if not re.fullmatch(r"[a-z0-9]{20}", project_ref):
+        raise BackupError("snapshot query requires the exact source project ref")
+    tables = ",\n".join(
+        f"'{name}', (SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text), '[]'::jsonb) FROM public.{name} t)"
+        for name in IW2_TABLES
+    )
+    counts = ",\n".join(
+        f"'{name}', (SELECT count(*) FROM public.{name})" for name in IW2_TABLES
+    )
+    return (
+        "SELECT jsonb_build_object(\n"
+        f"'schema', '{SNAPSHOT_SCHEMA}', 'project_ref', '{project_ref}',\n"
+        "'as_of', statement_timestamp(), 'snapshot', txid_current_snapshot()::text,\n"
+        "'timezone', current_setting('TimeZone'),\n"
+        f"'tables', jsonb_build_object({tables}),\n"
+        f"'counts', jsonb_build_object({counts})) AS snapshot;"
+    )
+
+
+def fetch_snapshot_via_psql(db_url: str, project_ref: str) -> bytes:
+    if not shutil.which("psql"):
+        raise BackupError("psql is not installed")
+    if project_ref_from_url(db_url) != project_ref:
+        raise BackupError("SQL source connection/project ref mismatch")
+    proc = subprocess.run(
+        ["psql", "-X", "-d", db_url, "-At", "-v", "ON_ERROR_STOP=1"],
+        input=("BEGIN READ ONLY;\n" + snapshot_query(project_ref) + "\nCOMMIT;\n").encode(),
+        capture_output=True, check=False,
+        env={**os.environ, "PGOPTIONS": "-c default_transaction_read_only=on"},
+    )
+    if proc.returncode:
+        raise BackupError("read-only SQL snapshot failed")
+    # Quiet mode avoids BEGIN/COMMIT command tags; retain support for psql
+    # versions that print them despite tuple-only output.
+    return b"\n".join(line for line in proc.stdout.splitlines() if line not in (b"BEGIN", b"COMMIT"))
+
+
+def parse_snapshot(raw: bytes, project_ref: str) -> tuple[dict[str, TableDump], dict[str, Any]]:
+    if len(raw) > MAX_SNAPSHOT_BYTES:
+        raise BackupError("snapshot exceeds bounded import size")
+    try:
+        value = json.loads(raw, parse_float=Decimal)
+        # Management API returns one row; psql emits the JSON object directly.
+        if isinstance(value, list) and len(value) == 1 and set(value[0]) == {"snapshot"}:
+            value = value[0]["snapshot"]
+        if (not isinstance(value, dict) or value.get("schema") != SNAPSHOT_SCHEMA
+                or value.get("project_ref") != project_ref
+                or not isinstance(value.get("as_of"), str)
+                or _parse_as_of(value["as_of"]) is None
+                or not isinstance(value.get("timezone"), str)
+                or not 1 <= len(value["timezone"]) <= 128
+                or not re.fullmatch(r"\d+:\d+:(?:\d+(?:,\d+)*)?", value.get("snapshot", ""))
+                or set(value.get("tables", {})) != set(IW2_TABLES)
+                or set(value.get("counts", {})) != set(IW2_TABLES)):
+            raise BackupError("snapshot identity or complete table set mismatch")
+        tables = {}
+        for name in IW2_TABLES:
+            rows = value["tables"][name]
+            count = value["counts"][name]
+            if (not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows)
+                    or type(count) is not int or count != len(rows)):
+                raise BackupError(f"snapshot count/rows mismatch: {name}")
+            tables[name] = dump_table(name, rows)
+        return tables, {
+            "project_ref": project_ref, "as_of": value["as_of"],
+            "snapshot": value["snapshot"], "capture": "single-statement-sql",
+            "timezone": value["timezone"],
+            "snapshot_response_sha256": sha256_bytes(raw),
+            "query_sha256": sha256_bytes(snapshot_query(project_ref).encode()),
+        }
+    except (ValueError, TypeError, KeyError) as exc:
+        raise BackupError("invalid snapshot response") from exc
+
+
 def dump_table(name: str, rows: list[dict[str, Any]]) -> TableDump:
-    if name not in PROTECTED_TABLES:
+    if name not in IW2_TABLES:
         raise BackupError(f"refusing to dump non-protected table {name}")
     raw = rows_to_jsonl(rows)
     return TableDump(name=name, rows=rows, sha256=sha256_bytes(raw), raw=raw)
@@ -450,7 +580,7 @@ def build_tar(
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
         manifest_bytes = json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8")
         _add_bytes(tar, f"{backup_id}/manifest.json", manifest_bytes)
-        for name in PROTECTED_TABLES:
+        for name in manifest_table_order(manifest):
             table = tables[name]
             _add_bytes(tar, f"{backup_id}/tables/{name}.jsonl", table.raw)
         for rel, data in (extra_files or {}).items():
@@ -467,34 +597,42 @@ def _add_bytes(tar: tarfile.TarFile, name: str, data: bytes) -> None:
 
 
 def parse_tar(plaintext: bytes) -> tuple[dict[str, Any], dict[str, TableDump]]:
-    buf = io.BytesIO(plaintext)
     tables: dict[str, TableDump] = {}
-    manifest: dict[str, Any] | None = None
-    with tarfile.open(fileobj=buf, mode="r:gz") as tar:
-        for member in tar.getmembers():
-            if not member.isfile():
-                continue
-            extracted = tar.extractfile(member)
-            if extracted is None:
-                continue
-            data = extracted.read()
-            path = Path(member.name)
-            if path.name == "manifest.json":
-                manifest = json.loads(data.decode("utf-8"))
-            elif path.suffix == ".jsonl":
-                name = path.stem
-                tables[name] = TableDump(
-                    name=name,
-                    rows=jsonl_to_rows(data),
-                    sha256=sha256_bytes(data),
-                    raw=data,
-                )
-    if manifest is None:
-        raise BackupError("backup archive has no manifest.json")
-    missing = [name for name in PROTECTED_TABLES if name not in tables]
-    if missing:
-        raise BackupError("backup archive missing tables: " + ", ".join(missing))
-    return manifest, tables
+    members: dict[str, bytes] = {}
+    try:
+        with tarfile.open(fileobj=io.BytesIO(plaintext), mode="r:gz") as tar:
+            for member in tar.getmembers():
+                if not member.isfile() or member.name in members:
+                    raise BackupError("duplicate or non-file archive member")
+                extracted = tar.extractfile(member)
+                if extracted is None:
+                    raise BackupError("unreadable archive member")
+                members[member.name] = extracted.read()
+        manifests = [name for name in members if name.endswith("/manifest.json")]
+        if len(manifests) != 1:
+            raise BackupError("backup archive must have one manifest.json")
+        manifest = json.loads(members[manifests[0]])
+        order = manifest_table_order(manifest)
+        backup_id = manifest.get("backup_id")
+        if not isinstance(backup_id, str) or not re.fullmatch(r"user-tables-\d{8}T\d{6}Z", backup_id):
+            raise BackupError("invalid archive backup identity")
+        expected = {f"{backup_id}/manifest.json"} | {
+            f"{backup_id}/tables/{name}.jsonl" for name in order
+        }
+        if set(members) - {f"{backup_id}/pg_dump.sql"} != expected:
+            raise BackupError("archive member/table set mismatch")
+        for name in order:
+            data = members[f"{backup_id}/tables/{name}.jsonl"]
+            rows = jsonl_to_rows(data)
+            meta = manifest["tables"][name]
+            if (not isinstance(meta, dict) or type(meta.get("rows")) is not int
+                    or meta["rows"] != len(rows) or not all(isinstance(row, dict) for row in rows)
+                    or meta.get("sha256") != sha256_bytes(data)):
+                raise BackupError(f"archive table integrity mismatch: {name}")
+            tables[name] = TableDump(name, rows, sha256_bytes(data), data)
+        return manifest, tables
+    except (ValueError, TypeError, KeyError, tarfile.TarError) as exc:
+        raise BackupError("invalid backup archive") from exc
 
 
 def build_manifest(
@@ -506,14 +644,15 @@ def build_manifest(
     now: datetime,
     payload_sha256: str,
 ) -> dict[str, Any]:
+    order = table_order(tables)
     return {
-        "schema": SCHEMA,
+        "schema": SCHEMA if order == PROTECTED_TABLES else IW2_SCHEMA,
         "backup_id": backup_id,
         "created_at": iso(now),
         "mode": mode,
         "tables": {
             name: {"rows": len(tables[name].rows), "sha256": tables[name].sha256}
-            for name in PROTECTED_TABLES
+            for name in order
         },
         "source": source,
         "retention_days": DEFAULT_RETENTION_DAYS,
@@ -522,7 +661,7 @@ def build_manifest(
         "payload_sha256": payload_sha256,
         "encrypted": True,
         "cipher": CIPHER,
-        "protected_tables": list(PROTECTED_TABLES),
+        "protected_tables": list(order),
     }
 
 
@@ -546,7 +685,7 @@ def fetch_via_rest(table: str, *, base_url: str, service_key: str, page_size: in
         )
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
-                payload = json.loads(resp.read().decode("utf-8") or "[]")
+                payload = json.loads(resp.read().decode("utf-8") or "[]", parse_float=Decimal)
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")[:300]
             raise BackupError(f"PostgREST {table} failed HTTP {exc.code}: {body}") from exc
@@ -581,7 +720,7 @@ def write_via_rest(
         return 0
     req = urllib.request.Request(
         url,
-        data=json.dumps(rows, default=str).encode("utf-8"),
+        data=json_value(rows).encode("utf-8"),
         headers=headers,
         method="POST",
     )
@@ -613,7 +752,7 @@ def fetch_via_psql(table: str, db_url: str) -> list[dict[str, Any]]:
         err = (proc.stderr or "").strip().splitlines()
         hint = err[-1] if err else "psql failed"
         raise BackupError(f"psql {table}: {hint}")
-    payload = json.loads(proc.stdout or "[]")
+    payload = json.loads(proc.stdout or "[]", parse_float=Decimal)
     if not isinstance(payload, list):
         raise BackupError(f"psql {table} returned a non-list")
     return payload
@@ -642,35 +781,61 @@ def run_pg_dump_sql(db_url: str) -> bytes:
     return proc.stdout
 
 
-def pg_insert_jsonl(db_url: str, tables: dict[str, TableDump]) -> dict[str, int]:
+def pg_insert_jsonl(db_url: str, tables: dict[str, TableDump], *, timezone: str = "UTC") -> dict[str, int]:
+    """Restore and verify the exact row multisets in one scratch transaction."""
     if not shutil.which("psql"):
         raise BackupError("psql is not installed")
-    restored: dict[str, int] = {}
-    for name in RESTORE_ORDER:
-        rows = tables[name].rows
-        if not rows:
-            restored[name] = 0
-            continue
-        literal = json.dumps(rows, default=str).replace("'", "''")
-        sql = (
-            "SET session_replication_role = replica;\n"
-            f"INSERT INTO public.{name} "
-            f"SELECT * FROM json_populate_recordset(NULL::public.{name}, '{literal}');\n"
-            "SET session_replication_role = DEFAULT;\n"
+    order = table_order(tables)
+    inserts: list[str] = []
+    checks: list[str] = []
+    for name in order:
+        literal = json_value(tables[name].rows).replace("'", "''")
+        inserts.append(
+            f"INSERT INTO public.{name} SELECT * FROM "
+            f"json_populate_recordset(NULL::public.{name}, '{literal}');"
         )
-        proc = subprocess.run(
-            ["psql", "-v", "ON_ERROR_STOP=1", "-d", db_url],
-            input=sql,
-            capture_output=True,
-            text=True,
-            check=False,
+        checks.append(
+            f"IF EXISTS (WITH expected AS (SELECT value FROM jsonb_array_elements('{literal}'::jsonb)), "
+            f"actual AS (SELECT to_jsonb(t) value FROM public.{name} t) "
+            "(SELECT value FROM expected EXCEPT ALL SELECT value FROM actual) UNION ALL "
+            "(SELECT value FROM actual EXCEPT ALL SELECT value FROM expected)) "
+            f"THEN RAISE EXCEPTION 'restore content mismatch: {name}'; END IF;"
         )
-        if proc.returncode != 0:
-            err = (proc.stderr or "").strip().splitlines()
-            hint = err[-1] if err else "psql failed"
-            raise BackupError(f"psql restore {name}: {hint}")
-        restored[name] = len(rows)
-    return restored
+    body = "BEGIN\n" + "\n".join(checks) + "\nEND;"
+    tag = "$mmx_restore$"
+    while tag in body:
+        tag = tag[:-1] + "x$"
+    counts = ", ".join(f"'{name}', (SELECT count(*) FROM public.{name})" for name in order)
+    zone = timezone.replace("'", "''")
+    sql = (
+        "BEGIN;\nSET LOCAL standard_conforming_strings = on;\n"
+        f"SET LOCAL TIME ZONE '{zone}';\n"
+        "SET LOCAL session_replication_role = replica;\n"
+        + "\n".join(inserts) + f"\nDO {tag}{body}{tag};\n"
+        + f"SELECT json_build_object({counts});\nCOMMIT;\n"
+    )
+    proc = subprocess.run(
+        ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-d", db_url],
+        input=sql, capture_output=True, text=True, check=False,
+    )
+    if proc.returncode:
+        # A lost connection can occur after COMMIT reached the server. Never
+        # turn a client failure into permission to replay an uncertain write.
+        raise BackupError(
+            "scratch restore EFFECT_UNKNOWN: psql failed; reconcile the exact "
+            "scratch destination before retrying (COMMIT may have succeeded)"
+        )
+    try:
+        result = json.loads(proc.stdout)
+        if (not isinstance(result, dict) or set(result) != set(order)
+                or any(type(n) is not int or n != len(tables[name].rows) for name, n in result.items())):
+            raise ValueError("counts")
+    except (ValueError, TypeError) as exc:
+        raise BackupError(
+            "scratch restore committed but readback is invalid; reconcile the "
+            "exact scratch destination before retrying"
+        ) from exc
+    return result
 
 
 def dump_via_fetcher(fetcher: TableFetcher, *, allow_missing: bool = False) -> dict[str, TableDump]:
@@ -694,8 +859,8 @@ def dump_via_fetcher(fetcher: TableFetcher, *, allow_missing: bool = False) -> d
 def verify_tables(expected: dict[str, Any], actual_counts: dict[str, int]) -> dict[str, Any]:
     report: dict[str, Any] = {}
     ok = True
-    for name in PROTECTED_TABLES:
-        want = int(expected.get(name, {}).get("rows", 0))
+    for name in table_order(expected):
+        want = int(expected[name]["rows"])
         got = int(actual_counts.get(name, -1))
         match = want == got
         ok = ok and match
@@ -764,11 +929,21 @@ def prune_expired(
 def load_artifact(store: ObjectStore, backup_id: str, prefix: str, key: str) -> BackupArtifact:
     enc_key, man_key = object_keys(backup_id, prefix)
     ciphertext = store.get(enc_key)
-    sidecar = json.loads(store.get(man_key).decode("utf-8"))
+    try:
+        sidecar = json.loads(store.get(man_key).decode("utf-8"))
+        manifest_table_order(sidecar)
+    except (ValueError, TypeError) as exc:
+        raise BackupError("invalid sidecar manifest") from exc
     plaintext = decrypt_payload(ciphertext, key)
     if sha256_bytes(plaintext) != sidecar.get("payload_sha256"):
         raise BackupError("payload sha256 mismatch after decrypt")
     manifest, tables = parse_tar(plaintext)
+    # v1 embedded payload hash predates the final tar rebuild. Compare all other
+    # fields to the externally hashed sidecar, and bind both to the requested id.
+    if (manifest.get("backup_id") != backup_id or sidecar.get("backup_id") != backup_id
+            or {k: v for k, v in manifest.items() if k != "payload_sha256"}
+            != {k: v for k, v in sidecar.items() if k != "payload_sha256"}):
+        raise BackupError("sidecar/archive identity mismatch")
     return BackupArtifact(
         backup_id=backup_id,
         manifest=manifest,
@@ -783,7 +958,7 @@ def restore_via_writer(
     writer: TableWriter,
 ) -> dict[str, int]:
     restored: dict[str, int] = {}
-    for name in RESTORE_ORDER:
+    for name in table_order(tables):
         restored[name] = writer(name, tables[name].rows)
     return restored
 
@@ -815,12 +990,24 @@ def build_receipt(
         "rto_target_minutes": RTO_TARGET_MINUTES,
         "commands": commands,
         "verification": verification,
-        "gate1_scratch_supabase": environment == "scratch-supabase",
+        # GATE-1 is about the DESTINATION being a real, non-production Supabase
+        # project - not about which transport wrote the rows. The psql path
+        # (--dest-db-url) is the only one that survives the auth.users FKs, so
+        # keying this off "scratch-supabase" alone stamped false on every correct
+        # restore the runbook actually prescribes.
+        "gate1_scratch_supabase": (
+            environment in ("scratch-supabase", "scratch-postgres")
+            and verification.get("ok") is True
+            and project_ref_from_url(dest) is not None
+            and dest_is_production(dest) is None
+            and ((urlparse(dest).hostname or "").endswith(".supabase.co")
+                 or (urlparse(dest).hostname or "").endswith(".supabase.com"))
+        ),
     }
 
 
 def resolve_mode(explicit: str) -> str:
-    if explicit in {"pg_dump", "rest", "memory"}:
+    if explicit in {"pg_dump", "rest", "memory", "snapshot"}:
         return explicit
     if env("SUPABASE_DB_URL") or env("DATABASE_URL"):
         return "pg_dump"
@@ -885,8 +1072,24 @@ def cmd_dump(args: argparse.Namespace) -> int:
     if not key:
         raise BackupError("BACKUP_ENCRYPTION_KEY is required")
     mode = resolve_mode(args.mode)
+    source = source_info(mode)
     extra_files: dict[str, bytes] = {}
-    if mode == "pg_dump":
+    if args.table_set == "iw2":
+        if args.allow_missing or mode not in {"pg_dump", "snapshot"}:
+            raise BackupError("IW2 requires a complete single SQL snapshot; REST/allow-missing refused")
+        project_ref = args.source_project_ref or project_ref_from_url(env("SUPABASE_URL"))
+        if not project_ref or not re.fullmatch(r"[a-z0-9]{20}", project_ref):
+            raise BackupError("IW2 requires the exact source project ref")
+        if mode == "snapshot":
+            raw = sys.stdin.buffer.read(MAX_SNAPSHOT_BYTES + 1)
+        else:
+            raw = fetch_snapshot_via_psql(
+                env("SUPABASE_DB_URL") or require_env("DATABASE_URL"), project_ref,
+            )
+        tables, source = parse_snapshot(raw, project_ref)
+    elif mode == "snapshot":
+        raise BackupError("snapshot mode requires --table-set iw2")
+    elif mode == "pg_dump":
         db_url = env("SUPABASE_DB_URL") or env("DATABASE_URL")
         if not db_url:
             raise BackupError("SUPABASE_DB_URL or DATABASE_URL is required for --mode pg_dump")
@@ -908,7 +1111,7 @@ def cmd_dump(args: argparse.Namespace) -> int:
     else:
         raise BackupError(f"unsupported dump mode {mode}")
     artifact = make_artifact(
-        tables, mode=mode, source=source_info(mode), key=key, extra_files=extra_files,
+        tables, mode=mode, source=source, key=key, extra_files=extra_files,
     )
     store = store_from_args(args)
     publish_artifact(store, artifact, args.prefix)
@@ -917,7 +1120,7 @@ def cmd_dump(args: argparse.Namespace) -> int:
         "ok": True,
         "backup_id": artifact.backup_id,
         "mode": mode,
-        "tables": {name: artifact.manifest["tables"][name]["rows"] for name in PROTECTED_TABLES},
+        "tables": {name: artifact.manifest["tables"][name]["rows"] for name in table_order(tables)},
         "enc_key": object_keys(artifact.backup_id, args.prefix)[0],
         "pruned": deleted,
         "rpo_declared_hours": RPO_DECLARED_HOURS,
@@ -949,7 +1152,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
     key = require_env("BACKUP_ENCRYPTION_KEY")
     store = store_from_args(args)
     artifact = load_artifact(store, args.backup_id, args.prefix, key)
-    counts = {name: len(artifact.tables[name].rows) for name in PROTECTED_TABLES}
+    counts = {name: len(table.rows) for name, table in artifact.tables.items()}
     report = verify_tables(artifact.manifest["tables"], counts)
     print(json.dumps({
         "ok": report["ok"],
@@ -989,8 +1192,13 @@ def cmd_restore(args: argparse.Namespace) -> int:
     started = utcnow()
     artifact = load_artifact(store, args.backup_id, args.prefix, key)
     mode = artifact.manifest.get("mode") or "rest"
+    if manifest_table_order(artifact.manifest) == IW2_TABLES and not args.dest_db_url:
+        raise BackupError("IW2 restore requires scratch Postgres and a single transaction")
     if args.dest_db_url:
-        actual = pg_insert_jsonl(args.dest_db_url, artifact.tables)
+        actual = pg_insert_jsonl(
+            args.dest_db_url, artifact.tables,
+            timezone=(artifact.manifest.get("source") or {}).get("timezone", "UTC"),
+        )
         dest_used = args.dest_db_url
         environment = "scratch-postgres"
     else:
@@ -1008,6 +1216,8 @@ def cmd_restore(args: argparse.Namespace) -> int:
         environment = "scratch-supabase"
     ended = utcnow()
     report = verify_tables(artifact.manifest["tables"], actual)
+    report["content_verified"] = bool(args.dest_db_url)
+    report["transactional_restore"] = bool(args.dest_db_url)
     commands = [
         f"python -m scripts.backup_user_tables restore --backup-id {args.backup_id} "
         f"--i-am-restoring-into-scratch "
@@ -1037,10 +1247,13 @@ def build_parser() -> argparse.ArgumentParser:
     shared.add_argument("--local-dir", help="Read/write backups on a local directory instead of R2")
     shared.add_argument("--prefix", default=env("BACKUP_R2_PREFIX", DEFAULT_PREFIX))
     shared.add_argument("--retention-days", type=int, default=DEFAULT_RETENTION_DAYS)
-    shared.add_argument("--mode", choices=("auto", "pg_dump", "rest"), default="auto")
+    shared.add_argument("--mode", choices=("auto", "pg_dump", "rest", "snapshot"), default="auto")
+    shared.add_argument("--table-set", choices=("legacy", "iw2"), default="legacy")
+    shared.add_argument("--source-project-ref", help="Exact source ref for IW2 snapshot capture/import")
     shared.add_argument("--allow-missing", action="store_true", help="Dump empty JSONL for missing REST tables")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    sub.add_parser("snapshot-query", parents=[shared], help="Print one read-only IW2 snapshot SELECT")
     sub.add_parser("dump", parents=[shared], help="Create an encrypted backup and publish it")
     sub.add_parser("list", parents=[shared], help="List published backup manifests")
 
@@ -1067,6 +1280,9 @@ def main(argv: list[str] | None = None) -> int:
         print("retention-days must be >= 30", file=sys.stderr)
         return EXIT_USAGE
     try:
+        if args.command == "snapshot-query":
+            print(snapshot_query(args.source_project_ref or project_ref_from_url(env("SUPABASE_URL")) or ""))
+            return 0
         if args.command == "dump":
             return cmd_dump(args)
         if args.command == "list":

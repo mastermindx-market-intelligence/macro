@@ -36,7 +36,7 @@
 # conflict_policy  ∈ PRIMARY_ONLY | FALLBACK | DOMAIN_AUTHORITY | CROSS_VALIDATE | COMPOSITE
 # ─────────────────────────────────────────────────────────────────────────────
 schema: dataset_registry.v1
-updated: "2026-09-20"
+updated: "2026-10-12"
 
 datasets:
 
@@ -61,6 +61,19 @@ datasets:
     quality_checks: [uniqueness, validity, freshness, continuity]
     version: "1.0.0"
     licensing: vendor_terms_personal_use
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: tradj                       # row-level, agrees with schema close (R00)
+    clocks: [ingested_at]              # no per-row published_at is captured; first
+                                       # system observation is the nightly collect (D00.D1)
+    point_in_time_corporate_actions: false   # no action revision set bound to this store
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
     schema:
       close:
         dtype: float64
@@ -80,6 +93,13 @@ datasets:
       history, which is how 30/231 names came to be stranded on a stale adjustment basis
       (measured 2026-07-19, healed by scripts/heal_stocks_basis.py) — the concrete cost of
       an adjusted series whose adjustment vintage is not recorded (§D4).
+      R00 POPULATION (2026-10-13, D00.D6 consumer B): market US. No `population:`
+      block is declared because venues are NOT measurable from the producer or any
+      in-repo source without reading `data/` (the yfinance fetch exposes no per-row
+      venue; the fetch universe is the union of top-N holdings per
+      collectors/sector_holdings.py plus every stored name, and holdings may include
+      foreign shares per that adapter's own session-routing comment) — an honest
+      partial stays in this note rather than guessing a MIC list.
 
   - dataset_id: equity.bars.daily.yahoo
     layer: L1
@@ -147,6 +167,17 @@ datasets:
     timezone: America/New_York
     frequency: 1d
     adjustment: none
+    basis: raw
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        internal_computation: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        redistribution: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+    code_consumers:
+      - scripts/stock_liquidity_profile.py
     conflict_policy: PRIMARY_ONLY
     quality_checks: [uniqueness, validity, freshness]
     version: "1.0.0"
@@ -160,10 +191,22 @@ datasets:
         note: >
           MEASURED NVDA 2024-06-03 = 1150.00 — the price actually PRINTED, pre the 10:1
           split. Same column name as the two stores above, 10x the number.
+      volume:
+        dtype: int64
+        unit: shares
+        nullable: false
+        note: >
+          Native _parse_day normalizes missing source volume to zero. Non-null
+          storage does not certify source completeness; the F08 qualified
+          projection refuses a zero-volume window because missingness was erased.
     notes: >
       The only raw-print equity store here, and therefore the only lawful input for
       limit-price / tick-size / exchange-rule work — see DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT,
       where using an adjusted tape for exactly that stop-shipped a whole program.
+      Rights adopt the existing operator-confirmed enterprise record, not a new
+      grant. Currency and per-row publication/ingestion clocks are not declared
+      by these daily files; the F08 liquidity projection must qualify its window
+      separately and cannot infer USD or known_at from this registry entry.
 
   # ── Macro releases ─────────────────────────────────────────────────────────
   - dataset_id: macro.fred.observations
@@ -297,7 +340,9 @@ datasets:
           (issuer_id may be a retained legacy mint, or NULL for an evidence-less new
           row — both aggregation-forbidden) | AMBIGUOUS (current symbol maps to >1
           CIK; reserved, fail-closed) | EVIDENCE_CONFLICT (later evidence disagrees
-          with a committed assignment; recorded, never auto-executed) |
+          with a committed assignment; recorded, never auto-executed — except a
+          NULL-issuer allowlist refusal whose CIK is later ratified, re-examined
+          all-or-nothing per CIK, D2B1 AMENDMENT §7) |
           DEFERRED_IDENTITY_EXCEPTION (named in _receipt.json identity_exceptions —
           GOLD today; B never mints a row — excluded from grouping entirely).
       issuer_cik:
@@ -372,6 +417,16 @@ datasets:
       canonical reader. The general pending-transition fence (§5) that prevents a
       RECURRENCE of this class lives in the receipt's `pending_transition_refusals`
       and `listing_continuity` blocks, not in this schema.
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   - dataset_id: reference.vendor_aliases
     layer: L2
@@ -380,16 +435,16 @@ datasets:
     producer: scripts/build_security_master.py
     storage: data/reference/vendor_aliases.parquet
     format: parquet
-    grain: [vendor, vendor_symbol, valid_from]
+    grain: [alias_kind, vendor, vendor_symbol, valid_from]
     identity:
       id_column: security_id
-      id_type: SEC
+      id_type: SEC_or_IDX
     temporal_profile: SNAPSHOT_SERIES
     timezone: UTC
     frequency: on_demand   # same producer, same reason — see reference.security_master
     conflict_policy: DOMAIN_AUTHORITY
     quality_checks: [uniqueness, referential, temporal_integrity]
-    version: "0.1.0"
+    version: "0.2.0"
     inputs: [reference.security_master]
     schema:
       vendor: {dtype: string, nullable: false}
@@ -404,7 +459,37 @@ datasets:
           inclusive end makes the changeover day ambiguous, and 2026-01-14 is exactly
           the day the MMC/MRSH answer has to be unambiguous.
       ingested_at: {dtype: "datetime64[ns]", nullable: false}
+      known_at: {dtype: string, nullable: true, note: "aware UTC evidence observation; required for polygon and occ_root, not consumer read availability"}
+      evidence_sha256: {dtype: string, nullable: true, note: "retained decoded source evidence digest; required for polygon and occ_root"}
+      binding_sha256: {dtype: string, nullable: true, note: "semantic alias tuple seal; consistency, not source authenticity"}
+      alias_kind: {dtype: string, nullable: true, enum: [occ_root], note: "null preserves ordinary bidirectional aliases; occ_root is a forward-only typed-underlying relation"}
     notes: >
+      For alias_kind=occ_root the existing security_id column holds an exact SEC or IDX
+      target; a prefix is syntax, never a canonical record or permission grant.
+      This relation requires an event date, aware known_at, retained source digest,
+      and a kind-separated binding seal. The dedicated lookup verifies exact retained
+      evidence bytes by decision cutoff. Distinct roots may share one underlying;
+      overlapping targets for one vendor/root refuse. Ordinary lookup excludes these
+      rows. Existing null alias_kind rows retain their bidirectional uniqueness.
+      Ingestion must establish source-specific root semantics and bind an existing
+      canonical security or index record before publishing any root row. This schema
+      does not create an index registry or admit a source by ticker equality.
+      The explicit thetadata/SPY profile combines captured Cboe product/reference,
+      Theta v3 symbol-contract and SEC/listing evidence with an existing active
+      SEC:US-ARCX-SPY record. New intake covers only its observed UTC date, retains
+      both capture clocks and canonical target fields, and refuses later replay.
+      Ordinary refresh preserves the historical window. This is source-specific
+      inference, not a live Theta response, verified Matrix session or rights grant;
+      see docs/dataos/direct-registrant-intake.md. Ordinary us_equity still excludes
+      ARCX; the Options consumer validates the typed canonical target separately.
+      The additional `polygon` historical-naming namespace is a bounded prospective
+      reference observation, with valid_from on the actual requested date and exclusive
+      valid_to. Both canonical lookup directions require an explicit aware decision_at;
+      known_at gates evidence observation, never publication or Radar file-read custody.
+      Candidate use additionally requires its existing input-bundle native snapshot read
+      receipt by cutoff. Missing clocks or conflicting observations refuse; this is not
+      bitemporal revision selection. Digests establish consistency, not authenticity.
+      Existing namespaces retain their original semantics and null additive fields.
       Supersedes lib/ticker_aliases.py — 53 lines, 2 entries, Yahoo-only and TIMELESS,
       which is why it can say "MMC means MRSH" but not "MMC meant MMC before
       2026-01-14". Its own docstring records the 7-month silent production loss the
@@ -444,6 +529,16 @@ datasets:
       DISPLAY TIER: nothing reads it as authority yet; lib/ticker_aliases.py remains the
       live seam until spec §11.4.
     supersedes: lib/ticker_aliases.py   # the `yahoo_fetch`/`store` rows only — see notes
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   # ── V4-D2B1 issuer axis (2026-08-19) — produced by the SAME builder, SAME era ────
   - dataset_id: reference.issuer_master
@@ -563,6 +658,16 @@ datasets:
       general pending-transition fence that prevents a RECURRENCE of this class (§5) is
       disclosed in _receipt.json's `pending_transition_refusals`/`listing_continuity`
       blocks, not written here — this dataset records only a REALIZED correction.
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   # ── China physical-gold source plane — PRODUCED after live source proof ────────
   # Promoted 2026-09-20 after the protected-main gold_china_basis backfill landed
@@ -907,3 +1012,922 @@ datasets:
       HEAD.json. Any unreferenced generation is noncanonical and its receipt cannot
       prove production acceptance. Replay/report receipts remain read-only and cannot
       substitute for a natural nightly; neither may project present-day state backward.
+
+  - dataset_id: reference.corporate_actions.massive_split_evidence
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: engine/close_pass/massive_close.py::retain_split_history
+    storage: private sources-massive-split-history-v1 kernel objects/receipts/generations
+    format: json
+    grain: [acquisition_id, id]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    conflict_policy: PRIMARY_ONLY
+    version: "1.0.0"
+    licensing: massive_enterprise_research_retention
+    code_consumers: [engine/close_pass/massive_split_evidence.py::SplitEvidenceReader]
+    notes: >
+      Opt-in source implementation only; no live producer or store activation.
+      Exact case-sensitive ticker, execution_date.gte and named basis date;
+      complete-empty, partial and failed acquisitions retained separately.
+      Native event IDs and exact decimal tokens are observations, not factor
+      applicability, raw-minute reconstruction, source authenticity or basis admission.
+
+  - dataset_id: company_intelligence.issuer_disclosure_generations
+    layer: L3
+    status: PRODUCED
+    owner: company-intelligence
+    producer: scripts/publish_company_disclosure.py
+    storage: "private:company-intelligence/state/generations/{sha256}.json"
+    format: json
+    grain: [generation]
+    temporal_profile: DERIVED
+    timezone: UTC
+    frequency: on_demand
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [temporal_integrity, referential, uniqueness]
+    version: "1.0.0"
+    licensing: GMI-C01-CHAIRMAN-SOURCE-PURPOSE-20261011
+    schema:
+      schema: {dtype: string, nullable: false, value: company_intelligence.issuer_disclosure_generation/v1}
+      computed_at: {dtype: RFC3339_UTC, nullable: false}
+      code_version: {dtype: string, nullable: false}
+      input_cutoffs: {dtype: object, nullable: false}
+      decisions: {dtype: object, nullable: false}
+      edition: {dtype: object, nullable: false}
+      fact: {dtype: object, nullable: false}
+    code_consumers: [engine/company_intelligence/issuer_disclosure_owner.py]
+    notes: >
+      PRODUCED 2026-10-12 after the source owner independently observed the real
+      retained-input STAGE publication. Evidence:
+      research/theme_graph/issuer_disclosures_20261011/real_stage_20261012/README.md. Serving still
+      requires a NEW adoption-bound generation and PROMOTE_CURRENT operation.
+      Current-only manifest of separately versioned native edition/fact members;
+      metadata clocks belong to the manifest, not invented native-schema fields.
+      No PIT read, original-source redistribution, commercial magnitude or trade
+      authority. The protected source ruling, identity and correction decisions
+      remain operative; a private pointer cannot grant itself authority.
+
+
+  # EOD/fundamentals have authenticated, completed research-corpus receipts.
+  # PRODUCED records their existence, not full history or L2/PIT admission.
+  # BOATS keeps its separate live-integration gate below.
+  - dataset_id: vendor.tiingo.raw.equity_eod
+    layer: L0
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/eod-bars/{date}/{symbol_path}/{request_hash}-{content_hash_24}.raw.gz
+    format: gzip_json
+    grain: [symbol, request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    frequency: batch
+    adjustment: dual_basis_raw_and_vendor_adjusted
+    vendor: tiingo
+    endpoint: /tiingo/daily/{ticker}/prices
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, uniqueness, completeness, asof]
+    version: "0.2.0"
+    licensing: operator_reports_redistribution_rights_product_scope_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      PRODUCED 2026-10-12 for the authenticated, completed research corpus in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Raw grain names immutable receipt fields; content_hash_24 is the first
+      24 hex characters of raw_sha256. Campaign and full history remain incomplete.
+      Preserve actual OHLC and vendor-adjusted fields distinctly; capture vintage
+      does not establish historical upstream availability or adjustment vintage.
+      Dated identity, PIT, canonical prices and publication remain unadmitted.
+      These captures cannot displace canonical Yahoo/Massive price authority.
+
+  - dataset_id: vendor.tiingo.raw.fundamentals
+    layer: L0
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/fund-*/{date}/{symbol_path}/{request_hash}-{content_hash_24}.raw.gz
+    format: gzip_json
+    grain: [source, symbol, request_path, observed_at_utc, raw_sha256]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: event_and_daily
+    vendor: tiingo
+    endpoint: /tiingo/fundamentals
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity, asof]
+    version: "0.2.0"
+    licensing: separate_fundamentals_addon_not_verified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      PRODUCED 2026-10-12 for completed original/revised statements and daily
+      research captures in docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Raw grain names receipt fields; request_path preserves asReported and date
+      selections, and content_hash_24 is the first 24 raw_sha256 hex characters.
+      The accepted cohort serves 2023-10-12 through 2026-10-09 despite 1990 request
+      starts. All-symbol/deep coverage and campaign completion remain unproven.
+      Source permaTicker still requires Data OS dated identity mapping; capture
+      vintage and vendor release date do not prove historical upstream availability.
+      PIT, canonical identity and publication remain unadmitted.
+
+  - dataset_id: vendor.tiingo.raw.boats
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::Archive.store_boats_batch
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/boats-firehose/{date}/{sha256}.ndjson.gz
+    format: ndjson_gzip
+    grain: [venue, source_event_ns, receive_time, source_digest]
+    temporal_profile: EVENT
+    timezone: UTC
+    frequency: streaming
+    adjustment: raw
+    vendor: tiingo
+    endpoint: wss://api.tiingo.com/boats
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, completeness, temporal_integrity, continuity]
+    version: "0.1.0"
+    licensing: chairman_attested_boats_realtime_purchased_licensed_full_redistribution_runtime_unproven
+    notes: >
+      The Chairman directly confirms BOATS Real-time has been purchased, and Mastermind
+      has licensed use and redistribution. This is accepted operator authority;
+      do not request a second purchase or repeat contract procurement. A separate
+      authenticated vendor connection, successful feed messages, endpoint account
+      activation, archival evidence and publication-path verification remain unproven.
+      BOATS is one ATS venue, never national best bid/offer; preserve raw Q/T/B and
+      MEMOIR conditions. The L0/L1 datasets stay PROPOSED until live integration proof.
+
+  - dataset_id: vendor.tiingo.research.eod
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/eod-bars/{date}/{receipt_id_or_raw_sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, market_date, source_receipt_id]
+    temporal_profile: BARS
+    timezone: UTC
+    frequency: batch
+    adjustment: raw_plus_vendor_total_return_adjusted
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, uniqueness, temporal_integrity]
+    version: "0.2.0"
+    inputs: [vendor.tiingo.raw.equity_eod]
+    licensing: research_only_not_canonical
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view, scripts/tiingo_research_query.py]
+    notes: >
+      PRODUCED 2026-10-12 for the verified retrospective research corpus in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Artifacts retain unambiguous legacy raw-digest names or receipt-context IDs;
+      source_sha256 joins the original raw payload and source_receipt_id its receipt.
+      Raw and vendor-adjusted prices remain distinct. Full history and campaign
+      completion remain unproven; dated identity and historical upstream availability
+      are still required before PIT use. No continuous service, canonical price
+      authority or publication admission is established by PRODUCED.
+
+  - dataset_id: vendor.tiingo.research.fundamentals
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/fund-*/{date}/{receipt_id_or_raw_sha256}.parquet
+    format: parquet
+    grain: [dataset_source, ticker_or_permaticker_vendor, source_receipt_id, statement_public_release_date_vendor, market_date, fiscal_year, fiscal_quarter, statement_type, metric_code, requested_as_reported]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: batch
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, temporal_integrity, completeness]
+    version: "0.2.0"
+    inputs: [vendor.tiingo.raw.fundamentals]
+    licensing: research_only_not_canonical
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view, scripts/tiingo_research_query.py]
+    notes: >
+      PRODUCED 2026-10-12 for completed original/revised/daily research views in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Grain is partition-dependent: statements use statement_public_release_date_vendor,
+      fiscal_year, fiscal_quarter, statement_type, metric_code and requested_as_reported;
+      daily uses market_date and metric_code. Both include dataset_source,
+      ticker_or_permaticker_vendor and source_receipt_id; absent partition columns
+      are not fabricated. Statements are REVISABLE_RELEASE; daily is SNAPSHOT_SERIES.
+      Filenames retain raw-digest or receipt-context IDs with verified source joins.
+      Actual cohort depth is 2023-10-12 through 2026-10-09 despite 1990 request starts.
+      All-symbol/deep history, campaign completion, dated identity, historical upstream
+      availability, PIT, canonical prices, continuous service and publication remain
+      unproven or unadmitted. PRODUCED records research existence only.
+
+  - dataset_id: vendor.tiingo.research.boats
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/boats-firehose/{date}/{sha256}.parquet
+    format: parquet
+    grain: [venue, event_epoch_ns, raw_message_sha256, source_digest]
+    temporal_profile: EVENT
+    timezone: UTC
+    frequency: streaming
+    adjustment: raw
+    vendor: tiingo
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, temporal_integrity, completeness]
+    version: "0.1.0"
+    inputs: [vendor.tiingo.raw.boats]
+    licensing: research_only_not_canonical
+    notes: >
+      Historical REST BOATS OHLC does not substitute for full quote/trade websocket
+      backfill. Multi-venue NBBO and continuity must remain false/not_proven.
+
+  # Additional Tiingo history remains PROPOSED: fixture-proven parsers do not
+  # establish a production corpus, endpoint access or canonical/PIT admission.
+
+  - dataset_id: vendor.tiingo.raw.boats_bars
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/boats-bars/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.boats_bars
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/boats-bars/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, bar_at_vendor, source_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.boats_bars]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.iex_bars
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/iex-bars/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.iex_bars
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/iex-bars/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, bar_at_vendor, source_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.iex_bars]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.equity_intraday
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/equity-intraday-bars/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.equity_intraday
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/equity-intraday-bars/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, bar_at_vendor, source_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.equity_intraday]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.forex_bars
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/forex-bars/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.forex_bars
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/forex-bars/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, bar_at_vendor, source_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.forex_bars]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.crypto_bars
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/crypto-bars/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.crypto_bars
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/crypto-bars/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, bar_at_vendor, source_sha256]
+    temporal_profile: BARS
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.crypto_bars]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.splits
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/splits/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: EVENT
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.splits
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/splits/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, ex_date_vendor, source_sha256]
+    temporal_profile: EVENT
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.splits]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.distributions
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/distributions/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: EVENT
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.distributions
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/distributions/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, ex_date_vendor, source_sha256]
+    temporal_profile: EVENT
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.distributions]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.fund_fee_history
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/fund-fee-history/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.fund_fee_history
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/fund-fee-history/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, source_date_label, metric_code, source_sha256]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.fund_fee_history]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.raw.distribution_yield
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tiingo_archive.py::collect_one
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/distribution-yield/{date}/{symbol_or_all}/{request_hash}-{content_hash}.raw.gz
+    format: gzip_json
+    grain: [request_path, observed_at_utc, raw_sha256]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  - dataset_id: vendor.tiingo.research.distribution_yield
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: scripts/tiingo_materialize.py::materialize_many
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/distribution-yield/{date}/{sha256}.parquet
+    format: parquet
+    grain: [ticker_vendor, source_date_label, metric_code, source_sha256]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    vendor: tiingo
+    conflict_policy: CROSS_VALIDATE
+    quality_checks: [checksum, completeness, temporal_integrity]
+    version: "0.1.0"
+    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
+    inputs: [vendor.tiingo.raw.distribution_yield]
+    notes: >
+      Research-only source history, not an active production dataset. Raw response
+      availability, exact source context, dated identity and actual upstream clocks
+      remain unqualified. Vendor prices/units are not executable or canonical price
+      bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  # ── R00 consumer A (D00.D6, 2026-10-13): Terminal daily OHLC JSON ───────────
+  # Cross-repo producer (repo mastermind-terminal @ 06a49a6104f6): status stays
+  # PROPOSED — this registry does not pretend an in-repo pipeline evidences a
+  # store another repo writes (R00.01), so the producer, basis and population
+  # below are cited, not claimed as produced here.
+  - dataset_id: terminal.bars.daily.ohlc_json
+    layer: L3
+    status: PROPOSED
+    owner: charting-app       # outside the in-repo owner vocabulary: the Terminal
+                              # app owns its own published output (R00 note)
+    producer: mastermind-terminal@06a49a6104f6:ingest/build_universe.py::build_ohlc_json
+    storage: mastermind-terminal:terminal/public/data/{ticker}.json   # OUT = $TERMINAL_DATA_DIR
+                              # override; manifest.json beside it (see notes)
+    format: json
+    grain: [ticker, date]
+    identity:
+      id_column: ticker
+      id_type: symbol         # storage key = vendor spelling frozen at write (D00.D2),
+                              # resolved through the alias table — never an identity
+    temporal_profile: DERIVED
+    frequency: 1d
+    version: "0.1.0"
+    basis: tradj
+    population:
+      market: US
+      venues: [XNYS, XNAS, XASE, ARCX]
+      universe: US tickers present in the Macro deep store data/stocks/<T>.parquet
+        (last MAX_BARS=3900) and existing Terminal flagship daily histories whose
+        store and yahoo_fetch aliases resolve to the same supported US listing;
+        direct Yahoo history is bounded by the observed per-file coverage
+    clocks: [derived]          # a DERIVED profile carries no clock of its own (D00.D1)
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    notes: >
+      PROPOSED, never PRODUCED on this registry's evidence: the producer lives in
+      another repo (R00.01) — mastermind-terminal@06a49a6104f6:ingest/
+      build_universe.py::build_ohlc_json (def at :142), US input = the Macro deep
+      store data/stocks/<T>.parquet via MACRO_REPO/ohlc_rel (:376-384, :423-428),
+      i.e. this registry's equity.bars.daily.stocks (tradj close). Output written
+      per ticker at :429 under OUT = $TERMINAL_DATA_DIR or terminal/public/data
+      (:54), manifest.json at :450 (:56); MAX_BARS=3900 (~15y daily, :58/:145).
+      BASIS (R00 ruling): mixed per-ticker vendor-adjusted sources selected by
+      `src` (deep = Macro equity.bars.daily.stocks tradj close with synthetic
+      open; polygon = adjusted=true aggs; yahoo = auto_adjust); vendor-adjusted,
+      not house SADJ (D00.D3), not executable; per-ticker basis is not declared
+      in the output -> GAP. One row label may never claim LESS adjustment than a
+      constituent may carry, and `sadj` would claim a house qualification D00.D3
+      reserves for qualified split events. The `o` field is SYNTHETIC (= prior
+      close, :147-149) with high/low clamped to include it (:152-153) and
+      bar_quality synthetic_open_deepstore — displayed, never a traded open
+      (D00.D4). Never-clobber (:415-421): an existing per-ticker JSON whose src
+      is polygon or yahoo is kept; those files come from other producers —
+      ingest/refresh_ohlc.py:40-41 (Polygon grouped daily aggs, adjusted=true)
+      and ingest/refresh_ohlc_intl.py:86 (yfinance auto_adjust). CN/HK/Intl
+      inputs (:23-26) are outside the D00.D6 positive witness (identity-only).
+      POPULATION: market US; venues measured from the Polygon primary_exchange
+      MIC map (:89-91, :211) — XNYS/XNAS/XASE/ARCX; D00.D6 names XNAS/XNYS/ARCX,
+      the XASE difference is recorded as a GAP. No lineage edge in `inputs:`: the
+      in-repo DAG is in-repo lineage, and a cross-repo build is named here, not
+      graphed as an in-repo pipeline.
+      2026-10-19 direct-source integration: the existing Terminal producer
+      ingest/build_polygon_universe.py may bind its own fresh Yahoo max/1d
+      auto_adjust observation through lib/dataos/terminal_materialization.py.
+      This explicit source variant closes the basis gap only for its bound
+      per-symbol materializations, using the actual requested yahoo_fetch alias,
+      canonical store identity, source/module versions, exact reference-file
+      hashes and dataos.terminal_ohlc.rows.v1 digest of all published OHLCV rows.
+      It does not claim the Macro parquet as an upstream dependency. Reused
+      documents retain their original observation; any mixed-source append or
+      content change invalidates the active binding until a full rebind.
+      CURRENT TRADJ is a non-executable vendor total-return proxy; historical
+      availability, action revisions and unattested identity generations remain
+      explicit. No rights or PROPOSED status change is implied. Contract and
+      acceptance limits: research/TERMINAL_YAHOO_MATERIALIZATION_2026-10-19.md.
+
+  # ── R00 consumer C (D00.D6, 2026-10-13): basket membership PIT histories ────
+  # One row per suite — three suites, two lanes (engine/basket_membership_pit.py
+  # SUITE_LANE): the US `baskets` suite is the D00.D6 positive witness; the two
+  # CN suites are identity-only. All three stores are append-only parquets,
+  # keep-FIRST on (snapshot_date, basket_id, ticker), advanced only by their one
+  # declared collection lane; content-dedup means a snapshot_date is stamped only
+  # when membership actually differs.
+  - dataset_id: basket.membership.history.baskets
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # the repo's own membership key space (D00.D2), not an identity
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # nightly advance with content-dedup — most nights stamp nothing
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable     # membership: no price column carries a basis
+    clocks: [ingested_at]    # snapshot_date is stamped at lane observation; collection
+                             # receipts carry the collection clock (D00.D1)
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::members_asof   # the PIT read seam (pit flag travels with the answer)
+      - scripts/research/freeze_mi_s2_theme_relative_intraday_registration.py
+    notes: >
+      US suite (SUITE_US = "baskets"): the 49 hand-curated US thematic baskets of
+      data/baskets/membership.json, snapshotted append-only by
+      engine/basket_membership_pit.py (producer driven by scripts/build_baskets.py
+      via append_all(suites=SUITES_US), lane "nightly" per SUITE_LANE — the only
+      lane allowed to advance this store). D00.D6 consumer C positive witness:
+      population market US. No `population:` block is declared — venues are not a
+      measurable property of an index-membership store and no in-repo source
+      enumerates them without reading `data/` (R00 gap). PRODUCED evidence: the
+      parquet is a committed blob at HEAD (last advanced by "engine: regime
+      update 2026-09-04", 297b3e6f16) and config/dag.yml wires
+      scripts.build_baskets --snapshot into the US nightly. name_zh is empty on
+      US rows — one reader, not two.
+
+  - dataset_id: basket.membership.history.baskets_china
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets_china/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # CN vendor spelling (D00.D2); identity-only normalization (D00.D6)
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # asia-lane advance with content-dedup
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable
+    clocks: [ingested_at]
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::members_asof
+    notes: >
+      Curated CN suite (SUITE_CURATED = "baskets_china"), advanced only by the
+      asia collection lane (SUITE_LANE; scripts/build_baskets_china_ths.py ->
+      append_all). IDENTITY-ONLY (D00.D6): no CN price-view positive witness is
+      claimed in v1; population market CN, venues not measurable in-repo (no
+      `population:` block — R00 gap). PRODUCED evidence: committed blob at HEAD
+      (last advanced by "engine: asia dashboards 2026-08-06", 8e8ce5ec7b);
+      content-dedup makes advance recency a cadence-stamp question, not a
+      staleness claim.
+
+  - dataset_id: basket.membership.history.baskets_china_ths
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets_china_ths/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # CN vendor spelling (D00.D2); identity-only normalization (D00.D6)
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # asia-lane advance with content-dedup
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable
+    clocks: [ingested_at]
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::read_history
+      - engine/basket_membership_pit.py::members_asof
+      - scripts/build_theme_graph.py
+      - engine/theme_graph/materialize.py
+    notes: >
+      Machine CN suite (SUITE_THS = "baskets_china_ths", THS concept boards),
+      advanced only by the asia collection lane (SUITE_LANE). IDENTITY-ONLY
+      (D00.D6): no CN price-view positive witness in v1; population market CN,
+      venues not measurable in-repo (no `population:` block — R00 gap). Rows
+      carry source_shape: the earliest side-car is the raw vendor concept dump
+      (ths_concept_dump) whose concept -> basket mapping is today's — the honest
+      bound on how PIT it is. PRODUCED evidence: committed blob at HEAD (last
+      advanced by "engine: asia dashboards 2026-10-04", 63df61aa9a; re-scrape
+      d337c379a3 the day before).
+
+  # ── BEA Global Value Chains — CEO-scoped data-purpose decision (2026-10-14) ───
+  # DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014 authorizes BEA first-party
+  # current descriptive use and assigns the existing macro-dashboard Data OS role.
+  # Both rows are PROPOSED. Neither ID represents a live native source producer,
+  # installed storage, original L0 source-byte custody, or valid historical PIT.
+  - dataset_id: bea.gvc.may2026.original_responses
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::bind_retained_responses"
+    storage: "data/bea/gvc/may2026/original_responses/{table_id}/{source_sha256}.json"
+    format: json
+    grain: [publisher_edition_date, source_table_id, original_response_sha256]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, completeness, temporal_integrity, source_revision]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    notes: >
+      PROPOSED ONLY, producer and storage path not installed. This is a stable
+      proposed source identity, not a claim that canonical original response bytes
+      have been authenticated or moved. Reuse the 64 previously retained BEA
+      research captures; do not reacquire them. Original response digest,
+      actual native ingested_at, original publication clock and correction chain
+      still require byte-evidenced admission. Publisher release is 2026-05-21
+      with DAY precision; do not invent an instant or backdate a 2017-2024
+      known_at. The CEO rights decision applies only to official BEA first-party
+      GVC statistics, with source attribution and no government endorsement.
+      The decision does not install a source producer or grant third-party rights.
+
+  - dataset_id: bea.gvc.may2026.industry_import_inputs
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::materialize_industry_inputs"
+    storage: "data/bea/gvc/may2026/industry_inputs/industry_{industry_code_exact}.jsonl"
+    format: jsonl
+    grain: [publisher_edition_date, accounting_year, industry_code_exact, commodity_code_exact]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, uniqueness, source_lineage, signed_accounting_reconciliation, temporal_integrity]
+    inputs: [bea.gvc.may2026.original_responses]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    notes: >
+      PROPOSED ONLY, not native produced or publicly served. The existing
+      separately retained 138 industry research JSONL views (eight annual years,
+      139 commodities each) have independently accepted research builder/lineage
+      receipts, but are not this proposed native L1 store. The GMI research
+      consumer is private and does not constitute an admitted Data OS product
+      reader. Source amounts are signed USD millions and geographic allocations
+      are imputed industry inputs, not observed bilateral supply transactions.
+      The May-21-2026 GVC edition revises 2017-2023; historical first-known
+      2017-2024 clocks are NULL. Native UTC ingest/revisions, exact 5241X vs
+      5241XX dated mapping and upstream response-byte/correction chain must be
+      verified before PRODUCED status. Rights approval covers first-party BEA
+      current-vintage descriptive industry display only, with attribution and
+      no endorsement. Public UI/browser/machine proof and independent source
+      review remain separate acceptance gates.

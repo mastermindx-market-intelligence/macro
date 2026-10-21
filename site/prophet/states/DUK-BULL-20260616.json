@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DUK-BULL-20260616",
-  "asof": "2026-09-25",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 11.6,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -48.4,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-21",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 33.5,
+  "raw_confidence": 36.0,
+  "delta_vs_base": -26.5,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 61.9,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 40.2,
-    "overlay": 47.0
+    "pace": 4.7,
+    "retention": 47.3,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.1,
+    "dist_to_stop_r": 0.701,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -0.733,
-    "p2": -0.3665,
+    "horizon_pct_used": 142.2,
+    "p1": -0.1991,
+    "p2": -0.0996,
     "p3": null,
-    "move_r": -1.1,
+    "move_r": -0.299,
     "mfe_r": 0.0,
-    "mae_r": -1.1
+    "mae_r": -1.253
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -9.830001831054688,
+  "_mae": -11.205001831054688,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444
+  "days_elapsed": 64,
+  "tau": 1.4222
 }

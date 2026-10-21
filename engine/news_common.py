@@ -32,9 +32,11 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from datetime import datetime, timezone
 from functools import lru_cache
+from urllib.parse import unquote, urlsplit
 
 from lib import config
 from engine import qkernel as _qk  # W2: shared primitives
@@ -154,6 +156,10 @@ _ROUNDUP_RE = re.compile(
     r"\b(?:stock|stocks|etf|etfs|fund|funds|share|shares)\s+to\s+(?:buy|watch|sell|own|consider|avoid|hold|grab|short)\b"
     r"|\bstock\s+picks?\b"
     r"|\btop\s+wall\s+street\s+analysts?\b"
+    # Explicit numbered analyst roundups; individual rating changes survive.
+    r"|(?:^|\bhere\s+are\s+(?:the\s+)?)"
+    r"(?:\d{1,2}\s+top|top\s+\d{1,2})\s+"
+    r"(?:analyst\s+)?(?:forecasts|upgrades|downgrades)\b"
     r"|\banalysts?\s+(?:like|love|favou?r|recommend|tout)\b"
     r"|\b(?:buy|own|watch|grab|sell|short|scoop\s+up)\s+these\b"
     r"|\bthese\s+\d{1,2}\s+(?:[\w-]+\s+){0,2}?(?:stock|stocks|etf|etfs|name|names|fund|funds|pick|picks|share|shares)\b"
@@ -597,10 +603,15 @@ def rank_score(h: dict, now: datetime | None = None,
         _imp_raw = 0.0
     imp = max(0.0, min(1.0, _imp_raw / 100.0))
 
+    # qbus.novelty_z measures attention VOLUME, not new factual information.
+    # Only a positive finite burst earns this display contribution. Taking abs
+    # rewards unusually quiet subjects; min(1, NaN) also grants maximum credit.
+    # Preserve the raw field for diagnostics and keep the existing weight/scale.
     nz = h.get("novelty_z")
     try:
-        nov = min(1.0, abs(float(nz)) / 3.0) if nz is not None else 0.0
-    except (TypeError, ValueError):
+        nz_value = float(nz) if nz is not None and not isinstance(nz, bool) else 0.0
+        nov = min(1.0, max(0.0, nz_value) / 3.0) if math.isfinite(nz_value) else 0.0
+    except (TypeError, ValueError, OverflowError):
         nov = 0.0
 
     echo = h.get("echo") or {}
@@ -902,3 +913,94 @@ def gdelt_fetch(query: str, max_records: int = 60, window_days: int = 2,
     except Exception as e:  # noqa: BLE001 — degrade, never raise
         log.warning("gdelt fetch failed (%s)", e)
         return [], "fetch_error"
+
+
+def ticker_template_reason(title: str, domain: str = "") -> str | None:
+    """Identify routine or promotional publisher templates without dropping raw intake.
+
+    Ranking can demote these formats; the curated ticker view excludes them.
+    They remain available in retained, non-curated coverage.
+    """
+    if domain.lower().removeprefix("www.") != "benzinga.com":
+        return None
+    text = (title or "").strip()
+    if (
+        re.search(r"\bwhale alerts? from (?:today['’]s? |the )?trading session\b", text, re.I)
+        or re.match(
+            r"^\d{1,2}\s+[\w &,-]{1,80}\bstocks?\s+with\s+whale alerts?\s+"
+            r"in\s+(?:today['’]s|the)\s+(?:trading\s+)?session\b", text, re.I,
+        )
+    ):
+        return "routine_options_template"
+    if re.match(r"^(?:industry comparison:\s*)?(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against|with) (?:its )?(?:industry )?(?:peers|competitors)\b", text, re.I):
+        return "routine_peer_profile"
+    if re.match(r"^in-depth examination of .{1,100}: evaluating performance against (?:its )?industry peers\b", text, re.I):
+        return "routine_peer_profile"
+    if re.search(r"\b(?:has everyone talking|buzz intensifies)\b", text, re.I):
+        return "promotional_hype"
+    return None
+
+
+# The broad newsroom preview rule also recognizes temporal context in factual
+# company reports. Only explicit corporate events can shed that context; the
+# remaining headline is screened again, preserving calendar/list/live-blog gates.
+_TICKER_FACT_RE = re.compile(
+    r"^[^:;?!]{1,100}\b(?:"
+    r"(?:raises|raised|cuts|increases|increased|reduces|reduced|declares|declared|suspends|suspended)"
+    r"\s+[^:;?!]{0,50}\b(?:dividends?|guidance|outlook|forecast|buybacks?)\b"
+    r"|(?:reports|reported|posts|posted)\s+"
+    r"(?=[^:;?!]{0,70}\b(?:revenue|profits?|earnings|sales|income|loss|EPS)\b)"
+    r"(?:record\b|higher\b|lower\b|\$?\d)"
+    r"|(?:secures|secured|wins|won|receives|received)\s+[^:;?!]{0,50}\b(?:approval|contract)\b"
+    r"|(?:acquires|acquired|launches|launched|completes|completed)\s+\S"
+    r")", re.I,
+)
+_TICKER_TIMING_RE = re.compile(
+    r"\bahead\s+of\b[^.;:?!]{0,30}\bearnings\b"
+    r"|\b(?:before|after)\s+the\s+(?:(?:opening|closing)\s+)?(?:open|bell|close)\b", re.I,
+)
+
+
+def ticker_editorial_reason(
+    title: str, domain: str = "", author: str = "", *, url: str = "",
+) -> str | None:
+    """Curated ticker display policy, using the shared publisher and title rules.
+
+    Company-specific dividend declarations and scheduled earnings remain useful
+    here even when the broad macro feed treats them as stubs. This view never
+    changes ingestion, rights, raw evidence retention, or trade authority.
+    The optional URL must already be permitted for display to this audience;
+    a missing or withheld URL contributes no section classification.
+    """
+    category = _qk.publisher_category(domain)
+    if category in {"excluded", "unreviewed"}:
+        return "publisher_excluded" if category == "excluded" else "publisher_unreviewed"
+    reason = low_value_reason(title, domain, author)
+    if reason == "calendar_preview" and _TICKER_FACT_RE.search(title):
+        factual_title = _TICKER_TIMING_RE.sub("", title).strip()
+        reason = low_value_reason(factual_title, domain, author)
+    if reason not in {None, "dividend_declaration_stub", "macro_release_stub"}:
+        return reason
+    routine = ticker_template_reason(title, domain)
+    if routine:
+        return routine
+    if _qk.publisher_domain(domain) == "benzinga.com" and url:
+        try:
+            parsed = urlsplit(url)
+            host = _qk.publisher_domain(parsed.hostname or "")
+            section = unquote(parsed.path).strip("/").split("/", 1)[0].lower()
+        except (TypeError, ValueError):
+            host, section = "", ""
+        else:
+            if parsed.scheme.lower() in {"http", "https"} and host == "benzinga.com":
+                if section == "opinion":
+                    return "publisher_opinion"
+                if section == "personal-finance":
+                    return "personal_finance_advice"
+    if category == "press_release" and re.search(
+        r"\b(?:shareholder alert|investor alert|class action (?:alert|reminder)|"
+        r"recover (?:your|their) losses|deadline (?:alert|reminder))\b",
+        title, re.I,
+    ):
+        return "solicitation_press_release"
+    return None

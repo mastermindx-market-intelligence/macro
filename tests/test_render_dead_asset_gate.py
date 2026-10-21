@@ -11,6 +11,8 @@ import hashlib
 from pathlib import Path
 import re
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 LANES = (
@@ -29,7 +31,11 @@ def _porcelain_rebase_at(lane: Path, text: str) -> int:
         rebase = text.index("git rebase --autostash -X theirs origin/main")
         assert text.index("push_fetch_main_for_rebase") < rebase
         return rebase
-    return text.index("git pull --rebase --autostash -X theirs origin main")
+    rebase = text.index('git rebase --autostash -X theirs "$COMMODITY_ACCEPTED"')
+    fetch = text.index("if ! push_fetch_main_for_rebase; then")
+    pin = text.index("COMMODITY_ACCEPTED=$(git rev-parse", fetch)
+    assert fetch < pin < rebase
+    return rebase
 
 
 #: The dangling reference the incident actually published: site/crypto.html
@@ -42,6 +48,10 @@ _INCIDENT_DEAD_CSS = "94a4f2e3.css"
 _CONTENT_ADDRESSED_CSS = re.compile(r'href="assets/css/([0-9a-f]{8})\.css\?v=\1"')
 
 
+# Reads the generated site/crypto.html and the stylesheet it links, so the verdict moves
+# with each render. `data_gate` (tests/conftest.py) runs it on the data gate only; the
+# lane-fence tests below read workflow text and stay on the code gate.
+@pytest.mark.data_gate
 def test_crypto_page_restores_current_house_style_asset_contract() -> None:
     """The page's content-addressed stylesheet must RESOLVE.  The hash is weather.
 

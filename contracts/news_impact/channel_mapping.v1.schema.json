@@ -1,0 +1,561 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/news_impact/channel_mapping.v1.schema.json",
+  "title": "channel_mapping.v1",
+  "description": "Deterministic mapping of a validated news_impact event onto the closed seven-channel library. No confidence, probability, score, price_target or fair_value fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "library_version",
+    "rule_ids",
+    "fact_id",
+    "company_id",
+    "input_schema",
+    "assigned_channels",
+    "mapping_status",
+    "earnings_head",
+    "prophet_flags",
+    "unsolicited_instruction_detected"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "channel_mapping.v1"
+    },
+    "library_version": {
+      "type": "string",
+      "const": "channel_library.v1"
+    },
+    "rule_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      }
+    },
+    "fact_id": {
+      "type": "string",
+      "minLength": 29,
+      "maxLength": 29,
+      "pattern": "^fact_[0-9a-f]{24}$"
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 14,
+      "maxLength": 14,
+      "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+    },
+    "input_schema": {
+      "type": "string",
+      "enum": [
+        "capital_allocation_event.v1",
+        "demand_guidance_contract_event.v1",
+        "strategic_product_partnership_event.v1",
+        "unmapped_event.v1"
+      ]
+    },
+    "assigned_channels": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "revenue_demand",
+              "margin_cost",
+              "capital_allocation",
+              "moat_duration",
+              "strategic_option",
+              "financial_incentives_survival",
+              "market_only"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "earnings_countable",
+              "watch_only",
+              "market_hypothesis"
+            ]
+          }
+        }
+      }
+    },
+    "mapping_status": {
+      "type": "string",
+      "enum": [
+        "mapped",
+        "not_yet_quantifiable",
+        "strategic_review",
+        "ineligible_role",
+        "superseded_inherit",
+        "unmapped_novel"
+      ]
+    },
+    "earnings_head": {
+      "type": "string",
+      "enum": [
+        "open",
+        "withheld"
+      ]
+    },
+    "driver_bridge": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/driver_bridge_inline"
+        }
+      ]
+    },
+    "not_yet_quantifiable": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema",
+            "fact_id",
+            "company_id",
+            "channels_touched",
+            "earnings_head",
+            "reason",
+            "missing_terms",
+            "next_discriminating_evidence",
+            "display_words"
+          ],
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "not_yet_quantifiable.v1"
+            },
+            "fact_id": {
+              "type": "string",
+              "minLength": 29,
+              "maxLength": 29,
+              "pattern": "^fact_[0-9a-f]{24}$"
+            },
+            "company_id": {
+              "type": "string",
+              "minLength": 14,
+              "maxLength": 14,
+              "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+            },
+            "channels_touched": {
+              "type": "array",
+              "maxItems": 7,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "role"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "enum": [
+                      "revenue_demand",
+                      "margin_cost",
+                      "capital_allocation",
+                      "moat_duration",
+                      "strategic_option",
+                      "financial_incentives_survival",
+                      "market_only"
+                    ]
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "earnings_countable",
+                      "watch_only",
+                      "market_hypothesis"
+                    ]
+                  }
+                }
+              }
+            },
+            "earnings_head": {
+              "type": "string",
+              "const": "withheld"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "driver_bridge_term_absent",
+                "authorization_without_execution",
+                "claim_class_none_stated",
+                "addressable_market_not_funded",
+                "attention_proxy_only",
+                "commentary_only"
+              ]
+            },
+            "missing_terms": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "eligible_units",
+                  "realized_revenue_per_unit",
+                  "incremental_margin",
+                  "operating_costs",
+                  "cash_taxes",
+                  "required_capital"
+                ]
+              }
+            },
+            "next_discriminating_evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "description",
+                "named_window",
+                "source_owner"
+              ],
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "named_window": {
+                  "type": "string",
+                  "enum": [
+                    "stated_fiscal_period",
+                    "next_reported_period",
+                    "through_horizon_period",
+                    "until_independent_milestone",
+                    "decision_cut_session",
+                    "not_applicable"
+                  ]
+                },
+                "source_owner": {
+                  "type": "string",
+                  "enum": [
+                    "issuer_filing",
+                    "independent_deployment",
+                    "executed_capital_action",
+                    "reported_period"
+                  ]
+                }
+              }
+            },
+            "display_words": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        }
+      ]
+    },
+    "duration_scenarios": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema",
+            "channel_ids",
+            "weights_status",
+            "scenarios"
+          ],
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "duration_scenario_set.v1"
+            },
+            "channel_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "strategic_option",
+                  "moat_duration"
+                ]
+              }
+            },
+            "weights_status": {
+              "type": "string",
+              "const": "forbidden_in_v1"
+            },
+            "scenarios": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "evidence_needed_before_weight",
+                  "who_would_rule"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "enum": [
+                      "failure",
+                      "niche_adoption",
+                      "broad_adoption",
+                      "displacement_cannibalization"
+                    ]
+                  },
+                  "evidence_needed_before_weight": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 8,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    }
+                  },
+                  "who_would_rule": {
+                    "type": "string",
+                    "const": "seat_dec_after_empirical_or_explicit_assumption"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "inherits_from_fact_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 29,
+          "maxLength": 29,
+          "pattern": "^fact_[0-9a-f]{24}$"
+        }
+      ]
+    },
+    "unmapped": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "reason",
+        "news_event_class",
+        "strategic_review_status",
+        "next_discriminating_evidence"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "unmapped_event.v1"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "no_matching_template",
+            "classify_event_none",
+            "role_incidental",
+            "commentary_only"
+          ]
+        },
+        "news_event_class": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "strategic_review_status": {
+          "type": "string",
+          "const": "eligible"
+        },
+        "next_discriminating_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "named_window",
+            "source_owner"
+          ],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "named_window": {
+              "type": "string",
+              "enum": [
+                "stated_fiscal_period",
+                "next_reported_period",
+                "through_horizon_period",
+                "until_independent_milestone",
+                "decision_cut_session",
+                "not_applicable"
+              ]
+            },
+            "source_owner": {
+              "type": "string",
+              "enum": [
+                "issuer_filing",
+                "independent_deployment",
+                "executed_capital_action",
+                "reported_period"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "named_quantities": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "display_words": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "prophet_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_size",
+        "may_gate",
+        "prophet_authority"
+      ],
+      "properties": {
+        "may_rank": {
+          "const": false
+        },
+        "may_size": {
+          "const": false
+        },
+        "may_gate": {
+          "const": false
+        },
+        "prophet_authority": {
+          "const": false
+        }
+      }
+    },
+    "unsolicited_instruction_detected": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "driver_bridge_inline": {
+      "type": "object",
+      "required": [
+        "schema",
+        "product_status",
+        "product"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "schema": {
+          "const": "driver_bridge.v1"
+        },
+        "product_status": {
+          "enum": [
+            "computed",
+            "withheld_unlabelled_assumption",
+            "withheld_labelled_assumption",
+            "withheld_term_absent",
+            "not_applicable_channel"
+          ]
+        },
+        "product": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "input_schema": {
+            "enum": [
+              "capital_allocation_event.v1",
+              "demand_guidance_contract_event.v1",
+              "strategic_product_partnership_event.v1"
+            ]
+          }
+        },
+        "required": [
+          "input_schema"
+        ]
+      },
+      "then": {
+        "properties": {
+          "assigned_channels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "not": {
+                    "const": "market_only"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mapping_status": {
+            "const": "superseded_inherit"
+          }
+        },
+        "required": [
+          "mapping_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "inherits_from_fact_id": {
+            "type": "string",
+            "minLength": 29,
+            "maxLength": 29,
+            "pattern": "^fact_[0-9a-f]{24}$"
+          }
+        },
+        "required": [
+          "inherits_from_fact_id"
+        ]
+      }
+    }
+  ]
+}

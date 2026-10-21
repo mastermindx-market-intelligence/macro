@@ -1,0 +1,532 @@
+{
+  "additional_geographic_filename_filter": {
+    "matches": [
+      "data/canada_breadth/constituents.parquet",
+      "data/hk_stocks_ext/_universe.json",
+      "data/strategies/sector_pulse_heat.json"
+    ],
+    "terms": [
+      "canada",
+      "ca_stocks",
+      "tsx",
+      "tsv",
+      "japan",
+      "jpx",
+      "london",
+      "lse",
+      "euro",
+      "global_equ",
+      "hk_stocks",
+      "china_stocks"
+    ]
+  },
+  "details": {
+    "data/breadth/ticker_sectors.parquet": {
+      "fields": {
+        "source": {
+          "counts": {
+            "gics_sp400": 400,
+            "gics_sp500": 503,
+            "gics_sp600": 600,
+            "sic_mapped": 12
+          },
+          "distinct": 4,
+          "max": "sic_mapped",
+          "min": "gics_sp400"
+        },
+        "ticker": {
+          "counts": null,
+          "distinct": 1515,
+          "max": "ZWS",
+          "min": "A"
+        }
+      },
+      "rows": 1515,
+      "sha256": "e63d2112e38f95bc49e7cc68c6095d1eca2b148898688a946bce40da2c77d6ad"
+    },
+    "data/polygon_universe/reference.parquet": {
+      "fields": {
+        "asof": {
+          "counts": {
+            "2026-10-07": 509
+          },
+          "distinct": 1,
+          "max": "2026-10-07",
+          "min": "2026-10-07"
+        },
+        "gics_sector": {
+          "counts": {
+            "Communication Services": 25,
+            "Consumer Discretionary": 47,
+            "Consumer Staples": 35,
+            "Energy": 21,
+            "Financials": 76,
+            "Health Care": 60,
+            "Industrials": 84,
+            "Information Technology": 74,
+            "Materials": 25,
+            "Real Estate": 31,
+            "Utilities": 31
+          },
+          "distinct": 11,
+          "max": "Utilities",
+          "min": "Communication Services"
+        },
+        "ticker": {
+          "counts": null,
+          "distinct": 509,
+          "max": "ZTS",
+          "min": "A"
+        }
+      },
+      "rows": 509,
+      "sha256": "b69738dd48d6b4cc8aa0c27cc69e08b69074596a903aafb79cc501ffb6e8edfc"
+    },
+    "data/stock_identity/partition/universe_snapshot_v1.parquet": {
+      "fields": {
+        "asof": {
+          "counts": {
+            "2026-08-13 00:00:00": 2781
+          },
+          "distinct": 1,
+          "max": "2026-08-13 00:00:00",
+          "min": "2026-08-13 00:00:00"
+        }
+      },
+      "rows": 2781,
+      "sha256": "9f22807e7cb6ba570f1963de945b7be77461a1788608754e25db6235f4fe3730"
+    },
+    "data/symbol_directory/snapshots/2026-10-09.parquet": {
+      "fields": {
+        "etf": {
+          "counts": {
+            "False": 7524,
+            "True": 5769
+          },
+          "distinct": 2,
+          "max": "True",
+          "min": "False"
+        },
+        "is_preferred": {
+          "counts": {
+            "False": 12915,
+            "True": 378
+          },
+          "distinct": 2,
+          "max": "True",
+          "min": "False"
+        },
+        "source": {
+          "counts": {
+            "nasdaqlisted": 5630,
+            "otherlisted": 7663
+          },
+          "distinct": 2,
+          "max": "otherlisted",
+          "min": "nasdaqlisted"
+        },
+        "test_issue": {
+          "counts": {
+            "False": 13256,
+            "True": 37
+          },
+          "distinct": 2,
+          "max": "True",
+          "min": "False"
+        }
+      },
+      "rows": 13293,
+      "sha256": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f"
+    },
+    "data/universe/membership.parquet": {
+      "by_group": {
+        "r2000": {
+          "active_rows": 1971,
+          "distinct_tickers": 2028,
+          "rows": 2028
+        },
+        "sp400": {
+          "active_rows": 400,
+          "distinct_tickers": 419,
+          "rows": 419
+        },
+        "sp500": {
+          "active_rows": 503,
+          "distinct_tickers": 518,
+          "rows": 518
+        },
+        "sp600": {
+          "active_rows": 602,
+          "distinct_tickers": 635,
+          "rows": 635
+        }
+      },
+      "duplicate_ticker_row_surplus": 662,
+      "fields": {
+        "active": {
+          "counts": {
+            "False": 124,
+            "True": 3476
+          },
+          "distinct": 2,
+          "max": "True",
+          "min": "False"
+        },
+        "first_seen": {
+          "counts": {
+            "2026-06-13 00:00:00": 1506,
+            "2026-07-12 00:00:00": 37,
+            "2026-07-20 00:00:00": 1,
+            "2026-07-21 00:00:00": 1994,
+            "2026-07-23 00:00:00": 1,
+            "2026-07-24 00:00:00": 2,
+            "2026-07-25 00:00:00": 3,
+            "2026-07-28 00:00:00": 2,
+            "2026-07-29 00:00:00": 2,
+            "2026-08-06 00:00:00": 3,
+            "2026-08-11 00:00:00": 1,
+            "2026-08-19 00:00:00": 3,
+            "2026-08-20 00:00:00": 1,
+            "2026-08-25 00:00:00": 1,
+            "2026-09-03 00:00:00": 1,
+            "2026-09-19 00:00:00": 1,
+            "2026-09-21 00:00:00": 3,
+            "2026-09-23 00:00:00": 27,
+            "2026-09-24 00:00:00": 1,
+            "2026-09-25 00:00:00": 5,
+            "2026-10-09 00:00:00": 5
+          },
+          "distinct": 21,
+          "max": "2026-10-09 00:00:00",
+          "min": "2026-06-13 00:00:00"
+        },
+        "group": {
+          "counts": {
+            "r2000": 2028,
+            "sp400": 419,
+            "sp500": 518,
+            "sp600": 635
+          },
+          "distinct": 4,
+          "max": "sp600",
+          "min": "r2000"
+        },
+        "last_seen": {
+          "counts": null,
+          "distinct": 27,
+          "max": "2026-10-09 00:00:00",
+          "min": "2026-06-13 00:00:00"
+        },
+        "ticker": {
+          "counts": null,
+          "distinct": 2938,
+          "max": "ZYME",
+          "min": "A"
+        }
+      },
+      "rows": 3600,
+      "sha256": "33da41e7a9831260c6e0f988c2ca43dd421c274ccd5cf357c47bb53ddc49c91b"
+    }
+  },
+  "listing_receipts": {
+    "data/symbol_directory/receipts/cik_map/2026-10-05.json": {
+      "actual_artifact_sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+      "content": {
+        "artifact": {
+          "bytes": 278660,
+          "key": "cik_map/2026-10-05.parquet",
+          "kind": "sec_registrant_map",
+          "parquet_schema": [
+            {
+              "dtype": "string",
+              "name": "ticker"
+            },
+            {
+              "dtype": "int64",
+              "name": "cik"
+            },
+            {
+              "dtype": "string",
+              "name": "title"
+            }
+          ],
+          "rows": 10440,
+          "sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9"
+        },
+        "authority": {
+          "context_only": true,
+          "lane": "sec_registrant_reference",
+          "listing_identity_observation_eligible": false,
+          "listing_sec_identity_binding_eligible": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "may_trade": false,
+          "promotion_eligible": false,
+          "sec_registrant_reference_eligible": true,
+          "signal_eligible": false,
+          "training_eligible": false
+        },
+        "clocks": {
+          "collector_completed_at": "2026-10-05T02:16:29.577967Z",
+          "collector_started_at": "2026-10-05T02:16:26.646352Z"
+        },
+        "completeness": {
+          "duplicate_key_count": 0,
+          "duplicate_occurrences": 0,
+          "parse_complete": true,
+          "post_dedupe_rows": 10440,
+          "pre_dedupe_rows": 10440,
+          "required_sources_complete": true,
+          "row_floor": 1,
+          "row_floor_satisfied": true,
+          "source_row_counts": [
+            {
+              "artifact_rows": 10440,
+              "minimum_artifact_rows": 1,
+              "parsed_rows": 10440,
+              "source_id": "sec.company_tickers"
+            }
+          ],
+          "status": "complete"
+        },
+        "diagnostics": {
+          "kind": "sec_registrant_map",
+          "pre_dedupe_spy_occurrence_count": 1,
+          "pre_dedupe_spy_occurrences": [
+            {
+              "cik": 884394,
+              "source_id": "sec.company_tickers",
+              "ticker": "SPY",
+              "title": "SPDR S&P 500 ETF TRUST"
+            }
+          ]
+        },
+        "evidence_policy": {
+          "artifact_integrity": "sha256_bytes_rows_ordered_schema.v1",
+          "evidence_basis": "live_captured_source_response",
+          "filename_git_mtime_authoritative": false,
+          "historical_continuity_inferred": false,
+          "prospective_only": true,
+          "source_response_bytes_retained": false,
+          "source_response_integrity": "sha256_bytes_commitment_at_capture.v1",
+          "source_response_replay_verifiable": false
+        },
+        "observation_date": "2026-10-05",
+        "producer": {
+          "id": "collectors.symbol_directory.SymbolDirectoryAdapter",
+          "version": "symbol_directory.collector.2026-08-10.v3"
+        },
+        "profile": "symbol_directory.operational_capture.v1",
+        "receipt_id": "sdreceipt_54f5c7f3a775b8877b8163a3c5b0d3acd447e87798ed2e59d25db8c10e9efa46",
+        "schema": "symbol_directory.completion_receipt.v1",
+        "sources": [
+          {
+            "requested_url": "https://www.sec.gov/files/company_tickers.json",
+            "response_bytes": 799085,
+            "response_bytes_retained": false,
+            "response_completed_at": "2026-10-05T02:16:29.548270Z",
+            "response_sha256": "31a807ba3f3c0b3340008aba9c3b487734d5b2d8dd5751c2a1b3667696cfa315",
+            "response_started_at": "2026-10-05T02:16:28.783197Z",
+            "source_id": "sec.company_tickers"
+          }
+        ]
+      },
+      "receipt_sha256": "7d7e0f0482d8540045b1bd1386e23157885ea1793139208305a421ddfc7cf740"
+    },
+    "data/symbol_directory/receipts/snapshots/2026-10-09.json": {
+      "actual_artifact_sha256": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f",
+      "content": {
+        "artifact": {
+          "bytes": 364484,
+          "key": "snapshots/2026-10-09.parquet",
+          "kind": "listing_snapshot",
+          "parquet_schema": [
+            {
+              "dtype": "string",
+              "name": "date"
+            },
+            {
+              "dtype": "string",
+              "name": "symbol"
+            },
+            {
+              "dtype": "string",
+              "name": "security_name"
+            },
+            {
+              "dtype": "string",
+              "name": "exchange"
+            },
+            {
+              "dtype": "bool",
+              "name": "etf"
+            },
+            {
+              "dtype": "bool",
+              "name": "test_issue"
+            },
+            {
+              "dtype": "bool",
+              "name": "is_preferred"
+            },
+            {
+              "dtype": "string",
+              "name": "source"
+            }
+          ],
+          "rows": 13293,
+          "sha256": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f"
+        },
+        "authority": {
+          "context_only": true,
+          "lane": "listing_observation",
+          "listing_identity_observation_eligible": true,
+          "listing_sec_identity_binding_eligible": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "may_trade": false,
+          "promotion_eligible": false,
+          "sec_registrant_reference_eligible": false,
+          "signal_eligible": false,
+          "training_eligible": false
+        },
+        "clocks": {
+          "collector_completed_at": "2026-10-09T03:23:48.114931Z",
+          "collector_started_at": "2026-10-09T03:23:46.894658Z"
+        },
+        "completeness": {
+          "duplicate_key_count": 0,
+          "duplicate_occurrences": 0,
+          "parse_complete": true,
+          "post_dedupe_rows": 13293,
+          "pre_dedupe_rows": 13293,
+          "required_sources_complete": true,
+          "row_floor": 8000,
+          "row_floor_satisfied": true,
+          "source_row_counts": [
+            {
+              "artifact_rows": 5630,
+              "minimum_artifact_rows": 5000,
+              "parsed_rows": 5630,
+              "source_id": "nasdaq_trader.nasdaqlisted"
+            },
+            {
+              "artifact_rows": 7663,
+              "minimum_artifact_rows": 6500,
+              "parsed_rows": 7663,
+              "source_id": "nasdaq_trader.otherlisted"
+            }
+          ],
+          "status": "complete"
+        },
+        "diagnostics": {
+          "kind": "listing_snapshot",
+          "non_authoritative_footers": [
+            {
+              "authoritative": false,
+              "line_sha256s": [
+                "c7338eac909a9bd861ab107feb0936c6365337c90f6ad5e81b72af2fd0136223"
+              ],
+              "matching_line_count": 1,
+              "source_id": "nasdaq_trader.nasdaqlisted"
+            },
+            {
+              "authoritative": false,
+              "line_sha256s": [
+                "6a66ef1cdb8d4058dc1eca448ab1b4cf4eb00fbc2c8c4995156e5bf239cc256f"
+              ],
+              "matching_line_count": 1,
+              "source_id": "nasdaq_trader.otherlisted"
+            }
+          ],
+          "pre_dedupe_spy_occurrence_count": 1,
+          "pre_dedupe_spy_occurrences": [
+            {
+              "etf": true,
+              "exchange": "P",
+              "is_preferred": false,
+              "security_name": "State Street SPDR S&P 500 ETF Trust",
+              "source_id": "nasdaq_trader.otherlisted",
+              "symbol": "SPY",
+              "test_issue": false
+            }
+          ]
+        },
+        "evidence_policy": {
+          "artifact_integrity": "sha256_bytes_rows_ordered_schema.v1",
+          "evidence_basis": "live_captured_source_response",
+          "filename_git_mtime_authoritative": false,
+          "historical_continuity_inferred": false,
+          "prospective_only": true,
+          "source_response_bytes_retained": false,
+          "source_response_integrity": "sha256_bytes_commitment_at_capture.v1",
+          "source_response_replay_verifiable": false
+        },
+        "observation_date": "2026-10-09",
+        "producer": {
+          "id": "collectors.symbol_directory.SymbolDirectoryAdapter",
+          "version": "symbol_directory.collector.2026-08-10.v3"
+        },
+        "profile": "symbol_directory.operational_capture.v1",
+        "receipt_id": "sdreceipt_8b3c68d2b1deba836a72c491e506a4babff9e0dfe699bc95a8a4dc2a99ba4df2",
+        "schema": "symbol_directory.completion_receipt.v1",
+        "sources": [
+          {
+            "requested_url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+            "response_bytes": 349480,
+            "response_bytes_retained": false,
+            "response_completed_at": "2026-10-09T03:23:47.319414Z",
+            "response_sha256": "9fd8af1f03c54fa181a811f1872514870532cefcc2b9753649c7322830a87206",
+            "response_started_at": "2026-10-09T03:23:46.895704Z",
+            "source_id": "nasdaq_trader.nasdaqlisted"
+          },
+          {
+            "requested_url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+            "response_bytes": 542931,
+            "response_bytes_retained": false,
+            "response_completed_at": "2026-10-09T03:23:47.813120Z",
+            "response_sha256": "32fda6e34876f4e364937c1dbe2323165beffece9d5da10d1eec32745d10efc3",
+            "response_started_at": "2026-10-09T03:23:47.514283Z",
+            "source_id": "nasdaq_trader.otherlisted"
+          }
+        ]
+      },
+      "receipt_sha256": "a1304d3c5406cdadc65b6d01c381a6e69471c012256b8573121d91f0ff7b52c8"
+    }
+  },
+  "membership_contract_search": {
+    "exit_code": 0,
+    "matches": [
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/china_sectors.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/edgar_deadname_prices.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/edgar_deadnames.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/edgar_delisting.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/sp1500_pit_sectors.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/demand_ledger.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/entry_radar/replay/panels.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/flow_observatory/groups.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/fund_boards.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/fund_intelligence.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/grading.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/group_flow.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/index_changes.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/intel_discovery.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/marketing/radar_internal.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/neuralweb/causal_inventory.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/oracle/panel.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/prophet_stage_fusion.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/qledger.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/qledger_desk_adapter.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/smart_money.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/stage_analysis.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/top_maturation.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:engine/universe_history.py",
+      "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:lib/pages.py"
+    ]
+  },
+  "observed_at_utc": "2026-10-09T10:33:29.725538+00:00",
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b"
+}
+

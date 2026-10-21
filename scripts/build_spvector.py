@@ -161,6 +161,26 @@ def _chart_dd(dd_s: pd.Series, dd_h: pd.Series, strat_label: str = "Vector") -> 
     return _html(fig)
 
 
+def _redeploy_gate_label(put_absent: bool, cap_now: int) -> tuple[str, str]:
+    """Gate chip: blocked while the Fed-put is absent, armed at capitulation 2+, else idle."""
+    if put_absent:
+        return "blocked — Fed-put absent", "受阻 —— 美联储看跌缺席"
+    if cap_now >= 2:
+        return "armed — would re-deploy", "就绪 —— 将再部署"
+    return "not triggered", "未触发"
+
+
+def _put_leg_flags(msf) -> dict | None:
+    """Last complete row of the master-switch legs; None if the frame lacks them."""
+    if msf is None or "recession" not in msf.columns or "fedput_off" not in msf.columns:
+        return None
+    rows = msf[["recession", "fedput_off"]].dropna()
+    if rows.empty:
+        return None
+    return {"recession": bool(rows["recession"].iloc[-1]),
+            "fedput_off": bool(rows["fedput_off"].iloc[-1])}
+
+
 # --------------------------------------------------------------------------- #
 # builder
 # --------------------------------------------------------------------------- #
@@ -223,26 +243,26 @@ def build() -> str:
     bi = next(i for i, b in enumerate(bands) if b["cur"])
     if bi < 3:
         nxt = bands[bi + 1]
-        next_note = f"Next de-risk: a sustained score above {(25, 50, 75)[bi]} trims equity to {nxt['weight']}%."
+        next_note_en = f"Next de-risk: a sustained score above {(25, 50, 75)[bi]} trims equity to {nxt['weight']}%."
         next_note_zh = f"下一步降险：分数持续高于 {(25, 50, 75)[bi]} 时，股票权重降至 {nxt['weight']}%。"
     else:
-        next_note = "Fully defensive; a validated capitulation washout (Fed-put present) can re-deploy to fully invested."
-        next_note_zh = "完全防守；经验证的投降式恐慌底（美联储看跌在场）可再部署至满仓。"
+        next_note_en = ("Fully defensive; a buyable washout (capitulation with the Fed-put present) "
+                        "can re-deploy to fully invested.")
+        next_note_zh = "完全防守；出现可买入的恐慌底（投降且美联储看跌在场）时可再部署至满仓。"
 
     # dislocation / capitulation chips
     cap_now = int(cf["capitulation_score"].dropna().iloc[-1]) if "capitulation_score" in cf and cf["capitulation_score"].notna().any() else 0
     put_absent = False
+    put_legs = None
     try:
-        pa = master_switch_frame(f)["put_absent"].dropna()
+        msf = master_switch_frame(f)
+        pa = msf["put_absent"].dropna()
         put_absent = bool(pa.iloc[-1]) if len(pa) else False
+        put_legs = _put_leg_flags(msf)
     except Exception:  # noqa: BLE001 — never let the chip break the build
         put_absent = False
-    if put_absent:
-        disloc_verdict, disloc_verdict_zh = "stand aside", "观望"
-    elif cap_now >= 2:
-        disloc_verdict, disloc_verdict_zh = "buyable washout", "可买入恐慌底"
-    else:
-        disloc_verdict, disloc_verdict_zh = "calm", "平静"
+        put_legs = None
+    disloc_verdict, disloc_verdict_zh = _redeploy_gate_label(put_absent, cap_now)
 
     # leg breakdown view-model (canonical order, then any extras)
     legs = []
@@ -298,12 +318,14 @@ def build() -> str:
         "score": score, "band_label": band_label, "band_label_zh": band_label_zh,
         "band_key": band_key, "band_color": band_color,
         "equity_w": equity_w, "cash_w": cash_w,
-        "last_switch": last_switch, "next_note": next_note, "next_note_zh": next_note_zh,
+        "last_switch": last_switch, "next_note": next_note_en, "next_note_zh": next_note_zh,
         "legs": legs,
         "disloc": {"verdict": disloc_verdict, "verdict_zh": disloc_verdict_zh,
-                   "put_absent": put_absent, "capitulation": cap_now},
+                   "put_absent": put_absent, "capitulation": cap_now, "put_legs": put_legs},
         "sc": sc, "at": at, "bands": bands, "episodes": episodes, "charts": charts,
         "overlay": overlay,
+        "bench_start": spy.index[0].strftime("%b %d, %Y"),
+        "overlay_log": _overlay_log_summary(config.data_dir() / "spvector" / "overlay_log.jsonl"),
     }
 
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
@@ -333,6 +355,42 @@ def main() -> int:
     out = build()
     print(f"[built] {out}")
     return 0
+
+
+def _overlay_log_summary(path: Path) -> dict | None:
+    """Tally the overlay forward log: rows, distinct asof days, veto days, span.
+
+    Pure read; never raises, never writes. Bad lines (non-JSON, non-dict,
+    unparseable asof) are skipped; a day is a veto day when ANY of its rows has
+    veto is True. Returns None when the log is absent or has no valid rows.
+    """
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    rows = 0
+    days: set[datetime] = set()
+    veto_days: set[datetime] = set()
+    for line in text.splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(row, dict):
+            continue
+        try:
+            day = datetime.strptime(str(row.get("asof")), "%Y-%m-%d")
+        except ValueError:
+            continue
+        rows += 1
+        days.add(day)
+        if row.get("veto") is True:
+            veto_days.add(day)
+    if not rows:
+        return None
+    return {"rows": rows, "days": len(days), "vetoes": len(veto_days),
+            "first": min(days).strftime("%b %d, %Y"),
+            "last": max(days).strftime("%b %d, %Y")}
 
 
 if __name__ == "__main__":

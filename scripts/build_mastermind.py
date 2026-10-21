@@ -31,7 +31,7 @@ log = logging.getLogger("build_mastermind")
 
 # Shared nav/theme assets + the page's own renderer. The snapshot JSON is produced by
 # the local Mastermind server, not here.
-ASSETS = ("theme.css", "theme.js", "mastermind.js")
+ASSETS = ("theme.css", "theme.js", "mastermind.js", "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css")
 
 
 def main() -> int:

@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
-  "asof": "2026-09-24",
-  "built": "2026-09-25 07:20 UTC",
+  "asof": "2026-10-20",
+  "built": "2026-10-21 07:18 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -37,7 +37,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -10.262,
+              "value": -9.036,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -61,7 +61,7 @@
               "series": "HYG/LQD",
               "metric": "ratio_ret_pct",
               "window": 22,
-              "value": 0.595,
+              "value": -0.749,
               "op": "lt",
               "threshold": -2.0,
               "passed": false
@@ -78,7 +78,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -10.262,
+              "value": -9.036,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -145,15 +145,15 @@
         "en": "Dollar spike → EM & multinational-EPS headwind",
         "zh": "美元飙升 → 新兴市场与跨国企业盈利承压"
       },
-      "state": "dormant",
+      "state": "propagating",
       "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
+        "en": "Propagating",
+        "zh": "传导中"
       },
-      "hop": 0,
+      "hop": 1,
       "n_hops": 2,
       "armable": true,
-      "episode_id": null,
+      "episode_id": "dollar_spike_em_multinational@r3:2026-10-16",
       "hops": [
         {
           "id": "dollar_spike->usd_transmission_on",
@@ -163,15 +163,15 @@
             0,
             20
           ],
-          "confirmed": false,
-          "asof": null,
+          "confirmed": true,
+          "asof": "2026-10-20",
           "value_receipt": [
             {
               "path": "transmission.usd_dir",
               "op": "eq",
               "threshold": "strengthening",
-              "value": "weakening",
-              "passed": false
+              "value": "strengthening",
+              "passed": true
             },
             {
               "path": "transmission.headwind_for",
@@ -211,10 +211,10 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": 1.072,
+              "value": -5.823,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ],
           "base_rate": {
@@ -229,20 +229,20 @@
         {
           "id": "dollar_spike",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "path": "dollar_desk.trend",
               "op": "eq",
               "threshold": "up",
-              "value": "mixed",
-              "passed": false
+              "value": "up",
+              "passed": true
             },
             {
               "path": "dollar_desk.usd_pos_pctile",
               "op": "gte",
               "threshold": 60,
-              "value": 69.0,
+              "value": 74.0,
               "passed": true
             }
           ]
@@ -250,14 +250,14 @@
         {
           "id": "usd_transmission_on",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "path": "transmission.usd_dir",
               "op": "eq",
               "threshold": "strengthening",
-              "value": "weakening",
-              "passed": false
+              "value": "strengthening",
+              "passed": true
             },
             {
               "path": "transmission.headwind_for",
@@ -278,17 +278,17 @@
         {
           "id": "em_derate",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "FXI",
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": 1.072,
+              "value": -5.823,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ]
         }
@@ -350,19 +350,719 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.178,
-              "median_excess_pct": -0.573,
-              "n": 3146
+              "mean_excess_pct": -0.184,
+              "median_excess_pct": -0.578,
+              "n": 3151
             },
             "63d": {
-              "mean_excess_pct": -1.147,
-              "median_excess_pct": -1.987,
-              "n": 3104
+              "mean_excess_pct": -1.143,
+              "median_excess_pct": -1.939,
+              "n": 3109
             }
           }
         }
       },
-      "blast": {},
+      "blast": {
+        "em_revenue_exposure": {
+          "label": {
+            "en": "EM revenue exposure",
+            "zh": "新兴市场营收敞口"
+          },
+          "n": 93,
+          "cuts": {},
+          "unevaluable": 1509,
+          "names": [
+            "A",
+            "AAPL",
+            "ADI",
+            "AEIS",
+            "AES",
+            "AGCO",
+            "AIN",
+            "ALGM",
+            "ALV",
+            "AMAT",
+            "AOS",
+            "APD",
+            "APH",
+            "AVT",
+            "BCO",
+            "BWA",
+            "CBT",
+            "CCK",
+            "CE",
+            "CGNX",
+            "CNH",
+            "COHU",
+            "CPAY",
+            "CRUS",
+            "CTVA",
+            "DCH",
+            "DD",
+            "EEFT",
+            "EL",
+            "ESI",
+            "EZPW",
+            "FCFS",
+            "FCX",
+            "FLS",
+            "FMC",
+            "FN",
+            "HLX",
+            "IDCC",
+            "INGR",
+            "INVX",
+            "ITT",
+            "JBL",
+            "KLIC",
+            "KMT",
+            "LAUR",
+            "LEA",
+            "LFUS",
+            "LIN",
+            "LITE",
+            "LRCX",
+            "LULU",
+            "MGM",
+            "MKSI",
+            "MPWR",
+            "MRVL",
+            "MTSI",
+            "MU",
+            "NEM",
+            "NGVT",
+            "NVDA",
+            "NXPI",
+            "OII",
+            "OLED",
+            "ONTO",
+            "PAYO",
+            "PENG",
+            "PHIN",
+            "PI",
+            "PLAB",
+            "PLXS",
+            "POWI",
+            "PSN",
+            "QRVO",
+            "RMBS",
+            "ROG",
+            "SCL",
+            "SLAB",
+            "SNDK",
+            "SNPS",
+            "ST",
+            "SYNA",
+            "TEL",
+            "TER",
+            "THRM",
+            "TPR",
+            "UCTT",
+            "ULS",
+            "VC",
+            "VECO",
+            "VIAV",
+            "WAB",
+            "WDC",
+            "WHR"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "names with >=15% of revenue from explicitly-EM-classified regions in their 10-K geographic note (measured per-name; em_pct is a conservative lower bound — mixed aggregates never counted). Names without a parseable disclosure bucket as unevaluable.",
+            "zh": "10-K地区披露中明确属新兴市场的营收占比≥15%的名字（逐名实测；em_pct为保守下限——混合地区聚合不计入）。无可解析披露的名字归入无法评估桶。"
+          }
+        },
+        "multinational_fx_translation": {
+          "label": {
+            "en": "Multinational FX translation",
+            "zh": "跨国汇率折算"
+          },
+          "n": 324,
+          "cuts": {},
+          "unevaluable": 1052,
+          "names": [
+            "A",
+            "AA",
+            "AAPL",
+            "ABNB",
+            "ABT",
+            "ACIW",
+            "ADBE",
+            "ADI",
+            "ADM",
+            "ADSK",
+            "AEIS",
+            "AES",
+            "AGCO",
+            "AIG",
+            "AIN",
+            "AKAM",
+            "ALGM",
+            "ALGN",
+            "ALV",
+            "AMAT",
+            "AME",
+            "AON",
+            "AORT",
+            "AOSL",
+            "APD",
+            "APH",
+            "APP",
+            "APTV",
+            "ARW",
+            "ASH",
+            "ATEN",
+            "ATI",
+            "ATMU",
+            "ATR",
+            "AVGO",
+            "AVT",
+            "AVY",
+            "BA",
+            "BALL",
+            "BAX",
+            "BCO",
+            "BDC",
+            "BDX",
+            "BF-B",
+            "BG",
+            "BHE",
+            "BIO",
+            "BKNG",
+            "BKR",
+            "BRC",
+            "BRKR",
+            "BSY",
+            "BWA",
+            "C",
+            "CARR",
+            "CAT",
+            "CBRE",
+            "CBT",
+            "CCK",
+            "CCL",
+            "CDNS",
+            "CE",
+            "CGNX",
+            "CMI",
+            "CNH",
+            "CNMD",
+            "COHU",
+            "COLM",
+            "COO",
+            "CPAY",
+            "CR",
+            "CRL",
+            "CROX",
+            "CRS",
+            "CRSR",
+            "CRUS",
+            "CSCO",
+            "CTVA",
+            "CVLT",
+            "CXM",
+            "DAN",
+            "DBD",
+            "DBX",
+            "DCH",
+            "DD",
+            "DE",
+            "DECK",
+            "DELL",
+            "DLB",
+            "DLR",
+            "DOV",
+            "DUOL",
+            "DXC",
+            "EBAY",
+            "EEFT",
+            "EL",
+            "ELAN",
+            "EMN",
+            "EMR",
+            "ENOV",
+            "ENR",
+            "EPAC",
+            "EPAM",
+            "EPC",
+            "EQIX",
+            "ESAB",
+            "ESI",
+            "ETSY",
+            "EXPE",
+            "EXTR",
+            "FBP",
+            "FCX",
+            "FFIV",
+            "FLS",
+            "FMC",
+            "FN",
+            "FTNT",
+            "FUL",
+            "GATX",
+            "GE",
+            "GEHC",
+            "GEV",
+            "GGG",
+            "GOLF",
+            "GOOGL",
+            "GXO",
+            "HAS",
+            "HLNE",
+            "HLX",
+            "HON",
+            "HPE",
+            "HPQ",
+            "HWM",
+            "ICHR",
+            "IDCC",
+            "IEX",
+            "INGR",
+            "INTC",
+            "INVX",
+            "IOSP",
+            "IPAR",
+            "IR",
+            "IRDM",
+            "ITGR",
+            "ITT",
+            "ITW",
+            "JBL",
+            "JBTM",
+            "JCI",
+            "JNJ",
+            "KAI",
+            "KBR",
+            "KD",
+            "KLIC",
+            "KMT",
+            "KN",
+            "KO",
+            "KVUE",
+            "KWR",
+            "LAUR",
+            "LEA",
+            "LEG",
+            "LFUS",
+            "LIN",
+            "LITE",
+            "LIVN",
+            "LKQ",
+            "LMAT",
+            "LRCX",
+            "LULU",
+            "LYB",
+            "MAT",
+            "MCO",
+            "MDLZ",
+            "MDT",
+            "META",
+            "MHK",
+            "MIR",
+            "MKSI",
+            "MMM",
+            "MMSI",
+            "MPWR",
+            "MRK",
+            "MRSH",
+            "MRVL",
+            "MSA",
+            "MSCI",
+            "MSFT",
+            "MTCH",
+            "MTRN",
+            "MTSI",
+            "MTX",
+            "NABL",
+            "NATL",
+            "NDSN",
+            "NEM",
+            "NEOG",
+            "NEU",
+            "NFLX",
+            "NGVT",
+            "NKE",
+            "NOV",
+            "NOVT",
+            "NPO",
+            "NTAP",
+            "NTCT",
+            "NTNX",
+            "NVST",
+            "NWSA",
+            "NXPI",
+            "OGN",
+            "OI",
+            "OII",
+            "OLED",
+            "OMC",
+            "ON",
+            "ONTO",
+            "OPLN",
+            "ORA",
+            "ORCL",
+            "OSIS",
+            "OSW",
+            "OTIS",
+            "PAHC",
+            "PAYO",
+            "PCAR",
+            "PEGA",
+            "PENG",
+            "PEP",
+            "PFE",
+            "PHIN",
+            "PI",
+            "PLAB",
+            "PLXS",
+            "POWI",
+            "PPC",
+            "PRGO",
+            "PRSU",
+            "PTC",
+            "PTCT",
+            "PVH",
+            "PYPL",
+            "QBTS",
+            "QLYS",
+            "RAL",
+            "RDW",
+            "RL",
+            "RMBS",
+            "ROG",
+            "ROK",
+            "RTX",
+            "RVTY",
+            "SABR",
+            "SARO",
+            "SCL",
+            "SDGR",
+            "SHC",
+            "SLAB",
+            "SLB",
+            "SNDK",
+            "SNEX",
+            "SNPS",
+            "SOLV",
+            "SON",
+            "SONO",
+            "ST",
+            "STEP",
+            "STT",
+            "STX",
+            "SW",
+            "SXI",
+            "SXT",
+            "SYNA",
+            "TDC",
+            "TDW",
+            "TDY",
+            "TECH",
+            "TEL",
+            "TER",
+            "TFX",
+            "THRM",
+            "TILE",
+            "TKR",
+            "TMO",
+            "TNC",
+            "TPR",
+            "TRMB",
+            "TTMI",
+            "TTWO",
+            "UBER",
+            "UCTT",
+            "ULS",
+            "USAR",
+            "V",
+            "VC",
+            "VECO",
+            "VFC",
+            "VIAV",
+            "VICR",
+            "VIR",
+            "VRT",
+            "VSEC",
+            "VSH",
+            "VTOL",
+            "VTRS",
+            "WAB",
+            "WAT",
+            "WDC",
+            "WDFC",
+            "WKC",
+            "WLY",
+            "WMG",
+            "WST",
+            "WTW",
+            "WWD",
+            "WWW",
+            "XPEL",
+            "XPO",
+            "XRAY",
+            "XYL",
+            "YUM",
+            "ZBH",
+            "ZBRA",
+            "ZTS"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "US multinationals with >=40% foreign revenue (10-K geographic note, measured per-name) — overseas EPS shrinks in dollar terms as USD firms. PERCENT 0-100; unparseable names bucket as unevaluable.",
+            "zh": "海外营收占比≥40%的美国跨国企业（10-K地区披露，逐名实测）——美元走强时海外每股盈利以美元计缩水。百分比0-100；无法解析的名字归入无法评估桶。"
+          }
+        },
+        "dollar_debt_burden": {
+          "label": {
+            "en": "Dollar-debt burden",
+            "zh": "美元债务负担"
+          },
+          "n": 30,
+          "cuts": {
+            "financials.debt_to_assets": 31.6
+          },
+          "unevaluable": 1319,
+          "names": [
+            "APTV",
+            "AVGO",
+            "BCO",
+            "BKNG",
+            "BSY",
+            "CCK",
+            "DCH",
+            "ELAN",
+            "FUL",
+            "ITW",
+            "MSCI",
+            "MTCH",
+            "NATL",
+            "NDSN",
+            "NXPI",
+            "OGN",
+            "OI",
+            "OSIS",
+            "OTIS",
+            "PI",
+            "SABR",
+            "SON",
+            "ST",
+            "SXT",
+            "SYNA",
+            "VFC",
+            "VTRS",
+            "WMG",
+            "WWW",
+            "XRAY"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "leveraged names (top-third debt_to_assets) whose revenue is majority non-US (>=50%, 10-K geographic note) — dollar-debt service against non-dollar cash flows. Assumes US filers' debt is USD-denominated (stated assumption; no currency-of-debt field exists).",
+            "zh": "高杠杆（debt_to_assets前三分之一）且营收过半来自美国以外（≥50%，10-K地区披露）的名字——以非美元现金流偿付美元债务。假设美国披露人的债务以美元计价（明示假设；无债务币种字段）。"
+          }
+        },
+        "em_commodity_sector_proxy": {
+          "label": {
+            "en": "EM/commodity sector (proxy)",
+            "zh": "新兴市场/商品行业（代理）"
+          },
+          "n": 186,
+          "cuts": {},
+          "unevaluable": 5,
+          "names": [
+            "AA",
+            "AEM",
+            "AESI",
+            "AG",
+            "AGI",
+            "ALB",
+            "ALM",
+            "AM",
+            "AMCR",
+            "AMR",
+            "ANGPY",
+            "APA",
+            "APD",
+            "AR",
+            "AROC",
+            "ASH",
+            "ASPI",
+            "ATR",
+            "AU",
+            "AVNT",
+            "AVY",
+            "AXTA",
+            "B",
+            "BALL",
+            "BCPC",
+            "BHP",
+            "BKR",
+            "BTG",
+            "BTU",
+            "CBT",
+            "CC",
+            "CCJ",
+            "CCK",
+            "CE",
+            "CENX",
+            "CF",
+            "CHRD",
+            "CLF",
+            "CMC",
+            "CNR",
+            "CNX",
+            "COP",
+            "CRC",
+            "CRGY",
+            "CRH",
+            "CRK",
+            "CRML",
+            "CTRA",
+            "CTVA",
+            "CVI",
+            "CVX",
+            "DD",
+            "DINO",
+            "DNN",
+            "DOW",
+            "DTM",
+            "DVN",
+            "ECL",
+            "EGO",
+            "EMN",
+            "EOG",
+            "EQT",
+            "EQX",
+            "ESI",
+            "EU",
+            "EXE",
+            "EXK",
+            "EXP",
+            "FANG",
+            "FCX",
+            "FMC",
+            "FNV",
+            "FSM",
+            "FTI",
+            "FUL",
+            "GEF",
+            "GFI",
+            "GPK",
+            "HAL",
+            "HCC",
+            "HL",
+            "HLX",
+            "HMY",
+            "HP",
+            "HWKN",
+            "IAG",
+            "IFF",
+            "IMPUY",
+            "INSW",
+            "INVX",
+            "IOSP",
+            "IP",
+            "KALU",
+            "KGC",
+            "KGS",
+            "KMI",
+            "KNF",
+            "KNTK",
+            "KOP",
+            "KWR",
+            "LAC",
+            "LBRT",
+            "LEU",
+            "LIN",
+            "LNG",
+            "LNN",
+            "LPG",
+            "LYB",
+            "MGY",
+            "MLM",
+            "MOS",
+            "MP",
+            "MPC",
+            "MTDR",
+            "MTRN",
+            "MTUS",
+            "MTX",
+            "MUR",
+            "NB",
+            "NE",
+            "NEM",
+            "NEU",
+            "NGVT",
+            "NOG",
+            "NOV",
+            "NUE",
+            "NXE",
+            "OI",
+            "OII",
+            "OKE",
+            "OVV",
+            "OXY",
+            "PAAS",
+            "PARR",
+            "PBF",
+            "PKG",
+            "PLG",
+            "PPG",
+            "PPTA",
+            "PR",
+            "PSX",
+            "PTEN",
+            "RES",
+            "REX",
+            "RGLD",
+            "RIO",
+            "RPM",
+            "RRC",
+            "RS",
+            "SBSW",
+            "SCL",
+            "SGML",
+            "SHW",
+            "SLB",
+            "SLGN",
+            "SLVM",
+            "SM",
+            "SMG",
+            "SON",
+            "STLD",
+            "SVM",
+            "SW",
+            "SXT",
+            "TALO",
+            "TDW",
+            "TPL",
+            "TRGP",
+            "UAMY",
+            "UEC",
+            "URG",
+            "UROY",
+            "USAR",
+            "UUUU",
+            "VAL",
+            "VALE",
+            "VLO",
+            "VMC",
+            "VNOM",
+            "VTOL",
+            "WFRD",
+            "WHD",
+            "WKC",
+            "WLK",
+            "WMB",
+            "WS",
+            "XOM"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "PROXY (sector, not revenue): GICS sector membership stands in for EM-demand exposure — Materials & Energy are the dollar-priced-commodity sectors most EM/dollar-sensitive. Complements em_revenue_exposure (rev 2): sector coverage is ~full, so it also catches names whose 10-K discloses no parseable geography. A coarse sector stand-in, not a revenue measurement.",
+            "zh": "代理（行业而非营收）：以GICS行业归属代表新兴市场需求敞口——材料与能源是对新兴市场/美元最敏感的美元计价商品行业。与rev 2的em_revenue_exposure互补：行业覆盖近乎全库，故也覆盖10-K无可解析地区披露的名字。粗略的行业替代，非营收测度。"
+          }
+        }
+      },
       "display_only": true
     },
     {
@@ -373,15 +1073,15 @@
         "en": "Oil shock → inflation → yields → long-duration de-rate",
         "zh": "油价冲击 → 通胀 → 收益率 → 长久期估值下修"
       },
-      "state": "dormant",
+      "state": "failed",
       "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
+        "en": "Halted",
+        "zh": "已中止"
       },
       "hop": 0,
       "n_hops": 3,
       "armable": true,
-      "episode_id": null,
+      "episode_id": "oil_inflation_duration_derate@r2:2026-10-15",
       "hops": [
         {
           "id": "oil_shock->breakeven_rise",
@@ -398,7 +1098,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 1.0,
+              "value": 2.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -442,7 +1142,7 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 47.0,
+              "value": 37.0,
               "passed": true
             }
           ],
@@ -482,7 +1182,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.179,
+              "value": -1.304,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -500,21 +1200,21 @@
         {
           "id": "oil_shock",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 17.035,
+              "value": 25.745,
               "op": "gt",
               "threshold": 25,
-              "passed": false
+              "passed": true
             },
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.6884,
+              "value": 1.4764,
               "op": "gt",
               "threshold": 0,
               "passed": true
@@ -530,7 +1230,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 1.0,
+              "value": 2.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -553,7 +1253,7 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 47.0,
+              "value": 37.0,
               "passed": true
             }
           ]
@@ -568,7 +1268,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.179,
+              "value": -1.304,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -576,7 +1276,21 @@
           ]
         }
       ],
-      "falsifier_fired": null,
+      "falsifier_fired": {
+        "index": 0,
+        "note": "oil +25% with breakevens near-flat over ~30d in a non-QE regime — passthrough absent",
+        "receipts": [
+          {
+            "series": "T10YIE",
+            "metric": "ret_bp",
+            "window": 22,
+            "value": 2.0,
+            "op": "lt",
+            "threshold": 5,
+            "passed": true
+          }
+        ]
+      },
       "base_rates": {
         "asof": null,
         "n_floor": 8,
@@ -676,9 +1390,9 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.023,
-              "median_excess_pct": 0.18,
-              "n": 2700
+              "mean_excess_pct": -0.016,
+              "median_excess_pct": 0.183,
+              "n": 2705
             },
             "63d": {
               "mean_excess_pct": 0.492,
@@ -724,7 +1438,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 1.0,
+              "value": 2.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -761,7 +1475,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -799,7 +1513,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.179,
+              "value": -1.304,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -823,7 +1537,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": 2.362,
+              "value": 7.294,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -832,7 +1546,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 17.035,
+              "value": 25.745,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -840,7 +1554,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.6884,
+              "value": 1.4764,
               "op": "lt",
               "threshold": 0,
               "passed": false
@@ -856,7 +1570,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 1.0,
+              "value": 2.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -872,7 +1586,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -889,7 +1603,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.179,
+              "value": -1.304,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -998,9 +1712,9 @@
               "n": 4141
             },
             "63d": {
-              "mean_excess_pct": 1.175,
-              "median_excess_pct": 0.979,
-              "n": 4117
+              "mean_excess_pct": 1.171,
+              "median_excess_pct": 0.976,
+              "n": 4122
             }
           }
         }
@@ -1024,7 +1738,7 @@
       "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "real_rate_peak_crypto_rerate@r1:2026-09-23",
+      "episode_id": "real_rate_peak_crypto_rerate@r1:2026-10-14",
       "hops": [
         {
           "id": "real_rate_extreme->real_rate_rolldown",
@@ -1041,7 +1755,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1049,7 +1763,7 @@
           ],
           "base_rate": {
             "p_confirm": 1.0,
-            "n": 33,
+            "n": 34,
             "regime_split": "available",
             "per_regime": {
               "inflation_down_or_flat": {
@@ -1058,7 +1772,7 @@
               },
               "inflation_up": {
                 "p": 1.0,
-                "n": 14
+                "n": 15
               }
             }
           }
@@ -1078,7 +1792,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 3.601,
+              "value": -1.097,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1115,7 +1829,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 1.0,
+              "value": 0.99,
               "passed": true
             },
             {
@@ -1136,7 +1850,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1152,7 +1866,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 3.601,
+              "value": -1.097,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1179,7 +1893,7 @@
               "to": "series:fred"
             },
             "p_confirm": 1.0,
-            "n": 33,
+            "n": 34,
             "per_regime": {
               "inflation_down_or_flat": {
                 "p": 1.0,
@@ -1187,13 +1901,13 @@
               },
               "inflation_up": {
                 "p": 1.0,
-                "n": 14
+                "n": 15
               }
             },
             "regime_split": "available",
             "span": {
               "first": "2008-10-08",
-              "last": "2025-06-13"
+              "last": "2026-03-27"
             },
             "regime_scheme": "inflation_regime"
           },
@@ -1239,9 +1953,9 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": 7.71,
-              "median_excess_pct": 0.873,
-              "n": 860
+              "mean_excess_pct": 7.716,
+              "median_excess_pct": 1.013,
+              "n": 865
             },
             "63d": {
               "mean_excess_pct": 25.999,
@@ -1260,7 +1974,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 22,
-            "value": 28.0,
+            "value": 12.0,
             "op": "lte",
             "threshold": 5,
             "passed": false
@@ -1269,7 +1983,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 5.0,
+            "value": 15.0,
             "op": "gte",
             "threshold": 4,
             "passed": true
@@ -1293,7 +2007,7 @@
       "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "real_rate_peak_gold_rerate@r1:2026-09-23",
+      "episode_id": "real_rate_peak_gold_rerate@r1:2026-10-14",
       "hops": [
         {
           "id": "real_rate_extreme->real_rate_rolldown",
@@ -1310,7 +2024,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1318,7 +2032,7 @@
           ],
           "base_rate": {
             "p_confirm": 1.0,
-            "n": 33,
+            "n": 34,
             "regime_split": "available",
             "per_regime": {
               "inflation_down_or_flat": {
@@ -1327,7 +2041,7 @@
               },
               "inflation_up": {
                 "p": 1.0,
-                "n": 14
+                "n": 15
               }
             }
           }
@@ -1347,7 +2061,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -4.028,
+              "value": -4.124,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1380,7 +2094,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 1.0,
+              "value": 0.99,
               "passed": true
             },
             {
@@ -1401,7 +2115,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 28.0,
+              "value": 12.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1417,7 +2131,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -4.028,
+              "value": -4.124,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1444,7 +2158,7 @@
               "to": "series:fred"
             },
             "p_confirm": 1.0,
-            "n": 33,
+            "n": 34,
             "per_regime": {
               "inflation_down_or_flat": {
                 "p": 1.0,
@@ -1452,13 +2166,13 @@
               },
               "inflation_up": {
                 "p": 1.0,
-                "n": 14
+                "n": 15
               }
             },
             "regime_split": "available",
             "span": {
               "first": "2008-10-08",
-              "last": "2025-06-13"
+              "last": "2026-03-27"
             },
             "regime_scheme": "inflation_regime"
           },
@@ -1500,9 +2214,9 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.095,
-              "median_excess_pct": -0.665,
-              "n": 1704
+              "mean_excess_pct": -0.118,
+              "median_excess_pct": -0.701,
+              "n": 1709
             },
             "63d": {
               "mean_excess_pct": -0.537,
@@ -1518,9 +2232,9 @@
             "en": "Real-rate beneficiary",
             "zh": "实际利率受益"
           },
-          "n": 697,
+          "n": 689,
           "cuts": {},
-          "unevaluable": 272,
+          "unevaluable": 276,
           "names": [
             "A",
             "AA",
@@ -1677,7 +2391,6 @@
             "CORT",
             "COST",
             "CPK",
-            "CPRI",
             "CPT",
             "CRH",
             "CRI",
@@ -1704,7 +2417,6 @@
             "CYTK",
             "CZR",
             "D",
-            "DAL",
             "DAN",
             "DAR",
             "DASH",
@@ -1814,7 +2526,6 @@
             "HAE",
             "HALO",
             "HAS",
-            "HAYW",
             "HCA",
             "HCC",
             "HD",
@@ -1890,7 +2601,6 @@
             "LAUR",
             "LCII",
             "LEA",
-            "LECO",
             "LEG",
             "LEN",
             "LFST",
@@ -1909,6 +2619,7 @@
             "LOPE",
             "LOW",
             "LPX",
+            "LQDA",
             "LRN",
             "LTC",
             "LTH",
@@ -1993,7 +2704,6 @@
             "OHI",
             "OI",
             "OLLI",
-            "OLN",
             "OMCL",
             "OPCH",
             "ORA",
@@ -2073,7 +2783,6 @@
             "SABR",
             "SAFE",
             "SAH",
-            "SAM",
             "SBAC",
             "SBH",
             "SBRA",
@@ -2143,7 +2852,6 @@
             "TPR",
             "TR",
             "TREX",
-            "TRN",
             "TRNO",
             "TSCO",
             "TSLA",
@@ -2181,7 +2889,6 @@
             "VMC",
             "VNO",
             "VRTX",
-            "VSEC",
             "VST",
             "VSXY",
             "VTR",
@@ -2204,7 +2911,6 @@
             "WPC",
             "WS",
             "WSM",
-            "WSO",
             "WST",
             "WTRG",
             "WWW",
@@ -2235,7 +2941,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 22,
-            "value": 28.0,
+            "value": 12.0,
             "op": "lte",
             "threshold": 5,
             "passed": false
@@ -2244,7 +2950,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 5.0,
+            "value": 15.0,
             "op": "gte",
             "threshold": 4,
             "passed": true
@@ -2285,7 +2991,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.77,
+              "value": 0.65,
               "passed": true
             }
           ],
@@ -2312,10 +3018,10 @@
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": 10.351,
+              "value": -10.183,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ],
           "base_rate": {
@@ -2346,7 +3052,7 @@
               "path": "vol_regime.vix",
               "op": "gte",
               "threshold": 25,
-              "value": 15.67,
+              "value": 18.44,
               "passed": false
             }
           ]
@@ -2360,7 +3066,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.77,
+              "value": 0.65,
               "passed": true
             }
           ]
@@ -2368,17 +3074,17 @@
         {
           "id": "highbeta_unwind",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "SPHB",
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": 10.351,
+              "value": -10.183,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ]
         }
@@ -2434,14 +3140,14 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": 0.093,
+              "mean_excess_pct": 0.092,
               "median_excess_pct": -0.081,
               "n": 1871
             },
             "63d": {
-              "mean_excess_pct": 1.024,
-              "median_excess_pct": 0.581,
-              "n": 1843
+              "mean_excess_pct": 1.021,
+              "median_excess_pct": 0.578,
+              "n": 1844
             }
           }
         }
@@ -2466,10 +3172,10 @@
   ],
   "display_only": true,
   "substrate": {
-    "universe": 1723,
+    "universe": 1726,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-09-25"
+      "max": "2026-10-21"
     }
   }
 }

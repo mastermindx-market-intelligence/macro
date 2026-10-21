@@ -13,7 +13,12 @@ Two modes, and the default is the safe one:
            tests/test_press_run.py::test_staging_writes_nothing_outside_staging
            snapshots the tree and fails on any other write.
 
---emit     Takes the staged items whose status is `passed`, writes
+           A non-publishable record precedes each slot's first provider call;
+           returned drafts are retained before validation. An interrupted slot
+           stays reserved by the existing planner until its same attempt is
+           reconciled. Provider-owned accounting may still write its own ledgers.
+
+--emit     Revalidates staged items whose status is `passed`, writes
            content/seo/blog/<slug>.md, renders the estate with the EXISTING
            free-content builder, copies the /blog/ subtree (pages + feed.xml)
            into site/, and appends one row per piece to
@@ -73,6 +78,7 @@ import sys
 import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
@@ -143,6 +149,48 @@ def _is_unverified_earnings_story_stage(item: object) -> bool:
         any(ref.startswith("chronicle:defeatbeta:") for ref in source_refs)
         or any(ref.startswith("earnings-evidence:") for ref in seed_refs)
     )
+
+
+# `scripts/stage_official_feed_press.py` stages one qualified official-feed
+# candidate as an ordinary Brief draft.  Its staged record carries an explicit
+# private-official provenance receipt with public-article approval false: the
+# qualification is candidate-only and conveys no release grant.  The receipt
+# lives in a mutable staging file, so — exactly as for the earnings guard
+# above — the refusal keeps an independent identity trail: the `official_feed:`
+# source ref IS the story's source, so it survives any provenance strip that
+# leaves the record recognisable as this story at all.
+_OFFICIAL_STAGE_RAIL = "private_official_feed"
+_OFFICIAL_SOURCE_PREFIX = "official_feed:"
+
+
+def _is_private_official_stage(item: object) -> bool:
+    """Detect a privately staged official-feed candidate — never emittable."""
+    if not isinstance(item, dict):
+        return False
+    slot = item.get("slot")
+    holders = [item] + ([slot] if isinstance(slot, dict) else [])
+    for holder in holders:
+        if str(holder.get("id") or "").startswith("press-official-"):
+            return True
+        provenance = holder.get("provenance")
+        if not isinstance(provenance, dict):
+            continue
+        receipt = provenance.get("admission_receipt")
+        if (isinstance(receipt, dict)
+                and str(receipt.get("rail") or "") == _OFFICIAL_STAGE_RAIL):
+            return True
+    refs: set[str] = set()
+    for holder in holders:
+        for key in ("sources", "seed_refs"):
+            refs.update(str(r) for r in (holder.get(key) or []) if isinstance(r, str))
+        for key in ("facts", "raw_documents"):
+            for fact in holder.get(key) or []:
+                if isinstance(fact, dict) and isinstance(fact.get("ref"), str):
+                    refs.add(fact["ref"])
+        revisions = holder.get("source_revisions")
+        if isinstance(revisions, dict):
+            refs.update(str(r) for r in revisions)
+    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -365,7 +413,12 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
     for path, obj in stage_rows:
         revisions = _source_revisions(obj)
         tracked_refs = [ref for ref in revisions if ref in current]
-        missing_refs = [ref for ref in revisions if ref not in current]
+        # Only a ref THIS reconciliation owns can go missing from it.  Other
+        # rails' revision receipts (official_feed:, whitehouse:, artifact:) sit
+        # in the same map but were never transcript revisions; treating them as
+        # vanished earnings refs would falsely supersede their records.
+        missing_refs = [ref for ref in revisions
+                        if ref not in current and ref.startswith("chronicle:")]
 
         if obj.get("status") == "correction_required":
             active = [
@@ -482,6 +535,33 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
     }
 
 
+def _write_stage_checkpoint(path: Path, item: dict, *, create: bool = False) -> None:
+    """Durably retain one slot without exposing a partially written JSON record.
+
+    The first write must never replace a prior attempt: even a caller bypassing
+    planner deduplication cannot replay an unsettled provider effect. Later
+    writes belong to that same invocation. These are ordinary staging records,
+    never a publication approval or a separate execution queue.
+    """
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        if create:
+            os.link(temporary, path)  # atomic exclusive create, including symlinks
+        else:
+            os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
 def _stage_preplanned_slots(
     root: Path,
     cfg: dict,
@@ -496,6 +576,8 @@ def _stage_preplanned_slots(
     admission_receipt: dict | None = None,
     single_provider_attempt: bool = False,
     admitted_token_cap: bool = False,
+    prepare_slot: Callable[[dict], dict] | None = None,
+    before_write: Callable[[dict], None] | None = None,
 ) -> dict:
     """Write already-selected slots through the normal writer/validator rail.
 
@@ -518,13 +600,49 @@ def _stage_preplanned_slots(
         attempts: list[dict] = []
         prior: list[str] = []
         passed_payload = None
-        writer_kwargs: dict[str, bool] = {}
+        out = staging_dir / f"{slot['id']}.json"
+        checkpoint = _stage_item(slot, None, attempts, run_date,
+                                 admission_receipt=admission_receipt)
+        checkpoint.pop("quarantine_reason", None)
+        checkpoint.update(status="in_progress",
+                          progress={"phase": "provider_started", "attempt": 0})
+        _write_stage_checkpoint(out, checkpoint, create=True)
+        writer_kwargs: dict = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
         if admitted_token_cap:
             writer_kwargs["admitted_token_cap"] = True
 
         for attempt in range(max_regenerations + 1):
+            if attempt:
+                checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
+                _write_stage_checkpoint(out, checkpoint)
+            if prepare_slot is not None or before_write is not None:
+                from engine.press.qbus_news import PrivateNewsUnavailable
+
+                try:
+                    if prepare_slot is not None:
+                        prepared = prepare_slot(slot)
+                        if not isinstance(prepared, dict) or prepared.get("id") != slot["id"]:
+                            raise PrivateNewsUnavailable("source_preparation_changed_slot_identity")
+                        slot = prepared
+                        checkpoint.update(
+                            slot=slot, sources=list(slot.get("sources") or []),
+                            seed_refs=list(slot.get("seed_refs") or []),
+                            source_revisions=dict(slot.get("source_revisions") or {}),
+                        )
+                        _write_stage_checkpoint(out, checkpoint)
+                    # Permission and identity checks run AFTER the provenance
+                    # checkpoint, immediately before each actual writer call.
+                    if before_write is not None:
+                        before_write(slot)
+                except PrivateNewsUnavailable as exc:
+                    attempts.append({"attempt": attempt, "ok": False, "reason": str(exc)})
+                    break
+            if before_write is not None:
+                # Bind the prepared attempt for a final check after provider
+                # construction and at the actual external request boundary.
+                writer_kwargs["private_admission_check"] = lambda prepared=slot: before_write(prepared)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
             if not res.get("ok"):
@@ -545,7 +663,18 @@ def _stage_preplanned_slots(
             draft = dict(res["draft"])
             draft["slug"] = _unique_slug(draft.get("slug") or slot.get("slug_hint") or "",
                                          slot, taken_slugs)
+            checkpoint.update(draft=draft, slug=draft["slug"],
+                              provider=res.get("provider"), model=res.get("model"),
+                              retained_draft_attempt=attempt,
+                              validator_report=None,
+                              writer_state=res.get("state"),
+                              progress={"phase": "validation_pending", "attempt": attempt})
+            for key in ("token_cap", "provider_usage"):
+                if key in res:
+                    checkpoint[key] = res[key]
+            _write_stage_checkpoint(out, checkpoint)
             report = validators.validate(draft, slot, cfg, root=root)
+            checkpoint["validator_report"] = report
             attempt_row = {"attempt": attempt, "ok": bool(report["ok"]),
                            "failed": report["failed"],
                            "our_value_share": report.get("our_value_share"),
@@ -568,9 +697,19 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
-        out = staging_dir / f"{slot['id']}.json"
-        out.write_text(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n",
-                       encoding="utf-8")
+        if passed_payload is None and checkpoint.get("draft") is not None:
+            # A failed validator verdict is evidence, not permission to erase
+            # the returned prose. Retain its exact last draft/report while
+            # keeping the terminal status and quarantine reason unchanged.
+            # A later provider failure may follow this draft; its own attempt
+            # remains in attempts, and retained_draft_attempt identifies which
+            # response these fields describe.
+            for key in ("draft", "slug", "provider", "model", "writer_state",
+                        "retained_draft_attempt", "validator_report",
+                        "token_cap", "provider_usage"):
+                if key in checkpoint:
+                    item[key] = checkpoint[key]
+        _write_stage_checkpoint(out, item)
         summary["items"].append({"id": slot["id"], "desk": slot["desk"],
                                  "status": item["status"],
                                  "reason": item.get("quarantine_reason", "")})
@@ -582,9 +721,7 @@ def _stage_preplanned_slots(
                         item.get("quarantine_reason"))
 
     summary["writer_state"] = state.snapshot()
-    (staging_dir / "_run_summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n",
-        encoding="utf-8")
+    _write_stage_checkpoint(staging_dir / "_run_summary.json", summary)
 
     _annotate("notice", "press_staging",
               f"press staging: {summary['passed']} passed, "
@@ -599,8 +736,14 @@ def _stage_preplanned_slots(
 
 
 def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
-                max_slots: int | None = None) -> dict:
-    """Plan, reconcile, then stage the ordinary multi-slot Press run."""
+                max_slots: int | None = None, single_attempt: bool = False) -> dict:
+    """Plan, reconcile, then stage the ordinary multi-slot Press run.
+
+    Qualification runs may opt into one provider-adapter invocation per slot,
+    disabling Anthropic SDK retries, Press fallback and draft regeneration.
+    Codex CLI internal requests are outside this bound. This does not change
+    source admission, token accounting, validation or publication authority.
+    """
     paths = _paths(cfg, root)
     # Preserve the generic lane's original timing: its staging directory
     # existed before either mutable discovery step ran.
@@ -620,6 +763,8 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
                                    int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3)),
     )
     max_regen = int(((cfg.get("quarantine") or {}).get("max_regenerations")) or 2)
+    if single_attempt:
+        max_regen = 0
 
     _pub_refs, pub_slugs = desk_planner.published_refs(root, cfg)
     _stg_refs, stg_slugs = desk_planner.staged_refs(root, cfg)
@@ -634,6 +779,7 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
         max_regenerations=max_regen,
         taken_slugs=taken,
         revision_reconciliation=revision_reconciliation,
+        single_provider_attempt=single_attempt,
     )
 
 
@@ -699,6 +845,77 @@ def run_admitted_earnings_staging(
         admission_receipt=dict(admission_receipt),
         single_provider_attempt=True,
         admitted_token_cap=True,
+    )
+
+
+def run_private_news_staging(
+    root: Path, cfg: dict, *, slot: dict, database, universe_path,
+    receipt_paths, staging_dir: str | Path,
+) -> dict:
+    """Ground one existing Press slot with blog_draft news; never enable emit.
+
+    The private directory is outside all generic staging/content/site paths.
+    Every attempt rebuilds from the original slot and checks admission again
+    after checkpoint IO. Provider fallback and regeneration remain disabled.
+    """
+    import copy
+    from engine.press import qbus_news
+
+    source_slot = copy.deepcopy(slot)
+    candidate = qbus_news.private_slot(source_slot)
+    if _is_canonical_story_slot(source_slot) or _is_private_official_stage({"slot": source_slot}):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_ordinary_press_slot")
+    receipt_paths = tuple(receipt_paths)
+    if not receipt_paths:
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_rights_required")
+    destination = Path(staging_dir).resolve()
+    paths = _paths(cfg, root)
+    forbidden = [
+        paths["staging"].resolve(), paths["content"].resolve(),
+        (root / "content").resolve(), (root / "site").resolve(),
+        (root / "properties").resolve(),
+    ]
+    # Press properties are independently served publication trees, not merely
+    # source inputs. Include actual configured roots as well as canonical roots.
+    for publication in (cfg.get("publications") or {}).values():
+        if isinstance(publication, dict):
+            for key in ("property_tree", "content_dir"):
+                value = publication.get(key)
+                if isinstance(value, str) and value:
+                    forbidden.append((root / value).resolve())
+    if any(destination == path or path in destination.parents
+           or destination in path.parents for path in forbidden):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_private_directory")
+    destination.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    def prepare(_previous: dict) -> dict:
+        # Never append new reports to an earlier attempt's evidence/facts.
+        return qbus_news.prepare_slot(
+            source_slot, database=database, universe_path=universe_path,
+            receipt_paths=receipt_paths,
+        )
+
+    def verify(prepared: dict) -> None:
+        qbus_news.verify_slot(
+            prepared, universe_path=universe_path, receipt_paths=receipt_paths,
+        )
+
+    llm_cfg = cfg.get("llm") or {}
+    state = writer.RunState(
+        token_budget=min(_env_int(
+            "PRESS_RUN_TOKEN_BUDGET", int(llm_cfg.get("run_token_budget") or 240_000)
+        ), 12_000),
+        breaker_threshold=_env_int(
+            "PRESS_CIRCUIT_BREAKER_FAILURES",
+            int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3),
+        ),
+    )
+    return _stage_preplanned_slots(
+        root, cfg, slots=[candidate], staging_dir=destination,
+        run_date=str(source_slot.get("as_of") or ""),
+        state=state, max_regenerations=0, taken_slugs=set(),
+        single_provider_attempt=True, admitted_token_cap=True,
+        prepare_slot=prepare, before_write=verify,
     )
 
 
@@ -917,6 +1134,18 @@ def run_emit(root: Path, cfg: dict) -> dict:
             continue
         if isinstance(obj, dict) and obj.get("status") == "passed" and obj.get("draft"):
             slot = obj.get("slot") if isinstance(obj.get("slot"), dict) else {}
+            from engine.press.qbus_news import is_private_stage
+
+            if is_private_stage(obj):
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "private qbus news draft: source processing permission "
+                    "does not authorize public-article release"
+                )
+                _write_stage_checkpoint(path, obj)
+                _annotate("warning", "press_emit_qbus_approval",
+                          f"press emit: private news candidate {obj.get('id')} not emitted")
+                continue
             if _is_unverified_earnings_story_stage(obj):
                 obj["status"] = "approval_required"
                 obj["quarantine_reason"] = (
@@ -930,6 +1159,46 @@ def run_emit(root: Path, cfg: dict) -> dict:
                 _annotate(
                     "warning", "press_emit_canonical_approval",
                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                )
+                continue
+            if _is_private_official_stage(obj):
+                # Candidate-only qualification: staging proved the source, not
+                # a release grant.  A passed deterministic suite changes no
+                # approval state, so this refuses BEFORE any revalidation or
+                # content/site/ledger write.
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "privately staged official-feed candidate: the candidate-only "
+                    "qualification conveys no public-article approval"
+                )
+                path.write_text(
+                    json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                    encoding="utf-8",
+                )
+                _annotate(
+                    "warning", "press_emit_official_approval",
+                    f"press emit: official candidate {obj.get('id')} requires "
+                    f"public-article approval — not emitted",
+                )
+                continue
+            # Staging is mutable: its saved report describes the earlier draft,
+            # not necessarily the copy we just loaded. Re-run the same suite
+            # before ANY content/render/ledger write and retain the fresh report
+            # for both quarantine and the eventual ledger row. The validator's
+            # slot-id exclusion keeps this candidate out of its staged peers.
+            report = validators.validate(obj["draft"], slot, cfg, root=root)
+            obj["validator_report"] = report
+            if not report["ok"]:
+                obj["status"] = "quarantined"
+                obj["quarantine_reason"] = "validators at emit: " + ", ".join(report["failed"])
+            path.write_text(
+                json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                encoding="utf-8",
+            )
+            if not report["ok"]:
+                _annotate(
+                    "warning", "press_emit_validation",
+                    f"press emit: slot {obj.get('id')} quarantined — {obj['quarantine_reason']}",
                 )
                 continue
             items.append((path, obj))
@@ -1140,7 +1409,30 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default="", help="repo root override (tests)")
     ap.add_argument("--max-slots", type=int, default=None,
                     help="cap the number of slots this run attempts")
+    ap.add_argument("--single-attempt", action="store_true",
+                    help="stage with one provider-adapter invocation per slot; "
+                         "disable Anthropic SDK retries, Press fallback and "
+                         "regeneration (Codex CLI internal requests are not bounded)")
+    mode.add_argument("--stage-qbus-news", action="store_true",
+                      help="ground one private Press draft from qualified qbus news; never emit")
+    ap.add_argument("--qbus-slot", default="", help="existing planned Press slot JSON")
+    ap.add_argument("--qbus-db", default="", help="canonical qbus database")
+    ap.add_argument("--qbus-universe", default="", help="owner-supplied news universe JSON")
+    ap.add_argument("--qbus-rights", action="append", default=[],
+                    help="blog_draft rights receipt; repeat for additional publishers")
+    ap.add_argument("--qbus-staging-dir", default="", help="dedicated private output directory")
     args = ap.parse_args(argv)
+    qbus_inputs = (args.qbus_slot, args.qbus_db, args.qbus_universe,
+                   args.qbus_rights, args.qbus_staging_dir)
+    if args.stage_qbus_news:
+        if not all(qbus_inputs):
+            ap.error("--stage-qbus-news requires all --qbus-* source/output arguments")
+        if args.desks or args.as_of or args.max_slots is not None:
+            ap.error("private news staging uses exactly the supplied current-day slot")
+    elif any(qbus_inputs):
+        ap.error("--qbus-* arguments require --stage-qbus-news")
+    if args.emit and args.single_attempt:
+        ap.error("--single-attempt applies only to staging, not --emit")
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -1153,11 +1445,25 @@ def main(argv=None) -> int:
 
     desks = [d.strip() for d in args.desks.split(",") if d.strip()] or None
 
+    if args.stage_qbus_news:
+        try:
+            slot = json.loads(Path(args.qbus_slot).read_text(encoding="utf-8"))
+            out = run_private_news_staging(
+                root, cfg, slot=slot, database=args.qbus_db,
+                universe_path=args.qbus_universe, receipt_paths=args.qbus_rights,
+                staging_dir=args.qbus_staging_dir,
+            )
+        except (OSError, ValueError) as exc:
+            _annotate("error", "press_private_news", str(exc))
+            return 1
+        print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
+        return 0 if out["passed"] == 1 else 1
     if args.emit:
         out = run_emit(root, cfg)
     else:
         out = run_staging(root, cfg, desks=desks,
-                          as_of=(args.as_of or None), max_slots=args.max_slots)
+                          as_of=(args.as_of or None), max_slots=args.max_slots,
+                          single_attempt=args.single_attempt)
 
     print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
     return 0

@@ -1,8 +1,8 @@
-# Fable Mode — Vendored Doctrine (R-V2-2), Revision 3
+# Fable Mode — Vendored Doctrine (R-V2-2), Revision 3.1
 
 **Purpose:** Injected into the orchestrator system prompt when the resolved model is
 not provably Fable-class (i.e. Opus). Distilled from the Fable 5.1 working doctrine
-(`.claude/skills/fable-mode/SKILL.md` Revision 3): the ten commitments + the pre-send
+(`.claude/skills/fable-mode/SKILL.md` Revision 3.1): the ten commitments + the pre-send
 gate, kept near the R-V2-2 byte budget. IMMUTABLE — loop PRs may not modify this file.
 **Precedence:** the repository's `CLAUDE.md` / `AGENTS.md`, its guards, and the operation's
 carrier outrank this text; where they conflict, follow them and name the conflict.
@@ -78,13 +78,13 @@ or a lost transcript is not one.
    stated undo path.
 8. Ladder: every status word names its rung; nothing reported higher than its evidence;
    pending lanes are OPEN, not anticipated.
-9. Ownership: no artifact has two writers; every launched lane has one owner, one watcher,
-   and a recorded id.
+9. Ownership: no artifact has two writers; every launched lane has one owner, one verified return binding
+   (watcher or supported native event), and a real recorded identity; unknown stays unknown.
 10. Durable state: the program file reflects this turn's decisions; a cold stranger could
     resume from it.
-11. Quiet: if waiting, a watcher is armed and this turn schedules no hand-rolled poll;
-    harness pressure got a hold note or, at the threshold, the one escape-ladder report —
-    never a fresh read.
+11. Quiet: a wait needs an actually registered watcher or another verified return path;
+    missing support never becomes a claimed wake. Continue useful independent work or
+    use the governing held/continuation boundary; no redundant polling or custody transfer.
 12. Session end: a substantial session ends with `SESSION END: <STATE>` from
     PROVEN_OUTCOME | EXACT_HUMAN_GATE | EFFECT_UNKNOWN | ALL_SCOPED_LANES_BLOCKED |
     DURABLE_EXECUTION_RUNNING — never MORE_WORK_EXISTS, and never while a change you

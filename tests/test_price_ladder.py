@@ -4,8 +4,9 @@ THE CONTRACT
 ============
 An excess return differences a name leg against a benchmark leg. Every benchmark this
 house grades against exists only BACK-ADJUSTED, so the name leg must be adjusted too. The
-breadth close caches are RAW, so they are the LAST rung, and a name that lands there is
-stamped rather than silently mixed in.
+breadth close cache is the LAST rung, but its legacy UNADJUSTED source tag is not
+canonical RAW-basis evidence: the native breadth producer requests adjusted Close. A
+name that lands there remains stamped without inventing a raw/tradj basis.
 
 EVERY BEHAVIOURAL TEST HERE RUNS ON A SYNTHETIC STORE AND NEVER SKIPS.
 A regression that only runs when `data/` happens to be present is a dark gate: it passes
@@ -334,3 +335,373 @@ def test_every_ladder_tag_classifies():
     read as 'pre-era' forever."""
     for src in pl.LADDER:
         assert pl.is_adjusted(src) is not None, src
+
+# --------------------------------------------------------------------------- #
+# 6. opt-in selected-price evidence — exact read, no legacy shape change
+# --------------------------------------------------------------------------- #
+def _sha256(path: Path) -> str:
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_evidence_mode_binds_the_exact_selected_file_column_and_basis(store):
+    r = pl.resolve_close("PAYER", data_dir=str(store), capture_evidence=True)
+    assert r.ok and r.evidence is not None
+    ev = r.evidence
+    path = store / "baskets" / "ohlcv" / "PAYER.parquet"
+    assert ev.source == "baskets_ohlcv"
+    assert ev.source_path == "baskets/ohlcv/PAYER.parquet"
+    assert ev.column == "close"
+    assert ev.basis == "tradj"
+    assert ev.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert ev.content_sha256 == _sha256(path)
+    assert ev.content_bytes == path.stat().st_size
+    # Existing source files do not attest these semantics. Unknown stays unknown.
+    assert ev.adjustment_asof is None
+    assert ev.session is None
+    assert ev.venue_scope is None
+    assert ev.observed_at is None
+
+
+def test_evidence_mode_records_yahoo_close_price_as_split_adjusted(tmp_path):
+    d = tmp_path / "yahoo"
+    d.mkdir(parents=True)
+    pd.DataFrame({"close_price": _raw_series().values}, index=IDX).to_parquet(d / "SADJ.parquet")
+    r = pl.resolve_close("SADJ", data_dir=str(tmp_path), capture_evidence=True)
+    assert r.price_source == "yahoo"
+    assert r.evidence is not None
+    assert r.evidence.column == "close_price"
+    assert r.evidence.basis == "sadj"
+    assert r.evidence.content_sha256 == _sha256(d / "SADJ.parquet")
+
+
+def test_evidence_mode_hashes_the_wide_cache_object_without_inventing_basis(store):
+    r = pl.resolve_close("CACHEONLY", data_dir=str(store), capture_evidence=True)
+    assert r.evidence is not None
+    path = store / "breadth" / "_closes_cache.parquet"
+    assert r.evidence.source == "closes_cache_UNADJUSTED"
+    assert r.evidence.source_path == "breadth/_closes_cache.parquet"
+    assert r.evidence.column == "CACHEONLY"
+    assert r.evidence.basis is None
+    assert r.evidence.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert r.evidence.content_sha256 == _sha256(path)
+
+
+def test_preloaded_wide_frame_never_borrows_a_configured_file_identity(tmp_path):
+    frame = pd.DataFrame({"CACHEONLY": _raw_series().values}, index=IDX)
+    books = pl.make_books(str(tmp_path), cache_frames=[frame], capture_evidence=True)
+    r = pl.resolve_close("CACHEONLY", data_dir=str(tmp_path), capture_evidence=True, _book=books)
+    assert r.ok and r.evidence is not None
+    assert r.evidence.source == "closes_cache_UNADJUSTED"
+    assert r.evidence.source_path is None
+    assert r.evidence.content_sha256 is None
+    assert r.evidence.basis is None
+    assert r.evidence.receipt_state == "SOURCE_OBJECT_UNATTESTED"
+
+
+def test_close_panel_evidence_covers_resolved_and_unresolved_requested_names(store):
+    panel, prov = pl.close_panel(
+        ["PAYER", "CACHEONLY", "NOWHERE"], data_dir=str(store), capture_evidence=True)
+    assert set(panel.columns) == {"PAYER", "CACHEONLY"}
+    assert set(prov["price_evidence"]) == {"PAYER", "CACHEONLY", "NOWHERE"}
+    assert prov["price_evidence"]["PAYER"]["basis"] == "tradj"
+    assert prov["price_evidence"]["CACHEONLY"]["basis"] is None
+    assert prov["price_evidence"]["NOWHERE"]["receipt_state"] == "UNRESOLVED"
+    assert prov["price_evidence"]["NOWHERE"]["source"] is None
+
+
+def test_default_mode_preserves_legacy_provenance_shape_and_values(store):
+    legacy = pl.resolve_close("PAYER", data_dir=str(store))
+    asserted = pl.resolve_close("PAYER", data_dir=str(store), capture_evidence=True)
+    assert legacy.evidence is None
+    assert legacy.series.equals(asserted.series)
+    assert legacy.price_source == asserted.price_source
+    _, prov = pl.close_panel(["PAYER"], data_dir=str(store))
+    assert "price_evidence" not in prov
+
+
+
+@pytest.mark.parametrize("group", pl.CACHE_GROUPS)
+@pytest.mark.parametrize("closes", [
+    [100.0, 102.0, 51.0],  # Unadjusted exchange prints around a 2-for-1 split.
+    [50.0, 51.0, 51.0],   # auto_adjust=True producer-shaped rebased Close.
+    [100.0, 51.0, 51.0],  # Mixed/rebased windows prove neither exact basis.
+])
+def test_cache_history_keeps_legacy_values_and_receipt_but_basis_unknown(tmp_path, group, closes):
+    idx = pd.bdate_range("2026-06-01", periods=3)
+    frame = pd.DataFrame({"SPLIT": closes}, index=idx)
+    path = tmp_path / group / "_closes_cache.parquet"
+    path.parent.mkdir(parents=True)
+    frame.to_parquet(path)
+    encoded = path.read_bytes()
+
+    legacy = pl.resolve_close("SPLIT", data_dir=str(tmp_path))
+    selected = pl.resolve_close("SPLIT", data_dir=str(tmp_path), capture_evidence=True)
+    assert selected.series.equals(frame["SPLIT"])
+    assert selected.series.equals(legacy.series)
+    assert selected.price_source == legacy.price_source == "closes_cache_UNADJUSTED"
+    assert selected.adjusted is legacy.adjusted is False
+    assert selected.tried == legacy.tried == list(pl.LADDER)
+    ev = selected.evidence
+    assert ev.source_path == f"{group}/_closes_cache.parquet"
+    assert ev.column == "SPLIT"
+    assert ev.basis is None
+    assert ev.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert ev.content_sha256 == _sha256(path)
+    assert ev.content_bytes == len(encoded)
+    assert ev.adjustment_asof is None
+
+
+# --------------------------------------------------------------------------- #
+# 7. C01 canonical read seam — resolve_close_canonical + the Terminal mapping
+# --------------------------------------------------------------------------- #
+import json  # noqa: E402
+from fractions import Fraction  # noqa: E402
+
+from lib.dataos.identity import parse_listing_key  # noqa: E402
+from lib.dataos.price_views import RefusalReason  # noqa: E402
+from lib.dataos.read_contract import ReadMode, ReadRequest, RefusalCode, ViewContract  # noqa: E402
+from lib.dataos.registry import load_registry  # noqa: E402
+
+
+def _c01_request(mode=ReadMode.CURRENT, *, basis="tradj", listing_id="US-XNYS-STK",
+                 mic=None, currency=None, extra_identity=None, extra_adj=None,
+                 extra_fu=None, **kw):
+    """A well-formed canonical read request: one listing, one basis, nothing forged."""
+    identity = {"security_id": f"SEC:{listing_id}", "listing_id": listing_id}
+    if mic is not None:
+        identity["mic"] = mic
+    if extra_identity:
+        identity.update(extra_identity)
+    field_units = {} if currency is None else {"currency": currency}
+    if extra_fu:
+        field_units.update(extra_fu)
+    adjustment_reference = {"basis": basis}
+    if extra_adj:
+        adjustment_reference.update(extra_adj)
+    contract = ViewContract(
+        purpose="c01_test", identity=identity, field_units=field_units,
+        adjustment_reference=adjustment_reference, coverage="requested")
+    return ReadRequest(mode=mode, contract=contract, **kw)
+
+
+def test_C01_tradj_served_from_stocks_row(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    out = pl.resolve_close_canonical("STK", view=_c01_request(), data_dir=str(store))
+    assert out.ok
+    assert out.values[0] == ("2026-06-01", Fraction(100))
+    assert out.contract.coverage == "2026-06-01..2026-07-10 n=30"
+    assert out.contract.identity["registry_row"] == "equity.bars.daily.stocks"
+    assert out.evidence_mode["registry_row"] == "equity.bars.daily.stocks"
+    assert out.evidence_mode["clock"] == "ingested_at"
+    assert out.evidence_mode["dependency_generation_ids"] == (
+        "sha256:" + _sha256(store / "stocks" / "STK.parquet"),)
+    assert out.contract.identity["vendor_symbol"] == "STK"
+    assert out.contract.identity["vendor"] == "yahoo"
+    assert out.evidence_mode["legacy_defects"] == ()
+    assert out.contract.refusal_reasons == ()
+
+
+def test_C01_tradj_served_from_yahoo_row(store):
+    _write_named(store, "yahoo", "YCL", _raw_series())
+    out = pl.resolve_close_canonical("YCL", view=_c01_request(), data_dir=str(store))
+    assert out.ok
+    assert out.contract.identity["registry_row"] == "equity.bars.daily.yahoo"
+    assert out.evidence_mode["registry_row"] == "equity.bars.daily.yahoo"
+    assert out.contract.adjustment_reference["basis"] == "tradj"
+    assert out.contract.field_units["share_basis"] == "tradj"
+
+
+def test_C01_baskets_rung_refuses_unbound_with_coverage_withheld(store):
+    out = pl.resolve_close_canonical("PAYER", view=_c01_request(), data_dir=str(store))
+    assert not out.ok and out.values is None
+    assert out.contract.refusal_reasons == (
+        "read_contract." + RefusalCode.UNBOUND_DEPENDENCY.name,)
+    assert out.contract.coverage == "withheld"
+
+
+def test_C01_cache_only_ticker_refuses_unbound(store):
+    out = pl.resolve_close_canonical("CACHEONLY", view=_c01_request(), data_dir=str(store))
+    assert not out.ok
+    assert out.contract.refusal_reasons == (
+        "read_contract." + RefusalCode.UNBOUND_DEPENDENCY.name,)
+    assert out.evidence_mode["registry_row"] is None
+
+
+def test_C01_yahoo_close_price_tradj_refuses_ambiguous_and_flags_S10(tmp_path):
+    d = tmp_path / "yahoo"
+    d.mkdir(parents=True)
+    pd.DataFrame({"close_price": _raw_series().values}, index=IDX).to_parquet(d / "SADJ.parquet")
+    out = pl.resolve_close_canonical(
+        "SADJ", view=_c01_request(basis="tradj"), data_dir=str(tmp_path))
+    assert not out.ok and out.values is None
+    assert out.contract.refusal_reasons == (
+        "price_views." + RefusalReason.AMBIGUOUS_BASIS.name,)
+    assert out.evidence_mode["legacy_defects"] == ("S10",)
+    assert out.contract.adjustment_reference["legacy_defect"] == "S10"
+
+
+def test_C01_yahoo_close_price_sadj_served_but_S10_still_flagged(tmp_path):
+    d = tmp_path / "yahoo"
+    d.mkdir(parents=True)
+    pd.DataFrame({"close_price": _raw_series().values}, index=IDX).to_parquet(d / "SADJ.parquet")
+    out = pl.resolve_close_canonical(
+        "SADJ", view=_c01_request(basis="sadj"), data_dir=str(tmp_path))
+    assert out.ok
+    assert out.contract.adjustment_reference["basis"] == "sadj"
+    assert out.contract.field_units["share_basis"] == "sadj"
+    assert out.evidence_mode["legacy_defects"] == ("S10",)
+    assert out.contract.adjustment_reference["legacy_defect"] == "S10"
+
+
+def test_C01_reconstruct_and_replay_refuse_before_any_read(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    rec = pl.resolve_close_canonical(
+        "STK", view=_c01_request(ReadMode.RECONSTRUCT,
+                                 cutoff="2026-07-01T00:00:00+00:00", clock="ingested_at"),
+        data_dir=str(store))
+    assert rec.contract.refusal_reasons == (
+        "read_contract." + RefusalCode.MISSING_CLOCK_VALUE.name,)
+    assert rec.legacy is None
+    assert rec.contract.coverage == "not read"
+    rep = pl.resolve_close_canonical(
+        "STK", view=_c01_request(ReadMode.REPLAY, output_id="out-1"), data_dir=str(store))
+    assert rep.contract.refusal_reasons == (
+        "read_contract." + RefusalCode.NO_RETAINED_OUTPUT.name,)
+    assert rep.legacy is None
+
+
+def test_C01_venue_rule_refuses_and_normalises(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    venue_unknown = "price_views." + RefusalReason.VENUE_CLOCK_UNKNOWN.name
+    # unparseable listing id and no mic
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(listing_id="NOT-A-KEY"), data_dir=str(store))
+    assert out.contract.refusal_reasons == (venue_unknown,)
+    # a mic that contradicts the listing id
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(mic="XLON"), data_dir=str(store))
+    assert out.contract.refusal_reasons == (venue_unknown,)
+    # an unmapped mic with an unparseable listing id
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(listing_id="US-XYZZ-STK", mic="XYZZ"), data_dir=str(store))
+    assert out.contract.refusal_reasons == (venue_unknown,)
+    # a padded mic normalises and serves
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(mic=" xnys "), data_dir=str(store))
+    assert out.ok
+    assert out.contract.identity["mic"] == "XNYS"
+
+
+def test_C01_currency_rule_refuses_mismatch_and_normalises(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(currency="GBP"), data_dir=str(store))
+    assert out.contract.refusal_reasons == (
+        "price_views." + RefusalReason.CURRENCY_MISMATCH.name,)
+    assert out.contract.coverage == "not read"
+    out = pl.resolve_close_canonical(
+        "STK", view=_c01_request(currency="usd"), data_dir=str(store))
+    assert out.ok
+    assert out.contract.field_units["currency"] == "USD"
+    assert out.contract.field_units["close"] == "USD/share"
+
+
+def test_C01_requester_cannot_inject_contract_state(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    view = _c01_request(
+        extra_adj={"as_at": "2020-01-01", "executable": True,
+                   "action_revision_set_id": "forged-ars"},
+        extra_fu={"share_basis": "raw"},
+        extra_identity={"registry_row": "forged"})
+    out = pl.resolve_close_canonical("STK", view=view, data_dir=str(store))
+    assert out.ok
+    adj = out.contract.adjustment_reference
+    assert set(adj) == {"basis", "action_revision_set_id", "as_at", "vintage",
+                        "executable", "readout"}
+    assert adj["as_at"] is None
+    assert adj["executable"] is False
+    assert adj["action_revision_set_id"] is None
+    assert adj["vintage"] == "unattested"
+    assert set(out.contract.field_units) == {"currency", "close", "share_basis"}
+    assert out.contract.field_units["share_basis"] == "tradj"
+    assert out.contract.identity["registry_row"] == "equity.bars.daily.stocks"
+    assert set(out.contract.identity) == {"security_id", "listing_id", "mic",
+                                          "vendor_symbol", "registry_row", "vendor"}
+    assert "forged" not in out.contract.identity.values()
+
+
+def test_C01_bind_refuses_an_unattested_receipt():
+    evidence = pl.PriceEvidence(
+        ticker="STK", source="data_stocks", source_path="stocks/STK.parquet",
+        column="close", basis="tradj", receipt_state="SOURCE_OBJECT_UNATTESTED")
+    legacy = pl.Resolved("STK", None, "data_stocks", True, [], evidence=evidence)
+    row, code = pl._c01_bind(legacy, load_registry())
+    assert row is None
+    assert code == "read_contract." + RefusalCode.MISSING_CURRENT_EVIDENCE.name
+
+
+def test_C01_values_refusals_and_exact_fractions():
+    vs, code = pl._c01_values(pd.Series([100, 101], index=["x", "y"]))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.UNKNOWN_ORDERING.name
+    vs, code = pl._c01_values(pd.Series([100, 101], index=pd.to_datetime(["2026-06-01", None])))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.UNKNOWN_ORDERING.name
+    vs, code = pl._c01_values(pd.Series([], dtype="float64"))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.MISSING_PRICE.name
+    vs, code = pl._c01_values(pd.Series([100, np.nan], index=IDX[:2]))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.MISSING_PRICE.name
+    vs, code = pl._c01_values(pd.Series([100, np.inf], index=IDX[:2]))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.NON_POSITIVE_VALUE.name
+    vs, code = pl._c01_values(pd.Series([100, 0], index=IDX[:2]))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.NON_POSITIVE_VALUE.name
+    vs, code = pl._c01_values(pd.Series([100, 101], index=[IDX[0], IDX[0]]))
+    assert vs is None
+    assert code == "price_views." + RefusalReason.DUPLICATE_ROW_DATE.name
+    # unsorted in, pairs sorted ascending by date out, each date keeps its own value
+    vs, code = pl._c01_values(pd.Series(_raw_series().iloc[:2].values, index=[IDX[1], IDX[0]]))
+    assert code is None
+    assert vs == (("2026-06-01", Fraction(101)), ("2026-06-02", Fraction(100)))
+
+
+def test_C01_legacy_read_is_unchanged_by_the_seam(store):
+    _write_named(store, "stocks", "STK", _raw_series())
+    out = pl.resolve_close_canonical("STK", view=_c01_request(), data_dir=str(store))
+    legacy = pl.resolve_close("STK", data_dir=str(store), capture_evidence=True)
+    assert legacy.price_source == out.legacy.price_source == "data_stocks"
+    assert legacy.adjusted == out.legacy.adjusted is True
+    assert legacy.evidence == out.legacy.evidence
+    assert legacy.series.equals(out.legacy.series)
+
+
+def test_C01_registry_pins_match_the_terminal_mapping():
+    mapping = pl.terminal_daily_ohlc_contract_v1()
+    stocks = load_registry().get("equity.bars.daily.stocks")
+    assert stocks.clocks[0] == mapping["evidence_mode"]["clock"]
+    assert stocks.vendor == pl.TERMINAL_DAILY_OHLC_STORE_VENDOR
+    assert stocks.basis == "tradj"
+    assert stocks.schema["close"]["basis"] == "tradj"
+    terminal = load_registry().get("terminal.bars.daily.ohlc_json")
+    assert sorted(pl.TERMINAL_DAILY_OHLC_MICS) == sorted(terminal.population["venues"])
+    assert parse_listing_key("US-XNYS-ABC").mic == "XNYS"
+
+
+def test_C01_terminal_mapping_is_pure_and_json_native():
+    m = pl.terminal_daily_ohlc_contract_v1()
+    assert json.loads(json.dumps(m, sort_keys=True)) == m
+    m["venues"].append("XLON")
+    m["field_units"]["currency"] = "GBP"
+    m["adjustment_reference"]["executable"] = True
+    fresh = pl.terminal_daily_ohlc_contract_v1()
+    assert fresh["venues"] == list(pl.TERMINAL_DAILY_OHLC_MICS)
+    assert fresh["field_units"]["currency"] == "USD"
+    assert fresh["adjustment_reference"]["executable"] is False
+    assert m["schema"] == "dataos.view_contract.v1"
+    assert m["purpose"] == "terminal_daily_ohlc"
+    assert m["adjustment_reference"]["basis"] == "tradj"
+    assert m["evidence_mode"]["mode"] == "CURRENT"

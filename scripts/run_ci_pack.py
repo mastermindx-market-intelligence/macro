@@ -49,7 +49,7 @@ import threading
 import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence
 
 import yaml
 
@@ -216,8 +216,8 @@ GLOBAL_INVALIDATORS = (
     "scripts/ci_scope_dependencies.py",
     "scripts/check_ci_trigger_closure.py",
     "scripts/audit_unrun_tests.py",
-    "config/dag.yml",
-    "config/synapse.yml",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
     "conftest.py",
     "**/conftest.py",
     "requirements*.txt",
@@ -407,10 +407,24 @@ SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
 
 PACK_TARGET_SECONDS = 600
 OBSERVED_COMMAND_SECONDS = {
-    "engine-render-guards": 860,
+    "engine-render-guards": 875,
     "express-render-guards": 150,
     "attested-history-guards": 60,
-    "workflow-yaml": 438,
+    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
+    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
+    # and the structure step 25 s (0.84x and 0.51x their local times). The later
+    # steps never ran there because the packing step failed first, so they are
+    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
+    # render-lane contracts and the options/sparse suites: about 90 s including
+    # its data-stack install.
+    "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
+    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
     "biocatalyst-worker": 274,
@@ -1216,6 +1230,13 @@ def infer_job_scopes(jobs: Iterable[LegacyJob]) -> tuple[list[LegacyJob], str]:
 
             for reference in SCOPE_REFERENCE_RE.findall(command):
                 rel = reference.split("::", 1)[0].rstrip(".,;:'\")")
+                # Named suites already contributed their complete closure above.
+                # They also match the generic path scanner, sometimes repeatedly
+                # (multiple node IDs in one suite). Rewalking the same graph adds
+                # no ownership: pytest ambiguity was checked before either pass,
+                # and the final named_pytest filter applies to both fallbacks.
+                if rel in named_here:
+                    continue
                 path = Path(rel)
                 if not planner_path_is_file(path):
                     continue
@@ -1723,6 +1744,169 @@ def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[s
         if uncovered:
             misses[job_id] = uncovered
     return misses
+
+
+# Ancestor inits are not part of the curated-exclusive closure audit, but they
+# execute every time Python imports a sibling — a curated job that misses one
+# has the same shape of silent false green. The allow-list ships empty: naming
+# entries is a later reviewed decision, so the census reports every pair.
+ANCESTOR_INIT_ALLOWLIST: frozenset[str] = frozenset()
+
+
+class AncestorInitFinding(NamedTuple):
+    """One ``(job, declared_path, init_path)`` triple the audit must cover.
+
+    ``init_bytes`` comes from ``os.stat`` only — the function never opens the
+    file. Missing inits (namespace packages) are not findings; the census
+    only emits when the path exists on disk.
+    """
+
+    job: str
+    declared_path: str
+    init_path: str
+    init_bytes: int
+
+
+def _ancestor_init_paths(declared_path: str) -> tuple[str, ...]:
+    """Return each ancestor directory strictly below the synthesized root.
+
+    The function then resolves each against ``repo_root`` independently —
+    keeping this helper purely lexical means the disk truth stays a single
+    ``os.stat`` call, never a traversal of the real working directory.
+    """
+    parts = declared_path.split("/")
+    if len(parts) < 2:
+        return ()
+    return tuple("/".join(parts[:depth]) for depth in range(1, len(parts)))
+
+
+def ancestor_init_census(
+    jobs: Iterable[LegacyJob],
+    *,
+    repo_root: Path,
+    allowlist: frozenset[str] = ANCESTOR_INIT_ALLOWLIST,
+) -> tuple[AncestorInitFinding, ...]:
+    """Tally ``__init__.py`` files that executed-but-weren't-declared.
+
+    The curated-exclusive tier REPLACES inference, so the declared ``paths:``
+    ARE the entire scope. Importing ``pkg/sub/mod.py`` executes
+    ``pkg/__init__.py`` AND ``pkg/sub/__init__.py``, but the curated closure
+    check above (``curated_exclusive_closure_findings``) only walks the files
+    Python's importer named — not the ancestor inits that ran alongside
+    them. A curated job that names the module without either parent init
+    stops running the moment one of those inits changes, while every
+    adjacent curated job still claims ``scope: exclusive`` is honest.
+
+    Rule, per curated-exclusive job and per NON-GLOB declared path: walk
+    each ancestor directory strictly below ``repo_root``; whenever
+    ``<dir>/__init__.py`` EXISTS on disk and is not (i) declared literally,
+    (ii) matched by one of the job's declared globs, nor (iii) in
+    ``allowlist``, emit one candidate. Deduplicate per ``(job, init_path)``
+    keeping the lexicographically first ``declared_path``. Walking is limited
+    to LITERAL declarations: the lexical ancestors of GLOB entries are NOT
+    walked — a declared path containing ``*`` or ``?`` contributes no ancestor
+    traversal of its own (the ``_has_glob(declared)`` skip), and a glob can
+    only ever SUPPRESS a candidate found under a literal path, never create
+    one.
+
+    A missing init (namespace package) is never a finding. The file is
+    never read — ``os.stat`` size only. The function does not import the
+    module under any name.
+    """
+    repo_root_resolved = repo_root.resolve()
+    raw: dict[tuple[str, str], AncestorInitFinding] = {}
+    for job in jobs:
+        if not job.exclusive:
+            continue
+        declared_set = frozenset(job.paths)
+        for declared in job.paths:
+            if _has_glob(declared):
+                continue
+            for rel_dir in _ancestor_init_paths(declared):
+                init_path = f"{rel_dir}/__init__.py"
+                if init_path in declared_set:
+                    continue
+                if _matches_any(job.paths, init_path):
+                    continue
+                if init_path in allowlist:
+                    continue
+                abs_dir = repo_root_resolved / rel_dir
+                abs_init = abs_dir / "__init__.py"
+                try:
+                    stat = abs_init.stat()
+                except OSError:
+                    # No init on disk: a namespace package (or an unreadable
+                    # path) runs no ancestor code, so it is never a finding.
+                    continue
+                key = (job.job_id, init_path)
+                candidate = AncestorInitFinding(
+                    job=job.job_id,
+                    declared_path=declared,
+                    init_path=init_path,
+                    init_bytes=stat.st_size,
+                )
+                existing = raw.get(key)
+                if existing is None or candidate.declared_path < existing.declared_path:
+                    raw[key] = candidate
+    return tuple(sorted(raw.values(), key=lambda item: (item.job, item.init_path)))
+
+
+def packing_probe_measurements(
+    manifest_path: Path,
+    probes: Iterable[tuple[str, int, int]],
+    *,
+    max_packs: int,
+) -> list[dict[str, Any]]:
+    """One row per packing probe: what an ordinary code PR touching it selects.
+
+    This IS ``tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs``'s
+    measurement, factored out so that test and ``scripts/check_contract_delta.py``
+    import one copy, for the reason ``curated_exclusive_closure_findings`` gives
+    above. ``probes`` is that test's ``PACKING_PROBES``: ``(changed path, max
+    selected jobs, max selected weight-seconds)``. The ceilings stay in the test,
+    beside the history that set them; this function only measures, and each row
+    carries its ceilings so ``packing_probe_breaches`` can judge it.
+
+    The verdict depends on the whole tree, not on the probe files: inference
+    walks every job's suites, so a suite that starts reading a probe file puts
+    its job on that probe without touching the manifest.
+    """
+    jobs, _note = infer_job_scopes(load_legacy_jobs(manifest_path))
+    rows: list[dict[str, Any]] = []
+    for probe, max_jobs, max_weight in probes:
+        selected, reason = select_jobs(jobs, [probe])
+        weight = sum(job.weight for job in selected)
+        rows.append({
+            "probe": probe,
+            "jobs": len(selected),
+            "weight": weight,
+            # Runners are what the incident actually spends: the pack count
+            # follows the SELECTED weight, so the weight cut is a runner cut.
+            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            "max_jobs": max_jobs,
+            "max_weight": max_weight,
+            "max_packs": max_packs,
+            "job_ids": sorted(job.job_id for job in selected),
+            "reason": reason,
+        })
+    return rows
+
+
+PACKING_PROBE_AXES = (("jobs", "max_jobs"), ("weight", "max_weight"), ("packs", "max_packs"))
+
+
+def packing_probe_breaches(rows: Iterable[dict[str, Any]]) -> list[tuple[str, str, int, int]]:
+    """``(probe, axis, measured, ceiling)`` for every probe axis over its ceiling.
+
+    The packing contract's verdict over ``packing_probe_measurements`` rows. An
+    empty list is a pass. Shared by the test and ``check_contract_delta.py``.
+    """
+    return [
+        (row["probe"], axis, row[axis], row[ceiling])
+        for row in rows
+        for axis, ceiling in PACKING_PROBE_AXES
+        if row[axis] > row[ceiling]
+    ]
 
 
 def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[LegacyJob]]:
@@ -3115,6 +3299,69 @@ def _current_commit_sha(root: Path) -> str:
     return value
 
 
+_EXACT_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048)
+
+
+def _tested_tree_ancestry_ready(
+    root: Path,
+    git_env: Mapping[str, str],
+    tested_tree_sha: str,
+) -> bool:
+    """Return whether the tested tree exposes all ancestry current consumers need.
+
+    Pull-request runs execute a synthetic two-parent merge. The six current
+    fetch-depth-0 consumers need the merge parents to be visible and need a real
+    merge base between those parents so PR commit trailers and diff-scoped
+    guards can walk to the branch point. They do not need unrelated refs/tags or
+    history older than that merge base. Main/workflow-dispatch runs use a normal
+    zero/one-parent commit, where making the immediate parent visible is enough:
+    each consumer explicitly fetches its canonical base before its own guard.
+    """
+
+    raw = _git_cmd(root, git_env, "cat-file", "-p", tested_tree_sha)
+    if raw.returncode != 0:
+        return False
+    raw_parents = [
+        line.split()[1].lower()
+        for line in raw.stdout.splitlines()
+        if line.startswith("parent ") and len(line.split()) == 2
+    ]
+    if len(raw_parents) > 2 or any(
+        not re.fullmatch(r"[0-9a-f]{40}", parent) for parent in raw_parents
+    ):
+        return False
+
+    visible = _git_cmd(
+        root,
+        git_env,
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        tested_tree_sha,
+    )
+    if visible.returncode != 0:
+        return False
+    parts = visible.stdout.strip().lower().split()
+    if not parts or parts[0] != tested_tree_sha.lower():
+        return False
+    if parts[1:] != raw_parents:
+        return False
+
+    if len(raw_parents) < 2:
+        return True
+
+    merge_base = _git_cmd(
+        root,
+        git_env,
+        "merge-base",
+        raw_parents[0],
+        raw_parents[1],
+    )
+    value = merge_base.stdout.strip().lower()
+    return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3125,10 +3372,17 @@ def _prepare_provided_actions(
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
     The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 additionally receives every advertised
-    branch and tag with complete history, matching checkout@v4's closed input
-    contract. Exact-base replay points ``origin`` at its isolated base-only
-    remote, so this same operation can never substitute moving current main.
+    checkout requesting fetch-depth 0 first deepens only the authoritative
+    tested tree, in bounded steps, until the synthetic merge parents have a
+    usable merge base. That is the actual history contract of every current
+    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
+    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
+    only through the branch point.
+
+    If exact-tree ancestry cannot be established within the bounded ladder, or
+    any exact fetch fails, preserve the established all-branches -> main-only
+    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
+    isolated base-only remote, so the same fail-closed recovery remains intact.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -3143,6 +3397,62 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
+
+    git_env = _trusted_git_environment(root)
+    # Recheck this exact repository/tree before fetching: a later consumer must
+    # not re-shallow history already established by an earlier consumer.
+    if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+        print(
+            "::notice title=run-ci-pack::exact tested-tree ancestry already "
+            "complete; retaining local history",
+            flush=True,
+        )
+        return
+    exact_fetch_failed = False
+    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--no-tags",
+                    f"--depth={depth}",
+                    "origin",
+                    tested_tree_sha,
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            exact_fetch_failed = True
+            print(
+                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
+                f"at depth {depth}; retrying legacy all-branches deepen",
+                flush=True,
+            )
+            break
+
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+
+        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
+            print(
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
+                flush=True,
+            )
+
+    if not exact_fetch_failed:
+        print(
+            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
+            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+
     try:
         subprocess.run(
             [
@@ -3156,7 +3466,7 @@ def _prepare_provided_actions(
                 "+refs/heads/*:refs/remotes/origin/*",
             ],
             cwd=root,
-            env=_trusted_git_environment(root),
+            env=git_env,
             check=True,
         )
     except subprocess.CalledProcessError:
@@ -3185,7 +3495,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
         except subprocess.CalledProcessError:
@@ -3215,7 +3525,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
 
@@ -4456,6 +4766,91 @@ def _run_exact_base_replays(
                     step["base_replay"] = replay
 
 
+def _find_repo_root(workflow_path: Path) -> Path:
+    """Resolve the repo root for the ancestor-init census.
+
+    Prefers ``git rev-parse --show-toplevel`` from the workflow's directory —
+    the canonical answer when the call is real. When the workflow sits in a
+    non-repo tree (a fixture under ``tmp_path``, for example), git fails
+    closed and the function falls back to the workflow's parent directory.
+    The ``relative_to`` sanity check keeps a silently-discovered parent
+    repo from being honoured when the manifest lives elsewhere — but note
+    what it does NOT do: a manifest inside a SUBDIRECTORY of an enclosing
+    checkout passes that check and resolves against that checkout's root,
+    so discovery is not bounded to the manifest's own tree unless the
+    caller sets ``GIT_CEILING_DIRECTORIES`` (which blocks git from chdir'ing
+    up INTO a listed directory; naming the fixture's parent pins the walk).
+    """
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=str(workflow_path.resolve().parent),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            candidate = Path(result.stdout.strip()).resolve()
+            try:
+                workflow_path.resolve().relative_to(candidate)
+                return candidate
+            except ValueError:
+                pass
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return workflow_path.resolve().parent
+
+
+def _run_ancestor_init_census(args: argparse.Namespace) -> int:
+    """Print the report-only ancestor-init census; exit 0 on a loadable manifest.
+
+    The census is informational only: every curated-exclusive job's declared
+    NON-GLOB paths are walked for ancestor inits, and each undeclared init
+    that exists on disk is emitted as one finding. The flag never validates
+    pack selection and never gates. It DOES exit nonzero when
+    ``load_legacy_jobs`` refuses the manifest — a ``ManifestError`` propagates
+    to ``main``'s fail-closed handler (observed rc=2 on an unparseable
+    fixture) — and the curator already owns closure failure in
+    ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
+    is the published baseline; per-init rows follow sorted by cross-job
+    count descending then path. ``--gate`` is forwarded to
+    ``load_legacy_jobs`` (the single gate filter choke point); its argparse
+    default is ``None``, so the default census stays whole-manifest and
+    byte-identical. ``--semantic-replay-job`` is the one mode that loads
+    ``load_legacy_jobs`` ungated (``main`` calls
+    ``load_legacy_jobs(args.workflow)`` without ``gate=``).
+    """
+    jobs = load_legacy_jobs(args.workflow, gate=args.gate)
+    repo_root = _find_repo_root(Path(args.workflow))
+    findings = ancestor_init_census(jobs, repo_root=repo_root)
+    per_init_count: dict[str, int] = {}
+    per_init_bytes: dict[str, int] = {}
+    jobs_with: set[str] = set()
+    nonempty = 0
+    for finding in findings:
+        jobs_with.add(finding.job)
+        per_init_count[finding.init_path] = (
+            per_init_count.get(finding.init_path, 0) + 1
+        )
+        per_init_bytes.setdefault(finding.init_path, finding.init_bytes)
+        if finding.init_bytes > 0:
+            nonempty += 1
+    n_exclusive = sum(1 for job in jobs if job.exclusive)
+    print(
+        f"ANCESTOR_INIT_CENSUS pairs={len(findings)} "
+        f"jobs={len(jobs_with)}/{n_exclusive} "
+        f"nonempty_pairs={nonempty} distinct_inits={len(per_init_count)}"
+    )
+    for init_path, count in sorted(
+        per_init_count.items(), key=lambda item: (-item[1], item[0])
+    ):
+        print(
+            f"{init_path} bytes={per_init_bytes[init_path]} jobs={count}"
+        )
+    return 0
+
+
 def execute_pack(
     jobs: list[LegacyJob],
     *,
@@ -4833,6 +5228,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument(
+        "--ancestor-init-census",
+        action="store_true",
+        help=(
+            "report-only: list ``__init__.py`` files a curated-exclusive job "
+            "executes on import but never declares — never gates, never "
+            "validates pack selection; exits 0 on a loadable manifest and "
+            "nonzero (observed 2) when load_legacy_jobs refuses the manifest; "
+            "pairs the curated-tier closure audit with the silent "
+            "ancestor-init blind spot the closure audit cannot see; "
+            "``--gate`` narrows the census to that gate's jobs (default: "
+            "whole-manifest)"
+        ),
+    )
+    parser.add_argument(
         "--plan-json",
         type=Path,
         default=None,
@@ -4966,6 +5375,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--execute and --plan-only are mutually exclusive")
     if args.plan_json is not None and args.plan_only:
         parser.error("--plan-json consumes a plan and cannot pair with --plan-only")
+    for _census_conflict, _flag in (
+        (args.execute, "--execute"),
+        (args.validate_only, "--validate-only"),
+        (args.plan_only, "--plan-only"),
+        # ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+        # (``default=None``) are not ``store_true``: the census dispatched
+        # first in ``main`` silently WON over both (observed rc=0, the plan
+        # never read/never emitted), so presence — ``is not None``, not
+        # truthiness — is the conflict test. The seven flags after them are
+        # the same class: ``default=None``, not ``store_true``, and only read
+        # after the census has already returned. ``--github-output`` and
+        # ``--changed-from`` (#9378 P3-a) join it: the census never reads them.
+        (args.plan_json is not None, "--plan-json"),
+        (args.emit_plan_json is not None, "--emit-plan-json"),
+        (args.emit_changed_files is not None, "--emit-changed-files"),
+        (args.changed_files_file is not None, "--changed-files-file"),
+        (args.expect_plan_sha is not None, "--expect-plan-sha"),
+        (args.emit_semantic_fragment is not None, "--emit-semantic-fragment"),
+        (args.emit_timing_observations is not None, "--emit-timing-observations"),
+        (args.github_output is not None, "--github-output"),
+        (args.changed_from is not None, "--changed-from"),
+    ):
+        if args.ancestor_init_census and _census_conflict:
+            parser.error(
+                "--ancestor-init-census is a terminal report-only mode and "
+                f"cannot pair with {_flag}"
+            )
+    # P3-b (#9378), deliberately NOT refused: --tested-tree-sha
+    # --subject-head-sha --base-sha --workflow-run-id --workflow-name --event
+    # --role --expect-tested-tree-sha --expect-subject-head-sha --expect-base-sha,
+    # and the env-/int-defaulted --scope-mode --matrix-mode --base-replay-budget-seconds
+    # --pack-index --pack-count: census reads only args.workflow/args.gate.
     if args.tracked_paths_file is not None and not args.plan_only:
         parser.error("--tracked-paths-file is planner-only and requires --plan-only")
     if args.tracked_paths_file is not None and not args.tested_tree_sha:
@@ -4984,6 +5425,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
+        if args.ancestor_init_census:
+            return _run_ancestor_init_census(args)
         if args.semantic_replay_job:
             jobs = load_legacy_jobs(args.workflow)
             target = next(
