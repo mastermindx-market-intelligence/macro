@@ -136,9 +136,12 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
     Separates what each number IS: `descriptive_rhythm` (the anchored window
     above), `qualified_model_cell` (hazard cell with source MODEL and a PASS
     verdict), `baseline_prior` (source PRIOR) or `missing_estimate`.  A
-    historically qualified cell is NOT a current calibrated claim until
-    live-feature parity is proven — that verdict belongs to a later packet — so
-    any qualified cell carries `model_cell_current_claim: "parity_not_established"`.
+    historically qualified cell is NOT a current calibrated claim until the live
+    feature vector has earned one — B12 measured that parity
+    (engine/hazard_parity.py, LIVE_HAZARD_PARITY) — so any qualified cell now
+    carries `model_cell_current_claim: "parity_holds" | "parity_failed"` from the
+    recorded verdict, plus a `live_feature_parity` {verdict, failing, report}
+    disclosure of the measurement itself.
 
     Reads `now["hazard"]`; never writes it.  Never raises.
     """
@@ -164,11 +167,25 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
                     continue
             hazard_kinds[h] = "missing_estimate"
 
+        # B12: the recorded live-feature parity verdict gates the current claim.
+        try:
+            from engine.hazard_parity import LIVE_HAZARD_PARITY as _parity
+            claim = ("parity_holds" if _parity.get("verdict") == "PARITY_HOLDS"
+                     else "parity_failed" if _parity.get("verdict") == "PARITY_FAILS"
+                     else "parity_not_established")
+            live_parity = {"verdict": _parity.get("verdict"),
+                           "failing": _parity.get("failing"),
+                           "report": _parity.get("report")}
+        except Exception:  # noqa: BLE001 — disclosure degrades, never raises
+            claim = "parity_not_established"
+            live_parity = None
+
         return {
             "schema": ESTIMATE_KINDS_SCHEMA,
             "rhythm": rhythm_kind,
             "hazard": hazard_kinds,
-            "model_cell_current_claim": "parity_not_established" if any_qualified else None,
+            "model_cell_current_claim": claim if any_qualified else None,
+            "live_feature_parity": live_parity,
         }
     except Exception:  # noqa: BLE001 — pure module contract: never raises
         return {
@@ -176,4 +193,5 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "rhythm": "missing_estimate",
             "hazard": {h: "missing_estimate" for h in _HORIZONS},
             "model_cell_current_claim": None,
+            "live_feature_parity": None,
         }

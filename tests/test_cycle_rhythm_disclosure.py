@@ -194,7 +194,7 @@ def test_estimate_kinds_model_pass_cell_is_qualified_with_parity_caveat():
     assert ek["hazard"] == {"1m": "qualified_model_cell",
                             "3m": "baseline_prior",
                             "6m": "baseline_prior"}
-    assert ek["model_cell_current_claim"] == "parity_not_established"
+    assert ek["model_cell_current_claim"] == "parity_failed"  # B12: measured PARITY_FAILS
 
 
 def test_estimate_kinds_prior_only_has_no_model_cell_claim():
