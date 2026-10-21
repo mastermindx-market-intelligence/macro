@@ -27236,6 +27236,8 @@ jobs:
         run: python -m pytest tests/test_prophet_whynot_receipts.py -q
       - name: Prophet leader-observation shelf (real publisher, tier split, plan-byte invariance, rendered consumer)
         run: python -m pytest tests/test_prophet_leader_observation_shelf.py -q
+      - name: Prophet Lab evidence dossier B04-A0 (closed reason map, forbidden-key refusal, admissibility literals)
+        run: python -m pytest tests/test_prophet_lab_dossier_b04a.py -q
       - name: zone-basis copy (no raw enum/slug/internal state on the published entry_zone; EN+ZH)
         # Same job as the intake because it guards the same payload: `entry_zone` is
         # whitelisted onto site/prophet/index.json, so its `basis`/`conversion_evidence`
