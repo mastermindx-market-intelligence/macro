@@ -107,6 +107,9 @@ function inject(src,onload){
 }
 function loadCycles(){
   if(loaded['@cycles']) return; loaded['@cycles']=true;
+  // BEFORE injection (RI09): sector_cycles.js reads this at boot to keep its standalone
+  // history listeners off — the shell's router owns the hash; narr+dna wait for first focus
+  window.SC_LAZY_EXTRAS=true;
   window.SC_EXTRA_DATA=['sector_cycles_china_narr_data.js','sector_cycles_china_dna_data.js'];
   window.SC_SERIES_DATA='sector_cycles_china_series_data.js';   // heavy arrays, after first paint
   var files=['sector_cycles_china_data.js','mm_charts.js','sector_cycles.js'];

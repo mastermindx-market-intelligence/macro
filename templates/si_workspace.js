@@ -300,8 +300,12 @@ var current=null;
    no entry and keeps native behaviour; history.scrollRestoration is never touched —
    this is additive memory on top of the browser's, not a replacement for it. */
 var SCROLL_MEM={};
+var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
+                       still-pending replay frame from an earlier activation — a stale
+                       frame must not scroll a view that is no longer on screen */
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
+  var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
   /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
   if(current) SCROLL_MEM[current]=window.scrollY;
   var i, secs=document.querySelectorAll('.si-view'), btns=document.querySelectorAll('.si-view-btn');
@@ -354,8 +358,16 @@ function activate(view,target){
   }else if(typeof SCROLL_MEM[view]==='number'){
     /* hashchange path with no explicit target (Back/Forward between views): replay where
        this view was last left, one frame after the section swap so the layout has settled.
-       First visit (no entry) never reaches here and native behaviour stands. */
-    requestAnimationFrame(function(){ window.scrollTo(0,SCROLL_MEM[view]||0); });
+       First visit (no entry) never reaches here and native behaviour stands. RI09: the
+       frame compares before it writes — if the viewport already sits at the remembered
+       origin (the browser's own restoration settled there) the write is skipped instead
+       of racing it, and a frame whose activation was superseded returns without touching
+       the scroll. history.scrollRestoration stays untouched: additive memory, not a
+       takeover of the browser's own restoration. */
+    requestAnimationFrame(function(){
+      if(gen!==SCROLL_GEN) return;
+      if(window.scrollY!==SCROLL_MEM[view]) window.scrollTo(0,SCROLL_MEM[view]||0);
+    });
   }
 }
 function route(){

@@ -1,9 +1,10 @@
 """Sector Central / Sector Cycles Back/Forward invariants (J-restore).
 
 Charter: research/sector_completion_20261021/INTEGRATION_CONTRACT.md §Gaps 1, 2
-and 4, closed by SIC-I09A (P18 part A) — a Back/Forward in the Sector Central
-shell must restore the previous view AND its scroll origin, and a Back/Forward
-on /sector_cycles.html must re-apply its focus deep link.
+and 4, closed by SIC-I09A (P18 part A) and hardened by SIC-I09A2 (independent
+review RI09) — a Back/Forward in the Sector Central shell must restore the
+previous view AND its scroll origin, and a Back/Forward on /sector_cycles.html
+must re-apply its focus deep link.
 
 What this file is defending, and why each pin exists rather than being obvious:
 
@@ -17,12 +18,21 @@ What this file is defending, and why each pin exists rather than being obvious:
   the viewport at that instant) and replayed only when no explicit target was
   passed — a LEGACY_ANCHORS deep link must keep winning over remembered scroll.
   `history.scrollRestoration` must stay untouched: the memory is additive, not a
-  hostile takeover of the browser's own restoration.
+  hostile takeover of the browser's own restoration. RI09: the replay frame
+  compares before it writes (a native restoration that already settled at the
+  remembered origin is not raced) and is retired by an activation generation
+  counter when a newer activation supersedes it.
 * **One reader, no history spam.** The cycles listeners must re-run the same
   deep-link reader boot() uses, and must stay off the shell host (inside Sector
   Central the hash belongs to si_workspace.js's view router — a setFocus-driven
-  replaceState there would clobber the shell's #view entry). Focus changes stay
-  replaceState: a pushState would turn every chip tap into a Back-button stop.
+  replaceState there would clobber the shell's #view entry). RI09: the
+  standalone guard is DOUBLE — the loaders' SC_LAZY_EXTRAS flag AND the .si-view
+  shell root the router owns; either alone must keep the listeners off, because
+  the China hub shipped with the flag missing. One traversal fires popstate AND
+  hashchange, so the handler is deduped by last-handled href, and the traversal
+  path never rewrites the entry URL (setFocus skips the closing replaceState
+  when reached by history). Focus changes stay replaceState: a pushState would
+  turn every chip tap into a Back-button stop.
 * **The 21-key literal.** Byte-stability of `var LEGACY_ANCHORS={…};` is what
   keeps test_xpv2_sector_r3_fixture.py::TestLegacyAnchors (a real parser) and
   every redirect stub in agreement; this file re-parses the same literal with
@@ -42,6 +52,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TPL = ROOT / "templates"
 SHELL = TPL / "sector_central.html.j2"
 ROUTER = TPL / "si_workspace.js"
+CHINA_ROUTER = TPL / "si_workspace_china.js"
 CYCLES = TPL / "sector_cycles.js"
 
 
@@ -63,6 +74,10 @@ def _shell() -> str:
 
 def _router() -> str:
     return ROUTER.read_text(encoding="utf-8")
+
+
+def _china_router() -> str:
+    return CHINA_ROUTER.read_text(encoding="utf-8")
 
 
 def _cycles() -> str:
@@ -115,17 +130,43 @@ def test_scroll_memory_restored_only_when_no_explicit_target() -> None:
     """The replay lives in the else of `if(target){`, guarded by a typeof check,
     so a LEGACY_ANCHORS deep link (explicit target) always wins and a first
     visit (no entry — `typeof SCROLL_MEM[view]` is not 'number') keeps native
-    browser behaviour."""
+    browser behaviour. RI09: the replay frame compares before it writes — a
+    native restoration that already settled at the remembered origin is not
+    raced — and returns when its activation was superseded."""
     code = _code(_router())
     assert "else if(typeof SCROLL_MEM[view]==='number'){" in code, (
         "restore lost its no-entry guard or moved out of the no-target branch"
     )
     m = re.search(r"requestAnimationFrame\(function\(\)\{\s*"
-                  r"window\.scrollTo\(0,\s*SCROLL_MEM\[view\]\|\|0\);?\s*\}\)", code)
-    assert m, "restore must replay the remembered offset on the next frame"
+                  r"if\(gen!==SCROLL_GEN\) return;\s*"
+                  r"if\(window\.scrollY!==SCROLL_MEM\[view\]\) "
+                  r"window\.scrollTo\(0,SCROLL_MEM\[view\]\|\|0\);\s*\}\)", code)
+    assert m, (
+        "restore must be a generation-guarded frame that compares before it writes"
+    )
     assert code.index("if(target){") < m.start(), (
         "restore must sit after the explicit-target branch, i.e. run only when "
         "activate() was called without a scroll target"
+    )
+
+
+def test_activation_generation_supersedes_pending_replay_frames() -> None:
+    """RI09: activate() must take a generation counter. A replay frame scheduled
+    by an activation that was itself superseded (rapid A→B hash flips while a
+    frame is still pending) must return without touching the scroll — it would
+    otherwise scroll to the OLD view's memory over the newly shown view. The
+    bump belongs on EVERY activation, not only ones that schedule a replay: an
+    explicit-target activation must equally invalidate a pending frame."""
+    code = _code(_router())
+    assert "var SCROLL_GEN=0;" in code, "missing module-level activation generation counter"
+    act = code.split("function activate(view,target){", 1)[1]
+    bump = act.find("var gen=++SCROLL_GEN;")
+    assert bump >= 0, "activate() no longer bumps the generation counter"
+    assert bump < act.index("if(current) SCROLL_MEM[current]="), (
+        "the bump must happen at the head of activate(), before the scroll capture"
+    )
+    assert "if(gen!==SCROLL_GEN) return;" in code, (
+        "the replay frame must check its activation generation before scrolling"
     )
 
 
@@ -145,7 +186,13 @@ def test_scroll_restoration_setting_is_never_touched() -> None:
 def test_cycles_binds_popstate_and_hashchange_to_one_shared_reader() -> None:
     """Both listeners must route through the single extracted reader
     (applyFocusHash) that boot()'s delayed first paint also uses — a second
-    copy of the parse rules is how the two paths drift apart."""
+    copy of the parse rules is how the two paths drift apart. RI09: the
+    standalone guard is DOUBLE — the loaders' SC_LAZY_EXTRAS flag AND the
+    .si-view shell root. Either alone must keep the listeners off: the China
+    hub shipped loadCycles without the flag, the listeners bound inside the
+    shell, and every Back/Forward replaceState'd the shell's #view entry
+    fragment-less. The handler is deduped by last-handled href because ONE
+    traversal fires BOTH popstate and hashchange."""
     code = _code(_cycles())
     assert code.count("function applyFocusHash()") == 1, (
         "the focus deep-link reader must exist exactly once"
@@ -154,14 +201,82 @@ def test_cycles_binds_popstate_and_hashchange_to_one_shared_reader() -> None:
         "boot() must keep applying the landing deep link after first paint"
     )
     pat = re.compile(
-        r"if \(!window\.SC_LAZY_EXTRAS\) \{\s*"
-        r"var syncFocusHash = function \(\) \{ if \(!applyFocusHash\(\)\) setFocus\(null\); \};\s*"
+        r'if \(!window\.SC_LAZY_EXTRAS && !document\.querySelector\("\.si-view"\)\) \{\s*'
+        r"var lastNavHref = null;\s*"
+        r"var syncFocusHash = function \(\) \{\s*"
+        r"if \(location\.href === lastNavHref\) return;\s*"
+        r"lastNavHref = location\.href;\s*"
+        r"if \(!applyFocusHash\(\)\) setFocus\(null, true\);\s*"
+        r"\};\s*"
         r'window\.addEventListener\("popstate", syncFocusHash\);\s*'
         r'window\.addEventListener\("hashchange", syncFocusHash\);'
     )
     assert pat.search(code), (
         "cycles must register exactly one popstate and one hashchange listener, "
-        "behind the standalone-page guard, both calling the shared reader"
+        "behind BOTH standalone-page guards (flag AND shell root), deduped by "
+        "last-handled href, clearing focus without rewriting the entry URL"
+    )
+
+
+def test_cycles_href_dedupe_starts_unhandled() -> None:
+    """The dedupe must start at null, never at the bind-time href: popstate and
+    hashchange both fire for ONE traversal, and a guard initialised to the
+    current href would swallow the first genuine Back onto that href too —
+    focus state and URL would silently diverge with no error anywhere."""
+    code = _code(_cycles())
+    m = re.search(r"var lastNavHref = (null|location\.href);", code)
+    assert m, "the last-handled href guard is gone from the cycles listeners"
+    assert m.group(1) == "null", (
+        "lastNavHref must initialise unhandled (null), not to the bind-time href"
+    )
+
+
+def test_cycles_traversal_never_rewrites_the_entry_url() -> None:
+    """RI09: setFocus(null) reached by traversal must not replaceState the
+    traversed entry fragment-less. The listener passes fromHistory=true and the
+    closing write is skipped on that path — the browser already put the entry's
+    URL where it belongs. In-app callers (chip tap, panel back button) keep the
+    write, which is what keeps the URL honest on a click."""
+    code = _code(_cycles())
+    assert "function setFocus(id, fromHistory) {" in code, (
+        "setFocus must take the fromHistory traversal flag"
+    )
+    assert re.search(r"if \(!fromHistory\) try \{ history\.replaceState", code), (
+        "the closing replaceState must be skipped on the traversal path"
+    )
+
+
+def test_both_shell_loaders_set_the_flag_before_injecting_cycles() -> None:
+    """The other half of the standalone guard, pinned for BOTH hubs so neither
+    drifts again: loadCycles must set SC_LAZY_EXTRAS BEFORE the trio is
+    injected — sector_cycles.js reads the flag at its own boot, not at focus
+    time, so a flag that lands after the inject calls binds the listeners
+    anyway. The China hub shipped without it (RI09 MAJOR)."""
+    for name, router in (("si_workspace.js", _router()),
+                         ("si_workspace_china.js", _china_router())):
+        lc = _code(router).split("function loadCycles()", 1)[1] \
+                           .split("function loadAssets", 1)[0]
+        flag = lc.find("window.SC_LAZY_EXTRAS=true")
+        assert flag >= 0, f"{name} loadCycles does not set SC_LAZY_EXTRAS"
+        assert lc.find("files.forEach") > flag, (
+            f"{name} must set SC_LAZY_EXTRAS BEFORE the cycles trio is injected — "
+            "sector_cycles.js reads it at boot"
+        )
+
+
+def test_cycles_shell_root_guard_matches_the_routers_own_selector() -> None:
+    """The root guard must name a selector the shell router actually owns:
+    `.si-view` is what activate() queries in si_workspace.js and
+    si_workspace_china.js. If either router ever renames its sections, this
+    fails right next to the stale guard instead of letting the guard silently
+    match nothing and re-open the MAJOR."""
+    for name, router in (("si_workspace.js", _router()),
+                         ("si_workspace_china.js", _china_router())):
+        assert "document.querySelectorAll('.si-view')" in _code(router), (
+            f"{name} no longer owns .si-view sections — the cycles guard selector is stale"
+        )
+    assert 'document.querySelector(".si-view")' in _code(_cycles()), (
+        "sector_cycles.js must probe the shell root with the same selector"
     )
 
 
