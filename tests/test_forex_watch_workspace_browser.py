@@ -37,6 +37,8 @@ class AccountOwner:
         self.fail_read = False
         self.drop_save = False
         self.drop_delete = False
+        self.defer_save = False
+        self.delayed_rows = {}
 
     @staticmethod
     def error(message):
@@ -70,6 +72,10 @@ class AccountOwner:
                 "active": False, "created_at": "2026-10-21T11:00:00Z",
                 "condition": {**rule, "type": "forex_price_close", "schema_version": 1,
                               "condition_id": identity, "revision": revision + 1}}
+            if self.defer_save:
+                self.defer_save = False
+                self.delayed_rows[identity] = record
+                return self.error("synthetic_response_lost_before_commit_visible")
             self.rows[identity] = record
             if self.drop_save:
                 self.drop_save = False
@@ -287,4 +293,56 @@ def test_sign_in_preserves_anonymous_draft_without_automatically_saving(browser_
     assert not owner.writes, "sign-in alone is not authorization to save the draft"
     page.locator("#fxr-prepared-list article button").nth(1).click()
     expect(page.locator("#fxr-saved-list article")).to_have_count(1)
+    assert len(owner.writes) == 1
+
+
+def test_same_account_session_confirmation_preserves_draft_and_editor(browser_page):
+    owner = AccountOwner()
+    page = browser_page(owner); ready(page); prepare(page)
+    page.locator("#fxr-prepared-list article button").first.click()
+    expect(page.locator("#fxr-watch-dialog")).to_be_visible()
+    before = page.locator("#fxr-rule-json").text_content()
+    epoch = page.evaluate("window.ForexWatchClient.authState().epoch")
+    # The incumbent SDK emits this on visible-tab session recovery without logout.
+    page.evaluate("(id) => window.__fxAuth.emit(id, 'SIGNED_IN')", A)
+    expect(page.locator("#fxr-prepared-list article")).to_have_count(1)
+    expect(page.locator("#fxr-watch-dialog")).to_be_visible()
+    assert page.locator("#fxr-rule-json").text_content() == before
+    assert page.evaluate("window.ForexWatchClient.authState().epoch") == epoch
+    assert not owner.writes
+
+
+def test_same_account_confirmation_keeps_unconfirmed_save_reconciliation(browser_page):
+    owner = AccountOwner(); owner.defer_save = True
+    page = browser_page(owner); ready(page); prepare(page)
+    page.locator("#fxr-prepared-list article button").nth(1).click()
+    expect(page.locator("#fxr-pending-list article")).to_have_count(1)
+    page.evaluate("(id) => window.__fxAuth.emit(id, 'SIGNED_IN')", A)
+    expect(page.locator("#fxr-pending-list article")).to_have_count(1)
+    expect(page.locator("#fxr-prepared-list article")).to_have_count(1)
+    expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+    assert not owner.rows and len(owner.writes) == 1
+    owner.rows.update(owner.delayed_rows)
+    page.locator("#fxr-pending-list article button").click()
+    expect(page.locator("#fxr-saved-list article")).to_have_count(1)
+    expect(page.locator("#fxr-pending-list article")).to_have_count(0)
+    assert len(owner.writes) == 1
+
+
+def test_empty_reload_cannot_resolve_an_unconfirmed_save(browser_page):
+    owner = AccountOwner(); owner.defer_save = True
+    page = browser_page(owner); ready(page); prepare(page)
+    page.locator("#fxr-prepared-list article button").nth(1).click()
+    expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+    page.locator("#fxr-account-refresh").click()
+    expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+    expect(page.locator("#fxr-pending-list article")).to_have_count(1)
+    page.locator("#fxr-pending-list article button").click()
+    expect(page.locator("#fxr-pending-list article button")).to_be_enabled()
+    expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+    assert not owner.rows and len(owner.writes) == 1
+    owner.rows.update(owner.delayed_rows)
+    page.locator("#fxr-pending-list article button").click()
+    expect(page.locator("#fxr-saved-list article")).to_have_count(1)
+    expect(page.locator("#fxr-pending-list article")).to_have_count(0)
     assert len(owner.writes) == 1

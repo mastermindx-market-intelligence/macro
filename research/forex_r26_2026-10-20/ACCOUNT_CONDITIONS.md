@@ -71,7 +71,7 @@ Expected error tokens are `forex_watch_revision_conflict`, `forex_watch_identity
 
 ## Browser behavior and recovery
 
-Every user intent captures the account UUID and an authentication epoch. Sign-out/sign-in creates a new epoch even for the same account; ordinary token refresh does not. A late response from an earlier epoch is discarded. Account changes clear rows, pending operations, the editor and its hidden JSON/form values.
+Every user intent captures the account UUID and an authentication epoch. An actual sign-out followed by sign-in creates a new epoch even for the same account. Routine same-account `SIGNED_IN` confirmation (including tab-focus session recovery) and ordinary token refresh preserve the current epoch, drafts, open editor and pending-write reconciliation. A late response from an earlier epoch is discarded. Account changes clear rows, pending operations, the editor and its hidden JSON/form values.
 
 Signing in may retain an anonymous prepared draft, but never saves it automatically. Only an explicit Save invokes the owner. Successful saves are shown only after validating the exact owner, ID, canonical rule, inactive state and revision in the returned row.
 
@@ -81,6 +81,6 @@ Two-tab edit conflicts require an explicit reload of the saved version before ed
 
 ## Local evidence and remaining qualification
 
-`account_evidence/validation.json` binds source hashes and test results. The real builder/Jinja/browser flow is exercised against synthetic market input and a controlled account owner, with HTTP(S) blocked. Browser cases cover desktop/mobile, EN/ZH, light/dark, explicit sign-in/save, reload/edit/delete, two tabs, account switches, lost responses and failed readback.
+`account_evidence/validation.json` binds the initial slice's source hashes and test results. `account_evidence/review-repair.json` preserves the independent REQUEST_CHANGES on 2d45507 and binds the subsequent auth/pending-state regressions and repair proof. The real builder/Jinja/browser flow is exercised against synthetic market input and a controlled account owner, with HTTP(S) blocked. Browser cases cover desktop/mobile, EN/ZH, light/dark, explicit sign-in/save, reload/edit/delete, two tabs, account switches, lost responses and failed readback.
 
 The storage implementation must independently prove owner RLS, direct activation/family-escape rejection, strict rule validation, concurrent create/edit/delete semantics and current grants in an isolated PostgreSQL fixture. Production application requires the established migration owner and actual catalog receipts. A deployed authenticated user path and admitted finalized-4H source/delivery remain separate obligations.

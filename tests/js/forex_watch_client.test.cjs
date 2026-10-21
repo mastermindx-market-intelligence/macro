@@ -184,3 +184,26 @@ test("an unapplied owner function is unavailable, not saved or an empty account"
   const h = harness(); h.writes({ data: null, error: { code: "PGRST202", message: "function absent" } });
   assert.equal((await h.api.save(h.request())).status, "unavailable");
 });
+
+test("routine same-account SIGNED_IN preserves the current intent and in-flight acknowledgment", async () => {
+  const h = harness({ deadlineMs: 200 }), request = h.request();
+  let acknowledge, started;
+  const reachedOwner = new Promise(resolve => { started = resolve; });
+  h.writes(() => { started(); return new Promise(resolve => { acknowledge = resolve; }); });
+  const saving = h.api.save(request);
+  await reachedOwner;
+  h.emit(A, "SIGNED_IN");
+  assert.equal(h.api.authState().epoch, request.accountEpoch);
+  acknowledge({ data: row(), error: null });
+  assert.equal((await saving).status, "saved");
+  assert.equal(h.calls.filter(call => call[0] === "rpc").length, 1);
+});
+test("initial signed-out session resolution notifies an already-subscribed view", () => {
+  let emit;
+  const api = create({ auth: { enabled: () => true, user: () => null, onChange: cb => { emit = cb; } },
+    getClient: () => { throw new Error("must not construct a client"); } });
+  const states = [];
+  api.subscribeAuth(state => states.push(state.status));
+  emit(null, "INITIAL_SESSION");
+  assert.deepEqual(states, ["checking", "signed_out"]);
+});

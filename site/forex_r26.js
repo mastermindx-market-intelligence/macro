@@ -214,10 +214,13 @@
   function announceAccount(text) { q("#fxr-account-message").textContent = text; q("#fxr-account-message").hidden = !text; }
   function renderAccount() {
     const auth = watchClient ? watchClient.authState() : { status: "unavailable" };
-    const status = accountView.status;
-    const ready = status === "ready";
+    // An inventory read cannot resolve a mutation that may still complete.
+    const status = accountView.status === "ready" && pendingOperations.size ?
+      "unconfirmed" : accountView.status;
+    const ready = accountView.status === "ready";
+    const confirmedInventory = status === "ready";
     q("#fxr-account-title").dataset.accountStatus = status;
-    q("#fxr-account-title").textContent = ready ?
+    q("#fxr-account-title").textContent = confirmedInventory ?
       (accountView.rows.length ? words("Saved conditions", "已保存条件") : words("No saved Forex conditions", "没有已保存的外汇条件")) :
       status === "updating" ? words("Updating saved conditions…", "正在更新已保存条件…") :
       status === "unconfirmed" ? words("Change awaiting confirmation", "更改等待确认") :
@@ -225,7 +228,7 @@
       status === "signed_out" ? words("Save conditions to your account", "将条件保存到账户") :
       status === "checking" ? words("Checking your account…", "正在检查账户…") :
       words("Account watch status unavailable", "账户关注状态不可用");
-    q("#fxr-account-description").textContent = ready ?
+    q("#fxr-account-description").textContent = confirmedInventory ?
       words("Saved conditions remain inactive. Finalized 4H monitoring and notifications are not available yet.", "已保存条件仍未启用。目前尚不支持最终4小时监测与通知。") :
       ["loading", "updating"].includes(status) ? words("Waiting for the account service to return your records.", "正在等待账户服务返回记录。") : messageFor(status);
     q("#fxr-account-signin").hidden = auth.status !== "signed_out";

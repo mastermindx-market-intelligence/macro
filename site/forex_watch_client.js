@@ -16,11 +16,15 @@
   function authState() { return { status: authStatus, userId, epoch }; }
   function onAuth(user, event) {
     const next = user && uuid(user.id) ? user.id : null;
-    const boundary = next !== userId || ["SIGNED_IN", "SIGNED_OUT", "INITIAL_SESSION"].includes(event);
+    // The incumbent SDK confirms an existing session with SIGNED_IN on tab focus.
+    // Only owner changes or an actual sign-out invalidate account-bound intents.
+    const boundary = next !== userId || event === "SIGNED_OUT";
+    const previousStatus = authStatus;
     if (boundary) epoch++;
     userId = next;
     authStatus = next ? "ready" : event === "SDK_FAILED" ? "unavailable" : "signed_out";
-    if (boundary || event === "SDK_FAILED") listeners.forEach(listener => listener(authState()));
+    if (boundary || previousStatus !== authStatus || event === "SDK_FAILED")
+      listeners.forEach(listener => listener(authState()));
   }
   if (auth && typeof auth.enabled === "function" && auth.enabled() && typeof getClient === "function") {
     authStatus = "checking";
