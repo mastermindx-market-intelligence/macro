@@ -129,11 +129,16 @@ window. Local rendering is not public acceptance.
   coordinator to complete its existing integration directly from the approved
   contract, preserving the failed run and without retrieval, replay or replacement.
   Exact failure: `/Volumes/Mastermind/agent-workspaces/codex/6e18/monitor-component-proof/ATTENTION_DELIVERY_FAILURE.md`.
+  Direct source a45e8bddf plus repairs a7744367c/330a8736a now has59 focused passes.
+  Independent combined source review passed exact product3187, including the
+  parent401 abort/hide/reverify repair and all eight author-file identities. Review
+  closed wrong consumer page, misleading quiet copy and lost signin context. Root inspected
+  dark desktop EN/light mobile ZH fixture materials. Authenticated/public proof remains owed.
 - Real native Today/Research/Monitor routes and member admission were committed at
   `f1366d0784c6426b70293fb436cbc4e4c62225ca`, with 146 focused passes. Research
   redirect/private-header/lockdown repair `2b0596be99b6e3e629a2ed0253ca072c162bd0dd`
-  passed the same independent review addendum and seven discriminating tests. Product
-  will regenerate the registry from all three qualified immutable sources.
+  passed the same independent review addendum and seven discriminating tests.
+  Final canonical source admission is now qualified below.
 - Shared-shell default entry now reaches Today at `4b1d76c5e8e7003105fecaefa4c440910c452367`.
   Independent review and actual loopback redirects preserve explicit pinned contexts
   and ordinary Terminal defaults. Portfolio hydration repair `07ffd34293eed210519a2e07890cb1d81210b17e`
@@ -141,35 +146,89 @@ window. Local rendering is not public acceptance.
 - W6 source qualification found actual non-2xx retained-owner reasons flattened to
   generic HTTP failure. Shared failure-only repair `cdd0d969f1cf60bda7bcb6ebd2fd4f7c76214964`
   is adopted as `feb469ac2`, with 101 parent helper/wrapper passes; the combined new
-  Monitor boundary still owes its narrow independent addendum. Monitor uses the
+  Monitor boundary passed its narrow independent addendum. Monitor uses the
   helper directly. Its per-owned-symbol
   evidence check opens the actual retained event with all four immutable pins and
   source date. No unsupported new-since or watchlist/report relationship is claimed.
-- Macro #7949 is now pushed at `f30662bed212ff463ba8557ac54d970e0b2c6228`.
-  Focused injection/regwall/Caddy, ten loopback cases, FIF census and packing/closure
-  repairs passed. Hosted CI run `39604775831` was observed through sole foreground
-  exec handle `59404`, owned by compatibility and now consumed;
-  do not create another poller. Packs 5/8/9 found real generated-pair or publication
-  fixture failures after the new capability assets, plus a mutable-ref assumption
-  in the registry test. Compatibility owns the full same-run census and three original
-  disjoint Fabric repairs: `ss-glossary-publication-fix-20261021-c245`,
-  `ss-pack8-publication-fix-20261021-c245`, and `ss-pack9-publication-fix-20261021-c245`.
-  Pack 11 additionally found one moved Caddy backend-map line pin, repaired by its
-  existing local owner without changing the map or its accepted security boundary.
-  Observer 59404 has now been consumed to completion (exit 1): eight of twelve
-  packs passed, only 5/8/9/11 failed, and the final gate correctly failed. There is
-  no remaining running observer for this run. API closure also needs 223 exact
-  literal declarations across thirteen curated jobs; original artifact-only Fabric
-  `ss-api-closure-declarations-20261021-c245` owns that bounded addition. The four
-  proposal carriers retain their original identities and no replacement was launched.
-  No guard weakening or blind rerun. Required checks and source landing remain owed.
-- The canonical registry has 346 classified rows (SHA256 `69e11f6ef13e56273eb4fb95cc9857b57b8a481ec9def5d87c523b4850c95b62`).
-  Its qualified projection (SHA256 `1204bc0f9ce94c08b7262310bec9905abe441397d02fc15d681dcd59b09ab93d`)
-  has 13,017 legacy paths, 14 native paths and 288 directory entries; zero ambiguous
-  or unresolved legacy paths. All eleven internal rows are excluded. Product
-  adopted these bytes, and acceptance verified Committee/Crossasset absence in the
-  actual local search. Newly committed Today/Monitor/Research routes still need the
-  final qualified registry/projection export.
+- Macro #7949 normal-fast-forwarded to `5d73033f85da2a900c32e7531de7f549b0c77f18`.
+  Original CI `39604775831` at f30662 finished with eight of twelve packs passing;
+  sole child observer59404 was consumed and closed. All seven diagnosed semantic
+  failures now pass 56 targeted cases; Caddy19, ontology22, markets2, registry/export73
+  and actual mounted APIs27+1 also pass. Canonical generation preserves all52 asset
+  stamps. Exact curated closure adds223 paths across13 jobs without changing suites,
+  selectors or job counts. All four original proposal results were consumed normally;
+  API closure/glossary accepted, pack8/pack9 partials remain unaccepted. No replay.
+  Release preparation found16 missing cached-module restart triggers plus one cached
+  Today schema. Exact additive repair9fcef06b628937e7269d9134911706e269e47277 passed
+  289existing+2new self-heal tests and was pushed normally. CurrentCI39620460168 has
+  one verified child observer99279. Prior39619458981 was canceled by normal same-PR
+  synchronize; original observer12197 was consumed and closed. Handles are agent-local,
+  never consumable by root. Current exact carrier/run/handle is
+  maintained in `/Volumes/Mastermind/agent-workspaces/codex/6e18/compatibility-release/CURRENT.md`.
+- The final canonical registry has349 classified rows (SHA256 `6fd3e876923752f61ecca0d9c05e7d8de7caeb9159f1080a70263511aa2cc88a`).
+  Projection SHA256 `a2e63e711998fe02054cb3a02addd309235483736f3c919f7f292dfd8139d599`
+  contains13,019 legacy paths,17 native paths and291 directory entries. Source tuple:
+  Macro7a8cabcc66dd474ca1b2efcd285f8f9495bfdbfc / Terminale0d4cabfccd3f1fd83b4362288124ba8078de731 /
+  protected Mastermind7ab47f0b62d9a22ff16a13f6b99b96b681874a93. Only Today/Monitor/Research
+  native rows and two canonical stock pages were added; no removal or access/lifecycle
+  drift. All paths resolve exactly once; seven internal tools remain excluded.
+  Product imported exact bytes and family acceptance independently qualified the delta.
+  Current hosted CI exposed four missing design-overlay archetypes: the existing
+  Terminal rule supplies chart_workspace for legacy catchall and Today/Research/Monitor.
+  Source8100c5ac plus canonical generation0d1b775665016 passes the actual combined
+  registry/design/export job239 cases. New projection SHA56a7bb19 has identical
+  consumer inventories/coverage and is imported verbatim at product13cae17dd1351ea5579804f906d05bd74107f885.
+  Family qualifies only this bounded metadata delta. Separately pack1 exposed369
+  inherited-init declarations versus ceiling344; compatibility is repairing exact
+  missing declarations against the same tracked inventory without raising the ceiling.
+  Observer99279 remains the sole current-run result owner through the full failure census.
+- Product integrated protected Terminal master b02b86d3c (existing session-recovery
+  repair) without losing its11 auth files. Clean candidate3187baba6b29f04fb01e6e92a243e0361a016dc2
+  contains the exact final projection, Monitor followups and canonical bilingual
+  helper normalization. Parent124 affected cases, TypeScript, scoped lint, diff and
+  forward-only language guard pass. Original copy leaf ss-product-copy-routing-20261021-001
+  settled rc1/provider429/QWEN_FINAL_RESPONSE_UNCONFIRMED; no artifact imported or
+  accepted, no replay/replacement. Parent completed the local deterministic integration.
+  Existing#1063 normal-fast-forwarded to3187 with requiredCI39621638381 and sole
+  child observer12795. Its actual unit job reported15,198 passes and13 failures:
+  missing native-route loading skeletons plus historical visual locks invalidated
+  by six added core dictionary keys and three actually changed surfaces. Product
+  consumed admitted C1 Fabric ss-product-native-gates-ci-20261021-001
+  (GLM5.3Flash/ubuntu0, controller65007), which settled naturally rc0 after698s.
+  Exact manifested patch b58caea4 was verified, integrated at3dbc and accepted
+  deterministically after64 affected passes; original metadata-observation refusal75
+  remains preserved, with no retry or replay. Core i18n again matches masterb02.
+  Local clean candidatefbc850932e778fb53543d26e07f6ac11c5c70611 also contains the
+  beta unit and disjoint first-Escape directory fix, with7 navigation passes,
+  TypeScript/affected lint/language guard PASS. Root read the actual focused diffs.
+  Family owns real keyboard/focus recheck; existing acceptance was reactivated
+  against exactfbc for actual captures of three changed surfaces. No blind rebinding.
+  Subsequent local keyboard checks passed first-Escape dismissal/focus3/3. Actual
+  primary-content/skip-navigation gaps prompted bounded semantic repair414309e79
+  and no-target fragment-preservation repair42d78dbb108eae0dc37fd73d7ece947612cb1ce0.
+  Auth logic/layout classes stay unchanged; existing native/legacy main owners are
+  preserved and status announcements remain separate. Final changed-case keyboard
+  checks and captures belong to the same family/acceptance owners. Original fbc
+  functional matrix30/30 and Analysis6/PL6-12 captures passed; unchanged ordinary
+  profile functional evidence retains its actual source identity, with final affected
+  crops captured separately. Local production3187 measurements show bounded48-link
+  output for10,760 matches and flat settled DOM/listener counts across repeated
+  transitions; no prior comparative baseline or public/mobile/INP claim is made.
+  Remote#1063 remains3187 pending the one coherent corrective push. An isolated
+  production-mode build of exact3187
+  passed with all three new routes emitted; reuse it for unchanged build behavior.
+- The beta unit classified installed Next16.2.9's explicit post-SIGTERM exit143
+  as a failure. The minimal comment plus SuccessExitStatus=143 patch passed
+  independent source review at SHA256
+  `9d6f18d8975ffa83ff9bbbb14e8057f2f5d5be0fb57ae72090b1b46a502186b2`;
+  product's two focused tests pass and the patch joins the same#1063 corrective push.
+  Signal,30-second timeout,Restart=no and hardening remain unchanged. This setting
+  does not prove cleanup: real inactive/dead, no PID/cgroup tasks/listener, no timeout
+  or forced kill/error, and negative failure cases remain owed. The installed owner
+  and unit match protected93e303cc and3187. Existing attended host configuration
+  owns canonical landed-unit installation; terminal-build does not install units.
+  Current acceptedA receipts exclude/etc/systemd and have no unit identity field:
+  preserve them, qualify the installed unit separately, and never rewrite A as proof.
 - Root accepted the family disposition plan in
   `/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/CURRENT.md`.
   All 24 consumer groups and 19 generated shapes retain explicit consumer obligations.
@@ -204,6 +263,15 @@ is required for that qualified continuation; no temporary bypass was commissione
 Public serving, exact build/publication identity and A-to-B-to-A recovery/rollback
 remain owed. Production port 3000 has not been changed by this commission.
 
+Root consumed the actual unchanged-A/PID3306695 namespace qualification: dedicated
+UID987/GID981, zero effective/bounding capabilities, NoNewPrivs and strict filesystem.
+Both data aliases resolve to the same device/inode under effective read-only mounts;
+same-user reads pass, nontruncating write-opens refuseEACCES, and scoped cache
+create/read/remove passes. This qualifies A isolation, not future B behavior.
+One normal certificate-verified public status preflight returns trusted hostname TLS
+but HTTP525 from EdgeOne while the beta origin vhost is absent. It is not healthy-app
+proof; no TLS bypass or browser retry occurred.
+
 Root's native Chrome profile 1 tab `1925928144` verified the existing product account
 session through the normal app Account UI (Chris, current October 21 sign-in) and
 read the incumbent Saved research surface. No secret was extracted or session
@@ -214,6 +282,12 @@ The workspace July 31 clock and source July 30 call date remain distinct. This
 does not prove the candidate build, immutable full tuple or save/readback. Report:
 `shared-shell-handoff/shared-shell-astra-handoff/acceptance/PRODUCTION_COMPANY_SOURCE_PREFLIGHT.md`
 under the root workspace parent; root viewed the retained event-receipt capture.
+Root also inspected the rendered SEC source capture. A subsequent research-library
+preflight was blocked by Chrome: another extension UI is open. No tab handle was
+returned, so creation outcome is unconfirmed. Root asked Chris once to finish or
+dismiss that dialog; the answer is pending. No browser retry, replacement tab or
+alternate browser/account is authorized to evade that control. Source/CI/release
+preparation continues independently; final native/public browser proof is held.
 
 Preserve WS:MARKET-OS A1A/A1B accepted population and mutation semantics. Watchlists
 are attention, portfolio_positions are holdings. The new shell does not reopen the
@@ -228,7 +302,8 @@ accepted historical production matrices or authorize unrelated schema changes.
   limits are retained in
   `/Volumes/Mastermind/agent-workspaces/codex/6e18/compatibility-release/FABRIC_OBSERVATION_DIAGNOSIS.md`.
   Preserve original completions, leases, deadlines and refusal; no alternate observer,
-  allowlist relaxation or replacement job. No new dispatch while reconciled.
+  allowlist relaxation or replacement job. No new dispatch may obtain that refused
+  observation effect; independent new work retains its own actual admission.
   The single handoff to `Resume Fabric Implementation 2` returned Too many requests;
   delivery is UNCONFIRMED and two same-chat reads did not resolve it. No third read or
   alternate send to that chat. A distinct cross-program source/install ownership
@@ -246,9 +321,9 @@ accepted historical production matrices or authorize unrelated schema changes.
   Parent-consumed report:
   `/Volumes/Mastermind/evidence/mmos-commission-01a15741/fabric-observer-source-compatibility.md`.
   The original
-  API-closure proposal meanwhile returned rc0 through its normal completion path;
-  same-carrier artifact export is complete with no execution replay. Parent
-  comparison and composed checks remain in progress; the other originals are preserved.
+  four proposal operations have now returned normally and were consumed through
+  their original carriers. API closure/glossary passed parent adjudication; pack8/9
+  rawHTML partials remain unaccepted. No execution replay or observation retry occurred.
 - Historical `ss-ci-preflight-20261021-001` remains on its original adapter carrier.
   Its retained result is prelaunch rc78 / PLAIN_PACKET_RETENTION_REFUSED;
   facade retry_allowed=false and execution_absence_proven=false remain intact.
@@ -273,27 +348,32 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Exact next actions
 
-1. Monitor completes its owned local attention integration and returns one exact
-   commit; reactivate the same product coordinator to adopt it, then the same
-   acceptance coordinator for the narrow combined Monitor/shared-helper risk review.
-   Product routes, redirects, headers and Portfolio hydration are already complete
-   at clean e0d4cabfccd3f1fd83b4362288124ba8078de731; reuse their accepted checks.
-2. Compatibility has folded the qualified APIs into existing #7949 locally at
-   f459ff0c3d652b6bfabeed4e32c5389244e8d108. Complete current-head canonical
-   generation, fixture/ref integration and API declaration checks now; original
-   artifact-only proposals do not own or block the incumbent source tree.
-3. Consume original normal completion results when available and compare/adjudicate
-   them without replay. Push one coherent corrected #7949 candidate, then advance
-   required checks, source landing, covering publication and qualified beta release.
-   No successor remote carrier/effect exists. Preserve same-carrier identity and
-   accepted unchanged checks. Completed coordinator turns are not idle wake.
-4. Product performs the normal fast-forward continuation of existing #1063 after
-   the qualified Monitor followup and final canonical projection, retaining one
-   actual CI result-consumption path. No competing global navigation PR.
-5. Regenerate routes only from qualified committed source in all three repositories,
-   then prove real account, source/revision, save/readback, chart-return, responsive
-   design and distinct family bodies against the final served candidate. Root must
-   inspect final browser output before whole-product acceptance.
+1. Product consumes the original12795 CI result, joins actual reviewed visual
+   recaptures and final keyboard/semantic checks to the qualified local42d78 source,
+   then makes one coherent corrective#1063 push and observes that exact run.
+   Reuse accepted Monitor/helper/source/build evidence where unchanged. Normal
+   protected landing is authorized; product must not invoke default production deploy.
+2. Compatibility consumes sole observer99279 for#7949 head9fcef/run39620460168,
+   joins the diagnosed overlay/init repairs into one corrective push with its own
+   exact required-CI return path, then advances normal source landing, covering
+   renderer/generated commit, updater/API restart and exact served-byte verification.
+   No successor carrier exists; all original proposal returns are settled.
+3. Compatibility is the sole explicit beta release owner after qualified source and
+   publication: canonical unit installation, reviewed Caddy/runtime continuation,
+   exact build identity, real A-to-B-to-A rollback/stop/withdrawal and production3000
+   invariance. Root decides ordinary production continuation from the beta evidence.
+   Preserve current locks, writers and effects; merging does not itself deploy.
+4. The Chrome extension dialog is the one pending human browser control. After
+   Chris clears it, reconcile the unconfirmed tab through the same browser rather
+   than creating a duplicate; then prove real account, source/revision, save/readback,
+   chart-return, responsive design and distinct family bodies at the served candidate.
+5. The existing family coordinator now qualifies independent local performance,
+   keyboard and reflow behavior from existing tooling/evidence while the common
+   public join waits. Fixture measurements do not replace held normal-browser proof.
+   Its distinct family/runtime cases follow the qualified common served tuple.
+   Source membership is already accepted;
+   do not repeat generation absent a relevant invalidator. Root inspects final
+   browser output before whole-product acceptance. Completed turns are not idle wake.
 
 Do not retry failed/uncertain operations under new IDs, replace original carriers,
 copy mock data into production, invent new stores/routers, merge watchlists into
