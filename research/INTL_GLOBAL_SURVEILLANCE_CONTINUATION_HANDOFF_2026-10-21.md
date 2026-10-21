@@ -50,3 +50,10 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Live proof owner: background Bash `br4783r8o` runs `scratchpad/prove_intl_assets.sh` every 5 min (after a 4-min deploy grace) until all ten paths return 200, cap ~75 min. It is the ONLY live-proof observer. IM-W0 stays `awaiting_ci` until it reports ten 200s; a 401 persisting past the cap means the deploy lane did not publish the Caddy/policy change — diagnose via a lane (deploy workflow run for 3217a6cc), never by re-merging.
 - #9925 (seat docs PR) observed by `bzj9wjxb9` (terminal-state only; seat merges with `--match-head-commit` on green). This checkpoint push moves its head; the watcher waits on the new rollup.
 - Agent OS handoff record drafted at scratch `agentos_handoff_draft.md`; committed as `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md` at the next records boundary (after live proof), keeping #9925 small.
+
+## Checkpoint 2026-10-21 04:2xZ — Wave 0 PRODUCTION_PROOF
+- Live-proof watcher `br4783r8o` at 04:06:24Z: anonymous `curl` with cache-busting returns **200 for /intl.html and all nine presentation assets** (/intl_workspace.css, _macro.css, _risk.css, _history.css, /intl_workspace_state.js, /intl_library_search.js, /intl_workspace_scenario.js, /intl_workspace.js, /intl_workspace_entry.js). Baseline before #9920 was 401 on all nine.
+- Negative boundary check (same minute): `/intl_data.json` → 401 (gated data stays gated); `/api/intl/summary`, `/sb/ping`, `/dashboard.html` → 404 (not public). The public boundary widened by exactly the nine presentation paths.
+- IM-W0 → `done` (PRODUCTION_PROOF). ACCEPTANCE of the served journeys (anonymous + entitled, masterplan §15 Wave 0) is recorded against §14 tests at the Wave 2 boundary; this checkpoint claims only the access repair.
+- Wave 1 under ORCH-1: lane W1A → PR open @686eb9a7, lane W1B → PR open @78711372; review lanes W1A-REVIEW/W1B-REVIEW launched 04:06Z on fabric (W1B-REVIEW r1 refused by economic policy, relaunched). Seat consumes ORCH-1's return, never the lanes directly.
+- Agent OS handoff record committed: `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md`.

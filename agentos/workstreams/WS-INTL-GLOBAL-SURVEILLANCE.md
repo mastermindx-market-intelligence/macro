@@ -22,11 +22,10 @@ owns_paths:
 waves:
 - id: IM-W0
   title: Wave 0 — access reconciliation and served journey verification
-  status: awaiting_ci
-  next_action: Squash-merge PR 9920 (nine International presentation assets public; independent review PASS at
-    898edecc) pinned to its head once ci-pack-0 is terminal, then prove anonymous HTTP 200 on the nine assets and
-    intl.html; record the PR 9596 reconciliation (base-stale packs 2/3 + author's theme.css receipt remint) and
-    leave 9596 and the 8754 egress hold untouched.
+  status: done
+  next_action: Done — PR 9920 merged at 898edecc (main 3217a6cc); anonymous 200 proven 2026-10-21T04:06Z on
+    intl.html plus the nine assets, /intl_data.json still 401. PR 9596 reconciliation recorded
+    (DEC:INTL-GS-9596-RECONCILIATION-2026-10-21); 9596 and the 8754 egress hold untouched.
 - id: IM11
   title: Global coverage contract — versioned 63-jurisdiction universe, capability vector, source-rights matrix
   status: in_progress
@@ -80,8 +79,8 @@ waves:
   depends_on:
   - IM17
   next_action: Commission after Wave 4.
-next_action: PR 9920 MERGED (main 3217a6cc); consume live-proof watcher br4783r8o (nine assets anonymous 200), then
-  consume the Wave 1 and R14 design orchestrator returns and cut Wave 2 packets from the frozen design spec.
+next_action: Consume the Wave 1 orchestrator return (W1A PR @686eb9a7, W1B PR @78711372 under review) and the R14 design
+  orchestrator return, freeze the design spec, then cut Wave 2 packets.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md
