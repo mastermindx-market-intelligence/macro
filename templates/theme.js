@@ -1845,7 +1845,7 @@
     _sbLoading = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
       s.src = _SDK_URL; s.async = true;
-      s.onload = resolve; s.onerror = function () { reject(new Error('sdk')); };
+      s.onload = resolve; s.onerror = function () {\n        _sbLoading = null; // A transient failure must not permanently poison future restores.\n        if (s.parentNode) s.parentNode.removeChild(s);\n        reject(new Error('sdk'));\n      };
       (document.head || document.documentElement).appendChild(s);
     });
     return _sbLoading;
@@ -1973,14 +1973,21 @@
     if (_authBooted || !_authEnabled) return;
     _authBooted = true;
     if (_isAuthReturn() || _hasSessionCookie()) {
-      // restore the session / exchange the ?code= return; on SDK-load failure
-      // (e.g. supabase.js blocked) settle to signed-out so nothing hangs.
+      // Restore the session; a transient SDK/Auth outage is NOT revocation.
       getSupabaseClient().then(function (sb) { return sb.auth.getSession(); })
-        .catch(function () { _authResolveAnon('SDK_FAILED'); });
+        .then(function (result) { if (result && result.error) throw result.error; })
+        .catch(function () { _authBooted = false; _authResolveAnon('SDK_FAILED'); });
     } else {
       _authResolveAnon('INITIAL_SESSION');   // anonymous — settle, no network
     }
   }
+
+  // Recover on a real browser/network return, without a polling loop or new auth store.
+  function _retryRestoreOnReturn() {
+    if (!_authBooted && !_curUser && (_hasSessionCookie() || _isAuthReturn())) _authBoot();
+  }
+  window.addEventListener('online', _retryRestoreOnReturn);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) _retryRestoreOnReturn(); });
 
   /* ---- the frosted-glass auth modal (matches index.html .glass) --------- */
   var AUTH_L = {
