@@ -35,6 +35,7 @@ import pandas as pd
 from engine import basket_index, cycles
 from engine import cycle_ontology as onto
 from engine import cycle_phase_age
+from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
 
@@ -1362,6 +1363,69 @@ def _stamp_phase_age(records, *, asof, history, history_status):
             log.warning("sector_cycles: phase-age stamp failed for %s: %s", rid, e)
 
 
+def _series_provenance_for(rec: dict, sector_benchmark) -> dict:
+    """B06 — reconstruction facts of the series THIS one record was built on.
+
+    Every value comes from the code path that built the record: sectors are a
+    single instrument RS'd to the configured benchmark with a bounded benchmark
+    ffill (RS_BENCH_FFILL_LIMIT); thematic baskets are current-membership
+    (pit=False) equal-weight member candles RS'd to SPY with an UNBOUNDED
+    benchmark ffill; amalgam complexes are the same basket machinery RS'd to the
+    family ETF (QQQ / IWM).  A field the stamp cannot attribute reads "unknown",
+    never a guess — the labels describe the actual reconstruction, they do not
+    relabel the series as exact-session or point-in-time.
+    """
+    kind = rec.get("kind")
+    prov = {
+        "schema": "sector_cycles.series_provenance.v1",
+        "structure_basis": rec.get("basis") or "unknown",
+        "rs_basis": "tr",
+        "membership": "unknown",
+        "point_in_time": None,
+        "benchmark": "unknown",
+        "benchmark_ffill_limit_sessions": None,
+        "history_mode": "reconstructed_price_history",
+    }
+    if kind == "sector":
+        prov.update(membership="single_instrument", point_in_time=True,
+                    benchmark=sector_benchmark,
+                    benchmark_ffill_limit_sessions=RS_BENCH_FFILL_LIMIT)
+    elif kind == "basket":
+        prov.update(membership="current_membership", point_in_time=False,
+                    benchmark="SPY")
+    elif kind in _AMALGAM_FAMILIES:
+        prov.update(membership="current_membership", point_in_time=False,
+                    benchmark=_AMALGAM_FAMILIES[kind]["benchmark"])
+    return prov
+
+
+def _stamp_rhythm_disclosure(records, *, today_x):
+    """B06 — stamp each record's rhythm window, estimate kinds and series provenance.
+
+    ADDITIVE and per-record fault-isolated: reads rec['turns'] / rec['now'] /
+    rec['basis'] / rec['kind'] and writes three NEW keys (rhythm, estimate_kinds,
+    series_provenance).  proj, now (incl. now.hazard), turns, osc, rs_history and
+    the record_series output are untouched.  A failure on one record stamps an
+    unavailable rhythm (reason 'stamp_error') and the build continues.
+    """
+    try:
+        sector_benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
+    except Exception as e:  # noqa: BLE001 — provenance must never break the build
+        log.warning("sector_cycles: sector benchmark unreadable — stamping 'unknown': %s", e)
+        sector_benchmark = "unknown"
+    for rec in records:
+        try:
+            rhythm = rhythm_window(rec.get("turns") or [], today_x)
+            rec["rhythm"] = rhythm
+            rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)
+            rec["series_provenance"] = _series_provenance_for(rec, sector_benchmark)
+        except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
+            log.warning("sector_cycles: rhythm disclosure failed for %s: %s",
+                        rec.get("id", "?"), e)
+            rec["rhythm"] = {"schema": RHYTHM_SCHEMA, "status": "unavailable",
+                             "reason": "stamp_error"}
+
+
 def compute(asof: str | None = None) -> dict | None:
     """Top-level: build every sector's cycle record + page meta. Returns None if the
     close panel can't be loaded (build script then no-ops).
@@ -1463,6 +1527,15 @@ def compute(asof: str | None = None) -> dict | None:
                      asof=str(last_ts.date()), history=None,
                      history_status="not_logged")
 
+    # ── B06: honest rhythm/overdue state, estimate kinds, series provenance ────
+    # One additive stamp over EVERY record the build produced (sectors, thematic
+    # baskets, every amalgam family): the dated anchored rhythm window with its
+    # explicit state (never rolled forward), the per-horizon estimate kind, and
+    # the reconstruction facts of the series each record was actually built on.
+    _stamp_rhythm_disclosure(
+        sectors + baskets + [r for fam in amalgam_families.values() for r in fam],
+        today_x=_yf(last_ts))
+
     x_lo = round(_yf(win_start), 3)
     x_hi = round(_yf(last_ts) + _TODAY_PAD, 3)
     x_lo_default = round(_yf(last_ts - pd.DateOffset(years=DEFAULT_WINDOW_YEARS)), 3)
@@ -1480,6 +1553,17 @@ def compute(asof: str | None = None) -> dict | None:
             # is chosen — that is a product decision recorded as a GAP.
             "phase_age_version": 1,
             "semantic_families": SEMANTIC_FAMILIES,
+            # B06: rhythm-disclosure version + the correction-contract
+            # disposition.  The Cycles inputs (yahoo close/close_price panels,
+            # basket + amalgam membership, the SECTORS registry, the B05
+            # forward log) carry no native correction / revision / supersession
+            # field — capability row R3A-92 — so none is invented here.
+            "rhythm_version": 1,
+            "correction_contract": {
+                "status": "none_native",
+                "basis": "no native correction or revision field in Cycles "
+                         "inputs (capability row R3A-92)",
+            },
             "rs_history": {
                 "schema": "sector_cycles.rs_history.v1",
                 "mode": "reconstructed_price_history",
