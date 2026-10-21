@@ -216,6 +216,96 @@ def test_open_key_normalisation_never_truncates_a_hyphenated_ticker():
 
 
 # --------------------------------------------------------------------------- #
+# 1b. The cleared-row split — `validation_failed` vs `plan_not_built`
+# --------------------------------------------------------------------------- #
+
+def _failure(ticker: str, *, stage: str = "clock_provenance") -> dict:
+    """One ``intake_stats["validation_failures"]`` entry, the stored shape."""
+    return {"ticker": ticker, "id": f"pp-{ticker.lower()}", "stage": stage,
+            "errors": ["clock mismatch"]}
+
+
+def test_cleared_row_in_the_failure_record_headlines_validation_failed():
+    """A name that cleared every gate but whose plan build FAILED its own data check
+    must not read as 'every check passed' — the intake's own record re-words it,
+    and the two cleared cohorts stay distinct denominators.
+    """
+    cx = refusal_receipts(
+        _board(_row("DATAF"), _row("QUIET")),
+        originated_tickers=set(),
+        validation_failures=[_failure("DATAF")],
+    )
+    assert _why(cx, "DATAF") == ["validation_failed"]
+    group = next(g for g in cx["groups"] if g["reason"] == "validation_failed")
+    assert group["reason"] == "validation_failed"
+    assert group["en"] == "Passed the board's checks — tonight's plan data didn't verify"
+    assert group["zh"] == "通过了榜单检查 — 但今晚的计划数据未能核验"
+    assert group["near"] is False        # the SYSTEM failed, not the stock
+    assert group["n"] == 1               # the TRUE count, never the drawn cap
+    # the other cleared cohort keeps its own honest line
+    assert _headline(cx, "QUIET") == "plan_not_built"
+    assert cx["unmapped"] == 0
+
+
+def test_cleared_row_absent_from_the_failure_record_keeps_plan_not_built():
+    """Regression: the split never re-words the cohort the intake said nothing about."""
+    cx = refusal_receipts(_board(_row("QUIET")), originated_tickers=set(),
+                          validation_failures=[])
+    assert _headline(cx, "QUIET") == "plan_not_built"
+
+
+def test_an_open_plan_outranks_the_failure_record():
+    """Precedence (a): an open plan is not a refusal of any kind, even when the
+    ticker also sits in the failure record."""
+    cx = refusal_receipts(
+        _board(_row("LIVE")),
+        open_keys=("LIVE-BULL",),
+        originated_tickers=set(),
+        validation_failures=[_failure("LIVE")],
+    )
+    assert _headline(cx, "LIVE") == "already_open"
+    assert cx["open_now"] == 1
+
+
+def test_an_originated_row_earns_no_receipt_even_if_the_record_names_it():
+    """A row in the originated set was planned tonight; a failure entry naming the
+    same ticker must not put a shelf line under a planned name."""
+    cx = refusal_receipts(
+        _board(_row("DONE"), _row("DATAF")),
+        originated_tickers={"DONE"},
+        validation_failures=[_failure("DONE"), _failure("DATAF")],
+    )
+    tickers = [n["ticker"] for g in cx["groups"] for n in g["names"]]
+    assert tickers == ["DATAF"]
+    assert _headline(cx, "DATAF") == "validation_failed"
+    assert cx["planned"] == 1
+
+
+def test_absent_failure_record_leaves_the_prior_output_untouched():
+    """``validation_failures=None`` is the historical call: byte-identical receipts,
+    on a split board and on the suite's every-status board."""
+    board = _board(_row("OPEN", score=90), _row("QUIET", score=80),
+                   _row("WAIT", status="buy_soon"))
+    before = refusal_receipts(board, open_keys=("OPEN-BULL",),
+                              originated_tickers=set())
+    after = refusal_receipts(board, open_keys=("OPEN-BULL",),
+                             originated_tickers=set(), validation_failures=None)
+    assert after == before
+    every = _every_status_board()
+    assert refusal_receipts(every, validation_failures=None) == refusal_receipts(every)
+
+
+def test_validation_failed_is_ordered_and_excluded_from_near():
+    """REFUSAL_ORDER seats it after `already_open` and before `not_ready`; it is NOT
+    a NEAR code — the near rail means 'one thing stands between it and a plan' and
+    here the thing that failed is the system's own data, not the stock."""
+    order = list(REFUSAL_ORDER)
+    assert order.index("already_open") + 1 == order.index("validation_failed")
+    assert order.index("validation_failed") + 1 == order.index("not_ready")
+    assert "validation_failed" not in REFUSAL_NEAR
+
+
+# --------------------------------------------------------------------------- #
 # 2. Exhaustiveness — the copy table is complete and bilingual
 # --------------------------------------------------------------------------- #
 
@@ -244,6 +334,25 @@ def test_template_copy_mirrors_the_engine_copy_exactly():
     MIRROR, and this is the pin that keeps it one."""
     mod = _env().get_template("_prophet_receipts.html.j2").module
     assert {k: tuple(v) for k, v in mod.pvr_copy.items()} == REFUSAL_COPY
+
+
+def test_candidate_pool_copy_words_shared_codes_identically():
+    """The candidate pool's ``_why`` map is the THIRD copy surface: every code it
+    shares with REFUSAL_COPY must carry the byte-identical EN/ZH pair, so the shelf
+    and the pool can never word the same refusal differently.  Parsed from the
+    template source (an underscore-prefixed ``{% set %}`` is not a module attr)."""
+    template = (ROOT / "templates" / "_us_candidate_pool_rows.html.j2").read_text(
+        encoding="utf-8")
+    block = template.split("_why = {", 1)[1].split("\n{% set _reason", 1)[0]
+    pool = {}
+    for key, values in re.findall(r"'([^']+)':\s*\((.*?)\)\s*(?:,|\n})", block):
+        copy = re.findall(r"'([^']*)'|\"([^\"]*)\"", values)
+        copy = [value for pair in copy for value in pair if value]
+        pool[key] = tuple(copy[:2])
+    shared = [code for code in REFUSAL_ORDER if code in pool]
+    assert shared, "the pool must still word the refusal codes it renders"
+    for code in shared:
+        assert pool[code] == REFUSAL_COPY[code], code
 
 
 # --------------------------------------------------------------------------- #
