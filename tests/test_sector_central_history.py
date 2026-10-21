@@ -312,3 +312,29 @@ def test_legacy_anchors_literal_parses_to_exactly_21_keys() -> None:
     assert all(isinstance(v, list) and len(v) == 2 for v in anchors.values()), (
         "every LEGACY_ANCHORS entry must remain a [view, scroll-target] pair"
     )
+
+
+def test_cycles_in_app_focus_write_resets_the_traversal_dedupe() -> None:
+    """RI09b finding 6/7: the traversal reader dedupes on the last-handled href,
+    but an in-app setFocus moves the URL by replaceState without firing any
+    event, so a user hash-edit back to the previously handled href would be
+    eaten by the dedupe. The in-app write therefore resets the dedupe (installed
+    by the listener block, null when no listener is bound), and the hash reader
+    itself never takes the writing path: applyFocusHash reaches setFocus with
+    fromHistory=true because the URL already carries the fragment."""
+    code = _code(_cycles())
+    assert "var _navDedupeReset = null;" in code, "the dedupe reset hook must be declared"
+    assert re.search(
+        r"if \(!fromHistory\) try \{ history\.replaceState\([^\n]*\); "
+        r"if \(_navDedupeReset\) _navDedupeReset\(\); \} catch",
+        code,
+    ), "the in-app replaceState must reset the traversal dedupe inside the same try"
+    assert "_navDedupeReset = function () { lastNavHref = null; };" in code, (
+        "the listener block must install the dedupe reset"
+    )
+    block = re.search(r"function applyFocusHash\(\) \{(.*?)\n  \}", code, re.S)
+    assert block, "applyFocusHash must exist"
+    assert "setFocus(h, true);" in block.group(1), (
+        "applyFocusHash must reach setFocus on the traversal path (fromHistory=true)"
+    )
+    assert "setFocus(h);" not in block.group(1), "no traversal-path write may remain"

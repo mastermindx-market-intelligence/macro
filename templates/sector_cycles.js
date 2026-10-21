@@ -990,6 +990,11 @@
 
   /* ---- focus orchestration ----------------------------------------------- */
   function toggleFocus(id) { setFocus(state.focus === id ? null : id); }
+  // RI09b finding 6: the traversal reader below dedupes on the last-handled href, but an
+  // in-app focus write moves the URL by replaceState without firing any event — a user
+  // hash-edit back to the previously handled href would then be eaten. The in-app write
+  // resets that dedupe (installed by the listener block; null when no listener is bound).
+  var _navDedupeReset = null;
   // fromHistory (traversal path only): the URL already matches the traversed entry, so
   // the closing replaceState below is skipped — rewriting it fragment-less would strip
   // the entry's hash (RI09). In-app callers keep the write: it is what keeps the URL
@@ -1019,7 +1024,7 @@
       if (isCnMobile()) { if (id) openSheet("half"); else closeSheet(); }   // hidden-at-rest detent sheet
       else if (id) expandSheet(true);                                       // US legacy peek sheet
     }
-    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {}
+    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -2027,7 +2032,7 @@
     if (!(h && byId[h])) return false;
     var hs = byId[h];
     if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
-    setFocus(h);
+    setFocus(h, true);   // RI09b finding 7: the URL already carries #h — no traversal-path write exists
     return true;
   }
 
@@ -2077,6 +2082,7 @@
       };
       window.addEventListener("popstate", syncFocusHash);
       window.addEventListener("hashchange", syncFocusHash);
+      _navDedupeReset = function () { lastNavHref = null; };
     }
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)
