@@ -92,7 +92,14 @@ themes; 320/390/768/1440; a passing test is not served proof.
 - Merge rule: review PASS/PASS_WITH_NOTES + CI green on the merge ref → `gh pr merge 9921 --squash
   --match-head-commit 7e0cf6c6…`; FAIL → fix lane under a new run id (-r2), never edit on the seat.
 - Still running: `pro-clockprov-20261021-r1` (ubuntu2, watcher bdyjfabdb); ORCH-DESIGN/INTEL/REGIONAL/SOURCE.
-- 03:4xZ: records PR **#9922** (Draft, session branch → main; docs/records only; Ready at a natural checkpoint) opened so
+- 03:3xZ: records PR **#9922** (Draft, session branch → main; docs/records only; Ready at a natural checkpoint) opened so
   every checkpoint commit lands on a carrier; the PR monitor is bound to #9922 with #9921 as the other bound PR.
   REGIONAL disposition snapshot committed as interim (verdicts READY/BLOCKED-CUSTODY/BLOCKED-DATA/BLOCKED-ORDER per
   obligation; §7 Decisions and §8 Lanes fill as its lanes return).
+- 03:3xZ: **clock_provenance census lane returned** (`pro-clockprov-20261021-r1`, ubuntu2, rc=0, commit 53fa1829 cherry-picked
+  as 15fb5868 onto the session branch → records PR #9922). Seat ruling in census §10: **38/38 LEGITIMATE**, no intake repair;
+  D-CLOCK-1 (fresh tier event on post-cross take) RESERVED to the incumbent Prophet owner + quant validation; disclosure
+  refinement (named "new base after fired event" receipt) adopted as a Stage 1 follow-on lane after #9921 merges.
+  #9921 state: head 7e0cf6c6, non-draft, UNARMED; ci-plan/ci-authority/fence-pack SUCCESS, contract-delta + ci-pack-0…11
+  IN_PROGRESS, only `ci-authority/codex/merge-queue-pilot` FAILURE (standing X, not a #9921 defect). Review lane
+  `pro-receipt-truth-review-20261021-r1` POLL_PENDING on ubuntu0 (launched 03:23Z).

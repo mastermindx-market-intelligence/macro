@@ -289,3 +289,28 @@ conviction_low 11 + pointing_down 2 = 74` ✓.
   open-key set (published open plans minus the 30 originated that night) and the 30
   originated assets, with the 14-name display cap lifted for full membership only; it
   reproduced every published group count and the exact first-14 ordering.
+
+## 10. Seat adjudication (Fable Meta-CEO seat 69eb9a1c, 2026-10-21 03:3xZ)
+
+Ruling: **ACCEPTED — 38/38 LEGITIMATE, 0 source defects, 0 missing evidence.** The gate
+compares two clocks that are each lawfully produced (`hold.anchor` advances with every §7
+buy take; `signal.tier_event_date` is the immutable cross close) and correctly declines to
+substitute a clock when the current base postdates the only fired event. Accounting is
+correct (`intake.validation_failures` lossless, `plan_not_built` n=39 = 38 + AZN duplicate-id),
+the old refusal and correction history is preserved, and no intake repair is authorized.
+
+Consequences for the program:
+
+1. **No clock repair.** Backdating formation to the event (option 8.2b) is a substitute-clock
+   guess and is refused. Registering a fresh tier event on a post-cross take (option 8.2a)
+   changes the documented immutable-cross-close contract and the point-in-time validity of
+   the tier series; it is a Prophet science decision, not an accounting fix, and is held as
+   **D-CLOCK-1 (reserved: incumbent Prophet owner + quant validation lane; not this wave)**.
+2. **Disclosure refinement (option 8.2c) is adopted as a Stage 1 follow-on**, sequenced
+   after PR #9921 (generic `validation_failed` receipt) merges: a named board-level receipt
+   for "new base formed after the tier event fired" so the why-not surface states the actual
+   reason instead of the generic "plan data didn't verify". No clock, admission or count
+   changes; same owning contract (`engine/prophet_bridge.py` `refusal_receipts`) and the
+   same test file as #9921. Lane id to mint: `pro-receipt-newbase-20261021-r1`.
+3. **B-ledger**: the 38-refusal investigation obligation is dispositioned with evidence
+   (this census, §§1–9); the positive origination count is not a target.
