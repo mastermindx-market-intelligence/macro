@@ -1,0 +1,69 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "operation_id": "sector-central-macro-paper-pivot-20261020-sol-001",
+  "branch": "sol/web-sector-central-macro-paper-pivot-20261020-sol-001",
+  "expected_head_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "action": "studio_git_commit_current_changes",
+  "result": {
+    "schema": "mastermind.studio_git_tool_error.v1",
+    "status": "REFUSED",
+    "effect_state": "NOT_APPLIED",
+    "code": "TYPED_GIT_PRECHECK_REFUSED",
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "same_operation_readback": {
+    "schema": "mastermind.studio_git_publish_status.v2",
+    "operation_id": "sector-central-macro-paper-pivot-20261020-sol-001",
+    "branch": "sol/web-sector-central-macro-paper-pivot-20261020-sol-001",
+    "local_head_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+    "remote_head_sha": null,
+    "clean": false,
+    "publication_state": "NOT_APPLIED",
+    "ready_to_push": false,
+    "repository": "macro"
+  },
+  "conclusion": "Commit refused before application. No commit, push, Macro PR, merge or production deployment occurred. Candidate source remains in the assigned workspace.",
+  "retry_or_alternate_carrier_used": false,
+  "review_render_sha256": "7a1b170f459c96df943dcd0095a671d3b370ad51b3b7062ba1e8431f27e1d29a",
+  "candidate_tests": "565 passed in 45.35s",
+  "temporary_review_server_stopped": true,
+  "browser_candidate_verified": false,
+  "paper_board_updated": false,
+  "paper_write_qualification": {
+    "scope": "Current connector only",
+    "server_name": "paper-desktop",
+    "server_version": "0.5.14",
+    "catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "accepted_for_write": false,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": false,
+    "expected_catalog_sha256": "ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9",
+    "paper_prepare_exposed": true,
+    "exact_file_read_serviceable": true,
+    "original_edit_operation": "sector-macro-paper-authority-20261020-01",
+    "original_edit_effect": "UNQUALIFIED; readback unchanged",
+    "other_connector_accepted_report_qualifies_this_connector": false
+  },
+  "observed_main": {
+    "sha": "4290a79a222da944dbee0b438474029d67d0c4b2",
+    "commits_ahead": 66,
+    "overlap": [
+      ".github/ci/legacy-jobs.yml",
+      "scripts/build_site.py",
+      "tests/test_ci_pack.py"
+    ],
+    "working_tree_rebased_or_merged": false
+  },
+  "reference_integrity": {
+    "status": "PROVISIONAL; full actual-artifact review pending",
+    "historical_packet_admission_blocker": "SUPERSEDED by landed documentation de-admission; original proposals preserved",
+    "approval_claimed": false
+  },
+  "browser_tabs_retained": 0
+}

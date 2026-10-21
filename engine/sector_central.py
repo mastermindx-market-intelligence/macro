@@ -49,6 +49,16 @@ TIERS = [
     (0,  "Reduce",       "减配",     "down"),
 ]
 
+# SIC-D-B13: the conviction-score DEFINITION version, stamped on every Central row and in
+# meta so a score whose meaning changed on a date says so on every row, and the grader
+# never pools calls made under two different score definitions. This is a definition
+# stamp, not a correction/supersession contract (the R3A-92 census stays none_native).
+CONVICTION_SCORE_VERSION = 2
+#   1 = crowding cap dormant — the basket member read keyed `symbol`, which no member of
+#       data/baskets/membership.json carried, so _crowd_for_members never saw a member
+#       (rows logged before this change; the frac >= 0.34 cap never fired)
+#   2 = crowding cap input resolved via `ticker` (fallback `symbol`) — the cap is live
+
 # zh for the reasoning-BODY tokens (this hub is EN-first, but the bilingual UI still
 # renders the zh body — keep it from leaking raw English). Canonical zh mirrors the US
 # sector-cycles page (templates/sector_cycles.js phase shorts) + the signal stacks (quads).
@@ -172,56 +182,81 @@ def _regime_anchor(latest: dict | None = None) -> dict:
     }
 
 
+def _aggregate_heat(hm: dict) -> dict:
+    """Pure aggregate of the Sector Heatmap feed: per-(Finviz)-sector cap-weighted heat +
+    breadth, plus the SIC-D-B03 coverage counts — how many tiles the sector has, how many
+    actually priced on 1M, how many were unchanged (excluded from adv/dec), and what share
+    of the sector's weight the priced-1M tiles carry. size_basis=='weight_proxy' →
+    tile-count weighting, otherwise cap-weight (tile size); the coverage weight follows the
+    same basis as the heat value."""
+    out = {}
+    cap_weighted = (hm.get("size_basis") != "weight_proxy")
+    agg = {}
+    for tile in hm.get("tiles", []):
+        sec = tile.get("sector")
+        if not sec:
+            continue
+        a = agg.setdefault(sec, {"w": 0.0, "ws": {}, "vals": {}, "adv": {}, "dec": {},
+                                 "n_tiles": 0, "w_1m": 0.0, "n_priced_1M": 0, "n_unchanged_1M": 0})
+        sz = float(tile.get("size") or 0.0)
+        a["n_tiles"] += 1
+        a["w"] += (sz if cap_weighted else 1.0)
+        v1m = (tile.get("perf") or {}).get("1M")
+        if v1m is not None:
+            a["w_1m"] += (sz if cap_weighted else 1.0)
+            a["n_priced_1M"] += 1
+            if float(v1m) == 0.0:
+                a["n_unchanged_1M"] += 1
+        perf = tile.get("perf") or {}
+        for tf, v in perf.items():
+            if v is None:
+                continue
+            v = float(v)
+            a["ws"].setdefault(tf, 0.0)
+            a["vals"].setdefault(tf, 0.0)
+            a["adv"].setdefault(tf, 0)
+            a["dec"].setdefault(tf, 0)
+            if cap_weighted:
+                a["ws"][tf] += sz
+                a["vals"][tf] += sz * v
+            else:
+                a["ws"][tf] += 1.0
+                a["vals"][tf] += v
+            if v > 0:
+                a["adv"][tf] += 1
+            elif v < 0:
+                a["dec"][tf] += 1
+    for sec, a in agg.items():
+        row = {}
+        for tf in ("1D", "1M", "YTD"):
+            w = a["ws"].get(tf, 0.0)
+            row["heat_" + tf] = round(a["vals"][tf] / w, 2) if w else None
+        adv, dec = a["adv"].get("1M", 0), a["dec"].get("1M", 0)
+        row["adv"], row["dec"] = adv, dec
+        # SIC-D-B03: breadth is ABSENT when no priced tile moved either way — never a fake 0
+        row["breadth_pct"] = round(100.0 * adv / (adv + dec), 0) if (adv + dec) else None
+        row["n_tiles"] = a["n_tiles"]
+        row["n_priced_1M"] = a["n_priced_1M"]
+        row["n_unchanged_1M"] = a["n_unchanged_1M"]
+        row["weight_coverage_1M"] = round(a["w_1m"] / a["w"], 4) if a["w"] else None
+        row["breadth_basis"] = "adv_over_adv_plus_dec_excl_unchanged"
+        out[sec] = row
+    return out
+
+
 def _heat_table() -> dict:
     """Per-(Finviz)-sector cap-weighted heat + breadth from the Sector Heatmap feed
     (site/marketdata/sp500_heatmap.json). Display CONTEXT only — coincident color, never a lead.
     Python port of heatmap.js weightedPc/breadth (size_basis=='marketcap' → cap-weighted)."""
-    out = {}
     try:
         site = config.ROOT / config.load()["storage"]["site_dir"]
         p = site / "marketdata" / "sp500_heatmap.json"
         if not p.exists():
             return {}
-        hm = json.loads(p.read_text())
-        cap_weighted = (hm.get("size_basis") != "weight_proxy")
-        agg = {}
-        for tile in hm.get("tiles", []):
-            sec = tile.get("sector")
-            if not sec:
-                continue
-            a = agg.setdefault(sec, {"w": 0.0, "ws": {}, "vals": {}, "adv": {}, "dec": {}})
-            sz = float(tile.get("size") or 0.0)
-            perf = tile.get("perf") or {}
-            for tf, v in perf.items():
-                if v is None:
-                    continue
-                v = float(v)
-                a["ws"].setdefault(tf, 0.0)
-                a["vals"].setdefault(tf, 0.0)
-                a["adv"].setdefault(tf, 0)
-                a["dec"].setdefault(tf, 0)
-                if cap_weighted:
-                    a["ws"][tf] += sz
-                    a["vals"][tf] += sz * v
-                else:
-                    a["ws"][tf] += 1.0
-                    a["vals"][tf] += v
-                if v > 0:
-                    a["adv"][tf] += 1
-                elif v < 0:
-                    a["dec"][tf] += 1
-        for sec, a in agg.items():
-            row = {}
-            for tf in ("1D", "1M", "YTD"):
-                w = a["ws"].get(tf, 0.0)
-                row["heat_" + tf] = round(a["vals"][tf] / w, 2) if w else None
-            adv, dec = a["adv"].get("1M", 0), a["dec"].get("1M", 0)
-            row["adv"], row["dec"] = adv, dec
-            row["breadth_pct"] = round(100.0 * adv / max(adv + dec, 1), 0)
-            out[sec] = row
+        return _aggregate_heat(json.loads(p.read_text()))
     except Exception as e:  # noqa: BLE001
         log.debug("central: heatmap aggregate failed: %s", e)
-    return out
+        return {}
 
 
 def market_context() -> dict:
@@ -314,6 +349,20 @@ def _momentum_confirm(now: dict, n_peers: int) -> tuple[float, dict]:
     fading = bool(rank and rank21 and rank <= max(3, n_peers // 4) and rank21 > n_peers // 2)
     return c, {"rs_rank": rank, "rs_63d": rs63, "rs_21d": rs21, "rs_21d_rank": rank21,
                "above_200d": above, "lead": lead, "fading": fading}
+
+
+def _crowding_member_ids(members: list) -> list:
+    """SIC-D-B13: the crowding member id for one membership entry — `ticker`, falling back
+    to `symbol` when ticker is empty; entries with neither are skipped. At base this read
+    keyed `symbol` only, and every member of data/baskets/membership.json keys `ticker`,
+    so the crowding input was always empty (the cap dormant). List order and inclusion
+    are otherwise exactly the base read."""
+    out = []
+    for m in (members or []):
+        mid = m.get("ticker") or m.get("symbol")
+        if mid:
+            out.append(mid)
+    return out
 
 
 def _crowd_for_members(members: list, crowd_by_ticker: dict) -> dict | None:
@@ -419,7 +468,8 @@ def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
     trace = _trace(state_d, forward, mkt, mom_d, crowd, early, stretched, beta, heat)
     return {
         "conviction": {"score": int(score), "label_en": en, "label_zh": zh,
-                       "dir": _dir, "early": bool(early), "confluence": confluence},
+                       "dir": _dir, "early": bool(early), "confluence": confluence,
+                       "score_version": CONVICTION_SCORE_VERSION},
         "forward": forward, "state": state_d, "momentum": mom_d, "crowding": crowd,
         "heat": heat,
         "components": {"state": round(state, 2), "forward": None,
@@ -508,9 +558,13 @@ def _trace(state_d, fwd, mkt, mom_d, crowd, early, stretched, beta, heat) -> lis
                     + (" · 偏早 — 趋势尚未确认" if early else "")})
     if heat and heat.get("heat_1M") is not None:
         hstance = "bullish" if (heat.get("heat_1M") or 0) > 0 else "bearish"
+        # SIC-D-B03: absent breadth reads n/a, never a fabricated "None%"
+        _bpct = heat.get("breadth_pct")
+        b_en = f"{_bpct}%" if _bpct is not None else "n/a"
+        b_zh = f"{_bpct}%" if _bpct is not None else "不可用"
         t.append({"layer": "Heat", "tier": "display", "stance": hstance,
-                  "en": f"breadth {heat.get('breadth_pct')}% adv · {heat.get('heat_1M'):+.1f}% 1M (cap-wt)",
-                  "zh": f"宽度 {heat.get('breadth_pct')}% 上涨 · 近月 {heat.get('heat_1M'):+.1f}%（市值加权）"})
+                  "en": f"breadth {b_en} adv · {heat.get('heat_1M'):+.1f}% 1M (cap-wt)",
+                  "zh": f"宽度 {b_zh} 上涨 · 近月 {heat.get('heat_1M'):+.1f}%（市值加权）"})
     if crowd:
         t.append({"layer": "Crowding", "tier": "display", "stance": "caution",
                   "en": f"{crowd['n_crowded']}/{crowd['n_members']} members crowded-fragile → size down",
@@ -655,30 +709,24 @@ def _rotation_rank_bucket(rank: int, n_total: int) -> int:
 def _load_rotation_artifact() -> dict:
     """Load data/us_sector_rotation/latest.json.
 
-    Returns an empty dict on any error (fail-open: callers degrade gracefully).
+    Returns the raw dict, or an empty dict on any error (fail-open: callers
+    degrade gracefully).  Freshness is NOT decided here — compute() gates the
+    artifact through engine.sector_generation_guard.session_alignment() on the
+    settled daily session; the old 48 h wall-clock rule (and its
+    accept-on-unparseable-ts path) is gone.
     """
-    import datetime as _dt
     try:
         p = config.data_dir() / "us_sector_rotation" / "latest.json"
         if not p.exists():
             log.debug("sector_central: rotation artifact absent — conviction sort retained")
             return {}
         raw = json.loads(p.read_text(encoding="utf-8"))
-        # Freshness guard: if artifact is >48h old, skip re-ordering
-        ts_str = raw.get("ts") or raw.get("asof")
-        if ts_str:
-            try:
-                from datetime import timezone as _tz
-                ts_dt = _dt.datetime.fromisoformat(str(ts_str))
-                # Treat naive datetimes as UTC
-                if ts_dt.tzinfo is None:
-                    ts_dt = ts_dt.replace(tzinfo=_tz.utc)
-                age_h = (_dt.datetime.now(_tz.utc) - ts_dt).total_seconds() / 3600
-                if age_h > 48:
-                    log.warning("sector_central: rotation artifact stale (%.1fh) — conviction sort retained", age_h)
-                    return {}
-            except Exception:
-                pass  # unparseable ts — accept the artifact anyway
+        if not isinstance(raw, dict):
+            # RB02 #2: well-formed but non-object JSON (null / list / scalar) must
+            # degrade exactly like an absent artifact — never reach .get() in compute().
+            log.warning("sector_central: rotation artifact is not a JSON object (%s) — conviction sort retained",
+                        type(raw).__name__)
+            return {}
         return raw
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: rotation artifact load failed (%s) — conviction sort retained", e)
@@ -848,6 +896,61 @@ def _attach_rotation(records: list[dict], rotation_raw: dict, kind: str) -> list
     return matched + unmatched
 
 
+# SIC-D-B03: sentinel spec handed to _membership_coverage when the membership source itself
+# could not be read (missing/corrupt file) — every basket row then discloses source_unavailable.
+_MEMB_SOURCE_UNAVAILABLE = "__source_unavailable__"
+_MEMB_SOURCE = "data/baskets/membership.json"
+
+
+def _memb_d(v) -> str | None:
+    """Normalize a membership date (ISO date or datetime) to YYYY-MM-DD for lexicographic
+    comparison; None passes through (never raises on odd input)."""
+    return str(v)[:10] if v is not None else None
+
+
+def _membership_coverage(spec, *, as_of, used_members, source_version) -> dict:
+    """Dated membership disclosure for ONE basket row (SIC-D-B03 — display-only, never a
+    scoring input). Reports the roster as listed in data/baskets/membership.json vs the
+    members EFFECTIVE at the central as-of (added <= as_of, not yet removed), how many the
+    curation back-projected onto an earlier add date (curated_added > added), and how many
+    members the crowding input actually received. Member id resolves via `ticker` OR
+    `symbol` — the same resolution the crowding member read applies (SIC-D-B13; at base
+    the crowding build keyed `symbol` only, so the input was always empty). Never
+    raises; the roster counts are None unless status == 'ok'."""
+    used = list(used_members or [])
+    out = {"schema": "sector_central.basket_membership.v1", "as_of": as_of,
+           "source": _MEMB_SOURCE, "source_version": source_version,
+           "status": "ok", "n_listed": None, "n_effective": None, "n_removed_by_asof": None,
+           "n_not_yet_added": None, "n_back_projected": None,
+           "crowding_input_members": len(used),
+           "crowding_input_status": "resolved" if used else "no_members_resolved"}
+    if spec == _MEMB_SOURCE_UNAVAILABLE:
+        out["status"] = "source_unavailable"
+        return out
+    if not isinstance(spec, dict):
+        out["status"] = "basket_not_listed"
+        return out
+    as_of_d = _memb_d(as_of)
+    n_eff = n_removed = n_pending = n_backproj = 0
+    for m in (spec.get("members") or []):
+        if not isinstance(m, dict):
+            continue
+        added, removed = _memb_d(m.get("added")), _memb_d(m.get("removed"))
+        if added is not None and as_of_d is not None and added > as_of_d:
+            n_pending += 1              # listed, but not yet a member at the as-of
+        elif removed is not None and as_of_d is not None and removed <= as_of_d:
+            n_removed += 1              # already gone by the as-of
+        else:
+            n_eff += 1
+        cur = _memb_d(m.get("curated_added"))
+        if cur and added and cur > added:
+            n_backproj += 1             # the roster's add date predates the actual curation
+    out.update({"n_listed": len(spec.get("members") or []),
+                "n_effective": n_eff, "n_removed_by_asof": n_removed,
+                "n_not_yet_added": n_pending, "n_back_projected": n_backproj})
+    return out
+
+
 def compute() -> dict | None:
     """Top-level: fuse the cycle spine + market regime + trend gates + heat/crowding into
     per-sector and per-basket central intelligence records, ranked by conviction."""
@@ -877,16 +980,28 @@ def compute() -> dict | None:
         log.debug("central: narrative rotation unavailable: %s", e)
     trend = _trend_gates(closes, rotation)
 
-    # basket membership (for crowding aggregation) — data/baskets/membership.json, members[].symbol
+    # basket membership (for crowding aggregation) — data/baskets/membership.json,
+    # members[].ticker (fallback `symbol`; SIC-D-B13 — the base `symbol`-only read left the
+    # crowding input permanently empty because every member keys `ticker`)
+    # SIC-D-B03: the file is read ONCE here — the memb scoring build below is untouched, and
+    # the same read feeds the dated per-basket disclosure (_membership_coverage).
     memb = {}
+    memb_src: dict = {}
+    memb_version = None
+    memb_failed = False
     try:
         f = config.data_dir() / "baskets" / "membership.json"
         if f.exists():
-            mm = (json.loads(f.read_text(encoding="utf-8")) or {}).get("baskets", {}) or {}
-            for bid, b in mm.items():
-                memb[bid] = [m.get("symbol") for m in (b.get("members") or []) if m.get("symbol")]
+            doc = json.loads(f.read_text(encoding="utf-8")) or {}
+            memb_version = doc.get("version")
+            memb_src = doc.get("baskets") or {}
+            for bid, b in memb_src.items():
+                memb[bid] = _crowding_member_ids(b.get("members"))
+        else:
+            memb_failed = True
     except Exception:  # noqa: BLE001
         memb = {}
+        memb_failed = True
 
     n_sec = len(cyc["sectors"])
     sectors = []
@@ -901,9 +1016,14 @@ def compute() -> dict | None:
     for rec in cyc.get("baskets", []):
         carried = _carry(rec)
         bid = (rec.get("id") or "")[2:] if (rec.get("id") or "").startswith("b-") else rec.get("id")
+        used = memb.get(bid, [])
         fused = _fuse(rec, mkt, n_bsk, trend=trend.get(rec.get("id")),
-                      members=memb.get(bid, []))
-        baskets.append({**carried, **fused})
+                      members=used)
+        cov = _membership_coverage(
+            _MEMB_SOURCE_UNAVAILABLE if memb_failed else memb_src.get(bid),
+            as_of=(cyc.get("meta") or {}).get("asOf"), used_members=used,
+            source_version=memb_version)
+        baskets.append({**carried, **fused, "membership_coverage": cov})
 
     # XSR-R2: primary sort is conviction score (will be replaced by rotation rank below).
     # This establishes the fallback order used when rotation artifact is absent.
@@ -913,7 +1033,26 @@ def compute() -> dict | None:
     # XSR-R2/R9: load rotation artifact and re-sort by fast-rotation rank.
     # Fail-open: if artifact missing/stale/unparseable, conviction sort is kept and
     # rotation fields are null on all records.
+    # SIC-D-B02: freshness is a settled-session generation guard, not wall-clock
+    # age — the raw artifact is only attached when both sides carry the same
+    # daily session; every other pairing keeps conviction order and is stamped
+    # in meta.rotation_alignment with a typed reason.
+    import datetime as _dt
+    from engine import sector_generation_guard as _sgg
     rotation_raw = _load_rotation_artifact()
+    rotation_alignment = _sgg.session_alignment(
+        rotation_raw.get("session") or rotation_raw.get("asof"),
+        cyc["meta"]["asOf"],
+        today=_dt.datetime.now(_dt.timezone.utc).date(),
+    )
+    if rotation_raw.get("ts"):
+        # provenance only — ts is never the gate
+        rotation_alignment["artifact_generated_at"] = rotation_raw["ts"]
+    if rotation_alignment["status"] != "aligned":
+        if rotation_raw:
+            log.warning("sector_central: rotation artifact generation %s (%s) — conviction sort retained",
+                        rotation_alignment["status"], rotation_alignment["reason"])
+        rotation_raw = {}
     sectors = _attach_rotation(sectors, rotation_raw, kind="sector")
     baskets = _attach_rotation(baskets, rotation_raw, kind="basket")
 
@@ -928,9 +1067,18 @@ def compute() -> dict | None:
         "as_of": cyc["meta"]["asOf"],
         "meta": {"n_sectors": len(sectors), "n_baskets": len(baskets),
                  "region": "us", "experimental": True,
+                 "conviction_score_version": CONVICTION_SCORE_VERSION,
                  "method": "gated-confluence (trend gate validated_risk_control, "
                            "data/strategies/thematic_rotation_phase0.json)",
-                 "board_order": "fast-lens (XSR-R2)" if rotation_armed else "conviction"},
+                 "board_order": "fast-lens (XSR-R2)" if rotation_armed else "conviction",
+                 "rotation_alignment": rotation_alignment,
+                 "rotation_alignment_version": 1,
+                 "membership_coverage": {
+                     "n_baskets": len(baskets),
+                     "n_crowding_unresolved": sum(
+                         1 for b in baskets
+                         if (b.get("membership_coverage") or {}).get("crowding_input_status")
+                         != "resolved")}},
         "market": mkt,
         "sectors": sectors,
         "baskets": baskets,
@@ -960,5 +1108,7 @@ def _carry(rec: dict) -> dict:
         "cycle": {"phase": now.get("phase"), "phaseLabel": phase_label,
                   "pos": now.get("pos"), "proj": rec.get("proj"),
                   "rs_rank": now.get("rs_rank"), "rs_21d_rank": now.get("rs_21d_rank"),
-                  "above200d": now.get("above200d")},
+                  "above200d": now.get("above200d"),
+                  # W2.2 structure basis (tr / price / tr_fallback) — SIC-D-B03 price-basis disclosure
+                  "basis": now.get("basis")},
     }

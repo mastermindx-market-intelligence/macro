@@ -99,6 +99,14 @@
   // Declared HERE, above its first reader, because resolveBoundList()'s branch
   // 2 must exclude it by name (seat ruling R1) — see _firstNonDesignated().
   var FIF_LIST_NAME = 'Filing Forensics';
+  // SIC-I07R designated list (seat decision): ONE dedicated list named exactly
+  // 'Sector Intelligence', holding the user's saved sector investigations as
+  // watchlist_symbols rows of section 'si'. Same identity law as the FIF list —
+  // the schema has no kind/system column, so the verbatim stored NAME plus the
+  // section literal are the identity. Declared HERE, beside FIF_LIST_NAME, so
+  // _firstNonDesignated()'s branch-2 exclusion reads the same values.
+  var SI_LIST_NAME = 'Sector Intelligence';
+  var SI_SECTION = 'si';
   var CACHE_PREFIX = 'mdash.wl.';
   var CACHE_SUFFIX = '.v1';
 
@@ -230,7 +238,7 @@
   /* Write the server membership of one list into its cache, PRESERVING the local
      item metadata (`added`, `note`) and settings already there — notes are local by
      ruling (no note column exists), so a sync must never erase them. */
-  function cacheWrite(listId, symbols) {
+  function cacheWrite(listId, symbols, siStamps) {
     if (!listId) return false;
     var prev = cacheRead(listId);
     syncOutboxEnsure(prev);
@@ -242,7 +250,14 @@
       updated: nowISO(),
       items: order.map(function (t) {
         var e = byT[t];
-        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '' };
+        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '',
+                 // RI07 finding 5: an investigation item's section stamp survives
+                 // a membership refresh the same way its local note does.
+                 // RI07b finding 6: a fresh device has no local item to inherit the
+                 // stamp from — the server read passes the rows it saw in section
+                 // 'si' (`siStamps`), so the dossier chip paints without a re-save.
+                 // Ordinary rows stay byte-identical (an undefined section is dropped).
+                 section: (e && e.section) || (siStamps && siStamps[t] ? SI_SECTION : undefined) };
       }),
       order: order,
       settings: prev.settings,
@@ -627,16 +642,24 @@
     return null;
   }
 
-  /* The first list by (position, created_at) whose name is NOT the designated
-     FIF list — the branch-2 bind candidate under seat ruling R1 (X2-n r1).
+  /* A designated list: a named surface that must never capture the page's
+     default bind (ruling R1). Two exist — the FIF subscription list (X2-n r1)
+     and the SIC-I07R 'Sector Intelligence' investigation list. Both are excluded
+     from branch 2 for the same reason: binding the page to them would aim
+     ordinary stars and pushList full-membership diffs at a surface whose rows
+     are owned by another producer. */
+  function _isDesignatedName(n) { return n === FIF_LIST_NAME || n === SI_LIST_NAME; }
+
+  /* The first list by (position, created_at) whose name is NOT a designated
+     list — the branch-2 bind candidate under seat ruling R1 (X2-n r1).
      A sorted COPY, not listsCache order: the cache is sorted by listsFetch but
      _rememberList appends, so "first by (position, created_at)" is restated
      here rather than trusting the cache's incidental order. Returns null when
-     every list is the designated list (branch 2 declines, branch 3 creates). */
+     every list is designated (branch 2 declines, branch 3 creates). */
   function _firstNonDesignated() {
     var sorted = listsCache.slice().sort(_byPositionThenCreated);
     for (var i = 0; i < sorted.length; i++) {
-      if (sorted[i].name !== FIF_LIST_NAME) return sorted[i];
+      if (!_isDesignatedName(sorted[i].name)) return sorted[i];
     }
     return null;
   }
@@ -714,21 +737,25 @@
     return _listsGuard().then(function () {
       if (!listId) throw new Error('no-list');
       return sb.from('watchlist_symbols')
-        .select('symbol, position, created_at')
+        // RI07b finding 6: `section` is SELECTED (so a fresh device learns which rows
+        // are saved investigations) but never FILTERED here — this read is the
+        // list's whole membership and the only delete authority (see `cloud`).
+        .select('symbol, section, position, created_at')
         .eq('watchlist_id', listId)
         .order('position');
     }).then(function (res) {
       if (res.error) throw res.error;
       var rows = (res.data || []).filter(function (r) { return r && r.symbol; });
-      var set = {}, order = [], mx = -1;
+      var set = {}, order = [], mx = -1, siByT = {};
       rows.forEach(function (r) {
+        if (r.section === SI_SECTION) siByT[r.symbol] = true;
         if (set[r.symbol]) return;
         set[r.symbol] = true;
         order.push(r.symbol);
         if ((r.position || 0) > mx) mx = r.position || 0;
       });
       cloud[listId] = { set: set, order: order, maxPos: mx };
-      cacheWrite(listId, order.slice());
+      cacheWrite(listId, order.slice(), siByT);
       return rows;
     });
   }
@@ -847,8 +874,11 @@
            what the visitor accumulated, and nothing else.
 
            Taken BEFORE the bind below: bindList re-points the blob at the list cache,
-           and capturing after that would fold the cloud membership, not the visitor's. */
-        var localBeforeMerge = _tickersOf(
+           and capturing after that would fold the cloud membership, not the visitor's.
+           RI07 finding 2: the capture is the FULL item (note + section included), so
+           the fold can route a saved investigation to its own dedicated list instead
+           of losing it inside the plain Watchlist. */
+        var localBeforeMerge = _itemsOf(
           (window.WL && window.WL.getBlob) ? window.WL.getBlob() : null);
 
         /* Bind the page to the list we just read, WITH its name. Leaving listId
@@ -1005,7 +1035,7 @@
     return Promise.all(tasks.map(function (t) { return t.catch(function () {}); }));
   }
 
-  // ---- one-time fold: local tickers not in cloud -> insert -------------------
+  // ---- one-time fold: local items not in cloud -> insert ---------------------
   /* Retargeted in W1a: the fold lands in the list NAMED 'Watchlist' (created if
      absent), not in "whatever list sorted first". Both shipped behaviours are kept
      verbatim: ONE shot per device via the marker, and the marker is NOT written on an
@@ -1015,8 +1045,18 @@
      ORDER IS LOAD-BEARING (ruling R1). The marker check and the empty-book check come
      BEFORE the target is resolved, so an account with nothing to fold never triggers
      the create-if-absent path. That is what makes creation here on-demand rather than
-     spurious, and it is why resolveBoundList() above is free to create nothing. */
-  function _foldLocalIntoCloud(localTickers) {
+     spurious, and it is why resolveBoundList() above is free to create nothing.
+
+     RI07 finding 2: the fold now has TWO targets. An item the anonymous store marked
+     as a saved investigation (`section === 'si'`, the stamp _siNoteWrite writes)
+     folds into the DEDICATED list through the save's own path, so
+     listSectorInvestigations() still returns it after sign-in. Everything else —
+     including an ordinary item carrying a user note — keeps the W1a ordinary fold
+     verbatim: notes are a first-class field of ORDINARY items too (they are local
+     by ruling, cacheWrite/mergeInto preserve them), so a non-empty note cannot
+     identify an investigation at fold time. That arm of the RI07 packet is
+     contradicted by the owner's pinned fold behavior and is reported, not taken. */
+  function _foldLocalIntoCloud(localItems) {
     // Only fold once per device (not per session) to avoid repeated inserts on
     // every sign-in after the ongoing diff-push is the real mechanism.
     var already = false;
@@ -1024,27 +1064,74 @@
     if (already) return Promise.resolve();
     if (!user || !sb) return Promise.resolve();
 
-    // `localTickers` is the PRE-MERGE capture from pull(). It is a parameter and not a
-    // re-read of window.WL precisely so this function cannot see the merged blob.
-    var tickers = (localTickers || []).filter(function (t) { return !!t; });
-    if (tickers.length === 0) {
+    /* `localItems` is the PRE-MERGE capture from pull(). It is a parameter and not a
+       re-read of window.WL precisely so this function cannot see the merged blob.
+       A bare ticker string (the pre-RI07 test seam's shape) is tolerated as an item
+       with no note and no section — it can only ever take the ordinary fold. */
+    var items = (localItems || []).map(function (x) {
+      return (typeof x === 'string') ? { t: x } : x;
+    }).filter(function (it) { return it && !!it.t; });
+    if (items.length === 0) {
       // Do NOT mark folded: local is empty (fresh device or signed-out-built list).
       // Marking here would permanently consume the one-shot fold before any items exist.
       // Nor resolve a target: there is nothing to deliver, so nothing to create.
       return Promise.resolve();
     }
 
-    // There IS content to deliver — now resolve (and if necessary create) the target,
-    // and diff against ITS server rows, never the bound list's.
-    return resolveFoldTarget()
-      .then(function (id) {
-        foldTargetId = id;
-        if (_cloudOf(id)) return _foldInsert(tickers);
-        return symbolsFetch(id).then(function () { return _foldInsert(tickers); });
-      })
+    var siItems = [], plainTickers = [];
+    items.forEach(function (it) {
+      if (it.section === SI_SECTION) siItems.push(it);
+      else plainTickers.push(it.t);
+    });
+
+    // There IS content to deliver — now resolve (and if necessary create) the target
+    // of each half, and diff against THAT target's server rows, never the bound list's.
+    var siFold = (siItems.length === 0) ? Promise.resolve() : _siFold(siItems);
+    var plainFold = (plainTickers.length === 0) ? Promise.resolve()
+      : resolveFoldTarget()
+          .then(function (id) {
+            foldTargetId = id;
+            if (_cloudOf(id)) return _foldInsert(plainTickers);
+            return symbolsFetch(id).then(function () { return _foldInsert(plainTickers); });
+          });
+
+    return Promise.all([siFold, plainFold])
+      .then(function () { _markFolded(); })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
       });
+  }
+
+  /* The investigation half of the one-time fold (RI07 finding 2): read-first per
+     symbol through the SAME primitives a save uses — siEnsureList, _siInsert
+     (section 'si'), _siNoteWrite — so the row the fold lands is indistinguishable
+     from one the signed-in save would have written, note included. */
+  function _siFold(siItems) {
+    return siEnsureList().then(function (list) {
+      return siRowsFetch(list.id).then(function (rows) {
+        var have = {}, maxPos = -1;
+        rows.forEach(function (r) {
+          have[String(r.symbol)] = true;
+          if ((r.position || 0) > maxPos) maxPos = r.position || 0;
+        });
+        // a read full-membership high-water mark outranks the section read, so
+        // the folded row's position never collides below an ordinary row's
+        var c = _cloudOf(list.id);
+        if (c && (c.maxPos || -1) > maxPos) maxPos = c.maxPos || -1;
+        var seq = Promise.resolve();
+        siItems.forEach(function (it) {
+          seq = seq.then(function () {
+            var done = have[it.t]
+              ? Promise.resolve({ symbol: it.t, skipped: true })
+              : _siInsert(list.id, it.t, maxPos).then(function (r) { maxPos += 1; return r; });
+            return done.then(function () {
+              _siNoteWrite(cacheKey(list.id), it.t, it.note || '');
+            });
+          });
+        });
+        return seq;
+      });
+    });
   }
 
   function _foldInsert(tickers) {
@@ -1055,7 +1142,7 @@
     if (!c) return Promise.resolve();
 
     var toInsert = tickers.filter(function (t) { return !c.set[t]; });
-    if (toInsert.length === 0) { _markFolded(); return Promise.resolve(); }
+    if (toInsert.length === 0) return Promise.resolve();
 
     // Insert sequentially; use maxPos+1 to avoid collisions after delete+add cycles
     var base = _nextPos(foldTargetId);
@@ -1068,11 +1155,12 @@
       .then(function (res) {
         if (res.error) throw res.error;
         _noteInserted(foldTargetId, toInsert);
-        _markFolded();
       })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
-        // Don't mark folded on error so we retry next session
+        // Rethrow: the marker moved to _foldLocalIntoCloud, which must not mark a
+        // failed fold as done (the retry-next-session law). warnOnce keeps this quiet.
+        throw err;
       });
   }
 
@@ -1108,6 +1196,29 @@
       if (!it || !it.t || seen[it.t]) return;
       seen[it.t] = 1;
       out.push(it.t);
+    });
+    return out;
+  }
+
+  /* RI07 finding 2: the fold's capture is the FULL local item — symbol, note,
+     section, added ts — not just the ticker, because the fold now has to decide
+     per item WHICH list it belongs to. Duplicate tickers collapse to one entry:
+     earliest `added`, and a note/section from whichever occurrence carries one. */
+  function _itemsOf(blob) {
+    var seen = {}, out = [];
+    if (!blob || !Array.isArray(blob.items)) return out;
+    blob.items.forEach(function (it) {
+      if (!it || !it.t) return;
+      var e = seen[it.t];
+      if (!e) {
+        seen[it.t] = e = { t: it.t, added: it.added || '', note: it.note || '',
+                           section: it.section || '' };
+        out.push(e);
+        return;
+      }
+      if (it.added && (!e.added || it.added < e.added)) e.added = it.added;
+      if (!e.note && it.note) e.note = it.note;
+      if (!e.section && it.section) e.section = it.section;
     });
     return out;
   }
@@ -2035,6 +2146,219 @@
     });
   }
 
+  // ---- SIC-I07R saved sector investigations (seat decision) ------------------
+  /* "Save this sector investigation" rides the EXISTING watch/save owner — no
+     new store, table, column or notification transport. A saved investigation is ONE
+     watchlist_symbols row {symbol: <SPDR ETF ticker>, section: 'si'} inside the
+     user's dedicated list named exactly 'Sector Intelligence', created lazily
+     through the existing list-create path (unique per (user_id, name)). The
+     Dossier entity key IS the SPDR ETF ticker, so the subject fits the schema
+     as a symbol row. Laws:
+
+       • identified by the verbatim stored NAME + the section literal 'si' —
+         the watchlists schema carries no kind/metadata column, so the unique
+         (user_id, name) index is the list's identity and `section` is the row's.
+       • the question / snapshot / origin are DEVICE-LOCAL ONLY, in the existing
+         local item `note` (the dedicated list's per-list cache item signed in,
+         the anonymous blob's item signed out) — `watchlist_symbols` has no note
+         column and this wave adds none. Cross-device readback of `note` is a
+         recorded GAP (it needs a Terminal column): stated in the readback UI as
+         "saved on this device", never implied to sync, never worked around.
+       • readback comes from the store, never a cache of the click: cloud rows
+         (a real server read FILTERED BY section — the shared symbolsFetch()
+         does not filter by section, so this read is what keeps investigation
+         rows from being reported as, or leaked into, any other list) when
+         signed in; the anonymous local blob signed out.
+       • account isolation is the owner's existing user_id scoping; this wave
+         adds no auth code. Signed-out saves stay on the device; a signed-in
+         session is never routed to the anonymous blob (A1A authority law).
+       • symbol saves remain symbol saves: no condition watcher is created and
+         the nightly scanner is untouched — removing the row (or the list) IS
+         the unsave. */
+  function siFindList() {
+    return _listsGuard().then(function () { return _findListByName(SI_LIST_NAME); });
+  }
+  function siEnsureList() {
+    return siFindList().then(function (found) {
+      if (found) return found;
+      /* Same position-0 law as fifEnsureList (seat ruling R1): the designated
+         list must never be creatable into position 0 of a list-less account —
+         that slot is the page's default bind. Refresh through listsFetch() so
+         the decision rests on server truth, then mint the primary 'Watchlist'
+         FIRST only when no non-designated list exists. */
+      return listsFetch().then(function () {
+        var prep = _firstNonDesignated()
+          ? Promise.resolve(null)
+          : _createPrimary();
+        return prep.then(function () { return listCreate(SI_LIST_NAME); });
+      });
+    });
+  }
+  /* The dedicated list's investigation rows — a real server read filtered by
+     section, so ordinary 'Watchlist'-section rows (hand-added by a user who
+     selected this list in the switcher) are never reported as investigations. */
+  function siRowsFetch(listId) {
+    return _listsGuard().then(function () {
+      return sb.from('watchlist_symbols')
+        .select('symbol, section, position, created_at')
+        .eq('watchlist_id', listId)
+        .eq('section', SI_SECTION)
+        .order('position');
+    }).then(function (res) {
+      if (res.error) throw res.error;
+      return (res.data || []).filter(function (r) { return r && r.symbol; });
+    });
+  }
+  /* Device-local note read/write on a blob key — the ONLY place the question
+     text is persisted. Preserves every other field of the raw blob verbatim
+     (the per-list cache carries account-scoped outbox state). The item this
+     writes carries `section: 'si'` (RI07 finding 2): it is what the sign-in
+     fold routes on, and what the page's row source reads to gate the chip —
+     the one field beyond the shape the anonymous store already tolerated. */
+  function _siBlobRead(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (raw) {
+        var b = JSON.parse(raw);
+        if (b && typeof b === 'object' && Array.isArray(b.items)) return b;
+      }
+    } catch (e) {}
+    return { v: 1, updated: '', items: [], order: [], settings: {} };
+  }
+  function _siNoteWrite(key, etf, note) {
+    var b = _siBlobRead(key);
+    var it = null;
+    for (var i = 0; i < b.items.length; i++) {
+      if (b.items[i] && b.items[i].t === etf) { it = b.items[i]; break; }
+    }
+    if (it) {
+      it.note = note || '';
+      it.section = SI_SECTION;
+    } else {
+      b.items.push({ t: etf, added: nowISO(), note: note || '', section: SI_SECTION });
+      if (!Array.isArray(b.order)) b.order = [];
+      if (b.order.indexOf(etf) < 0) b.order.push(etf);
+    }
+    b.updated = nowISO();
+    try { localStorage.setItem(key, JSON.stringify(b)); } catch (e) {}
+  }
+  function _siInsert(listId, t, basePos) {
+    setPill('syncing');
+    return sb.from('watchlist_symbols')
+      .insert({ watchlist_id: listId, symbol: t, section: SI_SECTION, position: basePos + 1 })
+      .then(function (res) {
+        if (res.error) throw res.error;
+        // keep a server-read membership current when one exists, so a later
+        // push diff against this list cannot delete the row it has not seen
+        if (_cloudOf(listId)) _noteInserted(listId, [t]);
+        setPill('synced');
+        return { symbol: t };
+      });
+  }
+  /* Public: save. Idempotent on the cloud row (a second save of the same ETF
+     updates the device-local note, never a second row — read-first, because
+     watchlist_symbols carries no unique index on (watchlist_id, symbol)).
+     RI07 finding 4: read-first loses to a RACE — two saves of one symbol in
+     flight together both read "absent" and both insert. One in-flight save per
+     symbol: a second call for the same etf chains after the first, re-reads,
+     and finds the row the first one minted. */
+  var _siSaveInFlight = {};
+  function saveSectorInvestigation(payload) {
+    var etf = String((payload && payload.etf) == null ? '' : payload.etf).trim().toUpperCase();
+    var note = String((payload && payload.note) == null ? '' : payload.note);
+    if (!etf) return Promise.reject(new Error('bad-args'));
+    /* RI07 finding 3: ticker allowlist. After the existing trim+uppercase, a
+       saved symbol is 1-8 plain upper-ASCII letters and nothing else — the
+       shape the dossier route (sectors/<ETF>.html) and the cloud row can own.
+       Anything else keeps the function's existing failure shape, on BOTH auth
+       paths (a refused etf never reaches the anonymous blob either). */
+    if (!/^[A-Z]{1,8}$/.test(etf)) return Promise.reject(new Error('bad-args'));
+    if (!user) {
+      // signed out: the anonymous local blob IS the store (same key the page
+      // reads). The item's `note` is the device-local home of the question.
+      _siNoteWrite('mdash.watchlist.v1', etf, note);
+      return Promise.resolve({ etf: etf, synced: false });
+    }
+    var prev = _siSaveInFlight[etf];
+    var run = (prev ? prev.catch(function () {}) : Promise.resolve())
+      .then(function () { return _siSave(etf, note); });
+    _siSaveInFlight[etf] = run;
+    run.then(function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; },
+             function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; });
+    return run;
+  }
+  function _siSave(etf, note) {
+    return siEnsureList().then(function (list) {
+      return siRowsFetch(list.id).then(function (rows) {
+        var exists = false, maxPos = -1;
+        rows.forEach(function (r) {
+          if (String(r.symbol) === etf) exists = true;
+          if ((r.position || 0) > maxPos) maxPos = r.position || 0;
+        });
+        // a read full-membership high-water mark outranks the section read, so
+        // the new row's position never collides below an ordinary row's
+        var c = _cloudOf(list.id);
+        if (c && (c.maxPos || -1) > maxPos) maxPos = c.maxPos || -1;
+        var done = exists ? Promise.resolve({ symbol: etf, skipped: true })
+                          : _siInsert(list.id, etf, maxPos);
+        return done.then(function (r) {
+          _siNoteWrite(cacheKey(list.id), etf, note);
+          return { etf: etf, listId: list.id, synced: true, skipped: !!(r && r.skipped) };
+        });
+      });
+    });
+  }
+  /* Public: readback, from the store. [{etf, added, note, synced}] — `added` is
+     the cloud row's created_at signed in; `note` is always the device-local
+     copy (the recorded GAP); `synced` names which store answered.
+     RI07 finding 4: ONE row per symbol even when the cloud still holds
+     duplicates an old race minted — the earliest created_at (when the
+     investigation was first saved) carrying the device-local note (the newest
+     copy; the note store is per-symbol, last write wins). */
+  function listSectorInvestigations() {
+    if (!user) {
+      /* Signed out: the anonymous blob. Its items carry no kind marker — a
+         non-empty `note` is the device-local signature of a saved investigation
+         (an ordinary star add writes note: ''). */
+      var b = _siBlobRead('mdash.watchlist.v1');
+      var pickL = {}, orderL = [];
+      b.items.forEach(function (it) {
+        if (!it || !it.t || !it.note) return;
+        var k = String(it.t), prev = pickL[k];
+        if (!prev) {
+          pickL[k] = { etf: it.t, added: it.added || '', note: it.note, synced: false };
+          orderL.push(k);
+          return;
+        }
+        if (it.added && (!prev.added || it.added < prev.added)) prev.added = it.added;
+        prev.note = it.note;   // array order is write order: the newest note wins
+      });
+      return Promise.resolve(orderL.map(function (k) { return pickL[k]; }));
+    }
+    return siFindList().then(function (list) {
+      if (!list) return [];   // never create on read
+      return siRowsFetch(list.id).then(function (rows) {
+        var byT = {};
+        cacheRead(list.id).items.forEach(function (it) { byT[it.t] = it; });
+        var pick = {}, order = [];
+        rows.forEach(function (r) {
+          var k = String(r.symbol);
+          if (!pick[k]) { pick[k] = r; order.push(k); }
+          else if ((r.created_at || '') < (pick[k].created_at || '')) pick[k] = r;
+        });
+        return order.map(function (k) {
+          var r = pick[k], it = byT[k];
+          return {
+            etf: r.symbol,
+            added: r.created_at || (it && it.added) || '',
+            note: (it && it.note) || '',
+            synced: true
+          };
+        });
+      });
+    });
+  }
+
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
     status: status,
@@ -2071,6 +2395,16 @@
       watch: fifWatch,
       unwatch: fifUnwatch,
       isWatched: fifIsWatched
+    },
+    // SIC-I07R saved-sector-investigation surface. The two frozen names live at
+    // the top level; the si group mirrors fif's shape for the page's renderer.
+    saveSectorInvestigation: saveSectorInvestigation,
+    listSectorInvestigations: listSectorInvestigations,
+    si: {
+      listName: function () { return SI_LIST_NAME; },
+      section: function () { return SI_SECTION; },
+      findList: siFindList,
+      ensureList: siEnsureList
     },
     portfolio: {
       list: portfolioList,
@@ -2368,6 +2702,9 @@
       lists: window.WatchStore.lists,
       symbols: window.WatchStore.symbols,
       fif: window.WatchStore.fif,
+      saveSectorInvestigation: saveSectorInvestigation,
+      listSectorInvestigations: listSectorInvestigations,
+      siFindList: siFindList, siEnsureList: siEnsureList, siRowsFetch: siRowsFetch,
       pull: pull,
       pushList: pushList,
       resolveBoundList: resolveBoundList,

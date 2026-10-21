@@ -1,0 +1,5 @@
+{
+  "_note": "zh glosses for stat_en values the producer ships English-only in site/premiumdata/sector_central.json (withheld rows). Not production strings — specimen only; the template must localise these at the source (PRC-001 cure).",
+  "uptrend intact": "上升趋势完好",
+  "downtrend": "下降趋势"
+}

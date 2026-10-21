@@ -1,0 +1,185 @@
+# Design-authority verdict packet (RIG V1 §7) — forced comparison at frozen_sha 508539c0.
+# Written 2026-10-21 after the visual_taste dual pass (BLOCK, BLOCK); amended 2026-10-21 10:4xZ after the
+# product_regression dual pass (BLOCK, BLOCK: 5 blockers stand — PRC-001/002/003/006/008; PRC-004/005/007/009
+# downgraded to major, PRC-017/019 to minor, PRC-023 withdrawn). Both receipts now exist at 508539c0, so the
+# manifest carries the revise status this packet records. Reviewer A's user-task read: Brief, Dossier and Cycles
+# WORSE, Rotation EQUIVALENT, Stock→Prophet BETTER, the rest UNKNOWN (boards 02-05/07-11/13/15/17-21 unviewed).
+schema: mastermind.rig_verdict.v1
+reference_id: sector-intelligence-cycles-20261021
+authority:
+  identity: Fable Meta-CEO seat 1a26b044 (macro#7646) — design authority; not a critic; not the Chairman
+  role: design_authority
+packet:
+  materially_improved: Cycles (boards 01-05) is drawn end to end where production serves an empty 'Loading the cycle
+    map…' shell in all eight captures and overflows on mobile. One shell with Brief / Explore / Watches workspaces
+    and the Cycles fold (SIC-MAP) replaces two unrelated pages. Containers use even neutral borders with no colored
+    edge accents (production still has them on the lane cards and the Bottoming Watch). Degraded, stale, denied
+    and error states are designed and announced (boards 06, 07, 11; edge cases 08). ZH red-up / green-down is applied
+    to direction deltas only. The rotation map and its accessible list share one selection (14). Mobile is list-first
+    with sheets, focus return and a docked scrub readout (05). Board 00 defines dark and light as two art directions
+    over one component vocabulary.
+  materially_worsened: 'The Brief, the product''s primary surface, turned from a dashboard into a report: boards
+    12, 22 and 13 replace the Act-Now lane board (36 sectors and themes in five graded lanes with score and 20d
+    vs market) and the 7-item Bottoming Watch with a two-line headline, one unlabeled chart and three GICS sectors
+    without stance chips (VTC-001). Five different non-canonical headers are drawn and none is the product nav family,
+    which is a third header family against the navigation source-of-truth law and the proposal''s own ''canonical
+    nav family only'' line (VTC-002). The glance tier carries internal vocabulary (''21-session relative wealth'',
+    ''Source rank 1/2/3'') that production avoided (VTC-004). The regime headline with its inked keyword and the
+    weekly handoff, the page''s identity, are gone (VTC-005).'
+  disappeared: 'The Act-Now lane board as a drawn object; the Bottoming Watch as a distinct object (it survives
+    only as three plain rows mixed into the user''s own saved items on boards 09/10); themes on the first screen;
+    a doctrine stance chip per Brief row (the only call drawn, ''Entry posture: Check entry signals'', is outside
+    the six stances); the regime headline keyword and the ''This week''s handoff'' pair; the canonical global chrome
+    (wordmark, flags, Other Assets, settings, Ask Mastermind, Terminal on mobile) on every board.'
+  behavior_harder: Reading all 36 sectors and themes by lane in one viewport now needs a trip into Explore; telling
+    a system-generated bottoming candidate from a self-saved symbol needs a second read; reading the Brief chart
+    needs inference of whose relative wealth it plots (VTC-011); telling MODEL from PRIOR on the Cycles hazard cells
+    is the smallest text on the board (VTC-009); two language controls on one page (VTC-010).
+  stronger_claims: 'The boards imply full theme × device × locale coverage through the shell while board 20 itself
+    records ''36 drawn, 18 gap, 6 not-on-page'' and board 22 fills only Brief desktop dark (VTC-003); board 21 claims
+    ''22 boards in this set'' (VTC-008). ''Entry posture: Check entry signals'' is a call the doctrine does not
+    define. No stronger quantitative or predictive claim is made: hazards stay MODEL/PRIOR-tagged, sizing stays
+    inert, no lead-lag claim appears.'
+  intent_vs_convenience: 'Product intent: the three-workspace IA, the Cycles fold, the state matrix, the stance-chip
+    and MODEL/PRIOR vocabularies, the ZH direction convention, list-first mobile. Convenience: the undrawn lane
+    board (SC-001..SC-008 marked RETAIN with ''no dedicated R3 board'' because the Paper file hit its size limit
+    and writes froze); the non-canonical headers (each board author drew a header rather than binding the shared
+    family); the 18 undrawn coverage cells and the 8 deleted duplicate boards (Paper capacity); the internal metric
+    names on the glance tier (copied from engine field names rather than the copy deck).'
+  production_preferable_for: 'The cross-sector glance (36 rows in five lanes with score and 20d vs market, plus
+    the Bottoming Watch, in one viewport); the regime headline and weekly leadership handoff as the page''s identity;
+    themes on the first screen; global chrome identity and reach as judged on the drawn boards; plain Tier-1 wording
+    (''20d vs market''). ''None'' is not arguable at this frozen_sha: on SC-001..SC-007 production draws what the
+    reference only claims to carry.'
+  strongest_argument_against: 'The reference does not draw the product''s main object on its primary surface. Approving
+    it would make the canonical reference less complete than the production it replaces on the core rows SC-001..SC-007,
+    and would legitimize a third header family that the navigation law forbids. With Paper writes frozen at the
+    file-size limit, the repair has not been drawn anywhere yet, so there is nothing to approve with conditions:
+    the honest verdict is REVISE.'
+blocking_findings:
+- finding: VTC-001
+  resolution: upheld_revise
+  note: Draw the Act-Now lane board (36 sectors and themes in five graded lanes, score + 20d vs market), the Bottoming
+    Watch as a distinct object, themes on the first screen and one of the six doctrine stances per row on the Brief,
+    desktop light + dark and mobile ZH; replace 'Check entry signals'.
+- finding: VTC-002
+  resolution: upheld_revise
+  note: Re-export every board with the canonical _site_nav chrome, or declare the drawn board chrome non-normative
+    in proposal.yml and bind templates/_site_nav.html.j2 as the normative header; no third family.
+- finding: VTC-003
+  resolution: upheld_revise
+  note: Draw the missing theme × device × locale cells (Explore desktop dark, Brief mobile light/EN, Watches dark,
+    Dossier ZH, …) or record each undrawn cell as PAPER_CAPACITY_LIMITED with a rendered-implementation proof obligation
+    at P10-P18; correct board 20/21 (VTC-008) in the same pass.
+- finding: PRC-001
+  resolution: upheld_revise
+  note: 'Same cure as VTC-001: draw the Act-Now lane board (five lanes, 36 rows, score + 20d vs market, true counts,
+    the ''N more here — sign in'' fold) and the Bottoming Watch as a distinct object on the Brief; correct state_matrix.csv:14
+    (brief/locked is drawn, not merely PRODUCED); add the lane/stance label strings to copy_deck.json with EN/ZH
+    parity.'
+- finding: PRC-002
+  resolution: upheld_revise
+  note: Draw the track-record entry on the Brief with the deck's grader_caption ('Conditional hit rate, not a win
+    rate') and the honest denominator rule (Neutral rows counted; directional coverage, conditional accuracy, abstention
+    and cohort maturity separated — U04/B13); no number appears on the Brief that the producer does not emit at
+    the frozen sha.
+- finding: PRC-003
+  resolution: upheld_revise
+  note: 'Board 01: remove the ''Cycle crosses zero'' MODEL row (no producer: engine/hazard_score.py scores P(turn
+    within h months) on the open leg only); draw the PARITY_FAILS disclosure and the display-only footnote the proposal
+    claims (auth.hazard :739-743); bind or drop ''4 of 6 cells fitted on Energy''.'
+- finding: PRC-006
+  resolution: upheld_revise
+  note: Every phase age drawn with its status qualifier from engine/cycle_phase_age.py (measured / lower_bound /
+    insufficient_history …) or shown as unknown per U03; update cycles_ia.md:155 and :228-230; no definite '14 months'
+    / 'Week 31' without the qualifier.
+- finding: PRC-008
+  resolution: upheld_revise
+  note: 'Same cure as VTC-002: canonical _site_nav chrome on every export, or proposal.yml declares the drawn board
+    chrome non-normative and binds templates/_site_nav.html.j2 as normative; information_economics.preserved (:770)
+    corrected.'
+- finding: PRC-004
+  resolution: upheld_revise
+  note: 'Downgraded to major by the critic''s second pass (27.4% = 31/113 is the producer''s Sector Central grader
+    hit rate, SC-035); still drives REVISE as a mislabel: board 01 presents conviction-call grader rows as ''called
+    turns … inside their window'' on Cycles and ''12 calls logged'' conflicts with 113. Cured under SIC-V1-C14.'
+- finding: PRC-005
+  resolution: upheld_revise
+  note: Downgraded to major by the critic's second pass ('Protect gains' is the producer's resolved stance, copy_deck.json:156
+    ← stage_analysis.html.j2:1499); 'Tighten risk rather than add.' is an unbound instruction sentence and is removed
+    or bound to a producer string. Cured under SIC-V1-C14.
+- finding: PRC-007
+  resolution: upheld_revise
+  note: Downgraded to major by the critic's second pass (board 01's PRIOR-led window may derive from the up/3m and
+    up/6m PRIOR cells); board 16's 'Slow cycle, 9 to 14 months MODEL' badge on descriptive periodicity is removed.
+    Cured under SIC-V1-C12.
+- finding: PRC-009
+  resolution: upheld_revise
+  note: Downgraded to major by the critic's second pass (no board makes a sizing or lead-lag claim once the PRC-005
+    sentence is gone); the missing disclosure of inert sizing (1.0) and the lead-lag STOP becomes a methods row
+    on board 06/07. Cured under SIC-V1-C14.
+overrides: []
+verdict: REVISE
+conditions:
+- id: SIC-V1-C01
+  text: VTC-001 cure drawn (lane board, Bottoming Watch, themes, stance chips; both themes; mobile ZH) and re-frozen
+    under a new frozen_sha; both critics re-run against it.
+- id: SIC-V1-C02
+  text: 'VTC-002 cure: canonical _site_nav chrome on the exports, or a non-normative-chrome declaration in proposal.yml
+    with _site_nav bound as normative; visual_taste critic confirms no third family on the re-frozen boards.'
+- id: SIC-V1-C03
+  text: 'VTC-003 cure: a per-board-family coverage matrix in proposal.yml; every undrawn cell either drawn or recorded
+    PAPER_CAPACITY_LIMITED with the P10-P18 rendered proof it must show; boards 20/21 corrected.'
+- id: SIC-V1-C04
+  text: 'VTC-004 + VTC-005 (major): glance-tier copy restored to the copy deck''s Tier-1 wording; regime headline
+    keyword and weekly handoff pair restored on the Brief; dispositions recorded in proposal.yml revision_mandate.'
+- id: SIC-V1-C05
+  text: VTC-006..VTC-012 (minor) each fixed or dispositioned by id in proposal.yml revision_mandate before re-freeze.
+- id: SIC-V1-C06
+  text: The product_regression critic receipt (Reviewer A) exists at 508539c0 (pass 1 10:13Z BLOCK, pass 2 10:21Z
+    BLOCK, reviews/product_regression.yml); it is re-run against the re-frozen sha of the repair wave before any
+    approved status, with the same rationale quarantine on its first pass.
+- id: SIC-V1-C07
+  text: Inline chart controls for C05/C06 (Cycles timing/hazard lenses) drawn or dispositioned RELOCATE with the
+    Explore home named.
+- id: SIC-V1-C08
+  text: SC-066 and SC-092 (BLOCKED_DATA) stay disclosed-absence states in the UI; no placeholder values.
+- id: SIC-V1-C09
+  text: 'Copy deck: no em-dashes or arrow glyphs in user-facing strings (copy_deck re-lint).'
+- id: SIC-V1-C10
+  text: 'P10-P18 journeys proven on the rendered product before #9917 leaves draft; no undraft on a screenshot or
+    test alone.'
+- id: SIC-V1-C11
+  text: PRC-001 + PRC-002 cure drawn on the Brief (Act-Now lanes, Bottoming Watch, track-record entry with the honest
+    denominator; desktop light/dark, mobile ZH + mobile light/EN locked state) and re-frozen; both critics re-run.
+- id: SIC-V1-C12
+  text: 'PRC-003 + PRC-007 (Cycles hazard/rhythm honesty): invented ''Cycle crosses zero'' target removed, PARITY_FAILS
+    disclosure + display-only footnote drawn on board 01, rhythm periodicity marked descriptive (no MODEL badge)
+    on board 16.'
+- id: SIC-V1-C13
+  text: 'PRC-006: phase-age qualifier (measured / lower_bound / insufficient_history) on every age shown, or unknown
+    shown as unknown; cycles_ia.md rows 155 and 228-230 corrected.'
+- id: SIC-V1-C14
+  text: 'PRC-004 / PRC-005 / PRC-009 (major): grader rows on board 01 labelled as the conviction-call grader with
+    ''calls logged'' reconciled to the producer denominator; ''Tighten risk rather than add.'' removed or bound
+    to a producer string; inert sizing (1.0) and the lead-lag STOP disclosed as a methods row on board 06/07.'
+- id: SIC-V1-C15
+  text: 'PRC-010..PRC-016: Time Machine, Forming Narratives, desk-watch, Moving/Money surfaces, Confluence/Explore
+    table, hero handoff pair + WHAT CHANGED chips, Reco tags + conviction board — each drawn with a board or dispositioned
+    by id (RELOCATE/DEFER with the production home named) in proposal.yml revision_mandate; ''carried unchanged''
+    boilerplate is not a home.'
+- id: SIC-V1-C16
+  text: 'PRC-017..PRC-022: legacy-anchor → new-tab mapping table (PRC-017); copy deck ⇄ boards parity incl. v2 phase
+    strings and the h1 budget (PRC-018); ''Engine read'' relabelled as narrative (PRC-019); boards_manifest capabilities_covered
+    corrected for boards 12/16 (PRC-020); state_matrix R3A mapping (PRC-021); one PRIOR cell value across boards
+    (PRC-022).'
+preserved_strengths:
+- Cycles boards 01-05 drawn end to end, far ahead of production's empty loading shell.
+- Even neutral borders everywhere; the colored edge accents production still carries are gone; focus outlines complete.
+- Bottoming Watch rows read as one plain sentence each (09, 10).
+- 'Honest degradation design: state cards 06/07/11 and edge cases 08 say what still works and how each state is
+  announced.'
+- ZH red-up / green-down applied to direction deltas only; stance and status ink do not flip.
+- Rotation map and accessible list share one selection; dot positions match list values (14).
+- List-first mobile with half/full sheets, focus return and the docked landscape scrub readout (05).
+- Board 00 defines dark and light as two separate art directions over one component vocabulary.

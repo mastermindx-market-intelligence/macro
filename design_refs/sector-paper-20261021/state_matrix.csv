@@ -1,0 +1,103 @@
+board,state,applies,trigger_code,tier1_render,still_works,user_action,live_region,matrix_rows,status
+brief,fresh,yes,templates/_sector_central_coverage.js.j2:53,"Receipt reads 'N of 11 sectors have qualified measurements' with evidence date; hero, chart, calls drawn.",hero; leadership chart; native calls; bottoming watch,none,none,R3A-24;R3A-08,PRODUCED
+brief,stale,yes,templates/_sector_central_coverage.js.j2:87,"Receipt kept; 'Older than source page <date>' appended; numbers and hero stay.",hero; native calls; bottoming watch,none,polite,R3A-27,PRODUCED
+brief,incompatible_generation,yes,templates/_sector_central_coverage.js.j2:52,"Receipt withheld: 'measurement date later than source page — review dates'; no coverage asserted; hero stays.",hero; native calls; watch,none,polite,R3A-16;R3A-31;U05;C24,PRODUCED
+brief,partial,yes,templates/_sector_central_coverage.js.j2:85,"Receipt 'N of 11 measured'; unmeasured sectors stay named in full evidence; leader kept.",hero; native calls; measured leader,none,polite,R3A-28,PRODUCED
+brief,corrected,yes,NOT YET PRODUCED,"Original kept; 'revised <date>: summary' note beside value; restatement dated; no silent rewrite.",all modules,none,polite,R3A-92,NOT YET PRODUCED
+brief,abstained,no,,"Cannot occur — six fixed call lanes; engine Neutral conviction is not a Brief lane.",n/a,none,none,none,NOT YET PRODUCED
+brief,error,yes,templates/sector_central.html.j2:3023,"Fixed copy 'Data failed to load — please refresh.' replaces hydrated rows; baked preview and hero stay.",server-baked preview; hero; watch,retry,assertive,R3A-31;R3A-30,PRODUCED
+brief,empty,yes,templates/sector_central.html.j2:2092,"Lane area: 'Refreshing the action board — check back after tonight's close.'; hero and watch stay.",hero; bottoming watch; where-to-look,none,polite,R3A-29;R3A-25,PRODUCED
+brief,no_access,yes,templates/_us_act_now_board.html.j2:64,"Free shell bakes preview rows only; full-board counts stay; 'N more here' sign-in line.",hero; watch; coverage receipt,sign in,none,R3A-14;R3A-03;R3A-12,PRODUCED
+brief,loading,yes,templates/_sector_central_brief.html.j2:15,"Placeholder line 'comparison appears when matching closes are available'; coverage receipt shows 'not loaded' note.",static hero; watch; calls preview,none,polite,R3A-90,PRODUCED
+brief,offline,yes,templates/sector_central.html.j2:4156,"Offline equals locked shell: baked preview and disclosure lines stay; nothing flashes or errors.",baked preview; hero; watch,retry,polite,R3A-32,PRODUCED
+brief,unauthorized,yes,templates/sector_central.html.j2:2030,"401/403 hydration no-op: server-baked preview plus sign-in disclosure line stay; no protected flash.",baked preview; hero; watch,sign in,none,R3A-32;R3A-18,PRODUCED
+brief,locked,yes,templates/_us_act_now_board.html.j2:31,"Violet lock treatment only; preview rows plus 'N more here — sign in' per lane.",preview rows; hero; watch,upgrade,none,R3A-14;R3A-15;R3A-16,PRODUCED
+brief,invalid_payload,yes,templates/_sector_central_coverage.js.j2:31,"Receipt: 'source coverage could not be checked — open the full evidence'; schema typed invalid.",hero; calls; watch,open source,polite,R3A-16;R3A-31;U05,PRODUCED
+brief,zero,yes,templates/_sector_central_coverage.js.j2:78,"Receipt may read '0 of 11 sectors have qualified measurements'; zero shown, never blank or neutral.",hero; calls; watch,none,polite,R3A-28,PRODUCED
+brief,empty_search,no,,"Cannot occur — Brief has no search input; discovery lives on Explore.",n/a,none,none,none,NOT YET PRODUCED
+brief,uncertain_command,no,,"Cannot occur — Brief issues links and anchors only, no mutating commands.",n/a,none,none,none,NOT YET PRODUCED
+explore,fresh,yes,templates/subsectors.js:508,"'as of <date>' stamp per universe; honest coverage line; boards and maps drawn.",all six views,none,none,R3A-77,PRODUCED
+explore,stale,yes,templates/sector_central.html.j2:1655,"Tape token demoted 'LAST SESSION · SETTLED'; never labelled live; numbers stay.",maps; boards; breadth,none,polite,R3A-27,PRODUCED
+explore,incompatible_generation,yes,templates/sector_central.html.j2:3816,"'History is from a different day — history X, current read Y. Not drawn, never mixed.'",current read; maps; money,none,polite,R3A-44;R3A-47,PRODUCED
+explore,partial,yes,templates/sector_central.html.j2:3621,"'Partial — N of 11 measured' chip; unmeasured listed separately; map plots measured only.",measured map; money; confluence,none,polite,R3A-65;R3A-67,PRODUCED
+explore,corrected,yes,templates/sector_central.html.j2:1973,"Interval note 'Comparison reset after a source change'; corrected baseline never compared.",boards; breadth; flows,none,polite,R3A-92;U05,PRODUCED
+explore,abstained,yes,templates/sector_central.html.j2:3895,"'Forecast: none — no forecasting model has been approved'; research estimate separately labelled display-only.",maps; events; confluence,none,polite,U14,PRODUCED
+explore,error,yes,templates/sector_central.html.j2:3746,"'History unavailable right now' plus 'the current read above is unaffected'; retry stays available.",current read; maps; boards,retry,assertive,R3A-30;R3A-31,PRODUCED
+explore,empty,yes,templates/subsectors.js:506,"'No data yet — run the nightly build.' replaces board; navigation shell stays usable.",navigation; other universes,none,polite,R3A-29,PRODUCED
+explore,no_access,no,,"Cannot occur — Explore payloads ungated; only interval observations gate, via 401/403 unauthorized row.",n/a,none,none,none,NOT YET PRODUCED
+explore,loading,yes,templates/sector_central.html.j2:3741,"Line and row skeletons (true geometry) with 'Loading history…'; current read paints first.",current read; hero; lists,none,polite,R3A-90,PRODUCED
+explore,offline,yes,templates/sector_central.html.j2:2032,"Network loss types 'could not be loaded', distinct from denied and invalid; retry offered.",static boards; maps,retry,polite,R3A-31,PRODUCED
+explore,unauthorized,yes,templates/sector_central.html.j2:2030,"'denied' renders 'Sign in with access to view these observations.'; sibling modules keep working.",maps; rotation; confluence,sign in,polite,R3A-32;R3A-88,PRODUCED
+explore,locked,no,,"Cannot occur — premium wall gates only the Overview Act-Now board, not Explore payloads.",n/a,none,none,none,NOT YET PRODUCED
+explore,invalid_payload,yes,templates/sector_central.html.j2:2040,"'Interval observations could not be verified.'; schema mismatch typed invalid, distinct from unavailable.",boards; maps; breadth,none,polite,R3A-16;R3A-31;U05,PRODUCED
+explore,zero,yes,templates/subsectors.js:309,"'Nothing extended or in a downtrend right now'; explicit measured zero, not missing.",boards; maps; leadership,none,polite,R3A-67;R3A-28,PRODUCED
+explore,empty_search,yes,templates/subsectors.js:496,"Counter reads '0 / N'; no no-results copy yet; clear-search control is the remedy.",table; sort; tabs,clear search,polite,R3A-79,PRODUCED
+explore,uncertain_command,no,,"Cannot occur — filters, sorts and refresh are local; failures are typed terminal states.",n/a,none,none,none,NOT YET PRODUCED
+dossier,fresh,yes,templates/subsector_detail.html.j2:163,"'as of <date>' pill; coverage 'priced / total members'; freshness, method, reliability grid complete.",signals; members; record,none,none,R3A-74;R3A-75,PRODUCED
+dossier,stale,yes,NOT YET PRODUCED,"Keep members; amber 'Stale · as of <date>' chip beside freshness cell; numbers stay.",members; signals; methods,none,polite,U07,NOT YET PRODUCED
+dossier,incompatible_generation,yes,NOT YET PRODUCED,"Keep signals; 'members dated <X>, cycle read <Y>' note; generations never blended.",signals; members; methods,none,polite,U07,NOT YET PRODUCED
+dossier,partial,yes,templates/subsector_detail.html.j2:156,"Coverage shows priced / total members; thin pill under six priced; unpriced not invented.",signals; structure; evidence,none,polite,R3A-75;R3A-67,PRODUCED
+dossier,corrected,yes,NOT YET PRODUCED,"Record keeps original; 'revised <date>: summary' provenance; supersession only via record owner.",record; methods,none,polite,R3A-92;R3A-35,NOT YET PRODUCED
+dossier,abstained,yes,NOT YET PRODUCED,"Record shows Neutral/abstention share separately from conditional directional accuracy; no blended rate.",record; methods; history,none,polite,C23;U04;R3A-35,NOT YET PRODUCED
+dossier,error,yes,templates/subsector_detail.html.j2:214,"Chart mount failure logs console-only today; identity, members, evidence stay; user error UI missing.",identity; members; evidence,retry,assertive,R3A-74,PRODUCED
+dossier,empty,yes,templates/subsector_detail.html.j2:196,"'Member detail is unavailable for this group.'; signals, structure and evidence sections stay.",signals; structure; evidence,none,polite,R3A-74,PRODUCED
+dossier,no_access,no,,"Cannot occur — Dossier pages render ungated; auth boundaries sit at stock destinations.",n/a,none,none,none,NOT YET PRODUCED
+dossier,loading,yes,templates/subsector_detail.html.j2:59,"Chart host reserves 420px true geometry before mount; identity renders after inline JSON boot.",identity; nav; back,none,polite,R3A-90;U07,PRODUCED
+dossier,offline,yes,NOT YET PRODUCED,"Keep static shell; 'offline' note with retry; authored evidence never silently cached as current.",static identity; members,retry,polite,U07;U11,NOT YET PRODUCED
+dossier,unauthorized,no,,"Cannot occur — no sign-in boundary on Dossier itself; destinations enforce their own.",n/a,none,none,none,NOT YET PRODUCED
+dossier,locked,no,,"Cannot occur — no premium preview surface on Dossier; depth gating sits downstream.",n/a,none,none,none,NOT YET PRODUCED
+dossier,invalid_payload,yes,NOT YET PRODUCED,"Typed invalid note; identity, methods and evidence stay; no partial guess from malformed detail.",identity; methods,open source,polite,U07,NOT YET PRODUCED
+dossier,zero,yes,templates/subsector_detail.html.j2:124,"Numbers keep zero as '+0.0'; null renders '—'; zero never blanked or relabelled missing.",members; signals; stats,none,polite,R3A-28,PRODUCED
+dossier,empty_search,no,,"Cannot occur — no search input; member table is a full list.",n/a,none,none,none,NOT YET PRODUCED
+dossier,uncertain_command,no,,"Cannot occur — Dossier is navigation-only; no commands to re-issue or reconcile.",n/a,none,none,none,NOT YET PRODUCED
+research,fresh,yes,templates/_sector_prophet_context.js.j2:26,"Subject chip '<name> · <ETF>' with dated context note and return href; Screener action armed.",composer; return link; screener,none,none,U09;U08,PRODUCED
+research,stale,yes,NOT YET PRODUCED,"Question kept; 'snapshot as of <date>' chip; stale-origin snapshots flagged, never reclocked.",question; entity; return,none,polite,U08,NOT YET PRODUCED
+research,incompatible_generation,yes,NOT YET PRODUCED,"Composer notes 'source generation changed'; evidence link dated; receiver never blends generations.",question; return link,none,polite,U08,NOT YET PRODUCED
+research,partial,yes,NOT YET PRODUCED,"Composer states 'no Sector evidence attached' while only ETF and question were passed.",question; entity; return,none,polite,U08,NOT YET PRODUCED
+research,corrected,yes,NOT YET PRODUCED,"Snapshot revisions dated and attributed; original question text preserved; no silent restatement.",question; record,none,polite,U08;U05,NOT YET PRODUCED
+research,abstained,no,,"Cannot occur — Research carries no model claims; nothing to abstain from.",n/a,none,none,none,NOT YET PRODUCED
+research,error,yes,templates/_sector_prophet_context.js.j2:76,"'The Screener is unavailable on this page. You can still return to the selected sector's evidence.'",return link; prophet,retry,polite,U09,PRODUCED
+research,empty,yes,templates/_sector_prophet_context.js.j2:23,"No si_sector parameter: continuation strip hidden; Prophet product remains fully usable.",prophet; screener,none,none,U09,PRODUCED
+research,no_access,yes,NOT YET PRODUCED,"'Evidence access missing or expired' note; question stays editable; receiver enforces current access.",question; entity,sign in,polite,U08,NOT YET PRODUCED
+research,loading,yes,templates/_sector_prophet_context.js.j2:49,"Screener button disabled until table and source mount; context strip paints immediately.",context strip; return,none,polite,U09,PRODUCED
+research,offline,yes,NOT YET PRODUCED,"Draft preserved locally per editor contract; 'offline — not sent' state; no auto-send.",draft; entity,retry,polite,U08;U11,NOT YET PRODUCED
+research,unauthorized,yes,NOT YET PRODUCED,"Account switch fences context; sign-in prompt at save; prior account never flashes.",local draft; question,sign in,none,U08,NOT YET PRODUCED
+research,locked,no,,"Cannot occur — no premium-locked surface on the continuation strip today.",n/a,none,none,none,NOT YET PRODUCED
+research,invalid_payload,yes,templates/_sector_prophet_context.js.j2:25,"'Selected sector unavailable — return to sector evidence; Prophet Stock Signals remains available.'",prophet; return link,open source,polite,U09,PRODUCED
+research,zero,yes,NOT YET PRODUCED,"Screener zero-match explains the actually loaded universe; no full-market denominator invented.",question; entity,none,polite,U09,NOT YET PRODUCED
+research,empty_search,no,,"Cannot occur — strip has no search box; Screener owns filtering.",n/a,none,none,none,NOT YET PRODUCED
+research,uncertain_command,yes,NOT YET PRODUCED,"Show command's last known state; disable re-issue until reconciled; never optimistic success.",question; entity; return,none,assertive,U08,NOT YET PRODUCED
+watches,fresh,yes,templates/watchlist.js:851,"'Up to date — loaded from your Mastermind account. Nothing has changed since.'",list; positions; risk,none,polite,U10,PRODUCED
+watches,stale,no,,"Cannot occur — saved symbols re-resolve nightly; watch states carry their own clocks.",n/a,none,none,none,NOT YET PRODUCED
+watches,incompatible_generation,no,,"Cannot occur — watch owner stores symbols and notes, not generation-joined analytics.",n/a,none,none,none,NOT YET PRODUCED
+watches,partial,yes,templates/watchlist.js:1036,"One failed ticker degrades exactly its drawer; rest of list keeps working.",list; other drawers,none,polite,U10;R3A-30,PRODUCED
+watches,corrected,yes,NOT YET PRODUCED,"Corrected records dated via record owner; watch rows never silently rewritten.",list; record,none,polite,U05;U10,NOT YET PRODUCED
+watches,abstained,no,,"Cannot occur — watches make no calls; observational states only.",n/a,none,none,none,NOT YET PRODUCED
+watches,error,yes,templates/watchlist.js:866,"'Change not saved' with reason and 'will not sync on its own. Please retry.'",list; read-only views,retry,assertive,U10,PRODUCED
+watches,empty,yes,templates/watchlist.js:66,"'Your watchlist is empty. Search above to add a holding'; starter chips checked against live index.",search; starter chips,none,polite,U10,PRODUCED
+watches,no_access,yes,templates/watchlist.js:872,"'Portfolio unavailable — read-only'; editing paused so nothing can be silently lost.",watchlist; local edits,none,none,U10,PRODUCED
+watches,loading,yes,templates/watchlist.js:857,"'Saving…' chip; page stays usable; write-through in flight, nothing blocked.",list; views,none,polite,U10,PRODUCED
+watches,offline,yes,templates/watchlist.js:863,"'Offline — changes kept locally'; watchlist-only wording; written through on return.",local list; edits,none,polite,U10,PRODUCED
+watches,unauthorized,yes,templates/watchlist.js:860,"Signed-out list is browser-local: 'Local to this browser — save it to a free account'.",local list; search,sign in,none,U10,PRODUCED
+watches,locked,no,,"Cannot occur — watchlist is a free-account surface; no premium-locked preview rows.",n/a,none,none,none,NOT YET PRODUCED
+watches,invalid_payload,yes,templates/watchlist.js:183,"Unparseable stored blob falls back to defaults; list restarts empty rather than crashing.",search; add flow,none,polite,U10,PRODUCED
+watches,zero,no,,"Cannot occur — zero holdings and empty list are one state here.",n/a,none,none,none,NOT YET PRODUCED
+watches,empty_search,yes,templates/watchlist.js:435,"Book-empty copy names which book is empty and what to do; other books stay.",other books; list,none,polite,U10,PRODUCED
+watches,uncertain_command,yes,templates/watchlist.js:189,"Acknowledgement only after the write lands; no pre-write optimistic 'Saved'; near-misses never emit.",list; read state,none,assertive,U10,PRODUCED
+cycles,fresh,yes,templates/sector_cycles.js:1529,"Panel header 'Sector rotation · <asOf>'; cards, hazards, legs and chart drawn.",chart; cards; legs; hazards,none,none,C24,PRODUCED
+cycles,stale,yes,templates/sector_cycles.js:1306,"Analyst note kept; amber or red 'curated <N>d ago' badge; engine read stays.",chart; cards; legs,none,polite,C12,PRODUCED
+cycles,incompatible_generation,yes,NOT YET PRODUCED,"Keep cycles; 'context from <date> — different generation' note; artifacts never joined across generations.",chart; cards; oscillator,none,polite,C20;U02,NOT YET PRODUCED
+cycles,partial,yes,templates/sector_cycles.js:1458,"Leg shows 'What drove this move — research pending'; measured leg numbers stay.",chart; cards; position,none,polite,C11;C13,PRODUCED
+cycles,corrected,yes,templates/sector_cycles.js:1332,"'revised <date>: <summary>' line under the analyst note; original narrative kept dated.",chart; legs; engine read,none,polite,C12;U05,PRODUCED
+cycles,abstained,yes,templates/sector_cycles.js:1077,"Hazard PRIOR badge, muted: KM base rate replaces model claim; badge never omitted.",chart; cards; legs,none,polite,C19;U14,PRODUCED
+cycles,error,yes,templates/sector_cycles.js:2052,"Failed rotation or fragmentation fetch silently drops chips; core chart unaffected; no error UI.",chart; cards; legs; panel,retry,assertive,C20;C28;U02,PRODUCED
+cycles,empty,yes,templates/sector_cycles.js:1435,"'No major turns in window.'; position, phase and stance read stay.",chart; cards; position,none,polite,C10,PRODUCED
+cycles,no_access,no,,"Cannot occur — Cycles reads public marketdata files; no tier gate exists.",n/a,none,none,none,NOT YET PRODUCED
+cycles,loading,yes,templates/sector_cycles.js:2001,"Core paints immediately; heavy series hydrate after first paint; guarded empties never throw.",cards; chart; panel,none,polite,C28;C24,PRODUCED
+cycles,offline,yes,NOT YET PRODUCED,"Keep workspace; 'offline — series unavailable' note with retry; baked as-of date never overwritten.",chart; cards,retry,polite,C28;U11,NOT YET PRODUCED
+cycles,unauthorized,no,,"Cannot occur — no authenticated fetch on Cycles; payloads are public.",n/a,none,none,none,NOT YET PRODUCED
+cycles,locked,no,,"Cannot occur — no premium surface on the Cycles workspace.",n/a,none,none,none,NOT YET PRODUCED
+cycles,invalid_payload,yes,templates/sector_cycles.js:19,"Core payload absent or malformed: board never mounts; static shell remains; no typed UI.",page shell; nav,none,polite,C28;U02,PRODUCED
+cycles,zero,yes,templates/sector_cycles.js:1546,"'No sectors are at prime entry right now.' row kept; bucket zero explicit.",map rows; chart; cards,none,polite,C01;C07,PRODUCED
+cycles,empty_search,yes,templates/sector_cycles.js:1803,"Search hides non-matching rows and groups; no no-results copy; All and Clear offered.",picker; chips; All/Clear,clear search,polite,C08,PRODUCED
+cycles,uncertain_command,no,,"Cannot occur — view state is local; no persisted commands to reconcile.",n/a,none,none,none,NOT YET PRODUCED

@@ -5166,9 +5166,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_798),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_600),
+    ("templates/index.html", 136, 5_880),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_843),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_619),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5176,6 +5176,109 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC post-merge integrated measurement (seat, PR #9917 merge
+    commit b081a82d0e72 = main 2d50943eb154 merged INTO the integration
+    branch at 418093a864b5): main's B04-A0 funding (PR #9935, below) and the
+    SIC I-wave funding (the next paragraph) each measured against a base the
+    other did not contain, so the merge resolved the three tuples
+    provisionally to main's values (5,825 / 5,798 / 5,600) pending one
+    integrated probe. That probe, on the merged tree, measures
+    5,880 / 5,843 / 5,619 — exactly the SIC closure values (5,877 / 5,840 /
+    5,616) plus the three units B04-A0 adds to each (its own pytest step
+    lands in a job all three probes select). Fund exactly that measured
+    integrated value; neither side's claim is re-funded on its own. No
+    job-count, selector, pack or entrant change; the ten-pack bound is
+    untouched.
+
+    2026-10-21 SIC integration funding (seat, PR #9917 head 67ccd15e51d5 +
+    the RI07b MINOR 6 fix fdc3e02b29e3): the four I-wave lanes landed on the
+    B13-funded base cbf9e095ebd5 (ceilings 5,867 / 5,830 / 5,606 measured AT
+    closure there) as I09A2 (tests/test_sector_central_history.py appended to
+    the pinned sector_central line), I05R2 (tests/test_research_receiver_entry.py
+    appended to that line before the trailing -q, both byte-pins updated),
+    I06R (own tier-gate step) and I07R2 (own tier-gate step). Each lane
+    paragraph below claimed its own +2/+3 against the shared f4a1747e5e base,
+    but the ceilings are funded only by the integrated measurement: the local
+    probe on 67ccd15e51d5 measures all three probes at 5,877 / 5,840 / 5,616,
+    exactly ten estimator units over the B13 ceilings (two line appends at two
+    each + two own steps at three each = ten, uniform across the three probes
+    because every registration lands in the tier-gate job all three select).
+    Fund exactly that measured ten. No job-count, selector, pack or entrant
+    change; the ten-pack bound is untouched.
+
+    2026-10-21 SIC-I07R registers
+    tests/test_watchstore_sector_investigations_js.py as its own step in the
+    tier-gate job — its own step, not an append to the sector_central line,
+    because test_sector_receiver_contracts.py pins that line as an exact
+    substring. The local probe on f4a1747e5e measures all three probes AT
+    their ceilings (5,861 / 5,828 / 5,604); the new step adds exactly three
+    estimator units to each (5,864 / 5,831 / 5,607) — the packet anticipated
+    the two code probes only, but the tier-gate job is selected by all three,
+    so the plan_book probe moves by the same measured three. No job-count or
+    pack change, no new entrant. Fund only that measured excess. Job counts,
+    selectors and the ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-I06R registers tests/test_sector_prophet_context_dated.py
+    in tier-gate as its own step beside the receiver contracts: that run line
+    is byte-pinned by test_sector_receiver_contracts::
+    test_legacy_jobs_gate_line_lists_contract_suite, so the suite cannot join
+    the line itself. The local probe on the packet base f4a1747e5e09
+    (identical tree, registration reverted) measures all three probes at the
+    SIC-RCV ceilings (5,861 / 5,828 / 5,604). The own-step registration adds
+    exactly three estimator units to each (5,864 / 5,831 / 5,607; appending to
+    the pinned line instead would have added two, but that shape is barred),
+    no job-count or pack change, no new entrant — tier-gate is already
+    selected by all three probes. Fund only that measured excess on all three
+    weight ceilings; the packet named two tuples, but the plan_book probe
+    measures the same breach, and funding less would leave this assertion red
+    on the measured head. Job counts, selectors and the ten-pack bound remain
+    unchanged.
+
+    2026-10-21 SIC-I05R registers tests/test_research_receiver_entry.py on
+    the same tier-gate run line. The local probe on f4a1747e5e0 measures
+    the two code probes at the SIC-RCV ceilings (5,861 / 5,828) and
+    plan_book at 5,604; the registration adds exactly two estimator units
+    to each probe (5,863 / 5,830 / 5,606), no job-count or pack change, no
+    new entrant. Fund only that measured excess — the packet's "two tuples"
+    anticipated the code probes; the same +2 lands on plan_book's tuple
+    too, so all three are funded. Job counts, selectors and the ten-pack
+    bound remain unchanged.
+
+    2026-10-21 SIC-I09A registers tests/test_sector_central_history.py on the
+    same tier-gate run line. The local probe on f4a1747e5e0 measures the three
+    probes at the after-B06 ceilings (5,861 / 5,828 / 5,604 — probe re-run green
+    with only the registration reverted); the registration adds exactly two
+    estimator units to each (5,863 / 5,830 / 5,606), no job-count or pack
+    change, no new entrant. The packet named only the two data-probe tuples;
+    the plan_book ceiling moves by the same measured +2 because the tier-gate
+    job is selected by all three probe scopes, and leaving it would keep the
+    probe red. Fund only that measured excess. Job counts, selectors and the
+    ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-D-B13 registers tests/test_sector_central_score_version.py
+    on the sector tier-gate run line (the only .github/ci change since the
+    pushed head 5ac3a5df). The local probe on 4d0f689e measures all three
+    code probes exactly two estimator units above their ceilings
+    (5,865 -> 5,867 / 5,828 -> 5,830 / 5,604 -> 5,606), no job-count or
+    pack change, no new entrant. Fund only that measured excess. Job
+    counts, selectors and the ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-RCV registers tests/test_sector_receiver_contracts.py on
+    the same tier-gate run line. The local probe on 66bc4205ab measures the
+    two code probes at the SIC-I01 ceilings (5,833 / 5,806); the registration
+    adds exactly three estimator units to each (5,836 / 5,809), no job-count
+    or pack change, no new entrant. Fund only that measured excess. Job
+    counts, the plan_book probe, selectors and the ten-pack bound remain
+    unchanged.
+
+    2026-10-21 SIC-I01 registers tests/test_sector_central_contract.py on the
+    tier-gate run line next to tests/test_sector_central_gate.py. The local
+    probe on 3d8d14acdc8 measures the two code probes at 135 jobs / 5,828
+    (index.html) and 5,801 (build_free_content); the registered suite adds
+    exactly two estimator units to each (5,830 / 5,803), no job-count or pack
+    change, no new entrant. Fund only that measured excess. Job counts, the
+    plan_book probe, selectors and the ten-pack bound remain unchanged.
 
     2026-10-21 Prophet Lab evidence dossier B04-A0 (PR #9935) adds one pytest
     step, tests/test_prophet_lab_dossier_b04a.py (closed reason map,
@@ -6123,6 +6226,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+
+    Sector Intelligence candidate 4fd82658 merged onto main e5dd30c6
+    (2026-10-21): the three public-render-fastlane sector suites it registers
+    add six estimator units. The local probe on the merged tree measures
+    index.html 135 jobs / 5,828 (ceiling 5,822) and build_free_content 135
+    jobs / 5,801 (ceiling 5,795); plan_book unchanged. No new entrant, ten
+    packs. Fund only the two measured six-unit excesses: 5,822 -> 5,828 and
+    5,795 -> 5,801. Job ceilings, selectors and the pack bound stay unchanged.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

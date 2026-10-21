@@ -1,0 +1,1470 @@
+# RIG V1 proposal ledger for sector-intelligence-cycles-20261021 (DRAFT, status draft in manifest.yml).
+# Dispositions cover all 134 baseline ids. SC rows inherit the R3A 'everything working is RETAIN' law; IMPROVE rows
+# cite the D-wave lane head that changes them; U rows are never RETAIN. OPEN items are written into the row text so the
+# two independent reviewers (Reviewer A GLM Fabric lane, Reviewer B Opus READ_ONLY auditor) judge them, not the seat.
+# frozen_sha = the commit whose tree holds every path under proposed_artifact (r3b-2 two-step precedent).
+# Re-frozen 2026-10-21 at 508539c0 (board 22 / node 6W1R-0 added by seat export); the earlier freeze 76d0fb0e held boards 0-21 only.
+schema: mastermind.rig_proposal.v1
+reference_id: sector-intelligence-cycles-20261021
+proposed_artifact:
+  frozen_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+  paths:
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/01-cycles-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/02-cycles-desktop-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/03-cycles-mobile-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/04-cycles-mobile-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/05-cycles-touch-interactions-mobile-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/06-cycles-states-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/07-cycles-states-mobile-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/08-cycles-edge-cases-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/09-watches-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/10-watches-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/11-watches-states-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/13-brief-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/14-explore-rotation-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/15-explore-rotation-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/17-dossier-mobile-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/18-research-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/19-research-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+  - design_refs/sector-paper-20261021/components/COMPONENTS.md
+  - design_refs/sector-paper-20261021/components/components.css
+  - design_refs/sector-paper-20261021/components/specimen.html
+  - design_refs/sector-paper-20261021/copy_deck.json
+  - design_refs/sector-paper-20261021/copy_deck.md
+  - design_refs/sector-paper-20261021/cycles_ia.csv
+  - design_refs/sector-paper-20261021/cycles_ia.md
+  - design_refs/sector-paper-20261021/state_matrix.csv
+  - design_refs/sector-paper-20261021/state_matrix.md
+  screenshots:
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
+    viewport: desktop 1440
+    theme: dark+light
+    locale: EN
+    note: 'board 0 R3 · 00 · Shared components · Dark + Light node 6ORG-0 (export, not screenshot); states: fresh, stale, partial, corrected, abstained, error, no_access (locked), loading (skeleton), empty'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/01-cycles-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 1 R3 · Cycles · Desktop · Dark · EN node 6PCB-0 (export, not screenshot); states: fresh (as-of), stale quarantine with TTL, PRIOR-led leg-end window, clocks disagree, lazy Cycle DNA (closed)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/02-cycles-desktop-light-zh.png
+    viewport: desktop 1440
+    theme: light
+    locale: ZH
+    note: 'board 2 R3 · Cycles · Desktop · Light · ZH node 6PZP-0 (export, not screenshot); states: fresh, clocks disagree, MODEL/PRIOR mixture, PRIOR-led window, lazy Cycle DNA'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/03-cycles-mobile-dark-en.png
+    viewport: mobile 390
+    theme: dark
+    locale: EN
+    note: 'board 3 R3 · Cycles · Mobile · Dark · EN node 6QDK-0 (export, not screenshot); states: fresh, clocks disagree, MODEL/PRIOR per hazard cell, PRIOR-led window, lazy Cycle DNA, not overdue'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/04-cycles-mobile-light-zh.png
+    viewport: mobile 390
+    theme: light
+    locale: ZH
+    note: 'board 4 R3 · Cycles · Mobile · Light · ZH node 6QN0-0 (export, not screenshot); states: fresh, clocks disagree, MODEL/PRIOR per cell, PRIOR-led window, lazy Cycle DNA, not overdue'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/05-cycles-touch-interactions-mobile-dark-en.png
+    viewport: mobile 390 (plus 844x390 landscape)
+    theme: dark
+    locale: EN
+    note: 'board 5 R3 · Cycles · Mobile interactions · Dark · EN node 6QW3-0 (export, not screenshot); states: sheet half height, sheet full height, focus return, scrub readout docked, landscape boundary, PRIOR-led window'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/06-cycles-states-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 6 R3 · Cycles · States · Desktop · Dark · EN node 6R7G-0 (export, not screenshot); states: stale, incompatible_generation, partial, corrected, abstained, error, empty, loading, offline, invalid_payload, zero, empty_search,
+      does-not-occur table: no_access, unauthorized, locked, uncertain_command'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/07-cycles-states-mobile-light-zh.png
+    viewport: mobile 390
+    theme: light
+    locale: ZH
+    note: 'board 7 R3 · Cycles · States · Mobile · Light · ZH node 6RI8-0 (export, not screenshot); states: stale, incompatible_generation, partial, corrected, abstained, error, empty, loading, offline, invalid_payload, zero, empty_search'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/08-cycles-edge-cases-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 8 R3 · Cycles · Edge cases · Desktop · Light · EN node 6RSJ-0 (export, not screenshot); states: old overdue projection, clocks disagree, MODEL/PRIOR mixture, short history, long names, high density, missing sector relationship'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/09-watches-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 9 R3 · Watches · Desktop · Light · EN node 6S1T-0 (export, not screenshot); states: fresh, selected row + read-back, alerts absent, overdue chip, PRIOR badge'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/10-watches-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 10 R3 · Watches · Mobile · Dark · ZH node 6S8K-0 (export, not screenshot); states: fresh, read-back sheet with focus return, alerts absent, overdue chip, PRIOR badge, see all'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/11-watches-states-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 11 R3 · Watches · States · Desktop · Dark · EN node 6SLV-0 (export, not screenshot); states: partial, corrected, error, empty, no_access, loading, offline, unauthorized, invalid_payload, empty_search, uncertain_command,
+      not on page with reasons: stale, incompatible_generation, abstained, locked, zero'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 12 R3 · Brief · Desktop · Light · EN node 6T8T-0 (export, not screenshot); states: fresh, Watch/Watching toggle, partial breadth 9 of 11'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/13-brief-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 13 R3 · Brief · Mobile · Dark · ZH node 6TE7-0 (export, not screenshot); states: fresh, partial 9/11, Watch/Watching, overdue leg-end readout'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/14-explore-rotation-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 14 R3 · Explore · Rotation · Desktop · Light · EN node 6TOF-0 (export, not screenshot); states: fresh, selected sector + inspector, Map/List alternative, partial, short history, empty (no match), loading'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/15-explore-rotation-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 15 R3 · Explore · Rotation · Mobile · Dark · ZH node 6TZY-0 (export, not screenshot); states: fresh (selected + watched), partial 9/11, short history, no match + clear filters, loading skeleton'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 16 R3 · Dossier · Desktop · Dark · EN node 6UBG-0 (export, not screenshot); states: loaded overview, origin context + clear, facts strip 14 shown / 13 priced / 14 expected, relationship not supplied, fast/slow MODEL
+      disagreement'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/17-dossier-mobile-light-zh.png
+    viewport: mobile 390
+    theme: light
+    locale: ZH
+    note: 'board 17 R3 · Dossier · Mobile · Light · ZH node 6UNJ-0 (export, not screenshot); states: loaded overview, origin context + clear, keyboard focus, identity unconfirmed, no price shown as no data, contradictory membership
+      sources, unrecognised sector, prices not loaded + retry, stale prices'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/18-research-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 18 R3 · Research · Desktop · Light · EN node 6UYN-0 (export, not screenshot); states: draft not saved, edited field with focus + counter, 8.2 read-back, no Sector evidence attached, saving, saved, save could not be
+      confirmed, older evidence, history from a different day, access ended'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/19-research-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 19 R3 · Research · Mobile · Dark · ZH node 6V4S-0 (export, not screenshot); states: draft, focused field 40/500, 8.2 read-back, no Sector evidence attached, saved, save could not be confirmed, older evidence, history
+      from a different day, access ended'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 20 R3 · State matrix · Desktop · Light · EN node 6V9C-0 (export, not screenshot); states: matrix 6 workflows x 10 states: drawn 36, gap 18, not on page 6, theme x device axes table'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 21 R3 · Authority and contents · Desktop · Light · EN node 6VRD-0 (export, not screenshot); states: reference board (no data states)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 22 R3 · Brief · Desktop · Dark · EN node 6W1R-0 (export, not screenshot; seat export 2026-10-21 after ORCH-PAPER PLATFORM_FAILURE r2); states: fresh, Watch/Watching toggle, partial breadth 9 of 11, overdue leg-end readout'
+dispositions:
+- id: SC-001
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-002
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-003
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-004
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-005
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-006
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-007
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-008
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-009
+  disposition: RETAIN
+  target: 'Dossier / native detail destination; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-010
+  disposition: RETAIN
+  target: 'Dossier / native detail destination; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-011
+  disposition: RETAIN
+  target: 'Dossier / native detail destination; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-012
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-013
+  disposition: RETAIN
+  target: 'Dossier / native detail destination; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-014
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-015
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-016
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-017
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-018
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-019
+  disposition: RETAIN
+  target: Shared access owner → same authorized data; Paper p-24-0 nodes 6T8T-0 (board 12), 6TE7-0 (board 13)
+- id: SC-020
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-021
+  disposition: RETAIN
+  target: 'Brief → What changed / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-022
+  disposition: RETAIN
+  target: 'Brief → What changed / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-023
+  disposition: RETAIN
+  target: 'Brief → What changed / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-024
+  disposition: RETAIN
+  target: Brief → native calls / all calls; Paper p-24-0 nodes 6T8T-0 (board 12), 6TE7-0 (board 13), 6TOF-0 (board 14), 6TZY-0 (board 15)
+- id: SC-025
+  disposition: RETAIN
+  target: 'Brief → native calls / all calls; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-026
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-027
+  disposition: RETAIN
+  target: All views → data, density and failure behavior; Paper p-24-0 nodes 6T8T-0 (board 12), 6TE7-0 (board 13)
+- id: SC-028
+  disposition: RETAIN
+  target: All views → data, density and failure behavior; Paper p-24-0 nodes 6T8T-0 (board 12), 6TE7-0 (board 13)
+- id: SC-029
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-030
+  disposition: RETAIN
+  target: All views → data, density and failure behavior; Paper p-24-0 nodes 6SLV-0 (board 11)
+- id: SC-031
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-032
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-033
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-034
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-035
+  disposition: IMPROVE
+  target: 'Dossier Record / Time Machine / Methods; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+  rationale: 'B13 lane head 4f65bdd3 (RB13 PASS_WITH_NOTES): denominator counts Neutral rows; directional coverage, conditional accuracy, abstention and cohort maturity are separate fields; score_version segments; negative results preserved;
+    the ~0.274 hit rate is never framed as a win rate (masterplan mandatory gap: grader denominator)'
+- id: SC-036
+  disposition: RETAIN
+  target: 'Explore → Rotation / native linked board; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-037
+  disposition: RETAIN
+  target: 'Explore → Rotation / native linked board; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-038
+  disposition: RETAIN
+  target: 'Explore → Rotation / native linked board; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-039
+  disposition: RETAIN
+  target: 'Explore → Cycles; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-040
+  disposition: RETAIN
+  target: 'Brief calls / Dossier native sector judgment; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-041
+  disposition: RETAIN
+  target: 'Explore → Rotation / native linked board; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-042
+  disposition: RETAIN
+  target: 'Explore → Rotation / native linked board; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-043
+  disposition: RETAIN
+  target: 'Explore → Rotation / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-044
+  disposition: RETAIN
+  target: 'Explore → Rotation / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-045
+  disposition: RETAIN
+  target: 'Explore → Rotation / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-046
+  disposition: RETAIN
+  target: 'Explore → Rotation / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-047
+  disposition: RETAIN
+  target: 'Explore → Rotation / Turns; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-048
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-049
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-050
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-051
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-052
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-053
+  disposition: RETAIN
+  target: 'Explore → Money / Participation; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-054
+  disposition: RETAIN
+  target: 'Explore → Leadership; discovery / comparison depth; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-055
+  disposition: RETAIN
+  target: 'Explore → Leadership; discovery / comparison depth; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-056
+  disposition: RETAIN
+  target: 'Explore → Leadership; discovery / comparison depth; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-057
+  disposition: RETAIN
+  target: 'Explore → Leadership; discovery / comparison depth; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-058
+  disposition: RETAIN
+  target: 'Dossier Record / Time Machine / Methods; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-059
+  disposition: RETAIN
+  target: 'Explore → theme universe / Dossier Drivers; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-060
+  disposition: RETAIN
+  target: 'Explore → theme universe / Dossier Drivers; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-061
+  disposition: RETAIN
+  target: 'Explore → theme universe / Dossier Drivers; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-062
+  disposition: RETAIN
+  target: 'Explore → theme universe / Dossier Drivers; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-063
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-064
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-065
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-066
+  disposition: BLOCKED_DATA
+  dependency: 'basket_confluence.json still carries only n_baskets: no gateable/thin producer field exists for the Baskets tab (carried from mastermind-xpv2-sector-r3b-2 SC-066; no D-wave lane changed that producer)'
+  escalation: remains a new-producer-field requirement adjudicated via research/reference_integrity/mastermind-xpv2-sector-r3b-2/ADJUDICATIONS.md process / Sol; programme row R3A-66 keeps 'Producer-dependent gap; no fabricated fields'
+  interim: 'candidate renders no Baskets thin/gateable disclosure line at all: absence as absence, no placeholder, no borrowed S&P wording'
+- id: SC-067
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-068
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-069
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-070
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-071
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-072
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-073
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-074
+  disposition: RETAIN
+  target: 'Dossier → Companies / native stock detail; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-075
+  disposition: RETAIN
+  target: 'Dossier → Companies / native stock detail; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-076
+  disposition: RETAIN
+  target: 'Dossier → Companies / native stock detail; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-077
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-078
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-079
+  disposition: RETAIN
+  target: 'Explore → Confluence, separated universes; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-080
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-081
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-082
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-083
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-084
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-085
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-086
+  disposition: RETAIN
+  target: 'Existing router → shared-shell boundary; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-087
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-088
+  disposition: RETAIN
+  target: 'Shared access owner → same authorized data; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-089
+  disposition: IMPROVE
+  target: 'Dossier Record / Time Machine / Methods; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+  rationale: 'B13 lane head 4f65bdd3 (RB13 PASS_WITH_NOTES): denominator counts Neutral rows; directional coverage, conditional accuracy, abstention and cohort maturity are separate fields; score_version segments; negative results preserved;
+    the ~0.274 hit rate is never framed as a win rate (masterplan mandatory gap: grader denominator)'
+- id: SC-090
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-091
+  disposition: RETAIN
+  target: 'All views → data, density and failure behavior; no dedicated R3 board: the production view markup is carried unchanged inside the shell''s Explore workflow (sic-p-rev finding 4 OPEN for the reviewers)'
+- id: SC-092
+  disposition: BLOCKED_DATA
+  dependency: no producer contract emits a correction/revision marker for any value on either surface; ORCH-DATA folded lane B08 on exactly this row-92 gap and B13 adds score_version segments, which are a version boundary, not a correction
+    marker
+  escalation: native coverage/correction fields are a masterplan mandatory gap (P06); routed to the producer owners via the programme record, never invented on a surface; Paper boards 12/13 draw only the 'corrected' state shell for
+    the day a field exists
+  interim: candidate renders values exactly as the producer states them today with no correction/revision UI; a later-corrected value is indistinguishable from a never-corrected one until a producer field exists
+- id: C01
+  disposition: IMPROVE
+  target: Cycles workspace default; the selected sector's Cycle tab; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6RSJ-0 (board 8), 6TOF-0 (board 14),
+    6TZY-0 (board 15)
+  rationale: Existing producer/frontend; explicit missing coverage remains to qualify. (plan tasks P05/P08/P15).
+- id: C02
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Universe/family selector with family-specific list and detail; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8). BOARD
+    CLAIM OPEN (sic-p-rev B3): the named control must be shown explicitly on 6PCB-0 / 6QDK-0 before approval.'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing family producers and selector; preserve distinct semantics.'
+- id: C03
+  disposition: IMPROVE
+  target: Main chart Price mode; chart methods drawer; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4)
+  rationale: 'Existing rebased chart; declared price/TR fallback and disclosure need qualification. (plan tasks P05/P08/P15). BOARD CLAIM OPEN (sic-p-rev B3): the named control must be shown explicitly on 6PCB-0 / 6QDK-0 before approval.'
+- id: C04
+  disposition: IMPROVE
+  target: Cycle-position mode and labelled methodology comparison; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8)
+  rationale: Existing frontend uses legacy position/phase; v2 fields are backend; coherent v2 presentation is new work. (plan tasks P05/P08/P15).
+- id: C05
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Price chart controls; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4). BOARD CLAIM OPEN (sic-p-rev B3): the named control
+    must be shown explicitly on 6PCB-0 / 6QDK-0 before approval.'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing controls; verify mathematical/display invariance.'
+- id: C06
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Shared chart toolbar; focused comparison chart; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6QW3-0 (board 5).'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing controls; date-domain and short-history boundaries need acceptance.'
+- id: C07
+  disposition: IMPROVE
+  target: Compact filter row and synchronized list; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: Existing filters/focus; vocabulary must move with semantic changes. (plan tasks P05/P08/P15).
+- id: C08
+  disposition: IMPROVE
+  target: Searchable compare tray; chart/list switch; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6RSJ-0 (board 8)
+  rationale: Existing comparison controls; cross-basis/history disclosure is an upgrade. (plan tasks P05/P08/P15).
+- id: C09
+  disposition: IMPROVE
+  target: Leadership summary; selected group's Relative performance section; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8)
+  rationale: Current RS/ranks exist; rs_history is backend-only here; exact endpoints and visible trail require work. (plan tasks P05/P08/P15).
+- id: C10
+  disposition: IMPROVE
+  target: Price/Cycle chart with accessible turn inspection; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6QW3-0 (board 5), 6R7G-0 (board 6), 6RI8-0 (board 7), 6UBG-0 (board
+    16)
+  rationale: Turn markers exist; full as-known confirmation inspector/replay proof is additional acceptance/work. (plan tasks P05/P08/P15).
+- id: C11
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Cycle tab History view; chart-linked timeline; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6UBG-0
+    (board 16).'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing timeline and explanations; verify exact selected-leg binding.'
+- id: C12
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Selected leg Evidence/Analyst note section; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6UBG-0
+    (board 16).'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing epoch/TTL treatment; quarantine and stale behavior require acceptance.'
+- id: C13
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Group dossier Cycle → Historical patterns; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6RSJ-0
+    (board 8).'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing lazy DNA/context; keep hypothesis rather than forecast meaning.'
+- id: C14
+  disposition: RELOCATE
+  destination: 'Cycles workspace inside the one shell: Compact cycle summary at the top of the Cycle tab; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4).'
+  reachability: 'shell rail Explore -> Cycles and Dossier -> Cycle tab; /sector_cycles.html keeps resolving to the same engine payloads until the U13/P21 production proof retires the standalone route; semantics preserved per matrix
+    classification: Existing bilingual engine read; verify precedence and missingness.'
+- id: C15
+  disposition: IMPROVE
+  target: Cycle summary and expandable timing explanation; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8), 6S1T-0 (board 9), 6S8K-0 (board 10)
+  rationale: Resolved stance exists alongside legacy action labels; reconcile actual rendering. (plan tasks P05/P08/P15).
+- id: C16
+  disposition: IMPROVE
+  target: Cycle → Timing detail, separate from leadership; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8)
+  rationale: Shared backend emits timing fields; full standalone timing detail is missing. (plan tasks P05/P08/P15).
+- id: C17
+  disposition: IMPROVE
+  target: Dossier decision context; Cycle → Trend and risk; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4)
+  rationale: 'Standalone above200/stance exists; full gate/regime/conviction trace is shared Central capability to integrate. (plan tasks P05/P08/P15). BOARD CLAIM OPEN (sic-p-rev B3): the named control must be shown explicitly on 6PCB-0
+    / 6QDK-0 before approval.'
+- id: C18
+  disposition: IMPROVE
+  target: Cycle → Rhythm, subordinate to measured state; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6RSJ-0 (board 8)
+  rationale: Projection is rendered; backend overdue flag is not rendered and must be added. (plan tasks P05/P08/P15).
+- id: C19
+  disposition: IMPROVE
+  target: Cycle → Turn-risk estimates with methods/record link; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7), 6RSJ-0 (board 8)
+  rationale: Hazard/PASS/PRIOR UI exists; historical qualification does not establish current feature parity. (plan tasks P05/P08/P15/P18).
+- id: C20
+  disposition: IMPROVE
+  target: Changes feed and selected group's Cycle context; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: Event chips exist via raw fetch; generation and failed-versus-quiet states need repair. (plan tasks P04/P06/P08/P15).
+- id: C21
+  disposition: IMPROVE
+  target: Participation/fragmentation section inside the dossier; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8)
+  rationale: 'Fragmentation chips exist; population/coverage/source failure treatment needs completion. (plan tasks P04/P06/P08/P15). BOARD CLAIM OPEN (sic-p-rev B3): the named control must be shown explicitly on 6PCB-0 / 6QDK-0 before
+    approval.'
+- id: C22
+  disposition: IMPROVE
+  target: Shared group dossier; company/member drill-through; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6RSJ-0 (board 8), 6S1T-0 (board 9), 6S8K-0 (board 10)
+  rationale: Native links exist; integrated company/Prophet/grounded Research/return is expanded work. (plan tasks P10/P11/P12/P15).
+- id: C23
+  disposition: IMPROVE
+  target: Record & methods; concise evidence badge; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4)
+  rationale: Shared Central grader/prospective logging exists; standalone outcome-record view is missing. (plan tasks P05/P06/P15).
+- id: C24
+  disposition: IMPROVE
+  target: Persistent compact source-status strip and expandable receipt; Paper p-24-0 nodes 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: Metadata and split payloads exist; SSR date and full cross-payload coherence are upgrades. (plan tasks P04/P06/P08/P15).
+- id: C25
+  disposition: IMPROVE
+  target: Purpose-designed mobile Cycles workspace; Paper p-24-0 nodes 6ORG-0 (board 0), 6QDK-0 (board 3), 6QN0-0 (board 4), 6QW3-0 (board 5), 6RSJ-0 (board 8), 6S8K-0 (board 10)
+  rationale: Mobile source controls exist; complete actual deployed mobile journey remains unproved. (plan tasks P05/P08/P15).
+- id: C26
+  disposition: IMPROVE
+  target: Shared accessible chart/list interaction model; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QW3-0 (board 5)
+  rationale: Keyboard/live-region helpers exist; task-level accessibility must be completed and accepted. (plan tasks P05/P08/P15).
+- id: C27
+  disposition: IMPROVE
+  target: Canonical Paper tokens across every Cycles state; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4)
+  rationale: Bilingual/theme system exists; all compositions and semantic parity require acceptance. (plan tasks P05/P08/P15).
+- id: C28
+  disposition: IMPROVE
+  target: Designed loading, partial, empty, stale, denied and failed states; Paper p-24-0 nodes 6ORG-0 (board 0), 6PCB-0 (board 1), 6PZP-0 (board 2), 6QDK-0 (board 3), 6QN0-0 (board 4), 6QW3-0 (board 5), 6R7G-0 (board 6), 6RI8-0 (board
+    7), 6S8K-0 (board 10)
+  rationale: Core/lazy behavior exists; complete typed source/access/failure states require new work. (plan tasks P04/P06/P08/P15).
+- id: U01
+  disposition: IMPROVE
+  target: 'Existing Macro integration carrier; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Continue clean committed 4fd82658…; source review/publication and final replacement on sector_central.html and sector_cycles.html. Preserve
+    custody and closed Terminal reference. (plan tasks P01/P03/P21); never RETAIN until its acceptance journey carries evidence'
+- id: U02
+  disposition: IMPROVE
+  target: Backend contracts; both Macro surfaces; Paper p-24-0 nodes 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Repair Oct19/Oct16 join dependency and raw standalone Cycles rotation/fragmentation consumption. Show quiet, stale, invalid, incompatible
+    and unavailable distinctly; no catch-to-empty success. (plan tasks P04/P06/P15); never RETAIN until its acceptance journey carries evidence'
+- id: U03
+  disposition: IMPROVE
+  target: 'Dedicated Cycles and Dossier Cycle; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Implement phase age from retained/replayed transitions with legitimate unknown boundaries; distinguish legacy/v2 state and resolved stance.
+    Replacing all age with unknown is an interim honesty fix. (plan tasks P05/P08/P15); never RETAIN until its acceptance journey carries evidence'
+- id: U04
+  disposition: IMPROVE
+  target: 'Record / Methods / Cycles evidence; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Version directional coverage, conditional accuracy and Neutral outcomes; retain original ledger, exclusions, maturity, adverse results
+    and no feedback into live scores. (plan tasks P05/P15); never RETAIN until its acceptance journey carries evidence'
+- id: U05
+  disposition: IMPROVE
+  target: Confluence coverage; Record / Methods; Paper p-24-0 nodes 6R7G-0 (board 6), 6RI8-0 (board 7), 6SLV-0 (board 11)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Complete native thin/gateable population fields where defined and correction/version lineage through existing owners. Preserve originals;
+    never infer an unknown historical correction or mark ordinary daily change as a re (plan tasks P06/P14/P15); never RETAIN until its acceptance journey carries evidence'
+- id: U06
+  disposition: IMPROVE
+  target: 'Active Paper Cycles workspace; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Design C01–C28 in desktop/mobile, include source/degraded/model/prior/overdue/phase/compare/history/access states; record actual nodes
+    and accepted review. (plan tasks P08/P09); never RETAIN until its acceptance journey carries evidence'
+- id: U07
+  disposition: IMPROVE
+  target: 'Sector/theme/industry Dossier; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Port latest Dossier to Macro, retain native group kinds, dated member evidence and all Signals/Drivers/Record functions; do not manufacture
+    sector relationships. (plan tasks P07/P10/P11); never RETAIN until its acceptance journey carries evidence'
+- id: U08
+  disposition: IMPROVE
+  target: Existing Research receiver; Paper p-24-0 nodes 6S1T-0 (board 9), 6S8K-0 (board 10)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Transmit and read back permitted canonical subject, edited question, source snapshot/reference, clock/evidence mode and return state;
+    explicit save behavior and account fencing. (plan tasks P06/P07/P12); never RETAIN until its acceptance journey carries evidence'
+- id: U09
+  disposition: IMPROVE
+  target: 'Existing stock, us_stocks.html and native Screener; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Preserve actual receiver and ETF context, source date, loaded denominator, explicit filter action and restored origin. Native stock rank
+    and entry authority remain. (plan tasks P11/P17); never RETAIN until its acceptance journey carries evidence'
+- id: U10
+  disposition: IMPROVE
+  target: Existing watch/save owner; Paper p-24-0 nodes 6S1T-0 (board 9), 6S8K-0 (board 10), 6SLV-0 (board 11)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Required: retain symbol saves and add canonical investigation subject with resumable context through the existing owner, explicit save/readback/remove
+    and account isolation. Condition alerts require their own admitted sc (plan tasks P16); never RETAIN until its acceptance journey carries evidence'
+- id: U11
+  disposition: IMPROVE
+  target: Every primary surface; Paper p-24-0 nodes 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Eight principal theme/language/width compositions plus transition/boundary checks; accessible chart/list, keyboard/touch, full names,
+    failure states and neutral container styling. (plan tasks P07/P08/P17); never RETAIN until its acceptance journey carries evidence'
+- id: U12
+  disposition: IMPROVE
+  target: 'Existing programme review process; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Full RIG actual before/after scope, genuine independent receipt, current Paper authority/TOC and source/candidate mapping; proposed files
+    are not approval. (plan tasks P02/P09/P19); never RETAIN until its acceptance journey carries evidence'
+- id: U13
+  disposition: IMPROVE
+  target: 'Actual production Macro routes; no Paper node: evidence/proof row'
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Bind reviewed source/build/assets/data/served identities and complete real user journeys after normal release; next scheduled coherent
+    update or qualified no-change, caches and rollback recorded. (plan tasks P19/P21/P22/P23); never RETAIN until its acceptance journey carries evidence'
+- id: U14
+  disposition: IMPROVE
+  target: Cycle/Rotation Methods and evidence; Paper p-24-0 nodes 6R7G-0 (board 6), 6RI8-0 (board 7)
+  rationale: 'completion upgrade identified by the 2026-10-21 census and NOT accepted as complete: Preserve historical 4/6 hazard research qualification, 2 PRIOR cells, inert sizing and lead-lag STOP; qualify current live-feature parity
+    separately. Finish LR natural-consumption proof and only preregister justified new (plan tasks P18/P22/P23); never RETAIN until its acceptance journey carries evidence'
+additions:
+- id: add.cycles-workspace
+  what: Sector Cycles becomes the sixth workflow of the one shell (boards 1-8) instead of a standalone page; C01-C28 relocate/improve into it
+  authority: 'neutral: same engine payloads (engine/sector_cycles.py, cycle_rhythm.py, cycle_phase_age.py); descriptive rhythm stays subordinate to measured state; MODEL vs PRIOR cells keep their producer semantics'
+- id: add.watches
+  what: 'Watches workflow (boards 9-11): save/list a sector investigation through the existing watch/save owner (templates/watchlist.js + watchstore.js, I07R lane 41d01cc4) with account isolation'
+  authority: 'neutral: a symbol save is not a condition alert; no new store, queue or transport; alerts stay with scripts/run_watchlist_sentinel.py'
+- id: add.research-receiver
+  what: 'Research workflow (boards 18-19): grounded note composer on the existing research_vault receiver with six-field read-back, no auto-save, unsaved text surviving a language switch (I05R lane dc9e9b6a; RI05 FAIL -> repair r2 before
+    merge)'
+  authority: 'neutral: the composer records what the user reads; it emits no signal'
+- id: add.dossier-origin
+  what: Dossier origin context + clear + restored return (boards 16-17; I09A lane 00fc3488; RI09 FAIL on the China-hub listener binding -> repair before merge)
+  authority: 'neutral: navigation state only'
+- id: add.prophet-context
+  what: Stock / Prophet / Screener destination us_stocks.html shows the dated ETF context (si_sector, si_asof, si_gen) with no auto-applied filter and an honest loaded-population count (I06R lane e3f69151; RI06 PASS_WITH_NOTES)
+  authority: 'neutral: context display only; no ranking or sizing'
+- id: add.components-and-state-index
+  what: 'board 0 shared component specimen (6ORG-0), board 20 workflow state matrix (6V9C-0: 36 drawn, 18 gap, 6 not-on-page), board 21 authority/contents (6VRD-0)'
+  authority: 'neutral: reviewer reference boards; no product authority'
+user_tasks:
+- id: task.brief
+  task: Open the Brief, read the Act-Now lanes and Bottoming Watch, open a real row, reach the track record with its honest denominator
+  critical: true
+  production: possible on the authenticated surface (anonymous shell carries no rows)
+  proposal: boards 12-13 (6T8T-0, 6TE7-0); degraded cluster undrawn (sic-p-rev major 8)
+  verdict: UNKNOWN
+- id: task.rotation
+  task: Read quadrant placement for the dated session, select a group, use the list alternative, reach the Dossier
+  critical: true
+  production: map only, dated session stamped by the producer; list alternative absent
+  proposal: boards 14-15 (6TOF-0, 6TZY-0) with map/list alternative
+  verdict: UNKNOWN
+- id: task.dossier
+  task: Read phase / position / measured phase age / rhythm, hazard parity disclosure, dated membership (membership-effective vs observation date), relations
+  critical: true
+  production: sectors/<TICKER>.html with legacy phase/position and placeholder-zero phase age
+  proposal: boards 16-17 (6UBG-0, 6UNJ-0) + B05 r2 / B12 producers
+  verdict: UNKNOWN
+- id: task.cycles
+  task: Read the cycle chart and table, open Cycle DNA, compare descriptive rhythm against MODEL / PRIOR, see every degraded state as the producer reports it
+  critical: true
+  production: /sector_cycles.html standalone; raw rotation/fragmentation loads without generation/error guards; old overdue hidden
+  proposal: boards 1-8 (6PCB-0 .. 6RSJ-0)
+  verdict: UNKNOWN
+- id: task.stock-prophet
+  task: Leave to us_stocks.html with the dated ETF context visible and no auto-applied filter
+  critical: true
+  production: plain link, no dated context
+  proposal: 'I06R partial _sector_prophet_context.js.j2 (no Paper board: destination page is outside this reference)'
+  verdict: UNKNOWN
+- id: task.research
+  task: Write a grounded note with six-field read-back; composer never auto-saves; unsaved text survives a language switch
+  critical: true
+  production: research_vault receiver without sector grounding
+  proposal: boards 18-19 (6UYN-0, 6V4S-0)
+  verdict: UNKNOWN
+- id: task.watches
+  task: Save a sector investigation through the existing watch owner with account isolation; list it back
+  critical: false
+  production: not possible (no sector save)
+  proposal: boards 9-11 (6S1T-0, 6S8K-0, 6SLV-0)
+  verdict: UNKNOWN
+- id: task.return
+  task: Restore the origin view, selection and scroll position after every excursion; language and theme switches preserve state
+  critical: true
+  production: router restores view only
+  proposal: board 21 navigation/return model (6VRD-0) + I09A router scroll memory
+  verdict: UNKNOWN
+- id: task.keyboard
+  task: Complete the Cycles journey keyboard-only with live-region announcements
+  critical: true
+  production: helpers exist; task-level journey unproved
+  proposal: board 5 touch model only; keyboard journey unclaimed (sic-p-rev major 11)
+  verdict: UNKNOWN
+authority_delta:
+- id: auth.stance-chip
+  direction: equal
+  production_claim: action labels (legacy) beside resolved stance
+  proposal_claim: one stance chip vocabulary ('Watch, don't chase' form pending the seat's doctrine ruling :44 vs :46)
+  delta: 'none in authority: stance is the producer''s resolved stance; legacy action labels are not re-ranked'
+- id: auth.model-prior
+  direction: equal
+  production_claim: MODEL / PRIOR cells on Central; standalone Cycles shows rhythm projection without the overdue flag
+  proposal_claim: MODEL / PRIOR (模型/先验) badges per cell everywhere; descriptive rhythm marked descriptive and overdue shown
+  delta: disclosure increases; no new predictor
+- id: auth.hazard
+  direction: equal
+  production_claim: hazard / PASS / PRIOR UI from historical 4/6 qualification
+  proposal_claim: same cells plus the live parity disclosure (PARITY_FAILS when the runtime diverges)
+  delta: a parity failure is shown, never repaired into a pass
+- id: auth.track-record
+  direction: weaker
+  production_claim: grader hit rate over directional rows
+  proposal_claim: denominator includes Neutral rows; coverage / conditional accuracy / abstention / maturity separated; score-version segments
+  delta: the headline number can fall; it is not a win rate in either version
+- id: auth.validated-21d
+  direction: weaker
+  production_claim: '''validated'' wording on the 21d window (continuity R3C-VALIDATED-21D)'
+  proposal_claim: 'the banned word is absent from all 23 boards (ORCH-PAPER sweep over boards 0-21: 0; seat find_nodes text sweep *validated* scoped to board 22 node 6W1R-0: 0 nodes)'
+  delta: wording only; the live surface still carries the condition until P19
+- id: auth.prophet-labels
+  direction: equal
+  production_claim: none on the Dossier
+  proposal_claim: Prophet labels are PLACEHOLDERS on boards 16-17
+  delta: none may ship as rendered; the builder binds real producer labels or omits the row
+information_economics:
+  words_per_card:
+    production: 'not measured: the anonymous capture carries no data-bearing cards'
+    proposal: not yet counted on board 0 specimens; Reviewer A measures (sic-p-rev minor 13)
+  findings:
+  - middle-dot separators replaced by colon/comma forms on board 0 (23 strings)
+  - two em-dashes and two arrow glyphs remain (ORCH-PAPER deviations)
+  - authority index on board 21 has 22 rows, above the 8-row L1 product-table limit, as a reviewer board
+  preserved:
+  - every number, state, clock, session, universe and route stays the producer's
+  - no colored container edge or accent stripe on any board
+  - canonical nav family only
+# ── Revision wave (2026-10-21, after verdict REVISE at 508539c0) ──────────────
+chrome:
+  status: non_normative
+  declaration: Every header drawn on boards 0-27 is non-normative. Boards 01/02/16 draw a local bar, boards 12/14/22 a modified
+    site nav, boards 23-27 the static capture copy nav_static.html. None is a source.
+  normative_source:
+  - templates/_site_nav.html.j2
+  - templates/_navlinks.html.j2
+  - templates/navigation-refresh.css
+  - templates/nav_market.js
+  - templates/theme.js
+  rule: The build carries the canonical authenticated header family unchanged (CLAUDE.md navigation source-of-truth). No third
+    header family, no local resize, no per-card language switch (VTC-010).
+  specimen_copy: design_refs/sector-paper-20261021/brief_repair/nav_static.html is a static copy for headless capture only;
+    it is regenerated from the templates, never edited by hand, and is not a reference.
+  closes:
+  - VTC-002
+  - PRC-008
+coverage_matrix:
+  legend:
+    drawn: board numbers from boards_manifest.yml (0-27)
+    PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the
+      named journey cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
+  families:
+  - family: Brief
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 22
+        - 24
+      desktop/light/en:
+        drawn:
+        - 12
+        - 23
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · mobile · dark · en
+      mobile/dark/zh:
+        drawn:
+        - 13
+        - 25
+      mobile/light/en:
+        drawn:
+        - 26
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · mobile · light · zh
+  - family: Explore · Rotation
+    cells:
+      desktop/light/en:
+        drawn:
+        - 14
+      mobile/dark/zh:
+        drawn:
+        - 15
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · light · zh
+  - family: Explore · Lenses (table, chart, breadth & money, confluence, forming narratives, history)
+    cells:
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · zh
+      desktop/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · en
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · en
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · zh
+  - family: Dossier
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 16
+      mobile/light/zh:
+        drawn:
+        - 17
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · dark · zh
+      desktop/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · light · en
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · en
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · light · en
+  - family: Cycles
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 1
+        - 6
+      desktop/light/zh:
+        drawn:
+        - 2
+      desktop/light/en:
+        drawn:
+        - 8
+      mobile/dark/en:
+        drawn:
+        - 3
+        - 5
+      mobile/light/zh:
+        drawn:
+        - 4
+        - 7
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · desktop · dark · zh
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · mobile · light · en
+  - family: Research
+    cells:
+      desktop/light/en:
+        drawn:
+        - 18
+      mobile/dark/zh:
+        drawn:
+        - 19
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · light · zh
+  - family: Watches
+    cells:
+      desktop/light/en:
+        drawn:
+        - 9
+      desktop/dark/en:
+        drawn:
+        - 11
+      mobile/dark/zh:
+        drawn:
+        - 10
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · zh
+  - family: Components
+    cells:
+      desktop/dark+light/en:
+        drawn:
+        - 0
+      zh:
+        drawn: []
+        status: specimen
+        proof_cell: design_refs/sector-paper-20261021/components/specimen.html renders both locales
+  - family: State matrix
+    cells:
+      desktop/light/en:
+        drawn:
+        - 20
+        superseded_by: 'board 27 + design_refs/sector-paper-20261021/state_matrix.csv (VTC-008: board 20 marks Brief dark
+          as a gap that board 22 draws)'
+  - family: Authority and contents
+    cells:
+      desktop/light/en:
+        drawn:
+        - 21
+        superseded_by: 'boards_manifest.yml, 28 rows (VTC-008: board 21 counts 22 boards)'
+  closes:
+  - VTC-003
+  - VTC-008
+routing_contract:
+  source: 'templates/si_workspace.js (VIEWS = overview, map, moving, money, explore, confluence; LEGACY_ANCHORS; resolveThemeHash;
+    #read-<id>; unknown hash -> overview; scrollIntoView block start). Pinned by tests/test_si_workspace_shell.py. China twin:
+    templates/si_workspace_china.js.'
+  rule: 'The production hash vocabulary is preserved verbatim. R3 tabs bind to the existing view hashes (Brief = #overview;
+    Explore · Rotation = #map / #moving; Explore · Lenses = #money / #explore / #confluence; Research = #tm-mount; Watches
+    = #accumulation-section). Any new tab hash (Dossier, Cycles) is minted in the build wave under the shell resolver and
+    pinned by the shell test; the reference mints none.'
+  legacy_anchors:
+  - anchor: actnow-section
+    production_view: overview
+    r3_home: Brief · lanes (brf-lanes)
+  - anchor: regime
+    production_view: overview
+    r3_home: Brief · hero verdict + stance
+  - anchor: grader
+    production_view: overview
+    r3_home: Brief · track record (brf-track)
+  - anchor: si-map
+    production_view: map
+    r3_home: Explore · Rotation · whole-market map (R3A-45)
+  - anchor: rotmap-section
+    production_view: map
+    r3_home: Explore · Rotation · map
+  - anchor: sc-cyclemap
+    production_view: map
+    r3_home: Explore · Rotation · cycle map
+  - anchor: board
+    production_view: map
+    r3_home: Explore · Rotation · sector boards (R3A-40 gated read)
+  - anchor: si-movement
+    production_view: moving
+    r3_home: Explore · Rotation · moving strip under the map (R3A-43, pulse_rank_delta_5d)
+  - anchor: rc-events-mount
+    production_view: moving
+    r3_home: Explore · Rotation · rotation events (R3A-44)
+  - anchor: rotation-app
+    production_view: moving
+    r3_home: Explore · Lenses · subsector rotation
+  - anchor: si-money
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money (R3A-48)
+  - anchor: internals-section
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money
+  - anchor: scc-leadership
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money · verdict card (R3A-49)
+  - anchor: explore-section
+    production_view: explore
+    r3_home: Explore · Lenses
+  - anchor: table-section
+    production_view: explore
+    r3_home: Explore · Lenses · table (R3A-54..57)
+  - anchor: chart-section
+    production_view: explore
+    r3_home: Explore · Lenses · rebased chart
+  - anchor: forming-narratives
+    production_view: explore
+    r3_home: Explore · Lenses · forming narratives (R3A-59..61, ai_watch provenance kept)
+  - anchor: tm-mount
+    production_view: explore
+    r3_home: Explore · Lenses · history / Time Machine (R3A-58); production Research workflow link
+  - anchor: si-heat-section
+    production_view: explore
+    r3_home: Explore · Lenses · theme heat (resolves to theme-heat-section)
+  - anchor: confluence
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: sc-app
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: sc-top
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: accumulation-section
+    production_view: watches (production workflow link)
+    r3_home: 'Watches tab (add.watches: durable saved investigations via the existing owner)'
+  theme_hash:
+    pattern: '#theme-<id>'
+    owner: resolveThemeHash() (R3A-82 boot redirect)
+    r3_home: Dossier with origin context + clear (board 16), falling back to Brief when the theme is unknown
+  read_hash:
+    pattern: '#read-<id>'
+    owner: gate 4 trace-open (R3A-83)
+    r3_home: Brief · the lane row's trace expand (brf-lane row), scrolled to centre
+  unknown_hash:
+    behaviour: Brief, with history.replaceState('#overview') when the hash is empty (R3A-84); never a blank view
+  deep_link_scroll: scrollIntoView({block:'start'}) on the anchored section after the view activates (R3A-85)
+  destination_inventory: per-view destination inventory (R3A-86) is carried by the shell; the Brief 'three next moves' link
+    to Rotation, Dossier and Cycles through these hashes only
+  closes:
+  - PRC-017
+revision_mandate:
+- id: VTC-001
+  severity: blocker
+  condition: C01/C04/C05
+  disposition: resolved_by_change
+  cure: 'Brief redrawn as the HTML specimen (boards 23-26): hero verdict + stance + weekly handoff + What changed, five producer-named
+    lanes with per-row score and 20d vs market, bottoming watch, track record, tier gate — a glance surface, not a report.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-002
+  severity: blocker
+  condition: C02
+  disposition: resolved_by_declaration
+  cure: 'chrome block above: all drawn headers non-normative; templates/_site_nav.html.j2 + _navlinks.html.j2 normative.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey shows the canonical header on the rendered Brief
+- id: VTC-003
+  severity: blocker
+  condition: C03
+  disposition: resolved_by_declaration
+  cure: 'coverage_matrix block above: every family × viewport × theme × locale cell is drawn (board numbers) or PAPER_CAPACITY_LIMITED
+    with the journey cell that must show it.'
+  proof: 'evidence/ cells recorded for each PAPER_CAPACITY_LIMITED entry before #9917 leaves draft (C10)'
+- id: VTC-004
+  severity: major
+  condition: C04
+  disposition: cure_in_repair_commit
+  cure: 'copy_deck.json Tier-1 lint: no internal vocabulary (''21-session relative wealth'', ''Source rank'', ''Illustrative
+    native binding'' are Paper pixels, absent from the deck and the specimen), h1 within the 4-word budget (specimen h1 ''Sector
+    Intelligence''), subtitle within 14 words, glyph lint (C09).'
+  proof: lint receipt in the repair commit; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: VTC-005
+  severity: major
+  condition: C04
+  disposition: partially_resolved
+  cure: Regime headline keyword (verdict word) and the weekly handoff pair are restored on specimen boards 23-26 (R3A-24,
+    si_handoff.json); 'Group strength. A separate stock decision.' is not in the deck.
+  note: 'DEFER to build: the production #theme-context-hero tinted material (tc-rotating/strain/steady tokens) is carried
+    by the integration lane; the specimen hero is neutral.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey rendered Brief shows the production hero tint
+- id: VTC-006
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'Dark Brief (specimen board 24) draws panel surfaces from the production tokens: brief.css binds --bg/--panel/--panel2/--line
+    from templates/theme.css (dark: #0f1115 / #181b21 / #1e222a / #3a4150, theme.css:63-69), so the surface hierarchy is the
+    product''s, not one graphite plane; Reviewer B re-judges the rendered board.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-007
+  severity: minor
+  condition: C05
+  disposition: resolved_by_change
+  cure: 'Specimen boards 23-27 and the Cycles corrections specimen render from one example dataset (brief_repair/example_dataset.json:
+    one as-of, one phase and age per sector). Contradicting Paper pixels on boards 01/08/12/14 are PAPER_CAPACITY_LIMITED.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-008
+  severity: minor
+  condition: C05
+  disposition: superseded
+  cure: Board 20 (state matrix) and board 21 (authority index, '22 boards') are superseded by board 27 + state_matrix.csv
+    and by boards_manifest.yml (28 rows).
+  proof: boards_manifest.yml notes on boards 20/21; Reviewer B re-run
+- id: VTC-009
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'COMPONENTS.md model-prior-badge rule: tag text never below 11px on mobile; the Cycles corrections specimen draws
+    the MODEL/PRIOR tags at that size.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: VTC-010
+  severity: minor
+  condition: C05
+  disposition: resolved_by_rule
+  cure: 'No per-card language switch: the Engine read card follows html[data-lang] like every other panel; the Cycles corrections
+    specimen omits the switch (chrome block).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-011
+  severity: minor
+  condition: C05
+  disposition: withdrawn_from_reference
+  cure: 'The single-series chart legend is a board-12 Paper pixel ("leadership behind the read"); neither the Brief specimen
+    (boards 23-27) nor the production Brief (#overview) carries that chart, and the Paper file accepts no writes
+    (PAPER_CAPACITY_LIMITED). The chart is not adopted by this reference; a future Brief chart must name every series in
+    its legend (components/COMPONENTS.md chart law) before it enters a reference.'
+  proof: boards_manifest.yml board 12 note; P10 Brief journey proof records no chart on the production Brief; Reviewer B re-run
+- id: VTC-012
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'COMPONENTS.md rules: horizontal rails carry an overflow cue; the range track uses the line token in light theme;
+    the retry button uses the button tokens, never black. Mobile Paper boards 15/17 are PAPER_CAPACITY_LIMITED; specimen mobile
+    boards 25/26 follow the rules.'
+  proof: P10-P13 investigation journey mobile cells; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-001
+  severity: blocker
+  condition: C11
+  disposition: resolved_by_change
+  cure: 'Act-Now board restored on specimen boards 23-26: the producer''s five lanes with the producer''s labels and counts,
+    per-row score and 20d vs market, bottoming watch (SC-008/SC-038).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-002
+  severity: blocker
+  condition: C11
+  disposition: resolved_by_change
+  cure: 'Track record panel (brf-track) with the self-grader caption and the link to #grader; denominator stated as resolved
+    calls, Neutral included (brief gap: grader denominator).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-003
+  severity: blocker
+  condition: C12
+  disposition: cure_in_repair_commit
+  cure: 'copy_deck cycles.hazard_label / hazard_footnote carry the parity caveat: the producer records live_hazard_parity
+    PARITY_FAILS (15 failing features: age_b1..b5, log_age_ratio, amp_proxy, pos_osc_s, osc_slope_s, trend_pass, mom_score,
+    rs_63d, vol_pctile, direction, basis_epoch; measured_on a038b3f3) and 4 sectors ship model_cell_current_claim parity_failed;
+    cells show the historical W4.2 qualification only, display-only, never a signal. ''Cycle crosses zero'' has no producer
+    and is removed from the reference.'
+  proof: deck diff + Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-004
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: 'Grader rows labelled as the conviction-call grader; ''calls logged'' bound to the producer denominator (production:
+    113 calls, 31 hits, 27.4% conviction-call hit rate — not a win rate); copy_deck track/grader strings and the specimen
+    track panel updated.'
+  proof: deck diff; P10-P13 investigation journey rendered Brief shows the producer count
+- id: PRC-005
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: copy_deck cycles.stance_act ('Act', source NEW) retired; lane titles bind to the producer's lane labels; stance chips
+    use the two production stance strings only. 'Tighten risk rather than add.' is a Paper pixel (board 01), absent from the
+    deck and the specimens, PAPER_CAPACITY_LIMITED and not adopted.
+  proof: deck diff; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale
+    quarantine on the first pass)
+  note: 'lane titles now bind to the producer''s own lane labels (example_dataset.json name_en/name_zh, captured from the
+    rendered product) and render them verbatim, including the production em-dash in "In favour — don''t chase"; linting a
+    production label is a product change (templates/builder), not a reference change.'
+- id: PRC-006
+  severity: blocker
+  condition: C13
+  disposition: cure_in_repair_commit
+  cure: 'cycles_ia.md rows 155 and 228-230 corrected: the producer ships phase_v2_age {sessions, status, method, run_start,
+    observed_from, basis, history_rows} from engine/cycle_phase_age.py with status measured | lower_bound | insufficient_history
+    | source_unavailable (e.g. XLK: 4 sessions, lower_bound); the age qualifier is rendered with the value; a placeholder
+    0 is never shown as ''0 days old''; unknown is shown as unknown.'
+  proof: cycles_ia.md diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run
+    against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-007
+  severity: major
+  condition: C12
+  disposition: cure_in_repair_commit
+  cure: 'Rhythm is descriptive (producer estimate_kinds.rhythm = descriptive_rhythm, rhythm_version 1): no MODEL badge on
+    periodicity; ''Cycle peak window opens in about 6 weeks'' replaced by the descriptive overdue-vs-own-rhythm wording in
+    the Cycles corrections specimen and on the deck.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: PRC-008
+  severity: blocker
+  condition: C02
+  disposition: resolved_by_declaration
+  cure: 'Third header family: see the chrome block (same cure as VTC-002).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey canonical header
+- id: PRC-009
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: 'Methods row on the Cycles states/edge boards (corrections specimen): sizing multiplier inert at 1.0 (engine/sector_central.py:404)
+    and lead-lag STOP (W5.1) stated as methods, never as a size or a signal; cycles_ia.md rows 36/157 name the STOP beside
+    the inert sizing.'
+  proof: cycles_ia.md diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run
+    against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-010
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Time Machine (SC-058, R3A-58) keeps its production markup.
+  home: 'Explore · Lenses · history (anchor tm-mount); undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · history cell on the rendered product
+- id: PRC-011
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Forming Narratives incl. ai_watch LLM verbatim (SC-059/060/061, R3A-59..61) keep their production markup and the ai_watch
+    provenance label.
+  home: 'Explore · Lenses · forming narratives (anchor forming-narratives); undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-012
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Desk watch (SC-046, display-only) stays display-only and distinct from the Watches tab (durable saved investigations,
+    add.watches).
+  home: 'Explore · Rotation · desk strip under the sector boards; undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P10-P13 investigation journey · Rotation cell
+- id: PRC-013
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Moving strip (SC-044, R3A-43, pulse_rank_delta_5d) and rotation events (R3A-44) sit under the rotation map; money
+    strip + verdict card (SC-045, R3A-48/49) form the breadth & money lens.
+  home: Explore · Rotation (si-movement, rc-events-mount) and Explore · Lenses · breadth & money (si-money, internals-section,
+    scc-leadership)
+  proof: P10-P13 investigation journey · Rotation cell; P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-014
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Explore table + rebased chart (SC-054..057) and Confluence (confluence, sc-app, sc-top) are lenses; deck explore_lenses
+    tagline already names them.
+  home: 'Explore · Lenses · table and Explore · Lenses · confluence; undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-015
+  severity: major
+  condition: C15
+  disposition: resolved_by_change
+  cure: Hero handoff pair + What changed chips (SC-024/SC-048, R3A-24 si_handoff.json) restored on specimen boards 23-26.
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-016
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Reco tags (SC-008, R3A-38) are the lane-row chips; the gated conviction board (SC-038, R3A-40, one gated read per
+    sector board) is the Brief lanes with the tier gate (specimen board 26 locked state).
+  home: Brief · lanes (brf-lane rows, brf-chip, brf-gate)
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey signed-out and signed-in Brief
+- id: PRC-017
+  severity: minor
+  condition: C16
+  disposition: resolved_by_declaration
+  cure: 'routing_contract block above maps every legacy anchor, #theme-*, #read-*, the unknown-hash fallback and deep-link
+    scroll to its R3 home.'
+  proof: tests/test_si_workspace_shell.py pin stays green in the build wave; Reviewer A re-run
+- id: PRC-018
+  severity: major
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'Deck ⇄ boards parity: (1) board strings absent from the deck (''Three places to investigate'', ''Source rank'', ''Entry
+    posture'', ''Check entry signals'', ''Go deeper'') are Paper pixels, PAPER_CAPACITY_LIMITED, not adopted — the specimen
+    renders deck strings only (gate: ''Check entry signals'' count 0 in brief.html); (2) h1 within budget on the specimen;
+    (3) board 01 phase chips (Early up / Late up / Early down / Late down) are pixels; the deck phase vocabulary binds and
+    the Cycles corrections specimen uses it; (4) quadrant_body ''gaining speed this week'' is the producer axis (pulse_rank_delta_5d,
+    templates/sector_central.html.j2:2860); board 14''s 21-session axis is the error and is PAPER_CAPACITY_LIMITED.'
+  proof: deck lint receipt; P10-P13 investigation journey · Rotation shows the producer axis; re-freeze at the repair commit;
+    Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-019
+  severity: minor
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: '''Engine read'' is relabelled as a narrative with its provenance (producer narratives.json), never as a measurement;
+    deck key added, Cycles corrections specimen uses it.'
+  proof: deck diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-020
+  severity: major
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'boards_manifest.yml capability claims corrected: board 12 drops R3A-19/R3A-27/R3A-92 (carried by specimen board 26);
+    board 16 drops C10/C11/C12 (turn markers, leg timeline, narrative are undrawn).'
+  proof: boards_manifest.yml diff; Reviewer A re-run
+- id: PRC-021
+  severity: minor
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'state_matrix.csv rows 4/15/23/32 corrected: brief + explore incompatible_generation and invalid_payload rows cite
+    R3A-16 (payload schema) + R3A-31 (malformed collapse) + U05 (typed states), the Brief receipt row also C24 (typed coverage),
+    instead of R3A-19 (auth hydration); explore/corrected cites R3A-92 (correction representation) + U05 instead of R3A-30.'
+  proof: state_matrix.csv diff; Reviewer A re-run
+- id: PRC-022
+  severity: minor
+  condition: C16
+  disposition: withdrawn_from_reference
+  cure: 'One PRIOR value: at the render identity the producer ships no PRIOR cell (12 hazard cells, all source MODEL / cell_verdict
+    PASS; 4 sectors model_cell_current_claim parity_failed; the remaining cells unavailable, e.g. non_monotone_cdf, or missing_estimate).
+    No producer field counts ''comparable legs'', so ''38% of 41 comparable legs'' and board 01''s 33% are both unsupported
+    and withdrawn. The Cycles corrections specimen renders cells from the producer (p, source, cell_verdict) and shows a PRIOR
+    badge only when the producer emits source PRIOR.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: PRC-023
+  severity: minor
+  condition: C16
+  disposition: withdrawn
+  cure: Withdrawn by Reviewer A on the second pass.
+  proof: reviews/product_regression.yml second_pass
+- id: R3C-HEATMAP-LEGIBILITY
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (heat-map legibility on the rendered product); no drawn board,
+    specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-AUTH-PREMIUM
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (signed-in premium hydration and the single premium wall (R3A-19,
+    R3A-87)); no drawn board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-TIME-MACHINE
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (Time Machine served in its relocated lens home); no drawn
+    board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-VALIDATED-21D
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (the 21-day validated series on the served product); no drawn
+    board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-NO-UNSUPPORTED-INVENTION
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (no invented number, signal, sizing or state on the served
+    product); no drawn board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml

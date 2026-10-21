@@ -1,0 +1,727 @@
+# R3 Sector Intelligence boards, Paper file 01M2WGNCX9475G79JRKJTCM08P, page p-24-0
+# Every PNG was produced by the Paper export tool at 1x (no screenshot substitution).
+# Node ids are real, returned by Paper after admitted edits (ORCH-PAPER return 2026-10-21 ~06:1xZ);
+# png_path rewritten from the scratchpad export location to this committed path by the seat.
+# Boards 23-27 are NOT Paper exports: seat-rendered HTML specimens (headless Chrome, 1x) from
+# design_refs/sector-paper-20261021/brief_repair/ because the Paper file is at its size limit
+# (PAPER_CAPACITY_LIMITED); node_id/page_id are null by design and must never be filled in by hand.
+# Board 22 (node 6W1R-0, the 23rd board on p-24-0; node id from ORCH-PAPER's ledger, never typed by the seat)
+# was exported by the seat 2026-10-21 ~09:0xZ with the same Paper export tool at 1x; png_px read from the PNG header.
+boards:
+- board_no: 0
+  title: R3 · 00 · Shared components · Dark + Light
+  node_id: 6ORG-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark+light
+  locale: EN
+  states_shown:
+  - fresh
+  - stale
+  - partial
+  - corrected
+  - abstained
+  - error
+  - no_access (locked)
+  - loading (skeleton)
+  - empty
+  capabilities_covered:
+  - C05
+  - C06
+  - C09
+  - C10
+  - C16
+  - C17
+  - C23
+  - C25
+  - C26
+  - C27
+  - C28
+  - 'shared primitives: type, spacing, surfaces, chart colors, buttons, controls, tables, disclosures, focus, sheets, source-status'
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1984
+- board_no: 1
+  title: R3 · Cycles · Desktop · Dark · EN
+  node_id: 6PCB-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - fresh (as-of)
+  - stale quarantine with TTL
+  - PRIOR-led leg-end window
+  - clocks disagree
+  - lazy Cycle DNA (closed)
+  capabilities_covered:
+  - C01-C24
+  - C26
+  - C27
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/01-cycles-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1925
+- board_no: 2
+  title: R3 · Cycles · Desktop · Light · ZH
+  node_id: 6PZP-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: ZH
+  states_shown:
+  - fresh
+  - clocks disagree
+  - MODEL/PRIOR mixture
+  - PRIOR-led window
+  - lazy Cycle DNA
+  capabilities_covered:
+  - C01-C24
+  - C26
+  - C27
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/02-cycles-desktop-light-zh.png
+  capture: export
+  png_px:
+  - 1440
+  - 1823
+- board_no: 3
+  title: R3 · Cycles · Mobile · Dark · EN
+  node_id: 6QDK-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: dark
+  locale: EN
+  states_shown:
+  - fresh
+  - clocks disagree
+  - MODEL/PRIOR per hazard cell
+  - PRIOR-led window
+  - lazy Cycle DNA
+  - not overdue
+  capabilities_covered:
+  - C01-C17
+  - C19
+  - C21-C25
+  - C27
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/03-cycles-mobile-dark-en.png
+  capture: export
+  png_px:
+  - 390
+  - 2581
+- board_no: 4
+  title: R3 · Cycles · Mobile · Light · ZH
+  node_id: 6QN0-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: light
+  locale: ZH
+  states_shown:
+  - fresh
+  - clocks disagree
+  - MODEL/PRIOR per cell
+  - PRIOR-led window
+  - lazy Cycle DNA
+  - not overdue
+  capabilities_covered:
+  - C01-C17
+  - C19
+  - C21-C25
+  - C27
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/04-cycles-mobile-light-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 2496
+- board_no: 5
+  title: R3 · Cycles · Mobile interactions · Dark · EN
+  node_id: 6QW3-0
+  page_id: p-24-0
+  viewport: mobile 390 (plus 844x390 landscape)
+  theme: dark
+  locale: EN
+  states_shown:
+  - sheet half height
+  - sheet full height
+  - focus return
+  - scrub readout docked
+  - landscape boundary
+  - PRIOR-led window
+  capabilities_covered:
+  - C06
+  - C10
+  - C25
+  - C26
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/05-cycles-touch-interactions-mobile-dark-en.png
+  capture: export
+  png_px:
+  - 1848
+  - 1040
+- board_no: 6
+  title: R3 · Cycles · States · Desktop · Dark · EN
+  node_id: 6R7G-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - stale
+  - incompatible_generation
+  - partial
+  - corrected
+  - abstained
+  - error
+  - empty
+  - loading
+  - offline
+  - invalid_payload
+  - zero
+  - empty_search
+  - 'does-not-occur table: no_access, unauthorized, locked, uncertain_command'
+  capabilities_covered:
+  - C01
+  - C07
+  - C08
+  - C10
+  - C11
+  - C12
+  - C13
+  - C19
+  - C20
+  - C24
+  - C28
+  - U02
+  - U05
+  - U11
+  - U14
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/06-cycles-states-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 2085
+- board_no: 7
+  title: R3 · Cycles · States · Mobile · Light · ZH
+  node_id: 6RI8-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: light
+  locale: ZH
+  states_shown:
+  - stale
+  - incompatible_generation
+  - partial
+  - corrected
+  - abstained
+  - error
+  - empty
+  - loading
+  - offline
+  - invalid_payload
+  - zero
+  - empty_search
+  capabilities_covered:
+  - C01
+  - C07
+  - C08
+  - C10
+  - C11
+  - C12
+  - C13
+  - C19
+  - C20
+  - C24
+  - C28
+  - U02
+  - U05
+  - U11
+  - U14
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/07-cycles-states-mobile-light-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 4860
+- board_no: 8
+  title: R3 · Cycles · Edge cases · Desktop · Light · EN
+  node_id: 6RSJ-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - old overdue projection
+  - clocks disagree
+  - MODEL/PRIOR mixture
+  - short history
+  - long names
+  - high density
+  - missing sector relationship
+  capabilities_covered:
+  - C01
+  - C02
+  - C04
+  - C08
+  - C09
+  - C13
+  - C15
+  - C16
+  - C18
+  - C19
+  - C21
+  - C22
+  - C25
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/08-cycles-edge-cases-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 2314
+- board_no: 9
+  title: R3 · Watches · Desktop · Light · EN
+  node_id: 6S1T-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - fresh
+  - selected row + read-back
+  - alerts absent
+  - overdue chip
+  - PRIOR badge
+  capabilities_covered:
+  - U08
+  - U10
+  - C15
+  - C22
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/09-watches-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1761
+- board_no: 10
+  title: R3 · Watches · Mobile · Dark · ZH
+  node_id: 6S8K-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - fresh
+  - read-back sheet with focus return
+  - alerts absent
+  - overdue chip
+  - PRIOR badge
+  - see all
+  capabilities_covered:
+  - U08
+  - U10
+  - C15
+  - C22
+  - C25
+  - C28
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/10-watches-mobile-dark-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 2455
+- board_no: 11
+  title: R3 · Watches · States · Desktop · Dark · EN
+  node_id: 6SLV-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - partial
+  - corrected
+  - error
+  - empty
+  - no_access
+  - loading
+  - offline
+  - unauthorized
+  - invalid_payload
+  - empty_search
+  - uncertain_command
+  - 'not on page with reasons: stale, incompatible_generation, abstained, locked, zero'
+  capabilities_covered:
+  - U05
+  - U10
+  - R3A-30
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/11-watches-states-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 2170
+- board_no: 12
+  title: R3 · Brief · Desktop · Light · EN
+  node_id: 6T8T-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - fresh
+  - Watch/Watching toggle
+  - partial breadth 9 of 11
+  capabilities_covered:
+  - R3A-24
+  - R3A-28
+  note: "capabilities trimmed per PRC-020: R3A-19 (auth hydration), R3A-27 and R3A-92 (correction representation) are not drawn on this board; the chart's single-series legend is not adopted (VTC-011 withdrawn from reference)"
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1169
+- board_no: 13
+  title: R3 · Brief · Mobile · Dark · ZH
+  node_id: 6TE7-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - fresh
+  - partial 9/11
+  - Watch/Watching
+  - overdue leg-end readout
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/13-brief-mobile-dark-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 2068
+- board_no: 14
+  title: R3 · Explore · Rotation · Desktop · Light · EN
+  node_id: 6TOF-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - fresh
+  - selected sector + inspector
+  - Map/List alternative
+  - partial
+  - short history
+  - empty (no match)
+  - loading
+  capabilities_covered:
+  - R3A-24
+  - C01
+  - Explore Rotation lens
+  - accessible map/list alternative (7.2)
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/14-explore-rotation-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1980
+- board_no: 15
+  title: R3 · Explore · Rotation · Mobile · Dark · ZH
+  node_id: 6TZY-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - fresh (selected + watched)
+  - partial 9/11
+  - short history
+  - no match + clear filters
+  - loading skeleton
+  capabilities_covered:
+  - R3A-24
+  - C01
+  - Explore Rotation lens
+  - list-first mobile with map switch
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/15-explore-rotation-mobile-dark-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 2805
+- board_no: 16
+  title: R3 · Dossier · Desktop · Dark · EN
+  node_id: 6UBG-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - loaded overview
+  - origin context + clear
+  - facts strip 14 shown / 13 priced / 14 expected
+  - relationship not supplied
+  - fast/slow MODEL disagreement
+  capabilities_covered:
+  - masterplan 8.1
+  note: "capabilities trimmed per PRC-020: C10/C11/C12 are Cycles capabilities and are not drawn on the Dossier board"
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1754
+- board_no: 17
+  title: R3 · Dossier · Mobile · Light · ZH
+  node_id: 6UNJ-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: light
+  locale: ZH
+  states_shown:
+  - loaded overview
+  - origin context + clear
+  - keyboard focus
+  - identity unconfirmed
+  - no price shown as no data
+  - contradictory membership sources
+  - unrecognised sector
+  - prices not loaded + retry
+  - stale prices
+  capabilities_covered:
+  - masterplan 8.1
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/17-dossier-mobile-light-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 3473
+- board_no: 18
+  title: R3 · Research · Desktop · Light · EN
+  node_id: 6UYN-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - draft not saved
+  - edited field with focus + counter
+  - 8.2 read-back
+  - no Sector evidence attached
+  - saving
+  - saved
+  - save could not be confirmed
+  - older evidence
+  - history from a different day
+  - access ended
+  capabilities_covered:
+  - masterplan 8.2
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/18-research-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1493
+- board_no: 19
+  title: R3 · Research · Mobile · Dark · ZH
+  node_id: 6V4S-0
+  page_id: p-24-0
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - draft
+  - focused field 40/500
+  - 8.2 read-back
+  - no Sector evidence attached
+  - saved
+  - save could not be confirmed
+  - older evidence
+  - history from a different day
+  - access ended
+  capabilities_covered:
+  - masterplan 8.2
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/19-research-mobile-dark-zh.png
+  capture: export
+  png_px:
+  - 390
+  - 2383
+- board_no: 20
+  title: R3 · State matrix · Desktop · Light · EN
+  node_id: 6V9C-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - 'matrix 6 workflows x 10 states: drawn 36, gap 18, not on page 6'
+  - theme x device axes table
+  capabilities_covered:
+  - masterplan 7.2 state examples (reviewer index)
+  note: "superseded by board 27 (coverage matrix) + design_refs/sector-paper-20261021/state_matrix.csv; retained as a reviewer index only (VTC-008/PRC-021)"
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1305
+- board_no: 21
+  title: R3 · Authority and contents · Desktop · Light · EN
+  node_id: 6VRD-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - reference board (no data states)
+  capabilities_covered:
+  - masterplan 7.2 navigation and selection model with return behavior
+  - board index and R2 supersession
+  note: "superseded by boards_manifest.yml (this file) + proposal.yml routing_contract; retained as a reviewer index only (VTC-008/PRC-017)"
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1577
+- board_no: 22
+  title: R3 · Brief · Desktop · Dark · EN
+  node_id: 6W1R-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - fresh
+  - Watch/Watching toggle
+  - partial breadth 9 of 11
+  - overdue leg-end readout
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1169
+- board_no: 23
+  title: R3 · Brief · Desktop · Light · EN (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - fresh
+  - Watch — don't chase stance chip
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/23-brief-desktop-light-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 1440
+  - 2531
+- board_no: 24
+  title: R3 · Brief · Desktop · Dark · EN (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - fresh
+  - Watch — don't chase stance chip
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/24-brief-desktop-dark-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 1440
+  - 2531
+- board_no: 25
+  title: R3 · Brief · Mobile · Dark · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - fresh
+  - Watch — don't chase stance chip
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/25-brief-mobile-dark-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 390
+  - 4244
+- board_no: 26
+  title: R3 · Brief · Mobile · Light · EN · locked (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: light
+  locale: EN
+  states_shown:
+  - fresh
+  - no_access (locked): 3 of 26 stand-aside rows + tier gate + Locked chip
+  - Watch — don't chase stance chip
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/26-brief-mobile-light-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 390
+  - 4347
+- board_no: 27
+  title: R3 · Brief · Coverage matrix · viewport × theme × locale (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - drawn vs renderable cells
+  - locked state frozen once (board 26)
+  capabilities_covered: []
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/27-coverage-matrix-desktop-light-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/coverage_matrix.html
+  png_px:
+  - 1440
+  - 853

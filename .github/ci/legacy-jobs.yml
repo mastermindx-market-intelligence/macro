@@ -5256,6 +5256,14 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       - "tests/test_ipo_prospectus_terms.py"
       - "data/ipo/lockups.parquet"
       - "data/ipo/calendar.parquet"
@@ -6219,7 +6227,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
-        run: python -m pytest tests/test_cycle_forward_log.py -q
+        run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q
 
   tier-gate:
     if: ${{ false }}
@@ -6286,7 +6294,22 @@ jobs:
       # suite needs no pandas/plotly pairing and nothing in it can skip on this
       # job's venv line (the suite's own test_import_stays_light pins that).
       - name: tier-preview split contract (sector_central act-now board)
-        run: python -m pytest tests/test_sector_central_gate.py -q
+        run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q
+      # SIC-I07R: saved sector investigations through the existing watch/save
+      # owner (templates/watchstore.js designated list, section 'si'). Runs as
+      # its own step because test_sector_receiver_contracts.py pins the step
+      # above as an exact substring. node-shelled like the hydration harness —
+      # node is preinstalled on ubuntu-latest and the suite skips cleanly if it
+      # ever is not; it needs nothing beyond the job's pytest install.
+      - name: tier-preview split contract (saved sector investigations)
+        run: python -m pytest tests/test_watchstore_sector_investigations_js.py -q
+      # SIC-I06R (2026-10-21): the Prophet destination's dated-context
+      # contracts (si_asof/si_gen/si_origin, honest loaded count, allowlisted
+      # origin return) — their own step so the pinned receiver-contracts run
+      # line above stays byte-exact. Node-only protocol harness plus static
+      # source asserts; pytest + preinstalled node, both already on this job.
+      - name: sector prophet dated context — params, allowlist, honest population, return
+        run: python -m pytest tests/test_sector_prophet_context_dated.py -q
       - name: public dashboard preview-tier contracts (anon shell allowlist + controller caps)
         # Found unwired by the 2026-08-02 adversarial review of #4331: the suite
         # pins the public/anon split for the dashboard shells (site_access.yml
@@ -10931,6 +10954,17 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/ledger_lane.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -15531,6 +15565,16 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -15631,6 +15675,16 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -15722,6 +15776,16 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/sector_generation_guard.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -16683,6 +16747,14 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -17866,6 +17938,18 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/ledger_lane.py"
+      - "engine/sector_generation_guard.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -17966,6 +18050,14 @@ jobs:
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_evidence_modes.py"
       - "tests/test_sector_cycles.py"
+      - "tests/test_sector_generation_guard.py"
+      - "tests/test_cycle_phase_age.py"
+      # SIC-D-B0104 (2026-10-21): B01 ownership-map + B04 metric-definition contracts
+      # also pin cycles-owned sources (writers, rs_history reconstruction labels, the
+      # forward-log keep-first invariant); they RUN in the unrun-scoring-engine job.
+      - "tests/test_sector_completion_ownership_map.py"
+      - "tests/test_sector_metric_definitions.py"
+      - "tests/test_cycle_forward_log_fence.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -17981,6 +18073,12 @@ jobs:
         run: pip install pytest pandas numpy scipy pyyaml pyarrow jinja2
       - name: LR-T06 rotation evidence-mode fences
         run: python -m pytest tests/test_rotation_evidence_modes.py -q
+      # SIC-D-B1011 (B11): the shared cycle forward-log writer refuses lane-off
+      # (sector_cycles), future-dated and replay appends; prior rows stay
+      # byte-identical after every refusal. Temp data dir only — pandas+pyarrow
+      # already on this job's venv line.
+      - name: cycle forward-log B11 fences — lane, future, replay refusals
+        run: python -m pytest tests/test_cycle_forward_log_fence.py -q
 
   rc-r14-china-rotation-events:
     if: ${{ false }}
@@ -22642,7 +22740,9 @@ jobs:
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
       # Also validate the data-free Market Memory shell and owned read-API wiring.
       # This test registration does not alter production render/publish inventory.
-        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py tests/test_consumer_cyclical_plnt_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Sector Central: Paper evidence, native routes, synchronous payload ordering,
+      # and the selected-sector Screener handoff run on code PRs with this Node/minimal-Python owner.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py tests/test_consumer_cyclical_plnt_site_wiring.py tests/test_sector_central_paper.py tests/test_si_workspace_shell.py tests/test_sector_central_data_is_sync.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -23702,6 +23802,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "engine/fundamental_forensics/models.py"
@@ -24482,6 +24590,10 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -27811,6 +27923,14 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -30200,6 +30320,35 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
+      # SIC-D-B02/B03/B07 (macro #7646): generation guard, dated membership coverage,
+      # grader v2 — their own step so the pinned sector_central line above stays byte-exact.
+      - name: sector_central D-wave suites — generation guard, membership coverage, grader v2
+        run: python -m pytest tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py tests/test_sector_central_score_version.py -q
+      # SIC-MAP (macro #7646): the capability-map census — every producer/route
+      # citation recorded in the sector-completion CSV must resolve in the tree.
+      # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.
+      - name: sector completion capability map — cited producers, routes and anchors exist
+        run: python -m pytest tests/test_sector_completion_capability_map.py -q
+      # SIC-D-B0104 (2026-10-21): the B01 ownership map and the B04 frozen metric
+      # definitions are contract-tested against the code — writer symbols, artifact
+      # path literals, the none_native correction/version census (R3A-92), and
+      # synthetic window/ratio-vs-pp/basis pins. Source + synthetic pandas only;
+      # no network, no data/, no site/. Listed in lr-rotation-evidence-modes' paths
+      # because they also pin cycles-owned sources.
+      - name: sector completion B01+B04 — ownership map + metric definition contracts
+        run: python -m pytest tests/test_sector_completion_ownership_map.py tests/test_sector_metric_definitions.py -q
+      # SIC-D-B1011 (B10): the free data JS/JSON carry a publication record with a
+      # typed status per secondary source (absent/malformed/read_error/ok) and no
+      # withheld act-now row ever lands in the free artifacts. Stubs the engine,
+      # grader and Jinja env; needs only this venv's existing deps.
+      - name: sector_central publication record — B10 secondary-source statuses, no locked rows in free artifacts
+        run: python -m pytest tests/test_sector_central_publication.py -q
+      # SIC-D-B09: every published group row carries a source-bound
+      # research_handoff (subject/kind, per-row snapshot digest, source/
+      # generation/clock, evidence mode, return context, explicit
+      # not_supplied relationships) — receivers bind without guessing.
+      - name: sector_central research handoff — B09 subject/snapshot/return-context per row
+        run: python -m pytest tests/test_sector_research_handoff.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -32784,6 +32933,17 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -32983,6 +33143,7 @@ jobs:
       - "site/marketdata/rotation_events.json"
       - "site/sectordata/sector_central.json"
       - "templates/sector_central.html.j2"
+      - "templates/_sector_prophet_context.js.j2"
       - "tests/__init__.py"
       - "tests/fixtures/leadership_rotation/**"
       - "tests/test_leadership_measured_read.py"
@@ -38231,6 +38392,16 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
+      - "engine/cycle_rhythm.py"
+      - "engine/cycle_phase_age.py"
       - ".github/workflows/engine-render.yml"
       - ".github/workflows/render.yml"
       - "scripts/ci/daily_engine_commit_outputs.sh"

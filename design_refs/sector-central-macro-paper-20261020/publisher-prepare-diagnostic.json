@@ -1,0 +1,19 @@
+{
+  "kind": "PRE_REF_PREPARATION_DIAGNOSTIC_ONLY",
+  "commit_tree_invoked": false,
+  "update_ref_invoked": false,
+  "push_invoked": false,
+  "original_head": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "head_unchanged": true,
+  "real_index_unchanged": true,
+  "status_unchanged": true,
+  "stages": [
+    {
+      "stage": "add -A -- .",
+      "exit_code": 1,
+      "elapsed_seconds": 3.07,
+      "stdout": "",
+      "stderr": "The following paths and/or pathspecs matched paths that exist\noutside of your sparse-checkout definition, so will not be\nupdated in the index:\ndesign_refs/sector-central-macro-paper-20261020/.gitignore\ndesign_refs/sector-central-macro-paper-20261020/BUILD_PLAN.md\ndesign_refs/sector-central-macro-paper-20261020/PULL_REQUEST_DRAFT.md\ndesign_refs/sector-central-macro-paper-20261020/SOURCE_REVIEW_README.md\ndesign_refs/sector-central-macro-paper-20261020/candidate-test-receipt.json\ndesign_refs/sector-central-macro-paper-20261020/candidate-test-summary.txt\ndesign_refs/sector-central-macro-paper-20261020/checkpoint-recovery-receipt.json\ndesign_refs/sector-central-macro-paper-20261020/ci-registration-attribution.json\ndesign_refs/sector-central-macro-paper-20261020/ci-registration-attribution.txt\ndesign_refs/sector-central-macro-paper-20261020/ci-registration-check.txt\ndesign_refs/sector-central-macro-paper-20261020/ci-registration-initial-check.txt\ndesign_refs/sector-central-macro-paper-20261020/compatibility-baseline-receipt.json\ndesign_refs/sector-central-macro-paper-20261020/compatibility-baseline-summary.txt\ndesign_refs/sector-central-macro-paper-20261020/compatibility-baseline-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/compatibility-final-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/compatibility-initial-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/coverage-source-probe.json\ndesign_refs/sector-central-macro-paper-20261020/coverage-source-probe.txt\ndesign_refs/sector-central-macro-paper-20261020/design-system-check.txt\ndesign_refs/sector-central-macro-paper-20261020/design.diff\ndesign_refs/sector-central-macro-paper-20261020/handoff-initial-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/initial-macro-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/macro-tests.txt\ndesign_refs/sector-central-macro-paper-20261020/main-overlap-receipt.json\ndesign_refs/sector-central-macro-paper-20261020/package-log.txt\ndesign_ref"
+    }
+  ]
+}

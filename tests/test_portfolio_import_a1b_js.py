@@ -557,7 +557,9 @@ def test_uuid_fold_preserves_two_exact_duplicate_lots_and_is_idempotent():
 def test_page_wires_pure_contract_before_store_and_ui_after_portfolio():
     page = (ROOT / "templates" / "watchlist.html.j2").read_text(encoding="utf-8")
     assert 'id="pf_import"' in page and 'id="dlg-import"' in page
-    assert 'src="watchstore.js?v=11"' in page and 'src="portfolio.js?v=11"' in page
+    # RI07 finding 1: the I07R stamp moved watchstore.js to ?v=12 (watchlist.html.j2);
+    # portfolio.js has not been re-stamped since v11, so its pin stays.
+    assert 'src="watchstore.js?v=12"' in page and 'src="portfolio.js?v=11"' in page
     assert 'src="portfolio_import_ui.js?v=2"' in page
     assert page.index('src="portfolio_import.js') < page.index('src="watchstore.js')
     assert page.index('src="portfolio.js') < page.index('src="portfolio_import_ui.js')
