@@ -83,7 +83,7 @@
     "scope": "Existing BOT renewal provider result and scheduler health work; ordinary auto-merge was already enabled.",
     "limit": "Its owner-reported live revoked-auth evidence and source changes are not credential recovery or a new root production attestation."
   },
-  "boundary": "Intermittent health behavior: earlier measured timeouts remain; the later successful HTTP200 observation did not measure duration. A fresh strict six-second health observation is required before release readiness. Incumbent668 custody/security remain unchanged.",
+  "boundary": "Release health gate remains unresolved: the strict curl -m6 check timed out after6.002257 seconds and a later rehearsal preflight timed out at10 seconds. The earlier200 observation remains valid only at its recorded scope. Neither successful isolated startup nor a responsive different route replaces real release health.",
   "next_action": "Preserve the incumbent health repair and its security gate; consume a qualified repair or fresh passing real health observation before claiming release readiness.",
   "followup_observations": [
     {
@@ -98,6 +98,46 @@
       "latency_measured": false,
       "timeout_seconds": 10,
       "strict_six_second_budget": "NOT_PROVED"
+    },
+    {
+      "file": "COMPOSED_HEALTH_PREFLIGHT.json",
+      "schema": "grey_deer.strict_health_observation.v1",
+      "observed_at": "2026-10-21T10:57:57.843180+00:00",
+      "installed": "fe7afd0111141bae27927715e709d074fea729e2",
+      "service_before": {
+        "MainPID": "3972732",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+      },
+      "curl_exit": 28,
+      "http_status": 0,
+      "curl_seconds": 6.002257,
+      "elapsed_seconds": 6.031364149414003,
+      "budget_seconds": 6,
+      "error": "curl: (28) Operation timed out after 6002 milliseconds with 0 bytes received\n",
+      "body_sha256": null,
+      "health": null,
+      "service_after": {
+        "MainPID": "3972732",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+      },
+      "service_identity_unchanged": true,
+      "contract_passed": false,
+      "limitations": [
+        "One observed request, not a latency/reliability SLO.",
+        "Earlier timed-out observations are retained.",
+        "No production mutation or provider/portfolio request invoked."
+      ]
+    },
+    {
+      "during": "2026-10-21T10:59:54.253313+00:00 through 2026-10-21T11:00:39.266917+00:00",
+      "source": "COMPOSED_REHEARSAL_RESULT.json production_before.health",
+      "exception_type": "TimeoutError",
+      "error": "timed out",
+      "timeout_seconds": 10
     }
   ]
 }

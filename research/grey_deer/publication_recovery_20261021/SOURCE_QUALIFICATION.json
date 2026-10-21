@@ -171,12 +171,33 @@
       "head": "146d958aa710667792a4e8ff9c3732832a444e7c",
       "state": "open; existing owner continuation",
       "source_note": "New owner-authored commit directly follows de95aa4; this was not a merge-controller refresh. Root preserves branch/source custody.",
-      "native_readback": "local equals remote and clean"
+      "native_readback": "local equals remote and clean",
+      "ci": {
+        "run": 39582392930,
+        "status": "completed",
+        "conclusion": "success",
+        "updated_at": "2026-10-21T10:52:05Z"
+      }
     },
     "macro_9957": {
       "head": "26f60b69a5c929f2a5a4316add623d01ccbc7eac",
-      "state": "draft/HOLD under original rotation owner",
-      "limits": "Forward merge repair does not admit historical contradictions or prove fresh MTF. Existing owner's unresolved external review request is not retried or replaced."
+      "state": "draft/HOLD after exact-head CI success; original independent request unresolved",
+      "limits": "Forward merge repair does not admit historical contradictions or prove fresh MTF. Existing owner's unresolved external review request is not retried or replaced.",
+      "ci": {
+        "run": 39578368434,
+        "conclusion": "success",
+        "all_twelve_packs_and_gate": "success",
+        "aggregate_completed_at": "2026-10-21T10:49:50Z",
+        "provenance": "existing owner's current PR-body receipt"
+      },
+      "independent_review": {
+        "request": "mas258-mtf-published-review-20261021-01",
+        "root": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+        "status": "NOT_FOUND / UNVERIFIED / EXECUTION_NOT_ELIGIBLE",
+        "execution_absence_proven": false,
+        "retry_allowed": false,
+        "provenance": "owner read-only reconciliation reported at10:53UTC; no root retry or replacement"
+      }
     }
   },
   "production": {
@@ -185,17 +206,12 @@
     "new_deployment": false,
     "reserved_exact_release_approval_required": true,
     "latest_health": {
-      "observed_during": "2026-10-21T10:39:25.558184+00:00 through 2026-10-21T10:39:39.059369+00:00",
-      "http_status": 200,
-      "status": "ok",
-      "paper_only": true,
-      "reasoning_policy_ok": true,
-      "scheduled_runtime_ok": true,
-      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
-      "latency_recorded": false,
+      "observed_during": "2026-10-21T10:59:54.253313+00:00 through 2026-10-21T11:00:39.266917+00:00",
+      "exception_type": "TimeoutError",
+      "error": "timed out",
       "timeout_seconds": 10,
-      "strict_six_second_acceptance": "NOT_PROVED",
-      "earlier_timeouts_retained": true
+      "strict_health_file": "COMPOSED_HEALTH_PREFLIGHT.json",
+      "strict_health_passed": false
     },
     "health_dependency": "HEALTH_DEPENDENCY.json"
   },
@@ -241,7 +257,7 @@
     "worker_start": "UNPROBED",
     "change": "Fabric tools became exposed during this continuation; this supersedes earlier absence only. No paid request dispatched by this publisher owner, no original-owner review request retried."
   },
-  "updated_at": "2026-10-21 10:50:45 UTC",
+  "updated_at": "2026-10-21 11:03:48 UTC",
   "integration_rehearsal": {
     "summary_file": "INTEGRATED_REHEARSAL_SUMMARY.json",
     "full_report_file": "INTEGRATED_REHEARSAL_RESULT.json",
@@ -260,7 +276,7 @@
     "restoration_verified": true
   },
   "final_archive_qualification": {
-    "state": "PENDING actual admitted composition",
+    "state": "COMPOSED CANDIDATE REHEARSAL PASSED; protected admission/binding and release health unresolved",
     "imports_added": [
       "portfolio.performance_read",
       "portfolio.performance_projection",
@@ -271,6 +287,44 @@
     "reason": "Scoped C3 review identifies new lazy/changed imported modules after the rehearsed integration; one final admitted archive execution is required. No provider/performance/portfolio function is to be invoked.",
     "composition_review_file": "COMPOSITION_REVIEW.json",
     "startup_sha256": "daa374604acc11144722ccc25b079b2e8cd780f6b4182afb53f07ab3b71eae29",
-    "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878"
+    "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "production_release_ready": false,
+    "health_gate": "FAILED observed strict six-second check; incumbent repair/security custody retained"
+  },
+  "composed_rehearsal": {
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "summary_file": "COMPOSED_REHEARSAL_SUMMARY.json",
+    "full_report_file": "COMPOSED_REHEARSAL_RESULT.json",
+    "full_report_sha256": "ada695588a81395030266c393015d2f588082fb641b4177e91fe54487ed24be2",
+    "archive_sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "started_at": "2026-10-21T10:59:54.253313+00:00",
+    "completed_at": "2026-10-21T11:00:39.266917+00:00",
+    "qualified": true,
+    "explicit_candidate_modules": [
+      "app.main",
+      "brain.perception_publication",
+      "brain.perception_receipt",
+      "brain.cli_bridge",
+      "brain.codex_bridge",
+      "brain.provider_waterfall",
+      "portfolio.performance_read",
+      "portfolio.performance_projection"
+    ],
+    "job_count": 18,
+    "dispatch_attempt_count": 0,
+    "first_run_attempt_count": 0,
+    "authority_files_unchanged": 10,
+    "production_identity_unchanged": true,
+    "restoration_verified": true,
+    "protected_landing_binding": "PENDING"
+  },
+  "release_decision": "RELEASE_DECISION.md — HOLD, not ready for production authorization",
+  "release_decision_review": {
+    "file": "DECISION_REVIEW.json",
+    "ruling": "ACCEPTED / HOLD",
+    "production_authorized": false,
+    "baseline_recovery_health": "unproved under observed failed six-second contract"
   }
 }
