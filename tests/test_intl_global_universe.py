@@ -22,6 +22,8 @@ from engine.intl_global_universe import (
     CAPABILITIES,
     CAPABILITY_STATES,
     MATRIX_FILE,
+    ROW_FRED_MACRO,
+    ROW_FRED_RATES,
     STATE_RANK,
     TARGET_JURISDICTIONS,
     UNIVERSE_FILE,
@@ -164,6 +166,11 @@ def test_coverage_summary_is_a_vector_not_a_percentage():
     equity = coverage_summary(doc, "equity_index_fx")
     assert equity["by_state"]["delayed"] == 6
     assert equity["emission_permitted"] == 6
+    # The fred/history rows feed partial states but are not EMISSION_OK, so no
+    # jurisdiction may claim emission permission through them.
+    for cap in ("local_rates_credit", "macro_policy", "history_pit_rights"):
+        summary = coverage_summary(doc, cap)
+        assert summary["emission_permitted"] == 0, cap
 
 
 def test_legacy_derivation_equality_and_non_legacy_unavailable():
@@ -233,6 +240,33 @@ def test_missing_data_never_improves_a_capability():
     assert delayed == 0
     with pytest.raises(UniverseError):
         withdraw_row(matrix, "no.such_row")
+
+
+def test_withdrawing_each_feeding_row_drops_its_capability_to_unavailable():
+    # Each row below feeds exactly one capability in the derivation; removing
+    # it from a deepcopy of the matrix must drop that capability to the
+    # concrete all-unavailable entry for every legacy key that held more
+    # (TW carries no fred yield_10y, so the rates row feeds six of seven).
+    matrix = load_rights_matrix()
+    countries = load_legacy_countries()
+    feeds = (
+        (ROW_LEGACY_HISTORY, "history_pit_rights"),
+        (ROW_FRED_RATES, "local_rates_credit"),
+        (ROW_FRED_MACRO, "macro_policy"),
+    )
+    for row_id, cap in feeds:
+        reduced = copy.deepcopy(matrix)
+        reduced["rows"] = [r for r in reduced["rows"] if r["id"] != row_id]
+        assert len(reduced["rows"]) == len(matrix["rows"]) - 1, row_id
+        held_more = 0
+        for key, cfg in countries.items():
+            full = derive_legacy_capabilities(key, cfg, matrix)
+            if STATE_RANK[full[cap]["state"]] <= 0:
+                continue
+            held_more += 1
+            derived = derive_legacy_capabilities(key, cfg, reduced)
+            assert derived[cap] == ALL_UNAVAILABLE, (key, row_id, cap)
+        assert held_more >= 6, (row_id, cap)
 
 
 def test_denominators_not_frozen_and_universe_valid():
