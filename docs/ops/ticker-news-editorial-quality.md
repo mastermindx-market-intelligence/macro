@@ -51,7 +51,9 @@ That same live check exposed residual Benzinga article classes: numbered analyst
 
 URL-based classification must use the current reader's permitted URL. The common SQL predicate projects a denied URL to an empty string before classification. A hidden URL therefore cannot change visible membership, grouped counts, details or flow. A URL-permitted correction into an excluded section removes the report; a later qualifying correction restores it. Raw writer history remains intact. The existing `ticker_news.curated.v1` contract is retained; this is a recognition repair, with no new publisher, entitlement or client contract.
 
-The follow-up is a candidate until its own concluded checks, ordinary backend rollout and fresh signed-in readback are recorded on its PR. Authentication has been resolved; article-class acceptance is the remaining release gate.
+A further pre-release AAPL check identified the same peer template with an `Industry Comparison:` prefix and an overt product-teaser hype headline. The Benzinga template screen also recognizes that prefix and the phrases `has everyone talking` / `buzz intensifies`; a factual product-event announcement remains an explicit positive control. Those two rejected cases failed before repair. The final affected backend selection passes 816 tests, including 34 new live-gap cases.
+
+The follow-up is [Macro #9963](https://github.com/mastermindx-market-intelligence/macro/pull/9963). It remains a candidate until its own concluded checks, ordinary backend rollout and fresh signed-in readback are recorded on that PR. Authentication has been resolved; article-class acceptance is the remaining release gate.
 
 ## Verification
 

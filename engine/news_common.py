@@ -916,7 +916,7 @@ def gdelt_fetch(query: str, max_records: int = 60, window_days: int = 2,
 
 
 def ticker_template_reason(title: str, domain: str = "") -> str | None:
-    """Identify routine publisher templates without dropping raw intake.
+    """Identify routine or promotional publisher templates without dropping raw intake.
 
     Ranking can demote these formats; the curated ticker view excludes them.
     They remain available in retained, non-curated coverage.
@@ -932,10 +932,12 @@ def ticker_template_reason(title: str, domain: str = "") -> str | None:
         )
     ):
         return "routine_options_template"
-    if re.match(r"^(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against|with) (?:its )?(?:industry )?(?:peers|competitors)\b", text, re.I):
+    if re.match(r"^(?:industry comparison:\s*)?(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against|with) (?:its )?(?:industry )?(?:peers|competitors)\b", text, re.I):
         return "routine_peer_profile"
     if re.match(r"^in-depth examination of .{1,100}: evaluating performance against (?:its )?industry peers\b", text, re.I):
         return "routine_peer_profile"
+    if re.search(r"\b(?:has everyone talking|buzz intensifies)\b", text, re.I):
+        return "promotional_hype"
     return None
 
 

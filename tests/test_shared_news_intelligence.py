@@ -819,6 +819,8 @@ def test_curated_health_preserves_qualified_parsed_additional_source(primary, ad
     ("Top 5 Analyst Upgrades For Wednesday", "stock_pick_roundup"),
     ("10 Top Analyst Forecasts For Tuesday", "stock_pick_roundup"),
     ("Comparing Apple With Industry Competitors In Technology Hardware, Storage & Peripherals Industry", "routine_peer_profile"),
+    ("Industry Comparison: Evaluating Apple Against Competitors In Technology Hardware, Storage & Peripherals Industry", "routine_peer_profile"),
+    ("‘Obviously This Is a Finger’: Apple’s ‘Pro and Tell’ Teaser Has Everyone Talking — MacBook Pro Buzz Intensifies", "promotional_hype"),
     ("10 Information Technology Stocks With Whale Alerts In Today’s Session", "routine_options_template"),
     ("5 Financials Stocks With Whale Alerts In Today's Trading Session", "routine_options_template"),
 ])
@@ -851,6 +853,7 @@ def test_editorial_sections_use_only_exact_publisher_url_categories(url, reason)
     "Berkshire increases its Apple holding",
     "SEC issues rules for personal financial advisers",
     "Company IPO shares decline 32% after trading begins",
+    "Apple announces October 28 event for touch-screen MacBook Pro",
 ])
 def test_live_editorial_screen_preserves_factual_company_reports(title):
     assert ticker_editorial_reason(title, "benzinga.com") is None

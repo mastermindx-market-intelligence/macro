@@ -22,12 +22,12 @@ changed:
   - path: engine/qbus_news_velocity.py
     what: Count the same curated population under per-source URL rights.
   - path: tests/test_shared_news_intelligence.py
-    what: Add 31 regressions for live variants, factual news, URL rights, corrections and groups.
+    what: Add 34 regressions for live variants, factual news, URL rights, corrections and groups.
   - path: tests/test_qbus_news_flow_store.py
     what: Preserve the existing timestamp assertion while forwarding the new optional URL-rights argument.
   - path: docs/ops/ticker-news-editorial-quality.md
     what: Record signed-in acceptance, the remaining article-class gap and the URL rights boundary.
-prs: [9942]
+prs: [9942, 9963]
 verified:
   - claim: The original provider and Terminal repairs completed ordinary deployment.
     command: GitHub PR 9942 and mastermind-terminal PR 1094; landed-path comparisons; canonical terminal-build target and live BUILD_ID.
@@ -38,9 +38,12 @@ verified:
   - claim: New live-gap cases reproduce the defect and pass with the follow-up.
     command: python3 -m pytest tests/test_shared_news_intelligence.py -q -k 'live_editorial or editorial_sections or url_category'
     result: Before implementation 21 failed and 10 passed; after implementation all 31 passed.
-  - claim: The affected backend regression selection passes with the committed data materialized.
+  - claim: The final affected backend regression selection passes with the committed data materialized.
     command: python3 -m pytest tests/test_qbus_news*.py tests/test_ticker_news*.py tests/test_run_qbus_news*.py tests/test_news_common.py tests/test_qkernel.py tests/test_financial_news.py tests/test_shared_news_intelligence.py -q
-    result: 813 passed in 66.15 seconds; the existing timestamp wrapper forwards the new optional URL-rights argument without weakening assertions.
+    result: 816 passed in 64.76 seconds; the existing timestamp wrapper forwards the new optional URL-rights argument without weakening assertions.
+  - claim: A fresh pre-release AAPL check exposed two remaining template variants, now covered.
+    command: Ordinary signed-in AAPL News read; python3 -m pytest tests/test_shared_news_intelligence.py -q -k live_editorial
+    result: The Industry Comparison prefix and overt publicity-hype title produced two failures before the final repair; the factual product-event control passed. All three cases are included in the final 816-test pass.
   - claim: The existing CI packing ceiling and Agent OS record validation pass.
     command: tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs; python3 scripts/agentos.py validate; git diff --check
     result: Packing assertion passed in the initial combined run; record validation exited zero with existing workspace/join warnings; whitespace check clean.
@@ -54,7 +57,7 @@ unresolved:
   - No multi-report control appeared in the sampled live first pages; live grouped-detail/correction delivery was not exercised.
   - The earlier optional Fabric audit failed before an attested lease; do not replay that carrier.
 next_actions:
-  - Commit and push through the managed publisher, open the follow-up Macro PR, complete independent review and concluded CI, then merge normally.
+  - Publish the final live-variant delta to existing Macro PR 9963 through the managed publisher, complete its delta review and concluded CI, then merge normally.
   - Verify ordinary Macro rollout and reload the signed-in AAPL/MSFT News panels; update the exact PR release receipts.
 do_not_redo:
   - Do not recreate the follow-up workspace; its initial unqualified acquisition was reconciled through canonical workspace and publisher status.
@@ -79,7 +82,7 @@ MISSION_COMPLETE: false. The bounded follow-up is BUILT_NOT_PROVEN. Authenticati
 
 The current operation is `ticker-news-editorial-live-gap-20261021-c3`, branch `sol/web-ticker-news-editorial-live-gap-20261021-c3`, based on `562fc7dd02a95792c1a3f59dee2e147f5ffddf20`. Its managed workspace is `/Volumes/Mastermind 2/agent-workspaces/macro/web/ticker-news-editorial-live-gap-20261021-c3`. The first acquisition left no effect; the same-operation retry created this workspace. Although the wrapper returned unqualified, canonical owner status and `studio_git_publish_status` positively reconciled the existing branch/path and reported ready-to-push. No acquisition is pending; do not retry allocation or change workspace infrastructure.
 
-The repair is confined to recurring formats observed live and exact publisher sections. It preserves factual single-company reporting, field rights, raw retention and the existing public policy contract. The independent reviewer will inspect the published immutable head; the principal owns ordinary release and browser acceptance.
+The repair is confined to recurring formats observed live and exact publisher sections. It preserves factual single-company reporting, field rights, raw retention and the existing public policy contract. Macro PR #9963 is published. Independent review accepted initial head `0c7b782c1dcb8e0fc6dece0d9169ec0df8211bde`; the later live-variant delta requires its own exact-head delta review and checks. The principal owns ordinary release and browser acceptance. This is a dated source-publication checkpoint; the PR's later immutable release receipts determine current deployment status.
 
 ## Historical implementation checkpoints
 
