@@ -34,6 +34,7 @@ import pandas as pd
 
 from engine import basket_index, cycles
 from engine import cycle_ontology as onto
+from engine import cycle_phase_age
 from engine.inputs import yahoo_closes
 from lib import config
 
@@ -129,6 +130,21 @@ PHASES = {
     "Expansion": {"label": "Expansion", "short": "Trending",     "hue": "#45b873"},
     "Peak":      {"label": "Peak",      "short": "Topping",      "hue": "#e0a030"},
     "Downturn":  {"label": "Downturn",  "short": "Rolling over", "hue": "#e0556b"},
+}
+
+# B05: declare which `now`-block family every field belongs to — the legacy
+# range-stochastic vocabulary vs the ontology z/CDF one — so receivers never
+# mix them (e.g. render `pos` and `pos_v2` on one axis).  Deliberately picks NO
+# primary family: that is a product decision recorded as a GAP, not settled here.
+SEMANTIC_FAMILIES: dict = {
+    "schema": "sector_cycles.semantic_families.v1",
+    "legacy": ["phase", "phaseLabel", "pos", "signal", "timing_state", "action"],
+    "ontology": [
+        "pos_v2", "phase_v2", "phase_v2_age_sessions", "stance", "divergence",
+        "tone", "stance_zh", "divergence_note", "divergence_note_zh", "clocks",
+    ],
+    "legacy_position_method": "range_stochastic",
+    "ontology_position_method": "canonical_zcdf",
 }
 
 WINDOW_YEARS = 15          # full history window: surfaces ~15y of cycles (where the tape exists)
@@ -799,7 +815,8 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
     # triple is internally coherent.  The LEGACY `phase`/`pos`/`signal` fields above stay
     # driven by `pos_now` and are byte-identical.
     pos_for_v2 = pos_v2 if pos_v2 is not None else pos_now
-    pending = _phase_pending if _phase_pending is not None else {}
+    phase_v2_source = "ontology"   # B05: provenance of phase_v2, stamped below —
+    pending = _phase_pending if _phase_pending is not None else {}  # never silent again
     ph_read: dict = {}
     try:
         ph_read = onto.classify_phase(
@@ -808,15 +825,17 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             confirm_persist=0, pending=pending,
         )
         phase_v2 = ph_read["phase"]
-        # phase_v2_age_bars: 0 here (single-bar call); W2.3 backfill wave computes this
-        # properly by replaying the series bar-by-bar. Placeholder value shipped as 0.
-        phase_v2_age_bars = 0
+        # phase_v2_age_bars: a single-bar call cannot measure age — ship None and
+        # let compute()'s _stamp_phase_age fill the measured value by replaying
+        # the retained forward-log history (engine/cycle_phase_age.py, B05).
+        phase_v2_age_bars = None
         if _phase_pending is not None:
             _phase_pending.clear()
             _phase_pending.update(ph_read.get("pending") or {})
     except Exception:  # noqa: BLE001
-        phase_v2 = phase  # fall back to legacy phase
-        phase_v2_age_bars = 0
+        phase_v2 = phase  # fall back to legacy phase (stamped legacy_fallback below)
+        phase_v2_age_bars = None
+        phase_v2_source = "legacy_fallback"
 
     # resolve_state: full stance/divergence/tone from the 5×8 crosswalk.
     # W3.6: pos-qualified crosswalk cells (Downturn × buy signals, §2.3) key off the SAME
@@ -877,6 +896,12 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             "pos_v2":          pos_v2,
             "phase_v2":        phase_v2,
             "phase_v2_age_bars": phase_v2_age_bars,
+            # B05: v2 provenance, explicit — which classifier produced phase_v2 and
+            # which position semantic it read (the W3.6 pos_v2→pos_now fallback and
+            # the legacy phase fallback were previously silent).
+            "phase_v2_source": phase_v2_source,
+            "phase_v2_position_input": ("pos_v2" if pos_v2 is not None
+                                        else "legacy_pos_fallback"),
             "stance":          stance,
             "divergence":      divergence,
             "tone":            tone,
@@ -1299,6 +1324,44 @@ def _latest_cycle_session(
     return pd.Timestamp(observed.index[-1])
 
 
+def _stamp_phase_age(records, *, asof, history, history_status):
+    """Stamp measured phase age (B05) into each record's `now` block.
+
+    `history`/`history_status` come from ONE `cycle_phase_age.load_phase_history`
+    call per build.  `history_status="not_logged"` stamps the not-logged outcome
+    for records the forward log never captures (amalgam families) instead of
+    letting them read as missing evidence.  `phase_v2_age_bars` carries the
+    session count only for a MEASURED daily record — a monthly record's bar is a
+    month, and a lower bound is a minimum, not a measurement.  Never raises: a
+    record that cannot be stamped is logged and left unchanged.
+    """
+    for rec in records:
+        try:
+            nw = rec.get("now") if isinstance(rec, dict) else None
+            if nw is None:
+                continue
+            if history_status == "not_logged":
+                age = {"sessions": None, "status": "not_logged",
+                       "method": cycle_phase_age.PHASE_AGE_METHOD,
+                       "run_start": None, "observed_from": None,
+                       "basis": nw.get("basis") or "tr", "history_rows": 0}
+            else:
+                age = cycle_phase_age.measure_phase_age(
+                    history, entity_id=rec.get("id"),
+                    current_phase=nw.get("phase_v2"), current_asof=asof,
+                    basis=nw.get("basis") or rec.get("basis") or "tr")
+            nw["phase_v2_age"] = age
+            nw["phase_v2_age_sessions"] = age.get("sessions")
+            nw["phase_v2_age_status"] = age.get("status")
+            daily = nw.get("freq") in (None, "D")
+            nw["phase_v2_age_bars"] = (age.get("sessions")
+                                       if age.get("status") == "measured" and daily
+                                       else None)
+        except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
+            rid = rec.get("id") if isinstance(rec, dict) else None
+            log.warning("sector_cycles: phase-age stamp failed for %s: %s", rid, e)
+
+
 def compute(asof: str | None = None) -> dict | None:
     """Top-level: build every sector's cycle record + page meta. Returns None if the
     close panel can't be loaded (build script then no-ops).
@@ -1389,6 +1452,17 @@ def compute(asof: str | None = None) -> dict | None:
         if fam_recs:
             amalgam_families[ns] = fam_recs
 
+    # ── B05: measured phase age from the retained forward-log history ──────────
+    # One load for the whole build; sectors + baskets are logged nightly by
+    # cycle_forward_log so their age is measured; amalgam family records are NOT
+    # logged (nothing to replay) and read not_logged rather than a guess.
+    _history, _history_status = cycle_phase_age.load_phase_history("sector_cycles")
+    _stamp_phase_age(sectors + baskets, asof=str(last_ts.date()),
+                     history=_history, history_status=_history_status)
+    _stamp_phase_age([r for fam in amalgam_families.values() for r in fam],
+                     asof=str(last_ts.date()), history=None,
+                     history_status="not_logged")
+
     x_lo = round(_yf(win_start), 3)
     x_hi = round(_yf(last_ts) + _TODAY_PAD, 3)
     x_lo_default = round(_yf(last_ts - pd.DateOffset(years=DEFAULT_WINDOW_YEARS)), 3)
@@ -1402,6 +1476,10 @@ def compute(asof: str | None = None) -> dict | None:
             "default_window_years": DEFAULT_WINDOW_YEARS,
             "rebaseDate": str(win_start.date()),
             "benchmark": benchmark,
+            # B05: phase-age + semantic-family declarations.  No primary family
+            # is chosen — that is a product decision recorded as a GAP.
+            "phase_age_version": 1,
+            "semantic_families": SEMANTIC_FAMILIES,
             "rs_history": {
                 "schema": "sector_cycles.rs_history.v1",
                 "mode": "reconstructed_price_history",
