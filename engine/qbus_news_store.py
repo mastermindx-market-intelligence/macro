@@ -24,7 +24,7 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
-from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
+from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, curated_sql_clause, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
@@ -774,9 +774,12 @@ class NewsStore:
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
         return obj
 
-    @property
-    def _curated_clause(self) -> str:
-        return "AND qbus_news_is_curated(s.source, p.title)=1" if self._curated else ""
+    def _curated_clause(self, rights: NewsReadRights) -> tuple[str, tuple[str, ...]]:
+        if not self._curated:
+            return "", ()
+        return curated_sql_clause(
+            tuple(source for source in self._read_sources(rights) if rights.allows(source, "url"))
+        )
 
     def _read_sources(self, rights: NewsReadRights) -> frozenset[str]:
         # Editorial eligibility narrows this read; the rights object and raw
@@ -1760,10 +1763,12 @@ class NewsStore:
             return NewsSnapshot(SCHEMA, security_id, (), cursor, False, change_sequence)
 
         placeholders = ",".join("?" for _ in self._read_sources(rights))
+        curated_clause, curated_params = self._curated_clause(rights)
         params: list[object] = [
             security_id,
             *sorted(self._read_sources(rights)),
             security_id,
+            *curated_params,
             *sorted(self._read_sources(rights)),
         ]
         having_cursor = ""
@@ -1805,7 +1810,7 @@ class NewsStore:
             ) w ON w.cluster_id=m.cluster_id
             WHERE i.security_id=?
               AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
               AND s.source IN ({placeholders})
             GROUP BY m.cluster_id
             {having_cursor}
@@ -1842,7 +1847,7 @@ class NewsStore:
                   ON i.source=s.source AND i.source_item_id=s.source_item_id
                 WHERE i.security_id=?
                   AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
                   AND s.source IN ({placeholders})
                   AND m.cluster_id IN ({cluster_placeholders})
                 ORDER BY m.cluster_id, s.last_sequence DESC,
@@ -1850,6 +1855,7 @@ class NewsStore:
                 """,
                 (
                     security_id,
+                    *curated_params,
                     *sorted(self._read_sources(rights)),
                     *selected_ids,
                 ),
@@ -2001,6 +2007,9 @@ class NewsStore:
                 now=as_of,
                 allowed_sources=self._read_sources(rights),
                 curated=self._curated,
+                allowed_url_sources=tuple(
+                    source for source in self._read_sources(rights) if rights.allows(source, "url")
+                ),
             )
         finally:
             conn.close()
@@ -2084,7 +2093,8 @@ class NewsStore:
         if not self._read_sources(rights):
             return None
         security_filter = ""
-        params = [story_id, *sorted(self._read_sources(rights))]
+        curated_clause, curated_params = self._curated_clause(rights)
+        params = [story_id, *curated_params, *sorted(self._read_sources(rights))]
         if security_id is not None:
             security_id = _validate_token(security_id, "security_id", 1024)
             security_filter = """AND EXISTS (
@@ -2106,7 +2116,7 @@ class NewsStore:
               ON p.source=s.source AND p.source_item_id=s.source_item_id
             WHERE m.cluster_id=?
               AND s.status='active'
-                  {self._curated_clause}
+                  {curated_clause}
               AND s.source IN ({placeholders})
               {security_filter}
             ORDER BY s.last_sequence DESC, s.source, s.source_item_id

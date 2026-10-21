@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-21T04:46:38.735572+00:00",
+  "generated_utc": "2026-10-21T11:21:55.846046+00:00",
   "as_of": "2026-10-21",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -6712,6 +6712,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "GORO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "GNRV",
         "category": "Acquisitions",
         "confidence": "high",
@@ -6846,14 +6854,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "AES",
-        "category": "Going-Private",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Going-Private"
       },
       {
         "ticker": "VWAV",
@@ -7512,6 +7512,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "GPRO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "JSPR",
         "category": "Issuer Tenders",
         "confidence": "high",
@@ -7966,14 +7974,6 @@
         "activist": true,
         "filer": null,
         "detail": "Activist Campaigns"
-      },
-      {
-        "ticker": "FUL",
-        "category": "Acquisitions",
-        "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
       },
       {
         "ticker": "KNG",
@@ -8614,6 +8614,14 @@
         "activist": false,
         "filer": null,
         "detail": "Liquidations"
+      },
+      {
+        "ticker": "ATKR",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "HRTX",
@@ -9504,14 +9512,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "RMCF",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
         "ticker": "VTIX",
         "category": "Delistings",
         "confidence": "high",
@@ -10033,11 +10033,11 @@
       },
       {
         "ticker": "ESGH",
-        "category": "Spin-Offs",
-        "confidence": "high",
+        "category": "Acquisitions",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
-        "detail": "Spin-Offs"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "EMBRAC-B",
@@ -10792,14 +10792,6 @@
         "detail": "Activist Campaigns"
       },
       {
-        "ticker": "DFH",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "JACK",
         "category": "Activist Campaigns",
         "confidence": "high",
@@ -10905,14 +10897,6 @@
       },
       {
         "ticker": "LGPS",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "SHG",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -12257,14 +12241,6 @@
       },
       {
         "ticker": "MASI",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PEBO",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -17320,14 +17296,6 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "MDRR",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "ASTC",
         "category": "Divestitures",
         "confidence": "high",
@@ -17750,14 +17718,6 @@
         "activist": false,
         "filer": null,
         "detail": "Strategic Reviews"
-      },
-      {
-        "ticker": "BRSL",
-        "category": "Issuer Tenders",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Issuer Tenders"
       },
       {
         "ticker": "AIFC",
@@ -18184,14 +18144,6 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "ASBPW",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "BCDA",
         "category": "Delistings",
         "confidence": "medium",
@@ -18424,14 +18376,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "PDSB",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "BANR",
         "category": "Acquisitions",
         "confidence": "high",
@@ -18470,14 +18414,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "GLPGF",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
       },
       {
         "ticker": "KAZR",
@@ -18561,14 +18497,6 @@
       },
       {
         "ticker": "PTCT",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "SPCX",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -18856,14 +18784,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TTMI",
-        "category": "Acquisitions",
-        "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "VREOF",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19056,14 +18976,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "BNAIW",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "COF-PN",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19224,14 +19136,6 @@
         "detail": "Deal Terminations"
       },
       {
-        "ticker": "MBNKO",
-        "category": "Activist Campaigns",
-        "confidence": "high",
-        "activist": true,
-        "filer": null,
-        "detail": "Activist Campaigns"
-      },
-      {
         "ticker": "EBON",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19377,11 +19281,11 @@
       },
       {
         "ticker": "MWYN",
-        "category": "Delistings",
+        "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Delistings"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "NCRA",
@@ -19449,6 +19353,14 @@
       },
       {
         "ticker": "TECH",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "MLCIL",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -20513,11 +20425,11 @@
       },
       {
         "ticker": "XWEL",
-        "category": "Acquisitions",
-        "confidence": "medium",
+        "category": "Delistings",
+        "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Delistings"
       },
       {
         "ticker": "VICI",
@@ -21168,14 +21080,6 @@
         "detail": "Activist Campaigns"
       },
       {
-        "ticker": "CMBMF",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
         "ticker": "HIT",
         "category": "Delistings",
         "confidence": "high",
@@ -21481,11 +21385,11 @@
       },
       {
         "ticker": "DCBG",
-        "category": "Delistings",
+        "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Delistings"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "INVZ",
@@ -21790,14 +21694,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PERFF",
-        "category": "Going-Private",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Going-Private"
       },
       {
         "ticker": "PLTYF",
@@ -23226,7 +23122,7 @@
       {
         "ticker": "GMM",
         "category": "Acquisitions",
-        "confidence": "high",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -23395,14 +23291,6 @@
         "ticker": "EDBLW",
         "category": "Acquisitions",
         "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "HOST",
-        "category": "Acquisitions",
-        "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -23665,6 +23553,14 @@
       },
       {
         "ticker": "BOLD",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "HSCSW",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -24232,14 +24128,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "CMMB",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "EFTY",
         "category": "Acquisitions",
         "confidence": "high",
@@ -24497,11 +24385,11 @@
       },
       {
         "ticker": "INTR",
-        "category": "Delistings",
+        "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Delistings"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "MKDWW",
@@ -24960,14 +24848,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "UFG",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "YXT",
         "category": "Delistings",
         "confidence": "high",
@@ -25233,11 +25113,11 @@
       },
       {
         "ticker": "BZH",
-        "category": "Acquisitions",
+        "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Delistings"
       },
       {
         "ticker": "NEON",
@@ -25454,6 +25334,14 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
+      },
+      {
+        "ticker": "DOGZ",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "FTRKF",
@@ -26401,11 +26289,11 @@
       },
       {
         "ticker": "HERZ",
-        "category": "Going-Private",
+        "category": "Issuer Tenders",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Going-Private"
+        "detail": "Issuer Tenders"
       },
       {
         "ticker": "SCZM",
@@ -26753,11 +26641,11 @@
       },
       {
         "ticker": "KMB",
-        "category": "Tender Offers",
+        "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Tender Offers"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "LFCR",
@@ -26793,11 +26681,11 @@
       },
       {
         "ticker": "SSTI",
-        "category": "Acquisitions",
+        "category": "Tender Offers",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Tender Offers"
       },
       {
         "ticker": "TZIC",
@@ -27198,6 +27086,54 @@
         "activist": false,
         "filer": null,
         "detail": "Issuer Tenders"
+      },
+      {
+        "ticker": "ASTLW",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "SCNX",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "ALPE",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "HLT",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "MMS",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "VZ",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       }
     ],
     "unusual_options": [
@@ -27507,17 +27443,6 @@
         "hot": true
       },
       {
-        "ticker": "HPE",
-        "net_up_30d": 17,
-        "breadth": 0.9,
-        "est_chg_30d": 2.42,
-        "n_analysts": 19,
-        "bull_ratio": 0.95,
-        "rising": true,
-        "revision_delta": 17,
-        "hot": true
-      },
-      {
         "ticker": "EOG",
         "net_up_30d": 16,
         "breadth": 1.0,
@@ -27636,6 +27561,17 @@
         "bull_ratio": 0.94,
         "rising": true,
         "revision_delta": 14,
+        "hot": true
+      },
+      {
+        "ticker": "MPC",
+        "net_up_30d": 13,
+        "breadth": 1.0,
+        "est_chg_30d": 37.82,
+        "n_analysts": 13,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 13,
         "hot": true
       }
     ],
@@ -28733,10 +28669,10 @@
         },
         {
           "ticker": "COE",
-          "buy_usd": 115721754.0,
+          "buy_usd": 105231196.0,
           "sell_usd": 0.0,
-          "net_usd": 115721754.0,
-          "buyers": 33,
+          "net_usd": 105231196.0,
+          "buyers": 28,
           "sellers": 0
         },
         {
@@ -29924,14 +29860,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -32671,6 +32607,13 @@
         "last_surprise_pct": 78.0
       },
       {
+        "ticker": "MPC",
+        "next_date": "2026-11-03",
+        "days_to": 13,
+        "eps_forecast": 23.15,
+        "last_surprise_pct": 22.1
+      },
+      {
         "ticker": "MPLX",
         "next_date": "2026-11-03",
         "days_to": 13,
@@ -33726,18 +33669,6 @@
         "why": "patent_cluster: 317 grants, 53 IPC classes \u00b7 trump: APPLIED MATERIALS \u00b7 unusual_options: 4.12\u00d7 vol/OI, balanced"
       },
       {
-        "ticker": "HPE",
-        "score": 4,
-        "weighted_score": 1.5,
-        "channel_list": [
-          "activist_13d",
-          "analyst_upgrade_cluster",
-          "lobbying",
-          "unusual_options"
-        ],
-        "why": "activist_13d: 13D activist campaign \u00b7 analyst_upgrade_cluster: net upgrades +17 revision delta \u00b7 lobbying: $1,180,000 lobbied \u00b7 unusual_options: 3.26\u00d7 vol/OI, call-skew"
-      },
-      {
         "ticker": "QCOM",
         "score": 4,
         "weighted_score": 1.4,
@@ -33770,7 +33701,7 @@
           "short_squeeze",
           "special_situation"
         ],
-        "why": "cnbc_pick: Jim Cramer \u00b7 material_8k: 5 material 8-Ks (items 5.02, 7.01, 8.01) \u00b7 short_squeeze: 14.2d to cover, SI +1% \u00b7 special_situation: Tender Offers"
+        "why": "cnbc_pick: Jim Cramer \u00b7 material_8k: 5 material 8-Ks (items 5.02, 7.01, 8.01) \u00b7 short_squeeze: 14.2d to cover, SI +1% \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "AVGO",
@@ -33855,6 +33786,17 @@
           "unusual_options"
         ],
         "why": "insider_mspr: MSPR 100.0 \u00b7 unusual_options: 4.04\u00d7 vol/OI, put-skew"
+      },
+      {
+        "ticker": "HPE",
+        "score": 3,
+        "weighted_score": 1.15,
+        "channel_list": [
+          "activist_13d",
+          "lobbying",
+          "unusual_options"
+        ],
+        "why": "activist_13d: 13D activist campaign \u00b7 lobbying: $1,180,000 lobbied \u00b7 unusual_options: 3.26\u00d7 vol/OI, call-skew"
       },
       {
         "ticker": "MRK",

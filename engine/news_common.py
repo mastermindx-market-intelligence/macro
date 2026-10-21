@@ -36,6 +36,7 @@ import math
 import re
 from datetime import datetime, timezone
 from functools import lru_cache
+from urllib.parse import unquote, urlsplit
 
 from lib import config
 from engine import qkernel as _qk  # W2: shared primitives
@@ -155,6 +156,10 @@ _ROUNDUP_RE = re.compile(
     r"\b(?:stock|stocks|etf|etfs|fund|funds|share|shares)\s+to\s+(?:buy|watch|sell|own|consider|avoid|hold|grab|short)\b"
     r"|\bstock\s+picks?\b"
     r"|\btop\s+wall\s+street\s+analysts?\b"
+    # Explicit numbered analyst roundups; individual rating changes survive.
+    r"|(?:^|\bhere\s+are\s+(?:the\s+)?)"
+    r"(?:\d{1,2}\s+top|top\s+\d{1,2})\s+"
+    r"(?:analyst\s+)?(?:forecasts|upgrades|downgrades)\b"
     r"|\banalysts?\s+(?:like|love|favou?r|recommend|tout)\b"
     r"|\b(?:buy|own|watch|grab|sell|short|scoop\s+up)\s+these\b"
     r"|\bthese\s+\d{1,2}\s+(?:[\w-]+\s+){0,2}?(?:stock|stocks|etf|etfs|name|names|fund|funds|pick|picks|share|shares)\b"
@@ -911,20 +916,28 @@ def gdelt_fetch(query: str, max_records: int = 60, window_days: int = 2,
 
 
 def ticker_template_reason(title: str, domain: str = "") -> str | None:
-    """Rank routine ticker templates below event reporting; never an intake drop.
+    """Identify routine or promotional publisher templates without dropping raw intake.
 
-    This narrower UI signal is separate from is_low_value(), because options
-    activity and peer profiles remain available in full ticker coverage.
+    Ranking can demote these formats; the curated ticker view excludes them.
+    They remain available in retained, non-curated coverage.
     """
     if domain.lower().removeprefix("www.") != "benzinga.com":
         return None
     text = (title or "").strip()
-    if re.search(r"\bwhale alerts? from (?:today['’]s? |the )?trading session\b", text, re.I):
+    if (
+        re.search(r"\bwhale alerts? from (?:today['’]s? |the )?trading session\b", text, re.I)
+        or re.match(
+            r"^\d{1,2}\s+[\w &,-]{1,80}\bstocks?\s+with\s+whale alerts?\s+"
+            r"in\s+(?:today['’]s|the)\s+(?:trading\s+)?session\b", text, re.I,
+        )
+    ):
         return "routine_options_template"
-    if re.match(r"^(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against) (?:its )?(?:peers|competitors)\b", text, re.I):
+    if re.match(r"^(?:industry comparison:\s*)?(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against|with) (?:its )?(?:industry )?(?:peers|competitors)\b", text, re.I):
         return "routine_peer_profile"
     if re.match(r"^in-depth examination of .{1,100}: evaluating performance against (?:its )?industry peers\b", text, re.I):
         return "routine_peer_profile"
+    if re.search(r"\b(?:has everyone talking|buzz intensifies)\b", text, re.I):
+        return "promotional_hype"
     return None
 
 
@@ -948,12 +961,16 @@ _TICKER_TIMING_RE = re.compile(
 )
 
 
-def ticker_editorial_reason(title: str, domain: str = "", author: str = "") -> str | None:
+def ticker_editorial_reason(
+    title: str, domain: str = "", author: str = "", *, url: str = "",
+) -> str | None:
     """Curated ticker display policy, using the shared publisher and title rules.
 
     Company-specific dividend declarations and scheduled earnings remain useful
     here even when the broad macro feed treats them as stubs. This view never
     changes ingestion, rights, raw evidence retention, or trade authority.
+    The optional URL must already be permitted for display to this audience;
+    a missing or withheld URL contributes no section classification.
     """
     category = _qk.publisher_category(domain)
     if category in {"excluded", "unreviewed"}:
@@ -967,6 +984,19 @@ def ticker_editorial_reason(title: str, domain: str = "", author: str = "") -> s
     routine = ticker_template_reason(title, domain)
     if routine:
         return routine
+    if _qk.publisher_domain(domain) == "benzinga.com" and url:
+        try:
+            parsed = urlsplit(url)
+            host = _qk.publisher_domain(parsed.hostname or "")
+            section = unquote(parsed.path).strip("/").split("/", 1)[0].lower()
+        except (TypeError, ValueError):
+            host, section = "", ""
+        else:
+            if parsed.scheme.lower() in {"http", "https"} and host == "benzinga.com":
+                if section == "opinion":
+                    return "publisher_opinion"
+                if section == "personal-finance":
+                    return "personal_finance_advice"
     if category == "press_release" and re.search(
         r"\b(?:shareholder alert|investor alert|class action (?:alert|reminder)|"
         r"recover (?:your|their) losses|deadline (?:alert|reminder))\b",

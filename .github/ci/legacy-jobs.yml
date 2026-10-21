@@ -16109,6 +16109,159 @@ jobs:
       - name: live_flow payload consumers — intraday_flow tracker + stock panel (node)
         run: python -m pytest tests/test_intraday_flow_ncp_js.py tests/test_stock_iflow_panel_js.py -q
 
+  international-transmission-evidence:
+    # IM17: typed transmission evidence, qualified transmission events and the US relevance ordering (contract only; frozen contagion models are read-only and imported by the test alone).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/intl_transmission_evidence.py"
+      - "config/intl_transmission_channels_v1.json"
+      - "tests/test_intl_transmission_evidence.py"
+      - "engine/intl_global_universe.py"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_dislocation.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+      - "engine/contagion_links.py"
+      - "engine/contagion.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/__init__.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/indicators.py"
+      - "engine/intl_risk.py"
+      - "engine/ird_velocity.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/constitution.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/passport.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/regime_vector.py"
+      - "engine/risk_radar_intl_audit.py"
+      - "engine/session_anchor.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install transmission evidence test dependencies
+        run: pip install pytest pandas numpy pyyaml pyarrow requests jinja2 plotly
+      - name: International transmission evidence contract
+        run: python -m pytest tests/test_intl_transmission_evidence.py -q
+
   ird-substrate-engines:
     if: ${{ false }}
     gate: code
@@ -27187,6 +27340,7 @@ jobs:
       - "templates/theme.css"
       - "templates/theme.js"
       - "tests/test_build_live_quotes.py"
+      - "tests/test_capture_prophet_b4_same_read.py"
       - "tests/test_catalyst_stock.py"
       - "tests/test_dashboard_template_render.py"
       - "tests/test_event_atlas.py"
@@ -27268,6 +27422,12 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      # Prophet B4 nightly capture (B4 same-read caller) import closure: the
+      # capture script and the W3 helpers it imports for the store-root,
+      # board-as-of and capture-target laws (w3 pulls the grades reader).
+      - "engine/us_prophet_grades.py"
+      - "engine/us_prophet_w3.py"
+      - "scripts/capture_prophet_b4_same_read.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -27329,6 +27489,12 @@ jobs:
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
       - name: Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
+      # B4 same-read's first production-shaped caller: the capture-only nightly
+      # decision-time stamp script. Capture census + W3 append discipline + the
+      # D11 no-persisted-verdict fence + the consumer fence, one native process
+      # beside the B05 step that owns the entry point it calls.
+      - name: Prophet B4 nightly capture (capture-only; W3 discipline; no state token persisted)
+        run: python -m pytest tests/test_capture_prophet_b4_same_read.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
       - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
@@ -28942,6 +29108,11 @@ jobs:
       - "scripts/build_foresight.py"
       - "collectors/__init__.py"
       - "templates/foresight.html.j2"
+      - "tests/test_foresight_page_analyst_zh.py"
+      - "tests/test_foresight_page_fingerprint_depth.py"
+      - "tests/test_foresight_page_flag_ledger.py"
+      - "tests/test_foresight_page_score_base.py"
+      - "tests/test_foresight_page_trend_state.py"
       - "engine/__init__.py"
       - "engine/altdata_confirmers.py"
       - "engine/bottleneck.py"
@@ -28997,6 +29168,8 @@ jobs:
       # kill-condition attribution suite.
       - name: Foresight thesis monitor kill conditions
         run: python -m pytest tests/test_thesis_monitor.py -q
+      - name: Foresight page reader chips (score base, trend state, flag ledger, depth, zh)
+        run: python -m pytest tests/test_foresight_page_analyst_zh.py tests/test_foresight_page_fingerprint_depth.py tests/test_foresight_page_flag_ledger.py tests/test_foresight_page_score_base.py tests/test_foresight_page_trend_state.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
