@@ -110,8 +110,24 @@ DISCLOSURE_CONTROLS = (
 # more) material weakness(es)" and "material weakness(es) exists/existed";
 # their forward guard reads only the predicate of the SAME clause, so a
 # relative "which has not been remediated" no longer refuses the mention.
+# B.3 pattern revision v5 (review F1-A/F1-B/F1-C/F2-A/F2-B, 2026-10-20):
+# the negation look-back below is case-insensitive and the bare-existence
+# arm carries the same "(?<![Nn]o )" lookbehind as arm 2 (a sentence-
+# initial "No material weakness existed" is a negated existence), the
+# existential copula "there was/were/is/are" is an anchor verb of that
+# look-back ("We do not believe there was a material weakness" is
+# false), the bare existence arm anchors on the whole word
+# exist/exists/existed and refuses a following "remediated" (a
+# prior-year remediated mention is not a presence), the existence
+# guard's forward scan stops at a coordinating "and"/"but" ("There was
+# a material weakness and it has not been remediated" is true), and the
+# clause-boundary set below gains the subordinators because/since/due
+# to/as a result of/resulting from plus "and"/"but" followed (within 3
+# tokens) by a subject restart, so the negation of an earlier predicate
+# ("was not effective ... because a material weakness ... existed") no
+# longer reaches the existence verb.
 _MW_EXISTENCE_GUARD = (
-    r"(?!(?:(?![,;]|\bwhich\b|\bthat\b)[^.]){0,60}?"
+    r"(?!(?:(?![,;]|\bwhich\b|\bthat\b|\band\b|\bbut\b)[^.]){0,60}?"
     r"\b(?:does not exist|did not exist|has been remediated|"
     r"was remediated|were remediated|were not|was not|is not|"
     r"no|not|never|without)\b)"
@@ -121,11 +137,13 @@ MATERIAL_WEAKNESS_IDENTIFIED = (
     r"(?<!have not )(?<!has not )(?<!without )"
     r"identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
     r"[^.]{0,40}?material weakness"
-    r"|(?<![Nn]o )material weakness(?:es)?(?![^.]{0,80}?(?:no|not|without)\b)"
-    r"[^.]{0,80}?exists?"
+    r"|(?<![Nn]o )material weakness(?:es)?"
+    r"(?![^.]{0,80}?(?:no|not|without|remediated)\b)"
+    r"[^.]{0,80}?\bexist(?:s|ed)?\b"
     r"|[Tt]here (?:was|were|is|are)(?: a| an| one| one or more)?"
     r" material weakness(?:es)?" + _MW_EXISTENCE_GUARD +
-    r"|material weakness(?:es)? (?:exists?|existed)" + _MW_EXISTENCE_GUARD
+    r"|(?<![Nn]o )material weakness(?:es)? (?:exists?|existed)"
+    + _MW_EXISTENCE_GUARD
 )
 ICFR_CHANGE = (
     r"(?:no changes|changes) in (?:the Company.s |our )?"
@@ -280,16 +298,34 @@ _ICFR_STATED_CONCLUSION = re.compile(
 # resolver scans for a negation token.
 # B.3 v4 (review F1-1): the verb set gains "identifies", and the negation
 # scan below starts at the clause boundary, not the sentence boundary.
-_MW_IDENTIFYING_VERB = re.compile(r"identif(?:y|ied|ies)|exists?|existed")
+# B.3 v5 (review F1-B): the existential copula "there was/were/is/are"
+# is an anchor too, so the clause look-back runs for the existential
+# arm's matches as well.
+_MW_IDENTIFYING_VERB = re.compile(
+    r"identif(?:y|ied|ies)|exists?|existed|[Tt]here (?:was|were|is|are)"
+)
+# B.3 v5 (reviews F1-A/F1-B): the negator match is case-insensitive (a
+# sentence-initial "No" negates), and "do not"/"does not" are listed
+# alongside the bare "not" they already matched through.
 _MW_NEGATION_BEFORE = re.compile(
-    r"\b(?:never|no|not|without|absence of|free of|did not|have not|"
-    r"has not)\b"
+    r"\b(?:never|no|not|without|absence of|free of|did not|do not|"
+    r"does not|have not|has not)\b",
+    re.IGNORECASE,
 )
 # B.3 v4 (review F1-1): a clause boundary inside a "."-bounded sentence —
 # a semicolon, a colon, an em/en dash, or a comma followed (within 3
 # tokens) by a subject restart.
+# B.3 v5 (review F2-A/F2-B): the subordinators "because", "since",
+# "due to", "as a result of" and "resulting from" are boundaries in
+# their own right, and "and"/"but" followed (within 3 tokens) by the
+# same subject restart is one too — a negation attached to the
+# predicate of an earlier clause ("was not effective") never reaches
+# the verb of the clause they introduce.
 _MW_CLAUSE_BOUNDARY = re.compile(
     r"[;:—–]|,\s*(?:\S+\s+){0,2}?(?:management|we|the company|"
+    r"our management|the audit committee|it)\b"
+    r"|\b(?:because|since|due to|as a result of|resulting from)\b"
+    r"|\b(?:and|but)\s+(?:\S+\s+){0,2}?(?:management|we|the company|"
     r"our management|the audit committee|it)\b"
 )
 
@@ -337,6 +373,13 @@ def _mw_clause_start(text: str, sentence_lo: int, verb_start: int) -> int:
     committee|it``) that lies before the verb; the latest one wins. A
     negator before that boundary belongs to a clause that already closed
     and never reaches the verb.
+
+    B.3 v5 (review F2-A/F2-B): the boundary set additionally counts the
+    subordinators ``because|since|due to|as a result of|resulting from``
+    in their own right and ``and``/``but`` followed (within 3 tokens) by
+    the same subject restart, so a negation tied to the predicate of an
+    earlier clause ("was not effective ... because a material weakness
+    ... existed") no longer reaches the verb.
     """
     start = sentence_lo
     for boundary in _MW_CLAUSE_BOUNDARY.finditer(text, sentence_lo, verb_start):
@@ -347,34 +390,46 @@ def _mw_clause_start(text: str, sentence_lo: int, verb_start: int) -> int:
 def _material_weakness_value(
     nt: Any, section_span: tuple[int, int], match: Any
 ) -> tuple[str, tuple[int, int]]:
-    """B.3 v4 clause-bounded resolution (reviews F1-b then F1-1/F1-2).
+    """B.3 v5 clause-bounded resolution (reviews F1-b, F1-1/F1-2, then
+    F1-A/F1-B/F1-C/F2-A/F2-B).
 
     Clause-boundary rule: the boolean is true only for an affirmative
     identification or existence, and a negation token ("no", "not",
-    "never", "without", "absence of", "free of", "did not", "have not",
-    "has not") negates the identification only when it lies in the SAME
-    CLAUSE as the anchor verb ("identify", "identified", "identifies",
-    "exist", "exists", "existed"). The look-back starts at the nearest
-    clause boundary before the verb — the sentence start, a ";", a ":",
-    an em/en dash, or a comma followed (within 3 tokens) by a subject
-    restart (management, we, the company, our management, the audit
-    committee, it) — and never earlier; the mapping pattern's own 40-char
-    verb-to-noun window stays as an additional cap on the identification.
-    A negator inside a relative or participial clause that ends before the
-    subject restart, or one before a ";", therefore does not reach the
-    verb, while "We never identified a material weakness" and "Management
-    did not identify any material weakness" stay false.
+    "never", "without", "absence of", "free of", "did not", "do not",
+    "does not", "have not", "has not" — matched case-insensitively, so a
+    sentence-initial "No" negates) negates the identification only when
+    it lies in the SAME CLAUSE as the anchor verb ("identify",
+    "identified", "identifies", "exist", "exists", "existed", or the
+    existential copula "there was/were/is/are"). The look-back starts at
+    the nearest clause boundary before the verb — the sentence start, a
+    ";", a ":", an em/en dash, a comma followed (within 3 tokens) by a
+    subject restart (management, we, the company, our management, the
+    audit committee, it), a subordinator (because, since, due to, as a
+    result of, resulting from), or "and"/"but" followed (within 3
+    tokens) by that subject restart — and never earlier; the mapping
+    pattern's own 40-char verb-to-noun window stays as an additional cap
+    on the identification. A negator inside a relative or participial
+    clause that ends before the subject restart, one before a ";", and
+    one tied to an earlier predicate before a subordinator ("was not
+    effective ... because a material weakness ... existed") therefore do
+    not reach the verb, while "We never identified a material weakness"
+    and "Management did not identify any material weakness" stay false.
 
     Existential rule: an affirmative existence is a presence. The mapping
     pattern's existence arms accept "there was/were/is/are (a|an|one|one
     or more) material weakness(es)" and "material weakness(es)
     exists/existed"; their forward negation/remediation guard reads only
-    the predicate of the SAME clause — the scan stops at a ",", a ";", or
-    a relative-pronoun "which"/"that" — so "There was a material weakness,
-    which has not been remediated" resolves true, while "There was no
-    material weakness", "a material weakness does not exist" and a
-    prior-year remediated mention carry no affirmative existential match
-    and stay false.
+    the predicate of the SAME clause — the scan stops at a ",", a ";", a
+    relative-pronoun "which"/"that", or a coordinating "and"/"but" — so
+    "There was a material weakness, which has not been remediated" and
+    "There was a material weakness and it has not been remediated"
+    resolve true. The bare "material weakness ... exist/exists/existed"
+    arm anchors on the whole word and refuses a "remediated" inside its
+    80-char window, so a prior-year remediated mention ("a material
+    weakness that existed in the prior year was remediated") carries no
+    affirmative existential match, while "There was no material
+    weakness", "a material weakness does not exist" and the arm's "No
+    material weakness existed" opening stay false.
     """
     text = nt.text
     verb = _MW_IDENTIFYING_VERB.search(text, match.start(), match.end())
