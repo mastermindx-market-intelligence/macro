@@ -5160,8 +5160,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_795),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_824),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_797),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5170,6 +5170,25 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 Mastermind OS origin qualification adds one explicit suite to
+    prelaunch-hardening's existing verified Caddy 2.11.4 invocation. Hosted
+    contract-delta run39554337803/job119070467378 at head da51db1c205f,
+    against tested base 5f82b33a6e6b, measured no newly selected jobs:
+
+        templates/index.html          135 jobs, 5,822 -> 5,824 weight
+        scripts/build_free_content.py 135 jobs, 5,795 -> 5,797 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,573 weight
+
+    All three probes remain at ten packs. Exact base/head attribution is
+    prelaunch-hardening 49 -> 51: four commands and one character-size unit
+    remain fixed while explicit test paths increase from 22 to 23. These are
+    deterministic planning units, not measured execution seconds. Retain the
+    shared deployment-security lane and fund only the two breached ceilings,
+    5,822 -> 5,824 and 5,795 -> 5,797, without padding. Job-count ceilings,
+    plan-book's 5,600 ceiling, the ten-pack limit, selection/inference, estimator
+    and every existing suite and assertion remain unchanged. New-head hosted
+    contract-delta must independently validate the final candidate.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
