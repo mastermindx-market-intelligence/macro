@@ -20,14 +20,16 @@ dispositions, `continuity.yml` and rationale were withheld until the first-pass 
 The critic's own return records `quarantine_respected: true` and two deviations (no data-bearing
 production Cycles frame exists to compare against; supporting docs read by grep/line ranges).
 
-The product_regression (Reviewer A) receipt is pending: Fabric review lanes
-`sic-rig-pra-20261021-r1` (ubuntu0), `-r2` (ubuntu2) and `-r4` (ubuntu1) were refused remote admission
-(r1: `host_disk_below_staging_reserve` + `host_temperature_at_or_above_limit`; r2: disk; r4:
-`host_load_at_or_above_limit` + `host_temperature_at_or_above_limit`); `-r3` never left the seat host
-(launcher pre-flight failed on a packet-path typo, no remote submission). The glm fleet read
-`NO_ELIGIBLE_HOST` at 09:39Z. No receipt exists for that role and none has been manufactured.
+The product_regression (Reviewer A) receipt exists at frozen_sha `508539c0`: native Opus `reviewer` agent
+`a29cc1ceb621c5201` (identity `opus-auditor-product-regression-sic-20261021-r1`, model claude-opus-5-5, read-only)
+after Fabric review lanes `sic-rig-pra-20261021-r1/r2/r4` were refused remote admission (disk / temperature / load)
+and `-r3` never left the seat host. Pass 1 (rationale-quarantined, returned 2026-10-21T10:13:47Z): BLOCK, 23 findings
+(9 blocker / 11 major / 3 minor) — `critic_return/first_pass_product_regression.md`. Pass 2 (rationale revealed,
+returned 10:21:24Z): BLOCK — PRC-001/002/003/006/008 upheld as blockers; PRC-004/005/007/009 downgraded to major;
+PRC-017/019 to minor; PRC-023 withdrawn — `critic_return/second_pass_product_regression.md`. Normalized receipt:
+`product_regression.yml` (first_pass + second_pass). Reviewer A did not open the visual_taste receipt or its
+critic returns; it read verdict.yml (allowed in pass 2) and cites it only where it concedes the author's own points.
 
-Disposition at frozen_sha `508539c0`: `verdict.yml` records REVISE on the visual_taste dual-pass BLOCK
-(VTC-001/002/003 `upheld_revise`), and `manifest.yml` stays `in_review` because the RIG checker only
-admits the `revise` status when both critic receipts exist. Reviewer A's receipt is owed against the
-re-frozen sha of the repair wave, where both critics re-run anyway.
+Disposition at `508539c0`: both receipts exist, so `manifest.yml` carries `revise`; `verdict.yml` records REVISE
+with the eight surviving blockers (VTC-001/002/003, PRC-001/002/003/006/008) as `upheld_revise` and conditions
+SIC-V1-C01..C16. The repair wave re-freezes under a new sha and both critics re-run against it.
