@@ -34,13 +34,27 @@ STUB_MODULE = "lib.intl_gs_coverage_view"
 STUB_TEMPLATE = "intl_workspace/coverage.html.j2"
 
 # Test-only stub view: opens with the production gs_panel_root contract so
-# panelValid() accepts it, and shows no market number (L10).
+# panelValid() accepts it, and shows no market number (L10). The market demo
+# block sits AFTER the panel root (still inside .intl-gs) so the X6 market
+# selection seam stays visible from every view, exactly like the scanner-row
+# market links the later lanes ship.
 STUB_COVERAGE_HTML = """{% import "intl_workspace/_gs_macros.html.j2" as gs %}
 {% call gs.gs_panel_root(view='coverage', panel=gs_panel) %}
 {{ gs.gs_bandhead(t('Coverage and data states', '覆盖与数据状态'), qnum=t('Coverage stub', '覆盖占位'), sub=t('Test-only stub for the W2F foundation seam.', 'W2F 基础接缝的测试专用占位视图。'), clock=t('21 Oct 08:00 UTC', '10月21日 08:00 UTC')) }}
 {{ gs.gs_specimen_chip() }}
 <p class="intl-gs__footnote">{{ t('Stub panel: no production view is shipped by this packet. IM13 lands the real coverage board.', '占位面板：本包不投产任何视图。真实覆盖面板由 IM13 落地。') }}</p>
 {% endcall %}
+<section class="intl-gs__panel" aria-label="{{ t('Market selection stub', '市场选择占位') }}">
+  {{ gs.gs_bandhead(t('Market selection', '市场选择'), sub=t('Foundation seam: select a market, the scope follows.', '基础接缝：选择市场后范围随之切换。')) }}
+  <div class="intl-gs__demorow">
+    <div data-gs-market-row="JP">{{ gs.gs_state_cell('qualified', t('Japan', '日本'), 0.42, '%', t('Proxy basis', '代理口径'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), reason=t('Thin session', '成交清淡'), dir='up') }} <a class="intl-gs__chip intl-gs__chip--link" href="?view=coverage&amp;market=JP" data-gs-select-market="JP" data-gs-open="coverage">{{ t('Select Japan', '选择日本') }}</a></div>
+    <div data-gs-market-row="KR">{{ gs.gs_state_cell('complete', t('Korea', '韩国'), -0.86, '%', t('USD · Unhedged', '美元 · 未对冲'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), dir='down') }} <a class="intl-gs__chip intl-gs__chip--link" href="?view=coverage&amp;market=KR" data-gs-select-market="KR" data-gs-open="coverage">{{ t('Select Korea', '选择韩国') }}</a></div>
+  </div>
+  <div data-gs-market-scope>
+    <div data-gs-market="JP" data-gs-market-default><p class="intl-gs__footnote">{{ t('Japan scope stub: shows only while JP is selected.', '日本范围占位：仅在选中 JP 时显示。') }}</p></div>
+    <div data-gs-market="KR" hidden><p class="intl-gs__footnote">{{ t('Korea scope stub: shows only while KR is selected.', '韩国范围占位：仅在选中 KR 时显示。') }}</p></div>
+  </div>
+</section>
 """
 
 
@@ -48,7 +62,7 @@ def _stub_module():
     module = types.ModuleType(STUB_MODULE)
     module.__doc__ = "Test-only coverage builder injected by intl_gs_fixture_site."
 
-    def build_view(*, universe, rights, contexts, workspace):
+    def build_view(*, universe, rights, contexts, workspace, observations=None):
         return [dict(view="coverage", context_id="im-gs-coverage", context={},
                      generation=None, payload={"stub": True})]
 
@@ -98,7 +112,11 @@ def render_intl_page(*, include_surveillance=True, stub_coverage=False):
 def render_states_page():
     """Minimal fixture document: html[data-theme][data-lang] + theme.css +
     intl_workspace.css + intl_workspace_surveillance.css + theme.js, no site
-    nav, everything wrapped in one .intl-gs scope (spec §10.8)."""
+    nav, everything wrapped in one .intl-gs scope (spec §10.8). The wrapper
+    carries test-only presentation scaffolding: the fixture page opts out of
+    the site-wide ambient aurora backdrop (VF1 — a specimen board reads on a
+    plain --bg canvas) and reserves bottom space under the copilot launcher
+    (VF13). Production pages never see this style block."""
     template = _env().from_string(
         '<!DOCTYPE html>\n'
         '<html lang="en" data-theme="dark">\n'
@@ -109,10 +127,14 @@ def render_states_page():
         '<link rel="stylesheet" href="theme.css">\n'
         '<link rel="stylesheet" href="intl_workspace.css">\n'
         '<link rel="stylesheet" href="intl_workspace_surveillance.css">\n'
+        '<style>/* fixture-only scaffolding (VF1): plain canvas, no aurora */\n'
+        'html,body{background:var(--bg);background-image:none;}\n'
+        'html body::before{content:none;}\n'
+        '</style>\n'
         '<script defer src="theme.js"></script>\n'
         '</head>\n'
         '<body>\n'
-        '<div class="intl-gs">\n'
+        '<div class="intl-gs intl-gs--fixture">\n'
         "{% include 'intl_workspace/_gs_state_fixture.html.j2' %}\n"
         '</div>\n'
         '</body>\n'
@@ -130,6 +152,23 @@ def write_site(out_dir, *, stub_coverage=False):
         for asset in (ROOT / "templates").glob(pattern):
             shutil.copy2(asset, out / asset.name)
             copied += 1
+    # VF16: the production site build serves the Inter faces and the live
+    # config beside the pages; the fixture site must serve them too so both
+    # evidence manifests record zero console errors and zero failed requests.
+    fonts = out / "fonts"
+    fonts.mkdir(exist_ok=True)
+    for font in (ROOT / "templates" / "fonts").glob("*.woff2"):
+        shutil.copy2(font, fonts / font.name)
+        copied += 1
+    live_config = ROOT / "templates" / "live_config.js"
+    if live_config.is_file():
+        shutil.copy2(live_config, out / "live_config.js")
+        copied += 1
+    else:
+        (out / "live_config.js").write_text(
+            "/* fixture stub: no live configuration on the evidence site */\n",
+            encoding="utf-8")
+        copied += 1
     return copied
 
 
@@ -138,14 +177,17 @@ def main(argv=None):
     parser.add_argument("--out", help="write <out>/intl.html, <out>/intl-gs-states.html and templates assets")
     parser.add_argument("--stub-coverage", action="store_true", help="test-only stub coverage view (pytest 2.6 / browser proof)")
     parser.add_argument("--print-html", action="store_true", help="print the rendered intl.html to stdout")
+    parser.add_argument("--print-states", action="store_true", help="print the rendered states fixture page to stdout")
     args = parser.parse_args(argv)
     if args.print_html:
         sys.stdout.write(render_intl_page(stub_coverage=args.stub_coverage))
+    if args.print_states:
+        sys.stdout.write(render_states_page())
     if args.out:
         copied = write_site(args.out, stub_coverage=args.stub_coverage)
         print(f"wrote {args.out}/intl.html, intl-gs-states.html + {copied} assets", file=sys.stderr)
-    if not (args.out or args.print_html):
-        parser.error("nothing to do: pass --out and/or --print-html")
+    if not (args.out or args.print_html or args.print_states):
+        parser.error("nothing to do: pass --out, --print-html and/or --print-states")
 
 
 if __name__ == "__main__":
