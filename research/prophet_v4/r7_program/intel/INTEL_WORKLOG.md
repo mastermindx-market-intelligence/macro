@@ -64,3 +64,105 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
     word, 0 × hold token).
 - B27 (ubuntu0) and b08gates (ubuntu3) were still POLL_PENDING at 03:37Z. One monitor is
   armed for their terminal lines.
+
+## 2026-10-21 03:4xZ — B27 consumed
+
+- Lane `pro-intel-b27-20261021-r1`: host ubuntu0, DONE rc=0 at 03:39Z, lane commit
+  `be515d3c0df` (1 file, +215). The report is on lane branch `lane/pro-intel-b27-20261021-r1`.
+- Proposed dispositions: 4 × RETAIN-RESEARCH-NEXT, 1 × RETAIN-DEFERRED (Defensive/Hedge). No
+  scope removal. No sleeve is claimed live.
+- Spot-check: 15 citations checked at BASE, all match. Accepted as a draft for the seat, with
+  this qualification: first steps are read-only census only until B06. The result is folded
+  into the disposition (B27 row and §5).
+- The custody read for F3 (one GraphQL query) found:
+  - #7868 last commit 2026-09-24;
+  - #8004 last commit 2026-09-25;
+  - #7871 last commit 2026-09-24.
+  These are recorded in F3. GitHub idleness is not proof that no local writer exists.
+- Did not launch a follow-on lane in the freed slot:
+  - The D06 numeric proposal (F4) and the B4 runtime wiring census (F5) are seat decisions
+    or owner routes.
+  - B4 runtime wiring may sit in the Source orchestrator's Stage 2/3 scope, so a lane here
+    risks duplication.
+  - The B04-A0 build waits on F2.
+
+## 2026-10-21 03:5xZ — b08gates consumed; first wave closed
+
+- `pro-intel-b08gates-20261021-r1`: ubuntu3, DONE rc=0 at 03:45Z, commit `42547cfd885a` (+190).
+  The report is on the lane branch at
+  `research/prophet_v4/r7_program/intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md`.
+  I read it in full on the lane host and did not copy it locally.
+- Material finding: the Gate S acceptance already exists at BASE (`earnings_semantics_v1/README.md:81-84`,
+  Sol, #8069 comment `5894923827`). I re-checked it here at BASE `e5dd30c6`:
+  - the contract sha256 is `a0790967…a177d`, which equals the D5 consumer pin and the fixture copy;
+  - `verify_q06_…py:100` asserts the pending `gate_s.state`.
+- Disposition updated:
+  - B08 is now NEEDS-FABLE-DECISION, narrowed to "ratify + manifest-only records PR".
+  - F1 is rewritten: never byte-edit the contract; the D07 exemplar row is optional and deferred.
+  - B14 is corrected: the D5 consumer is BUILT_NOT_PROVEN and #8069 is merged.
+  - Finding 2 now lists the extra stale premises.
+- Wave 1 closed: all four lanes (censusA, censusB, b27, b08gates) are consumed and no lane of
+  mine is live. The b04a0 packet awaits F2, and b16diag is withheld under F3. Returning to the seat.
+
+## 2026-10-21 ~04:0xZ–04:1xZ — seat rulings F1–F8 received; wave 2
+
+- Seat ruled F1–F8 (all ACCEPTED; F8 accepts the B27 draft). Disposition §1 and §3 updated:
+  B27 DISPOSITIONED; B10/B12 PROSPECTIVE-ONLY with the B4 caller and `recorded_at` writer
+  ROUTED-TO-SOURCE; F6 milestone-absence note for Sol carried for the Stage 6 records PR.
+- Wave 2 BASE = origin/main `c5ee0941b4e4b2132caabd4d43a4b419d46ec22e`.
+- F2 fresh collision check: one aliased GraphQL read of #8004/#7426/#7264 file lists (a first
+  call against the wrong repository slug returned NOT_FOUND and no data). A0's mandatory CI
+  registration file `.github/ci/legacy-jobs.yml` is in #7426, #7264 and fence #9821, so
+  `pro-intel-b04a0-20261021-r1` was NOT launched (STATUS BLOCKED to the seat). Hunk check:
+  no incumbent hunk touches the `prophet-anticipation-intake` job (BASE line 27185). Options
+  V1 (A0 without the CI line; seat adds it at landing) and V2 (defer) are in §3 F2.
+- Launched `pro-intel-b08records-20261021-r1` (build, F1) and, because b04a0 never started,
+  `pro-intel-d06num-20261021-r1` (research, F4) in the second slot. Two lanes max held.
+- b08records: ubuntu1, DONE rc=0 at 04:09Z, commit `524dcfdc3f1e`, 3 owned files (+69/−3).
+  Checked on the host: both contract copies sha256 `a0790967…a177d`; verifier exit 0;
+  SEC fixture sha cited in the new record matches; prereg note is append-only after line 46;
+  manifest diff confined to `.evidence_class.basis`, `.next_action`, `.feature.current_d5_state`
+  and the added `.feature.gate_s_acceptance`. Lane-reported pytest: 23 passed (Q06 + IV units),
+  `test_us_prophet_fusion.py` 293 passed / 9 skipped.
+
+## 2026-10-21 04:1xZ — seat: b08records LANDED; V1 RULED; b04a0 r2 launched
+
+- Seat landed b08records on the session branch (cherry-pick `cce8f4f7`) for records PR r2.
+- V1 RULED for B04-A0. Packet edited: `.github/ci/legacy-jobs.yml` removed from OWNED FILES and
+  from the rules; `.github/` added to OUT OF SCOPE; `test_ci_pack` unregistered-file failure is
+  an expected GAP, never fixed by a registry edit or a test delete/rename. Pre-V1 packet kept
+  as `pk/pro-intel-b04a0-20261021.r1-unlaunched.bak`. Token check: no HOLD-, one "validated",
+  only the launcher-filled `__BASE__`.
+- Refetched main = `4623f0f74184ff41debdeb2ca86e225506a05911` (#9921 merged 04:08Z). A0 inputs
+  are byte-unchanged from `c5ee0941` (diff touches only `config/site_access.yml`).
+- Launched `pro-intel-b04a0-20261021-r2` on ubuntu3 at 04:16Z. Live lanes: d06num + b04a0 r2 = 2.
+
+## 2026-10-21 04:2xZ — d06num consumed
+- `pro-intel-d06num-20261021-r1` DONE rc=0 04:18Z on ubuntu1. Commit `be899fa17f3a`, one file
+  (+261): `research/prophet_v4/r7_program/intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md`. The
+  report stays on the lane branch; the seat lands it by fetch + cherry-pick.
+- Checked: status line "PROPOSED — NOT RULED, NOT REGISTERED, NOT ADMITTED"; source-blind (no
+  `data/` or `site/` read); every number PROPOSED; OPEN fields named.
+- Citation spot-check at `c5ee0941`: PREREG.json:174-180, R6-PREREG-01 ruling :41/:43, Cell G
+  :273-279/:369, DR :151. All match.
+- Power arithmetic re-derived: normal N 10.5/42/168/670 against the lane's 11/42/168/671.
+- Finding for the seat: the F13 PASS form (point estimate ≥ 50 bps) is not covered by the power
+  table (rejects μ ≤ 0 at μ = 50), so effective PASS power is about 50%. The seat should rule
+  (a) power against the PASS form or (b) relax the point-estimate leg. Never lower the floor.
+- Live lanes: b04a0 r2 only (1 of 2).
+
+## 2026-10-21 04:4xZ — b04a0 r2 consumed; both wave 2 lanes closed
+- `pro-intel-b04a0-20261021-r2` DONE rc=0 04:40Z on ubuntu3. Commit `31baf83179d1` (one commit on
+  `4623f0f7`), 25 files, +3502, owned paths only; no `.github/`, `app/prophet_lab.py` or
+  `intelligence_vector.py` change.
+- Reason map sha256 `8fe54266…79645` equals my independent extraction of amendment lines
+  163-303 (162 and 304 are fence markers). Re-run with `~/lanes/venv`: 390 passed. The bare
+  system python lacks `pyarrow` (environment, not code).
+- `test_ci_pack` stayed green (201 passed, 2 skipped): the expected unregistered-file red did not
+  fire because the manifest allows dark suites. The seat still owes the registration line
+  (job `prophet-anticipation-intake`, line 27234 at `4623f0f7`).
+- Declared readings recorded in §3 F2: the wrapper's own input checks, and the coverage-basis
+  over lane tie-break (unobservable on the all-null-lane table; rule it before B04-B).
+- The seat merged origin/main into the session branch (`bc3f5615`) while these files were open;
+  I waited for the merge to commit before writing. No git act from this seat.
+- Live intel lanes: 0. Monitors and waiters closed.
