@@ -16,6 +16,8 @@ changed:
     what: "Exact-workspace, exact-workstream owner context for SessionStart; Mastermind PR 1666."
   - path: scripts/agentos.py
     what: "Exact per-path update dates with at most four concurrent reads; no creation-history queries in compile-context."
+  - path: mastermind:control_plane/operator_continuation_sources.py
+    what: "Git identity repair PR 1673 targets the existing PR 656 branch; no incumbent branch mutation."
   - path: agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md
     what: "Focused canonical goal, phases and next action within the existing program."
   - path: research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
@@ -26,11 +28,17 @@ verified:
     command: "python3 -B -m pytest -q tests/test_fabric_stop_preflight.py tests/test_fabric_stop_return.py tests/test_fabric_stop_subscriptions.py tests/test_fabric_stop_retirement.py tests/test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults"
     result: "122 passed at 7e68f7d3bc5aa90c553c6fe6aaaa3259fe7ae1c3; independent review complete."
   - claim: "The context adapter and incumbent owner/process boundary passed relevant suites."
-    command: "python3 -B -m pytest -q tests/test_agentos_session_start.py tests/test_fabric_launch_agentos.py tests/test_fabric_launch_agentos_process.py"
-    result: "61 passed at f48ed994cb1a1800ecfbf3d343fd4c98f27c17f5; independent review complete."
+    command: "python3 -B -m pytest -q tests/test_agentos_session_start.py tests/test_fabric_launch_agentos.py tests/test_fabric_launch_agentos_process.py tests/test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults"
+    result: "62 passed at 6b160c6c17e9ffaa64446b75100628f15c1c40e8; published 76bee5a7276a51cb0777e5f26c6cea5a0036e299 adds only owner-resolution documentation; independent review complete."
+  - claim: "The existing continuation source builder refuses missing or malformed Git identity."
+    command: "python3 -B -m pytest -q tests/test_operator_continuation_sources.py tests/test_operator_continuation.py"
+    result: "239 passed; commit c23cfddd18e67e1769e386e32746b1f47603815a preserves the tested bytes; independent review complete; PR 1673 targets PR 656's branch."
   - claim: "The compiler preserves per-path dates and complete bundle semantics with bounded concurrent reads."
     command: "python3 -B -m pytest -q tests/test_agentos_compile.py"
     result: "104 passed; script SHA256 21b1857ab7c30b9b41cf37903ceb74fd369d9ed5cf2450e870e92c92024a32a0; independent review complete."
+  - claim: "The existing continuation sources compose through the tested public interrupted Runtime lifecycle."
+    command: "python3 -B -m pytest -q tests/test_operator_continuation.py tests/test_operator_continuation_sources.py tests/test_operator_continuation_source_contract.py tests/test_operator_continuation_events.py tests/test_runtime_binding_projection.py tests/test_operator_continuation_public_lifecycle.py --tb=short"
+    result: "385 passed, no skips, at composition HEAD d5be58f93f974b6dc57ca072efa8b20d9210c26c plus new test SHA256 0bb7d89a5e6cf5c559455094ef34925ff9d8dcb599020d1e54f2372407d6690c. Private synthetic observations; PREPARE only, no ACK or native delivery."
   - claim: "The authored Agent OS records validate."
     command: "python3 -B scripts/agentos.py validate"
     result: "1922 records; zero errors and 181 warnings. No generated state was edited."
@@ -49,10 +57,10 @@ discoveries: [DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION]
 unresolved:
   - "Automatic review denied private installed-adapter diff disclosure; that action remains held."
   - "Executive and Session Bridge returned backend_unavailable; no paid START was observed."
-  - "Full semantic continuation is unaccepted; reconcile existing source PRs 656 and 1289."
+  - "Continuation is unaccepted; the eight-reader diagnostic's former process-group settlement is unproven."
 next_actions:
   - "Qualify exact candidate heads through their existing CI/review carriers; repair material failures."
-  - "Check complete owner context at the chosen packing budget before native installation."
+  - "Resolve diagnostic settlement and qualify complete owner context before native installation."
   - "Obtain the held private-adapter review permission; use native review/trust for installed hooks."
 do_not_redo:
   - "Reuse reviewed source and Agent OS/SessionTruth/Fabric owners; no second store or execution registry."
@@ -60,20 +68,22 @@ do_not_redo:
   - "Static pins, manual callbacks and new session IDs do not prove native delivery or transferred custody."
 danger_areas:
   - "The ecosystem bundle was 50,869 bytes; focused context has little margin at budget 4,000. Keep the 32-KiB cap and complete accounting."
-  - "Initial reads exceeded 25 seconds; the four-reader compiler passed actual composition. Native delivery is unobserved."
+  - "Read latency varies; retain four readers and the timeout. Eight-reader cleanup was uncertain; do not promote it."
   - "Do not adopt another workstream's workers, arms or canaries; this project has spent no native canary."
 ---
 
 ## §0 State — what is true right now
 
-Two independently reviewed Mastermind source candidates are published:
+Three independently reviewed Mastermind source candidates are published:
 [1664](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1664)
-and [1666](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1666).
+and [1666](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1666),
+plus [1673](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1673)
+against the existing continuation-source branch.
 This is a recoverable checkpoint of the ongoing assignment, not a claim of
 installed or accepted long-horizon behavior. No live hook pin, trust field or
 provider setting was changed.
 
-The numeric `prs` field is intentionally empty at this checkpoint: the two
+The numeric `prs` field is intentionally empty at this checkpoint: the three
 implementation carriers are Mastermind PRs, linked above with their repository
 and exact heads. The current Macro field and joins cannot represent their
 cross-repository identities. The verified `gh pr view` commands ran from the
@@ -96,7 +106,10 @@ the commit. The old failed run does not qualify the repaired head.
 
 PID 50505 observes repaired PR 1664 at 7e68f7d, pytest run 39582776894, every
 60 seconds. PR 1666 observer PID 35441 completed with failure at f48ed994,
-pytest run 39578530211; its exact failed shard requires diagnosis before release.
+pytest run 39578530211. D8's line-based alias scan associated the budget with
+owner_root; an AST-identical multiline call fixed it. PID 81957 observes the new
+76bee5a head and run 39584685698 every 60 seconds. PID 15089 observes PR 1673
+at c23cfddd, run 39585619779, every 60 seconds.
 Read retained output before starting another observer. Tool-only observers do not
 establish automatic reasoning-session wake. New-head and Macro CI observations
 belong to their exact published candidates and are retained on the PRs.
@@ -126,6 +139,32 @@ diagnostic reached its 55-second cap during another walk. That longer diagnostic
 did not alter the actual 25-second reader limit. The existing batch date helper
 was evaluated and rejected for this consumer after a real merge-resolution
 fixture showed a different updated date from the incumbent per-path query.
+
+With MACRO_MASTERMIND_REPO explicitly bound to the intended Git checkout, an actual
+budget-3200 source-composition read timed out at 25.023 seconds. A later bounded
+stage diagnostic completed in 16.719 seconds and returned a 28,192-byte bundle;
+15.204 seconds were spent in 48 exact Git date queries. This exposes variable
+latency; the diagnostic does not qualify the failed delivery invocation.
+
+One temporary eight-reader experiment failed with `owned process group did not
+settle` after 27.22 seconds. The exact child PID/PGID was not returned. A single
+read-only check at 2026-10-21T10:38:05.835340Z found no Python process with that
+exact diagnostic path, but cannot rule out orphaned Git descendants. Nothing was
+killed; no further compiler call was made. The four-reader source stayed unchanged.
+Retain this lifecycle gap for the existing process owner; do not retry to claim
+settlement. M2 evidence is in /tmp/astra-configured-owner-stage-diagnostic-20261021-cp.log
+and /tmp/astra-configured-owner-eight-reader-lifecycle-20261021-cp.json.
+
+The isolated continuation integration operation
+astra-continuation-integration-review-20261021-001 composes PR 1289's exact head
+9b7318ba with PR 656's builder and the PR 1673 repair through author-preserving
+cherry-picks. Its public lifecycle tests exercise generation-bound checkpoint,
+restore invalidation, atomic COO requeue, successor admission, read-only draft
+building and replay-safe PREPARE. Missing predecessor release is refused. All
+385 focused cases pass, including the three previously skipped source contracts.
+No lifecycle history is seeded with SQL. These are private synthetic observations
+for the specific LOST/TX9_DETACHED path, with no ACK, native delivery or acceptance
+claim. PR 1289's production HOLD and incumbent custody remain unchanged.
 
 ## §4 Not in scope — do not adopt
 

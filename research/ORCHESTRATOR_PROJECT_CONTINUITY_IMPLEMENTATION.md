@@ -96,7 +96,7 @@ repairs pins or trust and is not a runtime rollout.
 
 ### W1: startup and compaction orientation
 
-Mastermind PR 1666 at f48ed994cb1a1800ecfbf3d343fd4c98f27c17f5 adds
+Mastermind PR 1666, initially f48ed994cb1a1800ecfbf3d343fd4c98f27c17f5, adds
 integrations/session_bridge/agentos_session_start.py and its operation guide.
 The reviewed invocation selects one existing WS key and one exact intended
 workspace. Matching SessionStart events reread the incumbent Agent OS owner.
@@ -118,11 +118,15 @@ ecosystem workstream and its history were preserved.
 The exact source suites are:
 
 ```sh
-python3 -B -m pytest -q tests/test_agentos_session_start.py tests/test_fabric_launch_agentos.py tests/test_fabric_launch_agentos_process.py
+python3 -B -m pytest -q tests/test_agentos_session_start.py tests/test_fabric_launch_agentos.py tests/test_fabric_launch_agentos_process.py tests/test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults
 git diff --check
 ```
 
-Sixty-one tests passed after independent review. They cover source events,
+Sixty-two tests passed at 6b160c6c17e9ffaa64446b75100628f15c1c40e8, including the
+exact D8 guard after an AST-identical formatting repair. Published
+76bee5a7276a51cb0777e5f26c6cea5a0036e299 adds only an owner-resolution guide note.
+Tested adapter SHA256 is f59adf3597a4b384b21ef686ddb4634b2439402b73acf5bdb2fe9f337857d85b.
+The tests cover source events,
 workspace exclusion, current decision rereads, exact target/hash checks, full
 accounting, size limits, uncertain-read handling and bounded malformed CLI input.
 
@@ -177,6 +181,29 @@ silently turned into current strategic or runtime facts. The small remaining byt
 margin requires an explicitly smaller packing budget for the native canary, with
 another complete-owner-read check; the adapter's hard limit stays unchanged.
 
+The P0 gap was traced to existing sibling autodiscovery selecting the non-Git
+/Volumes/Mastermind mount. The existing process-local MACRO_MASTERMIND_REPO
+override selects the intended reviewed Git checkout. Its source file/HEAD must
+be recorded separately: the Macro record digest does not bind that live join.
+This changes no API or persistent setting.
+
+With that explicit binding, the actual budget-3200 adapter read timed out at
+25.023 seconds. A later stage diagnostic completed in 16.719 seconds, returning
+28,192 bytes; 15.204 seconds were the 48 exact date reads. Its 5,596-token estimate
+still reports full accounting above the request. P0 was present; remaining
+degradation was the sparse active-builds artifact and reported budget overrun.
+The diagnostic used a 55-second bound and is not a replacement acceptance for
+the failed 25-second adapter invocation.
+
+A single temporary eight-reader comparison did not justify a change: the
+incumbent runner raised `owned process group did not settle` after 27.22 seconds,
+before returning captured streams. The original child PID/PGID was unavailable.
+A subsequent read-only check found no matching diagnostic Python process, but
+does not prove the former group empty. No process was killed or extra compiler
+call made. Keep the reviewed four-reader implementation and preserve this
+specific lifecycle uncertainty for the process owner. Do not increase limits,
+hide accounting, introduce a cache, or repeat a read to label the failure green.
+
 ### W2: durable planning and checkpoint
 
 The workstream carries the project objective, phase dependencies and next action.
@@ -210,6 +237,37 @@ ownership before repairing or integrating; do not create another implementation.
 Native SessionStart qualification is not a prerequisite for this source review
 and repair. End-to-end continuation acceptance still needs authentic current
 owner records, model delivery, original-parent custody and effect reconciliation.
+
+The reviewed Git identity repair is published as PR 1673 at
+c23cfddd18e67e1769e386e32746b1f47603815a, targeting PR 656's existing branch.
+It retains contract normalization and provider/credential refusals before
+checking repository shape and the existing full Git object-ID grammar. All 239
+source/contract cases passed after eight new invalid cases first reproduced the
+defect. Publication alone does not resolve PR 656's formal review or release
+PR 1289. A separately acquired integration workspace composes its exact head
+with both scoped builder commits using author-preserving cherry-picks. No
+incumbent branch or workspace was changed.
+
+The composed verification passes 385 cases with zero failures, errors or skips:
+219 capsule cases, 20 repaired source-builder cases, three source integration
+contracts, 37 PREPARE/Event owner cases, 104 RuntimeBinding projections and two
+new public lifecycle cases. The three previously skipped source-contract cases
+now execute. No further production Runtime or port change was needed.
+
+The new positive case uses actual public Runtime APIs in a private test Runtime
+to admit an Attempt, write a generation-bound checkpoint, record a synthetic
+predecessor stop/release observation, restore and invalidate the old binding,
+derive retry safety, commit the atomic COO retry decision, admit a successor,
+build a draft without Event writes, and PREPARE one capsule with exact replay.
+The negative case refuses preparation without positive predecessor release.
+There is no SQL insertion of predecessor history or authority; SQL only reads
+Events. The test explicitly verifies no continuation ACK Event.
+
+This qualifies the specifically exercised read-only LOST/TX9_DETACHED source
+journey. Principal, session, process and release observations remain synthetic.
+It does not establish rate-limit rollover, native cross-provider continuation,
+delivery, model consumption, successor action or parent acceptance. The isolated
+composition remains reviewable source work, not release of PR 1289's HOLD.
 
 ## Remaining implementation and acceptance order
 

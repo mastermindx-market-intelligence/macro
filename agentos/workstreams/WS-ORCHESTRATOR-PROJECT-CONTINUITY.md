@@ -38,8 +38,8 @@ waves:
     title: Supply existing Agent OS context at startup and compaction
     status: awaiting_ci
     next_action: >
-      Qualify Mastermind PR 1666 and the Macro compiler fix, then prove complete
-      native delivery and continued action in one intended Astra session.
+      Qualify PR 1666 and the Macro compiler. Resolve read latency and diagnostic
+      process settlement before the complete native-delivery canary.
   - id: W2
     title: Publish the project plan and recoverable checkpoint in Agent OS
     status: in_progress
@@ -50,8 +50,8 @@ waves:
     title: Compose and qualify full semantic continuation through existing owners
     status: in_progress
     next_action: >
-      Reconcile existing continuation PRs 656 and 1289 and their review gates.
-      Source repair can proceed before native ingress; preserve original effect custody.
+      Review repair PR 1673 into PR 656 and the 385-case composition at PR 1289.
+      Publish the lifecycle proof while preserving its production hold and custody.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo
@@ -64,7 +64,7 @@ discoveries:
 do_not_redo:
   - "Reuse Agent OS and Mastermind runtime owners; no second task registry, priority queue or memory store (agentos/README.md)."
   - "Use ops.fabric_launch.agentos.read_context for exact owner expansion; ContextResolver selects references (Mastermind d010b161)."
-  - "121 return/preflight tests and 61 context/owner tests passed; reuse exact unchanged source evidence in the handoff. Broader CI remains separate."
+  - "122 return/preflight tests and 62 context/owner/guard tests passed; reuse exact source evidence in the handoff. Hosted CI remains separate."
 landmines:
   - "A matching static hook pin is not native loading or original-parent consumption; see DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION."
   - "The compiler may preserve mandatory material beyond its requested budget; inspect exclusions and the adapter's complete-output limit (agentos/README.md)."
