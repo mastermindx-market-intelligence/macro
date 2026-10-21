@@ -25,6 +25,33 @@ Token contentHash before: b80d0392.
 ## Log
 - 02:5xZ skills loaded (fable-mode, mastermind-design-system, frontend-design); Paper guide + fonts read; before counts recorded.
 
+- 03:xxZ page 08 created empty; built fresh, not by duplicating p-A-0, so p-A-0 stays byte-identical. Token set extended add-only by 4 (`line-quiet` and `focus`, each in light and dark). Hash b80d0392 -> 640746f9. This supersedes the brief's "three additions / --mx-focus-ring".
+- R7-01 Today 1440 light EN: ledger spine, lens switcher, receipt shelf, sample footnote. R7-02/03/04 are dark EN, light ZH and dark ZH twins. ZH line heights raised per spec §4.
+- R7-05..08 Today 390 cards in light/dark × EN/ZH; R7-09 320 stress reflow, with the chart below the decision and full-width buttons.
+- R7-10..13 Setup detail at 1440/390 in light/dark. The levels chart uses neutral level ink with dash-coded lines and a mandatory caption.
+- R7-14..16 lens boards. Earnings and Cycle show `Entry not assessed`; they never borrow a stance.
+- R7-17/18 Compare: transposed at 1440, grouped by slot at 390, with "Not ranked" stated. R7-19 Saved list: When you saved vs Tonight, with the correction kept beside the original.
+- R7-20/21/25 save sheet, outcomes and dialog. All four §6.4 states are drawn: waiting, saved read-back, rejected (assertive), uncertain (polite).
+- R7-22/23/24 truthful states: decision unavailable; stale quote with revoked entry and reconstructed plan; ALAB refusal receipt.
+- R7-26 board states: loading skeleton, healthy empty, outage with counts unknown rather than zero.
+- R7-27 Today at 768: mobile nav, gutter 20, two-column grid, gap 12, cards 358.
+- Fixes along the way:
+  - removed middots;
+  - changed 76 straight apostrophes to ’;
+  - normalised 700 to 600 for one weight per role (wordmark kept);
+  - changed the light checkbox border from line to muted for 1.4.11;
+  - bound all fills to tokens;
+  - fixed the dark Save button and wrap breaks;
+  - corrected a stale board date;
+  - kept dates and ranges unbroken with U+00A0/U+2060.
+- Fabric lane pro-design-variants-20261021-r1 DONE; 5 variants consumed. Adopted: decision-strip 1, lens-switcher 1, receipt-shelf 1.
+- Finding: PR #9566 (merged 2026-10-18) restored the compact chart-first card and binds #9495 to it. Logged as spec OQ1 (blocking for implementation). Read once; no further gh calls.
+- PDF export (export_combined_pdf) failed once; not retried. PNG proofs are the export of record.
+- Audits on page 08: 0 edge accents, 0 middots, 0 arrows, 0 ALL-CAPS, 0 Menlo, 0 straight quotes.
+- Copy register: 457 rows, plus 99 ZH-only strings with 0 unmatched after normalisation. Written as spec Appendix A.
+- AFTER node counts: all 11 pre-existing pages identical to the BEFORE table (p-A-0 10121/36). Page 08 is 6687/27. The user's active page is still p-1-0.
+- Wrote R7_DESIGN_SPEC_2026-10-21.md and R7_DESIGN_RETURN.md. No commit, no push, no live lane.
+
 ## Design brief (written before any Paper write)
 
 **Signature: the decision line.** Every opportunity is one line read in a fixed order
