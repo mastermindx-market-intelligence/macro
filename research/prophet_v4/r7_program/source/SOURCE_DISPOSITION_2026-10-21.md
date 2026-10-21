@@ -65,8 +65,23 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 - Owner/custody: B4 sources/policy files unheld in the open-PR census; `engine/prophet_entry_availability.py` held by
   #9731 (sol/*, armed); `build_stock_library.py` held by #9495/#9369; `engine/live_quotes.py` NBBO = #7734
   (sol/*, draft, mastermindx-3) and #9639.
-- Verdict: same-read composition **READY** — lane `pro-source-b05sameread-20261021-r1` (ubuntu1) launched 04:01Z, new
-  files only. Wiring into the builder **BLOCKED-CUSTODY** (#9495/#9369). Any positive (non-UNAVAILABLE) B4 state
+- Verdict: same-read composition **DONE (lane), ACCEPTED at source level by ORCH-SOURCE** — lane
+  `pro-source-b05sameread-20261021-r1`, ubuntu1, rc=0 04:24Z, commit `39b2767ffe21` on
+  `~/lanes/wt/pro-source-b05sameread-20261021-r1`; diff = `engine/prophet_b4_same_read.py` (+411),
+  `tests/test_prophet_b4_same_read.py` (+582), `.github/ci/legacy-jobs.yml` (+1, job `prophet-anticipation-intake`, no
+  `paths:`); lane-run suites 256 passed (same_read 30, strategy_definition 143, candidate_state 64, validity 19).
+  Copies: `$S/ret/b05/`. Spec 1-8 each has a named test (key set/determinism :156; one read + no projector :195;
+  happy = direct evaluator, not ENTRY_OPEN :247; binding :299; passthrough :350; bytes changed :382; retraction :405;
+  D01 x4 :462-498; `classify_nbbo` 7 outcomes + boundary :532-548; early close :564). No wall-clock read
+  (`datetime` used only for `fromisoformat`, module :109/:160); `decision_at` = owner `clocks.live_pass_ts`.
+  Review notes for the independent lane: (a) six module-raised `RuntimeOwnerFactError` on a *qualified* read with
+  no binding/clocks/attestation/live clock (:344, :347, :190, :194, :375, :379) propagate uncaught — fail-loud, which
+  contradicts the docstring's "every absent mandatory owner fact types UNAVAILABLE_DATA"; the reviewer rules whether
+  to route them through the existing catch; (b) `read_native_b4_owner_inputs` is not inside a try (it returns typed
+  refusals at BASE); (c) D01/happy tests monkeypatch the evaluator to inject geometry/metric fixtures and assert the
+  module itself passed `{}` — confirm that assertion; (d) GAP: `lib/nyse_calendar.py:10-13` models no early close —
+  2026-11-27 13:00 ET half day is an ordinary session; only `engine/prophet_entry_policy.py:68-74` knows it. Ships via
+  a seat claude/* PR after one independent review lane (D01 closure needs it). Wiring into the builder **BLOCKED-CUSTODY** (#9495/#9369). Any positive (non-UNAVAILABLE) B4 state
   **BLOCKED-DATA**: no native geometry/metric owner exists (sources docstring, census E Q2). NBBO **BLOCKED-CUSTODY**
   on #7734 plus a D08 decision (§4).
 - #7734 review finding to route (not ours to fix): its diff drops `early_close`/`is_session` from
@@ -92,9 +107,27 @@ A unit can carry two verdicts when it has separable halves; each half names its 
   enforces eligibility and dedupe with at-most-once delivery and quarantine; there is no correction or revocation of
   a sent alert; no Prophet module produces or enqueues a user alert today.
 - Owner/custody: alert drain/delivery = existing alerts owner (unheld); user_prefs = #9774.
-- Verdict: contract **READY** — research lane `pro-source-b21contract-20261021-r1` launched 04:1xZ (report
-  `B21_ALERT_STATE_MACHINE_CONTRACT_2026-10-21.md`, contract only, no delivery code). Build **NEEDS-FABLE-DECISION**
-  (D05 + D11) and depends B07/B20.
+- Contract DONE: lane `pro-source-b21contract-20261021-r1` (ubuntu3, commit 6eed43cb, STATUS DONE) →
+  `B21_ALERT_STATE_MACHINE_CONTRACT_2026-10-21.md` (465 lines, sha256 3f75cf6b3403), accepted by ORCH-SOURCE with
+  the notes below. Contract: eligible kinds are B1/B3 lifecycle events only (`episode_terminal`,
+  `emergence_triggered`, `corrected_material`, `retracted`, `superseded`; `episode_opened` optional, recency-gated);
+  never a quote refresh, freshness change, UNESTIMABLE/UNAVAILABLE side or B4 transition; id
+  `prophet|<kind>|<episode_id>|<from>-><to>|<b1_event_id>|<user_id>`; subscription (a) = one `ALERT_CATEGORIES`
+  member + a designated named watchlist (fif precedent), new store forbidden; corrections are NEW outbox rows with
+  `corrects_fire_event_id`; drain stale guard `not_after` → `mandatory_fact_stale`.
+- ORCH-SOURCE notes on acceptance: (1) the contract's reason for excluding B4 transitions ("a same-read caller would
+  be a new store") is too strong — the B05 same-read composer is pure and stores nothing; the exclusion still holds
+  on the two other grounds it gives (ENTRY_OPEN alert = price alert in disguise; nothing persists a B4 series, and D11
+  rule 3 forbids persisting ENTRY_OPEN). (2) U1 (`lib/user_prefs.py`, `tests/test_alert_prefs.py`) is
+  **BLOCKED-CUSTODY** on #9774 (`claude/cs-v2-u2-ship`, the cs-v2 lane whose head 9807f906 appends
+  `cs_saved_scenario` to the same tuple), not READY; U3's `config/dag.yml` row is held by #9852/#9774/#9590 and is a
+  seat placement act. (3) U4 (producer PATCH of its own unsent `alert_outbox` rows to `suppressed`) and U5 (drain
+  `decide_row` change) touch delivery infrastructure — out of this orchestrator's scope (contracts only) and
+  consequential enough for one independent review. (4) the quarantined-original correction copy is an open ruling.
+- Verdict: contract **DONE**; build U2 (pure producer core, new file) is technically READY but **NEEDS-FABLE-DECISION**
+  (D05 + D11, and the BUILD_PROGRAM dependency on B07/B20 that the contract proposes to waive for U1–U7); U1
+  BLOCKED-CUSTODY (#9774); U8 end-to-end proof BLOCKED on human-only gates (`ALERT_DRAIN_ENABLE`, recipient,
+  entitlement, copy ratification).
 
 ### B22 — Deliver a truthful unified track record (D11)
 - Evidence: masterplan A1 :860 "Finish #7399 truthful effective-ledger record". #7399 is sol/* draft 41ca9354, head
@@ -114,7 +147,15 @@ A unit can carry two verdicts when it has separable halves; each half names its 
   BU5 journey/report generator **READY**; BU2 code READY, entitled run **BLOCKED** on a live CDP session (D11-a);
   BU3 field `web_vitals` wire **NEEDS-FABLE-DECISION** (D11) and touches `templates/theme.js` (held by
   #9495/#9294/#9650/#9599).
-- Verdict: harness **READY** (BU1/BU4/BU5 packets to be written on seat acceptance of the design); B23 UI surface
+- BU1 lane DONE: `pro-source-b23bu1-20261021-r1`, ubuntu2, rc=0 04:35Z, commit `155769840281` (BASE e5dd30c6); diff =
+  `scripts/capture_page_evidence.py` (+206/-2), `tests/test_capture_page_evidence.py` (+220), no CI edit (extends
+  an existing suite); 85 passed; `--self-check` ok; default run = BASE manifest + 73 null timing keys only
+  (12 states x 6 + `timing_basis`); TOOL_VERSION 1.4.0; viewports `narrow-320` (320x720), `tablet-768` (768x1024).
+  ACCEPTED source-level by ORCH-SOURCE (no independent review owed: dev tooling, not a consequential change).
+  Lane GAP: the design file is not at BASE (it lives only on the seat branch) — heights fell back to the packet's.
+- BU4+BU5 lane launched 04:38Z stacked on the BU1 commit (`pro-source-b23bu45-20261021-r1`, ubuntu2), design facts
+  inlined because the design file is absent at BASE; ships after BU1 in the same or a follow-on seat PR.
+- Verdict: harness **READY** (BU1 DONE; BU4/5 RUNNING); B23 UI surface
   **READY-AFTER-DESIGN-SPEC** — packet `$S/pk/pro-source-b23ui-20261021.md` (`__HARNESS_DESIGN__` now fillable).
 
 ### B26 — Execute phased flagship cutover and rollback proof (D10, D11)
@@ -135,8 +176,10 @@ A unit can carry two verdicts when it has separable halves; each half names its 
   completion artifact still owed: "exact source/head, independent review and real owner-chain evidence" plus the
   return to #7581 finding 5789777976.
 - Open sub-facts: v1 has no revocation beyond retraction; shortened sessions are not modelled (`lib.nyse_calendar`).
-- Verdict: **READY** to close — B05 lane supplies owner-chain tests through the real composer; then one independent
-  review lane; then the seat posts the closure on #7581's carrier (seat act).
+- Verdict: **READY** to close — B05 lane DONE (39b2767ffe21): four D01 cases through the real composer (prior
+  completed session valid next session; late emit UNKNOWN not FAIL; expired window UNKNOWN; lineage mismatch UNKNOWN).
+  Remaining: one independent review lane on that commit, seat PR, then the seat posts the closure on #7581's carrier
+  (seat act). Shortened-session sub-fact stays an open calendar-owner GAP (B05 note d).
 
 ### D02 — Independent anchors and episode admission (register meaning)
 - Verdict: **NEEDS-FABLE-DECISION**; no SOURCE consumer needs a new anchor species in this wave. The commission
@@ -209,10 +252,13 @@ A unit can carry two verdicts when it has separable halves; each half names its 
    user-facing B4 vocabulary is the B4 state/refusal enum; UNAVAILABLE_DATA renders as "entry unavailable — <owner
    reason>", never a maturity stage and never a Buy; a quote refresh never relabels an assessment. Bind that as a D09
    design constraint for B07/B20 rather than a new decision.
-3. **D05 alert semantics.** Adopt subscription option (a) from the B21 contract (per-category opt-in in the existing
-   `user_prefs` owner; no new store); an eligible change = a B3/B4 state transition on a new assessment, never a quote
-   refresh; corrections are new events referencing the original fire id; revocation requires a contract extension to
-   the drain owner, not a Prophet-side store. Final wording after the B21 lane returns.
+3. **D05 alert semantics.** Adopt the B21 contract: subscription (a) (one `ALERT_CATEGORIES` member, merged after
+   #9774, plus the designated named watchlist; no new store); eligible change = the closed B1/B3 lifecycle set, never
+   a quote refresh, freshness flip, UNAVAILABLE/UNESTIMABLE side or B4 transition; corrections are new outbox rows
+   carrying `corrects_fire_event_id`; a sent original is never edited; an effect-unknown original gets no correction
+   row (typed count only). Rule separately: (i) whether the B07/B20 dependency is waived for the producer core,
+   (ii) the producer's own-row PATCH to `suppressed` (U4), (iii) the drain `not_after` guard (U5) — both with one
+   independent review — and (iv) the copy for a correction whose original is effect-unknown.
 4. **D08 NBBO.** Do not extend `_QUOTE_KEYS` until #7734 is accepted (with its early-close regression fixed and
    `tests/test_live_quotes.py` in CI) and NBBO rights sit in the D03 matrix. Until then fillability stays UNKNOWN and
    `classify_nbbo` (B05) is evidence only.
@@ -226,9 +272,12 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 ## 5. Packet set returned for seat acceptance
 | Packet (`$S/pk/`) | Class | State | Trigger |
 | --- | --- | --- | --- |
-| pro-source-b05sameread-20261021 | build C2 | RUNNING r1 ubuntu1 | consume; independent review before PR |
+| pro-source-b05sameread-20261021 | build C2 | DONE r1 ubuntu1 39b2767ffe21 (3 files, 256 passed); ACCEPTED source-level | independent review lane, then seat claude/* PR |
+| pro-source-b05review-20261021 | review C1 | RUNNING r1 ubuntu1 (BASE 39b2767f, launched 04:29Z) | independent review of B05 (spec 1-8 + attack surfaces A1-A8); report `source/B05_SAME_READ_REVIEW_2026-10-21.md` on the lane branch |
 | pro-source-b23harness-20261021 | census | DONE r1 ubuntu2, 4490397b | accepted by ORCH-SOURCE; report here |
-| pro-source-b21contract-20261021 | census | RUNNING r1 | consume |
+| pro-source-b21contract-20261021 | census | DONE r1 ubuntu3, 6eed43cb | accepted with notes; report here |
 | pro-source-b1recordedat-20261021 | build C1 | unlaunched, READY | seat acceptance (R2) |
 | pro-source-b4nightly-20261021 | build | unlaunched, BLOCKED | B05 return + #7734 + Fable ruling (R1) |
+| pro-source-b23bu1-20261021 | build C1 | DONE r1 ubuntu2 155769840281 (2 files, 85 passed); ACCEPTED source-level | seat claude/* PR (no independent review owed) |
+| pro-source-b23bu45-20261021 | build C1 | RUNNING r1 ubuntu2 (BASE = BU1 lane commit 15576984, launched 04:38Z) | BU4 lab-serve journal + BU5 report generator; design facts inlined |
 | pro-source-b07journey / b20workspace / b22record / b23ui | build | unlaunched | design spec acceptance |
