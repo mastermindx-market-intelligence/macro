@@ -17619,6 +17619,7 @@ jobs:
       - "tests/test_rotation_evidence_modes.py"
       - "tests/test_sector_cycles.py"
       - "tests/test_sector_generation_guard.py"
+      - "tests/test_cycle_phase_age.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
