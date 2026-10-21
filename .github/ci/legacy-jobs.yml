@@ -5678,6 +5678,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
@@ -9093,9 +9094,15 @@ jobs:
       - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
+      # FIF Z0 A47 (2026-10-20): the recovery-drill receipts replay suite and
+      # the research driver + committed receipt it pins.
+      - "tests/test_fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/FIF_A47_RECOVERY_DRILL_RECEIPTS_2026-10-20.json"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
+      - "tests/fixtures/fundamental_forensics_registry_v1_0_0/**"
       - "research/financial_intelligence_fabric/**"
       - "templates/fundamental_forensics.*"
       - "templates/fif_saved_briefcase.js"
@@ -9820,6 +9827,8 @@ jobs:
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_a43_responsive_keyboard_corpus.py"
+      - "mockups/evidence/fundamental_forensics_p2/**"
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
@@ -9906,7 +9915,9 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a47_recovery_drill_receipts.py
           tests/test_fif_a21_publish_observation.py
+          tests/test_fif_a43_responsive_keyboard_corpus.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
@@ -17183,6 +17194,7 @@ jobs:
       - research/US_BOARD_MEASUREMENT.md
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
@@ -18456,6 +18468,7 @@ jobs:
       - "templates/_vector_polish.html.j2"
       - "scripts/__init__.py"
       - "scripts/_commodity_card_fields.py"
+      - "scripts/build_commodity_strategies.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_strategies_grid_fields.py"
@@ -18517,6 +18530,11 @@ jobs:
     # builder. It pins the graded-ignition scoreboard block, its absence when nothing is
     # graded, and that its id never shadows the desk partial's script target. Exclusive so
     # the pages' suite does not widen any shared job's inferred scope.
+    # W30-L43 adds the theme price-coverage block and the observation line:
+    # tests/test_baskets_regional_themeobs_block.py and
+    # tests/test_baskets_regional_observation_line.py import only the stdlib, jinja2
+    # and scripts/_baskets_themeobs.py, and read the HK / Canada builders as text
+    # (never run them).
     scope: exclusive
     paths:
       - "templates/baskets_hk.html.j2"
@@ -18528,9 +18546,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "scripts/__init__.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
+      - "scripts/build_baskets_canada.py"
+      - "scripts/build_baskets_hk.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_baskets_regional_scorecard_block.py"
+      - "tests/test_baskets_regional_observation_line.py"
+      - "tests/test_baskets_regional_themeobs_block.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18541,7 +18564,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: HK / Canada basket desks — ignition scoreboard block
-        run: python -m pytest tests/test_baskets_regional_scorecard_block.py -q -p no:cacheprovider
+        run: >-
+          python -m pytest tests/test_baskets_regional_scorecard_block.py
+          tests/test_baskets_regional_themeobs_block.py
+          tests/test_baskets_regional_observation_line.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -18596,6 +18622,7 @@ jobs:
       - "templates/_vector_polish.html.j2"
       - "scripts/__init__.py"
       - "scripts/_china_income_card.py"
+      - "scripts/build_china_strategies.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_china_strategies_income_tile.py"
@@ -23656,6 +23683,7 @@ jobs:
       - scripts/__init__.py
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
@@ -28087,6 +28115,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"

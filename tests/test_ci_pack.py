@@ -1541,6 +1541,21 @@ def test_a_named_suite_edit_does_not_select_peer_pytest_jobs(real_manifest_scope
     assert len(nonempty) < 12, nonempty
 
 
+def test_fif_kernel_guards_selects_on_registry_v1_0_0_fixture_edit(real_manifest_scopes) -> None:
+    """#9761 follow-up (minor 1): the committed 1.0.0 registry copy is a job input.
+
+    The fif-kernel-guards suites re-derive the 1.0.0 pins from
+    tests/fixtures/fundamental_forensics_registry_v1_0_0, a SIBLING tree of
+    tests/fixtures/fundamental_forensics — so without its own glob a
+    fixture-only edit selected none of them through this job.
+    """
+    jobs, _ = real_manifest_scopes
+    selected, reason = PACK.select_jobs(
+        jobs, ["tests/fixtures/fundamental_forensics_registry_v1_0_0/x.json"]
+    )
+    assert "fif-kernel-guards" in {job.job_id for job in selected}, reason
+
+
 def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
