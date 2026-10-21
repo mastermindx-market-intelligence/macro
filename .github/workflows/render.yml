@@ -195,6 +195,7 @@ on:
       - "scripts/build_stock_seasonality_page.py"
       - "scripts/build_sector_central.py"
       - "scripts/build_sector_cycles.py"
+      - "scripts/build_sector_holdings_coverage.py"
       - "scripts/build_site.py"
       - "scripts/build_smart_money.py"
       - "scripts/build_sp500_heatmap.py"
