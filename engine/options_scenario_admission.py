@@ -215,6 +215,7 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
         validated.append((key, term, oi_value, (expiry - observed).total_seconds()))
     selected = [(key, term, oi_value, seconds) for key, term, oi_value, seconds in validated
         if (scope is None or key[0] in scope) and (max_dte is None or seconds / 86400 <= max_dte)]
+    out["coverage"].update(expiry_scope=deepcopy(scope), max_dte_days=max_dte)
     out["coverage"]["selected"] = len(selected)
     out["coverage"]["unqualified_selected"] = len(selected)
     out["coverage"]["selected_contract_keys"] = [list(row[0]) for row in selected]
@@ -256,7 +257,8 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
         return refuse("nonfinite_kernel_member")
     surface = build_scenario_surface(positives, root=root, observed_at=observed.isoformat(),
         spot=spots[0], price_grid=prices, horizons_minutes=horizons,
-        iv_observed_at=observed.isoformat(), iv_source="provided_iv", vol_map="sticky_strike",
+        expiry_scope=scope, iv_observed_at=observed.isoformat(),
+        iv_source="provided_iv", vol_map="sticky_strike",
         r=numbers["r"], q=numbers["q"], mult=numbers["mult"], pm=numbers["pm"])
     if any(value is None or not np.isfinite(value)
            for grid in surface["grids"].values() for row in grid for value in row):

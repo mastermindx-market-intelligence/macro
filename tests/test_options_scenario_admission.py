@@ -296,3 +296,12 @@ def test_known_zero_count_survives_another_members_missing_iv():
     assert out['surface'] is None and out['coverage']['selected']==2
     assert out['coverage']['zero_weight']==1 and out['coverage']['qualified']==1
     assert out['coverage']['unqualified_selected']==1
+
+
+def test_selected_scope_is_carried_to_result_without_population_reinterpretation():
+    g,oi,asof,req,ctx=strict_book();req['expiry_scope']=['2026-10-28'];req['max_dte_days']=10
+    out=strict_call(g,oi,asof,req,ctx)
+    assert out['status']=='complete_for_supplied_universe'
+    assert out['coverage']['expiry_scope']==out['surface']['expiry_scope']==['2026-10-28']
+    assert out['coverage']['max_dte_days']==10
+    assert out['coverage']['expected']==out['coverage']['selected']==1
