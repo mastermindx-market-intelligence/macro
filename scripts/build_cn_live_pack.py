@@ -44,7 +44,8 @@ def _now(raw: str | None) -> datetime | None:
 
 def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
     """Nightly board rows keyed by ticker. Missing file → empty (fail-open)."""
-    for rel in ("site/china_standouts.json", "data/china_standouts.json"):
+    for rel in ("site/factordata/china_standouts.json",
+                "site/china_standouts.json", "data/china_standouts.json"):
         p = root / rel
         if not p.is_file():
             continue
@@ -54,6 +55,18 @@ def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
             print(f"::warning title=cn-live-pack::frozen board {p} unreadable ({exc})",
                   flush=True)
             continue
+        if isinstance(doc, dict) and any(isinstance(doc.get(k), list)
+                                         for k in CP.PRIMARY_BOARD_ARRAYS):
+            rows, receipt = CP.project_primary_board(doc)
+            if receipt.get("refused"):
+                print(f"::warning title=cn-live-pack::frozen board {p} "
+                      f"refused ({receipt['refused']})", flush=True)
+                return {}
+            print(f"::notice title=cn-live-pack::frozen board {p} "
+                  f"as_of={receipt['as_of']} primary={receipt['primary_rows']} "
+                  f"projected={receipt['projected']} "
+                  f"excluded={receipt['excluded']}", flush=True)
+            return rows
         out: dict[str, dict[str, Any]] = {}
         lanes = doc.get("lanes") if isinstance(doc, dict) else None
         if isinstance(lanes, dict):
