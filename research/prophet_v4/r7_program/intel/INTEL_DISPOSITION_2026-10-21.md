@@ -35,7 +35,7 @@ exists only on those heads is unread.
 | B18 | Failure-inclusive Cycle policy research | BLOCKED-DATA by ruling (R6-B16-01:21) | None. A licensed failure/mapping source is the provider question |
 | B19 | Cycle core/add/exit | BLOCKED (B17/B18; D04 Cycle versions; no milestones) | None |
 | B24 | Portfolio context across sleeves | BLOCKED (B07/B13/B14/B17 undispatched; D05 DDL human gate) | None |
-| B27 | Retained sleeves and instrument roadmap | READY (research only) | `pro-intel-b27-20261021-r1` (launched): disposition draft |
+| B27 | Retained sleeves and instrument roadmap | READY (research only); draft DELIVERED | Seat rules on the draft (F8). Research steps are source-census only until B06 |
 
 No unit is READY for a build lane at BASE without a seat decision. That conclusion is itself
 the main Stage 4 finding (§4).
@@ -291,8 +291,29 @@ the main Stage 4 finding (§4).
   - No sleeve has a dedicated research doc or module.
   - Per-sleeve kill rows are listed in B §B27.
   - D12 is open.
-- **Verdict.** READY for a research-only disposition draft. Lane `pro-intel-b27-20261021-r1`
-  proposes; scope removal stays with the true authority (D12).
+- **Verdict.** READY for a research-only disposition draft.
+- **Lane result.** `pro-intel-b27-20261021-r1`, host ubuntu0, DONE rc=0, lane commit
+  `be515d3c0df`. The report is 215 lines:
+  `research/prophet_v4/r7_program/intel/B27_RETAINED_SLEEVES_DISPOSITION_DRAFT_2026-10-21.md`
+  on lane branch `lane/pro-intel-b27-20261021-r1`.
+- **Proposed dispositions.** It removes no scope:
+  - Policy/Event Swing, Catalyst/Dislocation, Liquidity/Debasement/Real Assets and
+    Range/Mean Reversion: RETAIN-RESEARCH-NEXT.
+  - Liquidity/Debasement/Real Assets is readiness-first. Its futures/commodity data leg
+    waits on a rights row, since the registry has none at BASE.
+  - Defensive/Avoidance/Hedge: RETAIN-DEFERRED, triggered by a Portfolio/Risk decision
+    contract plus a hedge-instrument owner.
+- **Other content.** An instrument × sleeve roadmap, where every short expression is barred
+  (`KILL-DIRECTIONAL-SHORTING`, DNR:45) and options are research-only. A sequencing
+  proposal. No sleeve is claimed live, qualified or ranked at BASE.
+- **Orchestrator adjudication.** I spot-checked 15 citations at BASE and all matched:
+  - `engine/prophet_strategy_definition.py:517/549/581/613/645/597/607`;
+  - DNR:45/53/117/123/130;
+  - catalog:22.
+- **Accepted as a DRAFT for the seat, with one qualification.** Each "smallest first research
+  step" is admissible only as a read-only source/kill-equivalence census. Any
+  preregistration or study waits on B06 (B27 depends on B00/B06; B06 is BLOCKED above). The
+  draft says the same in its §8.
 
 ## 3. Decisions for Fable (recommendation first)
 
@@ -369,7 +390,7 @@ the main Stage 4 finding (§4).
 |---|---|---|---|---|
 | pro-intel-censusA-20261021-r1 | census | ubuntu2 | DONE rc=0, `1b5114fb32b` | intel/CENSUS_A_EARLY_LEADERSHIP_B4_2026-10-21.md |
 | pro-intel-censusB-20261021-r1 | census | ubuntu2 | DONE rc=0, `d166114c595` | intel/CENSUS_B_EARNINGS_CYCLE_LATER_2026-10-21.md |
-| pro-intel-b27-20261021-r1 | research | ubuntu0 | RUNNING | intel/B27_RETAINED_SLEEVES_DISPOSITION_DRAFT_2026-10-21.md |
+| pro-intel-b27-20261021-r1 | research | ubuntu0 | DONE rc=0, `be515d3c0df`, consumed + spot-checked | intel/B27_RETAINED_SLEEVES_DISPOSITION_DRAFT_2026-10-21.md |
 | pro-intel-b08gates-20261021-r1 | research | ubuntu3 | RUNNING | intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md |
 
 Written, not launched. The packets are in the orchestrator scratchpad `pk/` directory and are

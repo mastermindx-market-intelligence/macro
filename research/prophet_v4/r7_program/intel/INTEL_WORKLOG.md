@@ -64,3 +64,24 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
     word, 0 × hold token).
 - B27 (ubuntu0) and b08gates (ubuntu3) were still POLL_PENDING at 03:37Z. One monitor is
   armed for their terminal lines.
+
+## 2026-10-21 03:4xZ — B27 consumed
+
+- Lane `pro-intel-b27-20261021-r1`: host ubuntu0, DONE rc=0 at 03:39Z, lane commit
+  `be515d3c0df` (1 file, +215). The report is on lane branch `lane/pro-intel-b27-20261021-r1`.
+- Proposed dispositions: 4 × RETAIN-RESEARCH-NEXT, 1 × RETAIN-DEFERRED (Defensive/Hedge). No
+  scope removal. No sleeve is claimed live.
+- Spot-check: 15 citations checked at BASE, all match. Accepted as a draft for the seat, with
+  this qualification: first steps are read-only census only until B06. The result is folded
+  into the disposition (B27 row and §5).
+- The custody read for F3 (one GraphQL query) found:
+  - #7868 last commit 2026-09-24;
+  - #8004 last commit 2026-09-25;
+  - #7871 last commit 2026-09-24.
+  These are recorded in F3. GitHub idleness is not proof that no local writer exists.
+- Did not launch a follow-on lane in the freed slot:
+  - The D06 numeric proposal (F4) and the B4 runtime wiring census (F5) are seat decisions
+    or owner routes.
+  - B4 runtime wiring may sit in the Source orchestrator's Stage 2/3 scope, so a lane here
+    risks duplication.
+  - The B04-A0 build waits on F2.

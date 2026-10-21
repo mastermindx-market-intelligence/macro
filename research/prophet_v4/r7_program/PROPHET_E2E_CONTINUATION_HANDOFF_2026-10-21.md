@@ -103,3 +103,12 @@ themes; 320/390/768/1440; a passing test is not served proof.
   #9921 state: head 7e0cf6c6, non-draft, UNARMED; ci-plan/ci-authority/fence-pack SUCCESS, contract-delta + ci-pack-0…11
   IN_PROGRESS, only `ci-authority/codex/merge-queue-pilot` FAILURE (standing X, not a #9921 defect). Review lane
   `pro-receipt-truth-review-20261021-r1` POLL_PENDING on ubuntu0 (launched 03:23Z).
+- 03:4xZ: **records PR #9922 MERGED** → main `82ba78f1c3d4` (docs/records checkpoint: handoff, Agent OS WS + handoff,
+  clock_provenance census + §10 ruling, orchestrator snapshots). Session branch merged `origin/main` back (8c40d21c) so
+  later records PRs diff only new commits. **Review lane returned PASS_WITH_NOTES** for #9921 @7e0cf6c6
+  (`research/prophet_v4/r7_program/reviews/RECEIPT_TRUTH_REVIEW_2026-10-21.md`, lane commit 3ba6c23e → cherry-picked
+  ad9d0fd1): every spec point PASS; N1 = 22 host-environment failures (html5lib/module missing, classified root-cause,
+  not defects); N2 = non-Mapping failure entries skipped silently (producer only emits dicts; no action). #9921 CI:
+  13 pass / 7 ci-packs pending / only merge-queue-pilot X (standing); background `gh pr checks --watch` armed (one
+  notification). On green: carrier re-read (last edge must still be 6306863736) → `gh pr merge 9921 --squash
+  --match-head-commit 7e0cf6c6…` → launch `pro-receipt-newbase-20261021-r1` against post-merge main.
