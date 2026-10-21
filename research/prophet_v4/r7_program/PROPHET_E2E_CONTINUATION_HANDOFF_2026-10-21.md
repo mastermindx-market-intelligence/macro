@@ -76,3 +76,19 @@ themes; 320/390/768/1440; a passing test is not served proof.
   routes any needed change as a carrier recommendation, and never becomes a second writer or alternate controller.
 - Next: harness notifications from the two Stage 1 watchers and the four orchestrators drive the next acts
   (review lane → `claude/prophet-r7-receipt-truth` PR; census adjudication; design spec acceptance).
+
+## Checkpoint 2026-10-21 03:3xZ — receipt-truth lane returned; PR #9921 open; review lane launched
+
+- Lane `pro-receipt-truth-20261021-r1` (ubuntu0, glm-5.3) returned `SESSION END: PROVEN_OUTCOME`: commit
+  `7e0cf6c655632be9e75188db1982504450183a43` on base `e5dd30c6`, exactly the five owned files, 141+/5−;
+  55 + 7 targeted tests pass; 22 pre-existing site/artifact-environment failures on the sparse lane tree.
+  Numbers at base: 38 `clock_provenance` validation failures sit inside the 39-member `plan_not_built` group,
+  so the "Cleared every check" contradiction was real for 38 of 39 rows.
+- Seat acts: carrier re-read (#6817 last edge still 6306863736) → pushed `claude/prophet-r7-receipt-truth` →
+  donors ubuntu1/ubuntu2 hold the head → **PR #9921** opened (non-draft, UNARMED; bound to this session's PR
+  monitor; never arm before the review verdict) → review lane `pro-receipt-truth-review-20261021-r1`
+  (class review, read-only, packet `$S/pk/pro-receipt-truth-review-20261021.md`) launched against head
+  `7e0cf6c6`; first attempt refused pre-launch ("validated appears 2 times"), reworded, same id (never ran).
+- Merge rule: review PASS/PASS_WITH_NOTES + CI green on the merge ref → `gh pr merge 9921 --squash
+  --match-head-commit 7e0cf6c6…`; FAIL → fix lane under a new run id (-r2), never edit on the seat.
+- Still running: `pro-clockprov-20261021-r1` (ubuntu2, watcher bdyjfabdb); ORCH-DESIGN/INTEL/REGIONAL/SOURCE.
