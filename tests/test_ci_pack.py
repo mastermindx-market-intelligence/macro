@@ -5001,6 +5001,8 @@ CURATED_EXCLUSIVE = {
     "local-projections",
     # Options R1 W2A: exact import/read closure of the relative-trend suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-rotation-relative-trend",
+    # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-sector-holdings-coverage",
 }
 
 
