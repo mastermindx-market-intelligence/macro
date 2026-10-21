@@ -4191,6 +4191,105 @@ def test_pk10_annual_rather_than_triennial_stays_annual() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def test_pk10_rejected_alternative_is_not_evidence() -> None:
+    # Review F1-A (third repair), (ii): the stated frequency is annual; the
+    # rejected "every three years" alternative is not evidence, and the
+    # rejection verb never appears in the matched span.
+    row, package, result = _pk10_frequency_row(
+        "<div>Shareholders approved annual say-on-pay votes, rejecting the"
+        " every three years alternative.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_incentive_collocation_is_not_a_frequency() -> None:
+    # Review F1-B (third repair), (O1): "annual" heading the "annual
+    # incentive plan" collocation is not a frequency; the stated "every
+    # three years" on the far side of the anchor governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote on our annual incentive plan will be held"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote on our annual incentive plan will be held every"
+        " three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_frequency_before_anchor_resolves() -> None:
+    # Review F2 (third repair), (iii): the frequency may precede the anchor
+    # in the same sentence; the hyphenated "every-three-years" is matched
+    # but discarded — it modifies the peer-group "review", not the vote.
+    row, package, result = _pk10_frequency_row(
+        "<div>We hold an annual say-on-pay vote, consistent with the"
+        " every-three-years review of our peer group.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_biennial_rather_than_annually() -> None:
+    # Third repair NOTE: the biennial transcript — the contrasted
+    # "annually" is discarded, the stated "every two years" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every two years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every two years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annually_rather_than_biennial() -> None:
+    # Third repair NOTE: the mirrored transcript — the contrasted "every
+    # two years" is discarded, the stated "annually" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held annually rather than every"
+        " two years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held annually"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_two_surviving_frequencies_is_not_disclosed() -> None:
+    # Third repair: two distinct frequencies survive one anchored sentence
+    # with no contrast marker separating them — the pack's existing
+    # anchor-present-no-resolvable-frequency emission, the valued
+    # not_disclosed asserted over the whole document.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote is held annually and every three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence: the span runs from the first byte through the last
+    # narrative character (the trailing close tags collapse to one space).
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The say-on-pay vote is held annually and every three years." in covered
+    assert contract.validate_pack_result(result) == []
+
+
 @pytest.mark.parametrize("pack_id", sorted(BASE_AAPL_ENVELOPE_SHA256))
 def test_base_pack_envelopes_unchanged_by_pk10_edits(pack_id: str) -> None:
     # §TESTS 4: every pack registered at BASE keeps its AAPL envelope

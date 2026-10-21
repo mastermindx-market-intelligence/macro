@@ -34,6 +34,7 @@ from typing import Any, Mapping
 from .. import specialist_pack_contract as contract
 from . import narrative
 from .base import (
+    NarrativeHooks,
     PackInput,
     PackProducer,
     PackSpec,
@@ -57,51 +58,149 @@ SPEC = PackSpec(
 PERFORMANCE_MEASURE = r"(?:most important|selected) (?:financial )?performance measure"
 DIRECTOR_INDEPENDENCE = r"independent (?:director|under the)"
 RELATED_PARTY = r"related[- ]party transaction"
-# B.2 pattern revision v3 (review F1, 2026-10-20): a stated non-annual
-# frequency governs over an annual mention in the same sentence. The arms are
-# evaluated triennial -> biennial -> annual, and every arm keeps the v2
-# sentence-bounded gap — now tempered: a gap may never cross a phrase that
-# resolves a different frequency, so a contrastive "rather than annually" /
-# "rather than every year" clause can no longer let the annual arm skip past
-# the stated "every three years" earlier in the sentence. The annual literal
-# still refuses the meeting / report / proxy collocations outright, and a
-# refused collocation guards no gap either.
+# B.3 pattern revision v4 (review F1/F2/F3, 2026-10-20): the say-on-pay
+# frequency resolves ORDER-INDEPENDENTLY inside the anchor's sentence; a
+# rejected alternative is never evidence, and an "annual" that heads a
+# non-meeting compound noun is not a frequency. The v3 one-regex arms are gone
+# (their alternation order silently decided contrastive sentences); the
+# mapping pattern is the anchor alone — it triggers the resolution and keeps
+# the no-anchor valued absence — and the frequency decision is the
+# ``_say_on_pay_frequency_value`` override, which implements this rule:
+#
+# * Same sentence only, either side of the anchor. The anchor and every
+#   candidate frequency phrase must sit inside one ``. ``-delimited sentence
+#   (the anchor's own ``[^.]`` gap already refuses to cross a period); phrases
+#   are collected on both sides of the anchor, and the leftmost anchored
+#   sentence that keeps a surviving frequency governs.
+# * Frequency phrases, hyphenated variants (``every-three-years``,
+#   ``every-two-years``) accepted wherever the spaced form is: annual
+#   ``annual|annually|every year|each year|once a year|one year``, biennial
+#   ``biennial|biennially|every two years|every other year|two years``,
+#   triennial ``triennial|triennially|every three years|three years``.
+# * Discards — a phrase is not evidence when it is the object of a
+#   rejection/contrast in the same sentence, i.e. ``rejecting|rejected|rather
+#   than|instead of|as opposed to|not|against|alternative`` precedes it within
+#   40 chars or ``alternative|was rejected|were rejected|option`` follows it
+#   within 20 chars; when ``annual`` is a compound-noun head — ``annual
+#   (meeting|report|incentive|bonus|cash|equity|compensation|proxy|statement|
+#   shareholder meeting)`` — while ``annual say-on-pay vote`` / ``annual
+#   advisory vote`` / ``annual vote`` / ``annual basis`` stay frequency
+#   evidence; or when the phrase is followed within 12 chars by ``review|
+#   cycle|period|plan|program`` — a noun other than vote/election/resolution/
+#   proposal/frequency, so the phrase modifies that noun (e.g. a peer-group
+#   review), not the vote. Discarded phrases never appear in the evidence
+#   span.
+# * Resolution: exactly one distinct frequency surviving in the sentence
+#   values that frequency, the span running from the earlier of anchor and
+#   leftmost surviving phrase to the later of the two, bounded to the
+#   sentence. Two or more distinct frequencies surviving one sentence with no
+#   contrast marker separating them, and an anchored sentence with no
+#   surviving frequency alike, resolve the pack's existing
+#   anchor-present-no-resolvable-frequency emission: the valued
+#   ``not_disclosed`` asserted over the whole document.
 _SAY_ON_PAY_ANCHOR = (
     r"(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
     r"|frequency of)"
 )
-_ANNUAL_FREQUENCY_PHRASE = (
-    r"every year|annual(?:ly)?(?! (?:meeting|report|proxy))|one year"
+_ANNUAL_COMPOUND_HEAD = (
+    r"(?:meeting|report|incentive|bonus|cash|equity|compensation|proxy"
+    r"|statement|shareholder meeting)"
 )
-_BIENNIAL_FREQUENCY_PHRASE = r"every two years|biennial(?:ly)?"
-_TRIENNIAL_FREQUENCY_PHRASE = r"every three years|triennial(?:ly)?"
-# The competing phrases the annual arm's gap may never cross.
-_NON_ANNUAL_FREQUENCY_PHRASE = (
-    r"every (?:two|three) years|triennial(?:ly)?|biennial(?:ly)?"
-    r"|once every (?:two|three) years"
+# Longest alternative first, so "every three years" wins over "three years"
+# at the same position; the word boundaries keep "annual" out of
+# "semiannually" and the like.
+_FREQUENCY_PHRASES = (
+    (
+        "triennial",
+        r"every three years|every-three-years|triennially|triennial"
+        r"|three years",
+    ),
+    (
+        "biennial",
+        r"every two years|every-two-years|every other year|biennially"
+        r"|biennial|two years",
+    ),
+    (
+        "annual",
+        r"every year|each year|once a year|one year|annually"
+        r"|annual(?! " + _ANNUAL_COMPOUND_HEAD + r")",
+    ),
 )
-
-
-def _guarded_gap(*guards: str) -> str:
-    """A sentence-bounded lazy gap whose characters never start a guard
-    phrase, so the gap cannot cross any of them."""
-    return r"(?:(?!" + r"|".join(guards) + r")[^.]){0,240}?"
-
-
-SAY_ON_PAY_FREQUENCY = (
-    _SAY_ON_PAY_ANCHOR
-    + _guarded_gap(_ANNUAL_FREQUENCY_PHRASE, _BIENNIAL_FREQUENCY_PHRASE)
-    + r"(?P<triennial>every three years)"
-    r"|"
-    + _SAY_ON_PAY_ANCHOR
-    + _guarded_gap(_ANNUAL_FREQUENCY_PHRASE, _TRIENNIAL_FREQUENCY_PHRASE)
-    + r"(?P<biennial>every two years)"
-    r"|"
-    + _SAY_ON_PAY_ANCHOR
-    + _guarded_gap(_NON_ANNUAL_FREQUENCY_PHRASE)
-    + r"(?P<annual>every year|annual(?:ly)?(?! (?:meeting|report|proxy))"
-    r"|one year)"
+_FREQUENCY_RES = tuple(
+    (literal, re.compile(r"\b(?:" + body + r")\b", re.IGNORECASE))
+    for literal, body in _FREQUENCY_PHRASES
 )
+_ANCHOR_RE = re.compile(_SAY_ON_PAY_ANCHOR, re.IGNORECASE)
+_REJECT_BEFORE_RE = re.compile(
+    r"\b(?:rejecting|rejected|rather than|instead of|as opposed to|not"
+    r"|against|alternative)\b",
+    re.IGNORECASE,
+)
+_REJECT_AFTER_RE = re.compile(
+    r"\b(?:alternative|was rejected|were rejected|option)\b", re.IGNORECASE
+)
+_NON_VOTE_NOUN_RE = re.compile(
+    r"\b(?:review|cycle|period|plan|program)\b", re.IGNORECASE
+)
+# The rejection / compound-head windows (chars before / after a phrase).
+_REJECT_BEFORE_WINDOW = 40
+_REJECT_AFTER_WINDOW = 20
+_NON_VOTE_NOUN_WINDOW = 12
+
+
+def _surviving_frequencies(
+    text: str, start: int, end: int
+) -> list[tuple[str, "re.Match[str]"]]:
+    """Every frequency phrase inside ``[start, end)`` that survives all
+    discards, as ``(enum literal, match)`` pairs in text order per literal."""
+    survivors: list[tuple[str, "re.Match[str]"]] = []
+    for literal, phrase_re in _FREQUENCY_RES:
+        for match in phrase_re.finditer(text, start, end):
+            window = max(start, match.start() - _REJECT_BEFORE_WINDOW)
+            before = text[window : match.start()]
+            if _REJECT_BEFORE_RE.search(before):
+                continue
+            after = text[match.end() : min(end, match.end() + _REJECT_AFTER_WINDOW)]
+            if _REJECT_AFTER_RE.search(after):
+                continue
+            heads = text[match.end() : min(end, match.end() + _NON_VOTE_NOUN_WINDOW)]
+            if _NON_VOTE_NOUN_RE.search(heads):
+                continue
+            survivors.append((literal, match))
+    return survivors
+
+
+def _say_on_pay_frequency_value(
+    nt: Any, section_span: tuple[int, int], match: Any
+) -> tuple[str, tuple[int, int]]:
+    """``say_on_pay_frequency`` text-value override: resolve the frequency
+    from the anchor's own sentence, order-independently, under the v4 discard
+    and precedence rule documented at ``_SAY_ON_PAY_ANCHOR`` above. Returns
+    the enum literal with its char span, or the pack's valued
+    ``not_disclosed`` over the whole document when no anchored sentence keeps
+    exactly one distinct surviving frequency."""
+    text = nt.text
+    lo, hi = section_span
+    seen_sentences: set[tuple[int, int]] = set()
+    for anchor in _ANCHOR_RE.finditer(text, lo, hi):
+        sentence = narrative.sentence_span(
+            text, anchor.start(), anchor.end(), section_span
+        )
+        if sentence in seen_sentences:
+            continue
+        seen_sentences.add(sentence)
+        survivors = _surviving_frequencies(text, sentence[0], sentence[1])
+        if not survivors:
+            continue
+        literals = {literal for literal, _match in survivors}
+        if len(literals) > 1:
+            return "not_disclosed", (lo, hi)
+        phrase = min(survivors, key=lambda item: item[1].start())[1]
+        return literals.pop(), (
+            min(anchor.start(), phrase.start()),
+            max(anchor.end(), phrase.end()),
+        )
+    return "not_disclosed", (lo, hi)
 
 # The catalogue field name declares no "(annual | ...)" literal list, so the
 # A.4 literal gate binds nothing here; the frequency literals below are the
@@ -129,7 +228,9 @@ _FIELD_MAPPINGS = {
         pattern=RELATED_PARTY, absent_value="not_disclosed"
     ),
     "say_on_pay_frequency": TextSpanMapping(
-        pattern=SAY_ON_PAY_FREQUENCY,
+        # v4: the anchor alone triggers _say_on_pay_frequency_value; with no
+        # anchor anywhere the row keeps the valued not_disclosed absence.
+        pattern=_SAY_ON_PAY_ANCHOR,
         kind="enum",
         enum_map={
             "annual": "annual",
@@ -299,6 +400,11 @@ PRODUCER = Pk10Producer(
     spec=SPEC,
     field_mappings=_FIELD_MAPPINGS,
     checks=(),
+    hooks=NarrativeHooks(
+        text_value_overrides={
+            "say_on_pay_frequency": _say_on_pay_frequency_value,
+        }
+    ),
 )
 
 register_extra_receipts("PK10", _proxy_forms_seen)
