@@ -49,6 +49,16 @@ TIERS = [
     (0,  "Reduce",       "减配",     "down"),
 ]
 
+# SIC-D-B13: the conviction-score DEFINITION version, stamped on every Central row and in
+# meta so a score whose meaning changed on a date says so on every row, and the grader
+# never pools calls made under two different score definitions. This is a definition
+# stamp, not a correction/supersession contract (the R3A-92 census stays none_native).
+CONVICTION_SCORE_VERSION = 2
+#   1 = crowding cap dormant — the basket member read keyed `symbol`, which no member of
+#       data/baskets/membership.json carried, so _crowd_for_members never saw a member
+#       (rows logged before this change; the frac >= 0.34 cap never fired)
+#   2 = crowding cap input resolved via `ticker` (fallback `symbol`) — the cap is live
+
 # zh for the reasoning-BODY tokens (this hub is EN-first, but the bilingual UI still
 # renders the zh body — keep it from leaking raw English). Canonical zh mirrors the US
 # sector-cycles page (templates/sector_cycles.js phase shorts) + the signal stacks (quads).
@@ -341,6 +351,20 @@ def _momentum_confirm(now: dict, n_peers: int) -> tuple[float, dict]:
                "above_200d": above, "lead": lead, "fading": fading}
 
 
+def _crowding_member_ids(members: list) -> list:
+    """SIC-D-B13: the crowding member id for one membership entry — `ticker`, falling back
+    to `symbol` when ticker is empty; entries with neither are skipped. At base this read
+    keyed `symbol` only, and every member of data/baskets/membership.json keys `ticker`,
+    so the crowding input was always empty (the cap dormant). List order and inclusion
+    are otherwise exactly the base read."""
+    out = []
+    for m in (members or []):
+        mid = m.get("ticker") or m.get("symbol")
+        if mid:
+            out.append(mid)
+    return out
+
+
 def _crowd_for_members(members: list, crowd_by_ticker: dict) -> dict | None:
     if not members or not crowd_by_ticker:
         return None
@@ -444,7 +468,8 @@ def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
     trace = _trace(state_d, forward, mkt, mom_d, crowd, early, stretched, beta, heat)
     return {
         "conviction": {"score": int(score), "label_en": en, "label_zh": zh,
-                       "dir": _dir, "early": bool(early), "confluence": confluence},
+                       "dir": _dir, "early": bool(early), "confluence": confluence,
+                       "score_version": CONVICTION_SCORE_VERSION},
         "forward": forward, "state": state_d, "momentum": mom_d, "crowding": crowd,
         "heat": heat,
         "components": {"state": round(state, 2), "forward": None,
@@ -882,8 +907,9 @@ def _membership_coverage(spec, *, as_of, used_members, source_version) -> dict:
     members EFFECTIVE at the central as-of (added <= as_of, not yet removed), how many the
     curation back-projected onto an earlier add date (curated_added > added), and how many
     members the crowding input actually received. Member id resolves via `ticker` OR
-    `symbol` (the crowding build keys on `symbol` only). Never raises; the roster counts
-    are None unless status == 'ok'."""
+    `symbol` — the same resolution the crowding member read applies (SIC-D-B13; at base
+    the crowding build keyed `symbol` only, so the input was always empty). Never
+    raises; the roster counts are None unless status == 'ok'."""
     used = list(used_members or [])
     out = {"schema": "sector_central.basket_membership.v1", "as_of": as_of,
            "source": _MEMB_SOURCE, "source_version": source_version,
@@ -947,7 +973,9 @@ def compute() -> dict | None:
         log.debug("central: narrative rotation unavailable: %s", e)
     trend = _trend_gates(closes, rotation)
 
-    # basket membership (for crowding aggregation) — data/baskets/membership.json, members[].symbol
+    # basket membership (for crowding aggregation) — data/baskets/membership.json,
+    # members[].ticker (fallback `symbol`; SIC-D-B13 — the base `symbol`-only read left the
+    # crowding input permanently empty because every member keys `ticker`)
     # SIC-D-B03: the file is read ONCE here — the memb scoring build below is untouched, and
     # the same read feeds the dated per-basket disclosure (_membership_coverage).
     memb = {}
@@ -961,7 +989,7 @@ def compute() -> dict | None:
             memb_version = doc.get("version")
             memb_src = doc.get("baskets") or {}
             for bid, b in memb_src.items():
-                memb[bid] = [m.get("symbol") for m in (b.get("members") or []) if m.get("symbol")]
+                memb[bid] = _crowding_member_ids(b.get("members"))
         else:
             memb_failed = True
     except Exception:  # noqa: BLE001
@@ -1032,6 +1060,7 @@ def compute() -> dict | None:
         "as_of": cyc["meta"]["asOf"],
         "meta": {"n_sectors": len(sectors), "n_baskets": len(baskets),
                  "region": "us", "experimental": True,
+                 "conviction_score_version": CONVICTION_SCORE_VERSION,
                  "method": "gated-confluence (trend gate validated_risk_control, "
                            "data/strategies/thematic_rotation_phase0.json)",
                  "board_order": "fast-lens (XSR-R2)" if rotation_armed else "conviction",
