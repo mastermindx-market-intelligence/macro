@@ -41,25 +41,40 @@ verified:
       PRODUCTION_PROOF 2026-10-21T04:06:24Z: anonymous cache-busted curl returns 200 for
       /intl.html and all nine assets; /intl_data.json still 401; /api/*, /sb/* not public.
 unverified:
-  - Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
-  - Wave 1 (ORCH-1: IM11 coverage contract + IM12 qualified observations): W1A PR @686eb9a7 and W1B PR @78711372 open, review lanes running at 04:06Z; verdicts not yet consumed.
-  - R14 design upgrade (ORCH-D) PNG evidence + design spec file — still running at 04:0xZ.
+  - >
+      Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
+  - >
+      Wave 1 (ORCH-1: IM11 coverage contract + IM12 qualified observations): W1A PR @686eb9a7 and W1B PR @78711372 open, review lanes running at 04:06Z; verdicts not yet consumed.
+  - >
+      R14 design upgrade (ORCH-D) PNG evidence + design spec file — still running at 04:0xZ.
 unresolved:
-  - #9596 remains red and author-owned; seat never pushes to it. Close/supersede decision belongs to its author after #9920 lands.
-  - Two locked unused SSD worktrees (intl-gs-w0a-6c9c36115aa4036d, intl-gs-w0b-b67a2895768398e0) left for the standing reclaim procedure.
+  - >
+      #9596 remains red and author-owned; seat never pushes to it. Close/supersede decision belongs to its author after #9920 lands.
+  - >
+      Two locked unused SSD worktrees (intl-gs-w0a-6c9c36115aa4036d, intl-gs-w0b-b67a2895768398e0) left for the standing reclaim procedure.
 next_actions:
-  - Consume ORCH-1 return → verify W1A/W1B PRs directly → squash-merge → landing proof → IM11/IM12 done.
-  - Consume ORCH-D return → review R14 PNGs + spec → freeze → commit spec on seat branch → spawn ORCH-2 (Wave 2 IM13/IM14) from scratchpad/orch2_commission_draft.txt.
-  - Waves 3–5 per masterplan §15; §14 hard acceptance tests before any production claim.
+  - >
+      Consume ORCH-1 return → verify W1A/W1B PRs directly → squash-merge → landing proof → IM11/IM12 done.
+  - >
+      Consume ORCH-D return → review R14 PNGs + spec → freeze → commit spec on seat branch → spawn ORCH-2 (Wave 2 IM13/IM14) from scratchpad/orch2_commission_draft.txt.
+  - >
+      Waves 3–5 per masterplan §15; §14 hard acceptance tests before any production claim.
 do_not_redo:
-  - Wave 0 asset extraction and its review (PR #9920) — accepted; do not re-extract from #9596.
-  - #9596 diagnosis (lane W0B) — recorded in the continuation handoff.
-  - Do not re-spawn ORCH-1 or ORCH-D; message them by id.
+  - >
+      Wave 0 asset extraction and its review (PR #9920) — accepted; do not re-extract from #9596.
+  - >
+      #9596 diagnosis (lane W0B) — recorded in the continuation handoff.
+  - >
+      Do not re-spawn ORCH-1 or ORCH-D; message them by id.
 danger_areas:
-  - #8754 egress hold / IW2 custody: never touch. #9596: never push, never check out as a branch.
-  - Frozen 11-market links graph and 14-ETF VAR must stay unchanged (masterplan §8).
-  - Flash fabric lanes summarise instead of cat-ing LANE_RECORD; packets must require the cat and inline receipts.
-  - Economic policy refuses glm-5.3 for leaf labor; use glm-5.3-flash or the escalation env.
+  - >
+      #8754 egress hold / IW2 custody: never touch. #9596: never push, never check out as a branch.
+  - >
+      Frozen 11-market links graph and 14-ETF VAR must stay unchanged (masterplan §8).
+  - >
+      Flash fabric lanes summarise instead of cat-ing LANE_RECORD; packets must require the cat and inline receipts.
+  - >
+      Economic policy refuses glm-5.3 for leaf labor; use glm-5.3-flash or the escalation env.
 ---
 
 # INTL-GLOBAL-SURVEILLANCE — seat handoff 2026-10-21 (checkpoint)
