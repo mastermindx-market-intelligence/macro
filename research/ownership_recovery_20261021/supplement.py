@@ -25,7 +25,8 @@ def main(root=None):
     rec=rec.merge(archived[['symbol','date','cell']].rename(columns={'cell':'archived_context_at_signal'}),on=['symbol','date'],how='left',validate='one_to_one')
     rec=rec.merge(events[['symbol','date','sequence','watch_id','watch_arm_t']],on=['symbol','date'],how='left',validate='one_to_one')
     def reason(r):
-        if r.membership=='both':return 'SAME_SIGNAL_DIFFERENT_ENDPOINT'
+        if r.membership=='both':
+            return 'SAME_SIGNAL_DIFFERENT_ENDPOINT' if r.context_exit_date!=r.watch_exit_date else 'SAME_SIGNAL_SAME_ENDPOINT'
         if r.membership=='right_only':
             return 'FIRST_WATCH_CROSS_OUTSIDE_JOINT_CONTEXT' if pd.notna(r.archived_context_at_signal) else 'NO_COMPLETE_CONTEXT_EVENT_UNRESOLVED'
         if r.sequence=='REPEAT':return 'LATER_CROSS_WITHIN_WATCH'
@@ -46,6 +47,12 @@ def main(root=None):
            'watch_mean_return':float(core_b.net.mean()),'watch_mean_entry_horizon_return':float(core_b.entry_horizon_net.mean()),
            'explanation':'Study A requires JOINT on signal date and exits signal+126. Study B arms in JOINT, waits for its first cross, and exits arm+126; the context may change while waiting.'}
     a.dump(out/'v11_cohort_reconciliation.json',a.clean(recon))
+    grid,w=a.block_weights(pd.Timestamp('2018-01-01'),pd.Timestamp('2026-10-08'))
+    common=[]
+    for pop,g in events[events.cell.eq('JOINT')].groupby('panel'):
+        z=g.dropna(subset=['ordinary_net','core_peer_net','broad_peer_net','spy_net'])
+        common.append({'panel':pop,'all_joint_n':len(g),**a.summarize(z,grid,w)})
+    pd.DataFrame(common).to_csv(out/'defensive_common_support.csv',index=False)
     # Post-outcome diagnostics of the already registered account paths.
     paths=pd.read_csv(out/'portfolio_paths.csv',parse_dates=['date'])
     annual=pd.read_csv(out/'portfolio_annual.csv');diagnostics=[]
@@ -73,6 +80,23 @@ def main(root=None):
     spy=next(x for x in manifest['assets'] if x['ticker']=='SPY')
     ix=pd.read_parquet(spy['path']).loc['2010-01-04':'2026-10-08'].index
     tr=pd.read_csv(out/'portfolio_trades.csv');sector=tr[tr.experiment.eq('SECTOR')&tr.policy.isin(['RSI_SELECTED','RSI_ALL_SECTORS','RSI_SPY'])].copy()
+    # A stop may close a still-immature horizon slot. Closed-status hit rates
+    # therefore differ in denominator; preserve a shared scheduled-maturity view.
+    maturity=[];open_rows=[]
+    for (ex,pop,pol),g in tr.groupby(['experiment','population','policy'],sort=False):
+        mature=g[g.scheduled_exit_t<len(ix)]
+        assert mature.closed.all()
+        maturity.append({'experiment':ex,'population':pop,'policy':pol,'accepted':len(g),
+            'scheduled_mature':len(mature),'scheduled_immature':len(g)-len(mature),
+            'mature_positive_n':int((mature.trade_net>0).sum()),
+            'mature_positive':float((mature.trade_net>0).mean()) if len(mature) else np.nan,
+            'closed_immature':int((g.closed&(g.scheduled_exit_t>=len(ix))).sum())})
+        for _,r in g[~g.closed].iterrows():
+            open_rows.append({'experiment':ex,'population':pop,'policy':pol,'symbol':r.nominee,
+              'signal_date':str(ix[int(r.signal_t)].date()),'entry_date':str(ix[int(r.entry_t)].date()),
+              'marked_net':r.trade_net,'capital_before_entry_per_original_sleeve':r.capital_before_entry})
+    pd.DataFrame(maturity).to_csv(out/'portfolio_trade_maturity.csv',index=False)
+    pd.DataFrame(open_rows).to_csv(out/'open_positions.csv',index=False)
     sector['date']=[ix[int(t)] for t in sector.signal_t]
     p=sector.pivot(index=['nominee','signal_t','date'],columns='policy',values='trade_net').reset_index()
     status=sector.groupby(['nominee','signal_t']).closed.agg(['all','any'])
@@ -102,6 +126,32 @@ def main(root=None):
           'eventual_loser_stop_delta':float((g.loc[g.net<=0,'stop_net']-g.loc[g.net<=0,'net']).mean()),
           'eventual_winner_stop_delta':float((g.loc[g.net>0,'stop_net']-g.loc[g.net>0,'net']).mean())})
     pd.DataFrame(dr).to_csv(out/'reference_location.csv',index=False)
+    # Decompose two headline drawdowns by the original equal-capital sleeves.
+    # Selection of the worst episode is retrospective diagnostic attribution.
+    _,raw,adj,ix=a.load_data(root/'data/input_manifest.json')
+    roster=pd.read_csv(out/'capital_rosters.csv');parts=[]
+    for ex,pop,pol,rscope,rpol,names,start_date,fee in [
+        ('DEFENSIVE','CORE5','JOINT','DEFENSIVE','JOINT',a.CORE,'2018-01-01',.0005),
+        ('SECTOR','SECTORS12','RSI_SELECTED','SECTORS','RSI',a.SECTORS,'2020-01-01',.001)]:
+        diag=next(x for x in diagnostics if x['experiment']==ex and x['population']==pop and x['policy']==pol)
+        start=int(ix.searchsorted(pd.Timestamp(start_date)));peak=int(ix.get_loc(pd.Timestamp(diag['peak_date'])));trough=int(ix.get_loc(pd.Timestamp(diag['trough_date'])))
+        account=paths[(paths.experiment==ex)&(paths.population==pop)&(paths.policy==pol)].set_index('date')
+        peak_nav=float(account.loc[ix[peak],'nav']);part_sum=0.
+        for symbol in names:
+            r=roster[(roster.population==rscope)&(roster.policy==rpol)&roster.symbol.eq(symbol)&roster.accepted]
+            rr=[{k:int(row[k]) for k in ['signal_t','entry_t','scheduled_exit_t']} for _,row in r.iterrows()]
+            vals,held,_,st=a.sleeve({s:adj[s].reindex(ix) for s in names},{s:raw[s].reindex(ix) for s in names},symbol,rr,start,fee)
+            vp=vals[peak-start];vt=vals[trough-start];contribution=(vt-vp)/len(names)/peak_nav;part_sum+=contribution
+            active=[x for x in st if x['entry_t']<=peak<x['exit_t']]
+            parts.append({'experiment':ex,'population':pop,'policy':pol,'symbol':symbol,
+              'peak_date':diag['peak_date'],'trough_date':diag['trough_date'],'drawdown_contribution':float(contribution),
+              'sleeve_value_at_peak':float(vp),'sleeve_value_at_trough':float(vt),
+              'peak_account_capital_weight':float(vp/len(names)/peak_nav),
+              'active_at_peak':bool(active),'entry_date_at_peak':str(ix[active[0]['entry_t']].date()) if active else None,
+              'sessions_since_entry_at_peak':int(peak-active[0]['entry_t']) if active else None,
+              'peak_sleeve_exposure':float(held[peak-start]/(vp+fee*held[peak-start]))})
+        assert np.isclose(part_sum,diag['max_drawdown'],atol=1e-8),(ex,part_sum,diag)
+    pd.DataFrame(parts).to_csv(out/'drawdown_sleeve_attribution.csv',index=False)
     print(json.dumps(a.clean({'cohort_reconciliation':recon,'sector_accepted_contrasts':contrasts})),flush=True)
 
 if __name__=='__main__':main()
