@@ -1684,3 +1684,24 @@ def test_draft_discovery_retains_harness_artifact_binding() -> None:
     rendered = module.draft_discovery(payload)
     record = yaml.safe_load(rendered.split("---", 2)[1])
     assert record["harness_experience"] == payload["harness_experience"]
+
+
+def test_harness_experience_text_view_retains_complete_lesson(simple: Path) -> None:
+    claim = "Preserve signed values. " * 70 + "COMPLETE_LESSON_TAIL"
+    meta = _harness_experience_meta()
+    _discovery(simple, "KEEP", claim=claim, harness_experience=meta)
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "12000", "--harness-experience", "--text")
+    assert result.returncode == 0, result.stderr
+    assert "COMPLETE_LESSON_TAIL" in result.stdout
+    assert meta["harness_artifact"]["digest"] in result.stdout
+    assert all(ref in result.stdout for ref in meta["source_run_ids"])
+    assert "EXCLUDED" in result.stdout and "DEGRADED" in result.stdout
+
+
+def test_harness_experience_default_text_remains_unchanged(simple: Path) -> None:
+    _discovery(simple, "KEEP", harness_experience=_harness_experience_meta())
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "12000", "--text")
+    assert result.returncode == 0, result.stderr
+    assert "HARNESS EXPERIENCE" not in result.stdout

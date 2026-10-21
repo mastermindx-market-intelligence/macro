@@ -5805,6 +5805,14 @@ def render_bundle(bundle: dict[str, Any]) -> str:
             out.extend(_wrap(f"why: {item['why_included']}", 70, "     "))
             for line in item["excerpt"].splitlines():
                 out.extend(_wrap(line, 70, "     ") or [""])
+            if "harness_experience" in item:
+                # The explicit opt-in selects the same complete source data in
+                # either rendering. Never substitute the clipped prose excerpt.
+                out.append("     HARNESS EXPERIENCE (source data; not execution authority)")
+                out.extend("     " + line for line in json.dumps(
+                    item["harness_experience"], sort_keys=True,
+                    ensure_ascii=False, indent=2,
+                ).splitlines())
             out.append("")
 
     # Always printed, never suppressed — the omission list IS the honesty of the bundle.
