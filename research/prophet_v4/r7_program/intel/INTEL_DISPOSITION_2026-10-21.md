@@ -5,6 +5,8 @@ Orchestrator: ORCH-INTEL (Opus 5.5, ROUTE orchestration, fable-mode), commission
 sleeves, plus the gating Stage 3 units). Base: `e5dd30c6344e4b62a0beba054ac4da97e00bab36`.
 Status: DRAFT for the seat. It proposes verdicts and routes. It accepts nothing, removes no
 scope, and makes no quantitative claim beyond quoted registered records.
+Update 2026-10-21 ~04:1xZ: the seat ruled F1–F8 (§3). Wave 2 lanes run on BASE
+`c5ee0941b4e4b2132caabd4d43a4b419d46ec22e` (origin/main at launch); see §5.
 
 Evidence: two read-only census lanes on the external fabric (glm-5.3), plus targeted checks by
 the orchestrator at BASE:
@@ -22,20 +24,20 @@ exists only on those heads is unread.
 
 | Unit | Name | Verdict | Smallest next lane |
 |---|---|---|---|
-| B04 | Episode evidence dossier | NEEDS-FABLE-DECISION (B04-A custody collision); B04-D BLOCKED-DATA | Ratify the B04-A0/A1 split (F2). Then build lane `pro-intel-b04a0-20261021` (packet written, not launched) |
-| B06 | Policy capture, decision-clean labels | BLOCKED-CUSTODY + BLOCKED-DATA | Route to the #8091/#8192 owner: freeze the numeric D06 fields (F4). A source-blind D06 proposal lane is possible after F4 |
-| B08 | Comparable event and expectation sources | NEEDS-FABLE-DECISION (records hygiene for an acceptance Sol already recorded); production admission BLOCKED-DATA | Seat records PR, manifest only (F1); readiness record DELIVERED by `pro-intel-b08gates-20261021-r1` |
+| B04 | Episode evidence dossier | F2 RULED (A0 now, A1 deferred). A0 BLOCKED-CUSTODY: its one CI-registry file `.github/ci/legacy-jobs.yml` is in #7426, #7264 and fenced #9821; B04-D BLOCKED-DATA | Not launched. Seat picks V1 (A0 without the CI line; seat adds it at landing) or V2 (defer A0) — §3 F2 |
+| B06 | Policy capture, decision-clean labels | BLOCKED-CUSTODY + BLOCKED-DATA | F4 RULED: source-blind numeric D06 proposal lane `pro-intel-d06num-20261021-r1` running; the seat rules on it and routes frozen numbers to the #8091/#8192 owner |
+| B08 | Comparable event and expectation sources | F1 RULED: Sol's recorded Gate S acceptance ratified; records hygiene in lane `pro-intel-b08records-20261021-r1`; production admission BLOCKED-DATA; Gate E closed | Seat lands/reviews the records lane (manifest + append-only prereg note + companion record); D07 exemplar row DEFERRED |
 | B09 | Group history and peer evidence | BLOCKED-DATA + BLOCKED-CUSTODY; depends on B04 | None now. Dated theme history accrues forward-only |
-| B10 | Early Leadership research comparisons | BLOCKED-DATA (D07 S3); depends on B06/B09 | Route the write-time `recorded_at` episode writer to the B1 owner (F5) |
-| B12 | Genuinely earlier entry | BLOCKED-DATA (no live B4 capture; D02 gated) | Route the B4 runtime wiring to its owner (F5). No study |
+| B10 | Early Leadership research comparisons | PROSPECTIVE-ONLY (F5 RULED); BLOCKED-DATA (D07 S3); depends on B06/B09 | `recorded_at` episode writer ROUTED-TO-SOURCE (Source orchestrator Stage 3). No lane here |
+| B12 | Genuinely earlier entry | PROSPECTIVE-ONLY (F5 RULED); BLOCKED-DATA (no live B4 capture; D02 gated) | B4 runtime caller ROUTED-TO-SOURCE (Source orchestrator Stage 3). No study, no lane here |
 | B14 | Earnings research journey | BLOCKED-CUSTODY (#7264) + BLOCKED-DATA (B1 natural clock; thesis DDL human gate) | D5 consumer already built (BUILT_NOT_PROVEN); #7264 owner owns the Lab view; production proof waits on B1 |
 | B15 | Earnings models, entry, holding | BLOCKED-DATA (no registration; H42 price basis blocked) | None. A prereg draft waits on the corporate-action factor owner |
-| B16 | Cycle source-readiness pilot | CLOSED NOT PILOT-READY (R6-B16-01, DO_NOT_REDO); diagnostic BLOCKED-CUSTODY | Repair #7868 per its B1/B2 review (F3). Packet `pro-intel-b16diag-20261021` withheld |
-| B17 | Funding and per-share Cycle dossiers | BLOCKED-CUSTODY (#8308, Sol hold) + BLOCKED-DATA | Route to #8308 / Sol (F6) |
+| B16 | Cycle source-readiness pilot | CLOSED NOT PILOT-READY (R6-B16-01, DO_NOT_REDO); diagnostic HELD (F3 RULED) | #7868 repair queued for Stage 4, not launched; never run v1 (#7847); packet `pro-intel-b16diag-20261021` withheld |
+| B17 | Funding and per-share Cycle dossiers | BLOCKED-CUSTODY (#8308 stays with Sol, F6 RULED) + BLOCKED-DATA | None. Milestone-absence note for Sol carried to the Stage 6 records PR (§3 F6); no post |
 | B18 | Failure-inclusive Cycle policy research | BLOCKED-DATA by ruling (R6-B16-01:21) | None. A licensed failure/mapping source is the provider question |
 | B19 | Cycle core/add/exit | BLOCKED (B17/B18; D04 Cycle versions; no milestones) | None |
 | B24 | Portfolio context across sleeves | BLOCKED (B07/B13/B14/B17 undispatched; D05 DDL human gate) | None |
-| B27 | Retained sleeves and instrument roadmap | READY (research only); draft DELIVERED | Seat rules on the draft (F8). Research steps are source-census only until B06 |
+| B27 | Retained sleeves and instrument roadmap | DISPOSITIONED (F8 RULED): all five sleeves SPEC_ONLY_RETAINED_B27; no scope removal (D12) | §8 order 1→5 accepted; gated on B00/B06; read-only census only until B06; no live/qualified/ranked claims; shorting barred (DNR:45), options research-only |
 
 No unit is READY for a build lane at BASE without a seat decision. That conclusion is itself
 the main Stage 4 finding (§4).
@@ -343,65 +345,75 @@ the main Stage 4 finding (§4).
   preregistration or study waits on B06 (B27 depends on B00/B06; B06 is BLOCKED above). The
   draft says the same in its §8.
 
-## 3. Decisions for Fable (recommendation first)
+## 3. Decisions for Fable — RULED 2026-10-21 ~04:0xZ
 
-- **F1 — Ratify Sol's recorded Gate S acceptance; approve a manifest-only records PR.**
-  - The acceptance already exists: README:81-84, Sol, #8069 comment `5894923827`. The BASE
-    contract bytes equal the accepted head. Do not re-accept.
-  - Before the PR, the seat makes one GitHub read to confirm that comment `5894923827` exists
-    on #8069. The lane could not verify it offline.
-  - Records PR (seat-owned; never on a `sol/` branch):
-    - manifest `.evidence_class.basis` → `D07_REGISTER_V1_ADOPTED_R6-D07-01_2026-09-27_509ffb5a6a5c`;
-    - manifest `.next_action` and `.feature` → the accepted factual field, citing README:81-84;
-    - R6-PREREG-01 "#7581/#7738 Draft" → merged-but-uncalled.
-  - **Never byte-edit the contract.** The D5 consumer pins its SHA-256, and the verifier asserts
-    the pending `gate_s.state`. Record the acceptance in a companion record instead.
-  - Optional and separate: a D07 exemplar register row PUBLIC_INFO_REPLAY for Q06/AAPL, in a PR
-    citing R6-D07-01. Recommend deferring it until the register owner confirms the class
-    criteria; nothing downstream needs it now.
-  - Gate E stays with Evaluation. #9821 (sol/, mastermindx-2) touches the same evidence family;
-    coordinate, never edit.
-- **F2 — Split B04-A.**
-  - Recommend ratifying:
-    - **B04-A0:** new-module dossier wrapper, A9 reason map, A12 closed shape, A7 clock split, A8
-      projection skeleton, historical-event-set absence, and function-level fixtures. It consumes
-      the inner vector read-only and touches neither `app/prophet_lab.py` nor
-      `engine/prophet_lab/intelligence_vector.py`.
-    - **B04-A1:** route plus `IdentityBindingConflict`, after #8004 lands or closes and #7426 is
-      dispositioned by Sol, coordinated with #7264.
-  - Ask #8004's owner once to land or close it. Its "bind episode security before issuer
-    evidence" fix is A1's precondition.
-  - Packet `pro-intel-b04a0-20261021` is written, not launched.
-- **F3 — Cycle diagnostic.**
-  - Recommend keeping it held and never running v1 (#7847). Doing so is the forbidden
-    workaround, and v1 carries the same B1 inference defect.
-  - Repair #7868 per B1 (report counted anchors; predeclare a dependence treatment or label the
-    inference unestablished) and B2 (explicit required-row/support/censoring sets per H1–H3).
-  - Re-review, then run once.
-  - #7868 is a claude/ branch idle since 2026-09-27.
-  - GitHub read on 2026-10-21 ~03:4xZ:
-    - #7868: last commit `3ad50f9d` at 2026-09-24, last update was the 09-27 review.
-    - #8004: last commit `f5898f9b` at 2026-09-25, no update since.
-    - #7871: last commit 2026-09-24; review 2026-10-03.
-  - GitHub idleness is not proof that no local writer exists. If the seat's own custody
-    check (Agent OS / live leases) finds no writer, the seat may adopt the #7868 repair as a
-    seat lane; otherwise route it to the owner.
-  - #7871 is needed only if v3 keeps the full-vintage source.
-- **F4 — Numeric D06 fields for H1 (worthwhile gain / tail harm).**
-  - D06 is FABLE_AUTHORIZED_TO_RESOLVE.
-  - Recommend that the seat commission a source-blind numeric proposal (no outcome reads),
-    rule on it, and route the frozen numbers to the #8091/#8192 owner.
-  - Definition is not admission.
-- **F5 — Prospective-only Early Leadership capture.**
-  - Recommend recording that B10/B12 are prospective-only. Route the B4 runtime wiring (a nightly
-    caller of the #7581/#7738 library) and the write-time `recorded_at` episode writer to their
-    owners.
-  - No retrospective study is admissible (D07).
-- **F6 — #8308 B17.** Leave it with Sol. Record for Sol that milestones are absent and B19 needs them.
-- **F7 — Chairman provider question (Cycle).** Recommend not asking yet. R6-B16-01:25-28 makes it
-  not askable until rules 1/4/5 are otherwise satisfiable. FRED model use remains "not a source".
-- **F8 — B27 dispositions.** The seat rules on the lane's proposals. Scope removal is not decided
-  by this orchestrator (D12).
+All eight were ruled by the seat (Fable 69eb9a1c). The recommendation text is kept short; the
+ruling is binding.
+
+- **F1 — Gate S records hygiene. RULED: ACCEPTED.**
+  - Seat confirmed comment `5894923827` on #8069 exists: author mastermidx4 (Sol),
+    2026-09-29T17:05:28Z, marker `SOL_Q06_GATE_S_ACCEPTANCE_20260929`, "SOL ACCEPTED / CONTINUE —
+    Gate S factual field accepted; Gate E remains closed". Not re-accepted.
+  - Build lane `pro-intel-b08records-20261021-r1` (manifest edits only, BASE `c5ee0941`):
+    manifest `.evidence_class.basis` → `D07_REGISTER_V1_ADOPTED_R6-D07-01_2026-09-27_509ffb5a6a5c`;
+    `.next_action` and `.feature` → the accepted factual field citing README:81-84 and the
+    comment; R6-PREREG-01 Draft wording → merged-but-uncalled; one companion record.
+  - FROZEN: the contract JSON and its fixture are never byte-edited; sha256 `a0790967…a177d`
+    unchanged and the verifier exits 0 are acceptance conditions.
+  - Interpretation (flagged to the seat): R6-PREREG-01 line 9 was true on 2026-09-23, so the lane
+    appends a dated status note instead of rewriting it.
+  - D07 exemplar register row: DEFERRED. Gate E stays with Evaluation.
+- **F2 — Split B04-A. RULED: ACCEPTED (A0 now, A1 later). A0 RESULT: BLOCKED, NOT LAUNCHED.**
+  - Fresh collision check (one aliased GraphQL read of #8004/#7426/#7264 file lists; a first
+    call against the wrong repository returned no data):
+    - #8004 OPEN `f5898f9b0b`, 3 files; #7426 OPEN `7bc0487674`, 20 files; #7264 OPEN
+      `214e0eda8c`, 64 files.
+    - A0 owned files: `engine/prophet_lab/evidence_dossier.py`,
+      `config/prophet_dossier_reason_map.v1.json`, `tests/fixtures/prophet_lab_dossier/`,
+      `tests/test_prophet_lab_dossier_b04a.py` (name fixed by R6-B04-01a:113), and one
+      registration line in `.github/ci/legacy-jobs.yml` (mandatory: `test_ci_pack` checks that
+      every test file is registered).
+    - Intersection = `.github/ci/legacy-jobs.yml`: in #7426, #7264 and the seat fence #9821.
+      Non-empty, so per the ruling the lane is not launched. None of the other A0 paths exist at
+      BASE or in any listed PR.
+  - Hunk evidence (local objects, each PR diffed against its own merge-base): #7264 hunks at
+    @@ -2071/3032/3053/3064/3069/7411; #7426 at 3160–3200; #9821 at 8474/8569. None touches the
+    `prophet-anticipation-intake` job (BASE line 27185; whynot run line 27234) where A0 adds
+    its line.
+  - Options for the seat:
+    - **V1 (recommended):** relaunch A0 as `-r2` without the CI line; the lane's acceptance
+      runs the new test file directly, and the seat adds the single registration line in its own
+      landing commit. The hunk is disjoint from every incumbent hunk, so the textual conflict is
+      nil and the custody touch is one line the seat owns.
+    - **V2:** defer A0 until #7426 and #7264 land or close.
+  - A1 and the #8004 owner ask stay deferred until A0 merges.
+- **F3 — Cycle diagnostic. RULED: ACCEPTED (hold).** Never run v1 (#7847). The #7868 B1/B2
+  repair is queued for Stage 4 and not launched. Packet `pro-intel-b16diag-20261021` stays withheld.
+- **F4 — Numeric D06 fields for H1. RULED: ACCEPTED.** Research lane
+  `pro-intel-d06num-20261021-r1`: a source-blind numeric proposal for
+  Q05-H1-PEER-PARTICIPATION-ACCELERATION-V1, no outcome reads, report
+  `intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md` (lane branch). Every number is PROPOSED until the
+  seat rules. Definition is not admission.
+- **F5 — Prospective-only Early Leadership capture. RULED: ACCEPTED.** B10/B12 are
+  prospective-only; no retrospective study is admissible (D07). The B4 runtime caller (nightly
+  caller of the merged #7581/#7738 library) and the write-time `recorded_at` episode writer are
+  ROUTED-TO-SOURCE (Source orchestrator, Stage 3). Not launched here.
+- **F6 — #8308 B17. RULED: ACCEPTED.** #8308 stays with Sol. Note for Sol, to be carried in the
+  Stage 6 records PR (no post now):
+  - Milestone-absence note: the Cycle per-share/funding dossier (B17) has no registered
+    milestone set at BASE, and B19 (core/add/exit) cannot be specified without one. When #8308
+    resumes, it should name the milestone source, its clock and its absence state (D07: an
+    unknown milestone clock stays diagnostic), so B19 can be registered against it.
+- **F7 — Chairman provider question (Cycle). RULED: ACCEPTED (not asked).** R6-B16-01:25-28
+  keeps it unaskable until rules 1/4/5 are otherwise satisfiable. FRED model use remains
+  "not a source".
+- **F8 — B27 dispositions. RULED: B27 draft ACCEPTED as the retained-sleeves disposition.**
+  - All five sleeves stay SPEC_ONLY_RETAINED_B27. No scope removal (D12).
+  - §8 sequencing 1→5 accepted. Everything is gated on B00/B06; first steps are read-only
+    census only until B06.
+  - §9 "no live/qualified/ranked claims" accepted. Shorting barred (DNR:45); options are
+    research-only.
+  - B27 is DISPOSITIONED.
 
 ## 4. Findings
 
@@ -431,7 +443,12 @@ the main Stage 4 finding (§4).
 | pro-intel-b27-20261021-r1 | research | ubuntu0 | DONE rc=0, `be515d3c0df`, consumed + spot-checked | intel/B27_RETAINED_SLEEVES_DISPOSITION_DRAFT_2026-10-21.md |
 | pro-intel-b08gates-20261021-r1 | research | ubuntu3 | DONE rc=0, `42547cfd885a`, consumed; acceptance hash + verifier assert re-checked at BASE | intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md |
 
+| pro-intel-b08records-20261021-r1 | build | ubuntu1 | DONE rc=0 04:09Z, `524dcfdc3f1e`, consumed; contract sha + verifier + fixture sha re-checked on host | manifest + prereg status note + `wave3/Q06_GATE_S_ACCEPTANCE_RECORD_2026-10-21.md` (3 files, +69/−3) |
+| pro-intel-d06num-20261021-r1 | research | see worklog | LAUNCHED 2026-10-21 (F4), BASE `c5ee0941` | intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md |
+
 Written, not launched. The packets are in the orchestrator scratchpad `pk/` directory and are
 listed here by name:
-- `pro-intel-b16diag-20261021`: withheld; see F3.
-- `pro-intel-b04a0-20261021`: awaits F2.
+- `pro-intel-b16diag-20261021`: withheld (F3 RULED: hold).
+- `pro-intel-b04a0-20261021`: F2 RULED, then BLOCKED by the fresh collision check
+  (`.github/ci/legacy-jobs.yml`); awaits the seat's V1/V2 choice. The run id
+  `pro-intel-b04a0-20261021-r1` was never launched.

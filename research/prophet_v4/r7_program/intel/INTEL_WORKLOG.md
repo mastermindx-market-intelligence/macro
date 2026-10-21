@@ -103,3 +103,24 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
   - Finding 2 now lists the extra stale premises.
 - Wave 1 closed: all four lanes (censusA, censusB, b27, b08gates) are consumed and no lane of
   mine is live. The b04a0 packet awaits F2, and b16diag is withheld under F3. Returning to the seat.
+
+## 2026-10-21 ~04:0xZ–04:1xZ — seat rulings F1–F8 received; wave 2
+
+- Seat ruled F1–F8 (all ACCEPTED; F8 accepts the B27 draft). Disposition §1 and §3 updated:
+  B27 DISPOSITIONED; B10/B12 PROSPECTIVE-ONLY with the B4 caller and `recorded_at` writer
+  ROUTED-TO-SOURCE; F6 milestone-absence note for Sol carried for the Stage 6 records PR.
+- Wave 2 BASE = origin/main `c5ee0941b4e4b2132caabd4d43a4b419d46ec22e`.
+- F2 fresh collision check: one aliased GraphQL read of #8004/#7426/#7264 file lists (a first
+  call against the wrong repository slug returned NOT_FOUND and no data). A0's mandatory CI
+  registration file `.github/ci/legacy-jobs.yml` is in #7426, #7264 and fence #9821, so
+  `pro-intel-b04a0-20261021-r1` was NOT launched (STATUS BLOCKED to the seat). Hunk check:
+  no incumbent hunk touches the `prophet-anticipation-intake` job (BASE line 27185). Options
+  V1 (A0 without the CI line; seat adds it at landing) and V2 (defer) are in §3 F2.
+- Launched `pro-intel-b08records-20261021-r1` (build, F1) and, because b04a0 never started,
+  `pro-intel-d06num-20261021-r1` (research, F4) in the second slot. Two lanes max held.
+- b08records: ubuntu1, DONE rc=0 at 04:09Z, commit `524dcfdc3f1e`, 3 owned files (+69/−3).
+  Checked on the host: both contract copies sha256 `a0790967…a177d`; verifier exit 0;
+  SEC fixture sha cited in the new record matches; prereg note is append-only after line 46;
+  manifest diff confined to `.evidence_class.basis`, `.next_action`, `.feature.current_d5_state`
+  and the added `.feature.gate_s_acceptance`. Lane-reported pytest: 23 passed (Q06 + IV units),
+  `test_us_prophet_fusion.py` 293 passed / 9 skipped.
