@@ -112,22 +112,31 @@ def _receipt(raw, *, source_id="broad_dollar", rights_row=RIGHTS_ROW_OK,
         evidence_ref=evidence_ref, producer_cfg=producer_cfg)
 
 
-def _expected_weekly_log(raw: pd.Series, as_of, change_periods=13):
+def _expected_weekly_log(raw: pd.Series, as_of, change_periods=13,
+                         transform="log_change"):
     """Independent hand computation of the aligned weekly values.
 
     The GLT alignment carries, at each Friday grid point, the last observation
     whose reference date plus release_lag_bdays (1 business day) lands on or
     before that Friday — for continuous business-daily data, Thursday's close.
+    ``transform="level_change"`` returns plain first differences (percentage
+    points) instead of 100 x log differences.
     """
     grid = pd.date_range(raw.index.min(), as_of, freq="W-FRI")
     vals = []
     for friday in grid:
         eligible = raw.index[raw.index <= friday - pd.offsets.BDay(1)]
         vals.append(float(raw.loc[eligible[-1]]) if len(eligible) else None)
+
+    def _change(later, earlier):
+        if transform == "log_change":
+            return 100.0 * (math.log(later) - math.log(earlier))
+        return later - earlier
+
     changes = [
         None if (i < change_periods or vals[i] is None
                  or vals[i - change_periods] is None)
-        else 100.0 * (math.log(vals[i]) - math.log(vals[i - change_periods]))
+        else _change(vals[i], vals[i - change_periods])
         for i in range(len(vals))
     ]
     prior = [c for c in changes[:-1] if c is not None]
@@ -340,6 +349,32 @@ def test_direction_tokens_by_source():
     assert receipt["value"]["direction"] == "spread_narrower"
 
 
+def test_level_change_sources_use_percentage_points():
+    """us_real_yield_10y and every EM corporate OAS source inherit the GLT
+    level_change transform: value.diff(13) in percentage points, never a log
+    change; only broad_dollar is log_pct."""
+    assert dc.source_spec("us_real_yield_10y")["change_transform"] == "level_change"
+    for source_id in EM_OAS_SOURCE_IDS:
+        assert dc.source_spec(source_id)["change_transform"] == "level_change"
+
+    for source_id in ("us_real_yield_10y", "em_corporate_oas"):
+        raw = _daily_walk(271828 + len(source_id))
+        as_of = _as_of_for(raw)
+        receipt = _receipt(raw, source_id=source_id)
+        assert receipt["state"] == "qualified", receipt["abstain_reasons"]
+        expected = _expected_weekly_log(raw, as_of, transform="level_change")
+        value = receipt["value"]
+        assert value["change_unit"] == "percentage_points"
+        assert value["change"] == pytest.approx(expected["change"], abs=1e-9)
+        assert value["z_prior"] == pytest.approx(expected["z"], abs=1e-9)
+        assert value["prior_history_periods"] == len(expected["prior"])
+        assert receipt["alignment"]["change_transform"] == "level_change"
+
+    broad = _receipt(_daily_walk(20261021))
+    assert broad["state"] == "qualified"
+    assert broad["value"]["change_unit"] == "log_pct"
+
+
 # --------------------------------------------------------------------------
 # 4. rights variants
 
@@ -432,6 +467,47 @@ def test_clock_missing_and_order_violation():
                          computed_at="2026-12-30T23:30:00")
     assert reordered["state"] == "abstain"
     assert reordered["abstain_reasons"] == ["clock_order_violation"]
+
+
+def test_receipt_id_ignores_ingestion_and_computation_clocks():
+    """receipt_id hashes only the frozen identity fields; the ingestion and
+    computation clocks never enter it (they may move freely after the fact
+    without minting a new id)."""
+    raw = _daily_walk(4242)
+    a = _receipt(raw, ingested_at="2026-12-31T23:00:00",
+                 computed_at="2026-12-31T23:30:00")
+    b = _receipt(raw, ingested_at="2027-01-05T10:00:00",
+                 computed_at="2027-01-05T11:00:00")
+    assert a["state"] == "qualified" and b["state"] == "qualified"
+    assert a["clocks"]["ingestion"]["at"] != b["clocks"]["ingestion"]["at"]
+    assert a["clocks"]["computation"]["at"] != b["clocks"]["computation"]["at"]
+    assert a["receipt_id"] == b["receipt_id"], \
+        "receipt_id must not depend on ingested_at or computed_at"
+
+    # independent recomputation of the id from the frozen identity: the
+    # observation clock is the reference date carried at the last Friday,
+    # i.e. the last observation at least one business day before it.
+    as_of = _as_of_for(raw)
+    grid = pd.date_range(raw.index.min(), as_of, freq="W-FRI")
+    eligible = raw.index[raw.index <= grid[-1] - pd.offsets.BDay(1)]
+    identity = {
+        "contract_version": "intl-global-dollar-credit-v1",
+        "source_id": "broad_dollar",
+        "series_id": "DTWEXBGS",
+        "as_of": pd.Timestamp(as_of).strftime("%Y-%m-%d"),
+        "observation_at": eligible[-1].strftime("%Y-%m-%d"),
+        "evidence_ref": "fixture:synthetic",
+    }
+    assert identity["observation_at"] == a["clocks"]["observation"]["at"]
+    expected_id = "dc:sha256:" + hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":"))
+        .encode("utf-8")).hexdigest()
+    assert a["receipt_id"] == expected_id
+
+    # positive control: evidence_ref is inside the hashed identity
+    c = _receipt(raw, evidence_ref="fixture:other")
+    assert c["state"] == "qualified"
+    assert c["receipt_id"] != a["receipt_id"]
 
 
 # --------------------------------------------------------------------------
