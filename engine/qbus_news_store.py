@@ -26,6 +26,7 @@ from typing import Iterable, Sequence
 
 from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, curated_sql_clause, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
 from engine.qbus_news_contract import NewsRevision
+from engine.qbus_news_editorial import NewsEditorialView
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
     ClusterCandidate,
@@ -717,6 +718,7 @@ class NewsStore:
         self._cluster_policy_passed = True
         self._read_only = False
         self._curated = False
+        self._editorial_view = None
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
             str(self.path),
@@ -736,8 +738,12 @@ class NewsStore:
         source_key: str,
         cluster_policy: ClusterPolicy | None = None,
         curated: bool = False,
+        editorial_view: NewsEditorialView | None = None,
     ) -> "NewsStore":
-        if not isinstance(curated, bool):
+        if not isinstance(curated, bool) or (
+            editorial_view is not None and
+            (not curated or not isinstance(editorial_view, NewsEditorialView))
+        ):
             raise StoreValidationError("qbus_news_store:invalid_editorial_view")
         db = Path(path)
         if not db.exists() or not db.is_file():
@@ -749,6 +755,7 @@ class NewsStore:
         obj._cluster_policy_passed = cluster_policy is not None
         obj._read_only = True
         obj._curated = curated
+        obj._editorial_view = editorial_view
         try:
             obj._conn = sqlite3.connect(
                 f"file:{urllib.parse.quote(str(db))}?mode=ro",
@@ -758,7 +765,7 @@ class NewsStore:
             )
             obj._conn.row_factory = sqlite3.Row
             if curated:
-                register_curated_reader(obj._conn)
+                register_curated_reader(obj._conn, editorial_view)
             obj._conn.execute("PRAGMA query_only=ON")
             row = obj._conn.execute(
                 "SELECT value FROM qbus_meta WHERE key='schema'"
@@ -778,8 +785,15 @@ class NewsStore:
         if not self._curated:
             return "", ()
         return curated_sql_clause(
-            tuple(source for source in self._read_sources(rights) if rights.allows(source, "url"))
+            tuple(source for source in self._read_sources(rights) if rights.allows(source, "url")),
+            tuple(source for source in self._read_sources(rights) if rights.allows(source, "teaser")),
+            editorial_view=self._editorial_view,
         )
+
+    def _check_editorial_security(self, security_id: str) -> None:
+        company = self._editorial_view.company if self._editorial_view else None
+        if company is not None and company.security_id != security_id:
+            raise StoreValidationError("qbus_news_store:editorial_security_mismatch")
 
     def _read_sources(self, rights: NewsReadRights) -> frozenset[str]:
         # Editorial eligibility narrows this read; the rights object and raw
@@ -1743,6 +1757,7 @@ class NewsStore:
         rights: NewsReadRights,
     ) -> NewsSnapshot:
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 500:
@@ -1972,6 +1987,7 @@ class NewsStore:
         touching its write path. Failures raise; the API layer maps them.
         """
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if (
@@ -2010,6 +2026,10 @@ class NewsStore:
                 allowed_url_sources=tuple(
                     source for source in self._read_sources(rights) if rights.allows(source, "url")
                 ),
+                allowed_teaser_sources=tuple(
+                    source for source in self._read_sources(rights) if rights.allows(source, "teaser")
+                ),
+                editorial_view=self._editorial_view,
             )
         finally:
             conn.close()
@@ -2020,6 +2040,7 @@ class NewsStore:
         provenance = {
             "velocity_schema": VELOCITY_SCHEMA,
             **({"editorial_policy": EDITORIAL_POLICY_VERSION} if self._curated else {}),
+            **({"editorial_view": self._editorial_view.metadata()} if self._editorial_view else {}),
             "sources_counted": velocity["sources_counted"],
             "status_counted": "active",
             "distinct_by": "source + source_item_id",
@@ -2088,6 +2109,10 @@ class NewsStore:
         security_id: str | None = None,
     ) -> StoryDetail | None:
         story_id = _validate_token(story_id, "story_id", 1024)
+        company = self._editorial_view.company if self._editorial_view else None
+        if company is not None:
+            security_id = security_id or company.security_id
+            self._check_editorial_security(security_id)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if not self._read_sources(rights):
@@ -2097,6 +2122,7 @@ class NewsStore:
         params = [story_id, *curated_params, *sorted(self._read_sources(rights))]
         if security_id is not None:
             security_id = _validate_token(security_id, "security_id", 1024)
+            self._check_editorial_security(security_id)
             security_filter = """AND EXISTS (
                 SELECT 1 FROM news_security_index i
                 WHERE i.source=s.source AND i.source_item_id=s.source_item_id
@@ -2165,6 +2191,7 @@ class NewsStore:
         rights: NewsReadRights,
     ) -> ChangePage:
         security_id = _validate_token(security_id, "security_id", 1024)
+        self._check_editorial_security(security_id)
         if (
             not isinstance(after_sequence, int)
             or isinstance(after_sequence, bool)

@@ -927,3 +927,210 @@ def test_url_category_projection_keeps_group_members_and_counts_consistent(tmp_p
         flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant)
         assert flow["reports_24h"] == expected
         assert flow["stories_24h"] == 1
+
+
+# Article-format and company-reference views are additive reader choices.
+from engine.qbus_news_editorial import (
+    NewsEditorialView, article_format, company_reference, company_reference_context,
+)
+
+
+def _company_view(mode="company", *, names=("Nvidia",), ticker="NVDA"):
+    return NewsEditorialView(mode, company_reference_context(
+        security_id=_EDITORIAL_SECURITY, ticker=ticker,
+        universe_revision="fixture-universe", names=names,
+    ))
+
+
+@pytest.mark.parametrize("title,kind", [
+    ("Benzinga Bulls and Bears: Nvidia, Apple, Aster", "roundup"),
+    ("10 Industrials Stocks Whale Activity In Today's Session", "roundup"),
+    ("Weekly recap: chip manufacturers", "roundup"),
+    ("Nvidia manufacturing developments — Week in review", "roundup"),
+    ("$100 Invested In ON Semiconductor 15 Years Ago Would Be Worth This Much Today", "investment_template"),
+    ("If You Invested $1000 In JPMorgan Chase Stock 10 Years Ago, You Would Have This Much Today", "investment_template"),
+    ("Commentary: what the AI cycle means for suppliers", "commentary"),
+])
+def test_editorial_view_classifies_explicit_formats_without_claiming_truth(title, kind):
+    assert article_format(title, "benzinga")[0] == kind
+    assert not _company_view("news").allows("benzinga", title)
+    assert _company_view("all").allows("benzinga", title)
+
+
+@pytest.mark.parametrize("title", [
+    "Nvidia reports quarterly revenue of $20 billion",
+    "Nvidia and Aster sign a manufacturing agreement",
+    "Analyst says Nvidia raises quarterly dividend",
+    "Nvidia unveils new processor ahead of next week's event",
+    "Nvidia releases a weekly recap feature for enterprise users",
+    "Nvidia beats earnings; Apple cuts guidance",
+    "Nvidia shares rise after regulator approves acquisition",
+    "Nvidia analyst maintains Buy and raises price target",
+    "Nvidia supplier halts production after a fire",
+])
+def test_editorial_view_preserves_unclassified_company_developments(title):
+    decision = _company_view().decision("benzinga", title)
+    assert decision["format"] == "unclassified"
+    assert decision["company_reference"] == "headline"
+    assert decision["eligible"] is True
+
+
+@pytest.mark.parametrize("title,teaser,expected", [
+    ("Nvidia reports results", "", "headline"),
+    ("Supplier factory closes", "Nvidia says its chip supply will be delayed.", "summary"),
+    ("Unrelated company reports results", "", "not_observed"),
+    ("Pineapple grower expands", "", "not_observed"),
+    ("Shares rise", "$NVDA rose after the announcement.", "summary"),
+    ("NASDAQ: NVDA reports results", "", "headline"),
+    ("NVDA", "", "not_observed"),
+    ("nvidia", "", "not_observed"),
+])
+def test_company_reference_is_bounded_visible_text_evidence(title, teaser, expected):
+    assert company_reference(title, teaser, _company_view().company) == expected
+
+
+def test_company_reference_handles_legal_suffixes_without_inventing_product_aliases():
+    context = company_reference_context(
+        security_id="on", ticker="ON", universe_revision="u",
+        names=("ON SEMICONDUCTOR CORP",),
+    )
+    assert company_reference("ON Semiconductor reports results", "", context) == "headline"
+    assert company_reference("ON THE RISE", "", context) == "not_observed"
+    assert company_reference("$ON reports results", "", context) == "headline"
+    assert company_reference("onsemi reports results", "", context) == "not_observed"
+    apple = company_reference_context(
+        security_id="apple", ticker="AAPL", universe_revision="u", names=("Apple",),
+    )
+    assert company_reference("Pineapple demand grows", "", apple) == "not_observed"
+    assert company_reference("Farmers increase apple production", "", apple) == "not_observed"
+    assert company_reference("iPhone production halted", "", apple) == "not_observed"
+
+
+def test_editorial_context_revision_binds_identity_names_universe_and_view():
+    a = _company_view()
+    assert a.revision == _company_view().revision
+    assert a.revision != _company_view("all").revision
+    assert a.revision != _company_view(names=("Nvidia", "Aster")).revision
+    other = company_reference_context(
+        security_id="another-security", ticker="NVDA", universe_revision="fixture-universe",
+        names=("Nvidia",),
+    )
+    assert a.revision != NewsEditorialView("company", other).revision
+    with pytest.raises(ValueError):
+        NewsEditorialView("unsupported")
+
+
+def test_company_reference_profile_names_abstain_on_ambiguity_and_refresh(monkeypatch, tmp_path):
+    import pandas as pd
+    from engine import news_common
+
+    monkeypatch.setattr(news_common.config, "ROOT", tmp_path)
+    path = tmp_path / "data" / "profile" / "profiles.parquet"
+    path.parent.mkdir(parents=True)
+    pd.DataFrame({"ticker": ["ZZQ", "ZZQ"], "name": ["Aster Corp", "Birch Corp"]}).to_parquet(path)
+    assert news_common.company_reference_names("ZZQ") == ()
+    pd.DataFrame({"ticker": ["ZZQ"], "name": ["Aster Corporation"]}).to_parquet(path)
+    assert news_common.company_reference_names("ZZQ") == ("Aster Corporation",)
+    path.unlink()
+    assert news_common.company_reference_names("ZZQ") == ()
+
+
+def _view_report(item, title, teaser="", minute=1, source="benzinga"):
+    clock = _EDITORIAL_T0 + timedelta(minutes=minute)
+    if source == "benzinga":
+        rev = normalize_news({
+            "id": item, "title": title, "teaser": teaser,
+            "url": "https://benzinga.com/news/" + item,
+            "created": _EDITORIAL_T0.isoformat(), "updated": clock.isoformat(),
+            "stocks": ["NVDA"],
+        }, transport="benzinga_rest", received_at=clock)
+    else:
+        domain = source.removeprefix("massive:")
+        payload = massive_payload(domain, title, item)
+        payload["description"] = teaser
+        payload["published_utc"] = clock.isoformat()
+        rev = normalize_massive_news(payload, received_at=clock)
+    return RoutedRevision(rev, (_EDITORIAL_SECURITY,), "fixture-universe")
+
+
+def _view_reader(db, mode="company"):
+    return NewsStore.open_readonly(db, source_key="test", curated=True, editorial_view=_company_view(mode))
+
+
+def test_company_view_filters_before_page_limit_and_keeps_broader_history(tmp_path):
+    db = tmp_path / "view.sqlite3"
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [
+            _view_report("real", "Nvidia announces a manufacturing agreement"),
+            *[_view_report(str(n), "Aster opens facility " + str(n), minute=n+2) for n in range(25)],
+        ])
+    rights = _editorial_rights()
+    with _view_reader(db) as reader:
+        page = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=rights)
+        assert [row.source_item_id for row in page.rows] == ["real"]
+        assert page.has_more is False
+        assert reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)["reports_24h"] == 1
+        with pytest.raises(Exception, match="editorial_security_mismatch"):
+            reader.snapshot("another-security", limit=1, cursor=None, rights=rights)
+    with _view_reader(db, "all") as reader:
+        assert len(reader.snapshot(_EDITORIAL_SECURITY, limit=100, cursor=None, rights=rights).rows) >= 2
+        assert reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)["reports_24h"] == 26
+    with NewsStore(db, source_key="test") as writer:
+        assert writer.counts()["revisions"] == 26
+
+
+@pytest.mark.parametrize("allow_teaser", [False, True])
+def test_company_view_corrections_use_only_permitted_summary_and_current_counts(tmp_path, allow_teaser):
+    db = tmp_path / "view.sqlite3"
+    rights = NewsReadRights(
+        frozenset({"benzinga"}), source_fields=(SourceReadRights("benzinga", True, True, allow_teaser),),
+    )
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [_view_report("same", "Supplier signs manufacturing agreement", "Nvidia is the customer.")])
+    with _view_reader(db) as reader:
+        page = reader.snapshot(_EDITORIAL_SECURITY, limit=20, cursor=None, rights=rights)
+        assert len(page.rows) == int(allow_teaser)
+        before_sequence = page.change_sequence
+        before_flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)
+        assert before_flow["reports_24h"] == int(allow_teaser)
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [_view_report("same", "Supplier signs manufacturing agreement", "Aster is the customer.", minute=2)])
+    with _view_reader(db) as reader:
+        assert reader.snapshot(_EDITORIAL_SECURITY, limit=20, cursor=None, rights=rights).rows == ()
+        changes = reader.projected_changes_for_security(
+            _EDITORIAL_SECURITY, after_sequence=before_sequence, limit=20, rights=rights,
+        )
+        assert all(row.kind == "remove" and not row.title and not row.teaser for row in changes.rows)
+        assert reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)["reports_24h"] == 0
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [_view_report("same", "Supplier signs manufacturing agreement", "Nvidia is the customer.", minute=3)])
+    with _view_reader(db) as reader:
+        assert len(reader.snapshot(_EDITORIAL_SECURITY, limit=20, cursor=None, rights=rights).rows) == int(allow_teaser)
+
+
+def test_company_view_group_members_details_changes_and_flow_share_one_projection(tmp_path):
+    db = tmp_path / "view.sqlite3"
+    title = "Supplier signs manufacturing agreement"
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [
+            _view_report("b", title, "Nvidia is the customer."),
+            _view_report("r", title, "Nvidia is the customer.", source="massive:reuters.com"),
+        ])
+    rights = NewsReadRights(
+        frozenset({"benzinga", "massive:reuters.com"}),
+        source_fields=(SourceReadRights("benzinga", True, True, False),
+                       SourceReadRights("massive:reuters.com", True, True, True)),
+    )
+    with _view_reader(db) as reader:
+        page = reader.snapshot(_EDITORIAL_SECURITY, limit=20, cursor=None, rights=rights)
+        assert len(page.rows) == 1
+        row = page.rows[0]
+        assert row.source == "massive:reuters.com"
+        assert row.source_count == row.item_count == 1
+        detail = reader.story(row.story_id, rights=rights)
+        assert detail.source_count == detail.item_count == len(detail.members) == 1
+        changes = reader.projected_changes_for_security(_EDITORIAL_SECURITY, after_sequence=0, limit=20, rights=rights)
+        assert len(changes.rows) == 1 and changes.rows[0].source == "massive:reuters.com"
+        flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)
+        assert flow["reports_24h"] == flow["stories_24h"] == 1
+        assert flow["provenance"]["editorial_view"] == _company_view().metadata()

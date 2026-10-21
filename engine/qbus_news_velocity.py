@@ -15,6 +15,7 @@ import math
 import sqlite3
 
 from engine.qbus_news_cluster import UNKNOWN_CLUSTER_POLICY_VERSION
+from engine.qbus_news_editorial import NewsEditorialView
 
 SCHEMA = "qbus.news_velocity.v1"
 METHOD = (
@@ -145,6 +146,8 @@ def compute_news_velocity(
     allowed_sources: Collection[str],
     curated: bool = False,
     allowed_url_sources: Collection[str] = (),
+    allowed_teaser_sources: Collection[str] = (),
+    editorial_view: NewsEditorialView | None = None,
 ) -> dict:
     """Return schema ``qbus.news_velocity.v1`` for one security as of ``now``.
 
@@ -189,9 +192,11 @@ def compute_news_velocity(
     curated_params: tuple[str, ...] = ()
     if curated:
         from engine.qbus_news_quality import curated_sql_clause, register_curated_reader
-        register_curated_reader(conn)
+        register_curated_reader(conn, editorial_view)
         clause, curated_params = curated_sql_clause(
-            tuple(source for source in allowed_url_sources if source in counted_sources)
+            tuple(source for source in allowed_url_sources if source in counted_sources),
+            tuple(source for source in allowed_teaser_sources if source in counted_sources),
+            editorial_view=editorial_view,
         )
         story_sql = story_sql.replace(
             "AND s.status = 'active'",
