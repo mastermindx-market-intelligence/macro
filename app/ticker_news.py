@@ -386,14 +386,14 @@ def _curated_health(health: Mapping[str, Any], rights: NewsReadRights) -> dict[s
         for item in health.get("additional_sources") or []:
             if not isinstance(item, Mapping) or item.get("provider") != "massive":
                 continue
-            publishers = [publisher for publisher in item.get("publishers", [])
+            publishers = [publisher for publisher in item.get("configured_publishers", [])
                           if isinstance(publisher, str) and "massive:" + publisher in eligible]
             if not publishers:
                 continue
-            entry = dict(item, publishers=publishers)
+            entry = dict(item, configured_publishers=publishers)
             # The writer count includes rejected articles and cannot describe
             # this curated population. Keep its untouched receipt at the writer.
-            entry.pop("accepted_reports", None)
+            entry.pop("accepted_reports_since_start", None)
             extras.append(entry)
         result["additional_sources"] = extras
     return result

@@ -74,3 +74,19 @@ Macro was based on `e5dd30c6344e4b62a0beba054ac4da97e00bab36`; Terminal on
 pre-release checkpoint, determines deployment/completion. The scoped Terminal lint
 finding is pre-existing: the same `setDetailBusy(null)` effect is rejected on the
 unchanged base by `eslint --stdin --stdin-filename components/news/TickerNewsPanel.tsx`.
+
+
+## Independent review repair checkpoint
+
+Macro PR #9942 was confirmed created after the interrupted publication call.
+Independent source reviews inspected Macro `543cba1ea597171958a66267c9044fa13b1ae068`
+and Terminal `9d07f3c8fa14abbb7c2ed5531ef4210cd1b3fbeb` through GitHub. Three P2
+findings were accepted and repaired before release: use parsed health fields
+(`configured_publishers`, `accepted_reports_since_start`); preserve explicit
+factual company events containing otherwise ambiguous earnings/bell timing;
+and bind expanded story caches and outstanding responses to group sequence and
+editorial policy. The new tests reproduced seven backend failures and three
+Terminal failures before repair. The repaired backend selection passes 782
+tests; the Terminal news selection passes 337. The source reviews are actual
+inspection, distinct from the earlier architecture-only advice. Final delta
+review, hosted checks and live deployment proof remain separate release gates.

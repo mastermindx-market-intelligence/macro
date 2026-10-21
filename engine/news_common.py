@@ -928,6 +928,26 @@ def ticker_template_reason(title: str, domain: str = "") -> str | None:
     return None
 
 
+# The broad newsroom preview rule also recognizes temporal context in factual
+# company reports. Only explicit corporate events can shed that context; the
+# remaining headline is screened again, preserving calendar/list/live-blog gates.
+_TICKER_FACT_RE = re.compile(
+    r"^[^:;?!]{1,100}\b(?:"
+    r"(?:raises|raised|cuts|increases|increased|reduces|reduced|declares|declared|suspends|suspended)"
+    r"\s+[^:;?!]{0,50}\b(?:dividends?|guidance|outlook|forecast|buybacks?)\b"
+    r"|(?:reports|reported|posts|posted)\s+"
+    r"(?=[^:;?!]{0,70}\b(?:revenue|profits?|earnings|sales|income|loss|EPS)\b)"
+    r"(?:record\b|higher\b|lower\b|\$?\d)"
+    r"|(?:secures|secured|wins|won|receives|received)\s+[^:;?!]{0,50}\b(?:approval|contract)\b"
+    r"|(?:acquires|acquired|launches|launched|completes|completed)\s+\S"
+    r")", re.I,
+)
+_TICKER_TIMING_RE = re.compile(
+    r"\bahead\s+of\b[^.;:?!]{0,30}\bearnings\b"
+    r"|\b(?:before|after)\s+the\s+(?:(?:opening|closing)\s+)?(?:open|bell|close)\b", re.I,
+)
+
+
 def ticker_editorial_reason(title: str, domain: str = "", author: str = "") -> str | None:
     """Curated ticker display policy, using the shared publisher and title rules.
 
@@ -939,6 +959,9 @@ def ticker_editorial_reason(title: str, domain: str = "", author: str = "") -> s
     if category in {"excluded", "unreviewed"}:
         return "publisher_excluded" if category == "excluded" else "publisher_unreviewed"
     reason = low_value_reason(title, domain, author)
+    if reason == "calendar_preview" and _TICKER_FACT_RE.search(title):
+        factual_title = _TICKER_TIMING_RE.sub("", title).strip()
+        reason = low_value_reason(factual_title, domain, author)
     if reason not in {None, "dividend_declaration_stub", "macro_release_stub"}:
         return reason
     routine = ticker_template_reason(title, domain)
