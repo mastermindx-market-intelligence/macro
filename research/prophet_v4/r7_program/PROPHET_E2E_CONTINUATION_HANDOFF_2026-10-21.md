@@ -112,3 +112,4 @@ themes; 320/390/768/1440; a passing test is not served proof.
   13 pass / 7 ci-packs pending / only merge-queue-pilot X (standing); background `gh pr checks --watch` armed (one
   notification). On green: carrier re-read (last edge must still be 6306863736) → `gh pr merge 9921 --squash
   --match-head-commit 7e0cf6c6…` → launch `pro-receipt-newbase-20261021-r1` against post-merge main.
+  CI watcher launched: background handle `bzr72esbg` (`gh pr checks 9921 --watch --interval 180`, PR #9921 head 7e0cf6c6; output $S/../tasks/bzr72esbg.output; consumed by harness notification).
