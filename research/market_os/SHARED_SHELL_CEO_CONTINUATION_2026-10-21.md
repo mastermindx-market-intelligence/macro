@@ -56,12 +56,61 @@ these assignments do not claim an idle wake or create user-owned chats.
 | `compatibility_release` | W0-W3; Macro source integration/CI, generated publication, exact beta host/service/release proof |
 | `acceptance` | Independent source/design/user-path acceptance; first shared native-browser review window |
 | `continuation_contracts` | W6-W8 owner contracts; watchlist read-failure repair and pure Monitor composition; no shared app/navigation writes |
+| `company_context` | Existing retained-event owner URL binding and negative tests; no new API/store or IW2 changes |
+| `monitor_integration` | Disjoint Monitor body/CSS/tests using current watchlist and alert owners; product integrates route/chrome |
+| `portfolio_integration` | Existing Portfolio links/labels and focused tests; preserve holdings/migration boundaries |
 
 Product isolated tree: `/Volumes/Mastermind 2/agent-workspaces/claude/5600d31ffa29643a/shared-shell-investigation-20261021-8901372ea7d07db1`,
 branch `claude/shared-shell-investigation-20261021`, base Terminal
 `8189edb8abd41e1c95d6460ad735549af5538d48`. Its coordinator verified native
 ancestry and reported serial adoption of #1063. This is an in-progress integration,
-not accepted product evidence.
+not accepted product evidence. Product now serves a local candidate at
+`http://127.0.0.1:3116/discover`; independent acceptance has the first browser
+window. Local rendering is not public acceptance.
+
+## Current material progress
+
+- Watchlist read-failure and Monitor composition source was delivered at Terminal
+  `cf9d9d22e8c7a1fe32205708004b2c2d0acad782`, adopted by product as `b76c373d7`.
+  Coordinator reports 120 focused tests plus TypeScript/lint; root inspected the
+  actual diff. Database failure is unavailable, not an empty watchlist. Save
+  confirmation requires an authoritative membership read started after that exact
+  operation, fenced by operation identity and current UUID. W6 product is unaccepted.
+- Discover Fabric leaf `ss-product-discover-composition-20261021-001` returned
+  two manifested artifacts. Product consumed the same result, corrected the real
+  Prophet destination, existing tokens and contrast, then passed mounted tests and
+  recorded bounded reviewer acceptance. This is labor acceptance only.
+- Company retained context reuses authenticated `/api/investigations/baseline` and
+  immutable event/generation/company/fingerprint bindings. Company helper Fabric
+  operation `ss-company-context-20261021-001` is running; no replacement/replay.
+- Research revision read work is isolated to `app/research.py` and its new test.
+  Existing rights/catalog/rate-limit owners remain; selected revision mismatch must
+  return 409 without silently replacing the body. Existing 152 regressions passed;
+  new test and independent review operations are pending on their original carriers.
+- Macro integration has composed current source conflicts and passed 70 focused
+  injection/regwall/Caddy tests plus ten loopback routing cases. Packing and closure
+  failures remain under repair; neither source nor publication is accepted.
+
+## Beta edge and origin
+
+Root used the existing authenticated Tencent EdgeOne console for site
+`zone-3ryte5fep5wd`, domain `beta.mastermind-x.com`. The existing activated CNAME
+had no HTTPS configuration. Root submitted one free managed certificate request;
+the same operation's later UI readback is **Deployed**, free RSA 2048, expiring
+2027-01-18 16:59:59. Proof screenshots are retained in the extracted handoff's
+`acceptance/beta-certificate-applying.png` and `acceptance/beta-certificate-deployed.png`.
+
+Read-only domain editor confirms origin `146.190.142.17`, protocol **Follow
+protocol**, HTTP port 80, HTTPS port 443, and origin Host **beta.mastermind-x.com**.
+Root cancelled the editor without changes. No beta-specific rule was present among
+the ten inspected rules. The existing VPS beta service answers on loopback 3001,
+but installed Caddy has no beta virtual host. Personal-plan HTTPS UI exposes no
+origin-certificate-validation control; no verification setting was changed.
+The exact current-edge candidate matches the incumbent app's internal origin TLS
+and is undergoing independent integration review. Origin SNI/trust qualification,
+exact reviewed config, public serving, source/build
+identity and recovery/rollback proof remain to be joined. Production port 3000 has
+not been changed by this commission.
 
 Preserve WS:MARKET-OS A1A/A1B accepted population and mutation semantics. Watchlists
 are attention, portfolio_positions are holdings. The new shell does not reopen the
@@ -83,9 +132,11 @@ accepted historical production matrices or authorize unrelated schema changes.
 - Contract leaf `ss-cont-contracts-20261021-001` returned rc78 before worker
   admission, canonical_source_unreadable. No useful result or acceptance; direct
   bounded work follows under the existing no-worker-started rule.
-- Product leaf `ss-product-contract-census-20261021-001` reported MiniMax ubuntu0
-  LEASE_OK and LAUNCH_ATTEMPT. Product coordinator owns same-ID foreground
-  status/result/verification and acceptance. Launch is not completion.
+- Product leaf `ss-product-contract-census-20261021-001` returned no usable census;
+  it was not accepted or replayed. A successful process exit was not acceptance.
+- Caddy review `ss-caddy-boundary-review-20261021-c245` returned an unconfirmed
+  final response with provider429. No review verdict, acceptance or live config
+  apply follows from that result. Preserve its carrier and cooldown.
 - No public deployment, TLS, authenticated journey, visual acceptance, or completed
   publication is established by this checkpoint.
 
