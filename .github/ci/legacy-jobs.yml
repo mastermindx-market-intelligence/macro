@@ -37,6 +37,12 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -946,6 +952,30 @@ jobs:
       - "tests/test_bea_gvc_browser.py"
       - "tests/test_bea_gvc_current_descriptive.py"
       - "tests/test_bea_gvc_view_contract.py"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -1907,6 +1937,12 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -2818,6 +2854,30 @@ jobs:
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
       - "tests/__init__.py"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -2836,6 +2896,12 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -3756,6 +3822,30 @@ jobs:
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
       - "engine/fundamental_forensics/latency.py"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3775,6 +3865,8 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "tests/test_c19_wp31_gates.py"
       - "tests/test_c19_wp31_stats.py"
@@ -4204,6 +4296,8 @@ jobs:
     # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
       - "config.yml"
       - "config/market_reference.yml"
@@ -5304,6 +5398,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "tests/test_ipo_prospectus_terms.py"
       - "data/ipo/lockups.parquet"
       - "data/ipo/calendar.parquet"
@@ -6505,6 +6600,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "config/dataset_registry.yml"
       - "config/intelligence_workspace/datapoints.v1.json"
@@ -6659,6 +6756,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -7297,6 +7398,16 @@ jobs:
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7872,6 +7983,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -8202,6 +8314,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -9060,6 +9173,12 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -10031,6 +10150,30 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10742,6 +10885,7 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/stooq.py"
       - "lib/store.py"
@@ -10865,6 +11009,7 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/stooq.py"
       - "lib/store.py"
@@ -10966,6 +11111,7 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "scripts/__init__.py"
       - "scripts/build_china_mechanics.py"
@@ -10994,6 +11140,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -11293,6 +11441,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -12417,6 +12566,8 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - ".github/workflows/**"
       - "scripts/ci/*.sh"
       - "data/**"
@@ -12568,6 +12719,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/rates_command_basis.py"
@@ -13172,6 +13325,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
       - "tests/test_options_payoff_lab_consumer.py"
       - "tests/test_options_skew_source_note.py"
@@ -13332,6 +13487,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
@@ -13448,6 +13605,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -14042,6 +14201,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "config.yml"
       - "config/sparse_worktree.json"
       - "engine/__init__.py"
@@ -14105,6 +14265,8 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - engine/__init__.py
       - engine/analyst_revisions.py
       - engine/canon.py
@@ -14333,6 +14495,8 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Native LP card import/source closure, measured after consumer adoption.
       - "engine/local_projection_research_card.py"
       - "engine/local_projections.py"
@@ -14933,6 +15097,10 @@ jobs:
       # not the main-only data-health plane. Preserve real-data macro tests below.
       - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
         run: python -m pytest tests/test_forex_context_bus.py -q
+      # Shared Shell keeps the existing document producer and finite route
+      # admission contracts on the code gate alongside page-injection coverage.
+      - name: Shared Shell finite routes and document compatibility
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py -q
 
   quant-q09-venue-concentration:
     if: ${{ false }}
@@ -16359,6 +16527,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -16428,6 +16598,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -16746,6 +16917,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/shared_shell.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -17929,6 +18101,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -18755,6 +18929,8 @@ jobs:
       - "lib/config.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "templates/china.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
@@ -19842,6 +20018,7 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/stooq.py"
@@ -20038,9 +20215,11 @@ jobs:
         # proves the real stamp path as well). pyyaml closes the Brain gateway's
         # Fundamental Forensics package import in this isolated environment.
         # requests closes app.main's eager app.market_memory import.
-        run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
+        run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests jinja2 jsonschema==4.26.0
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_api.py -q
+        run: python -m pytest tests/test_research_api.py tests/test_research_revision_read.py -q
+      - name: Macro Command registered-user serving API
+        run: python -m pytest tests/test_macro_command_api.py -q
       - name: source-bound report evidence — corpus selector
         run: python -m pytest tests/test_research_evidence_passages.py -q
 
@@ -20061,6 +20240,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -20727,6 +20909,12 @@ jobs:
       - "engine/classification_axes/registry.py"
       - "engine/classification_axes/sic_industry.py"
       - "engine/classification_axes/value_chain.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20789,6 +20977,8 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -20843,6 +21033,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -21288,6 +21482,16 @@ jobs:
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22860,6 +23064,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -23751,6 +23961,30 @@ jobs:
       - "site/government-revenue-data/research-state.json"
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -23784,6 +24018,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "engine/fundamental_forensics/models.py"
@@ -24564,6 +24799,10 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -24943,6 +25182,15 @@ jobs:
       - "tests/test_shared_theme_progressive_loader.cjs"
       - "templates/theme.js"
       - "tests/fixtures/government_revenue/archetypes/**"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -25229,6 +25477,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/government_revenue/public_agreement.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -25356,6 +25606,10 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -25797,6 +26051,16 @@ jobs:
       - "engine/group_pulse.py"
       - "site/basketdata/pulse.json"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -26064,8 +26328,14 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
-      - name: one product header + nav prefix + hover/anchor geometry
-        run: python -m pytest tests/test_product_chrome.py tests/test_subdir_nav_prefix.py tests/test_nav_hover_bridge.py tests/test_nav_menu_mockup_hover.py tests/test_nav_wide_menu_anchor.py -q
+      # Shared All tools adoption (PR #7949, 2026-10-01): keep the production
+      # controller/template/site contract under the incumbent product-chrome /
+      # navigation owner. The suite executes the controller's 97-case Node
+      # behavior contract and Jinja/static integration checks; this job already
+      # supplies Jinja and the packed runner supplies Node. No parallel job or
+      # second navigation owner is created.
+      - name: one product header + nav prefix + hover/anchor geometry + All tools integration
+        run: python -m pytest tests/test_product_chrome.py tests/test_subdir_nav_prefix.py tests/test_nav_hover_bridge.py tests/test_nav_menu_mockup_hover.py tests/test_nav_wide_menu_anchor.py tests/test_all_tools_menu.py -q
       - name: landing IA + nav front-door regroup + start-page voice and publish integrity
         run: python -m pytest tests/test_landing_navigation.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
       - name: terminal entitlement copy + chat-allowance truth + full-screen portal contract
@@ -26474,6 +26744,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -29261,6 +29532,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -29336,6 +29609,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -30936,6 +31211,10 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -31373,6 +31652,16 @@ jobs:
       - "engine/group_pulse.py"
       - "site/basketdata/pulse.json"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -31437,6 +31726,12 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -32528,6 +32823,30 @@ jobs:
       - scripts/tiingo_materialize.py
       - lib/dataos/tiingo_reader.py
       - lib/dataos/tiingo_views.py
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32904,6 +33223,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -34465,6 +34786,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/market_os/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -35489,6 +35816,30 @@ jobs:
       - "site/factordata/attention.json"
       - "site/factordata/tech_confluence.json"
       - "site/marketdata/sp500_heatmap.json"
+      - "app/macro_command.py"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/source_layout.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -35709,6 +36060,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
       - "scripts/build_macro_workspaces.py"
@@ -35805,6 +36158,8 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/__init__.py"
       - "engine/market_os/**"
@@ -35954,6 +36309,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -36516,6 +36872,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
@@ -36650,6 +37008,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
@@ -36764,6 +37124,8 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -36962,6 +37324,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/config.py"
       - "lib/pages.py"
@@ -38458,6 +38822,7 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
       - "lib/stooq.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"

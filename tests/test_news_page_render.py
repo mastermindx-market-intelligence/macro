@@ -1233,12 +1233,16 @@ def test_news_css_unsafe_reference_is_not_evidence(tmp_path, href):
     assert count == 0 and rejected == [href]
 
 
-def test_news_css_contract_accepts_real_externalizer_output(tmp_path):
+def test_news_css_contract_accepts_real_externalizer_output(tmp_path, monkeypatch):
     import hashlib
+    from lib import pages
     from scripts.externalize_css import externalize
 
     site = tmp_path / "site"
     site.mkdir()
+    # The canonical writer injects shared assets relative to its configured site.
+    # Keep that owner inside this fixture so every emitted reference is real here.
+    monkeypatch.setattr(pages, "_site_root", lambda: site)
     canonical = (ROOT / "templates/news_desk.css").read_text().strip()
     block = "/* shared page */\n" + canonical + "\n.after{display:block}"
     page = site / "news.html"

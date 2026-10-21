@@ -764,6 +764,19 @@
     $("ndHistoryCompare").addEventListener("click",openComparison);
     $("ndHistoryKeep").addEventListener("click",function(){openInvestigations(compareIds);});
     ["ndCompare","ndInvestigations","ndMonitor","ndHistory"].forEach(function(id){$(id).addEventListener("close",function(){finishResearchDialog(this);});});
+    // A qualified shell candidate owns embedded auth, including before INIT.
+    // Keep the canonical link for standalone and modified-click navigation.
+    ["ndSignIn","ndCompanySignIn"].forEach(function(id){
+      var link=$(id);if(!link)return;
+      link.addEventListener("click",function(e){
+        var shell=win.MMXSharedShell;
+        if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||!shell||typeof shell.openAuth!=="function")return;
+        var target=(link.getAttribute("target")||"").toLowerCase();
+        if(link.hasAttribute("download")||(target&&target!=="_self"))return;
+        e.preventDefault();
+        try{shell.openAuth("signin");}catch(_){/* The qualified shell still owns this action. */}
+      });
+    });
     $("ndRetry").addEventListener("click",function(){win.clearTimeout(timer);connect();});
     doc.querySelectorAll("[data-close-dialog]").forEach(function(b){b.addEventListener("click",function(){closeDialog(b.closest("dialog"));});});
     doc.addEventListener("keydown",function(e){

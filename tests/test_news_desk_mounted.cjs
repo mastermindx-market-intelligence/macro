@@ -364,3 +364,65 @@ test("coverage keeps missing collection counters unknown and updates an open dis
  const details=h.doc.querySelector(".nd-coverage-source-details");details.open=true;details.querySelector("summary").focus();const key=h.doc.activeElement.dataset.researchFocus;assert.match(details.textContent,/Items observedUnknown/);assert.match(h.doc.getElementById("ndCoverageBody").textContent,/Previously checked/);
  h.app.accept(Object.assign(snapshot([story("a",{feed_id:"source-a",language:"en",category:"energy"})]),{source_health:[Object.assign({},source,{last_outcome:"unchanged",last_observed_item_count:0,last_http_status:200,last_attempt_duration_ms:73})]}));assert.equal(h.doc.activeElement.dataset.researchFocus,key);assert.equal(h.doc.querySelector(".nd-coverage-source-details").open,true);assert.match(h.doc.querySelector(".nd-coverage-source-details").textContent,/Items observed0/);assert.match(h.doc.getElementById("ndCoverageBody").textContent,/No reporting changes/);
 });
+
+
+test("embedded News sign-in delegates once to the shell while initialization is pending",async t=>{
+ const h=harness(t);await settle();const intents=[];
+ h.win.MMXSharedShell={active:false,openAuth:mode=>intents.push(mode)};
+ for(const id of ["ndSignIn","ndCompanySignIn"]){
+  const link=h.doc.getElementById(id),href=link.getAttribute("href");
+  const event=new h.win.MouseEvent("click",{button:0,bubbles:true,cancelable:true});
+  assert.equal(link.dispatchEvent(event),false);
+  assert.equal(event.defaultPrevented,true);
+  assert.equal(link.getAttribute("href"),href);
+  assert.equal(href,"/?signin=1&ret=news.html");
+ }
+ assert.deepEqual(intents,["signin","signin"]);
+});
+
+test("News sign-in retains standalone and modified-link navigation",async t=>{
+ const h=harness(t);await settle();const intents=[];
+ function inspect(id,options){
+  const link=h.doc.getElementById(id);let handled;
+  // Observe the application decision, then stop jsdom's unimplemented navigation.
+  link.addEventListener("click",event=>{handled=event.defaultPrevented;event.preventDefault();},{once:true});
+  link.dispatchEvent(new h.win.MouseEvent("click",Object.assign({button:0,bubbles:true,cancelable:true},options)));
+  assert.equal(handled,false);assert.equal(link.getAttribute("href"),"/?signin=1&ret=news.html");
+ }
+ for(const id of ["ndSignIn","ndCompanySignIn"]){
+  delete h.win.MMXSharedShell;inspect(id,{});
+  h.win.MMXSharedShell={active:false};inspect(id,{});
+  h.win.MMXSharedShell={active:true,openAuth:mode=>intents.push(mode)};
+  for(const options of [{ctrlKey:true},{metaKey:true},{shiftKey:true},{altKey:true},{button:1},{button:2}])inspect(id,options);
+  const link=h.doc.getElementById(id);
+  link.setAttribute("target","_blank");inspect(id,{});link.removeAttribute("target");
+  link.setAttribute("download","");inspect(id,{});link.removeAttribute("download");
+ }
+ assert.deepEqual(intents,[]);
+});
+
+test("News sign-in respects a previously handled click",async t=>{
+ const h=harness(t);await settle();const intents=[];
+ h.win.MMXSharedShell={openAuth:mode=>intents.push(mode)};
+ for(const id of ["ndSignIn","ndCompanySignIn"]){
+  const link=h.doc.getElementById(id);
+  link.addEventListener("click",event=>event.preventDefault(),{capture:true,once:true});
+  link.dispatchEvent(new h.win.MouseEvent("click",{button:0,bubbles:true,cancelable:true}));
+ }
+ assert.deepEqual(intents,[]);
+});
+
+
+test("a claimed News sign-in never starts a second route after shell refusal or failure",async t=>{
+ const h=harness(t);await settle();let attempts=0,localAuth=0;
+ h.win.MDXAuth={open:()=>localAuth++};
+ for(const throws of [false,true]){
+  h.win.MMXSharedShell={openAuth:mode=>{attempts++;assert.equal(mode,"signin");if(throws)throw new Error("shell unavailable");return false;}};
+  for(const id of ["ndSignIn","ndCompanySignIn"]){
+   const link=h.doc.getElementById(id),event=new h.win.MouseEvent("click",{button:0,bubbles:true,cancelable:true});
+   assert.equal(link.dispatchEvent(event),false);assert.equal(event.defaultPrevented,true);
+   assert.equal(link.getAttribute("href"),"/?signin=1&ret=news.html");
+  }
+ }
+ assert.equal(attempts,4);assert.equal(localAuth,0);
+});
