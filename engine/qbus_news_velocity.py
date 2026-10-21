@@ -143,6 +143,7 @@ def compute_news_velocity(
     security_id: str,
     now: datetime,
     allowed_sources: Collection[str],
+    curated: bool = False,
 ) -> dict:
     """Return schema ``qbus.news_velocity.v1`` for one security as of ``now``.
 
@@ -184,6 +185,13 @@ def compute_news_velocity(
         story_sql = _STORY_SQL_MEMBERS_ONLY
     else:
         story_sql = _STORY_SQL_NO_CLUSTER_TABLES
+    if curated:
+        from engine.qbus_news_quality import register_curated_reader
+        register_curated_reader(conn)
+        story_sql = story_sql.replace(
+            "AND s.status = 'active'",
+            "AND s.status = 'active' AND qbus_news_is_curated(s.source, p.title)=1",
+        )
     rows = conn.execute(
         story_sql.format(placeholders=placeholders),
         (security_id, *counted_sources),

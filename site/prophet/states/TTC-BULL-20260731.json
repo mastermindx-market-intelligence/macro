@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTC-BULL-20260731",
-  "asof": "2026-10-20",
+  "asof": "2026-10-21",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.7,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.05,
     "dist_to_t1_r": 1.45,
     "dist_to_t2_r": 2.95,
-    "horizon_pct_used": 164.4,
+    "horizon_pct_used": 166.7,
     "p1": 0.0333,
     "p2": 0.0166,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 74,
-  "tau": 1.6444
+  "days_elapsed": 75,
+  "tau": 1.6667
 }
