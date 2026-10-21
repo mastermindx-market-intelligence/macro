@@ -43,6 +43,6 @@ Release through the ordinary Macro and Terminal source/CI/deployment lanes. The 
 
 ## Verification
 
-The focused regression suite is `tests/test_ticker_news_editorial_policy.py`, enrolled in the existing ticker-news-qbus CI job. It covers the user's screenshot headlines, aliases and lookalike hosts, before-pagination rejection, mixed story members, corrections/removals/restoration, title permissions, real API reads, release classification and scoped health. Existing qbus/ticker/financial-news suites check the shared-policy integration.
+Editorial regressions are co-located in `tests/test_shared_news_intelligence.py`, already enrolled in the existing ticker-news-qbus CI job alongside its source-diversity, rights and live-consistency tests. It covers the user's screenshot headlines, aliases and lookalike hosts, before-pagination rejection, mixed story members, corrections/removals/restoration, title permissions, real API reads, release classification and scoped health. Existing qbus/ticker/financial-news suites check the shared-policy integration.
 
 Terminal contract and rendered-consumer tests cover additive compatibility, bilingual attribution and the absence of false curation claims. Its existing responsive ticker-news test exercises publisher filtering at 1440×900, 820×1180 and 390×844 in EN/ZH. Dark views use the shipped theme; light views are explicitly approved-palette specimens under the existing D-W1 ruling. This fixture proof is distinct from production/authentication/delivery evidence.

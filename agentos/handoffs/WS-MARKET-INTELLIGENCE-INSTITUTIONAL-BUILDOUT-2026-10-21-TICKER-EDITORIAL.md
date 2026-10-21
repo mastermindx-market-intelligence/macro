@@ -25,7 +25,7 @@ changed:
     what: Optional curated count population with unchanged raw mode.
   - path: app/ticker_news.py
     what: Public curated reader, additive content attribution and scoped delivery health.
-  - path: tests/test_ticker_news_editorial_policy.py
+  - path: tests/test_shared_news_intelligence.py
     what: Regression coverage for screenshot cases, rights, pagination, corrections and health; enrolled in ticker-news-qbus CI.
   - path: docs/ops/ticker-news-editorial-quality.md
     what: Source audit, explanation of the inclusion error, policy and premium-coverage boundary.
@@ -90,3 +90,22 @@ Terminal failures before repair. The repaired backend selection passes 782
 tests; the Terminal news selection passes 337. The source reviews are actual
 inspection, distinct from the earlier architecture-only advice. Final delta
 review, hosted checks and live deployment proof remain separate release gates.
+
+
+## CI packing repair checkpoint
+
+Hosted contract-delta checks found that registering a separate editorial test module
+added two estimator weight units to the already-selected ticker-news-qbus job,
+exceeding the existing free-content probe ceiling (5,797 versus 5,795). The
+editorial cases and helpers were moved into the existing shared-news intelligence
+suite, whose subject already includes source quality, rights and live consistency.
+All assertions and parameter cases are retained, with private helper names to
+avoid collisions. Only the redundant path and invocation entries were removed;
+production logic, job selection rules and packing ceilings are unchanged. This
+is suite consolidation, not a runtime-saving claim. Concluded hosted checks and
+production proof are still required after publication.
+
+After consolidation, the same backend selection passed all 782 tests, and
+`tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs`
+passed with the existing packing ceilings. Hosted CI remains unverified for
+this test-only follow-up until its published run concludes.

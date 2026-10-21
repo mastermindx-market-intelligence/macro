@@ -33919,7 +33919,6 @@ jobs:
       - tests/test_massive_news.py
       - tests/test_qbus_news_intake.py
       - tests/test_shared_news_intelligence.py
-      - tests/test_ticker_news_editorial_policy.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -34931,7 +34930,6 @@ jobs:
           tests/test_massive_news.py
           tests/test_qbus_news_intake.py
           tests/test_shared_news_intelligence.py
-          tests/test_ticker_news_editorial_policy.py
           tests/test_alpaca_news.py
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
