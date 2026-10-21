@@ -12046,6 +12046,17 @@ jobs:
       # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
       - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
         run: python -m pytest tests/test_china_heatmap_freshness.py -q
+      # Asia-close qledger carve-out (#9934, GH001 port of #9556): when the
+      # qledger ledger is withheld the collect stage must reset data/qledger and
+      # site/qledger back out of the broad `git add data/ site/qledger/`, and the
+      # commit-data gate expressions must evaluate the way the workflow text says.
+      # Reads .github/workflows/asia-close.yml as text and shares its helpers with
+      # tests/test_daily_collect_commit_path.py (pyyaml + pytest; synthetic repos
+      # under tmp_path; no data/ or site/ reads). Belongs HERE (gate: code) so it
+      # runs on every PR: prophet-anticipation-intake is gate: data and is packed
+      # only by data-health.yml after merge, so a registration there never ran on a PR.
+      - name: asia-close.yml qledger carve-out (collect stage never broad-adds a withheld ledger)
+        run: python -m pytest tests/test_asia_close_collect_commit_path.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
@@ -27231,7 +27242,7 @@ jobs:
       # Browser-free and a few seconds serial (it renders the dashboard template), and it
       # reuses the pip line above — no new dependency enters this job's import closure.
       - name: anticipation why-not receipts (headline specificity, fail-closed status, the shelf partial)
-        run: python -m pytest tests/test_prophet_whynot_receipts.py tests/test_asia_close_collect_commit_path.py -q
+        run: python -m pytest tests/test_prophet_whynot_receipts.py -q
       - name: Prophet leader-observation shelf (real publisher, tier split, plan-byte invariance, rendered consumer)
         run: python -m pytest tests/test_prophet_leader_observation_shelf.py -q
       - name: zone-basis copy (no raw enum/slug/internal state on the published entry_zone; EN+ZH)
