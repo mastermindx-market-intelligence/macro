@@ -5157,8 +5157,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_828),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_801),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_830),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5167,6 +5167,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC-I01 registers tests/test_sector_central_contract.py on the
+    tier-gate run line next to tests/test_sector_central_gate.py. The local
+    probe on 3d8d14acdc8 measures the two code probes at 135 jobs / 5,828
+    (index.html) and 5,801 (build_free_content); the registered suite adds
+    exactly two estimator units to each (5,830 / 5,803), no job-count or pack
+    change, no new entrant. Fund only that measured excess. Job counts, the
+    plan_book probe, selectors and the ten-pack bound remain unchanged.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
