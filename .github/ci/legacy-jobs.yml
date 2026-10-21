@@ -7771,6 +7771,33 @@ jobs:
       - name: International research context and route state
         run: node --test tests/intl_workspace_state.test.cjs
 
+  international-global-universe:
+    # IM11: global universe v1, capability coverage and source-rights matrix (data contract only).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/intl_global_universe.py"
+      - "tests/test_intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install contract test dependencies
+        run: pip install pytest pyyaml
+      - name: International global universe contract
+        run: python -m pytest tests/test_intl_global_universe.py -q
+
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
     # Scope includes the measured first-party import closure and config input.
@@ -8078,6 +8105,10 @@ jobs:
       - "lib/intl_macro_publication.py"
       - "tests/test_intl_macro_mount.py"
       - "tests/test_intl_macro_publication.py"
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "tests/test_intl_global_observation.py"
+      - "tests/test_intl_global_observation_adapter.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8088,7 +8119,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -8531,6 +8562,14 @@ jobs:
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
+      # B04-A0 evidence dossier (#9935): the dossier test, its fixtures, the
+      # committed reason map it pins by digest and the R6-B04-01a amendment it
+      # parses as a fence. Declared here so the coverage rule admits the run
+      # line below and an edit to any of them re-runs this job on the PR.
+      - "tests/test_prophet_lab_dossier_b04a.py"
+      - "tests/fixtures/prophet_lab_dossier/**"
+      - "config/prophet_dossier_reason_map.v1.json"
+      - "research/prophet_v4/r6_program/rulings/R6-B04-01a_DOSSIER_CONTRACT_AMENDMENT_DRAFT_2026-09-24.md"
       # test_caddy_hub_boundary.py's fastapi/starlette half imports
       # app.prophet_lab (its importorskip reasons literally read "prophet_lab
       # guard tests need fastapi") — it rides HERE so those tests execute
@@ -8594,6 +8633,16 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
+      # and admissibility literals for the Prophet Lab dossier reader. Hermetic
+      # (fixtures under tests/fixtures/prophet_lab_dossier/); imports
+      # engine.prophet_lab + lib.dataos.identity, both already exercised by the
+      # projection step above, so this job's deps cover it. Belongs HERE
+      # (gate: code) so it runs on every PR: prophet-anticipation-intake is
+      # gate: data and is packed only by data-health.yml after merge.
+      - name: Prophet Lab evidence dossier B04-A0 (closed reason map, forbidden-key refusal, admissibility literals)
+        run: python -m pytest tests/test_prophet_lab_dossier_b04a.py -q
 
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
@@ -12049,6 +12098,17 @@ jobs:
       # stdlib + pytest only (re, pathlib); no data/ or site/ reads.
       - name: asia-close.yml asia ownership fence (Options PIT/campaign narrow roots must not enter broad staging)
         run: python -m pytest tests/test_china_heatmap_freshness.py -q
+      # Asia-close qledger carve-out (#9934, GH001 port of #9556): when the
+      # qledger ledger is withheld the collect stage must reset data/qledger and
+      # site/qledger back out of the broad `git add data/ site/qledger/`, and the
+      # commit-data gate expressions must evaluate the way the workflow text says.
+      # Reads .github/workflows/asia-close.yml as text and shares its helpers with
+      # tests/test_daily_collect_commit_path.py (pyyaml + pytest; synthetic repos
+      # under tmp_path; no data/ or site/ reads). Belongs HERE (gate: code) so it
+      # runs on every PR: prophet-anticipation-intake is gate: data and is packed
+      # only by data-health.yml after merge, so a registration there never ran on a PR.
+      - name: asia-close.yml qledger carve-out (collect stage never broad-adds a withheld ledger)
+        run: python -m pytest tests/test_asia_close_collect_commit_path.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
       # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
@@ -26662,6 +26722,7 @@ jobs:
       - "engine/prophet_bridge.py"
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
+      - "engine/prophet_b4_same_read.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_doors.py"
       - "engine/prophet_entry_availability.py"
@@ -26681,6 +26742,15 @@ jobs:
       # archive test must declare its whole import closure (cn_pack -> armed_pack ->
       # build_china_library -> the china tree). Derived by curated_exclusive_closure_findings
       # on this head; an undeclared import here is a silent false green (test_ci_pack).
+      # cnp1arch closure r2: the china tree reads these site/*.json data files by
+      # literal path (string references count toward the exclusive closure; see
+      # curated_exclusive_closure_findings). CI run 39561003560 named exactly these six.
+      - "site/china_intel/analogs.json"
+      - "site/chinaaltdata/by_ticker.json"
+      - "site/chinanews/by_ticker.json"
+      - "site/chinaradar/radar.json"
+      - "site/chinaspecialdata/special.json"
+      - "site/factordata/china_standouts.json"
       - "collectors/china_ths_concepts.py"
       - "engine/china_board_rank.py"
       - "engine/china_continuation_watch.py"
@@ -27105,6 +27175,7 @@ jobs:
       - "tests/test_prophet_candidate_plan_return.py"
       - "tests/test_prophet_candidate_state.py"
       - "tests/test_prophet_candidate_state_sources.py"
+      - "tests/test_prophet_b4_same_read.py"
       - "tests/test_prophet_card_shared.py"
       - "tests/test_us_prophet_original_card_layout.py"
       - "tests/test_prophet_daily_brief.py"
@@ -27227,6 +27298,8 @@ jobs:
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+      - name: Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)
+        run: python -m pytest tests/test_prophet_b4_same_read.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
@@ -33158,8 +33231,17 @@ jobs:
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
+    # Literal import/read closure of the four offline suites. Exclusive scope
+    # prevents the CLI's dynamic file-module tests from widening unrelated probes.
+    scope: exclusive
     paths:
       - config/dag.yml
+      - engine/__init__.py
+      - lib/__init__.py
+      - scripts/__init__.py
+      - contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json
+      - research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md
+      - research/options_estate/options_alpha_exact_option_outcome_policy_v1.json
       - contracts/options/options.prospective_nbbo_cohort.v1.schema.json
       - docs/runbooks/OPTIONS_NBBO_COHORT.md
       - engine/options_nbbo_cohort.py
@@ -33172,6 +33254,9 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - scripts/evaluate_options_alpha_exact_option_outcome.py
+      - tests/test_options_alpha_exact_option_outcome_cli.py
+      - docs/runbooks/OPTIONS_OA3_RETAINED_EVALUATION.md
       - engine/options_occ_contract_terms.py
       - tests/test_options_occ_contract_terms.py
       - tests/test_options_occ_contract_terms_native.py
@@ -33191,6 +33276,7 @@ jobs:
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
           tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
 
@@ -37961,6 +38047,9 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/render.yml"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/commodity_carry.py"
@@ -38055,15 +38144,32 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "scripts/__init__.py"
       - "scripts/build_commodities.py"
+      - "scripts/check_commodity_publication.py"
+      - "scripts/check_site_asset_refs.py"
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
+      - "site/commodities.html"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
       - "templates/commodity-workspace.js"
+      - "config/sparse_worktree.json"
+      - "lib/site_assets.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/worktree_sparse.py"
+      - "scripts/externalize_css.py"
+      - "scripts/optimize_assets.py"
+      - "templates/_interfonts.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "templates/navigation-refresh.css"
+      - "templates/product-nav-icons.css"
+      - "templates/theme.css"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_commodity_publication.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
     timeout-minutes: 7
@@ -38079,6 +38185,6 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js

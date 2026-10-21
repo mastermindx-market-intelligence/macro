@@ -45,3 +45,40 @@ Seat-only acts (push/PR/label/merge/post) are never performed here.
 - Custody scan: #9821 touches only `.github/ci/legacy-jobs.yml` in common with SOURCE packets (disjoint line insert);
   #9714/#7929 no overlap; #7734 gates NBBO; daily.yml/dag.yml held by 7 open PRs → seat adds any workflow step.
 - Next: consume B05 (spec items 1–8, diff-stat to owned files) and B21 (9 questions); then return to the seat.
+
+### 2026-10-21 04:2xZ — B21 consumed; BU1 launched
+- B21 lane returned 04:21Z DONE rc=0 (host ubuntu3, reached as `mmx-ubuntu3`; commit 6eed43cb, 1 file +465, no
+  outcome file opened). Report copied to `B21_ALERT_STATE_MACHINE_CONTRACT_2026-10-21.md` (3f75cf6b3403); accepted
+  with four notes recorded in the disposition (B4-exclusion reasoning, U1 custody #9774, U4/U5 delivery scope +
+  review, effect-unknown copy ruling).
+- B23 BU1 packet `pro-source-b23bu1-20261021` launched into the freed slot 04:22Z, host ubuntu2, RUNNING.
+  BU4+BU5 packet written (`pro-source-b23bu45-20261021`), launch after BU1 merges.
+
+## 04:3xZ — B05 consumed (ACCEPTED source-level)
+- `pro-source-b05sameread-20261021-r1` ubuntu1 rc=0 04:24Z, commit 39b2767ffe21, diff = 3 owned files only
+  (module +411, tests +582, legacy-jobs.yml +1 in `prophet-anticipation-intake`); 256 passed on lane.
+- Judged against frozen spec 1-8: each item has a named test; no wall-clock read; decision_at from owner clocks;
+  only the three contract classes caught. Review notes (a)-(d) recorded in disposition B05 (module-raised
+  RuntimeOwnerFactError on a qualified read propagates uncaught; reader call not wrapped; evaluator interposition in
+  tests; nyse_calendar early-close GAP).
+- Next: one independent review lane on 39b2767ffe21 (seat dispatch), then seat claude/* PR; D01 closure after.
+- BU1 lane still POLL_PENDING on ubuntu2 at 04:26Z.
+- 04:29Z launched `pro-source-b05review-20261021-r1` (review C1, pinned ubuntu1 where 39b2767f lives, BASE = that
+  commit). Packet `$S/pk/pro-source-b05review-20261021.md`. Live lanes: BU1 (ubuntu2) + B05 review (ubuntu1) = 2.
+
+## 04:3xZ — BU1 consumed; BU4/5 launched stacked
+- `pro-source-b23bu1-20261021-r1` ubuntu2 rc=0 04:35Z, commit 155769840281, 2 owned files, 85 passed, self-check ok.
+  ACCEPTED source-level. Lane GAP: design file absent at BASE (seat branch only) — finding for the seat: lanes based
+  on main cannot read r7 design docs until the seat ships them.
+- Rewrote `$S/pk/pro-source-b23bu45-20261021.md` (BASE = BU1 lane commit, design facts inlined, CI rule aligned to
+  COMMON's single-line rule) and launched `pro-source-b23bu45-20261021-r1` pinned ubuntu2 at 04:38Z.
+- Live lanes: B05 review (ubuntu1) + BU4/5 (ubuntu2) = 2.
+
+## 04:4xZ — B05 review consumed (PASS_WITH_NOTES); CI-placement finding
+- `pro-source-b05review-20261021-r1` ubuntu1 rc=0, commit `e4433f5713d6` (1 file, report only). Spec 1-8 PASS.
+  A1 NOTE (docstring overstates; raises are correct reader-contract guards); A8 NOTE (CI line data-gated).
+  Report copied to `B05_SAME_READ_REVIEW_2026-10-21.md` (sha 5f7ff01f590c). B05 + D01 now ready for the seat PR.
+- Verified: `prophet-anticipation-intake` is `gate: data` (:27085); #9921's whynot suite sits there too (main :27234),
+  so neither is PR-gated. Disposition §4 item 7 = move pure-code suites to `gate: code` jobs at ship time.
+- Seat merged origin/main (#9928) into the branch at 04:42Z; conflicts in source/ files resolved to HEAD by the seat;
+  my edits applied after MERGE_HEAD cleared. BU4/5 lane still POLL_PENDING (ubuntu2).

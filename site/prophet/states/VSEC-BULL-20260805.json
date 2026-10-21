@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VSEC-BULL-20260805",
-  "asof": "2026-10-20",
+  "asof": "2026-10-21",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.6,
@@ -10,23 +10,23 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 1.3,
+    "validity": 0.3,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.08,
+    "dist_to_stop_r": 0.041,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 164.4,
-    "p1": -0.6132,
-    "p2": -0.3066,
+    "horizon_pct_used": 166.7,
+    "p1": -0.6395,
+    "p2": -0.3198,
     "p3": null,
-    "move_r": -0.92,
+    "move_r": -0.959,
     "mfe_r": 0.393,
-    "mae_r": -0.926
+    "mae_r": -0.959
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 25.279995727539074,
-  "_mae": -59.550006103515614,
+  "_mae": -61.67999572753905,
   "_max_p1": 0.26210467317303343,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 74,
-  "tau": 1.6444
+  "days_elapsed": 75,
+  "tau": 1.6667
 }
