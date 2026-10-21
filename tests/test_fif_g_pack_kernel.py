@@ -177,9 +177,20 @@ def _period_universe(occurrences: Sequence[Any], governed: frozenset[str]):
     return [seen[key] for key in sorted(seen)]
 
 
-def _governed_concepts(registry) -> frozenset[str]:
+def _governed_concepts(registry, clock: str) -> frozenset[str]:
+    """Aliases from the clock-scoped governance view the kernel itself applies.
+
+    The kernel reads governance through
+    ``MetricRegistry.governance_bundle_at(recorded_at)`` — a mapping is
+    visible only when ``mapping.rule.available_at <= cutoff``
+    (engine/fundamental_forensics/metric_registry.py:493-530) — so the period
+    grid here is derived from that same view: an alias whose rule clock is
+    after the run clock cannot contribute a period the frozen gold never had.
+    The bundle exposes the visible contracts as ``contracts`` with only their
+    visible mappings attached under ``contract.mappings``.
+    """
     governed = set()
-    for contract in registry.contracts:
+    for contract in registry.governance_bundle_at(clock).contracts:
         for mapping in contract.mappings:
             for alias in mapping.taxonomy_concept_aliases:
                 governed.add(f"{alias.taxonomy}:{alias.concept}")
@@ -254,7 +265,7 @@ def _kernel_rows(cik10: str, admitted: Sequence[str], stage: Path, clock: str) -
     from engine.fundamental_forensics.raw_ledger import RawFactLedger, parse_utc
 
     registry = _registry()
-    governed = _governed_concepts(registry)
+    governed = _governed_concepts(registry, clock)
     entity = QueryEntity(
         ticker=_pack_ticker(cik10),
         entity_id=cik10,
@@ -599,6 +610,69 @@ def test_ungoverned_metric_rule_is_narrow() -> None:
     assert not _ungoverned_typed_absence(
         {"category": "kernel_row_without_gold_row", "kernel": {}}, governed
     )
+
+
+def test_governed_concepts_scope_to_the_run_clock() -> None:
+    """An alias whose rule clock is after the run clock adds no concept.
+
+    The kernel applies governance through ``governance_bundle_at``; this pins
+    the harness to the same clock-scoped view — a mapping visible only after
+    the clock must not contribute its alias (and so no period) to the grid.
+    The amended registry re-dates one contract's mappings to a single rule
+    past the clock (same governed aliases, new immutable rule), so both
+    bundles stay inside the governed vocabularies.
+    """
+    from dataclasses import replace
+    from datetime import datetime
+
+    from engine.fundamental_forensics.metric_registry import (
+        ImmutableRule,
+        MappingRule,
+    )
+
+    registry = _registry()
+    mapped = [c for c in registry.contracts if c.mappings]
+    target, other = mapped[0], mapped[1]
+    real = target.mappings[0]
+    future = "2031-01-01T00:00:00+00:00"
+    amended = replace(
+        registry,
+        contracts=tuple(
+            replace(
+                target,
+                mappings=(
+                    MappingRule(
+                        metric_id=target.metric_id,
+                        rule=ImmutableRule(
+                            rule_id="a33-future-alias-rule/v1",
+                            version="1.0.0",
+                            available_at=datetime.fromisoformat(future),
+                            confidence=real.rule.confidence,
+                        ),
+                        taxonomy_concept_aliases=real.taxonomy_concept_aliases,
+                    ),
+                ),
+            )
+            if current is target
+            else current
+            for current in registry.contracts
+        ),
+    )
+    first_alias = real.taxonomy_concept_aliases[0]
+    target_key = f"{first_alias.taxonomy}:{first_alias.concept}"
+    other_alias = other.mappings[0].taxonomy_concept_aliases[0]
+    other_key = f"{other_alias.taxonomy}:{other_alias.concept}"
+    before = max(
+        m.rule.available_at
+        for contract in registry.contracts
+        for m in contract.mappings
+    ).isoformat()
+    # The view is live at ``before`` (an untouched contract's alias is
+    # governed there) but the re-dated contract's alias is not; it becomes
+    # governed at/after its own rule clock.
+    assert other_key in _governed_concepts(amended, before)
+    assert target_key not in _governed_concepts(amended, before)
+    assert target_key in _governed_concepts(amended, future)
 
 
 def _defect_in_group(entry: Mapping[str, Any], view: str, accession: str) -> bool:

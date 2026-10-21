@@ -5678,9 +5678,12 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -9091,9 +9094,15 @@ jobs:
       - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
+      # FIF Z0 A47 (2026-10-20): the recovery-drill receipts replay suite and
+      # the research driver + committed receipt it pins.
+      - "tests/test_fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/FIF_A47_RECOVERY_DRILL_RECEIPTS_2026-10-20.json"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
+      - "tests/fixtures/fundamental_forensics_registry_v1_0_0/**"
       - "research/financial_intelligence_fabric/**"
       - "templates/fundamental_forensics.*"
       - "templates/fif_saved_briefcase.js"
@@ -9818,6 +9827,8 @@ jobs:
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_a43_responsive_keyboard_corpus.py"
+      - "mockups/evidence/fundamental_forensics_p2/**"
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
@@ -9904,7 +9915,9 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a47_recovery_drill_receipts.py
           tests/test_fif_a21_publish_observation.py
+          tests/test_fif_a43_responsive_keyboard_corpus.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
@@ -10523,6 +10536,8 @@ jobs:
     # index-template (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes.
     # scope: exclusive pins it to its static import closure plus ancestor inits; the probe
     # ceilings stay fixed.
+    # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
+    # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
     paths:
       - "templates/china_altdata.html.j2"
       - "tests/test_china_altdata.py"
@@ -10584,14 +10599,18 @@ jobs:
       - "lib/exchange_holidays.py"
       - "lib/filing_value_units.py"
       - "lib/hk_calendar.py"
+      - "lib/illus.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
       - "lib/stooq.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      - "scripts/build_china_altdata.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
     timeout-minutes: 5
@@ -10626,6 +10645,109 @@ jobs:
         run: pip install pytest pandas numpy pyarrow requests pyyaml
       - name: whole-board breadth collector + heatmap payload contract
         run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py tests/test_sp500_heatmap_intraday_clock.py -q
+
+  china-radar-record:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # China Radar record (W31-L47/L48, 2026-10-21). The sector cards print each candidate's
+    # convergence and the data as-of date, the Short-horizon record prints matured counts and
+    # the n behind each sign's hit rate per horizon, the open-calls table prints the call and
+    # check-by dates, and site/chinaradar/ledger.json stops writing bare NaN. Five render and
+    # ledger suites (jinja2 + engine/i18n; data_dir monkeypatched, no data/ or site/ read).
+    # scope: exclusive pins the job to its static import closure plus ancestor inits.
+    paths:
+      - "templates/china_radar.html.j2"
+      - "tests/test_china_radar_candidate_convergence.py"
+      - "tests/test_china_radar_horizon_record.py"
+      - "tests/test_china_radar_ledger_json_valid.py"
+      - "tests/test_china_radar_reading_dates.py"
+      - "tests/test_china_radar_scored_calls.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/entity_resolver.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/name_resolver.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/smart_money.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_china_radar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: China Radar — candidate convergence, horizon record n, open-call dates, NaN-free ledger
+        run: python -m pytest tests/test_china_radar_candidate_convergence.py tests/test_china_radar_horizon_record.py tests/test_china_radar_ledger_json_valid.py tests/test_china_radar_reading_dates.py tests/test_china_radar_scored_calls.py -q -p no:cacheprovider
 
   china-search-universe:
     if: ${{ false }}
@@ -17181,9 +17303,12 @@ jobs:
       - research/US_BOARD_MEASUREMENT.md
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
+      - scripts/_ths_provenance.py
+      - scripts/_ths_turn_annotate.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
       - scripts/build_baskets_china.py
@@ -18352,6 +18477,11 @@ jobs:
     # never runs the builder. It pins the server-rendered construction / history notes on the
     # lite page and the lite page's own canonical, og:url and description. Exclusive so the
     # page's suite does not widen any shared job's inferred scope (the packing-probe ceilings).
+    # W30-L41/L42 add the membership-provenance and sleeve-chip lines and the turn-chip
+    # tooltip: tests/test_baskets_china_ths_provenance.py and
+    # tests/test_baskets_china_ths_turn_days.py import only the stdlib, jinja2 and
+    # scripts/_ths_provenance.py / scripts/_ths_turn_annotate.py, and read the THS builder
+    # as text (never run it).
     scope: exclusive
     paths:
       - "templates/baskets_china_factorwatch.html.j2"
@@ -18362,9 +18492,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "scripts/__init__.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
+      - "scripts/build_baskets_china_ths.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_baskets_china_factorwatch_notes.py"
+      - "tests/test_baskets_china_ths_provenance.py"
+      - "tests/test_baskets_china_ths_turn_days.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18375,7 +18510,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: THS basket browser — build notes, lite canonical and description
-        run: python -m pytest tests/test_baskets_china_factorwatch_notes.py -q -p no:cacheprovider
+        run: >-
+          python -m pytest tests/test_baskets_china_factorwatch_notes.py
+          tests/test_baskets_china_ths_provenance.py
+          tests/test_baskets_china_ths_turn_days.py -q -p no:cacheprovider
 
   narrative-radar-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -18439,6 +18577,7 @@ jobs:
       - "templates/_vector_polish.html.j2"
       - "scripts/__init__.py"
       - "scripts/_commodity_card_fields.py"
+      - "scripts/build_commodity_strategies.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_strategies_grid_fields.py"
@@ -18500,6 +18639,11 @@ jobs:
     # builder. It pins the graded-ignition scoreboard block, its absence when nothing is
     # graded, and that its id never shadows the desk partial's script target. Exclusive so
     # the pages' suite does not widen any shared job's inferred scope.
+    # W30-L43 adds the theme price-coverage block and the observation line:
+    # tests/test_baskets_regional_themeobs_block.py and
+    # tests/test_baskets_regional_observation_line.py import only the stdlib, jinja2
+    # and scripts/_baskets_themeobs.py, and read the HK / Canada builders as text
+    # (never run them).
     scope: exclusive
     paths:
       - "templates/baskets_hk.html.j2"
@@ -18511,9 +18655,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "scripts/__init__.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
+      - "scripts/build_baskets_canada.py"
+      - "scripts/build_baskets_hk.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_baskets_regional_scorecard_block.py"
+      - "tests/test_baskets_regional_observation_line.py"
+      - "tests/test_baskets_regional_themeobs_block.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18524,7 +18673,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: HK / Canada basket desks — ignition scoreboard block
-        run: python -m pytest tests/test_baskets_regional_scorecard_block.py -q -p no:cacheprovider
+        run: >-
+          python -m pytest tests/test_baskets_regional_scorecard_block.py
+          tests/test_baskets_regional_themeobs_block.py
+          tests/test_baskets_regional_observation_line.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -18579,6 +18731,7 @@ jobs:
       - "templates/_vector_polish.html.j2"
       - "scripts/__init__.py"
       - "scripts/_china_income_card.py"
+      - "scripts/build_china_strategies.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_china_strategies_income_tile.py"
@@ -22047,26 +22200,36 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow rjsmin==1.2.5
+        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow jsonschema==4.26.0 rjsmin==1.2.5
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
-      - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_gmi_issuer_economic_context_api.py tests/test_api_gmi_economic_context_parity.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
-      # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
-      # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
-      # meta validation and replay identity through the mounted /api/collect route,
-      # producer near-miss source contracts incl. template/site shipping-pair
-      # parity, and the deterministic activation funnel report. Lives in this job
-      # because it owns the beacon/growth-registry subject, and needs exactly the
-      # same minimal FastAPI/httpx dependency closure as the beacon suite above.
-      - name: CA1A event spine — collector envelope v1 + producer contracts + funnel report
-        run: python -m pytest tests/test_commercial_activation_event_spine.py tests/test_ca1a_producers_contract.py tests/test_activation_funnel_report.py -q
-      # R1A-M (2026-09-02): the shared regular-quote projector both this job's
-      # dossier route AND the Intelligence Hub batch route now use, plus the
-      # deliberately public batch API itself — same minimal FastAPI/httpx
-      # dependency closure as the dossier suite immediately above.
-      - name: shared regular quote projector + Intelligence Hub market pulse batch API
-        run: python -m pytest tests/test_public_quote_projection.py tests/test_intelligence_hub_market_pulse_api.py -q
+      # Share one pytest process across the related API suites. This keeps all
+      # beacon/dossier, WS:COMMERCIAL-ACTIVATION CA1A, R1A-M quote and fresh
+      # Options authentication cases in the same existing dependency environment.
+      # Preserve the suite order and every case; the separate Caddy boundary
+      # invocation below retains its verified binary and environment.
+      - name: prelaunch API, event spine, quotes and fresh Options auth contracts
+        run: >-
+          python -m pytest
+          tests/test_collect_throttle.py
+          tests/test_growth_events_registry.py
+          tests/test_tape_relay.py
+          tests/test_billing_subscribe.py
+          tests/test_company_intelligence_api.py
+          tests/test_company_disclosures_api.py
+          tests/test_gmi_issuer_economic_context_api.py
+          tests/test_api_gmi_economic_context_parity.py
+          tests/test_company_context_runtime.py
+          tests/test_company_intelligence_dossier_js.py
+          tests/test_dossier_quote_api.py
+          tests/test_dossier_live_quote_surface.py
+          tests/test_commercial_activation_event_spine.py
+          tests/test_ca1a_producers_contract.py
+          tests/test_activation_funnel_report.py
+          tests/test_public_quote_projection.py
+          tests/test_intelligence_hub_market_pulse_api.py
+          tests/test_options_auth.py
+          -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
       # authenticated operator identity, a fixed admin iframe, Caddy's real
       # adapted handler order, and the bounded atomic GitHub-source publisher.
@@ -22089,6 +22252,7 @@ jobs:
             tests/test_control_room_auth.py \
             tests/test_control_room_caddy.py \
             tests/test_publish_control_room_active_builds.py -q
+
 
   quant-q15-noise-robust-rv:
     if: ${{ false }}
@@ -23639,9 +23803,12 @@ jobs:
       - scripts/__init__.py
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
+      - scripts/_ths_provenance.py
+      - scripts/_ths_turn_annotate.py
       - scripts/backfill_crypto.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
@@ -28068,9 +28235,12 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -32952,6 +33122,10 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - engine/options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms_native.py
+      - docs/runbooks/OPTIONS_OCC_CONTRACT_TERMS.md
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -32966,7 +33140,9 @@ jobs:
           python -m pytest
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
-          tests/test_options_alpha_exact_option_outcome.py -q -rs
+          tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_occ_contract_terms.py
+          tests/test_options_occ_contract_terms_native.py -q -rs
 
   product-experience-registry:
     if: ${{ false }}
