@@ -632,6 +632,24 @@ def main(*, strict: bool = False) -> int:
                      "(capability row R3A-92)",
         },
     }
+    # ── SOURCE-BOUND RESEARCH HANDOFF (B09, masterplan §5) ────────────────────
+    # Every selectable group row (data["sectors"] / data["baskets"]) carries a
+    # handoff a Dossier or Research receiver can bind to without guessing:
+    # subject/kind, an immutable per-row snapshot digest, the source/generation/
+    # clock, the evidence mode and the return context — with explicit
+    # not_supplied where the native source states no relationship. Attached
+    # AFTER the publication record (the generation is copied from it) and
+    # BEFORE the free writes so both free artifacts carry it. Additive and
+    # fail-soft both per row and as a whole: the build continues exactly as
+    # before either way. engine.sector_research_handoff is import-light.
+    try:
+        from engine.sector_research_handoff import attach_handoffs
+        _rh = attach_handoffs(data)
+        data["publication"]["research_handoff"] = {
+            "version": 1, "rows": _rh["rows"], "unavailable": _rh["unavailable"]}
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("sector_central: research handoff step failed (%s)", e)
+        data["publication"]["research_handoff"] = {"status": "error"}
     payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
     fdir = site / "sectordata"
