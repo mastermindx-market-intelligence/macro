@@ -1,5 +1,50 @@
 # Forex R26 — current-owner integration
 
+MISSION_COMPLETE: false. Release and production acceptance remain held.
+
+## Resumed continuation — 2026-10-21
+
+The current user directed this session to resume timed-out conversation `6ad82699-a1c4-83ea-92e9-c2dc8f878351`, “Resume Forex Project”, and continue its project. The original managed operation, source branch, PR and accepted designs are preserved. Current protected procedure loaded: `Mastermind@b66e64ad57b50f77253eeacf62ac72dc165a50aa`. This section supersedes the execution frontier below; the historical receipts remain as provenance.
+
+### Source custody and candidate
+
+- Macro operation `forex-r26-owner-adoption-20261020-sol-001`; branch `sol/web-forex-r26-owner-adoption-20261020-sol-001`; existing PR **#9866**, DRAFT/HOLD.
+- Original workspace: `/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-owner-adoption-20261020-sol-001`.
+- Recovered local HEAD `388d27784cbbe0fbd1df3dc16228dbb96d6c9fcd` is a rebased owner-integration commit over `e5dd30c6344e4`; published head is `5798c8de9127f9a7c2c2efa02226a0281103f9d3`. They are not an ancestor chain. Preserve both histories with an ordinary merge before the same-branch push; never force-push or replace the PR.
+- Freshly fetched main `b9b0759af6b8f347a7d729e3b13b8925857c5f8f` includes unrelated CI job additions and generated data. No new Forex source/template/engine overlap was observed; its CI additions must be preserved by ordinary integration.
+- No active merge/rebase was present at recovery. The original dirty source and completed worker artifacts were preserved. No primary checkout, account, lease or shared source was reset.
+
+The recovered successor now mounts the R26 consumer in the actual builder/Jinja route: Today, Explore, My watches, pair detail tabs, comparison, bilingual source/freshness disclosures, light/dark themes, keyboard controls and responsive layouts. The existing full study is retained behind disclosure. Pair quote direction and assessed-currency/residual-model direction remain distinct. Historical timeline labels are a builder display projection; producer event IDs and historical fields are not rewritten.
+
+The dollar/risk-off sparkline uses common observation slots, preserving gaps and measured zero, with explicit scale labeling. The consumer obeys the owner's present decision_context, keeps explicit current null unavailable, distinguishes old evidence from current availability, and preserves independently dated quotes. The “My watches” flow is currently **preparation in the current tab only**: no account save, watch activation, finalized-4H feed or delivered notification is proven. The small copy repair in this continuation replaces internal “owner admission” terminology with plain EN/ZH availability and preparation language.
+
+### Executed verification
+
+Receipts: `successor_evidence/browser.json`, `resume_validation.json`, and `mockups/evidence/forex-r26-successor-20261021/{EVIDENCE.yml,manifest.json,smells.json}`. Browser inputs are synthetic; these are local checks, never production evidence.
+
+- Focused current-source pytest run: **447 passed, 1 skipped**. Suites: R26 decision contract, R4 contract, spark window, consumer, freshness, event display, rendered workspace and context bus. The only skip was the sparse-checkout canonical latest.json smoke.
+- The unchanged canonical smoke was executed separately using the exact HEAD snapshot in an isolated directory: **PASS**, snapshot SHA256 `8279bc08195d8accb0774b7d4232908800e70be6a6fa79aa4a683708ec69b29c`, as-of 2026-10-17; the projection correctly withheld a current read. No canonical market data was written.
+- After the final copy edits: workspace/event-display suites **34 passed**; browser witness **14 cases PASS**, zero page errors/overflow, source hashes unchanged during execution. Matrix: desktop/tablet/mobile × EN/ZH × light/dark, plus missing-risk and older-risk cases.
+- Fresh standard page capture: **24/24 states captured** at `2026-10-21T09:16:05Z`, including real hover/focus states. The browser receipt carries exact source hashes; the manifest honestly identifies the nearest checkout SHA rather than claiming a clean-source build.
+- Design guard: **0 new blocking findings**. Runtime-style guard after canonical `worktree_sparse.py add site`: **PASS**, 241 JavaScript files scanned, all injections within frozen allowances.
+- Earlier hosted failure reproductions: exclusive CI-curation test **1 passed**; donut/missing-shares browser test **2 passed**. Dedicated `forex-r26-consumer` CI ownership replaces the broad shim additions without weakening ceilings.
+- Old hosted run `39414239073` failed on published `5798c8d...`; local passes are not a green hosted result. New-head CI and independent review remain required.
+
+### Worker provenance and held boundaries
+
+Original root `forex-r26-native-completion-20261020-sol-001`, parent `forex-r26-recovery-20261020-sol` remain unchanged.
+
+- Spark worker `forex-r26-spark-window-repair-20261020-001`: terminal rc0, full returned report consumed. Response SHA256 `add1b6ad2e7711e8c6d588cdc2b839db10967e0e28d86f84e15470360c1b1568`. Preserved original patch is exactly 19,986 bytes, SHA256 `d679318d58765fd7d866b85773f15b5d40b924eff79607c9425e218e9bf76b07`, matching its return. The raw patch remains preserved locally and in the complete immutable Fabric response; it is excluded from the source commit because its unified-diff context contains trailing spaces. Its bytes were not normalized or rewritten. Parent refinements in the successor are separately tested. An attempted acceptance receipt was rejected with INVALID_ARGUMENT for verification_summary; subsequent status still says NOT_ACCEPTED. No machine acceptance is claimed.
+- Consumer worker `forex-r26-consumer-repair-20261020-001`: terminal rc0, response SHA256 `12a0da3cb6e3960d35e3b30a3942d246bacb87c40dda488084b571b6bfbf01bb`. Its reported patch/file hashes differ from this recovered successor. Original worker artifact provenance is not asserted; its 77-test claim is not substituted for current-source validation. The current consumer must be reviewed as successor source.
+- New read-only owner census `forex-r26-watch-owner-census-20261021-001` reached terminal rc78: `pool=minimax admission_denied reason=canonical_source_unreadable`; response SHA256 `971eb7390dfc2e761cff7a49518de344335a26f014291097e5218e3fca592a58`. It produced no service census. No provider switch, replay, new root or alternative worker was used to evade that failure.
+- Parent copy editing was a bounded LOWER_TOTAL_OVERHEAD repair discovered during its required visual inspection; a separate qualified review remains required for release. No self-authored test result is independent review.
+
+### Remaining acceptance
+
+Publish this exact successor on #9866 after scoped commit and history-preserving reconciliation; inspect its actual CI and qualified independent review. Keep DRAFT/HOLD, no merge-on-green label and no native auto-merge until the accountable release ruling. Then complete the incumbent account/watch/source/notification integration and actual deployed user-path proof. An inert prepared condition is not a saved/active watch, and green source checks are not production acceptance. #8315 and #8729 remain separately held. The accepted Paper designs must not be recreated.
+
+## Historical owner checkpoint — 2026-10-20
+
 MISSION_COMPLETE: false. This is a source candidate, not release or production acceptance.
 
 ## Assignment, source and preservation

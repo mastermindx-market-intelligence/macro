@@ -23,6 +23,7 @@ import numbers
 import logging
 import sys
 from datetime import datetime, timezone
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -35,6 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib import config, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from lib.forex_kinematics_view import project_kinematics  # noqa: E402
+from lib.forex_r26_consumer import project_r26_consumer  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_forex")
@@ -182,6 +184,48 @@ def _spark_pts(values, w: int, h: int, n: int = 126) -> str:
         return " ".join(pts)
     except Exception:  # noqa: BLE001
         return ""
+
+
+def _window_segments(values, w: int, h: int) -> list[str]:
+    """SVG polyline segment strings over FIXED window slots (hero sparkline only).
+
+    Unlike _spark_pts — which drops NaN and re-spreads the survivors — the input
+    is an already-aligned window: every slot keeps its own x-position and each
+    run of consecutive finite values becomes its OWN polyline, so a line breaks
+    across a gap instead of bridging it.  Missing / non-finite slots stay
+    missing; a 1-value run returns a 1-point segment the template draws as a
+    dot.  y uses _spark_pts's min-max viewbox, over this window's finite values.
+    """
+    try:
+        s = pd.to_numeric(pd.Series(list(values)), errors="coerce").astype(float)
+        s = s.where(np.isfinite(s))
+        if s.empty or not s.notna().any():
+            return []
+        lo, hi = float(s.min()), float(s.max())
+        pad = 2
+        h_inner = h - 2 * pad
+        denom = max(len(s) - 1, 1)
+        segs: list[str] = []
+        run: list[str] = []
+
+        def _xy(i: int, v: float) -> str:
+            x = round(i / denom * w, 1)
+            y = (round(pad + h_inner / 2, 1) if hi == lo else
+                 round(pad + (1.0 - (v - lo) / (hi - lo)) * h_inner, 1))
+            return f"{x},{y}"
+
+        for i, v in enumerate(s):
+            if pd.isna(v):
+                if run:
+                    segs.append(" ".join(run))
+                    run = []
+            else:
+                run.append(_xy(i, float(v)))
+        if run:
+            segs.append(" ".join(run))
+        return segs
+    except Exception:  # noqa: BLE001
+        return []
 
 
 def _tail_years(df: pd.DataFrame, years: float) -> pd.DataFrame:
@@ -522,7 +566,15 @@ def _decision_context(results, pairs, dollar, kinematics_view, cfg, events, *,
         assessed = p.get("base")
         if assessed not in {key[:3], key[3:]}:
             raise ValueError("assessed_currency_not_in_pair")
+        meta = (cfg.get("assets") or {}).get(key) or {}
+        inverted = meta.get("invert", False)
+        convention_ok = (type(inverted) is bool and meta.get("base") == assessed
+                         and inverted == (assessed == key[3:]))
         pair_rows.append({"pair": key, "display_base": key[:3], "display_quote": key[3:],
+            "quote_convention": {"status": "qualified" if convention_ok else "unavailable",
+                "inverted_from_assessed": inverted if type(inverted) is bool else None,
+                "basis": "configured_assessed_currency_and_literal_quote_inversion",
+                "reason": None if convention_ok else "missing_or_contradictory_instrument_convention"},
             "assessed_currency": assessed, "assessed_to_pair_direction": "same" if assessed == key[:3] else "opposite",
             "literal_quote": quote, "calculated_asof": asof,
             "technical_state": {"trend": p.get("ts_trend"), "structure": p.get("structure_state"),
@@ -538,9 +590,10 @@ def _decision_context(results, pairs, dollar, kinematics_view, cfg, events, *,
             "multi_timeframe": {"source": "forex_mtf.mtf_ladder via pair_vm", "basis": "assessed_currency_price", "rows": p.get("mtf_rows") or []},
             "quote_dependency_id": dep_id, "price_rule_capability_id": key + ":price_close_4h"})
     readiness = _r4_readiness(dependencies, checked_at=checked_at, action_requirements=requirements)
-    canonical_changes = [{k: e.get(k) for k in ("id", "ts", "type", "asset", "context", "anchor", "headline", "severity")} for e in events]
+    canonical_changes = [{k: e.get(k) for k in ("id", "ts", "type", "asset", "context", "anchor", "headline", "headline_zh", "severity", "display_headline_en", "display_headline_zh", "display_assessed_currency", "display_basis", "display_residual_method", "display_basis_en", "display_basis_zh")} for e in events]
     snapshot = {"schema": "mastermind.forex.decision-context.v1", "source_revision": source_revision,
         "pairs": pair_rows, "current_read": {"risk": dollar.get("risk_word"), "regime": dollar.get("regime"),
+            "calculated_asof": dollar.get("asof"),
             "available": bool(dollar.get("current_available")), "reason": dollar.get("unavailable_reason"),
             "last_confirmed": dollar.get("last_confirmed")},
         "changes": canonical_changes, "change_window": "recent_48_hours_not_user_last_seen",
@@ -561,24 +614,55 @@ def dollar_vm(dol: pd.DataFrame) -> dict:
     roc = _r4_number(last.get("dollar_roc"))
     reg = raw_reg if risk is not None and roc is not None and isinstance(raw_reg, str) and raw_reg in REGIME_ZH else None
     fav_en, fav_zh = FAVORED.get(reg, ([], []))
-    # F2 — hero sparkline: broad-dollar rebased to 100 + risk-off composite
-    _broad_tail = dol["broad"].dropna().tail(126) if "broad" in dol.columns else pd.Series(dtype=float)
-    _last_broad = float(_broad_tail.iloc[0]) if len(_broad_tail) > 0 else None
-    if _last_broad and _last_broad != 0:
-        _broad_rebased = 100.0 * _broad_tail / _last_broad
-    else:
-        _broad_rebased = _broad_tail
-    _riskoff_tail = dol["risk_off"].dropna().tail(126) if "risk_off" in dol.columns else pd.Series(dtype=float)
-    _SPARK_W, _SPARK_H = 440, 60
+    # F2 — hero sparkline: broad-dollar rebased to 100 + risk-off composite.
+    # R26 (#8315): cut the COMMON 126-row window FIRST, then read both series
+    # at exactly those row slots.  Each series used to be dropna().tail(126) on
+    # its own, so sparser risk-off pulled observations from OUTSIDE the dollar
+    # window and _spark_pts re-spread survivors so distinct dates shared an x.
+    _SPARK_W, _SPARK_H, _SPARK_N = 440, 60, 126
+    _win = dol.tail(_SPARK_N)
+    _broad_w = (pd.to_numeric(_win["broad"], errors="coerce")
+                if "broad" in _win.columns else pd.Series(dtype=float))
+    _riskoff_w = (pd.to_numeric(_win["risk_off"], errors="coerce")
+                  if "risk_off" in _win.columns else pd.Series(dtype=float))
+    # rebase to the first finite positive broad value IN the window (missing,
+    # zero, malformed slots are never a base); plot unrebased without one
+    _base = next((float(v) for v in _broad_w
+                  if pd.notna(v) and np.isfinite(v) and v > 0), None)
+    _broad_rebased = 100.0 * _broad_w / _base if _base else _broad_w
+    _dollar_segs = _window_segments(_broad_rebased, _SPARK_W, _SPARK_H)
+    _riskoff_segs = _window_segments(_riskoff_w, _SPARK_W, _SPARK_H)
+
+    def _safe_pts(segs: list[str]) -> str:
+        # legacy single-polyline fields, kept for compatibility: filled only
+        # when gap-free, so an old renderer never draws a bridged path
+        return segs[0] if len(segs) == 1 else ""
+
+    _last_val = float(_broad_rebased.iloc[-1]) if _base is not None and len(_broad_rebased) else None
+    if _last_val is not None and not np.isfinite(_last_val):
+        _last_val = None  # missing last slot -> unavailable
+    _win_start = _win_end = None
+    if len(_win):
+        try:
+            _win_start, _win_end = str(_win.index[0].date()), str(_win.index[-1].date())
+        except AttributeError:  # non-date index
+            _win_start, _win_end = str(_win.index[0]), str(_win.index[-1])
     hero_spark = {
-        "dollar_pts": _spark_pts(_broad_rebased.tolist(), _SPARK_W, _SPARK_H),
-        "riskoff_pts": _spark_pts(_riskoff_tail.tolist(), _SPARK_W, _SPARK_H),
+        "dollar_pts": _safe_pts(_dollar_segs),
+        "riskoff_pts": _safe_pts(_riskoff_segs),
+        "dollar_segments": _dollar_segs,
+        "riskoff_segments": _riskoff_segs,
+        "dollar_scale": "rebased_100" if _base is not None else "reported_index",
+        "rebase_available": _base is not None,
         "w": _SPARK_W, "h": _SPARK_H,
-        "last_rebased": _r(_broad_rebased.iloc[-1], 1) if len(_broad_rebased) > 0 else None,
-        "n": len(_broad_rebased),
+        "last_rebased": _r(_last_val, 1),
+        "n": int(np.isfinite(_broad_w).sum()),
+        # shared-window metadata: same row slots as both segment lists
+        "window_start": _win_start, "window_end": _win_end, "count": len(_win),
     }
     return {
         "regime": reg, "regime_zh": REGIME_ZH.get(reg),
+        "asof": str(dol.index[-1].date()) if hasattr(dol.index[-1], "date") else None,
         "current_available": reg is not None,
         "unavailable_reason": last.get("smile_unavailable_reason") if reg is None else None,
         "last_confirmed": {
@@ -719,6 +803,97 @@ TYPE_LABEL = {"residual_shock": "Shock", "risk_regime": "Risk", "trend_flip": "T
               "scenario_active": "Scenario"}
 
 
+def _r26_price_history(results: dict, cfg: dict, reference_date) -> dict:
+    """Display literal quotes on a dated, contiguous part of the source window.
+
+    No interpolation or synthetic residual series. An invalid row ends the
+    drawable run; an invalid final row withholds the chart rather than carrying
+    an older value forward as the endpoint.
+    """
+    histories = {}
+    for key, frame in results.items():
+        if key != "_dollar" and key not in (cfg.get("assets") or {}):
+            continue
+        name = "broad_dollar" if key == "_dollar" else key
+        record = {"status": "unavailable", "basis": "reported_index" if key == "_dollar" else "literal_quote",
+                  "series": {"dates": [], "vals": []}, "first_date": None,
+                  "last_date": None, "observations": 0, "window_observations": 0}
+        histories[name] = record
+        column, invert = ("broad", False) if key == "_dollar" else ("close", False)
+        if key != "_dollar":
+            meta = (cfg.get("assets") or {}).get(key) or {}
+            invert = meta.get("invert", False)
+            if (len(key) != 6 or meta.get("base") not in (key[:3], key[3:])
+                    or type(invert) is not bool or invert != (meta["base"] == key[3:])):
+                continue
+        if not isinstance(frame, pd.DataFrame) or frame.empty or column not in frame:
+            continue
+        window = frame.tail(126)
+        record["window_observations"] = len(window)
+        run = []
+        try:
+            for day, raw in window[column].items():
+                stamp = pd.Timestamp(day)
+                number = _r4_number(raw)
+                valid = (not pd.isna(stamp) and stamp.date() <= reference_date
+                         and number is not None and (key == "_dollar" or number > 0))
+                if not valid:
+                    run = []
+                    continue
+                value = _r4_number(1.0 / number if invert else number)
+                if value is None:
+                    run = []
+                    continue
+                if run and stamp.date().isoformat() <= run[-1][0]:
+                    run = []
+                run.append((stamp.date().isoformat(), value))
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if len(run) < 2:
+            continue
+        record.update(status="available" if len(run) == len(window) else "partial",
+                      first_date=run[0][0], last_date=run[-1][0],
+                      observations=len(run),
+                      series={"dates": [day for day, _ in run], "vals": [value for _, value in run]})
+    return histories
+
+
+def _project_event_display(events: list[dict], results: dict, cfg: dict) -> list[dict]:
+    """Qualify display captions without changing event/ledger identity or math."""
+    projected = []
+    for event in events:
+        item = deepcopy(event)
+        pair = item.get("asset")
+        meta = (cfg.get("assets") or {}).get(pair) or {}
+        assessed = meta.get("base")
+        if item.get("type") in {"momentum", "structure", "trend_flip"} and assessed:
+            method = None
+            frame = results.get(pair)
+            try:
+                event_day = pd.Timestamp(item["ts"]).date()
+                rows = frame.loc[frame.index.date == event_day] if frame is not None else None
+                if rows is not None and len(rows) == 1:
+                    raw = rows.iloc[0].get("residual_method")
+                    method = raw if isinstance(raw, str) and raw in {"adjusted", "raw_fallback", "zero_filled", "unavailable"} else None
+            except (AttributeError, TypeError, ValueError):
+                pass
+            en = item.get("headline") or "Technical evidence changed"
+            zh = item.get("headline_zh") or "技术证据发生变化"
+            body_en = en.split(": ", 1)[-1]
+            body_zh = zh.split("：", 1)[-1]
+            item["display_headline_en"] = body_en if body_en.startswith(assessed + " ") else assessed + ": " + body_en
+            item["display_headline_zh"] = body_zh if body_zh.startswith(assessed) else assessed + "：" + body_zh
+            item["display_assessed_currency"] = assessed
+            item["display_basis"] = "assessed_currency_residual_pipeline"
+            item["display_residual_method"] = method
+            suffix_en = {"adjusted": "event-day input dollar-adjusted", "raw_fallback": "raw-price fallback at this event", "zero_filled": "missing return filled by the source", "unavailable": "event-day adjustment unavailable"}.get(method, "event-day adjustment not supplied")
+            suffix_zh = {"adjusted": "该日输入已调整美元影响", "raw_fallback": "该日使用原始价格回退", "zero_filled": "来源对缺失收益作了填补", "unavailable": "该日调整不可用"}.get(method, "未提供该日调整方法")
+            item["display_basis_en"] = f"Assessed {assessed} residual technical series; {suffix_en}."
+            item["display_basis_zh"] = f"受评估货币 {assessed} 的残差技术序列；{suffix_zh}。"
+        projected.append(item)
+    return projected
+
+
 def _group_timeline(events: list[dict]) -> list[dict]:
     days: dict[str, list] = {}
     for e in events:
@@ -726,6 +901,8 @@ def _group_timeline(events: list[dict]) -> list[dict]:
         asset = e.get("asset")
         lab = "Dollar" if asset == "dollar" else META.get(asset, {}).get("label", asset or "")
         e = {**e, "label": TYPE_LABEL.get(e["type"], e["type"]), "asset_label": lab,
+             "headline": e.get("display_headline_en") or e.get("headline"),
+             "headline_zh": e.get("display_headline_zh") or e.get("headline_zh"),
              "daylabel": ts.strftime("%a %b %d")}
         days.setdefault(ts.strftime("%Y-%m-%d"), []).append(e)
     return [{"day": d, "daylabel": evs[0]["daylabel"], "events": evs}
@@ -1379,7 +1556,7 @@ def main() -> int:
         log.warning("forex alerts rebuild failed (%s)", e)
         all_events = forex_alerts.load_events()
     event_projection = forex_alerts.qualified_current_events(all_events, dol)
-    visible_events = event_projection["events"]
+    visible_events = _project_event_display(event_projection["events"], results, cfg)
     recent_events = forex_alerts.recent(visible_events, acfg["timeline_days"])
     timeline = _group_timeline(recent_events)
 
@@ -1411,8 +1588,11 @@ def main() -> int:
                 "context": e.get("context"), "anchor": e.get("anchor"),
                 "type": e.get("type"),
                 "asset": e.get("asset"),
-                "headline_en": e.get("headline"),
-                "headline_zh": e.get("headline_zh"),
+                "headline_en": e.get("display_headline_en") or e.get("headline"),
+                "headline_zh": e.get("display_headline_zh") or e.get("headline_zh"),
+                "display_basis": e.get("display_basis"),
+                "display_basis_en": e.get("display_basis_en"),
+                "display_basis_zh": e.get("display_basis_zh"),
                 "severity": e.get("severity"),
             }
             for e in _changes_today
@@ -1430,24 +1610,6 @@ def main() -> int:
         results, pairs, dollar, kinematics_view, cfg, _changes_today,
         checked_at=datetime.now(timezone.utc).isoformat(),
         event_withheld=event_projection["withheld"])
-    from engine.i18n import tr, td
-    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
-    env.globals.update(tr=tr, td=td)
-    html = env.get_template("forex.html.j2").render(
-        C=C, as_of=as_of, built=built, cal_span=cal_span,
-        dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
-        transmission=transmission, strength=strength, scorecards=scorecards,
-        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view, decision_context=decision_context,
-        pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
-        timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
-        # B1.4 new view-model vars (populated in the new template; stub values for
-        # the existing template so it does not crash if the template is not yet updated)
-        hero=None, why_tiles=None, trans_rows=None, stress=None,
-        scoreboard=None, recent=None,
-        footer_en=None, footer_zh=None, stance=stance)
-    site = config.ROOT / config.load()["storage"]["site_dir"]
-    write_page(site / "forex.html", html)
-    log.info("wrote %s/forex.html (%d KB)", site, len(html) // 1024)
 
     # hub latest.json (consumed by build_vector's hub card; build_forex runs before it)
     outdir = config.data_dir() / "forex"
@@ -1466,6 +1628,8 @@ def main() -> int:
         last_p = df_p.iloc[-1] if df_p is not None and not df_p.empty else pd.Series(dtype=object)
         prow: dict = {
             "label": p["label"], "quote": p["quote"], "chg": p["chg"],
+            "calculated_asof": str(df_p.index[-1].date()) if df_p is not None and not df_p.empty else None,
+            "chg_horizon": "1m", "chg_lookback_observations": 21,
             "action": conv.get("action"), "score": conv.get("score"),
             # MSX-1 additions (additive-only):
             "headline": conv.get("headline"), "head_zh": conv.get("headline_zh"),
@@ -1586,6 +1750,38 @@ def main() -> int:
         print(f"::warning :: forex additive export assembly failed ({_e_export}) — writing "
               "without dollar_day/em/stance/fx_state/DXY",
               flush=True)
+    # Assemble once, then project/render/write the same in-memory snapshot.
+    # The prior on-disk publication above is used only by incumbent event-edge
+    # detection; it must never become this build's rendered consumer input.
+    reference_date = datetime.now(timezone.utc).date()
+    r26_view = project_r26_consumer(latest, reference_date=reference_date)
+    latest["price_history"] = _r26_price_history(results, cfg, reference_date)
+    latest["r26_consumer"] = r26_view
+    r26_by_pair = {row["pair"]: row for row in r26_view["destinations"]["today"]["pair_tabs"]}
+    from engine.i18n import tr, td
+    from lib.illus import illus
+    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
+    env.globals.update(tr=tr, td=td, illus=illus)
+    html = env.get_template("forex.html.j2").render(
+        C=C, as_of=as_of, built=built, cal_span=cal_span,
+        r26_view=r26_view, r26_by_pair=r26_by_pair, r26_histories=latest["price_history"],
+        dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
+        transmission=transmission, strength=strength, scorecards=scorecards,
+        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view, decision_context=decision_context,
+        pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
+        timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
+        # B1.4 new view-model vars (populated in the new template; stub values for
+        # the existing template so it does not crash if the template is not yet updated)
+        hero=None, why_tiles=None, trans_rows=None, stress=None,
+        scoreboard=None, recent=None,
+        footer_en=None, footer_zh=None, stance=stance)
+    site = config.ROOT / config.load()["storage"]["site_dir"]
+    site.mkdir(parents=True, exist_ok=True)
+    for asset in ("forex_r26.css", "forex_r26.js"):
+        (site / asset).write_bytes((config.ROOT / "templates" / asset).read_bytes())
+    write_page(site / "forex.html", html)
+    log.info("wrote %s/forex.html (%d KB)", site, len(html) // 1024)
+
     (outdir / "latest.json").write_text(json.dumps(latest, indent=2, default=str))
     return 0
 

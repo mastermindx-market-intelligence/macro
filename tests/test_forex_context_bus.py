@@ -1068,6 +1068,8 @@ def test_r12_actual_builder_writes_kinematics_without_changing_other_snapshot_fi
         assembled = context.pop('assembled_at', None)
         if context:
             assert pd.Timestamp(assembled).tzinfo is not None
+        projected_clock = snapshot['r26_consumer']['current_read'].pop('assembled_at')
+        assert projected_clock == assembled, 'consumer must retain the same owner assembly clock'
     assert comparable == comparable_baseline
     assert got['regime_radar']['active'] == []
     assert baseline['kinematics']['value_status'] == 'unavailable'
@@ -1456,7 +1458,8 @@ def test_r13_complete_forex_template_contains_inspector_without_changing_market_
             for factor in pair['conviction']['factors']:
                 factor['value'] = 0.4
     env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / 'templates'), autoescape=True)
-    env.globals.update(tr=tr, td=td)
+    from lib.illus import illus
+    env.globals.update(tr=tr, td=td, illus=illus)
     html = env.get_template('forex.html.j2').render(**context)
     soup = BeautifulSoup(html, 'html.parser')
     assert len(soup.select('#fx-movement-evidence')) == 1
