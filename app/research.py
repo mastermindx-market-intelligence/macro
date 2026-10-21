@@ -651,6 +651,10 @@ def research_read(
         )
 
     def changed() -> JSONResponse:
+        if not selected:
+            # No selection exists yet. A correction race is temporarily unavailable,
+            # not an instruction to discard or silently replace a selected revision.
+            return reply({"error": "research text unavailable"}, 503)
         return reply({"error": "selected_revision_unavailable", "report_id": doc_id}, 409)
 
     try:
