@@ -45,6 +45,7 @@
       window.MDXAuth.open(mode === "signup" ? "signup" : "signin");
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth(mode === "signup" ? "signup" : "signin"); return; }
     location.href = "/?signup=1";
   }
   function openUpgrade() {
@@ -52,6 +53,7 @@
       window.MMOnboard.open("upgrade", { plan: "essential", period: "annual" });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth("billing"); return; }
     location.href = "/plans.html";
   }
 
