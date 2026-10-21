@@ -1,0 +1,26 @@
+{
+  "action": "Read existing selected browser tabs and user tabs",
+  "browser_id": "0",
+  "browser_name": "Chrome",
+  "session": "🔎 Shared Shell beta acceptance",
+  "error_code": "UNKNOWN",
+  "error_message": "No connected browser was found for the originating browser instance.",
+  "prior_connection_failure": "ERR_SOCKET_NOT_CONNECTED on original M2 preview; retained JPEG is historical, not a screenshot of the later disconnect",
+  "credentials_entered": false,
+  "auth_setting_changed": false,
+  "callback_patterns_currently_verified": false,
+  "current_supabase_project": {
+    "id": "fsldfzlxyavsuwqbceod",
+    "name": "MarketIntelligence",
+    "status": "ACTIVE_HEALTHY"
+  },
+  "needed": "Reconnect the same originating browser session; DNSPod page was last at Tencent Cloud sign-in",
+  "viewport_cleanup": "1440x900 override was last known; reset cannot be performed while disconnected",
+  "new_application_screenshot": false,
+  "recorded_at": "2026-10-19 09:33:43 UTC",
+  "observation_time_bounds": {
+    "after": "2026-10-19T09:26:41Z",
+    "before": "2026-10-19T09:33:20Z",
+    "exact_timestamp_retained": false
+  }
+}
