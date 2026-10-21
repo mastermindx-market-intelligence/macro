@@ -10,6 +10,7 @@ declarations.  Synthetic turns/records only — no network, no site, no data/.
 from __future__ import annotations
 
 import copy
+import json
 import sys
 from pathlib import Path
 
@@ -195,6 +196,10 @@ def test_estimate_kinds_model_pass_cell_is_qualified_with_parity_caveat():
                             "3m": "baseline_prior",
                             "6m": "baseline_prior"}
     assert ek["model_cell_current_claim"] == "parity_failed"  # B12: measured PARITY_FAILS
+    # B12r2 (RB12 repair): qualified records carry the sub-KiB pointer only
+    lp = ek["live_feature_parity"]
+    assert lp is not None and "report" not in lp
+    assert lp["report_ref"] == "meta.live_hazard_parity"
 
 
 def test_estimate_kinds_prior_only_has_no_model_cell_claim():
@@ -203,6 +208,7 @@ def test_estimate_kinds_prior_only_has_no_model_cell_claim():
     ek = estimate_kinds(now, _rhythm_ok())
     assert set(ek["hazard"].values()) == {"baseline_prior"}
     assert ek["model_cell_current_claim"] is None
+    assert ek["live_feature_parity"] is None   # B12r2: unqualified carries no payload
 
 
 def test_estimate_kinds_absent_hazard_and_horizons_read_missing():
@@ -391,3 +397,65 @@ def test_compute_meta_declares_rhythm_version_and_correction_contract(monkeypatc
         # additive only — pre-existing keys unchanged by the stamp
         assert rec["basis"] == "price"
         assert rec["proj"] is None and rec["turns"] == _turns()
+
+
+def test_compute_publishes_parity_report_once_records_carry_pointer(monkeypatch):
+    """B12r2 (RB12 repair): the ~10 KiB live-feature parity report is published
+    exactly ONCE per payload, in meta — never per record.
+
+    One qualified record (a MODEL/PASS cell) carries only the sub-KiB
+    {verdict, failing, report_ref} pointer; one unqualified record carries None;
+    meta.live_hazard_parity holds the full recorded report."""
+    from engine.hazard_parity import LIVE_HAZARD_PARITY
+
+    idx = pd.bdate_range("2024-01-01", periods=520)
+    spy = pd.Series(np.linspace(400, 500, 520), index=idx)
+    panel = pd.DataFrame({"SPY": spy, "XLK": spy * 1.05, "XLV": spy * 0.98},
+                         index=idx)
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis="tr": panel.copy())
+    monkeypatch.setattr(
+        sc.config, "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}})
+
+    def fake_build_sector(ticker, meta, closes, win_start, closes_px=None):
+        if ticker not in ("XLK", "XLV"):
+            return None
+        rec = _sector_rec()
+        rec.update({"ticker": ticker, "name": meta.get("name", ticker),
+                    "rs_history": sc._leadership_history(closes, ticker)})
+        rec["now"].update(sc._leadership(closes, ticker))
+        if ticker == "XLK":        # qualified: a MODEL/PASS hazard cell exists
+            rec["now"]["hazard"] = {
+                "1m": {"p": 0.12, "source": "MODEL", "cell_verdict": "PASS"},
+                "3m": {"p": 0.3, "source": "PRIOR", "cell_verdict": "PRIOR"},
+                "6m": {"p": 0.4, "source": "PRIOR", "cell_verdict": "PRIOR"},
+            }
+        else:                       # unqualified: priors only, no qualified cell
+            rec["now"]["hazard"] = {
+                h: {"p": 0.3, "source": "PRIOR", "cell_verdict": "PRIOR"}
+                for h in ("1m", "3m", "6m")}
+        return rec
+
+    monkeypatch.setattr(sc, "build_sector", fake_build_sector)
+    monkeypatch.setattr(sc, "_load_baskets", lambda: {})
+    monkeypatch.setattr(sc, "build_amalgam_family", lambda *a, **k: [])
+
+    data = sc.compute()
+    assert data is not None
+    by_ticker = {rec["ticker"]: rec for rec in data["sectors"]}
+    assert set(by_ticker) == {"XLK", "XLV"}
+
+    qual = by_ticker["XLK"]["estimate_kinds"]["live_feature_parity"]
+    assert qual is not None
+    assert "report" not in qual
+    assert len(json.dumps(qual)) < 1024
+    assert qual == {"verdict": LIVE_HAZARD_PARITY["verdict"],
+                    "failing": LIVE_HAZARD_PARITY["failing"],
+                    "report_ref": "meta.live_hazard_parity"}
+
+    assert by_ticker["XLV"]["estimate_kinds"]["live_feature_parity"] is None
+
+    meta_rep = data["meta"]["live_hazard_parity"]
+    assert meta_rep is not None
+    assert meta_rep["report"] == LIVE_HAZARD_PARITY["report"]
+    assert meta_rep["verdict"] == LIVE_HAZARD_PARITY["verdict"]
