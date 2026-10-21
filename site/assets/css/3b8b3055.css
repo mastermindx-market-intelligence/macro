@@ -1,4 +1,3 @@
-
 /* Commodity workspace composition. Canonical theme.css owns every color/type token.
    Radius fallbacks follow the documented DS-PR-0 scale, matching theme.css until those tokens land. */
 .page-commod.cw-enabled .aurora { display:none; }
@@ -256,4 +255,3 @@ body.page-commod.cw-brain-inline #mmb-launch { display:none !important; }
  .cw .cw-gold-read { flex-direction:column; gap:8px; }
  .cw .cw-gold-value { margin-bottom:20px; }
 }
-
