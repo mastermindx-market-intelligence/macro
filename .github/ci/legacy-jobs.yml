@@ -17646,6 +17646,10 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      # Native activity proposal ledger writer (PIPE-PROPOSE 2026-10-21).
+      - "scripts/propose_activity_membership.py"
+      - "tests/test_gmi_activity_proposal_ledger.py"
+      - "data/theme_graph/probation/activity_proposals.jsonl"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17660,7 +17664,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
