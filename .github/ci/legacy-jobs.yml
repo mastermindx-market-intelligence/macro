@@ -8531,6 +8531,14 @@ jobs:
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
+      # B04-A0 evidence dossier (#9935): the dossier test, its fixtures, the
+      # committed reason map it pins by digest and the R6-B04-01a amendment it
+      # parses as a fence. Declared here so the coverage rule admits the run
+      # line below and an edit to any of them re-runs this job on the PR.
+      - "tests/test_prophet_lab_dossier_b04a.py"
+      - "tests/fixtures/prophet_lab_dossier/**"
+      - "config/prophet_dossier_reason_map.v1.json"
+      - "research/prophet_v4/r6_program/rulings/R6-B04-01a_DOSSIER_CONTRACT_AMENDMENT_DRAFT_2026-09-24.md"
       # test_caddy_hub_boundary.py's fastapi/starlette half imports
       # app.prophet_lab (its importorskip reasons literally read "prophet_lab
       # guard tests need fastapi") — it rides HERE so those tests execute
