@@ -124,6 +124,11 @@ window. Local rendering is not public acceptance.
   Root viewed dark desktop/light Chinese mobile evidence. W6 remains incomplete:
   the same Monitor owner is completing actual qualified event/revision attention
   through existing owners; inventory alone does not fulfill the assigned journey.
+  Its original attention leaf settled TERMINAL rc65 with two inconsistent producer
+  manifests. No artifact was imported or accepted. Root commissioned the same local
+  coordinator to complete its existing integration directly from the approved
+  contract, preserving the failed run and without retrieval, replay or replacement.
+  Exact failure: `/Volumes/Mastermind/agent-workspaces/codex/6e18/monitor-component-proof/ATTENTION_DELIVERY_FAILURE.md`.
 - Real native Today/Research/Monitor routes and member admission were committed at
   `f1366d0784c6426b70293fb436cbc4e4c62225ca`, with 146 focused passes. Research
   redirect/private-header/lockdown repair `2b0596be99b6e3e629a2ed0253ca072c162bd0dd`
@@ -203,6 +208,12 @@ Root's native Chrome profile 1 tab `1925928144` verified the existing product ac
 session through the normal app Account UI (Chris, current October 21 sign-in) and
 read the incumbent Saved research surface. No secret was extracted or session
 transferred. This is a lawful browser path for later acceptance, not beta auth proof.
+Independent normal-browser source preflight also found AAPL/NASDAQ Q3 FY2026,
+the producer-issued revenue receipt 109,417 and its matching SEC Exhibit 99.1.
+The workspace July 31 clock and source July 30 call date remain distinct. This
+does not prove the candidate build, immutable full tuple or save/readback. Report:
+`shared-shell-handoff/shared-shell-astra-handoff/acceptance/PRODUCTION_COMPANY_SOURCE_PREFLIGHT.md`
+under the root workspace parent; root viewed the retained event-receipt capture.
 
 Preserve WS:MARKET-OS A1A/A1B accepted population and mutation semantics. Watchlists
 are attention, portfolio_positions are holdings. The new shell does not reopen the
@@ -212,9 +223,9 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 - One supported observation of original `ss-glossary-publication-fix-20261021-c245`
   refused `original_run_observation_unconfirmed` (rc75) before remote transport.
-  Pure local qualification finds 37 retained support files versus the installed
-  reader's closed 31-file generation. Exact six-file difference, paths, four original
-  proposal handles and limits are retained in
+  An initial pure local reproduction compared 37 retained support files with a
+  historical flat 31-file module. Its paths, four original proposal handles and
+  limits are retained in
   `/Volumes/Mastermind/agent-workspaces/codex/6e18/compatibility-release/FABRIC_OBSERVATION_DIAGNOSIS.md`.
   Preserve original completions, leases, deadlines and refusal; no alternate observer,
   allowlist relaxation or replacement job. No new dispatch while reconciled.
@@ -226,8 +237,15 @@ accepted historical production matrices or authorize unrelated schema changes.
   the actual incumbent Fabric owner, not the refused observation or job replay.
   Portfolio returned actual pickup by existing Executive owner
   `01a15741-5e68-7803-8eb4-ccac74a6c04b` (Initiate Mastermind OS commission), which
-  is reconciling the source compatibility slice through its existing Sol/Fabric.
-  No source/release repair or observation clearance is yet claimed. The original
+  completed source/selection qualification. Its report establishes that PR1640
+  already merged the closed37 repair: normal CLI selects immutable generation
+  da6c2c23, sequence12, with repaired observer0984a7a2. Both current/previous
+  descriptors and all83 code hashes verify; pure launcher controls pass. Thus the
+  flat31 reproduction does not identify the original generic75 cause, which remains
+  UNKNOWN. No new source repair, install or observation retry is needed or granted.
+  Parent-consumed report:
+  `/Volumes/Mastermind/evidence/mmos-commission-01a15741/fabric-observer-source-compatibility.md`.
+  The original
   API-closure proposal meanwhile returned rc0 through its normal completion path;
   same-carrier artifact export is complete with no execution replay. Parent
   comparison and composed checks remain in progress; the other originals are preserved.
@@ -255,16 +273,23 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Exact next actions
 
-1. Product completes actual route/redirect/header integration and Portfolio hydration;
-   Monitor completes the missing qualified attention-to-exact-context journey.
-2. Compatibility consumes the original Fabric CI/API-closure proposals, folds the
-   qualified APIs into #7949, then advances required checks, source landing,
-   covering publication and qualified beta release through the incumbent owners.
-3. Consume each original CI repair result through compatibility and push one coherent
-   corrected candidate. Preserve same-carrier identity and accepted unchanged checks.
-4. Compatibility serially owns the qualified Research/Today successor app/main,
-   actual mounted headers and CI/release; product owns native admission. Completed
-   coordinator turns are not idle wake or live result-consumption services.
+1. Monitor completes its owned local attention integration and returns one exact
+   commit; reactivate the same product coordinator to adopt it, then the same
+   acceptance coordinator for the narrow combined Monitor/shared-helper risk review.
+   Product routes, redirects, headers and Portfolio hydration are already complete
+   at clean e0d4cabfccd3f1fd83b4362288124ba8078de731; reuse their accepted checks.
+2. Compatibility has folded the qualified APIs into existing #7949 locally at
+   f459ff0c3d652b6bfabeed4e32c5389244e8d108. Complete current-head canonical
+   generation, fixture/ref integration and API declaration checks now; original
+   artifact-only proposals do not own or block the incumbent source tree.
+3. Consume original normal completion results when available and compare/adjudicate
+   them without replay. Push one coherent corrected #7949 candidate, then advance
+   required checks, source landing, covering publication and qualified beta release.
+   No successor remote carrier/effect exists. Preserve same-carrier identity and
+   accepted unchanged checks. Completed coordinator turns are not idle wake.
+4. Product performs the normal fast-forward continuation of existing #1063 after
+   the qualified Monitor followup and final canonical projection, retaining one
+   actual CI result-consumption path. No competing global navigation PR.
 5. Regenerate routes only from qualified committed source in all three repositories,
    then prove real account, source/revision, save/readback, chart-return, responsive
    design and distinct family bodies against the final served candidate. Root must
