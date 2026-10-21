@@ -454,6 +454,10 @@ public:
     # plane is the Bearer-authenticated /api/brain/* gateway, which is
     # unchanged; the script itself carries no signals or customer data.
     - /mm_brain.js
+    # Native illustration code/styles only; all private response data remains
+    # inside the existing authenticated Brain transport and thread endpoints.
+    - /mm_brain_visuals.js
+    - /mm_brain_visuals.css
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #

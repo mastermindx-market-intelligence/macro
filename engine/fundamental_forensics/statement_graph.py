@@ -1947,6 +1947,105 @@ def map_standardized_metric(
     return {"metric_id": None, "mapping_state": "unmapped", "mapping_receipt": None}
 
 
+def _matched_alias_priority(taxonomy: str, concept: str, metric_id: str, registry: Any) -> int | None:
+    contracts = getattr(registry, "contracts", None)
+    if contracts is None:
+        return None
+    iterable = contracts.values() if isinstance(contracts, dict) else contracts
+    priorities = [
+        alias.priority
+        for contract in iterable
+        if getattr(contract, "metric_id", None) == metric_id
+        for alias in getattr(contract, "taxonomy_concept_aliases", ())
+        if alias.concept == concept and alias.taxonomy == taxonomy
+    ]
+    return min(priorities) if priorities else None
+
+
+def _is_total_label(row: dict[str, Any]) -> bool:
+    """Same total-line predicate ``_assign_display_depth`` keys on."""
+    label = str(row.get("as_reported_label") or "").strip().lower()
+    return label.startswith("total ")
+
+
+def _recoverable_columns(demoted: dict[str, Any], governing: dict[str, Any]) -> list[str]:
+    """Column keys a demoted row fills where the governing row holds null.
+
+    Demotion is row-level, so a value only the loser carries would otherwise
+    lose its standardized binding with no receipt letting a consumer find it
+    again. Keys are the cell's period label (falling back to the period end).
+    """
+    keys: list[str] = []
+    for demoted_cell, governing_cell in zip(
+        demoted.get("cells") or (), governing.get("cells") or ()
+    ):
+        if demoted_cell.get("value") is None or governing_cell.get("value") is not None:
+            continue
+        period = demoted_cell.get("period") or {}
+        keys.append(str(period.get("label") or period.get("end") or period))
+    return keys
+
+
+def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
+    """Keep one governed alias per standardized metric within a statement.
+
+    The kernel resolves a metric through its alias with the lowest priority
+    number. A statement can present two concepts that alias the same metric
+    (``Assets`` at priority 10 and its ``LiabilitiesAndStockholdersEquity``
+    alias at 20 both map to ``total_assets``). Only the rows matched at the
+    lowest priority keep the standardized mapping; every lower-priority row
+    becomes ``unmapped`` with an ``alias_priority`` receipt that names the
+    governing concept. Rows tied at one priority are left unchanged.
+
+    A ``total_*`` metric whose contenders disagree on wearing a ``Total ...``
+    label first restricts the contest to the rows that do — a statement total
+    must not land on a component line — and marks those receipts with
+    ``reason_detail``. A demoted row that alone fills columns the governing
+    row leaves null lists them under ``recoverable_columns``.
+    """
+    by_metric: dict[str, list[tuple[int, dict[str, Any]]]] = {}
+    for row in rows:
+        metric_id = row.get("standardized_metric_id")
+        receipt = row.get("mapping_receipt")
+        if row.get("mapping_state") != "mapped" or not metric_id or not isinstance(receipt, dict):
+            continue
+        priority = _matched_alias_priority(receipt["taxonomy"], receipt["concept"], metric_id, registry)
+        if priority is not None:
+            by_metric.setdefault(metric_id, []).append((priority, row))
+    for metric_id, entries in by_metric.items():
+        contest = entries
+        label_preferred = False
+        if metric_id.startswith("total_"):
+            preferred = [entry for entry in entries if _is_total_label(entry[1])]
+            if preferred and len(preferred) < len(entries):
+                contest = preferred
+                label_preferred = True
+        best = min(priority for priority, _row in contest)
+        kept = [row for priority, row in contest if priority == best]
+        governing = kept[0]
+        for priority, row in entries:
+            if any(row is keeper for keeper in kept):
+                continue
+            receipt = row["mapping_receipt"]
+            demotion = {
+                "taxonomy": receipt["taxonomy"],
+                "concept": receipt["concept"],
+                "reason": "alias_priority",
+                "metric_id": metric_id,
+                "priority": priority,
+                "governing_concept": governing["mapping_receipt"]["concept"],
+                "governing_priority": best,
+            }
+            if label_preferred:
+                demotion["reason_detail"] = "total_label_preferred"
+            recoverable = _recoverable_columns(row, governing)
+            if recoverable:
+                demotion["recoverable_columns"] = recoverable
+            row["standardized_metric_id"] = None
+            row["mapping_state"] = "unmapped"
+            row["mapping_receipt"] = demotion
+
+
 def _assign_display_depth(rows: list[dict[str, Any]]) -> None:
     open_header = False
     for row in rows:
@@ -2134,6 +2233,7 @@ def reconstruct_statement(
                 "cells": cells,
             }
         )
+    _apply_alias_priority(out_rows, registry)
     _assign_display_depth(out_rows)
     return {
         "statement_type": statement_type,
