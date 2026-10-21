@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-19T23:16:08.940Z",
+  "fixtureOnly": true,
+  "exactUrl": true,
+  "rows": [
+    "Original match 107 Aug 2026 · 10:00 UTCDistance 0.009999999999999998Observed1.0246×Archived close ratioInspect original evidenceObservationmmcontextualobservation_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaOriginal digestbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbRevision1Observed at2026-08-21T00:00:00ZPublished at2026-08-21T00:00:01ZRecorded at2026-08-21T00:00:02ZExact archived close ratio1.024650000000000000",
+    "Original match 201 Aug 2026 · 10:00 UTCDistance 0.010000000000000000Proof pendingNo qualified observation is visible by this cutoff. Missing is not zero."
+  ],
+  "steps": [
+    "comparison opened",
+    "subsequent observations opened",
+    "original evidence expanded",
+    "then-known hid future observation",
+    "back restored same comparison",
+    "exact pinned URL reopened",
+    "reload retained original evidence identity"
+  ]
+}

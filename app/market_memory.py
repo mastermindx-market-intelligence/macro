@@ -91,7 +91,7 @@ _symbol_fetch_executor = ThreadPoolExecutor(
 # Inherit the server INFO handler; the unconfigured root drops INFO records.
 _read_observation_log = logging.getLogger("uvicorn.error.market_memory")
 _read_observation_lock = Lock()
-_read_observation_active: dict[int, tuple[str, float]] = {}
+_read_observation_active: dict[int, tuple[str, float, int]] = {}
 _read_observation_sequence = itertools.count(1)
 _READ_OBSERVATION_TAGS = frozenset({
     "legacy_playback_catalog", "retained_macro", "retained_catalog", "retained_saved",
@@ -114,12 +114,13 @@ def _read_observation_start(tag: str) -> int | None:
         return None
     try:
         started = time.monotonic()
+        native_thread_id = threading.get_native_id()
         with _read_observation_lock:
             if len(_read_observation_active) >= _PLAYBACK_MAX_INFLIGHT:
                 return None
             seq = next(_read_observation_sequence)
-            _read_observation_active[seq] = (tag, started)
-        _read_observation_emit("start", tag=tag, seq=seq)
+            _read_observation_active[seq] = (tag, started, native_thread_id)
+        _read_observation_emit("start", tag=tag, seq=seq, native_thread_id=native_thread_id)
         return seq
     except Exception:
         return None
@@ -132,8 +133,9 @@ def _read_observation_finish(seq: int | None, success: bool) -> None:
         with _read_observation_lock:
             entry = _read_observation_active.pop(seq, None)
         if entry is not None:
-            tag, started = entry
+            tag, started, native_thread_id = entry
             _read_observation_emit("finish", tag=tag, seq=seq, success=success,
+                                   native_thread_id=native_thread_id,
                                    elapsed_ms=round((time.monotonic() - started) * 1000, 3))
     except Exception:
         pass
@@ -151,6 +153,7 @@ def _read_observation_stage(seq: int | None, stage: str,
             entry = _read_observation_active.get(seq)
         if entry is not None and entry[0] == 'retained_catalog':
             _read_observation_emit("stage", tag=entry[0], seq=seq, stage=stage,
+                                   native_thread_id=entry[2],
                                    elapsed_ms=round(elapsed_ms, 3),
                                    thread_cpu_ms=round(thread_cpu_ms, 3))
     except Exception:
@@ -176,7 +179,8 @@ def _read_observation_busy(tag: str) -> None:
             holders = tuple(_read_observation_active.items())
         now = time.monotonic()
         _read_observation_emit("busy", tag=tag, holders=[
-            {"seq": seq, "tag": entry[0], "age_ms": round((now - entry[1]) * 1000, 3)}
+            {"seq": seq, "tag": entry[0], "native_thread_id": entry[2],
+             "age_ms": round((now - entry[1]) * 1000, 3)}
             for seq, entry in holders
         ])
     except Exception:
@@ -1071,8 +1075,66 @@ def retained_method_catalog(root: Path) -> list[dict]:
         for mode in registered["modes"]]
 
 
+def _exact_outcome_request(value: dict) -> dict:
+    import re
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+
+    required = {"retrieval_id", "selection_sha256", "lens", "outcome_cutoff"}
+    if (type(value) is not dict or not required <= set(value)
+            or set(value) - required - {"outcome_use_identity"}):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_OUTCOME_REQUEST"})
+    result = dict(value)
+    patterns = {"retrieval_id": r"mmretainedretrieval_[a-f0-9]{64}",
+                "selection_sha256": r"[a-f0-9]{64}",
+                "outcome_use_identity": r"mmoutcomeuse_[a-f0-9]{64}"}
+    if (result["lens"] not in ("then_known", "later_observed")
+            or any(key in result and (type(result[key]) is not str
+                or re.fullmatch(pattern, result[key]) is None) for key, pattern in patterns.items())):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_OUTCOME_REQUEST"})
+    try:
+        cohort.utc_instant(result["outcome_cutoff"])
+    except cohort.RetainedContextCohortError as exc:
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_OUTCOME_REQUEST"}) from exc
+    return result
+
+
+def _retained_outcome_result(selection, policy, request_spec: dict) -> dict:
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_episode_outcomes as outcomes
+    from engine.neuralweb import market_memory_outcome_inspection as inspection
+    from engine.research_factory import market_memory_outcome_use as owner
+    from engine.research_factory import market_memory_e0_installed_control as control
+    from engine.research_factory.market_memory_contextual_registration import E0ControlError
+    from engine.research_factory.market_memory_e0_access_history import E0AccessHistoryError
+
+    original = retrieval.disclose_episode_retrieval(selection, policy=policy)
+    if any(original[key] != request_spec[key] for key in ("retrieval_id", "selection_sha256")):
+        raise HTTPException(409, detail={"state": "EXACT_COMPARISON_CHANGED"})
+    try:
+        found = owner.discover_registered_outcome_use(selection, lens=request_spec["lens"],
+            outcome_cutoff=request_spec["outcome_cutoff"], site_policy=policy,
+            expected_use_identity=request_spec.get("outcome_use_identity"))
+        result = {"schema": "market_memory.outcome_inspection_response.v1",
+                  "retrieval_id": original["retrieval_id"], "selection_sha256": original["selection_sha256"]}
+        if found is None:
+            return {**result, "available": False, "status": "NOT_CONFIGURED",
+                    "descriptor": None, "attachment": None}
+        capability, descriptor = found
+        attachment, outcome_policy = owner.read_registered_outcome_attachment(capability)
+        projection = inspection.project_outcome_inspection(selection, attachment, policy=outcome_policy)
+        if owner.disclose_registered_outcome_use(capability) != descriptor:
+            raise owner.OutcomeUseError("outcome_descriptor_changed")
+        return {**result, "available": True, "status": "AVAILABLE",
+                "descriptor": descriptor, "attachment": projection}
+    except (owner.OutcomeUseError, control.E0InstalledControlError,
+            E0ControlError, E0AccessHistoryError, PermissionError) as exc:
+        raise HTTPException(403, detail={"state": "OUTCOME_USE_NOT_ADMITTED"}) from exc
+    except outcomes.EpisodeOutcomeError as exc:
+        raise HTTPException(503, detail={"state": "EXACT_OUTCOME_EVIDENCE_UNAVAILABLE"}) from exc
+
+
 def retained_macro_for_user(root: Path, user_id: str, request_spec: dict,
-                            *, peer: str | None = None) -> dict:
+                            *, peer: str | None = None, _outcome_request: dict | None = None) -> dict:
     """Shared same-process authority and resource boundary for HTTP and Brain."""
     import re
     from engine.neuralweb import market_memory_episode_features as features
@@ -1082,6 +1144,8 @@ def retained_macro_for_user(root: Path, user_id: str, request_spec: dict,
     from engine.neuralweb import market_memory_retained_use as use
 
     use._enforce_current_site_user(user_id)
+    if _outcome_request is not None:
+        _outcome_request = _exact_outcome_request(_outcome_request)
     required = {"query_id", "subject_id", "generation_id", "generation_sha256",
                 "query_cutoff", "method_spec_id"}
     if (type(request_spec) is not dict or not required <= set(request_spec)
@@ -1132,10 +1196,13 @@ def retained_macro_for_user(root: Path, user_id: str, request_spec: dict,
                 market_memory_trusted.default_trusted_store_root(root))
             method = retrieval.RetainedContextMethodSpec(
                 selected["purge_calendar_days"], selected["embargo_calendar_days"], selected["mode"])
-            return market_memory.retained_macro_context(
-                reader, policy=policy, query_id=spec["query_id"],
+            composition = dict(policy=policy, query_id=spec["query_id"],
                 generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
                 subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], method=method, limit=limit)
+            if _outcome_request is not None:
+                selection, _packet = market_memory.compose_retained_macro_capabilities(reader, **composition)
+                return _retained_outcome_result(selection, policy, _outcome_request)
+            return market_memory.retained_macro_context(reader, **composition)
     except (use.RetainedUseError, features.EpisodeFeatureAccessError,
             cohort.RetainedContextAccessError) as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
@@ -1163,6 +1230,23 @@ def retained_macro(
                or (request.client.host if request.client else "unknown"))[:160]
     value = retained_macro_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
     return _response(value, headers={"ETag": '"' + value["context_id"] + '"'})
+
+
+@router.get("/macro/retained/outcomes")
+def retained_outcomes(request: Request, _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    items = list(request.query_params.multi_items())
+    if len({key for key, _value in items}) != len(items):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_OUTCOME_REQUEST"})
+    comparison = dict(items)
+    outcome = {key: comparison.pop(key, None)
+               for key in ("retrieval_id", "selection_sha256", "lens", "outcome_cutoff")}
+    if "outcome_use_identity" in comparison:
+        outcome["outcome_use_identity"] = comparison.pop("outcome_use_identity")
+    peer = str(request.headers.get(_SYMBOL_TRUSTED_PEER_HEADER)
+               or (request.client.host if request.client else "unknown"))[:160]
+    value = retained_macro_for_user(_repo_root(), str(_user.get("id") or ""), comparison,
+                                   peer=peer, _outcome_request=outcome)
+    return _response(value)
 
 
 def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,

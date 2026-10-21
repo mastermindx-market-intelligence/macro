@@ -8,7 +8,7 @@ import subprocess
 import sys
 from contextlib import ExitStack
 from concurrent.futures import ThreadPoolExecutor
-from threading import Barrier
+from threading import Barrier, get_native_id
 
 import pytest
 
@@ -108,8 +108,46 @@ def test_stage_fields_are_bounded_and_require_an_active_catalog_read(caplog):
     api._read_observation_stage(seq, 'projections', 1, 1)
     stages = [r.args[1] for r in caplog.records if '.stage ' in r.getMessage()]
     assert stages == [{'tag': 'retained_catalog', 'seq': seq, 'stage': 'projections',
+                       'native_thread_id': get_native_id(),
                        'elapsed_ms': 12.5, 'thread_cpu_ms': 3.25}]
     assert 'private-user/path' not in caplog.text
+
+
+def test_concurrent_reads_keep_their_own_thread_in_every_event(caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    barrier = Barrier(2)
+
+    def run(_):
+        with api._observe_admitted_read('retained_catalog') as seq:
+            barrier.wait(timeout=10)
+            api._read_observation_stage(seq, 'projections', 12.5, 3.25)
+            api._read_observation_busy('retained_saved')
+            barrier.wait(timeout=10)
+            return seq, get_native_id()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        observed = dict(pool.map(run, range(2)))
+    assert len(set(observed.values())) == 2
+    events = [(record.args[0], record.args[1]) for record in caplog.records]
+    for seq, native_thread_id in observed.items():
+        own = [(event, fields) for event, fields in events if fields.get('seq') == seq]
+        assert [event for event, _ in own] == ['start', 'stage', 'finish']
+        assert all(fields['native_thread_id'] == native_thread_id for _, fields in own)
+    for event, fields in events:
+        if event == 'busy':
+            assert {holder['seq']: holder['native_thread_id']
+                    for holder in fields['holders']} == observed
+
+
+def test_thread_lookup_failure_does_not_change_the_read(monkeypatch):
+    def fail():
+        raise RuntimeError('thread lookup failed')
+
+    monkeypatch.setattr(api.threading, 'get_native_id', fail)
+    with api._observe_admitted_read('retained_catalog') as seq:
+        assert seq is None
+        api._read_observation_stage(seq, 'projections', 12.5, 3.25)
+        assert not api._read_observation_active
 
 
 def test_info_events_reach_the_default_server_handler():
@@ -159,7 +197,9 @@ def _ast_digest(node):
 
 ORIGINAL_AST = {
     'operational_playback_catalog': '8184ee9f2de3d5c57495bd78dd8424ef26f5c2171e53ac718f82c8332fbb018d',
-    'retained_macro_for_user': '26f2f39c90ce7d53998e88a4c41c2b2b4cace30acdb5d6df81e67e4f30176302',
+    # U2 adds an explicitly requested outcome consumer inside the same owner
+    # limits; original compare behavior is exercised by retained_consumer.
+    'retained_macro_for_user': '02d6a4aa345cf57a0fd6730f0a1a1b78a265262aaabbc0790e76125897caee92',
     'retained_catalog_for_user': '553c88cc52a3e6c725de5f42a1c3294040b8c1463b694904599143d9ed0e1382',
     'retained_saved_for_user': 'ee67f3f9dd582c9aaf0b135fc6e1f02ef47e16bb6c4343e0750e248482e18fb1',
 }
@@ -199,7 +239,7 @@ class StripObserver(ast.NodeTransformer):
 
 
 @pytest.mark.parametrize('name,digest', ORIGINAL_AST.items())
-def test_routes_preserve_exact_original_authorization_limits_and_payloads(name, digest):
+def test_diagnostics_preserve_pinned_authorization_limits_and_payloads(name, digest):
     node = ast.parse(inspect.getsource(getattr(api, name))).body[0]
     actual = StripObserver().visit(node)
     assert _ast_digest(actual) == digest

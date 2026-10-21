@@ -70,7 +70,8 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
 
 
 def test_market_memory_assets_are_template_owned_and_byte_identical() -> None:
-    for name in ("market_memory.css", "market_memory.js", "market_memory_intent.js", "market_memory_retained.js", "market_memory_retained.css"):
+    for name in ("market_memory.css", "market_memory.js", "market_memory_intent.js", "market_memory_retained.js", "market_memory_retained.css",
+                 "market_memory_outcome_contract.js", "market_memory_outcome_view.js"):
         assert (ROOT / "templates" / name).read_bytes() == (
             ROOT / "site" / name
         ).read_bytes()
@@ -81,6 +82,7 @@ def test_market_memory_page_loads_current_owned_asset_versions() -> None:
     owned = {
         "market_memory.css", "market_memory.js", "market_memory_intent.js",
         "market_memory_retained.js", "market_memory_retained.css",
+        "market_memory_outcome_contract.js", "market_memory_outcome_view.js",
     }
     refs: dict[str, list[str]] = {name: [] for name in owned}
 
@@ -280,6 +282,7 @@ const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);
 @pytest.mark.parametrize("suite", [
     "market_memory_intent.test.cjs",
     "market_memory_retained.test.cjs",
+    "market_memory_outcome_contract.test.cjs",
     "market_memory_auth_return.test.cjs",
     "market_memory_retained_state.test.cjs",
 ])

@@ -277,6 +277,8 @@ public:
     - /market_memory_intent.js
     - /market_memory_retained.js
     - /market_memory_retained.css
+    - /market_memory_outcome_contract.js
+    - /market_memory_outcome_view.js
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css

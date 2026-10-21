@@ -37,6 +37,37 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -44,9 +75,10 @@ jobs:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -621,6 +653,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -1891,6 +1925,37 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -1898,9 +1963,10 @@ jobs:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -2468,6 +2534,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -2804,6 +2872,37 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -2811,9 +2910,10 @@ jobs:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -3359,6 +3459,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -6611,6 +6713,24 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -6644,6 +6764,8 @@ jobs:
       - "tests/test_options_hub.py"
       - "tests/test_options_hub_contract_v2.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -8932,6 +9054,37 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -8939,9 +9092,10 @@ jobs:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "templates/institutional_holding_research.js"
@@ -9063,6 +9217,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
@@ -12582,6 +12738,8 @@ jobs:
       - "engine/research_factory/market_memory_e0_*.py"
       - "engine/research_factory/market_memory_contextual_registration.py"
       - "tests/test_market_memory_e0_*.py"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "tests/test_inspect_market_memory_e0_control.py"
       - "tests/fixtures/market_memory_e0/**"
       - "contracts/market_memory/**"
       - "config/market_memory_canary.v1.json"
@@ -12627,7 +12785,18 @@ jobs:
           tests/test_market_memory_e0_critical_claims.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_task_evidence.py
+          tests/test_market_memory_e0_registered_method.py
+          tests/test_market_memory_e0_condition_evidence.py
           tests/test_market_memory_e0_allocation.py
+          tests/test_market_memory_e0_allocation_resolution.py
+          tests/test_market_memory_e0_reserved_read.py
+          tests/test_market_memory_e0_access_history.py
+          tests/test_market_memory_e0_installed_control.py
+          tests/test_market_memory_e0_selected_task_inputs.py
+          tests/test_market_memory_e0_selected_condition.py
+          tests/test_market_memory_e0_source_identity.py
+          tests/test_inspect_market_memory_e0_control.py
           -q
 
   research-codegen-runtime-qualification:
@@ -19650,11 +19819,31 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
@@ -20431,11 +20620,31 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -22436,6 +22645,37 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -22443,9 +22683,10 @@ jobs:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -22560,6 +22801,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
@@ -24123,6 +24366,26 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -24915,6 +25178,26 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -30406,6 +30689,26 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -30906,6 +31209,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "tests/test_market_memory_outcome_use.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -31060,6 +31368,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex.py
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - engine/neuralweb/market_memory_retrieval.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - tests/test_market_memory_operating_cortex_service.py
@@ -31547,7 +31857,44 @@ jobs:
       - "engine/neuralweb/governance.py"
       - "engine/neuralweb/key_pool.py"
       - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
       - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_interval_split.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_source_coverage.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "tests/test_market_memory_e0_control_records.py"
+      - "tests/test_market_memory_e0_installed_control.py"
+      - "tests/test_market_memory_e0_registered_method.py"
+      - "tests/test_market_memory_e0_selected_task_inputs.py"
+      - "config/market_memory_retained_use.v2.json"
+      - "contracts/market_memory/fitted_use_binding.v2.schema.json"
+      - "engine/research_factory/market_memory_fitted_use.py"
+      - "engine/neuralweb/market_memory_fitted_normalization.py"
+      - "engine/neuralweb/market_memory_fitted_distance.py"
+      - "engine/neuralweb/market_memory_fitted_retrieval.py"
+      - "engine/neuralweb/market_memory_exact_index.py"
       - "engine/neuralweb/market_memory_episode_features.py"
       - "engine/neuralweb/market_memory_episode_retrieval.py"
       - "engine/neuralweb/market_memory_experience_accrual.py"
@@ -31564,6 +31911,8 @@ jobs:
       - "engine/neuralweb/market_memory_sources_spy.py"
       - "engine/neuralweb/market_memory_technical_observation.py"
       - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -31900,7 +32249,15 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
+      - "tests/test_market_memory_episode_outcomes.py"
+      - "tests/test_market_memory_outcome_inspection.py"
+      - "tests/test_market_memory_outcome_api.py"
       - "tests/test_market_memory_episode_comparison.py"
+      - "tests/test_market_memory_fitted_normalization.py"
+      - "tests/test_market_memory_fitted_distance.py"
+      - "tests/test_market_memory_fitted_retrieval.py"
+      - "tests/test_market_memory_e0_domains.py"
+      - "tests/test_market_memory_exact_index.py"
       - "tests/test_market_memory_episode_features.py"
       - "tests/test_market_memory_episode_retrieval.py"
       - "tests/test_market_memory_experience_accrual.py"
@@ -31912,6 +32269,7 @@ jobs:
       - "research/market_memory/performance_20261015/benchmark.py"
       - "tests/test_market_memory_technical_store.py"
       - "tests/test_market_memory_retained_source_metadata.py"
+      - "tests/test_market_memory_price_metadata_use.py"
       - "tests/test_market_memory_trusted.py"
       - "tests/test_options_signal_episode.py"
       - "tests/test_ptse_action_context.py"
@@ -32019,7 +32377,15 @@ jobs:
           tests/test_ptse_w3_publication.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_population.py
+          tests/test_market_memory_fitted_normalization.py
+          tests/test_market_memory_fitted_distance.py
+          tests/test_market_memory_fitted_retrieval.py
+          tests/test_market_memory_exact_index.py
           tests/test_market_memory_episode_features.py
+          tests/test_market_memory_episode_outcomes.py
+          tests/test_market_memory_outcome_inspection.py
+          tests/test_market_memory_outcome_api.py
+          tests/test_market_memory_outcome_use.py
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
@@ -32209,6 +32575,7 @@ jobs:
           tests/test_market_memory_technical_observation.py
           tests/test_market_memory_technical_store.py
           tests/test_market_memory_retained_source_metadata.py
+          tests/test_market_memory_price_metadata_use.py
           tests/test_capture_market_memory_technicals.py
           tests/test_market_memory_technicals_deploy.py
           tests/test_market_memory_experience_accrual.py
@@ -33905,6 +34272,37 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # U2: exact selected-outcome owner dependencies reached by this suite.
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "config/market_memory_technical_price_basis.v1.json"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "contracts/market_memory/outcome_use_binding.v2.schema.json"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
+      - "engine/neuralweb/market_memory_price_metadata_use.py"
+      - "engine/neuralweb/market_memory_technical_observation.py"
+      - "engine/neuralweb/market_memory_technical_store.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "lib/massive_ticker.py"
       - "app/medtech.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
@@ -33920,9 +34318,10 @@ jobs:
       - tests/test_qbus_news_intake.py
       - tests/test_shared_news_intelligence.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "scripts/inspect_market_memory_price_coverage.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
-      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -34005,6 +34404,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
