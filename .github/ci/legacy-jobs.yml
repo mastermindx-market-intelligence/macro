@@ -10536,6 +10536,8 @@ jobs:
     # index-template (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes.
     # scope: exclusive pins it to its static import closure plus ancestor inits; the probe
     # ceilings stay fixed.
+    # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
+    # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
     paths:
       - "templates/china_altdata.html.j2"
       - "tests/test_china_altdata.py"
@@ -10597,14 +10599,18 @@ jobs:
       - "lib/exchange_holidays.py"
       - "lib/filing_value_units.py"
       - "lib/hk_calendar.py"
+      - "lib/illus.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
       - "lib/stooq.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      - "scripts/build_china_altdata.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
     timeout-minutes: 5
