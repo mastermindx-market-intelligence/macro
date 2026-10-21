@@ -29881,7 +29881,7 @@ jobs:
       # SIC-D-B02/B03/B07 (macro #7646): generation guard, dated membership coverage,
       # grader v2 — their own step so the pinned sector_central line above stays byte-exact.
       - name: sector_central D-wave suites — generation guard, membership coverage, grader v2
-        run: python -m pytest tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py -q
+        run: python -m pytest tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py tests/test_sector_central_score_version.py -q
       # SIC-MAP (macro #7646): the capability-map census — every producer/route
       # citation recorded in the sector-completion CSV must resolve in the tree.
       # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.

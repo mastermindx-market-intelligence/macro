@@ -288,6 +288,11 @@ def append_central_log(data: dict) -> int:
             "trend_pass": fwd.get("trend_pass"), "ret_12m": fwd.get("ret_12m"),
             "gate_factor": (rec.get("components") or {}).get("gate_factor"),
             "level": _level_for(rec, panel),
+            # SIC-D-B13: the score-definition version this call was made under
+            # (CONVICTION_SCORE_VERSION; prior rows read NaN after concat → legacy 1).
+            # Keep-first keeps a row's score and its version together, so a re-run on
+            # the same date can never pair a v1 score with a v2 label.
+            "score_version": conv.get("score_version"),
         })
     if not rows:
         return 0
@@ -379,51 +384,25 @@ def _fwd_return(row: pd.Series, h: int, panel, basket_lvl: dict,
         return None, None
 
 
-def grade() -> dict | None:
-    """Score every matured call. Returns a scorecard {n_calls, n_graded, dates, by_horizon}.
+def _score_versions(df: pd.DataFrame) -> pd.Series:
+    """SIC-D-B13: per-row score-definition version, normalised to a number. Rows logged
+    before the version column existed (or with a null/unparseable value) are version 1 —
+    the legacy score — by definition; every row logged by a CONVICTION_SCORE_VERSION=2
+    build carries 2."""
+    if "score_version" in df.columns:
+        v = pd.to_numeric(df["score_version"], errors="coerce")
+    else:
+        v = pd.Series(np.nan, index=df.index, dtype=float)
+    return v.fillna(1.0)
 
-    W3.8 changes:
-    - Basket forward returns read from the FROZEN store (data/basket_levels/us.parquet) only.
-      The live compute_baskets() path is gone from _basket_levels().
-    - Grades whose forward window spans a membership-hash change are INVALIDATED
-      (dropped with reason 'membership_changed'; counted in invalidated_membership).
-    - Pre-freeze basket calls are NOT graded: if the frozen store doesn't exist yet
-      (or has no data for the basket's call date), the scorecard reports
-      'accruing from <freeze_start>' — the permanent survivorship hole (D4-N3 / R1).
 
-    2026-08 (chain fix): basket calls dated before the basket's chain anchor are
-    INVALIDATED (dropped with reason 'pre_chain_anchor'; counted in
-    invalidated_pre_chain).  The scorecard exposes basket_return_valid_start — the
-    newest chain anchor among gradable baskets, i.e. the date from which basket
-    return math is trustworthy at all.
-    """
-    p = config.data_dir() / _STORE[0] / _STORE[1]
-    if not p.exists():
-        return {"available": False, "note": "no calls logged yet"}
-    try:
-        df = pd.read_parquet(p)
-    except Exception as e:  # noqa: BLE001
-        return {"available": False, "note": f"unreadable: {e}"}
-    if df.empty:
-        return {"available": False, "note": "empty"}
-
-    panel = _yahoo_panel()
-    basket_lvl = _basket_levels()
-
-    # Load frozen DataFrame for membership-hash checks (W3.8)
-    frozen_df = None
-    freeze_start = None
-    try:
-        from engine.basket_freeze import read_frozen, freeze_start_date
-        frozen_df = read_frozen("us")
-        freeze_start = freeze_start_date("us")
-    except Exception:  # noqa: BLE001
-        pass
-
-    bench = None
-    if panel is not None and "SPY" in panel.columns:
-        bench = panel["SPY"].dropna()
-
+def _grade_calls(df: pd.DataFrame, *, panel, basket_lvl, frozen_df, freeze_start,
+                 bench) -> dict:
+    """The base scorecard for ONE frame of logged calls — the pre-B13 grade() body,
+    extracted verbatim (SIC-D-B13) so the legacy segment and every by_score_version
+    block run exactly the base code path. `df` is the frame to grade; the price context
+    (panel / basket levels / frozen store / benchmark) is loaded once by grade() and
+    shared across segments."""
     # 2026-08: the newest chain anchor across the baskets we can actually grade.
     _valid_starts = [vs for _s, vs in basket_lvl.values() if vs]
     basket_valid_start = max(_valid_starts) if _valid_starts else None
@@ -532,4 +511,88 @@ def grade() -> dict | None:
             "by_cohort_month": by_cohort_month,
         }
     out["n_graded"] = max((v.get("n", 0) for v in out["by_horizon"].values()), default=0)
+    return out
+
+
+def grade() -> dict | None:
+    """Score every matured call. Returns a scorecard {n_calls, n_graded, dates, by_horizon}.
+
+    W3.8 changes:
+    - Basket forward returns read from the FROZEN store (data/basket_levels/us.parquet) only.
+      The live compute_baskets() path is gone from _basket_levels().
+    - Grades whose forward window spans a membership-hash change are INVALIDATED
+      (dropped with reason 'membership_changed'; counted in invalidated_membership).
+    - Pre-freeze basket calls are NOT graded: if the frozen store doesn't exist yet
+      (or has no data for the basket's call date), the scorecard reports
+      'accruing from <freeze_start>' — the permanent survivorship hole (D4-N3 / R1).
+
+    2026-08 (chain fix): basket calls dated before the basket's chain anchor are
+    INVALIDATED (dropped with reason 'pre_chain_anchor'; counted in
+    invalidated_pre_chain).  The scorecard exposes basket_return_valid_start — the
+    newest chain anchor among gradable baskets, i.e. the date from which basket
+    return math is trustworthy at all.
+
+    SIC-D-B13 (score version segmentation): a score whose meaning changed on a date
+    must never be pooled across that date. Every base key below (dir_hit_rate,
+    rank_ic, by_tier, counts, by_cohort_month, …) is computed on the legacy segment
+    (version 1) ONLY, by exactly the base code path — on a frame with no
+    score_version column or only null versions the output is byte-identical to the
+    pre-B13 grader. New additive top-level keys: score_version_segments (per-version
+    call counts / date range / role) and by_score_version (a full same-structure
+    scorecard per non-legacy version). A cohort month that spans the activation is
+    split across segments, never pooled.
+    """
+    p = config.data_dir() / _STORE[0] / _STORE[1]
+    if not p.exists():
+        return {"available": False, "note": "no calls logged yet"}
+    try:
+        df = pd.read_parquet(p)
+    except Exception as e:  # noqa: BLE001
+        return {"available": False, "note": f"unreadable: {e}"}
+    if df.empty:
+        return {"available": False, "note": "empty"}
+
+    panel = _yahoo_panel()
+    basket_lvl = _basket_levels()
+
+    # Load frozen DataFrame for membership-hash checks (W3.8)
+    frozen_df = None
+    freeze_start = None
+    try:
+        from engine.basket_freeze import read_frozen, freeze_start_date
+        frozen_df = read_frozen("us")
+        freeze_start = freeze_start_date("us")
+    except Exception:  # noqa: BLE001
+        pass
+
+    bench = None
+    if panel is not None and "SPY" in panel.columns:
+        bench = panel["SPY"].dropna()
+
+    # SIC-D-B13: segment the ledger by score-definition version, then grade each
+    # cohort on its own. The legacy (version-1) frame drives every base key — when
+    # no row carries a non-legacy version this is the whole frame, unchanged.
+    versions = _score_versions(df)
+    legacy_mask = versions == 1
+    legacy = df if bool(legacy_mask.all()) else df[legacy_mask]
+    out = _grade_calls(legacy, panel=panel, basket_lvl=basket_lvl,
+                       frozen_df=frozen_df, freeze_start=freeze_start, bench=bench)
+
+    segments = {}
+    for v in sorted(versions.unique()):
+        sub = df[versions == v]
+        ds = sub["date"].dropna()
+        segments[str(int(v))] = {
+            "n_calls": int(len(sub)),
+            "first_date": (ds.min() if len(ds) else None),
+            "last_date": (ds.max() if len(ds) else None),
+            "role": ("legacy — the top-level fields" if v == 1 else
+                     f"score version {int(v)} — graded only under by_score_version"),
+        }
+    out["score_version_segments"] = segments
+    out["by_score_version"] = {
+        str(int(v)): _grade_calls(df[versions == v], panel=panel, basket_lvl=basket_lvl,
+                                  frozen_df=frozen_df, freeze_start=freeze_start, bench=bench)
+        for v in sorted(versions.unique()) if v != 1
+    }
     return out

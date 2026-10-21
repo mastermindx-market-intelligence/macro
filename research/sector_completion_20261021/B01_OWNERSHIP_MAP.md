@@ -95,8 +95,8 @@ surface, and none may be fabricated for it.
 
 | artifact | schema | field(s) or none | semantics |
 |---|---|---|---|
-| `site/sector_central_data.js` | — | `none_native` | payload replaced wholesale nightly; no per-record version, correction or supersession key exists |
-| `site/sectordata/sector_central.json` | — | `none_native` | same payload, same contract |
+| `site/sector_central_data.js` | — | `none_native` | payload replaced wholesale nightly; since SIC-D-B13 every conviction row carries `conviction.score_version` — a score-DEFINITION stamp (1 = crowding cap dormant, 2 = cap input resolved via `ticker`), not a correction or supersession key |
+| `site/sectordata/sector_central.json` | — | `none_native` | same payload, same contract — the per-record `conviction.score_version` stamp rides both encodings |
 | `site/premiumdata/sector_central.json` | — | `none_native` | `built`/`as_of`/sha256 are generation stamps, not correction contracts; ALWAYS-written rule supersedes by replacement |
 | `site/sector_cycles_data.js` | — | `none_native` | `meta.rs_history` stamps provenance (`mode`, `naturally_observed`) but no correction/supersession field |
 | `site/sector_cycles_series_data.js` | — | `none_native` | split of the core payload; no version key |
@@ -105,7 +105,7 @@ surface, and none may be fabricated for it.
 | `site/sectordata/sector_cycles.json` | — | `none_native` | raw mirror |
 | `data/us_sector_rotation/latest.json` | — | `none_native` | display-tier snapshot; `asof`/`ts` are generation stamps |
 | `data/sector_cycles/forward_log.parquet` | — | `none_native` | immutability by construction: append-only, keep-FIRST per (`date`,`id`) (`engine/cycle_forward_log.py:274`) — a wrong row is never corrected, only never overwritten |
-| `data/sector_central/calls.parquet` | — | `none_native` | same keep-FIRST immutability (`engine/sector_central_grader.py:138-139`) |
+| `data/sector_central/calls.parquet` | — | `none_native` | same keep-FIRST immutability (`engine/sector_central_grader.py:305-306`); SIC-D-B13 appends a `score_version` column — prior rows read NaN (never rewritten) and grade as legacy version 1, so the scorecard never pools calls made under two score definitions |
 | `site/marketdata/rotation_events.json` | — | `none_native` | detector output regenerated nightly; no event-level correction key |
 | `site/marketdata/sector_fragmentation.json` | — | `none_native` | same |
 | `site/live/shock_state.json` | — | `none_native` | state snapshot |
