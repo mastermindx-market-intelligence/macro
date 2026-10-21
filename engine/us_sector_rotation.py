@@ -885,6 +885,10 @@ def write_latest(scored: list[dict], root: Optional[Path] = None) -> Path:
 
     payload = {
         "asof":      scored[0]["asof"] if scored else None,
+        # SIC-D-B02: explicit settled-session stamp — consumers gate on this
+        # (session_alignment), never on the wall-clock ts below.
+        "session":   scored[0]["asof"] if scored else None,
+        "clock":     "settled_daily_session",
         "ts":        datetime.now(timezone.utc).isoformat(),
         "authority": "DISPLAY-ONLY — re-orders display surfaces; feeds no gate, size, score, or calibrated key.",
         "instruments": scored,
