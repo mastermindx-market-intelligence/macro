@@ -166,7 +166,11 @@ def test_shared_chrome_files_only_add_the_reviewed_default_off_host(path: str) -
         b'{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\\n" }}{% endif %}\n'
     )
     assert local.count(reviewed_host) == 1, "reviewed All tools host must appear exactly once"
-    assert local.replace(reviewed_host, b"", 1) == upstream, (
+    # ``origin/main`` has carried the reviewed host itself since the Shared Shell
+    # integration (#7949) merged, so the byte-for-byte recovery strips that one
+    # include from both sides; any other shared-chrome mutation still fails here.
+    assert upstream.count(reviewed_host) <= 1, "origin/main carries the reviewed host at most once"
+    assert local.replace(reviewed_host, b"", 1) == upstream.replace(reviewed_host, b"", 1), (
         f"{path} changed outside the reviewed default-off host (G7)"
     )
 
