@@ -6,6 +6,7 @@ Feed chronology remains the store change sequence, independent of this choice.
 """
 from __future__ import annotations
 
+from collections.abc import Collection
 from datetime import datetime, timezone
 from html import unescape
 from urllib.parse import urlsplit
@@ -120,12 +121,30 @@ def curated_source(source: str) -> bool:
     return publisher_category(publisher_identity(key)) in {"reporting", "press_release"}
 
 
-def curated_report(source: str, title: str) -> bool:
+def curated_report(source: str, title: str, url: str = "") -> bool:
+    """Screen a report using only fields permitted to the current reader."""
     return curated_source(source) and ticker_editorial_reason(
-        display_text(title), publisher_identity(source),
+        display_text(title), publisher_identity(source), url=display_text(url),
     ) is None
+
+
+def curated_sql_clause(allowed_url_sources: Collection[str] = ()) -> tuple[str, tuple[str, ...]]:
+    """One predicate for store/flow queries with aliases s (state), p (projection).
+
+    Bind source identities as values. CASE projects denied URLs to an empty
+    string before classification, so a hidden URL cannot change visible counts,
+    group membership or correction projections.
+    """
+    if isinstance(allowed_url_sources, str):
+        raise TypeError("allowed_url_sources must be a collection of source ids")
+    sources = tuple(sorted(set(allowed_url_sources)))
+    url = "''"
+    if sources:
+        marks = ",".join("?" for _ in sources)
+        url = f"CASE WHEN s.source IN ({marks}) THEN p.url ELSE '' END"
+    return f"AND qbus_news_is_curated(s.source, p.title, {url})=1", sources
 
 
 def register_curated_reader(connection) -> None:
     """Pure SELECT predicate, evaluated before grouping and page limits."""
-    connection.create_function("qbus_news_is_curated", 2, curated_report, deterministic=True)
+    connection.create_function("qbus_news_is_curated", 3, curated_report, deterministic=True)

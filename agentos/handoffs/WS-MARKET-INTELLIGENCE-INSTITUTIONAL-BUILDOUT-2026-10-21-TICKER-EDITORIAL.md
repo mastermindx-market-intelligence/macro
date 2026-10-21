@@ -1,72 +1,93 @@
 ---
 workstream: WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT
-session: sol/web-ticker-news-provider-quality-20261020-c3
+session: sol/web-ticker-news-editorial-live-gap-20261021-c3
 model: codex
 ended_because: ci_handoff
 mission: >
-  Candidate publication checkpoint for the Chairman's Fool/Zacks provider audit and
-  Terminal ticker-news quality repair. The principal continues through review,
-  concluded CI, ordinary deployment and live verification; this is not a completion claim.
+  Complete the Chairman's ticker-news editorial repair after ordinary signed-in
+  acceptance revealed remaining Benzinga templates and Opinion/personal-finance
+  articles. The original provider and Terminal changes are merged and deployed.
+  This follow-up still requires its own review, concluded CI and live readback.
 state_before: >
-  The shared ticker reader enforced rights but not editorial admission. The earlier
-  additional-source activation deliberately included Fool and Zacks. The live Apple
-  first page had 13 Fool, 6 Zacks and 1 Benzinga row. The Macro newsroom already had
-  stronger source/article screening and a separate derived intelligence feed.
+  Macro PR 9942 and Terminal PR 1094 removed Fool/Zacks from the curated ticker
+  view and shipped publisher and press-release labels. Signed-in AAPL/MSFT
+  checks confirmed those changes, then exposed residual Benzinga article classes.
 changed:
-  - path: engine/qkernel.py
-    what: Canonical publisher exclusions, strict hostname tiers and source categories.
   - path: engine/news_common.py
-    what: Shared ticker editorial predicate, preserving factual company announcements.
+    what: Recognize observed numbered analyst, peer-profile and whale-alert templates; classify exact permitted Benzinga URL sections.
   - path: engine/qbus_news_quality.py
-    what: Versioned curated reader predicate and SQLite registration.
+    what: Share a three-argument curated predicate with rights-projected URL values.
   - path: engine/qbus_news_store.py
-    what: Consistent pre-pagination curation across rows, details, projected changes and counts.
+    what: Apply the same projected category rule before pagination and across story members and changes.
   - path: engine/qbus_news_velocity.py
-    what: Optional curated count population with unchanged raw mode.
-  - path: app/ticker_news.py
-    what: Public curated reader, additive content attribution and scoped delivery health.
+    what: Count the same curated population under per-source URL rights.
   - path: tests/test_shared_news_intelligence.py
-    what: Regression coverage for screenshot cases, rights, pagination, corrections and health; enrolled in ticker-news-qbus CI.
+    what: Add 34 regressions for live variants, factual news, URL rights, corrections and groups.
+  - path: tests/test_qbus_news_flow_store.py
+    what: Preserve the existing timestamp assertion while forwarding the new optional URL-rights argument.
   - path: docs/ops/ticker-news-editorial-quality.md
-    what: Source audit, explanation of the inclusion error, policy and premium-coverage boundary.
+    what: Record signed-in acceptance, the remaining article-class gap and the URL rights boundary.
+prs: [9942, 9963]
 verified:
-  - claim: Shared backend and financial-news regression checks pass locally.
+  - claim: The original provider and Terminal repairs completed ordinary deployment.
+    command: GitHub PR 9942 and mastermind-terminal PR 1094; landed-path comparisons; canonical terminal-build target and live BUILD_ID.
+    result: Macro merge 526ce826f0898d8724e79acf3a884f9cec6f3096; Terminal merge d9ec4d2b86e9e9e0129d7fcd4c646f25f7670c49; build-TfctsWXpff2fKS. Both PRs retain release receipts.
+  - claim: Ordinary signed-in source controls and labels work after reload.
+    command: Open app.mastermind-x.com/terminal News for AAPL and MSFT; select GlobeNewswire; reload the ordinary page.
+    result: AAPL first 20 rows Benzinga with no Fool/Zacks; MSFT offered Benzinga and GlobeNewswire and filtered to three labelled press releases.
+  - claim: New live-gap cases reproduce the defect and pass with the follow-up.
+    command: python3 -m pytest tests/test_shared_news_intelligence.py -q -k 'live_editorial or editorial_sections or url_category'
+    result: Before implementation 21 failed and 10 passed; after implementation all 31 passed.
+  - claim: The final affected backend regression selection passes with the committed data materialized.
     command: python3 -m pytest tests/test_qbus_news*.py tests/test_ticker_news*.py tests/test_run_qbus_news*.py tests/test_news_common.py tests/test_qkernel.py tests/test_financial_news.py tests/test_shared_news_intelligence.py -q
-    result: 767 passed; the committed data tree was materialized before this run.
-  - claim: Terminal news contract and rendered-consumer checks pass locally.
-    command: npm test -- lib/__tests__/tickerNews lib/__tests__/newsCatchupPanel.test.tsx lib/__tests__/newsReviewState.test.ts; npm test -- news
-    result: 225 tests in the first selection and 334 in the second; selections overlap and are not summed.
-  - claim: Terminal production code builds and typechecks.
-    command: npm run build; npx tsc --noEmit
-    result: Both exited zero; later changes are test fixtures, evidence and documentation.
-  - claim: Real-shell responsive fixtures pass.
-    command: TERMINAL_E2E_PORT=3271 TERMINAL_CROPS=1 npx playwright test e2e/ticker-news.spec.ts --project=desktop --workers=1
-    result: Four tests passed, including EN/ZH at three sizes; light captures are explicitly D-W1 specimens.
+    result: 816 passed in 64.76 seconds; the existing timestamp wrapper forwards the new optional URL-rights argument without weakening assertions.
+  - claim: A fresh pre-release AAPL check exposed two remaining template variants, now covered.
+    command: Ordinary signed-in AAPL News read; python3 -m pytest tests/test_shared_news_intelligence.py -q -k live_editorial
+    result: The Industry Comparison prefix and overt publicity-hype title produced two failures before the final repair; the factual product-event control passed. All three cases are included in the final 816-test pass.
+  - claim: The existing CI packing ceiling and Agent OS record validation pass.
+    command: tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs; python3 scripts/agentos.py validate; git diff --check
+    result: Packing assertion passed in the initial combined run; record validation exited zero with existing workspace/join warnings; whitespace check clean.
 unverified:
-  - claim: The candidate source is merged and deployed.
-    what_would_verify: Matching published heads, concluded required checks, ordinary merge/deploy receipts and fresh live policy marker/readback.
+  - claim: The follow-up article-class repair is merged and deployed.
+    what_would_verify: Independent exact-head review, concluded required checks, ordinary merge/deploy and signed-in AAPL/MSFT readback.
   - claim: Premium newsroom publishers are actively delivered by this ticker feed.
-    what_would_verify: Actual source-specific entitlements and original receipts/observations from an integrated premium feed. Allowlist membership does not suffice.
+    what_would_verify: Actual source-specific entitlements and original receipts/observations from an integrated premium feed.
 unresolved:
-  - The candidate source still needs independent review acceptance and hosted CI at this checkpoint.
-  - The optional read-only Fabric audit carrier ticker-news-macro-policy-audit-20261020-c3-01 failed on a retained request packet before lease. Its wrapper did not attest execution absence; preserve the exact carrier and do not replay it.
+  - Remaining Benzinga article-class acceptance is open until the follow-up reaches production.
+  - No multi-report control appeared in the sampled live first pages; live grouped-detail/correction delivery was not exercised.
+  - The earlier optional Fabric audit failed before an attested lease; do not replay that carrier.
 next_actions:
-  - Finish the bounded independent reviews and publish both managed source branches under ticker-news-provider-quality-20261020-c3.
-  - Follow required CI, merge through normal gates, let the Macro update lane apply the backend, and deploy Terminal with its canonical build owner.
-  - Verify the ordinary authenticated Terminal page, eligible publishers, grouped detail, flow counts and live refresh. Record release proof on the exact PRs.
+  - Publish the final live-variant delta to existing Macro PR 9963 through the managed publisher, complete its delta review and concluded CI, then merge normally.
+  - Verify ordinary Macro rollout and reload the signed-in AAPL/MSFT News panels; update the exact PR release receipts.
 do_not_redo:
-  - Do not reactivate Fool/Zacks to fill sparse coverage or reinterpret a rights receipt as an editorial approval.
-  - Do not buy a direct Benzinga headline feed; DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS remains valid.
-  - Do not create a second news writer or use a derived newsroom snapshot as original qbus publisher evidence.
-  - The existing held Macro cockpit PR 9612 and Terminal sidebar PR 1081 retain their owners and release gates.
+  - Do not recreate the follow-up workspace; its initial unqualified acquisition was reconciled through canonical workspace and publisher status.
+  - Original Macro PR 9942 and Terminal PR 1094 are merged and deployed; do not recreate them or rebuild Terminal for this backend-only recognition repair.
+  - Do not reactivate Fool/Zacks to fill sparse coverage or reinterpret a rights receipt as editorial approval.
+  - Do not activate or buy a premium feed without its actual entitlement/integration basis.
+  - Do not create a second writer or use derived newsroom intelligence as original publisher evidence.
+  - Held Macro cockpit PR 9612 and Terminal sidebar PR 1081 retain their own release gates.
 danger_areas:
-  - Reader policy must remain consistent across pagination, current story members, changes, flow and health.
-  - A publisher's display name is not its licensed source identity; keep source keys and original provenance intact.
-  - Terminal's dark theme ships; approved light specimens do not assert a live light mode.
-  - Raw writer history and current rights are independent from the curated reader and must remain intact.
+  - A denied URL must not affect visible membership, groups, corrections or counts; classify only rights-projected fields.
+  - Every SQLite curated call now uses three arguments; old two-argument audit snippets are obsolete.
+  - The exact v1 public policy marker remains compatible with the already deployed Terminal.
+  - Raw writer retention and current rights remain independent of editorial admission.
+  - A warm Terminal tab is not proof of universal automatic policy-cache invalidation; ordinary reload is the acceptance path.
 decisions:
   - DEC:TICKER-NEWS-EDITORIAL-ADMISSION-IS-SEPARATE-FROM-RIGHTS
 ---
+
+## Current continuation state
+
+MISSION_COMPLETE: false. The bounded follow-up is BUILT_NOT_PROVEN. Authentication is resolved; the remaining gate is article-class release and acceptance. The original PRs' deployment receipts and signed-in observations are retained in their GitHub descriptions.
+
+The current operation is `ticker-news-editorial-live-gap-20261021-c3`, branch `sol/web-ticker-news-editorial-live-gap-20261021-c3`, based on `562fc7dd02a95792c1a3f59dee2e147f5ffddf20`. Its managed workspace is `/Volumes/Mastermind 2/agent-workspaces/macro/web/ticker-news-editorial-live-gap-20261021-c3`. The first acquisition left no effect; the same-operation retry created this workspace. Although the wrapper returned unqualified, canonical owner status and `studio_git_publish_status` positively reconciled the existing branch/path and reported ready-to-push. No acquisition is pending; do not retry allocation or change workspace infrastructure.
+
+The repair is confined to recurring formats observed live and exact publisher sections. It preserves factual single-company reporting, field rights, raw retention and the existing public policy contract. Macro PR #9963 is published. Independent review accepted initial head `0c7b782c1dcb8e0fc6dece0d9169ec0df8211bde`; the later live-variant delta requires its own exact-head delta review and checks. The principal owns ordinary release and browser acceptance. This is a dated source-publication checkpoint; the PR's later immutable release receipts determine current deployment status.
+
+## Historical implementation checkpoints
+
+The following history records the already completed original implementation; its earlier pending-state prose is superseded by the current continuation state and the original PR release receipts.
+
 
 Both source workspaces use the managed operation `ticker-news-provider-quality-20261020-c3`.
 Macro was based on `e5dd30c6344e4b62a0beba054ac4da97e00bab36`; Terminal on
