@@ -1,68 +1,68 @@
 {
   "schema": "shadow_audit.v1",
-  "n_booked": 7534,
+  "n_booked": 7698,
   "booked_dates": [
     "2026-06-18",
-    "2026-10-14"
+    "2026-10-19"
   ],
-  "asof": "2026-10-14",
-  "n_matured": 2027,
+  "asof": "2026-10-20",
+  "n_matured": 2218,
   "by_horizon": {
     "h21": {
       "ic": {
-        "mean_ic": 0.1135,
-        "ic_vol": 0.1772,
-        "ic_ir": 0.641,
-        "ic_ir_ann": 2.219,
+        "mean_ic": 0.1058,
+        "ic_vol": 0.1832,
+        "ic_ir": 0.577,
+        "ic_ir_ann": 2.0,
         "t_hac": null,
         "p_hac": null,
-        "hit": 0.729,
-        "n": 48,
+        "hit": 0.706,
+        "n": 51,
         "hac_lags": 21,
         "hac_lags_requested": 21,
-        "t_suppressed": "n=48 cannot carry the lag-21 overlap correction (needs n>=63; Bartlett variance degenerates as lag approaches n)"
+        "t_suppressed": "n=51 cannot carry the lag-21 overlap correction (needs n>=63; Bartlett variance degenerates as lag approaches n)"
       },
-      "n_dates": 48,
-      "n_obs": 1560,
-      "n_indep_windows": 3,
+      "n_dates": 51,
+      "n_obs": 1673,
+      "n_indep_windows": 4,
       "span": [
         "2026-06-18",
-        "2026-09-14"
+        "2026-09-18"
       ],
       "verdict": "building",
       "clark_west": {
         "cw_t": null,
         "cw_p": null,
-        "mean_adj": 0.00086,
-        "n_dates": 27,
-        "n_obs": 1009,
-        "oos_r2": 0.03911,
+        "mean_adj": 0.0008,
+        "n_dates": 30,
+        "n_obs": 1122,
+        "oos_r2": 0.03729,
         "hac_lags": 21,
         "hac_lags_requested": 21,
         "benchmark": "expanding mean of prior fully-closed forward returns",
-        "t_suppressed": "n=27 cannot carry the lag-21 overlap correction (needs n>=63; Bartlett variance degenerates as lag approaches n)"
+        "t_suppressed": "n=30 cannot carry the lag-21 overlap correction (needs n>=63; Bartlett variance degenerates as lag approaches n)"
       }
     },
     "h63": {
       "ic": {
-        "mean_ic": 0.2422,
-        "ic_vol": 0.1973,
-        "ic_ir": 1.228,
-        "ic_ir_ann": 2.455,
+        "mean_ic": 0.2223,
+        "ic_vol": 0.1914,
+        "ic_ir": 1.161,
+        "ic_ir_ann": 2.323,
         "t_hac": null,
         "p_hac": null,
-        "hit": 0.833,
-        "n": 18,
-        "hac_lags": 17,
+        "hit": 0.81,
+        "n": 21,
+        "hac_lags": 20,
         "hac_lags_requested": 63,
-        "t_suppressed": "n=18 cannot carry the lag-63 overlap correction (needs n>=189; Bartlett variance degenerates as lag approaches n)"
+        "t_suppressed": "n=21 cannot carry the lag-63 overlap correction (needs n>=189; Bartlett variance degenerates as lag approaches n)"
       },
-      "n_dates": 18,
-      "n_obs": 467,
+      "n_dates": 21,
+      "n_obs": 545,
       "n_indep_windows": 1,
       "span": [
         "2026-06-18",
-        "2026-07-15"
+        "2026-07-21"
       ],
       "verdict": "building",
       "clark_west": {
@@ -71,12 +71,12 @@
     }
   },
   "coverage": {
-    "n_tickers_booked": 1308,
-    "n_tickers_resolvable": 406,
+    "n_tickers_booked": 1328,
+    "n_tickers_resolvable": 417,
     "note": "booked names absent from the free price panel never mature \u2014 part of the survivorship bound, not a maturation lag (prereg \u00a74.3)"
   },
   "price_basis": "raw closes \u2014 price-only forward return, not the total return the prereg names; dividend payers are penalized (tests/test_price_basis_graders.py)",
   "interpretation": "Realized forward cross-sectional IC of the FROZEN stock score per horizon. Empty/thin until horizons elapse. Honest prior: likely \u22480 \u2014 and knowing that is the institutional win. Verdicts stay 'building' until the FROZEN pre-registration's \u00a73 sample floor (research/SHADOW_BOOK_PREREGISTRATION.md).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve listed names only.",
-  "generated_utc": "2026-10-18T07:03:29+00:00"
+  "generated_utc": "2026-10-21T08:12:31+00:00"
 }

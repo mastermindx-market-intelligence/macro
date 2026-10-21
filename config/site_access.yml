@@ -268,6 +268,18 @@ public:
     - /scene-motion.js
     - /chat.css
     - /theme.css
+    # International workspace presentation and local in-page controls. These
+    # exact files contain no datasets or data transport; source materializations
+    # and API authorization retain their existing publication/access boundaries.
+    - /intl_workspace.css
+    - /intl_workspace_macro.css
+    - /intl_workspace_risk.css
+    - /intl_workspace_history.css
+    - /intl_workspace_state.js
+    - /intl_library_search.js
+    - /intl_workspace_scenario.js
+    - /intl_workspace.js
+    - /intl_workspace_entry.js
     # Public Market Memory shell assets. They contain presentation/read-client
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
@@ -452,6 +464,10 @@ public:
     # plane is the Bearer-authenticated /api/brain/* gateway, which is
     # unchanged; the script itself carries no signals or customer data.
     - /mm_brain.js
+    # Native illustration code/styles only; all private response data remains
+    # inside the existing authenticated Brain transport and thread endpoints.
+    - /mm_brain_visuals.js
+    - /mm_brain_visuals.css
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #

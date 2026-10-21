@@ -12,6 +12,8 @@ remain separate owner gates.
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
@@ -35,6 +37,9 @@ from engine.qbus_news_receipts import (
     NewsReceiptError,
     QualifiedNewsRights,
     load_rights_receipt,
+    load_rights_set,
+    additional_rights_paths,
+    combine_news_rights,
     write_health_receipt,
 )
 from engine.qbus_news_store import NewsStore
@@ -79,6 +84,8 @@ def _rights_receipt_for(
     returns.
     """
     receipt = load_rights_receipt(rights_path, now=now, audience="site_full")
+    if receipt is not None and receipt.source != "benzinga":
+        return None
     if receipt is not None and provider == "alpaca" and receipt.provider != "alpaca":
         return None
     return receipt
@@ -134,7 +141,7 @@ class NewsIngestRunner:
         wait: Callable[[float], None] = time.sleep,
         stop: StopFlag | None = None,
         catchup_interval_seconds: float = 30.0,
-        recv_timeout_seconds: float = 1.0,
+        recv_timeout_seconds: float = 0.1,
         reconnect_base_seconds: float = 1.0,
         reconnect_max_seconds: float = 60.0,
         max_frame_bytes: int = 2 * 1024 * 1024,
@@ -144,6 +151,7 @@ class NewsIngestRunner:
         stream_target: str | None = None,
         stream_handshake: Callable[[object], None] | None = None,
         frame_normalizer: Callable[..., Sequence[NewsRevision]] | None = None,
+        supplemental=None,
     ) -> None:
         if not token and stream_target is None:
             raise ValueError("qbus_news:missing_stream_token")
@@ -173,7 +181,12 @@ class NewsIngestRunner:
         self.stream_target = stream_target
         self.stream_handshake = stream_handshake
         self.frame_normalizer = frame_normalizer
+        self.supplemental = supplemental
         self.stats = RunnerStats()
+        self._catchup_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="news-catchup")
+        self._catchup_future = None
+        self._catchup_cursor = None
+        self._catchup_observed_at = None
         self._last_successful_catchup: datetime | None = None
         self._last_stream_event_at: datetime | None = None
         self._gap_unresolved = False
@@ -204,6 +217,7 @@ class NewsIngestRunner:
             "catchups_failed": self.stats.catchups_failed,
             "last_catchup_error": self._last_catchup_error,
             "last_stream_error": self._last_stream_error,
+            **({"additional_sources": [self.supplemental.health()]} if self.supplemental else {}),
         }
 
     def _publish_health(self, state: str) -> None:
@@ -225,13 +239,24 @@ class NewsIngestRunner:
             return False
 
     def _catch_up(self) -> None:
+        # Boot remains synchronous. A reconnect reuses any periodic acquisition
+        # already in flight, never racing the same client's requests/session.
+        self._drain_catchup()
+        if self._catchup_future is not None:
+            return
         observed_at = self.clock()
         try:
-            result = benzinga_news.catch_up_once(
-                client=self.direct_client,
-                store=self.store,
-                universe=self.universe_provider(),
+            current = self.store.current_cursor()
+            batch = self.direct_client.fetch_delta(
+                cursor_epoch=benzinga_news._parse_store_cursor(current),
                 observed_at=observed_at,
+            )
+            if not self._admitted():
+                self.stop.set()
+                return
+            result = benzinga_news.apply_catch_up_batch(
+                batch=batch, store=self.store, universe=self.universe_provider(),
+                expected_cursor=current,
             )
         except Exception as exc:  # source/service loop records class, never raw secret text
             self.stats.catchups_failed += 1
@@ -239,6 +264,9 @@ class NewsIngestRunner:
             state = "degraded" if self._last_successful_catchup else "catching_up"
             self._publish_health(state)
             return
+        self._record_catchup(result, observed_at)
+
+    def _record_catchup(self, result, observed_at):
         if result.gap_unresolved:
             self.stats.catchups_gap += 1
             self._gap_unresolved = True
@@ -249,6 +277,41 @@ class NewsIngestRunner:
             self._last_catchup_error = None
             self._gap_unresolved = False
             self._publish_health("live")
+
+    def _start_periodic_catchup(self):
+        if self._catchup_future is not None or not self._admitted():
+            return
+        try:
+            self._catchup_cursor = self.store.current_cursor()
+            epoch = benzinga_news._parse_store_cursor(self._catchup_cursor)
+            self._catchup_observed_at = self.clock()
+            self._catchup_future = self._catchup_pool.submit(
+                self.direct_client.fetch_delta,
+                cursor_epoch=epoch, observed_at=self._catchup_observed_at,
+            )
+        except Exception as exc:
+            self._catchup_failed(exc)
+
+    def _catchup_failed(self, exc):
+        self.stats.catchups_failed += 1
+        self._last_catchup_error = _error_code(exc)
+        self._publish_health("degraded" if self._last_successful_catchup else "catching_up")
+
+    def _drain_catchup(self):
+        if self._catchup_future is None or not self._catchup_future.done():
+            return
+        future, self._catchup_future = self._catchup_future, None
+        if not self._admitted():
+            self.stop.set()
+            return
+        try:
+            result = benzinga_news.apply_catch_up_batch(
+                batch=future.result(), store=self.store,
+                universe=self.universe_provider(), expected_cursor=self._catchup_cursor,
+            )
+            self._record_catchup(result, self._catchup_observed_at)
+        except Exception as exc:
+            self._catchup_failed(exc)
 
     def _handle_frame(self, raw: object) -> None:
         size = _frame_size(raw)
@@ -315,6 +378,8 @@ class NewsIngestRunner:
                 ):
                     break
 
+                if self.supplemental is not None:
+                    self.supplemental.pump()
                 self._catch_up()
                 if self.stop.is_set():
                     break
@@ -343,8 +408,11 @@ class NewsIngestRunner:
                             if not self._admitted():
                                 self.stop.set()
                                 break
+                            if self.supplemental is not None:
+                                self.supplemental.pump()
+                            self._drain_catchup()
                             if self.monotonic() >= next_catchup:
-                                self._catch_up()
+                                self._start_periodic_catchup()
                                 next_catchup = (
                                     self.monotonic()
                                     + self.catchup_interval_seconds
@@ -377,6 +445,11 @@ class NewsIngestRunner:
                 self.wait(backoff)
                 backoff = min(backoff * 2.0, self.reconnect_max_seconds)
         finally:
+            if self._catchup_future is not None:
+                self._catchup_future.cancel()
+            self._catchup_pool.shutdown(wait=False, cancel_futures=True)
+            if self.supplemental is not None:
+                self.supplemental.close()
             self._publish_health("unavailable")
 
         return self.stats
@@ -406,6 +479,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--rights-receipt", type=Path)
     p.add_argument("--health-path", type=Path)
     p.add_argument("--token-env", default="BENZINGA_API_KEY")
+    p.add_argument("--massive-news", action="store_true",
+                   default=os.environ.get("MM_TICKER_NEWS_MASSIVE_ENABLED") == "1",
+                   help="enable rights-qualified additional publishers in the existing runner")
+    p.add_argument("--massive-token-env", default="POLYGON_API_KEY")
     p.add_argument(
         "--provider",
         default=os.environ.get("QBUS_NEWS_PROVIDER") or "benzinga",
@@ -556,11 +633,29 @@ def main(argv=None) -> int:
         )
         return 2
 
+    supplemental_paths = additional_rights_paths()
+    supplemental_receipts = load_rights_set(supplemental_paths, now=now)
+    supplemental_rights = combine_news_rights(tuple(
+        receipt for receipt in supplemental_receipts
+        if receipt.provider == "massive" and receipt.source.startswith("massive:")
+    ))
+    massive_token = os.environ.get(args.massive_token_env, "") if args.massive_news else ""
+    if args.massive_news and (not massive_token or not supplemental_rights.allowed_sources):
+        print(json.dumps({
+            **report, "activation_qualified": False,
+            "error": "activation_additional_sources_unqualified",
+            "additional_token_present": bool(massive_token),
+            "additional_sources_qualified": len(supplemental_rights.allowed_sources),
+        }, sort_keys=True))
+        return 2
+
     qualified_report = {
         **report,
         "activation_qualified": True,
         "universe_count": universe.count,
         "universe_revision": universe.revision,
+        "additional_sources_enabled": bool(args.massive_news),
+        "additional_sources_qualified": len(supplemental_rights.allowed_sources) if args.massive_news else 0,
     }
     if args.check_activation:
         print(json.dumps(qualified_report, sort_keys=True))
@@ -578,40 +673,45 @@ def main(argv=None) -> int:
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_args: stop.set())
 
-    if provider == "alpaca":
-        client = alpaca_news.AlpacaNewsClient(
-            key_id=key_id, secret_key=secret_key
-        )
-        with NewsStore(args.database, source_key="alpaca-rest") as store:
-            runner = NewsIngestRunner(
-                token=token,
-                store=store,
-                universe_provider=lambda: universe,
-                direct_client=client,
-                stop=stop,
-                health_path=health_path,
-                admission_guard=rights_admitted,
-                provider="alpaca",
-                stream_target=alpaca_news.STREAM_URL,
-                stream_handshake=lambda ws: alpaca_news.stream_handshake(
-                    ws, key_id=key_id, secret_key=secret_key
+    with ExitStack() as resources:
+        supplemental = None
+        if args.massive_news:
+            from engine.massive_news import MassiveNewsClient
+            from engine.qbus_news_intake import SupplementalNewsIntake
+
+            extra_store = resources.enter_context(NewsStore(
+                args.database, source_key="massive-reference-news",
+            ))
+            supplemental = SupplementalNewsIntake(
+                client=MassiveNewsClient(massive_token),
+                store=extra_store,
+                rights_provider=lambda: load_rights_set(
+                    additional_rights_paths(), now=_utc_now(),
                 ),
-                frame_normalizer=alpaca_news.normalize_stream_frames,
-            )
-            stats = runner.run()
-    else:
-        client = benzinga_news.BenzingaNewsClient(token=token)
-        with NewsStore(args.database, source_key="benzinga-rest") as store:
-            runner = NewsIngestRunner(
-                token=token,
-                store=store,
                 universe_provider=lambda: universe,
-                direct_client=client,
-                stop=stop,
-                health_path=health_path,
-                admission_guard=rights_admitted,
             )
-            stats = runner.run()
+        source_key = "alpaca-rest" if provider == "alpaca" else "benzinga-rest"
+        store = resources.enter_context(NewsStore(args.database, source_key=source_key))
+        kwargs = {}
+        if provider == "alpaca":
+            client = alpaca_news.AlpacaNewsClient(key_id=key_id, secret_key=secret_key)
+            kwargs = {
+                "provider": "alpaca", "stream_target": alpaca_news.STREAM_URL,
+                "stream_handshake": lambda ws: alpaca_news.stream_handshake(
+                    ws, key_id=key_id, secret_key=secret_key,
+                ),
+                "frame_normalizer": alpaca_news.normalize_stream_frames,
+            }
+        else:
+            client = benzinga_news.BenzingaNewsClient(token=token)
+        runner = NewsIngestRunner(
+            token=token, store=store, universe_provider=lambda: universe,
+            direct_client=client, stop=stop, health_path=health_path,
+            admission_guard=rights_admitted, supplemental=supplemental,
+            recv_timeout_seconds=0.1,
+            **kwargs,
+        )
+        stats = runner.run()
     print(json.dumps(exit_receipt(stats), sort_keys=True))
     return 0
 

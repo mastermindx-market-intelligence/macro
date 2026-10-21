@@ -307,8 +307,29 @@ waves:
       event index before the unchanged owner filter; no semantic/proof/shard change.
       Parser214tests pass, new scan regression fails before, two complete filing
       outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
-      Same72tests pass335.45sec vs403.73before; normal hosted release remains.
+      Same72tests pass335.45sec vs403.73before. PR9813 merged9c7df3786fc3856fbb692da301584b4b443ab66d
+      at2026-10-20T04:57:13Z; seven blobs verified. Final39364786931 passes
+      96jobs/299proof units/zero infrastructure findings and all active checks.
+      Three green trial FIF commands1581.75/2093.14/1573.07sec show variation.
+      Next: separate natural parser cohort with exact parser plus planner blobs
+      and merge ancestry; earlier00:55 cohort remains fixed.
+      Fixed parser05:54 cohort16runs has5qualified completions(3success2failure),
+      11pending/0cancelled/0reruns. Success p50/p951860/2218sec,wall228.50/252.18min;
+      failure first-step-completion950.5/1002sec. Zero original-baseline proof matches.
+      Exact secondary pairs differ in outcome; one artifact-upload failure and one
+      AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
       No causal fleet30percent or cost-neutrality claim.
+      Report9850 merged6793c010048996193d3d98876b486910c7982e3c;75selected jobs,
+      active gates and6authored blobs verified. Fixed07:54 parser snapshot57runs:
+      36qualified completions(29success7failure),18pending3cancelled. ScopedN24
+      success p50/p951895/2553sec,wall177.675/253.95min;zero baseline proof matches.
+      Three103job successful treatments share ONE old-parser control. Gate times
+      2066/2581/2553sec versus2007control; summed wall lower, no causal claim.
+      Treated FIF commands1594.096/2151.041/2089.544sec versus1329.857control;
+      treated2681passes versus2680control. Primary command dominates; image and
+      Python labels agree among treatments but physical performance is uncontrolled.
+      Retain12packs/two weights/parser source. Next source slice requires qualified
+      residual profiling and current FIF carrier custody; no speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

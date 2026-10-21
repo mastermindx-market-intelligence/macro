@@ -313,18 +313,657 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>16</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>16</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>16</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-policy"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-0.6</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:12.4%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 131<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-21</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">10</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:30%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:30%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-tech">
+          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+          <span class="mx-bar"><i style="width:20%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 22 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 1 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">10</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 31</span><span class="l-zh">10月31日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3182706" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行副行长、外汇局局长朱鹤新：稳妥深化“人工智能+” 加快金融数据要素价值释放 pboc deputy governor and safe administrator zhu hexin: steadily deepen "ai plus" and accelerate the release of the value of financial data elements 央行副行长、外汇局局长朱鹤新：稳妥深化“人工智能+” 加快金融数据要素价值释放 近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，中国人民银行副行长、国家外汇管理局局长朱鹤新指出，“十四五”时期，两部金融科技发展规划圆满完成实施，金融数字化转型全面深化，数字技术金融应用纵深推进，金融服务质效显著提升。“十五五”时期，抢抓人工智能发展历史性机遇，以金融数字化、智能化转型为主线，积极稳妥深化“人工智能+”，安全有序推进“数据要素×”，推动金融科技向新向智发展。要重点做好四方面工作：坚持智能驱动，推动人工智能与金融双向赋能；坚持数据筑基，加快金融数据要素价值释放；坚持风险可控，筑牢 recently, at the fintech conference of the 2026 financial street forum annual meeting, held under the theme "intelligence-driven, integrated coexistence—fintech in the new form of the intelligent economy," zhu hexin, deputy governor of the people's bank of china and administrator of the state administration of foreign exchange, noted that during the 14th five-year plan period, the two fintech development plans were successfully completed, financial digital transformation was comprehensively deepened, the application of digital technology in finance advanced in depth, and the quality and efficiency of financial services improved significantly. during the 15th five-year plan period, we should seize the historic opportunity of ai development, take financial digitalization and intelligent transformation as the main line, actively and steadily deepen "ai+", safely and orderly advance "data elements x", and promote fintech development toward innovation and intelligence. we should focus on four areas: adhere to intelligence-driven development and promote two-way empowerment between ai and finance; adhere to data as the foundation and accelerate the release of the value of financial data elements; adhere to controllable risks and build a solid 近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，中国人民银行副行长、国家外汇管理局局长朱鹤新指出，“十四五”时期，两部金融科技发展规划圆满完成实施，金融数字化转型全面深化，数字技术金融应用纵深推进，金融服务质效显著提升。“十五五”时期，抢抓人工智能发展历史性机遇，以金融数字化、智能化转型为主线，积极稳妥深化“人工智能+”，安全有序推进“数据要素×”，推动金融科技向新向智发展。要重点做好四方面工作：坚持智能驱动，推动人工智能与金融双向赋能；坚持数据筑基，加快金融数据要素价值释放；坚持风险可控，筑牢 华尔街见闻 pboc_liquidity tech_policy pboc & liquidity 央行与流动性 tech policy 科技政策 512800.ss">
+          <time class="tp-when" data-t="2026-10-21T11:20:52+00:00" datetime="2026-10-21T11:20:52+00:00">10-21<br>11:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T11:20:52+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Deputy Governor and SAFE Administrator Zhu Hexin: Steadily deepen "AI Plus" and accelerate the release of the value of financial data elements</span><span class="l-zh">央行副行长、外汇局局长朱鹤新：稳妥深化“人工智能+” 加快金融数据要素价值释放</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, at the Fintech Conference of the 2026 Financial Street Forum Annual Meeting, held under the theme "Intelligence-Driven, Integrated Coexistence—Fintech in the New Form of the Intelligent Economy," Zhu Hexin, Deputy Governor of the People's Bank of China and Administrator of the State Administration of Foreign Exchange, noted that during the 14th Five-Year Plan period, the two fintech development plans were successfully completed, financial digital transformation was comprehensively deepened, the application of digital technology in finance advanced in depth, and the quality and efficiency of financial services improved significantly. During the 15th Five-Year Plan period, we should seize the historic opportunity of AI development, take financial digitalization and intelligent transformation as the main line, actively and steadily deepen "AI+", safely and orderly advance "data elements x", and promote fintech development toward innovation and intelligence. We should focus on four areas: adhere to intelligence-driven development and promote two-way empowerment between AI and finance; adhere to data as the foundation and accelerate the release of the value of financial data elements; adhere to controllable risks and build a solid</span><span class="l-zh">近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，中国人民银行副行长、国家外汇管理局局长朱鹤新指出，“十四五”时期，两部金融科技发展规划圆满完成实施，金融数字化转型全面深化，数字技术金融应用纵深推进，金融服务质效显著提升。“十五五”时期，抢抓人工智能发展历史性机遇，以金融数字化、智能化转型为主线，积极稳妥深化“人工智能+”，安全有序推进“数据要素×”，推动金融科技向新向智发展。要重点做好四方面工作：坚持智能驱动，推动人工智能与金融双向赋能；坚持数据筑基，加快金融数据要素价值释放；坚持风险可控，筑牢</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3182669" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="high"
+           data-search="证监会刘浩凌：探索符合我国资本市场实际的人工智能治理路径 liu haoling of the csrc: explore an ai governance path suited to the realities of china's capital market 证监会刘浩凌：探索符合我国资本市场实际的人工智能治理路径 近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，证监会副主席刘浩凌指出，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（证券时报） recently, at the fintech conference of the 2026 financial street forum annual meeting, held under the theme "intelligence-driven, integrated coexistence—fintech in the new form of the intelligent economy," liu haoling, vice chairman of the csrc, noted that ai empowers the high-quality development of the capital market, and development and security must be coordinated. we must neither ignore risks because of the technology dividend nor halt progress because of risks. we should improve the comprehensive governance system and establish and perfect full-lifecycle management including access assessment, dynamic monitoring, and emergency response. we should actively explore an ai governance path that suits the reality of china's capital market, scientifically define the boundaries and risk tolerance levels of high-value application scenarios, and explore the establishment of a credibility assessment system that meets actual business needs. we should proactively integrate into the overall national ai development agenda, strengthen coordination and linkage with industry and research institutes, and pool development synergies. (securities times) 近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，证监会副主席刘浩凌指出，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（证券时报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-10-21T10:44:36+00:00" datetime="2026-10-21T10:44:36+00:00">10-21<br>10:44</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:44:36+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Liu Haoling of the CSRC: Explore an AI governance path suited to the realities of China's capital market</span><span class="l-zh">证监会刘浩凌：探索符合我国资本市场实际的人工智能治理路径</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, at the Fintech Conference of the 2026 Financial Street Forum Annual Meeting, held under the theme "Intelligence-Driven, Integrated Coexistence—Fintech in the New Form of the Intelligent Economy," Liu Haoling, Vice Chairman of the CSRC, noted that AI empowers the high-quality development of the capital market, and development and security must be coordinated. We must neither ignore risks because of the technology dividend nor halt progress because of risks. We should improve the comprehensive governance system and establish and perfect full-lifecycle management including access assessment, dynamic monitoring, and emergency response. We should actively explore an AI governance path that suits the reality of China's capital market, scientifically define the boundaries and risk tolerance levels of high-value application scenarios, and explore the establishment of a credibility assessment system that meets actual business needs. We should proactively integrate into the overall national AI development agenda, strengthen coordination and linkage with industry and research institutes, and pool development synergies. (Securities Times)</span><span class="l-zh">近日，在以“智能驱动 融合共生——智能经济新形态下的金融科技”为主题的2026金融街论坛年会金融科技大会上，证监会副主席刘浩凌指出，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（证券时报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3182648" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="high"
+           data-search="证监会副主席刘浩凌：既不能因技术红利漠视风险，也不能因风险止步不前 csrc vice chairman liu haoling: we must neither ignore risks because of technological dividends nor hold back because of risks 证监会副主席刘浩凌：既不能因技术红利漠视风险，也不能因风险止步不前 中国证监会副主席刘浩凌20日在2026金融街论坛年会平行论坛上表示，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（上证报） liu haoling, vice chairman of the csrc, said on the 20th at a parallel forum of the 2026 financial street forum annual meeting that ai empowers the high-quality development of the capital market, and development and security must be coordinated. we must neither ignore risks because of the technology dividend nor halt progress because of risks. we should improve the comprehensive governance system and establish and perfect full-lifecycle management including access assessment, dynamic monitoring, and emergency response. we should actively explore an ai governance path that suits the reality of china's capital market, scientifically define the boundaries and risk tolerance levels of high-value application scenarios, and explore the establishment of a credibility assessment system that meets actual business needs. we should proactively integrate into the overall national ai development agenda, strengthen coordination and linkage with industry and research institutes, and pool development synergies. (shanghai securities news) 中国证监会副主席刘浩凌20日在2026金融街论坛年会平行论坛上表示，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（上证报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss">
+          <time class="tp-when" data-t="2026-10-21T10:20:31+00:00" datetime="2026-10-21T10:20:31+00:00">10-21<br>10:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:20:31+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC Vice Chairman Liu Haoling: We must neither ignore risks because of technological dividends nor hold back because of risks</span><span class="l-zh">证监会副主席刘浩凌：既不能因技术红利漠视风险，也不能因风险止步不前</span></h2>
+            <p class="tp-sum"><span class="l-en">Liu Haoling, Vice Chairman of the CSRC, said on the 20th at a parallel forum of the 2026 Financial Street Forum Annual Meeting that AI empowers the high-quality development of the capital market, and development and security must be coordinated. We must neither ignore risks because of the technology dividend nor halt progress because of risks. We should improve the comprehensive governance system and establish and perfect full-lifecycle management including access assessment, dynamic monitoring, and emergency response. We should actively explore an AI governance path that suits the reality of China's capital market, scientifically define the boundaries and risk tolerance levels of high-value application scenarios, and explore the establishment of a credibility assessment system that meets actual business needs. We should proactively integrate into the overall national AI development agenda, strengthen coordination and linkage with industry and research institutes, and pool development synergies. (Shanghai Securities News)</span><span class="l-zh">中国证监会副主席刘浩凌20日在2026金融街论坛年会平行论坛上表示，人工智能赋能资本市场高质量发展，要统筹好发展与安全，既不能因技术红利漠视风险，也不能因风险止步不前。要完善综合治理体系，建立健全准入评估、动态监测、应急处置等全生命周期管理。要积极探索符合我国资本市场实际的人工智能治理路径，科学划定高价值应用场景的边界和风险容忍尺度，探索建立符合业务实际需求的可信度评估体系。要主动融入国家人工智能发展大局，强化与产业界、科研院所协同联动，汇聚发展合力。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/article/3371224/new-property-purchase-disclosure-rule-japan-sparks-fears-it-may-curb-foreign-investment" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="new property purchase disclosure rule in japan sparks fears it may curb foreign investment  日本新的房产购买披露规则引发担忧，恐将抑制外国投资 tokyo’s implementation of a rule that requires all property buyers to declare their nationality is raising concerns among investors, according to analysts.
+japan’s shift from an ultra-loose monetary policy to gradual normalisation of its interest rates was also likely to force investors to reconsider whether real estate assets were still attractive, they added.
+“japan has had a really strong run for the last seven or eight years,” said neil brookes, head of asia-pacific capital markets at...  分析人士称，东京实施要求所有购房者申报国籍的规定，正引发投资者的担忧。
+他们补充说，日本从超宽松货币政策转向利率逐步正常化，也可能迫使投资者重新考虑房地产资产是否仍具吸引力。 scmp - business property markets property 房地产 equity market 股票市场 510300.ss 512200.ss">
+          <time class="tp-when" data-t="2026-10-18T03:00:07+00:00" datetime="2026-10-18T03:00:07+00:00">10-18<br>03:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-18T03:00:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">New property purchase disclosure rule in Japan sparks fears it may curb foreign investment</span><span class="l-zh">日本新的房产购买披露规则引发担忧，恐将抑制外国投资</span></h2>
+            <p class="tp-sum"><span class="l-en">Tokyo’s implementation of a rule that requires all property buyers to declare their nationality is raising concerns among investors, according to analysts.
+Japan’s shift from an ultra-loose monetary policy to gradual normalisation of its interest rates was also likely to force investors to reconsider whether real estate assets were still attractive, they added.
+“Japan has had a really strong run for the last seven or eight years,” said Neil Brookes, head of Asia-Pacific capital markets at...</span><span class="l-zh">分析人士称，东京实施要求所有购房者申报国籍的规定，正引发投资者的担忧。
+他们补充说，日本从超宽松货币政策转向利率逐步正常化，也可能迫使投资者重新考虑房地产资产是否仍具吸引力。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182645" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="国家金融监督管理总局召开国际咨询委员会2026年会议 national financial regulatory administration holds 2026 meeting of its international advisory council 国家金融监督管理总局召开国际咨询委员会2026年会议 国家金融监督管理总局国际咨询委员会（iac）2026年会议于10月19日—20日在北京召开。中共中央政治局委员、国务院副总理何立峰19日晚在钓鱼台国宾馆会见金融监管总局国际咨询委员会委员时表示，中国正全面落实“十五五”规划纲要，将继续坚定不移扩大金融领域高水平对外开放，加快建设金融强国。欢迎更多外资金融机构来华投资兴业，深化对华合作，为中国式现代化建设提供高质量金融服务。 the 2026 meeting of the international advisory council (iac) of the national financial regulatory administration was held in beijing on october 19-20. he lifeng, member of the political bureau of the cpc central committee and vice premier of the state council, said on the evening of the 19th when meeting with members of the iac of the national financial regulatory administration at the diaoyutai state guesthouse that china is fully implementing the outline of the 15th five-year plan and will continue to unswervingly expand high-level opening-up in the financial sector and accelerate the building of a financial powerhouse. china welcomes more foreign financial institutions to invest and do business in china, deepen cooperation with china, and provide high-quality financial services for chinese modernization. 国家金融监督管理总局国际咨询委员会（iac）2026年会议于10月19日—20日在北京召开。中共中央政治局委员、国务院副总理何立峰19日晚在钓鱼台国宾馆会见金融监管总局国际咨询委员会委员时表示，中国正全面落实“十五五”规划纲要，将继续坚定不移扩大金融领域高水平对外开放，加快建设金融强国。欢迎更多外资金融机构来华投资兴业，深化对华合作，为中国式现代化建设提供高质量金融服务。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:18:16+00:00" datetime="2026-10-21T10:18:16+00:00">10-21<br>10:18</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:18:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">National Financial Regulatory Administration holds 2026 meeting of its International Advisory Council</span><span class="l-zh">国家金融监督管理总局召开国际咨询委员会2026年会议</span></h2>
+            <p class="tp-sum"><span class="l-en">The 2026 meeting of the International Advisory Council (IAC) of the National Financial Regulatory Administration was held in Beijing on October 19-20. He Lifeng, member of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, said on the evening of the 19th when meeting with members of the IAC of the National Financial Regulatory Administration at the Diaoyutai State Guesthouse that China is fully implementing the outline of the 15th Five-Year Plan and will continue to unswervingly expand high-level opening-up in the financial sector and accelerate the building of a financial powerhouse. China welcomes more foreign financial institutions to invest and do business in China, deepen cooperation with China, and provide high-quality financial services for Chinese modernization.</span><span class="l-zh">国家金融监督管理总局国际咨询委员会（IAC）2026年会议于10月19日—20日在北京召开。中共中央政治局委员、国务院副总理何立峰19日晚在钓鱼台国宾馆会见金融监管总局国际咨询委员会委员时表示，中国正全面落实“十五五”规划纲要，将继续坚定不移扩大金融领域高水平对外开放，加快建设金融强国。欢迎更多外资金融机构来华投资兴业，深化对华合作，为中国式现代化建设提供高质量金融服务。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-21/doc-inivxmez6277608.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="七位券商首席解读吴清最新讲话：资本市场内在稳定性进一步增强 a股中期向好逻辑未变 seven brokerage chiefs interpret wu qing's latest speech: intrinsic stability of the capital market further enhanced, mid-term positive logic for a-shares unchanged 七位券商首席解读吴清最新讲话：资本市场内在稳定性进一步增强 a股中期向好逻辑未变    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Seven brokerage chiefs interpret Wu Qing's latest speech: Intrinsic stability of the capital market further enhanced, mid-term positive logic for A-shares unchanged</span><span class="l-zh">七位券商首席解读吴清最新讲话：资本市场内在稳定性进一步增强 A股中期向好逻辑未变</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://flash.jin10.com/detail/20261021200140357800" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="南非国家财政部将启动债券回购计划 south africa's national treasury to launch bond buyback program 南非国家财政部将启动债券回购计划 南非国家财政部将启动债券回购计划。 the south african national treasury will launch a bond buyback program. 南非国家财政部将启动债券回购计划。 金十数据 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-21T20:01:40+08:00" datetime="2026-10-21T20:01:40+08:00">10-21<br>20:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T20:01:40+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">South Africa's National Treasury to launch bond buyback program</span><span class="l-zh">南非国家财政部将启动债券回购计划</span></h2>
+            <p class="tp-sum"><span class="l-en">The South African National Treasury will launch a bond buyback program.</span><span class="l-zh">南非国家财政部将启动债券回购计划。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20261021/c680943128.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="国机重装：拟2026年度定增募资不超过4.44亿元用于补充流动资金 sinomach heavy equipment: plans private placement in 2026 to raise no more than rmb 444 million to supplement working capital 国机重装：拟2026年度定增募资不超过4.44亿元用于补充流动资金 国机重装公告，公司拟向特定对象发行a股股票，募集资金总额不超过4.44亿元，扣除发行费用后全部用于补充流动资金，发行对象为国机集团并以现金认购全部股票。本次发行方案已获董事会审议通过，尚需履行国资审批、股东会审议、上交所审核及中国证监会注册等程序。 sinomach heavy equipment announced that the company plans to issue a-shares to specific targets, with total fundraising not exceeding rmb 444 million. after deducting issuance expenses, all proceeds will be used to supplement working capital. the issuance target is sinomach group, which will subscribe to all shares in cash. the issuance plan has been approved by the board of directors and still requires state-owned asset approval, shareholder meeting review, shanghai stock exchange review, and csrc registration. 国机重装公告，公司拟向特定对象发行a股股票，募集资金总额不超过4.44亿元，扣除发行费用后全部用于补充流动资金，发行对象为国机集团并以现金认购全部股票。本次发行方案已获董事会审议通过，尚需履行国资审批、股东会审议、上交所审核及中国证监会注册等程序。 同花顺 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-21T11:57:12+00:00" datetime="2026-10-21T11:57:12+00:00">10-21<br>11:57</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T11:57:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Sinomach Heavy Equipment: plans private placement in 2026 to raise no more than RMB 444 million to supplement working capital</span><span class="l-zh">国机重装：拟2026年度定增募资不超过4.44亿元用于补充流动资金</span></h2>
+            <p class="tp-sum"><span class="l-en">Sinomach Heavy Equipment announced that the company plans to issue A-shares to specific targets, with total fundraising not exceeding RMB 444 million. After deducting issuance expenses, all proceeds will be used to supplement working capital. The issuance target is Sinomach Group, which will subscribe to all shares in cash. The issuance plan has been approved by the board of directors and still requires state-owned asset approval, shareholder meeting review, Shanghai Stock Exchange review, and CSRC registration.</span><span class="l-zh">国机重装公告，公司拟向特定对象发行A股股票，募集资金总额不超过4.44亿元，扣除发行费用后全部用于补充流动资金，发行对象为国机集团并以现金认购全部股票。本次发行方案已获董事会审议通过，尚需履行国资审批、股东会审议、上交所审核及中国证监会注册等程序。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261021194900458800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="智利央行买入2500万美元 central bank of chile buys usd 25 million 智利央行买入2500万美元 智利央行买入2500万美元。 the central bank of chile bought usd 25 million. 智利央行买入2500万美元。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-10-21T19:49:00+08:00" datetime="2026-10-21T19:49:00+08:00">10-21<br>19:49</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T19:49:00+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Central Bank of Chile buys USD 25 million</span><span class="l-zh">智利央行买入2500万美元</span></h2>
+            <p class="tp-sum"><span class="l-en">The Central Bank of Chile bought USD 25 million.</span><span class="l-zh">智利央行买入2500万美元。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182673" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="丁薛祥会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾 ding xuexiang meets with some foreign guests attending the 2026 international science council mid-term members' meeting and beijing science dialogue 丁薛祥会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾 中共中央政治局常委、国务院副总理丁薛祥21日在北京会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾。 ding xuexiang, member of the standing committee of the political bureau of the cpc central committee and vice premier of the state council, met in beijing on the 21st with some foreign guests attending the 2026 international science council mid-term members' meeting and the beijing science dialogue. 中共中央政治局常委、国务院副总理丁薛祥21日在北京会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:46:28+00:00" datetime="2026-10-21T10:46:28+00:00">10-21<br>10:46</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:46:28+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ding Xuexiang meets with some foreign guests attending the 2026 International Science Council Mid-Term Members' Meeting and Beijing Science Dialogue</span><span class="l-zh">丁薛祥会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾</span></h2>
+            <p class="tp-sum"><span class="l-en">Ding Xuexiang, member of the Standing Committee of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, met in Beijing on the 21st with some foreign guests attending the 2026 International Science Council Mid-Term Members' Meeting and the Beijing Science Dialogue.</span><span class="l-zh">中共中央政治局常委、国务院副总理丁薛祥21日在北京会见2026年国际科学理事会中期会员大会暨北京科学对话部分外宾。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182622" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="中办、国办：推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破 general offices of the cpc central committee and the state council: push for decisive breakthroughs in core technology research in key fields such as integrated circuits, industrial mother machines, high-end instruments, advanced materials and biomanufacturing 中办、国办：推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破 中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，以关键核心技术突破提升产业链自主可控水平。推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破。深入实施产业基础再造和重大技术装备攻关等工程，聚焦重点领域薄弱环节，强化基础零部件及基础元器件攻关，突破关键基础软件，攻克关键基础材料，加强先进基础工艺和产业技术基础研发。 the general office of the cpc central committee and the general office of the state council released the opinions on promoting the deep integration of technological innovation and industrial innovation. the opinions propose improving the independent and controllable level of industrial chains through breakthroughs in key core technologies. decisive breakthroughs should be achieved in key core technologies in key areas such as integrated circuits, industrial machine tools, high-end instruments, advanced materials, and biomanufacturing. projects such as the industrial base reengineering and major technical equipment breakthroughs should be implemented in depth, focusing on weak links in key areas, strengthening breakthroughs in basic parts and components, achieving breakthroughs in key basic software, conquering key basic materials, and strengthening r&d in advanced basic processes and industrial technical foundations. 中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，以关键核心技术突破提升产业链自主可控水平。推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破。深入实施产业基础再造和重大技术装备攻关等工程，聚焦重点领域薄弱环节，强化基础零部件及基础元器件攻关，突破关键基础软件，攻克关键基础材料，加强先进基础工艺和产业技术基础研发。 华尔街见闻 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-21T10:03:36+00:00" datetime="2026-10-21T10:03:36+00:00">10-21<br>10:03</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:03:36+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Offices of the CPC Central Committee and the State Council: Push for decisive breakthroughs in core technology research in key fields such as integrated circuits, industrial mother machines, high-end instruments, advanced materials and biomanufacturing</span><span class="l-zh">中办、国办：推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the CPC Central Committee and the General Office of the State Council released the Opinions on Promoting the Deep Integration of Technological Innovation and Industrial Innovation. The Opinions propose improving the independent and controllable level of industrial chains through breakthroughs in key core technologies. Decisive breakthroughs should be achieved in key core technologies in key areas such as integrated circuits, industrial machine tools, high-end instruments, advanced materials, and biomanufacturing. Projects such as the industrial base reengineering and major technical equipment breakthroughs should be implemented in depth, focusing on weak links in key areas, strengthening breakthroughs in basic parts and components, achieving breakthroughs in key basic software, conquering key basic materials, and strengthening R&D in advanced basic processes and industrial technical foundations.</span><span class="l-zh">中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，以关键核心技术突破提升产业链自主可控水平。推动集成电路、工业母机、高端仪器、先进材料、生物制造等重点领域关键核心技术攻关取得决定性突破。深入实施产业基础再造和重大技术装备攻关等工程，聚焦重点领域薄弱环节，强化基础零部件及基础元器件攻关，突破关键基础软件，攻克关键基础材料，加强先进基础工艺和产业技术基础研发。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3182616" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="德国央行：德国通胀将在一段时间内保持高位 bundesbank: german inflation will remain elevated for some time 德国央行：德国通胀将在一段时间内保持高位 德国央行：德国通胀将在一段时间内保持高位。 德国经济第三季度可能停滞，第四季度将“明显恢复增长”。 bundesbank: german inflation will remain high for a period of time. the german economy may stagnate in the third quarter and will "clearly resume growth" in the fourth quarter. 德国央行：德国通胀将在一段时间内保持高位。 德国经济第三季度可能停滞，第四季度将“明显恢复增长”。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-10-21T10:01:08+00:00" datetime="2026-10-21T10:01:08+00:00">10-21<br>10:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:01:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Bundesbank: German inflation will remain elevated for some time</span><span class="l-zh">德国央行：德国通胀将在一段时间内保持高位</span></h2>
+            <p class="tp-sum"><span class="l-en">Bundesbank: German inflation will remain high for a period of time. The German economy may stagnate in the third quarter and will "clearly resume growth" in the fourth quarter.</span><span class="l-zh">德国央行：德国通胀将在一段时间内保持高位。 德国经济第三季度可能停滞，第四季度将“明显恢复增长”。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-21/doc-inivxmez6277608.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="资本市场内在稳定性进一步增强 a股中期向好逻辑未变 intrinsic stability of the capital market further enhanced, mid-term positive logic for a-shares unchanged 资本市场内在稳定性进一步增强 a股中期向好逻辑未变    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Intrinsic stability of the capital market further enhanced, mid-term positive logic for A-shares unchanged</span><span class="l-zh">资本市场内在稳定性进一步增强 A股中期向好逻辑未变</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182656" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="上交所召开首批主动etf市场动员会 sse holds mobilization meeting for first batch of active etfs 上交所召开首批主动etf市场动员会 10月21日，上海证券交易所召开首批主动etf市场动员会，9家首批主动etf基金管理人、7家证券公司的40余名负责人员参会，会议旨在推动市场各方形成合力，保障首批主动etf平稳落地运行，引导中长期资金入市。上交所相关负责人表示，将坚持”平稳起步、循序渐进、严防风险”，强化对主动etf发行上市、投资运作、信息披露的全链条监管，确保首批主动etf开好头、起好步。同时，持续丰富公募基金产品体系和高质量供给，和市场各方同题共答、增强合力，提升中长期资金a股投资比例与稳定性，更好服务实体经济和金融强国建设。 on october 21, the shanghai stock exchange held a market mobilization meeting for the first batch of active etfs. more than 40 responsible persons from 9 fund managers of the first batch of active etfs and 7 securities companies attended. the meeting aimed to promote synergy among market participants, ensure the smooth launch and operation of the first batch of active etfs, and guide medium- and long-term funds into the market. a relevant person in charge of the sse said that the exchange will adhere to "a steady start, gradual progress, and strict risk prevention," strengthen full-chain supervision over the issuance and listing, investment operations, and information disclosure of active etfs, and ensure that the first batch of active etfs gets off to a good start. at the same time, the sse will continue to enrich the public fund product system and high-quality supply, answer the same questions together with market participants and enhance synergy, increase the proportion and stability of medium- and long-term funds' a-share investment, and better serve the real economy and the building of a financial powerhouse. 10月21日，上海证券交易所召开首批主动etf市场动员会，9家首批主动etf基金管理人、7家证券公司的40余名负责人员参会，会议旨在推动市场各方形成合力，保障首批主动etf平稳落地运行，引导中长期资金入市。上交所相关负责人表示，将坚持”平稳起步、循序渐进、严防风险”，强化对主动etf发行上市、投资运作、信息披露的全链条监管，确保首批主动etf开好头、起好步。同时，持续丰富公募基金产品体系和高质量供给，和市场各方同题共答、增强合力，提升中长期资金a股投资比例与稳定性，更好服务实体经济和金融强国建设。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-21T10:38:55+00:00" datetime="2026-10-21T10:38:55+00:00">10-21<br>10:38</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:38:55+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">SSE holds mobilization meeting for first batch of active ETFs</span><span class="l-zh">上交所召开首批主动ETF市场动员会</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 21, the Shanghai Stock Exchange held a market mobilization meeting for the first batch of active ETFs. More than 40 responsible persons from 9 fund managers of the first batch of active ETFs and 7 securities companies attended. The meeting aimed to promote synergy among market participants, ensure the smooth launch and operation of the first batch of active ETFs, and guide medium- and long-term funds into the market. A relevant person in charge of the SSE said that the exchange will adhere to "a steady start, gradual progress, and strict risk prevention," strengthen full-chain supervision over the issuance and listing, investment operations, and information disclosure of active ETFs, and ensure that the first batch of active ETFs gets off to a good start. At the same time, the SSE will continue to enrich the public fund product system and high-quality supply, answer the same questions together with market participants and enhance synergy, increase the proportion and stability of medium- and long-term funds' A-share investment, and better serve the real economy and the building of a financial powerhouse.</span><span class="l-zh">10月21日，上海证券交易所召开首批主动ETF市场动员会，9家首批主动ETF基金管理人、7家证券公司的40余名负责人员参会，会议旨在推动市场各方形成合力，保障首批主动ETF平稳落地运行，引导中长期资金入市。上交所相关负责人表示，将坚持”平稳起步、循序渐进、严防风险”，强化对主动ETF发行上市、投资运作、信息披露的全链条监管，确保首批主动ETF开好头、起好步。同时，持续丰富公募基金产品体系和高质量供给，和市场各方同题共答、增强合力，提升中长期资金A股投资比例与稳定性，更好服务实体经济和金融强国建设。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3182644" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="千亿etf阵营再扩容 宽基与信用债获资金加仓 rmb 100 billion etf camp expands further as broad-based and credit bond products draw capital additions 千亿etf阵营再扩容 宽基与信用债获资金加仓 近期，etf规模持续回升，千亿级产品阵营再度扩容。wind数据显示，截至10月21日收盘，全市场规模超过千亿元的etf共有5只。具体来看，沪深300etf华泰柏瑞估算规模达1242.04亿元，银华日利etf估算规模达1211.6亿元，科创50etf华夏估算规模达1045.4亿元，黄金etf华安估算规模达1030.42亿元，华宝添益etf估算规模达1030.01亿元。 recently, etf scale has continued to recover, and the ranks of products with over rmb 100 billion have expanded again. wind data show that as of the close on october 21, there were 5 etfs in the whole market with scale exceeding rmb 100 billion. specifically, the estimated scale of huatai-pinebridge csi 300 etf reached rmb 124.204 billion, the estimated scale of yinhua rili etf reached rmb 121.16 billion, the estimated scale of chinaamc star 50 etf reached rmb 104.54 billion, the estimated scale of huaan gold etf reached rmb 103.042 billion, and the estimated scale of huabao tianyi etf reached rmb 103.001 billion. 近期，etf规模持续回升，千亿级产品阵营再度扩容。wind数据显示，截至10月21日收盘，全市场规模超过千亿元的etf共有5只。具体来看，沪深300etf华泰柏瑞估算规模达1242.04亿元，银华日利etf估算规模达1211.6亿元，科创50etf华夏估算规模达1045.4亿元，黄金etf华安估算规模达1030.42亿元，华宝添益etf估算规模达1030.01亿元。 华尔街见闻 markets equity market 股票市场 510300.ss ashr">
+          <time class="tp-when" data-t="2026-10-21T10:17:54+00:00" datetime="2026-10-21T10:17:54+00:00">10-21<br>10:17</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:17:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">RMB 100 billion ETF camp expands further as broad-based and credit bond products draw capital additions</span><span class="l-zh">千亿ETF阵营再扩容 宽基与信用债获资金加仓</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, ETF scale has continued to recover, and the ranks of products with over RMB 100 billion have expanded again. Wind data show that as of the close on October 21, there were 5 ETFs in the whole market with scale exceeding RMB 100 billion. Specifically, the estimated scale of Huatai-PineBridge CSI 300 ETF reached RMB 124.204 billion, the estimated scale of Yinhua Rili ETF reached RMB 121.16 billion, the estimated scale of ChinaAMC STAR 50 ETF reached RMB 104.54 billion, the estimated scale of Huaan Gold ETF reached RMB 103.042 billion, and the estimated scale of Huabao Tianyi ETF reached RMB 103.001 billion.</span><span class="l-zh">近期，ETF规模持续回升，千亿级产品阵营再度扩容。Wind数据显示，截至10月21日收盘，全市场规模超过千亿元的ETF共有5只。具体来看，沪深300ETF华泰柏瑞估算规模达1242.04亿元，银华日利ETF估算规模达1211.6亿元，科创50ETF华夏估算规模达1045.4亿元，黄金ETF华安估算规模达1030.42亿元，华宝添益ETF估算规模达1030.01亿元。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">ASHR</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.yicai.com/news/103402778.html" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="法德利差再破150基点，法国国债正在被重新“开价” 法国社会动荡叠加高债务、财政赤字及拥挤交易等多重因素，正触发市场对法国主权债的重新定价。 france-germany spread breaks 150 basis points again as french government bonds are being repriced. social unrest in france, combined with high debt, fiscal deficits and crowded trades, is triggering a market repricing of french sovereign debt. 法德利差再破150基点，法国国债正在被重新“开价” 法国社会动荡叠加高债务、财政赤字及拥挤交易等多重因素，正触发市场对法国主权债的重新定价。    第一财经 fiscal_trade fiscal & trade 财政与贸易 cbon">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">France-Germany spread breaks 150 basis points again as French government bonds are being repriced. Social unrest in France, combined with high debt, fiscal deficits and crowded trades, is triggering a market repricing of French sovereign debt.</span><span class="l-zh">法德利差再破150基点，法国国债正在被重新“开价” 法国社会动荡叠加高债务、财政赤字及拥挤交易等多重因素，正触发市场对法国主权债的重新定价。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4230818.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行副行长朱鹤新：加快金融数据要素价值释放 pboc deputy governor zhu hexin: accelerate the release of the value of financial data elements 央行副行长朱鹤新：加快金融数据要素价值释放    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Deputy Governor Zhu Hexin: Accelerate the release of the value of financial data elements</span><span class="l-zh">央行副行长朱鹤新：加快金融数据要素价值释放</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182638" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="李强同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤 li qiang and russian prime minister mishustin co-chair the 31st china-russia prime ministers' regular meeting 李强同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤 10月21日上午，国务院总理李强在圣彼得堡同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤。李强表示，中方愿同俄方发扬相互尊重、互利共赢精神，推动各领域合作不断走深走实，把两国元首重要共识更好转化为实际行动和具体成效，更好服务两国发展振兴，更多惠及两国人民。 on the morning of october 21, premier li qiang of the state council co-chaired the 31st china-russia prime ministers' regular meeting with russian prime minister mishustin in st. petersburg. li qiang said that china is willing to work with russia to carry forward the spirit of mutual respect and win-win cooperation, promote steady and deepening cooperation in various fields, better translate the important consensus of the two heads of state into practical actions and concrete results, better serve the development and revitalization of the two countries, and bring more benefits to the two peoples. 10月21日上午，国务院总理李强在圣彼得堡同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤。李强表示，中方愿同俄方发扬相互尊重、互利共赢精神，推动各领域合作不断走深走实，把两国元首重要共识更好转化为实际行动和具体成效，更好服务两国发展振兴，更多惠及两国人民。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:10:54+00:00" datetime="2026-10-21T10:10:54+00:00">10-21<br>10:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:10:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Li Qiang and Russian Prime Minister Mishustin co-chair the 31st China-Russia Prime Ministers' Regular Meeting</span><span class="l-zh">李强同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤</span></h2>
+            <p class="tp-sum"><span class="l-en">On the morning of October 21, Premier Li Qiang of the State Council co-chaired the 31st China-Russia Prime Ministers' Regular Meeting with Russian Prime Minister Mishustin in St. Petersburg. Li Qiang said that China is willing to work with Russia to carry forward the spirit of mutual respect and win-win cooperation, promote steady and deepening cooperation in various fields, better translate the important consensus of the two heads of state into practical actions and concrete results, better serve the development and revitalization of the two countries, and bring more benefits to the two peoples.</span><span class="l-zh">10月21日上午，国务院总理李强在圣彼得堡同俄罗斯总理米舒斯京共同主持中俄总理第三十一次定期会晤。李强表示，中方愿同俄方发扬相互尊重、互利共赢精神，推动各领域合作不断走深走实，把两国元首重要共识更好转化为实际行动和具体成效，更好服务两国发展振兴，更多惠及两国人民。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182636" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中办、国办：产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化 general offices of the cpc central committee and the state council: for national science and technology plan projects with clear industrial application goals, enterprises should in principle lead implementation and drive the transformation of results 中办、国办：产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，健全研用一体的成果转化应用机制，产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化。支持高校、科研院所设立技术转移机构或岗位，强化知识产权、创业孵化、科技金融等专业化服务，通过技术转让、许可、作价投资等方式加快成果应用。 the general office of the cpc central committee and the general office of the state council issued opinions on promoting the deep integration of technological innovation and industrial innovation. among them, it is proposed to improve the mechanism for transforming and applying research results with integrated r&d and application, and for national science and technology plan projects with clear industrial application goals, enterprises should in principle lead implementation and lead results transformation. support universities and research institutes in setting up technology transfer institutions or positions, strengthen specialized services such as intellectual property, business incubation, and sci-tech finance, and accelerate the application of results through technology transfer, licensing, and investment at appraised value. 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，健全研用一体的成果转化应用机制，产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化。支持高校、科研院所设立技术转移机构或岗位，强化知识产权、创业孵化、科技金融等专业化服务，通过技术转让、许可、作价投资等方式加快成果应用。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:10:13+00:00" datetime="2026-10-21T10:10:13+00:00">10-21<br>10:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:10:13+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Offices of the CPC Central Committee and the State Council: For national science and technology plan projects with clear industrial application goals, enterprises should in principle lead implementation and drive the transformation of results</span><span class="l-zh">中办、国办：产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the CPC Central Committee and the General Office of the State Council issued opinions on promoting the deep integration of technological innovation and industrial innovation. Among them, it is proposed to improve the mechanism for transforming and applying research results with integrated R&D and application, and for national science and technology plan projects with clear industrial application goals, enterprises should in principle lead implementation and lead results transformation. Support universities and research institutes in setting up technology transfer institutions or positions, strengthen specialized services such as intellectual property, business incubation, and sci-tech finance, and accelerate the application of results through technology transfer, licensing, and investment at appraised value.</span><span class="l-zh">中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，健全研用一体的成果转化应用机制，产业应用目标明确的国家科技计划项目，原则上由企业牵头实施并主导成果转化。支持高校、科研院所设立技术转移机构或岗位，强化知识产权、创业孵化、科技金融等专业化服务，通过技术转让、许可、作价投资等方式加快成果应用。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182628" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中办、国办：鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度 general offices of the cpc central committee and state council: encourage state-owned enterprises to accelerate the establishment of r&d reserve funds with independent accounting, exemption from value-preservation and appreciation assessments, and error tolerance and correction 中办、国办：鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，完善企业常态化参与国家科技和产业发展战略、规划、政策制定机制。推动国家自然科学基金试点向民营企业开放，扩大企业创新发展联合基金范围和规模。鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度。 the general office of the cpc central committee and the general office of the state council issued opinions on promoting the deep integration of technological innovation and industrial innovation. among them, it is proposed to improve the mechanism for enterprises to participate in the formulation of national science and technology and industrial development strategies, plans, and policies on a regular basis. promote pilot opening of the national natural science foundation of china to private enterprises and expand the scope and scale of enterprise innovation and development joint funds. encourage state-owned enterprises to accelerate the establishment of r&d reserve fund systems with independent accounting, exemption from value-preservation and appreciation assessment, and fault tolerance and error correction. 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，完善企业常态化参与国家科技和产业发展战略、规划、政策制定机制。推动国家自然科学基金试点向民营企业开放，扩大企业创新发展联合基金范围和规模。鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:06:43+00:00" datetime="2026-10-21T10:06:43+00:00">10-21<br>10:06</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:06:43+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Offices of the CPC Central Committee and State Council: Encourage state-owned enterprises to accelerate the establishment of R&D reserve funds with independent accounting, exemption from value-preservation and appreciation assessments, and error tolerance and correction</span><span class="l-zh">中办、国办：鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the CPC Central Committee and the General Office of the State Council issued opinions on promoting the deep integration of technological innovation and industrial innovation. Among them, it is proposed to improve the mechanism for enterprises to participate in the formulation of national science and technology and industrial development strategies, plans, and policies on a regular basis. Promote pilot opening of the National Natural Science Foundation of China to private enterprises and expand the scope and scale of enterprise innovation and development joint funds. Encourage state-owned enterprises to accelerate the establishment of R&D reserve fund systems with independent accounting, exemption from value-preservation and appreciation assessment, and fault tolerance and error correction.</span><span class="l-zh">中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，完善企业常态化参与国家科技和产业发展战略、规划、政策制定机制。推动国家自然科学基金试点向民营企业开放，扩大企业创新发展联合基金范围和规模。鼓励国有企业加快建立独立核算、免于增值保值考核、容错纠错的研发准备金制度。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182625" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中办、国办：在新业态新领域开展放宽市场准入试点，探索开展承诺即入制 general offices of the cpc central committee and state council: launch pilot programs to relax market access in new business forms and new fields, and explore a commitment-based entry system 中办、国办：在新业态新领域开展放宽市场准入试点，探索开展承诺即入制 中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，健全激励创新的市场环境。破除不合理限制创新产品进入市场的制度障碍，在新业态新领域开展放宽市场准入试点，探索开展承诺即入制。加强新技术应用监管，探索“沙盒监管”方式。推动健全人工智能、生物技术等前沿领域法律法规，完善科技伦理制度规范。 the general office of the cpc central committee and the general office of the state council released the opinions on promoting the deep integration of technological innovation and industrial innovation. the opinions propose improving the market environment that incentivizes innovation. remove institutional barriers that unreasonably restrict innovative products from entering the market, carry out pilot programs to relax market access in new business forms and new fields, and explore the implementation of a commitment-based entry system. strengthen supervision over the application of new technologies and explore "sandbox regulation" approaches. promote the improvement of laws and regulations in frontier fields such as ai and biotechnology, and improve science and technology ethics rules and standards. 中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，健全激励创新的市场环境。破除不合理限制创新产品进入市场的制度障碍，在新业态新领域开展放宽市场准入试点，探索开展承诺即入制。加强新技术应用监管，探索“沙盒监管”方式。推动健全人工智能、生物技术等前沿领域法律法规，完善科技伦理制度规范。 华尔街见闻 tech_policy tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:04:57+00:00" datetime="2026-10-21T10:04:57+00:00">10-21<br>10:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:04:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Offices of the CPC Central Committee and State Council: Launch pilot programs to relax market access in new business forms and new fields, and explore a commitment-based entry system</span><span class="l-zh">中办、国办：在新业态新领域开展放宽市场准入试点，探索开展承诺即入制</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the CPC Central Committee and the General Office of the State Council released the Opinions on Promoting the Deep Integration of Technological Innovation and Industrial Innovation. The Opinions propose improving the market environment that incentivizes innovation. Remove institutional barriers that unreasonably restrict innovative products from entering the market, carry out pilot programs to relax market access in new business forms and new fields, and explore the implementation of a commitment-based entry system. Strengthen supervision over the application of new technologies and explore "sandbox regulation" approaches. Promote the improvement of laws and regulations in frontier fields such as AI and biotechnology, and improve science and technology ethics rules and standards.</span><span class="l-zh">中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》。意见提出，健全激励创新的市场环境。破除不合理限制创新产品进入市场的制度障碍，在新业态新领域开展放宽市场准入试点，探索开展承诺即入制。加强新技术应用监管，探索“沙盒监管”方式。推动健全人工智能、生物技术等前沿领域法律法规，完善科技伦理制度规范。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182619" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中办、国办：以原创性颠覆性科技创新培育壮大新兴产业和未来产业 general offices of the cpc central committee and state council: cultivate and strengthen emerging industries and future industries through original and disruptive technological innovation 中办、国办：以原创性颠覆性科技创新培育壮大新兴产业和未来产业 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，加强基础理论研究和底层技术研发，开展颠覆性技术挖掘甄别，加速科学发现和技术突破。实施产业创新工程，一体推进创新设施建设、技术研究开发、产品迭代升级，加快新能源、新材料、航空航天等战略性新兴产业发展，因地制宜建设各具特色、优势互补的战略性新兴产业集群，着力打造新兴支柱产业。 the general office of the cpc central committee and the general office of the state council issued opinions on promoting the deep integration of scientific and technological innovation with industrial innovation. among other things, the opinions propose strengthening basic theoretical research and underlying technology r&d, carrying out the identification and screening of disruptive technologies, and accelerating scientific discovery and technological breakthroughs. they call for implementing industrial innovation projects, advancing the construction of innovation facilities, technology research and development, and product iteration and upgrading in an integrated manner, speeding up the development of strategic emerging industries such as new energy, new materials, and aerospace, building strategic emerging industry clusters with distinctive features and complementary advantages in light of local conditions, and striving to create new pillar industries. 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，加强基础理论研究和底层技术研发，开展颠覆性技术挖掘甄别，加速科学发现和技术突破。实施产业创新工程，一体推进创新设施建设、技术研究开发、产品迭代升级，加快新能源、新材料、航空航天等战略性新兴产业发展，因地制宜建设各具特色、优势互补的战略性新兴产业集群，着力打造新兴支柱产业。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:02:44+00:00" datetime="2026-10-21T10:02:44+00:00">10-21<br>10:02</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:02:44+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Offices of the CPC Central Committee and State Council: Cultivate and strengthen emerging industries and future industries through original and disruptive technological innovation</span><span class="l-zh">中办、国办：以原创性颠覆性科技创新培育壮大新兴产业和未来产业</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the CPC Central Committee and the General Office of the State Council issued opinions on promoting the deep integration of scientific and technological innovation with industrial innovation. Among other things, the opinions propose strengthening basic theoretical research and underlying technology R&D, carrying out the identification and screening of disruptive technologies, and accelerating scientific discovery and technological breakthroughs. They call for implementing industrial innovation projects, advancing the construction of innovation facilities, technology research and development, and product iteration and upgrading in an integrated manner, speeding up the development of strategic emerging industries such as new energy, new materials, and aerospace, building strategic emerging industry clusters with distinctive features and complementary advantages in light of local conditions, and striving to create new pillar industries.</span><span class="l-zh">中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见。其中提出，加强基础理论研究和底层技术研发，开展颠覆性技术挖掘甄别，加速科学发现和技术突破。实施产业创新工程，一体推进创新设施建设、技术研究开发、产品迭代升级，加快新能源、新材料、航空航天等战略性新兴产业发展，因地制宜建设各具特色、优势互补的战略性新兴产业集群，着力打造新兴支柱产业。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3182617" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见 the general offices of the cpc central committee and the state council issued opinions on promoting the deep integration of technological innovation and industrial innovation 中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见 10月21日，中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》，要求以发展新质生产力、建设现代化产业体系为目标，以构建企业主导、各主体协同的产学研融通创新体系为重点，推动全链条贯通、全领域覆盖、全要素融通、全方位保障，形成科技创新和产业创新互融共促新格局。 on october 21, the general office of the cpc central committee and the general office of the state council released the opinions on promoting the deep integration of scientific and technological innovation with industrial innovation, which require aiming to develop new quality productive forces and build a modern industrial system, focusing on building an enterprise-led, multi-entity collaborative system of integrated industry-university-research-application innovation, promoting full-chain connectivity, full-domain coverage, full-factor integration, and all-round support, and forming a new pattern in which scientific and technological innovation and industrial innovation reinforce each other through mutual integration. 10月21日，中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》，要求以发展新质生产力、建设现代化产业体系为目标，以构建企业主导、各主体协同的产学研融通创新体系为重点，推动全链条贯通、全领域覆盖、全要素融通、全方位保障，形成科技创新和产业创新互融共促新格局。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-21T10:01:30+00:00" datetime="2026-10-21T10:01:30+00:00">10-21<br>10:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T10:01:30+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The General Offices of the CPC Central Committee and the State Council issued opinions on promoting the deep integration of technological innovation and industrial innovation</span><span class="l-zh">中共中央办公厅、国务院办公厅发布关于推动科技创新和产业创新深度融合的意见</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 21, the General Office of the CPC Central Committee and the General Office of the State Council released the Opinions on Promoting the Deep Integration of Scientific and Technological Innovation with Industrial Innovation, which require aiming to develop new quality productive forces and build a modern industrial system, focusing on building an enterprise-led, multi-entity collaborative system of integrated industry-university-research-application innovation, promoting full-chain connectivity, full-domain coverage, full-factor integration, and all-round support, and forming a new pattern in which scientific and technological innovation and industrial innovation reinforce each other through mutual integration.</span><span class="l-zh">10月21日，中共中央办公厅、国务院办公厅对外发布《关于推动科技创新和产业创新深度融合的意见》，要求以发展新质生产力、建设现代化产业体系为目标，以构建企业主导、各主体协同的产学研融通创新体系为重点，推动全链条贯通、全领域覆盖、全要素融通、全方位保障，形成科技创新和产业创新互融共促新格局。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">14</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×4</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
@@ -413,6 +1052,6 @@
 })();
 </script>
 
-<script src="theme.js?v=46939917" defer></script>
+<script src="theme.js?v=1c9d7ad5" defer></script>
 </body>
 </html>

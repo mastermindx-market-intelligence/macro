@@ -1,13 +1,36 @@
 {
-  "as_of": "2026-10-19",
+  "as_of": "2026-10-21",
   "coverage": {
-    "end": "2026-10-19",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W43; 13 week(s) have events so far; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-07-20"
+    "end": "2026-10-21",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W43; 14 week(s) have events so far; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-07-22"
   },
   "iso_week": "2026-W43",
   "schema": "chronicle.rollup.weekly/v1",
   "weeks": [
+    {
+      "clusters": [
+        {
+          "n_events": 21,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 7,
+          "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "research_vault",
+          "theme": "cybersecurity",
+          "top_events": []
+        }
+      ],
+      "iso_week": "2026-W43"
+    },
     {
       "clusters": [
         {
@@ -17,15 +40,15 @@
           "top_events": []
         },
         {
-          "n_events": 46,
-          "source": "earnings_call",
-          "theme": "earnings",
+          "n_events": 57,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
-          "n_events": 35,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 48,
+          "source": "earnings_call",
+          "theme": "earnings",
           "top_events": []
         },
         {
@@ -488,7 +511,7 @@
     {
       "clusters": [
         {
-          "n_events": 488,
+          "n_events": 489,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -665,13 +688,13 @@
     {
       "clusters": [
         {
-          "n_events": 252,
+          "n_events": 195,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 167,
+          "n_events": 166,
           "source": "research_vault",
           "theme": null,
           "top_events": [
@@ -684,16 +707,6 @@
               "tickers": [],
               "title": "J.P. Morgan: JPM International Market Intell | Morning Briefing",
               "weight_hint": 3
-            },
-            {
-              "date": "2026-07-20",
-              "id": "cev-research_vault-b4ff102eff0a",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-xynjuyjmmnl-a733fd",
-              "tickers": [],
-              "title": "Morgan Stanley: Michael Wilson Weekly Warm up Broadening Continues as Index Struggles",
-              "weight_hint": 3
             }
           ]
         },
@@ -704,21 +717,21 @@
           "top_events": []
         },
         {
-          "n_events": 3,
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
         },
         {
-          "n_events": 2,
+          "n_events": 1,
           "source": "risk_band",
           "theme": "risk",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
           "top_events": []
         }
       ],
