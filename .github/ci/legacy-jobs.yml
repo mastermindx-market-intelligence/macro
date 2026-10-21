@@ -14882,6 +14882,8 @@ jobs:
       - engine/forex*.py
       - engine/neuralweb/mastermind_context.py
       - lib/forex*.py
+      - lib/shared_shell.py
+      - lib/site_assets.py
       - scripts/build_forex.py
       - scripts/build_macro_context.py
       - templates/forex*.j2
