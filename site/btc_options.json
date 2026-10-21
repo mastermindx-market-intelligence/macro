@@ -2,47 +2,47 @@
   "schema": "crypto.btc_options/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-20",
-  "generated_at": "2026-10-20T17:34:45.267906+00:00",
+  "as_of": "2026-10-21",
+  "generated_at": "2026-10-21T15:51:12.447588+00:00",
   "coverage": {
     "available": true,
-    "observations": 101,
+    "observations": 102,
     "first_date": "2026-06-13",
-    "last_date": "2026-10-20",
-    "note_en": "101 daily point-in-time chain snapshots accrued since 2026-06-13.",
-    "note_zh": "自 2026-06-13 起已积累 101 个每日链上快照。"
+    "last_date": "2026-10-21",
+    "note_en": "102 daily point-in-time chain snapshots accrued since 2026-06-13.",
+    "note_zh": "自 2026-06-13 起已积累 102 个每日链上快照。"
   },
-  "spot": 81862.15,
+  "spot": 83898.77,
   "volatility": {
-    "dvol": 38.26,
-    "atm_iv_7d": 32.71211349449016,
-    "atm_iv_30d": 36.65318947329955,
-    "atm_iv_90d": 37.054087783509225,
-    "atm_iv_180d": 38.05491100786691,
-    "term_slope_30_90": 0.40089831020967637,
-    "rr_25d": -3.592087855947824,
-    "skew_25d": 0.09871085067182808,
-    "skew_term": -0.02177287629955875
+    "dvol": 37.42,
+    "atm_iv_7d": 30.14853409061111,
+    "atm_iv_30d": 35.77182155258262,
+    "atm_iv_90d": 36.50065103515781,
+    "atm_iv_180d": 37.80205594535349,
+    "term_slope_30_90": 0.7288294825751862,
+    "rr_25d": -2.9355050840497796,
+    "skew_25d": 0.08222703316666048,
+    "skew_term": -0.04231723027371133
   },
   "positioning": {
-    "put_call_oi_ratio": 0.5944595792222344,
-    "put_call_vol_ratio": 1.5281133559391962,
+    "put_call_oi_ratio": 0.6102158298099135,
+    "put_call_vol_ratio": 0.2645736103099631,
     "max_pain": 78000.0,
-    "max_pain_expiry_d": 9.784477379282407,
-    "total_oi_btc": 389329.4
+    "max_pain_expiry_d": 8.855693655613425,
+    "total_oi_btc": 384302.0
   },
   "gamma": {
-    "gex_per_1pct_usd": 112829243.77883519,
-    "gamma_concentration_usd": 534997202.5510013,
-    "flip": 79656.26554494021,
-    "distance_pct": 2.69,
+    "gex_per_1pct_usd": 240647282.43137896,
+    "gamma_concentration_usd": 587201771.3768871,
+    "flip": 79463.24466852515,
+    "distance_pct": 5.29,
     "regime": "long",
     "assumption_en": "Dealer sign assumes long calls and short puts.",
     "assumption_zh": "交易商符号假设为多头看涨、空头看跌。"
   },
   "basis": {
-    "annualized_pct": 5.701373085707308,
-    "front_annualized_pct": 5.885207910508672,
-    "slope_pct": -0.42476904954693406
+    "annualized_pct": 5.359972468601048,
+    "front_annualized_pct": 5.412483275065753,
+    "slope_pct": -0.15398242574511478
   }
 }

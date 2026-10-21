@@ -491,3 +491,71 @@ def test_alias_priority_keeps_the_lone_alias_and_demotes_a_lower_priority_twin()
     tied = [_mapped_row("us-gaap:Assets", "total_assets"), _mapped_row("us-gaap:Assets", "total_assets")]
     statement_graph._apply_alias_priority(tied, registry)
     assert tied == [_mapped_row("us-gaap:Assets", "total_assets")] * 2
+
+
+def _instant_cell(period_label: str, value) -> dict:
+    return {
+        "period": {"kind": "instant", "start": None, "end": period_label, "label": period_label},
+        "value": value,
+    }
+
+
+def test_alias_priority_receipt_names_recoverable_columns() -> None:
+    # #9761 follow-up (minor 3): whole-row demotion must not strand a value
+    # only the loser carries. The receipt names the columns the governing row
+    # leaves null, so a consumer can recover the binding from the demoted row.
+    registry = load_core_registry(ROOT)
+    governing = _mapped_row("us-gaap:Assets", "total_assets")
+    governing["cells"] = [_instant_cell("2025-09-27", "100"), _instant_cell("2024-09-28", None)]
+    demoted = _mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets")
+    demoted["cells"] = [_instant_cell("2025-09-27", "100"), _instant_cell("2024-09-28", "95")]
+    rows = [governing, demoted]
+    statement_graph._apply_alias_priority(rows, registry)
+    assert rows[0]["standardized_metric_id"] == "total_assets"
+    assert rows[1]["mapping_receipt"]["recoverable_columns"] == ["2024-09-28"]
+
+    # A winner that fills every column the loser carries stays key-free — the
+    # AAPL golden balance-sheet shape, so committed bytes do not move.
+    full_winner = _mapped_row("us-gaap:Assets", "total_assets")
+    full_winner["cells"] = [_instant_cell("2025-09-27", "100"), _instant_cell("2024-09-28", "97")]
+    loser = _mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets")
+    loser["cells"] = [_instant_cell("2025-09-27", "100"), _instant_cell("2024-09-28", "95")]
+    rows = [full_winner, loser]
+    statement_graph._apply_alias_priority(rows, registry)
+    assert rows[1]["mapping_receipt"]["reason"] == "alias_priority"
+    assert "recoverable_columns" not in rows[1]["mapping_receipt"]
+
+
+def test_alias_priority_prefers_a_total_label_for_total_metrics() -> None:
+    # #9761 follow-up (minor 4): with the real registry, Assets@10 on a plain
+    # "Assets" label used to beat LiabilitiesAndStockholdersEquity@20 on
+    # "Total Liabilities and Stockholders' Equity", moving total_assets onto a
+    # non-total line. A total_* metric first prefers total-labelled rows.
+    registry = load_core_registry(ROOT)
+    component = _mapped_row("us-gaap:Assets", "total_assets")
+    component["as_reported_label"] = "Assets"
+    total_line = _mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets")
+    total_line["as_reported_label"] = "Total Liabilities and Stockholders' Equity"
+    rows = [component, total_line]
+    statement_graph._apply_alias_priority(rows, registry)
+    assert rows[1]["standardized_metric_id"] == "total_assets"
+    assert rows[1]["as_reported_label"].startswith("Total")
+    assert (rows[0]["standardized_metric_id"], rows[0]["mapping_state"]) == (None, "unmapped")
+    assert rows[0]["mapping_receipt"]["reason_detail"] == "total_label_preferred"
+
+    # Both contenders on Total labels (the AAPL golden shape) keeps the
+    # existing lowest-priority rule and the receipt keys unchanged.
+    both_total = [
+        {**_mapped_row("us-gaap:Assets", "total_assets"), "as_reported_label": "Total assets"},
+        {
+            **_mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets"),
+            "as_reported_label": "Total liabilities and stockholders' equity",
+        },
+    ]
+    statement_graph._apply_alias_priority(both_total, registry)
+    assert both_total[0]["standardized_metric_id"] == "total_assets"
+    assert (both_total[1]["standardized_metric_id"], both_total[1]["mapping_state"]) == (
+        None,
+        "unmapped",
+    )
+    assert "reason_detail" not in both_total[1]["mapping_receipt"]

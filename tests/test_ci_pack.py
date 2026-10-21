@@ -1541,6 +1541,21 @@ def test_a_named_suite_edit_does_not_select_peer_pytest_jobs(real_manifest_scope
     assert len(nonempty) < 12, nonempty
 
 
+def test_fif_kernel_guards_selects_on_registry_v1_0_0_fixture_edit(real_manifest_scopes) -> None:
+    """#9761 follow-up (minor 1): the committed 1.0.0 registry copy is a job input.
+
+    The fif-kernel-guards suites re-derive the 1.0.0 pins from
+    tests/fixtures/fundamental_forensics_registry_v1_0_0, a SIBLING tree of
+    tests/fixtures/fundamental_forensics — so without its own glob a
+    fixture-only edit selected none of them through this job.
+    """
+    jobs, _ = real_manifest_scopes
+    selected, reason = PACK.select_jobs(
+        jobs, ["tests/fixtures/fundamental_forensics_registry_v1_0_0/x.json"]
+    )
+    assert "fif-kernel-guards" in {job.job_id for job in selected}, reason
+
+
 def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
@@ -4348,6 +4363,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
+    "options-nbbo-cohort",
+    "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.
     "options-pilot-chronology-code",
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
@@ -4383,6 +4401,7 @@ CURATED_EXCLUSIVE = {
     "nw-lobe-unfreeze",
     "quant-q06-sparse-cal",  # Q06 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "china-search-universe",
+    "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
@@ -4712,6 +4731,12 @@ CURATED_EXCLUSIVE = {
     "international-workspace-pure-js",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
+    "international-global-universe",
+    # IM17 transmission-evidence contract: edges, qualified transmission
+    # events and the US relevance ordering; the frozen contagion models are
+    # read by the test alone, so its curated scope must pin their closure.
+    "international-transmission-evidence",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
@@ -5141,8 +5166,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_795),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_798),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5151,6 +5176,25 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 Prophet Lab evidence dossier B04-A0 (PR #9935) adds one pytest
+    step, tests/test_prophet_lab_dossier_b04a.py (closed reason map,
+    forbidden-key refusal, admissibility literals), to the existing code-gated
+    prophet-lab job and declares the suite, its fixtures, the reason-map config
+    and the R6-B04-01a contract draft in that job's exclusive paths. The job was
+    already selected on all three probes, so no job joins any probe; the step
+    costs exactly 3 estimator units (one command plus one tests/test_ path).
+    Hosted contract-delta on f5004c58 against main 98242f73 measured:
+
+        templates/index.html          135 jobs, 5,822 -> 5,825 weight
+        scripts/build_free_content.py 135 jobs, 5,795 -> 5,798 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,574 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,822 -> 5,825 and build 5,795 -> 5,798, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
+    the ten-pack limit, selector code and every prior suite remain unchanged.
+    Planning weights are not measured execution times.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
@@ -7774,3 +7818,22 @@ def test_ancestor_init_census_does_not_grow() -> None:
             substantive_rows,
         )
     )
+
+
+def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes():
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["options-nbbo-cohort"]
+    assert job.exclusive
+    for dependency in (
+        "scripts/evaluate_options_alpha_exact_option_outcome.py",  # ci-trigger-closure: data — selector input name, never opened
+        "engine/options_alpha_exact_option_outcome.py",  # ci-trigger-closure: data — selector input name, never opened
+        "tests/test_options_alpha_exact_option_outcome_cli.py",  # ci-trigger-closure: data — selector input name, never opened
+        "engine/__init__.py", "lib/__init__.py", "scripts/__init__.py",  # ci-trigger-closure: data — selector input name, never opened
+        "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json",  # ci-trigger-closure: data — selector input name, never opened
+    ):
+        selected, _ = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], dependency
+    for probe in ("scripts/build_free_content.py", "templates/index.html",  # ci-trigger-closure: data — selector input name, never opened
+                  "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
+        selected, _ = PACK.select_jobs([job], [probe])
+        assert selected == [], probe
