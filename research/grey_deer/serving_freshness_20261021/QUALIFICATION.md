@@ -4,7 +4,7 @@
 
 The existing Grey Deer / Risk Radar / Risk On–Risk Off programme, MAS-258, remains **In Progress / MISSION_COMPLETE=false**. This is a continuation of the accepted census and release work, not a replacement programme, a new research trial or a policy promotion.
 
-[Mastermind PR #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660) owns the serving repair on branch `sol/web-risk-radar-serving-freshness-20261021`. Current pushed candidate is `fd4a5dc553dabaebc67baeebf2a1cf57b4b6565d`, based on protected Mastermind `d3537d6dd1cf63178a1493eb70fa2eccc6c01fe0`. It is pushed and clean, **DRAFT/HOLD pending exact-head hosted CI and normal source admission**. No deployment or merge acceptance is claimed by this record.
+[Mastermind PR #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660) merged at 2026-10-21T06:24:13Z: final head `b54c58df73077bf50762e71136d8a8ae6c92bed2`, merge `3960aefcf4724a88812d79d97c1b370dc9f951c4`. Source merge does not establish deployment or installed acceptance. The detailed reader tests/reviews below retain their original predecessor scope. The current source, publisher and MTF frontier is in [the current continuation](CONTINUATION.md).
 
 The admitted source operation is `risk-radar-serving-freshness-20261021`, workspace `/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-serving-freshness-20261021`. The first source checkpoint is `9c967c27e71c49a278fb27b1978b0db678601b47`; its checks do not certify the successor.
 
@@ -79,7 +79,7 @@ PYTHONDONTWRITEBYTECODE=1 python3.12 -m pytest \
 git diff --check
 ```
 
-**Current result: 263 passed, 1 skipped in 48.22 seconds, exit 0; diff check passed.** Studio process 71515 completed. The skipped test is the existing live-vendor MCP test because no live vendor/regime data is present in the isolated workspace; the new synthetic MCP consumer regression passed. The predecessor b15b9bd passed 201 cases in process 16645; the intermediate current-reader set passed 98 with one skipped in process 67410. The exact CI-pinned Macro dependency, `256c757b3c4f0ec759571c29a30a71387d0a18f8`, supplied only engine/lib to the isolated ignored vendor directory. No production data was copied.
+**Reader qualification at the recorded fd4a5dc boundary: 263 passed, 1 skipped in 48.22 seconds, exit 0; diff check passed.** Studio process 71515 completed. The skipped test is the existing live-vendor MCP test because no live vendor/regime data is present in the isolated workspace; the new synthetic MCP consumer regression passed. The predecessor b15b9bd passed 201 cases in process 16645; the intermediate current-reader set passed 98 with one skipped in process 67410. The exact CI-pinned Macro dependency, `256c757b3c4f0ec759571c29a30a71387d0a18f8`, supplied only engine/lib to the isolated ignored vendor directory. No production data was copied.
 
 The route/cache regression uses the actual APIRouter with response caching installed, advances the clock on the same publication, and verifies no cached response, unchanged publication file hash and unchanged clocks/sequence. The page cases execute the shipped JavaScript renderer with synthetic API responses; they are not screenshots or browser visual acceptance.
 
@@ -93,7 +93,7 @@ Retain these prior outcomes:
 - The first independent candidate inspection returned no source before interruption. It is NOT_ACCEPTED as implementation attestation. Its contract disposition was accepted, but must not be relabeled an independent source review.
 - The later GitHub-only independent review ACCEPTED the monotone serving contract at b15b9bd for market_view.py lines1664–1875, market_view.html lines364–425 and web.py lines1747–1775. It excluded date-helper, cache exclusion, rotation producer, test execution and production.
 - A second GitHub-only principal source consultation confirmed active raw-reader bypasses in autonomous, strategist and MCP, plus a separate raw typed-context channel. The correction at fd4a5dc received a separate ACCEPTED verdict after five exact GitHub file reads across decision_context, shared PM reader/prompt, strategist and MCP wiring. It accepts current eligibility withdrawal, not full reconstruction of probability/trajectory/axis fields from original raw source snapshots; those provenance limits remain outside this boundary. Tests, publisher activation and production were excluded from that review.
-- Current-head hosted CI run 39544738739 and CodeQL run 39544735505 were in progress at the recorded qualification boundary. Prior-head checks do not certify this successor.
+- Hosted CI run 39544738739 and CodeQL run 39544735505 were in progress at the earlier fd4a5dc qualification boundary. The final b54c58d source later passed normal checks and merged; see the dated continuation. Prior-head checks retain their own scope.
 
 AgentOS validation in the Macro evidence workspace completed with 0 errors and 174 repository advisory warnings (1,911 records); git diff --check passed. No generated AgentOS views were edited.
 
@@ -107,6 +107,6 @@ The currently approved release was already executed on 20 October. This continua
 
 The accepted 36-ETF / 8,486-session / 305,496-row census remains descriptive. The proposed 532 B0/B1 fits remain NOT_ADMITTED and zero executed. Existing Yahoo model-purpose, FRED, T13 h21, frozen study, warning/recovery, prospective maturity and capital-policy holds remain binding. Preserve the original warning and product carriers and reconcile real current writers before editing overlapping files.
 
-Paid Fabric was not callable in this session, and the Executive reader request was not sent. No paid dispatch is claimed. Native consultations were bounded principal C3 contract/design judgments. The first Macro workspace acquisition returned NOT_APPLIED; subsequent bounded Git identity/origin/base checks succeeded and the canonical acquisition then succeeded. No allocator or permission rule was changed.
+At the earlier reader checkpoint, paid Fabric was not callable and the Executive reader request was not sent. Later review attempts and their distinct denial/admission states are recorded in the dated continuation; no worker acceptance is inferred. Native consultations were bounded principal C3 contract/design judgments. The first Macro workspace acquisition returned NOT_APPLIED; subsequent bounded Git identity/origin/base checks succeeded and the canonical acquisition then succeeded. No allocator or permission rule was changed.
 
 Canonical issue: [MAS-258](https://linear.app/mastermindx/issue/MAS-258/rru-upgrade-cross-region-risk-radar-recovery-and-unified-risk).

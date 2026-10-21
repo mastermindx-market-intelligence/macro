@@ -1,6 +1,6 @@
 # Natural perception publisher restoration — source contract
 
-Status: proposed source continuation under MAS-258, **not implemented or activated**. This document does not admit a source-purpose/model trial, a portfolio run, a new forward cohort or a production change. Law pin: Mastermind d3537d6dd1cf63178a1493eb70fa2eccc6c01fe0. Reader candidate: [Mastermind #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660), fd4a5dc553dabaebc67baeebf2a1cf57b4b6565d.
+Status updated on October21: the original writer has published [Mastermind #1667](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1667), observed head `65c071d9d4820135a54d6d2f7af861bb5e7cebc1`. The owner reports 472 passed / 1 skipped and two source review acceptances at its application predecessor dd44a6b; exact-head hosted CI/security and production activation remain separate. Root did not edit or independently retest that publisher. Earlier candidate hashes and test results do not certify later bytes. See [the continuation](CONTINUATION.md) for source, actual-input refusal and custody. Reader [Mastermind #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660) is merged at3960aefcf4724a88812d79d97c1b370dc9f951c4; no production installation follows from source merge. The original contract below was inspected at law pin d3537d6dd1cf63178a1493eb70fa2eccc6c01fe0 and reader predecessor fd4a5dc553dabaebc67baeebf2a1cf57b4b6565d.
 
 ## Inspected cause and candidate owner
 

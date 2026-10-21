@@ -41,6 +41,10 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
   - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
   - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
   - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
@@ -459,37 +463,33 @@ waves:
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Continue MAS-258 as the existing Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
-  Macro9595 is merged at444140f2446ef2025da07ce1b591e0c0ce4393d4; preserve its closed carrier.
-  The approved October20 standard release fe7afd0111141bae27927715e709d074fea729e2 was executed once.
-  October21 read-only inspection found the service active at that revision, PID2884430 and restart counter0,
-  while /api/market_view still served August7 evidence, builtAugust10, seq9, as validated and confirmed.
-  The service-visible publication hash is17e4621d51d0b517fa9143214936c89997784ad85fe5779740ebaba7134b5df5.
-  Complete Mastermind1660 at fd4a5dc553dabaebc67baeebf2a1cf57b4b6565d through exact-head review,
-  hosted CI39544738739 / CodeQL39544735505 and normal source admission. Local nine-file regression passed
-  263 with one skipped; bounded exact-source reviews accepted the b15b9bd serving primitive and the fd4a5dc
-  current-reader contract. Raw regime probability/trajectory/axis provenance is outside that reader acceptance.
-  The current-reader addition withdraws stale/unpaired typed inputs and carries source dates through
-  autonomous, strategist and MCP. It is current input qualification, not a display-only behavior claim.
-  Preserve history and existing protection: expiry cannot create positive consensus, recovery, zero dissent
-  or a new episode. Historical context formatting and the archived Flagship gate are unchanged.
-  Record source/release evidence in serving_freshness_20261021 and the October21 AgentOS handoff.
-  Restore natural perception publication through one existing owner only after the explicit publisher
-  contract is qualified: the sole installed writer belongs to archived Flagship and the active autonomous
-  schedule does not replace it. Inspect externally managed Macro refresh semantics, paired publication
-  identity/write receipts, same-day correction custody and book-specific distribution inputs. No manual
-  portfolio/nightly, revived archived book, duplicate schedule, event store or parallel producer.
-  Production deployment remains a reserved exact-release decision under current strategic state.
-  The browser reaches the real Market View Pro entitlement screen; authenticated visual acceptance is open.
-  The separate health timeout remains an unqualified observation; a subsequent Market View API200 is not
-  a health proof. No new deployment, restart, model fit or production publisher execution occurred.
-  Preserve the accepted36-ETF/8486-session/305496-row descriptive census and W5 one natural30-rowSPY batch.
-  W5 outcomes remain immature and are not30 independent events. No manual nightly, backfill or early grading.
-  All532 B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo source-purpose, FRED HOLD, T13h21 refusal,
-  null independentN and frozen failed studies stay binding. Existing warning8132/8721 HOLDs,9428 refusal,
-  Copilot8014/9447 and Radar9548 actual writer intersections, QLedger/nightly custody and Terminal proof remain.
-  Canonical envelope rank/gate/size/execute authority remains false. Update MAS-258 from verified evidence.
-  MISSION_COMPLETE remains false; do not claim an autonomous wake or a finished programme.
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
 
 ---
 
