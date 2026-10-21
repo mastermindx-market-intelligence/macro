@@ -122,8 +122,9 @@ Each decision is a reserved parameter or priority call. The seat holds the works
 | F4 | CIE package location (pin `1b0f2ee2`), and the owner who accepts CIE-02 | Full CIE-06, CIE-02/03 and L0 cannot be censused or started without the package. Accepting CIE-02 gates CIE-03/L0 under the activation law | The seat supplies the package path or its Mastermind PR, then commissions one remaining-obligation census lane. Until then, China Alpha stays at its accepted bounded slice |
 | F5 | Priority of China Alpha P2 (shadow) and R1 relative to China Prophet P0–P4 | Both compete for the same China scheduler and data planes, and the masterplan sets no order between them | China Prophet P0 → P1 → P3 first. Start China Alpha P2 as a shadow-only census after the P0 and P1 lanes are running. Keep R1 behind F4 |
 | F6 | Pre-existing reds on `unrun-picks-boards` at BASE: `tests/test_prophet_board_since.py:626` (expects one `_us_board_cards` include; BASE has two, from #9517/#9550 on 10-17) and `:377` (Canada laggards tokens) | A CA-ZB or CN-P1 PR touches a path trigger of that job (`build_canada.py`, `build_china_library.py`), so it would inherit a red the lane cannot fix inside its owned files | Route both asserts to the owner of #9517/#9550 (US board cards) before shipping CA-ZB/CN-P1, or ship with the reds named as inherited under the sweeper's inherited-red rule. Do not widen the regional lanes to fix them |
+| F7 | China P1 archive-failure semantics: if the archive write of the armed pack fails, the current key `live_flow/cn_prophet_live_armed.json` is NOT replaced, and the step exits 1 (non-fatal to Asia-close) | Losing the N−1 authority on a roll cannot be undone (`REPAIR_DECISIONS.md:70`: a current key rolled to N cannot replace the archived N−1). A stale current key is visible and recoverable. #8714 does not state the failure order | Ratify archive-first, with no replace on archive failure, as frozen in packet `cnp1arch` spec 4. The alternative (replace anyway, warn) silently destroys the reconciler's first-event authority |
 
-Further decisions from the HK/CA scouts are appended as F6+ when they return.
+Further decisions from the HK/CA scouts are appended as F8+ when they return.
 
 ## 8. Lanes
 
@@ -137,3 +138,5 @@ Fabric lanes under the seat launcher. Every run id is unique. Branch `lane/<run 
 | pro-regional-cascout-20261021-r1 | census | mmx-ubuntu3 | RUNNING | — |
 
 Packets written and waiting for a slot (seat scratchpad `pk/`): `pro-regional-cnp1proj-20261021.md`, `pro-regional-cnp1trad-20261021.md`, `pro-regional-cnp4margin-20261021.md`.
+
+Packet written and gated by sequence (not launchable at BASE): `pro-regional-cnp1arch-20261021.md`. It edits the same `main()` publish branch as `cnp1trad` and reads the `cnp1proj` receipt, so it launches on the main revision that contains both, with that revision as BASE and after F7 is ratified.

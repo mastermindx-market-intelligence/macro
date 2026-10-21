@@ -113,3 +113,22 @@ themes; 320/390/768/1440; a passing test is not served proof.
   notification). On green: carrier re-read (last edge must still be 6306863736) → `gh pr merge 9921 --squash
   --match-head-commit 7e0cf6c6…` → launch `pro-receipt-newbase-20261021-r1` against post-merge main.
   CI watcher launched: background handle `bzr72esbg` (`gh pr checks 9921 --watch --interval 180`, PR #9921 head 7e0cf6c6; output $S/../tasks/bzr72esbg.output; consumed by harness notification).
+
+## Checkpoint 2026-10-21 03:58Z — INTEL orchestrator wave 1 consumed; F1–F8 RULED
+
+- INTEL (a6822c097960d27d8) returned DONE 03:5xZ; its four lane reports are landed on this branch
+  (censusA 9e8c95a7 ← lane 1b5114fb ubuntu2; censusB a26dc303 ← d166114c ubuntu2; b27 036d04ec ← be515d3c ubuntu0;
+  b08gates 740f13dd ← 42547cfd ubuntu3) under `research/prophet_v4/r7_program/intel/`.
+- Seat GitHub read: #8069 comment 5894923827 EXISTS (mastermidx4/Sol, 2026-09-29T17:05Z, "SOL ACCEPTED / CONTINUE —
+  Gate S factual field accepted; Gate E remains closed"). F1 precondition satisfied.
+- RULINGS (seat): F1 ACCEPTED (ratify recorded acceptance; manifest-only records lane; never byte-edit the contract;
+  D07 PUBLIC_INFO_REPLAY row DEFERRED) · F2 ACCEPTED (B04-A split: A0 now, A1 after #8004/#7426/#7264; #8004 ask deferred
+  until A0 merges) · F3 ACCEPTED hold (never run v1; #7868 B1/B2 repair queued for Stage 4 under custody check) ·
+  F4 ACCEPTED (source-blind numeric D06 proposal, research lane) · F5 ACCEPTED (B10/B12 prospective-only; B4 runtime caller +
+  write-time recorded_at writer ROUTED-TO-SOURCE Stage 3) · F6 ACCEPTED (#8308 stays with Sol; note for Stage 6 records) ·
+  F7 ACCEPTED (not asked) · F8 RULED (B27 draft ACCEPTED: five sleeves SPEC_ONLY_RETAINED_B27, no scope removal, §8 order
+  1→5, gated on B00/B06, read-only census first; B27 DISPOSITIONED).
+- INTEL resumed by message with the rulings; lanes to mint (never reuse): `pro-intel-b08records-20261021-r1` (build),
+  `pro-intel-b04a0-20261021-r1` (build, after collision check vs #8004/#7426/#7264/#9714/#9821/#9921/#9495),
+  `pro-intel-d06num-20261021-r1` (research, after one of the two finishes). BASE for each = current origin/main at launch.
+- #9921 still under watcher bzr72esbg (packs running at 03:57Z); merge rule unchanged (carrier last edge 6306863736 at 03:5xZ).
