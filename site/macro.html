@@ -501,7 +501,7 @@
             <div class="ms-alerts-wrap">
               <label class="ms-alerts" for="ms-alerts-toggle" tabindex="0" aria-haspopup="dialog" aria-controls="ms-alerts-pop">
                 <span class="dot"></span><span class="l-en">Fired alerts</span><span class="l-zh">已触发警报</span>
-                <span class="ct">1</span>
+                <span class="ct">10</span>
               </label>
               <div class="ms-alerts-pop" id="ms-alerts-pop" role="dialog" aria-label="Fired alerts · 已触发警报">
                 <div class="ms-pop-head">
@@ -515,6 +515,87 @@
                   
                   
                   
+                  
+                  
+                  
+                  <a class="ms-sig sev-warn" href="macro_context.html#board">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🧲</span><span class="ms-sig-title"><span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">GEX: spot crossed the gamma flip (net -44bn, spot vs flip -0.4%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-15, 2026-10-16, 2026-10-19, so the crossing point inside that span is unobserved</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -44bn，现价相对翻转点 -0.4%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-15, 2026-10-16, 2026-10-19 无期权链快照，其间的穿越时点无法观测</span></div>
+                    <div class="ms-sig-what"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Medium — changes the volatility backdrop, not the direction.</span><span class="l-zh">中 — 改变的是波动背景，而非方向。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" data-ms-dlg="dlg-sector" href="#dlg-sector">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">📉</span><span class="ms-sig-title"><span class="l-en">A sector fell out of favor</span><span class="l-zh">某板块失宠</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">XLC RS vs SPY crossed below 10th pctile of 90d (now 7)</span><span class="l-zh">XLC RS 相对 SPY 下穿 90 天第 10 百分位（现为 7）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One sector’s strength versus the market just dropped to the bottom of its recent range — money is rotating out. Usually a reason to avoid or trim, not to bottom-fish; wait for it to base and trigger again.</span><span class="l-zh">某板块相对市场的强度刚跌至其近期区间的底部 — 资金正在流出。通常是回避或减仓的理由，而非抄底；等它筑底并再次触发。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — descriptive rotation, not a timing signal.</span><span class="l-zh">背景 — 描述性的轮动，而非择时信号。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" data-ms-dlg="dlg-sector" href="#dlg-sector">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">📈</span><span class="ms-sig-title"><span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">XLP RS vs SPY crossed above 90th pctile of 90d (now 90)</span><span class="l-zh">XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 90）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — descriptive rotation, not a timing signal.</span><span class="l-zh">背景 — 描述性的轮动，而非择时信号。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager cut ILMN by -36% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 ILMN 仓位 -36%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager cut HOOD by -20% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 HOOD 仓位 -20%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added NTLA by +25% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 NTLA 仓位 +25%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added ARKY by +54% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 ARKY 仓位 +54%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
+                  
+                  
+                  
+                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
+                  </a>
                   
                   
                   
@@ -4977,11 +5058,11 @@
         
         <span class="mx5-ai-ticker-pill">QQQ</span>
         
+        <span class="mx5-ai-ticker-pill">TSLA</span>
+        
         <span class="mx5-ai-ticker-pill">XHB</span>
         
-        <span class="mx5-ai-ticker-pill">NFLX</span>
-        
-        <span class="mx5-ai-ticker-pill">TSLA</span>
+        <span class="mx5-ai-ticker-pill">USO</span>
         
       </div>
       
@@ -4989,14 +5070,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 High-Impact Items</span><br>
-          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">earnings</span><br>
-          8 high-impact signals across channels
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">6 High-Impact Items</span><br>
+          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">inflation</span><br>
+          6 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 条高影响信息</span><br>
-          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">业绩</span><br>
-          8 条高影响信号
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">6 条高影响信息</span><br>
+          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">通胀</span><br>
+          6 条高影响信号
         </span>
         
       </div>
@@ -5042,8 +5123,8 @@
         
         
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">1 need action · of 1</span>
-          <span class="l-zh">1 条需处理 · 共 1 条</span>
+          <span class="l-en">2 need action · of 10</span>
+          <span class="l-zh">2 条需处理 · 共 10 条</span>
         </div>
         
       </div>
@@ -5051,6 +5132,23 @@
       
       
       <div class="mx5-alerts-list">
+        
+        
+        
+        <div class="mx5-alert-item warn">
+          <div class="mx5-alert-dot warn"></div>
+          <div class="mx5-alert-content">
+            <div class="mx5-alert-title warn">
+              <span style="font-size:12px;margin-right:3px">🧲</span>
+              <span class="l-en">Options “gravity” flipped — bigger swings more likely</span>
+              <span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+            </div>
+            <div class="mx5-alert-detail">
+              <span class="l-en">Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.</span>
+              <span class="l-zh">期权对冲由抑制波动转为放大波动——双向波动可能加大。</span>
+            </div>
+          </div>
+        </div>
         
         
         
@@ -5097,8 +5195,8 @@
       <div class="mx5-alert-footer">
         <span>
           
-          <span class="l-en">1 need action · of 1</span>
-          <span class="l-zh">1 条需处理 · 共 1 条</span>
+          <span class="l-en">2 need action · of 10</span>
+          <span class="l-zh">2 条需处理 · 共 10 条</span>
           
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
@@ -6190,7 +6288,7 @@
 
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="d5e4b918d2a59c0a" data-settled-session="2026-10-20" data-coherence="ALIGNED">
+         data-bundle-id="9e78b77361860f3f" data-settled-session="2026-10-20" data-coherence="ALIGNED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
@@ -6333,7 +6431,7 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle d5e4b918d2a59c0a ·
+            grey-deer-v1-2026-08-19 · bundle 9e78b77361860f3f ·
             coverage FRESH ·
             coherence ALIGNED (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
@@ -8980,6 +9078,30 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
                 <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
+                  <span style="font-size:12px;margin-right:3px">🧲</span>
+                  <span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+                </div>
+                
+                
+                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
+                
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">GEX: spot crossed the gamma flip (net -44bn, spot vs flip -0.4%) — measured across 4 sessions, not overnight: no chain snapshot exists for 2026-10-15, 2026-10-16, 2026-10-19, so the crossing point inside that span is unobserved</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -44bn，现价相对翻转点 -0.4%） — 该变化跨越 4 个交易日，并非隔夜发生：2026-10-15, 2026-10-16, 2026-10-19 无期权链快照，其间的穿越时点无法观测</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
                   <span style="font-size:12px;margin-right:3px">📅</span>
                   <span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span>
                 </div>
@@ -8999,6 +9121,163 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         </div>
         
         
+        
+        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">📉</span>
+                  <span class="l-en">A sector fell out of favor</span><span class="l-zh">某板块失宠</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLC RS vs SPY crossed below 10th pctile of 90d (now 7)</span><span class="l-zh">XLC RS 相对 SPY 下穿 90 天第 10 百分位（现为 7）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One sector’s strength versus the market just dropped to the bottom of its recent range — money is rotating out. Usually a reason to avoid or trim, not to bottom-fish; wait for it to base and trigger again.</span><span class="l-zh">某板块相对市场的强度刚跌至其近期区间的底部 — 资金正在流出。通常是回避或减仓的理由，而非抄底；等它筑底并再次触发。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">📈</span>
+                  <span class="l-en">A sector broke into leadership</span><span class="l-zh">某板块跃升为领先</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">XLP RS vs SPY crossed above 90th pctile of 90d (now 90)</span><span class="l-zh">XLP RS 相对 SPY 上穿 90 天第 90 百分位（现为 90）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One sector’s strength versus the market just pushed into the top of its recent range — it’s starting to lead. This describes where money is rotating, not an instant buy. Check the sector’s heat and trigger column before acting.</span><span class="l-zh">某板块相对市场的强度刚冲入其近期区间的顶部 — 开始领先。这描述的是资金轮动的方向，并非立即买入。行动前请查看该板块的热度与触发列。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager cut ILMN by -36% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 ILMN 仓位 -36%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager cut HOOD by -20% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 减仓 HOOD 仓位 -20%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added NTLA by +25% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 NTLA 仓位 +25%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added ARKY by +54% of position (2026-10-05..2026-10-20, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 ARKY 仓位 +54%（2026-10-05..2026-10-20，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager cut AMD by -31% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -31%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
+                  <span style="font-size:11px;margin-right:3px">🐳</span>
+                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
+                </div>
+                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager added NVDA by +26% of position (2026-09-23..2026-10-06, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +26%（2026-09-23..2026-10-06，已按资金流标准化）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+        </div>
         
         
         
@@ -9050,7 +9329,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/spacex-spcx-stock-musk-merger-tesla.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">SpaceX up over 8% in premarket after earnings beat and Musk hints at Tesla tie-up</span><span class="l-zh">SpaceX盘前上涨逾8%，此前财报超预期且马斯克暗示与特斯拉合作</span></span>
+              <span class="nbx-title"><span class="l-en">SpaceX up 8% in premarket after earnings beat and Musk hints at Tesla tie-up</span><span class="l-zh">SpaceX盘前上涨8%，此前财报超预期且马斯克暗示与Tesla合作</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9065,10 +9344,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/20/united-airlines-ual-3q-2026-earnings.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/australia-data-center-operator-nexdc-datacenter.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">United Airlines slashes 2026 profit outlook on fuel prices, but travelers keep booking despite higher fares</span><span class="l-zh">美联航因燃油价格下调2026年利润展望，但旅客无视更高票价继续订票</span></span>
+              <span class="nbx-title"><span class="l-en">Australian data center operator NextDC&#39;s shares plunge 40% after it slashes earnings forecast</span><span class="l-zh">澳大利亚数据中心运营商NextDC大幅下调盈利预测后股价暴跌40%</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9101,10 +9380,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655088-earnings-snapshot-philip-morris-surpasses-q3-expectations-and-revises-fy2026-earnings-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655135-zoom-communications-in-focus-as-oppenheimer-upgrades-to-outperform?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Earnings Snapshot: Philip Morris surpasses Q3 expectations and revises FY2026 earnings outlook</span><span class="l-zh">财报速览：菲利普莫里斯超越第三季度预期并调整FY2026盈利展望</span></span>
+              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
+              <span class="nbx-title"><span class="l-en">Zoom Communications in focus as Oppenheimer upgrades to Outperform</span><span class="l-zh">Zoom Communications受关注，Oppenheimer上调评级至跑赢大盘</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9119,28 +9398,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655087-danaher-stock-drops-q3-revenue-miss?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Danaher drops after Q3 revenue miss amid CEO transition</span><span class="l-zh">丹纳赫第三季度营收不及预期，叠加CEO过渡期，股价下跌</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 21</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655086-at-a-glance-stocks-gapping-down-premarket?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655132-blackrock-launches-new-robotics-etf-with-exposure-to-nvidia-tesla-and-spacex?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">At a glance: stocks gapping down premarket</span><span class="l-zh">一览：盘前跳空下跌的股票</span></span>
+              <span class="nbx-title"><span class="l-en">BlackRock launches new robotics ETF with exposure to Nvidia, Tesla and SpaceX</span><span class="l-zh">BlackRock推出新机器人ETF，涵盖Nvidia、Tesla和SpaceX敞口</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9155,10 +9416,28 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655082-at-a-glance-stocks-gapping-up-premarket?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.marketwatch.com/story/musk-says-hes-exploring-a-spacex-tesla-megamerger-what-would-a-combined-company-be-worth-f35566aa?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">Musk says he’s exploring a SpaceX-Tesla megamerger. What would a combined company be worth?</span><span class="l-zh">马斯克称正探索SpaceX与Tesla超级合并。合并后的公司价值几何？</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 21</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655133-amplitech-stock-jumps-on-103m-follow-on-order-backlog-tops-52m?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">At a glance: stocks gapping up premarket</span><span class="l-zh">概览：盘前跳涨的股票</span></span>
+              <span class="nbx-title"><span class="l-en">AmpliTech stock jumps on $1.03M follow-on order; backlog tops $52M</span><span class="l-zh">AmpliTech股价因103万美元后续订单大涨；积压订单超5200万美元</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9173,13 +9452,13 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.rttnews.com/3701016/european-shares-mixed-as-uk-inflation-climbs.aspx" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655141-key-north-sea-oil-platform-to-stay-open-even-in-strike-apache-says?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
-              <span class="nbx-title"><span class="l-en">European Shares Mixed As united kingdom Inflation Climbs</span><span class="l-zh">英国通胀攀升，欧洲股市涨跌互现</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Key North Sea oil platform to stay open even in strike, Apache says</span><span class="l-zh">Apache表示，北海关键石油平台即使在罢工期间也将保持运营</span></span>
             </div>
             <div class="nbx-meta">
-              <span class="nbx-src">gdelt</span>
+              <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Oct 21</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
@@ -10990,7 +11269,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
       <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Observed health entries for data sources this dashboard depends on. No entries means health is unavailable, not healthy. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘依赖数据源的已观测健康记录。没有记录表示健康状态不可用，并不代表正常。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
-      <span class="fold-stat">13 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
+      <span class="fold-stat">14 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
     </summary>
     
@@ -11139,7 +11418,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>511</td><td>2026-10-16</td>
+        <td>511</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11148,7 +11427,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11157,7 +11436,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>697</td><td>2026-10-16</td>
+        <td>696</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11166,7 +11445,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>251</td><td>2026-10-16</td>
+        <td>251</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11175,7 +11454,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>26</td><td>2026-10-16</td>
+        <td>25</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11184,7 +11463,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-10-16</td>
+        <td>180</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11202,7 +11481,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11211,7 +11490,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11220,7 +11499,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-10-16</td>
+        <td>5</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11229,7 +11508,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>20</td><td>2026-10-16</td>
+        <td>18</td><td>2026-10-16</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11238,7 +11517,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2394</td><td>2026-10-16</td>
+        <td>2400</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11247,7 +11526,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11256,7 +11535,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11265,7 +11544,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11274,7 +11553,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2552</td><td>2026-10-16</td>
+        <td>2556</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11283,7 +11562,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-10-15</td>
+        <td>180</td><td>2026-10-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11292,7 +11571,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11301,7 +11580,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-10-15</td>
+        <td>6</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11310,7 +11589,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11319,7 +11598,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11328,7 +11607,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11337,7 +11616,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>9039</td><td>2026-10-16</td>
+        <td>9040</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11346,7 +11625,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>10092</td><td>2026-10-16</td>
+        <td>6821</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11355,7 +11634,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>8157</td><td>2026-10-16</td>
+        <td>8163</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11364,7 +11643,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4472</td><td>2026-10-16</td>
+        <td>4476</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11373,7 +11652,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11382,7 +11661,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>143748</td><td>2026-10-16</td>
+        <td>137366</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11391,7 +11670,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
-        <td>131137</td><td>2026-10-16</td>
+        <td>170267</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11399,8 +11678,8 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         <td class="l">china_stocks_raw</td>
         
         
-        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
-        <td>42325</td><td>2026-10-16</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>52284</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11408,9 +11687,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         <td class="l">china_trade_detail</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host=&#39;engl</td>
       </tr>
       
       <tr>
@@ -11418,7 +11697,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11427,7 +11706,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11436,7 +11715,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11445,7 +11724,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1011</td><td>2026-10-16</td>
+        <td>1014</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11814,7 +12093,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>654</td><td>2026-10-16</td>
+        <td>656</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11823,7 +12102,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5781</td><td>2026-10-16</td>
+        <td>5783</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11832,7 +12111,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>713</td><td>2026-10-16</td>
+        <td>711</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11841,7 +12120,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11850,7 +12129,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11859,7 +12138,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>44</td><td>2026-10-16</td>
+        <td>42</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11868,7 +12147,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4997</td><td>2026-10-16</td>
+        <td>5001</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11886,7 +12165,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11895,7 +12174,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11904,7 +12183,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1515</td><td>2026-10-15</td>
+        <td>1517</td><td>2026-10-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11913,7 +12192,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11922,7 +12201,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>175</td><td>2026-10-16</td>
+        <td>171</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11931,7 +12210,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2365</td><td>2026-10-12</td>
+        <td>2366</td><td>2026-10-19</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11939,7 +12218,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         <td class="l">hk_shorts_positions</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
         <td>1</td><td>2026-10-09</td>
         <td class="l muted"></td>
       </tr>
@@ -11949,7 +12228,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11958,7 +12237,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-15</td>
+        <td>1</td><td>2026-10-20</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11967,7 +12246,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>3615</td><td>2026-10-16</td>
+        <td>14165</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11976,7 +12255,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-16</td>
+        <td>1</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11985,7 +12264,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>251</td><td>2026-10-16</td>
+        <td>250</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11994,7 +12273,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>100</td><td>2026-10-15</td>
+        <td>100</td><td>2026-10-21</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12712,9 +12991,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-21 11:24 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-21 12:54 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-21 11:24 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-21 12:54 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>
