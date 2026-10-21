@@ -30,6 +30,7 @@ import subprocess
 from pathlib import Path
 
 import jinja2
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = ROOT / "templates"
@@ -463,6 +464,16 @@ def test_live_dot_uses_health_tokens_not_direction():
 # Verdict qualifier class modifier (was inline --c: pre-fix)
 # --------------------------------------------------------------------------- #
 
+# The hero template's qualifier table (spec §6, its "one source of truth"),
+# as an explicit literal. The tests CONSULT this table; they neither
+# re-implement the template logic nor parse the template.
+_QUALIFIER_CLASS_BY_VERDICT = {
+    "RISK_ON": "ud-verdict-qualifier--warn",   # narrowing / 在收窄
+    "RISK_OFF": "ud-verdict-qualifier--down",  # deepening / 在加深
+    "MIXED": "ud-verdict-qualifier--muted",    # steady / 趋稳
+}
+
+
 def test_hero_verdict_qualifier_uses_class_modifier_not_inline_custom_property():
     """The qualifier ('narrowing' / 'deepening' / 'steady') lives on a class
     modifier (.ud-verdict-qualifier--{warn,down,muted}) — NEVER an inline
@@ -475,6 +486,86 @@ def test_hero_verdict_qualifier_uses_class_modifier_not_inline_custom_property()
     assert "ud-verdict-qualifier--down" in css, (
         "theme.css must define .ud-verdict-qualifier--down for RISK_OFF"
     )
+
+
+# The hero template's verdict-word table (spec §6, its "one source of truth"),
+# as an explicit literal — copied, never re-implemented or parsed back out of
+# the template.
+_VERDICT_WORDS_BY_VERDICT = {
+    "RISK_ON": ("ud-verdict-qualifier--warn", "narrowing", "在收窄"),
+    "RISK_OFF": ("ud-verdict-qualifier--down", "deepening", "在加深"),
+    "MIXED": ("ud-verdict-qualifier--muted", "steady", "趋稳"),
+}
+
+
+@pytest.mark.parametrize(
+    "synthetic_latest,expected_verdict",
+    [
+        # Each case is a synthetic INPUT to the real engine call. Only the
+        # vol leg fires on a minimal `latest` (no frame → no tape leg; the
+        # other readers need keys this input omits), and `_comp_vol` maps
+        # `conditions.risk_appetite.vix_term` onto that leg's score:
+        # <0.90 → 0.85, 1.00–1.05 → 0.42, ≥1.05 → 0.20. With no other leg
+        # the blend is exactly that score (×100), so the branch is selected
+        # by construction — contango + a 0th-percentile VIX reads 91 →
+        # RISK_ON, the neutral term band reads 49 → MIXED, backwardation +
+        # a 100th-percentile VIX reads 12 → RISK_OFF.
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 0.85},
+                            "complacency": {"vix_pctile": 0.0}}},
+            "RISK_ON",
+        ),
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 1.02}}},
+            "MIXED",
+        ),
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 1.10},
+                            "complacency": {"vix_pctile": 1.0}}},
+            "RISK_OFF",
+        ),
+    ],
+)
+def test_verdict_branches_render_deterministically(synthetic_latest, expected_verdict):
+    """All three verdict branches, reached through the REAL engine on
+    deterministic synthetic INPUTS and rendered by the real hero template.
+
+    Lawful fixture form (a): the inputs to `market_state_snapshot` are
+    synthetic; the engine's own RETURN is what the hero renders against —
+    never a hand-built OUTPUT shape. The tests read no data/ and do not
+    depend on the live regime, unlike the `_real_vm()` forms above."""
+    from engine.market_state import market_state_snapshot
+
+    market_state = market_state_snapshot(synthetic_latest, frame=None, alerts=[])
+    assert market_state is not None, "engine must resolve the minimal vol-leg input"
+    assert market_state["verdict"] == expected_verdict, (
+        f"engine must return {expected_verdict} for this synthetic input "
+        f"(proves the branch is really reached), got {market_state['verdict']}"
+    )
+    qual_class, word_en, word_zh = _VERDICT_WORDS_BY_VERDICT[expected_verdict]
+    vm = {
+        "market_state": market_state,
+        "stance": {"key": "shift"},
+        "alerts": [],
+        "event_strip": [],
+        "ms_history": [],
+        "risk_envelope": {},
+        "fear_greed": {},
+        "latest": {"date": market_state.get("asof"),
+                   "quad_name": market_state.get("label_en")},
+    }
+    html = _render_macro_with_hero(vm)
+    assert market_state["label_en"] in html, (
+        f"{expected_verdict}: engine label_en {market_state['label_en']!r} must render"
+    )
+    assert market_state["label_zh"] in html, (
+        f"{expected_verdict}: engine label_zh {market_state['label_zh']!r} must render"
+    )
+    assert qual_class in html, (
+        f"{expected_verdict}: qualifier class {qual_class!r} must render"
+    )
+    assert word_en in html, f"{expected_verdict}: EN word {word_en!r} must render"
+    assert word_zh in html, f"{expected_verdict}: ZH word {word_zh!r} must render"
 
 
 # --------------------------------------------------------------------------- #
