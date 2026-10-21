@@ -247,7 +247,8 @@ def main() -> int:
     deny = policy.get("deny") or {}
     denied = {"exact": set(deny.get("exact") or []), "prefixes": tuple(deny.get("prefixes") or [])}
     labels = navigation_labels([source("templates/_navlinks.html.j2"),
-                                source("templates/_public_nav.html.j2")])
+                                source("templates/_public_nav.html.j2"),
+                                source("templates/_public_footer.html.j2")])
     doc = derive_projection(registry, paths, denied, labels,
                             registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=ref,
                             document_paths=document_inventory(ROOT, ref, paths))
