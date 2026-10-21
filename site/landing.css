@@ -319,6 +319,7 @@ html.still{scroll-behavior:auto}
 .nav-in{position:relative;max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter);height:64px;display:flex;align-items:center;gap:24px}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink)}
 .brand .m{width:27px;height:27px;border-radius:7px;background:var(--ink);display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:14px}
+.brand img.m{display:block;flex:none;background:none}
 .nav-links{display:flex;align-items:center;gap:4px;margin:0;padding:0;list-style:none;font-size:14px;font-weight:500}
 .nav-group{position:relative}
 .nav-trigger,.nav-direct>a{display:flex;align-items:center;gap:6px;min-height:40px;padding:8px 12px;border-radius:10px;color:var(--muted);font:inherit;transition:color var(--dur-micro) var(--ease-out),background var(--dur-micro) var(--ease-out)}
@@ -1414,7 +1415,6 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
 }
 @media (max-width:430px){
   .brand{gap:0;font-size:0}
-  .brand .m{font-size:14px}
   /* One notch of tracking off the h2s, here only: at the 30px floor the two longest
      heads sat ~11px from a re-wrap, and 375px devices already broke them onto a third
      line. -.024em buys ~5px at 390 and recovers both at 375. ZH is left alone by
