@@ -250,11 +250,15 @@ def test_contract_records_premise_correction_and_verdicts():
 
 
 def test_legacy_jobs_gate_line_lists_contract_suite():
-    """The one CI line this packet edits must keep the gate suite and add this file."""
+    """The one CI line this packet edits must keep the gate suite and add this file.
+
+    SIC-I09A appended tests/test_sector_central_history.py to the same line.
+    """
     yml = LEGACY_JOBS.read_text(encoding="utf-8")
     line = (
         "run: python -m pytest tests/test_sector_central_gate.py "
-        "tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py -q"
+        "tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py "
+        "tests/test_sector_central_history.py -q"
     )
     assert line in yml, "tier-gate run line no longer registers test_sector_receiver_contracts.py"
     # the neighbouring suites' registrations are untouched
