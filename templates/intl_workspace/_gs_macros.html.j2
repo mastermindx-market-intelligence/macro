@@ -17,7 +17,8 @@
 {%- endmacro %}
 
 {% macro gs_tier_chip(label) -%}
-{{ gs_chip(label, {'T1': 'tier', 'T2': 'tier', 'T3': 'tier', 'Proxy': 'prov', 'Restricted': 'warn-dashed'}.get(label, 'tier')) }}
+{%- set copy = {'T1': ('T1', 'T1'), 'T2': ('T2', 'T2'), 'T3': ('T3', 'T3'), 'Proxy': ('Proxy', '代理'), 'Restricted': ('Restricted', '受限')}.get(label, (label, label)) -%}
+{{ gs_chip(t(copy[0], copy[1]), {'T1': 'tier', 'T2': 'tier', 'T3': 'tier', 'Proxy': 'prov', 'Restricted': 'warn-dashed'}.get(label, 'tier')) }}
 {%- endmacro %}
 
 {% macro gs_stance_chip(stance) -%}
@@ -71,33 +72,46 @@
 {%- endmacro %}
 
 {# state cell (§7 anatomy: h92, pad 10/12, --r-card, --panel, 1px --line).
+   EXACTLY THREE rows (VF2): (1) market 11/600 --muted + state chip;
+   (2) one flex row — value numeral 17/700 with the basis label inline on the
+   same baseline (Abstain/Empty put the reason in the basis slot; Corrected
+   puts the struck old value inline before the new one; Restricted shows the
+   dashed rights slot with its entitlement note);
+   (3) clock numeral 10 --muted, with the Partial missing-leg text after it.
    dir: 'up'|'down'|'' drives §6 ink (never applied to stale/closed/suspended,
-   which are always muted). corrected renders old (line-through) → new. #}
+   which are always muted). No state adds a fourth row at 1440. #}
 {% macro gs_state_cell(state, market, value=none, unit='', basis='', clock='', reason='', note='', old='', dir='') -%}
 <div class="intl-gs__statecell intl-gs__statecell--{{ state }}" data-state="{{ state }}"{% if dir %} data-dir="{{ dir }}"{% endif %}>
   <div class="intl-gs__statecell__top">
     <span class="intl-gs__statecell__market">{{ market }}</span>
     {{ gs_state_chip(state, note) }}
   </div>
+  <div class="intl-gs__statecell__mainrow">
   {%- if state == 'restricted' %}
-  <span class="intl-gs__rights-slot" role="img" aria-label="Value withheld · rights restricted · 数值保留 · 权限受限"></span>
+    <span class="intl-gs__rights-slot" role="img" aria-label="Value withheld · rights restricted · 数值保留 · 权限受限"></span>
+    {%- if reason %}<span class="intl-gs__statecell__basis">{{ reason }}</span>{% endif %}
   {%- elif state == 'loading' %}
-  <span class="intl-gs__skel" aria-hidden="true"></span>
-  <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
+    <span class="intl-gs__skel" aria-hidden="true"></span>
+    <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
   {%- elif state == 'corrected' %}
-  <span class="intl-gs__statecell__value"><span class="intl-gs__old intl-gs__num">{{ old }}</span> {{ gs_signed(value, 2, unit) }}</span>
+    <span class="intl-gs__old intl-gs__num">{{ old }}</span><span class="intl-gs__statecell__value intl-gs__num">{{ gs_signed(value, 2, unit) }}</span>
+  {%- elif state in ['abstain', 'empty'] %}
+    <span class="intl-gs__statecell__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__statecell__basis">{{ reason }}</span>
   {%- else %}
-  <span class="intl-gs__statecell__value intl-gs__num{% if state in ['stale', 'closed', 'suspended'] %} intl-gs__num--muted{% elif dir %} intl-gs__num--{{ dir }}{% endif %}">{% if state in ['abstain', 'empty'] %}—{% else %}{{ gs_signed(value, 2, unit) }}{% endif %}</span>
+    <span class="intl-gs__statecell__value intl-gs__num{% if state in ['stale', 'closed', 'suspended'] %} intl-gs__num--muted{% elif dir %} intl-gs__num--{{ dir }}{% endif %}">{{ gs_signed(value, 2, unit) }}</span>
+    {%- if basis %}<span class="intl-gs__statecell__basis">{{ basis }}</span>{% endif %}
   {%- endif %}
-  {%- if basis %}<span class="intl-gs__statecell__basis">{{ basis }}</span>{% endif %}
-  <span class="intl-gs__statecell__clock intl-gs__num">{% if state == 'loading' %}{{ t('Acquiring…', '获取中…') }}{% else %}{{ clock }}{% endif %}</span>
-  {%- if reason %}<span class="intl-gs__statecell__reason">{{ reason }}</span>{% endif %}
+  </div>
+  <div class="intl-gs__statecell__metarow">
+    <span class="intl-gs__statecell__clock intl-gs__num">{% if state == 'loading' %}{{ t('Acquiring…', '获取中…') }}{% else %}{{ clock }}{% endif %}</span>
+    {%- if reason and state not in ['abstain', 'empty', 'restricted'] %}<span class="intl-gs__statecell__reason">{{ reason }}</span>{% endif %}
+  </div>
 </div>
 {%- endmacro %}
 
 {# ---- six-question strip (§1.2/§8) ---- #}
-{% macro gs_question_card(n, title, answer='', answered=false) -%}
-<div class="intl-gs__qcard{% if answered %} is-answered{% endif %}">
+{% macro gs_question_card(n, title, answer='', answered=false, active=false) -%}
+<div class="intl-gs__qcard{% if answered %} is-answered{% endif %}{% if active %} is-active{% endif %}">
   <span class="intl-gs__qcard__n intl-gs__num">{{ n }}</span>
   <span class="intl-gs__qcard__body">
     <span class="intl-gs__qcard__title">{{ title }}</span>
@@ -109,6 +123,64 @@
 {% macro gs_question_strip(questions) -%}
 <div class="intl-gs__qstrip">
 {%- for q in questions %}{{ gs_question_card(q.n, q.title, q.answer|default(''), q.answered|default(false)) }}{% endfor -%}
+</div>
+{%- endmacro %}
+
+{# W2F-X X5: the shared chrome strip — the six spec §1.2 questions with their
+   frozen EN/ZH labels; `active` rings the board's current question. #}
+{% macro gs_questions(active=none) -%}
+{%- set labels = [('What changed globally?', '全球发生了什么变化？'),
+                  ('Local, FX, common or divergent?', '本地、汇率、共同还是背离？'),
+                  ('Credit, funding, liquidity?', '信用、融资、流动性？'),
+                  ('Transmission into the US?', '如何传导至美国？'),
+                  ('Eligible US corroboration?', '合格的美国佐证？'),
+                  ('What resolves the thesis?', '什么能验证或推翻论点？')] -%}
+<div class="intl-gs__qstrip">
+{%- for pair in labels %}{{ gs_question_card(loop.index, t(pair[0], pair[1]), '', false, loop.index == active) }}{% endfor -%}
+</div>
+{%- endmacro %}
+
+{# W2F-X X5: §10.0 page header — eyebrow · H1 · lede, with the specimen chip
+   beside the title when the page shows specimen values. #}
+{% macro gs_page_header(eyebrow, title, lede, specimen=false) -%}
+<header class="intl-gs__pagehead">
+  {{ gs_eyebrow(eyebrow) }}
+  <h1 class="intl-gs__pagehead__title">{{ title }}</h1>
+  <p class="intl-gs__pagehead__lede">{{ lede }}</p>
+  {%- if specimen %}{{ gs_specimen_chip() }}{% endif %}
+</header>
+{%- endmacro %}
+
+{# W2F-X X5: the §10.0 snapshot bar bound to one basis — four contract clock
+   cells (label + the latest qualified clock instant, or "—" plus the no-
+   qualified-observation copy), the Mode | Basis | Horizon read-out as
+   segmented read-only labels, and the alignment note. The usd_hedged basis
+   shows the Abstain state instead of a basis label. snapshot is the mount's
+   workspace['surveillance']['snapshot'][basis] block. #}
+{% macro gs_snapshot(snapshot, basis, horizon) -%}
+{%- set entry = (snapshot or {}).get(basis, {}) -%}
+{%- set clocks = entry.get('clocks') or {} -%}
+{%- set clock_labels = [('observation', ('Reference period', '参考区间')),
+                        ('source_publication', ('Source available', '来源可得')),
+                        ('ingestion', ('Acquired + qualified', '采集并合格')),
+                        ('computation', ('Published', '发布'))] -%}
+{%- set basis_copy = {'local': ('Local', '本币'),
+                      'usd_unhedged': ('USD · Unhedged', '美元 · 未对冲'),
+                      'usd_hedged': ('USD · Hedged', '美元 · 已对冲')}.get(basis, (basis, basis)) -%}
+<div class="intl-gs__snapshot">
+  {%- for key, pair in clock_labels %}
+  <span class="intl-gs__snapclock">
+    <span class="intl-gs__snapclock__label">{{ t(pair[0], pair[1]) }}</span>
+    {%- if clocks.get(key) %}<span class="intl-gs__snapclock__value intl-gs__num">{{ clocks.get(key) }}</span>
+    {%- else %}<span class="intl-gs__snapclock__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__snapclock__empty">{{ t('No qualified observation', '无合格观测') }}</span>{% endif %}
+  </span>
+  {% endfor -%}
+  <span class="intl-gs__snapcontrols">
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Mode', '模式') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t('Price', '价格') }}</span></span></span>
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Basis', '口径') }}</span>{% if basis == 'usd_hedged' %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt">{{ t(basis_copy[0], basis_copy[1]) }}</span></span> {{ gs_chip(t('Hedged basis not supported', '不支持对冲口径'), 'muted-dashed') }}{% else %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t(basis_copy[0], basis_copy[1]) }}</span></span>{% endif %}</span>
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Horizon', '区间') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active intl-gs__num">{{ horizon }}</span></span></span>
+  </span>
+  <span class="intl-gs__snapshot__note">{{ t('Clocks follow the four-clock observation contract; each cell is the latest qualified observation of this basis.', '时钟遵循四时钟观测合同；每个单元格均为该口径最近一次合格观测。') }}</span>
 </div>
 {%- endmacro %}
 
@@ -149,12 +221,17 @@
 </div>
 {%- endmacro %}
 
-{# ---- KPI card (§8) ---- #}
-{% macro gs_kpi(label, value, unit, basis, clock, tier, ink='') -%}
+{# ---- KPI card (§8) ---- count=true renders an unsigned integer (VF10: counts
+   are never signed and never carry decimals; only returns carry a sign, dp and
+   direction ink per §6). The tier chip sits in the card's header ROW (VF11),
+   so a long label wraps beside it instead of colliding with it. #}
+{% macro gs_kpi(label, value, unit, basis, clock, tier, ink='', count=false) -%}
 <div class="intl-gs__kpi">
-  <span class="intl-gs__kpi__tier">{{ gs_tier_chip(tier) }}</span>
-  <span class="intl-gs__kpi__label">{{ label }}</span>
-  <span class="intl-gs__kpi__value intl-gs__num{% if ink %} intl-gs__num--{{ ink }}{% endif %}">{{ gs_signed(value, 2, unit) }}</span>
+  <div class="intl-gs__kpi__head">
+    <span class="intl-gs__kpi__label">{{ label }}</span>
+    <span class="intl-gs__kpi__tier">{{ gs_tier_chip(tier) }}</span>
+  </div>
+  <span class="intl-gs__kpi__value intl-gs__num{% if ink %} intl-gs__num--{{ ink }}{% endif %}">{% if count %}{{ value|int }}{% else %}{{ gs_signed(value, 2, unit) }}{% endif %}</span>
   <span class="intl-gs__kpi__meta">{{ basis }} · <span class="intl-gs__num">{{ clock }}</span></span>
 </div>
 {%- endmacro %}

@@ -57,9 +57,15 @@ html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spaci
 /* ---- L2 focus / selected / featured / hover ---- */
 .intl-gs :is(button,select,a,[tabindex],.intl-gs__seg__opt,.intl-gs__qcard,.intl-gs__row,.intl-gs__chip--link):focus-visible{outline:2px solid var(--link);outline-offset:3px;}
 .intl-gs__featured{outline:1.5px solid var(--info);}
-.intl-gs__table tbody tr.is-selected{outline:1.5px solid var(--info);}
-.intl-gs__qcard.is-answered .intl-gs__qcard__n{outline:1.5px solid var(--info);}
-.intl-gs__btn:not(:disabled):hover,.intl-gs__seg__opt:not(.is-active):hover,.intl-gs__qcard:hover,.intl-gs__table tbody tr:hover{background:var(--panel2);}
+/* VF9: the ring draws INSIDE the row box so the clipped table wrap cannot
+   cut it — all four sides render at 1440. Never inset, never single-side. */
+.intl-gs__table tbody tr.is-selected{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs__qcard.is-answered .intl-gs__qcard__n,.intl-gs__qcard.is-active .intl-gs__qcard__n{outline:1.5px solid var(--info);}
+.intl-gs__btn:not(:disabled):hover,.intl-gs__seg__opt:not(.is-active):hover,.intl-gs__qcard:hover,.intl-gs__table tbody tr:hover,.intl-gs a[data-gs-select-market]:hover{background:var(--panel2);}
+/* X6 selected-market marking: the selected row keeps the 1.5px --info ring
+   (a full outline, offset inside — never inset, never a single-side border);
+   the global :focus-visible rule above stays on top for focusable children. */
+.intl-gs [data-gs-market-row][data-gs-selected]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
 
 /* ---- chips (§7/§8) ---- */
 .intl-gs__chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:var(--r-pill);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:var(--fs-micro);font-weight:600;line-height:1;white-space:nowrap;}
@@ -95,6 +101,11 @@ html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spaci
 .intl-gs__qcard__title{font-size:var(--fs-sm);font-weight:600;color:var(--text);line-height:1.4;}
 .intl-gs__qcard__answer{font-size:var(--fs-label);color:var(--muted);line-height:1.4;}
 
+/* ---- page header (§10.0; W2F-X X5) ---- */
+.intl-gs__pagehead{display:flex;flex-direction:column;gap:4px;margin:0;}
+.intl-gs__pagehead__title{margin:0;font-size:var(--fs-h1);font-weight:700;color:var(--text);line-height:1.2;}
+.intl-gs__pagehead__lede{margin:0;max-width:760px;font-size:var(--fs-md);color:var(--muted);line-height:1.5;}
+
 /* ---- panel / band / band head ---- */
 .intl-gs__panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:16px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;}
 .intl-gs__band{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-width:0;}
@@ -108,21 +119,32 @@ html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spaci
 .intl-gs__split__main{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
 .intl-gs__rail{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px;min-width:0;}
 
-/* ---- snapshot bar ---- */
+/* ---- snapshot bar (§10.0; X5 clock cells + read-out) ---- */
 .intl-gs__snapshot{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:14px 16px;}
-.intl-gs__snapclock{display:flex;flex-direction:column;gap:2px;}
+.intl-gs__snapclock{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .intl-gs__snapclock__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
 html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;letter-spacing:0.02em;}
 .intl-gs__snapclock__value{font-size:var(--fs-sm);color:var(--text);}
-.intl-gs__snapshot__note{font-size:var(--fs-sm);color:var(--muted);}
+.intl-gs__snapclock__empty{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs__snapshot__note{font-size:var(--fs-sm);color:var(--muted);flex-basis:100%;}
+.intl-gs__snapcontrols{display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
+.intl-gs__snapctl{display:inline-flex;align-items:center;gap:6px;}
+.intl-gs__snapctl__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;letter-spacing:0.02em;}
+.intl-gs__seg--readonly .intl-gs__seg__opt{cursor:default;}
 
 /* ---- KPI card ---- */
 .intl-gs__kpirow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
 .intl-gs__kpi{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:14px 16px;}
-.intl-gs__kpi__label{font-size:var(--fs-label);font-weight:700;color:var(--muted);}
+/* VF11: label and tier chip share one header row — the chip keeps its place
+   in flow, and at ≤900 the label takes the full first line so a long EN label
+   never collides with a wide chip on a narrow card. */
+.intl-gs__kpi__head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0;}
+.intl-gs__kpi__label{font-size:var(--fs-label);font-weight:700;color:var(--muted);flex:1;min-width:0;}
 .intl-gs__kpi__value{font-size:var(--fs-num-lg);font-weight:700;color:var(--text);}
 .intl-gs__kpi__meta{font-size:var(--fs-micro);color:var(--muted);}
-.intl-gs__kpi__tier{position:absolute;top:10px;right:10px;}
+.intl-gs__kpi__tier{flex:none;}
+@media (max-width:900px){.intl-gs__kpi__head{flex-wrap:wrap;}.intl-gs__kpi__label{flex-basis:100%;}}
 
 /* ---- session hand-off strip (h56) ---- */
 .intl-gs__handoff{display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-height:56px;border:1px solid var(--line);border-radius:var(--r-panel);padding:8px 16px;background:var(--panel);}
@@ -171,12 +193,15 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
 .intl-gs__skel--sm{height:8px;width:70%;}
 @keyframes intl-gs-skel-pulse{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}
 
-/* ---- state cell (§7) ---- */
+/* ---- state cell (§7; VF2: exactly three rows) ---- */
 .intl-gs__statecell{display:flex;flex-direction:column;gap:4px;min-height:92px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);}
 .intl-gs__statecell--qualified{border:1px dashed var(--warn);}
 .intl-gs__statecell--abstain{border:1px dashed var(--muted);}
 .intl-gs__statecell--corrected{outline:1px solid var(--info);}
 .intl-gs__statecell__top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.intl-gs__statecell__mainrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0;}
+.intl-gs__statecell--loading .intl-gs__statecell__mainrow{flex-direction:column;align-items:stretch;}
+.intl-gs__statecell__metarow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0;}
 .intl-gs__statecell__market{font-size:var(--fs-label);font-weight:600;color:var(--muted);}
 .intl-gs__statecell__value{font-size:var(--fs-h2);font-weight:700;}
 .intl-gs__statecell__basis{font-size:var(--fs-label);color:var(--muted);}
@@ -184,6 +209,11 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
 .intl-gs__statecell__reason{font-size:var(--fs-label);color:var(--muted);}
 .intl-gs__statecell--stale .intl-gs__statecell__value,.intl-gs__statecell--closed .intl-gs__statecell__value,.intl-gs__statecell--suspended .intl-gs__statecell__value{color:var(--muted);}
 .intl-gs__old{font-size:var(--fs-sm);color:var(--muted);text-decoration:line-through;}
+
+/* VF15: the page-wide h2::before 3px gradient rail (templates/intl.html.j2)
+   never renders inside the surveillance scope — neutral surface hierarchy
+   only (Chairman design rule 2026-10-18). */
+.intl-gs h2::before{content:none;}
 
 /* ---- correction note ---- */
 .intl-gs__corr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:var(--fs-sm);color:var(--text);}
@@ -198,9 +228,23 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
 .intl-gs__heatbg--up-strong{background:var(--returns-up-strong);}
 .intl-gs__heatbg--down-strong{background:var(--returns-down-strong);}
 
+/* ---- coverage glyph rows (§7; VF7: 12×12 glyph + numeral 10 clock) ---- */
+.intl-gs__glyphwrap{display:inline-flex;align-items:center;gap:4px;min-width:0;}
+.intl-gs__glyphwrap .intl-gs__num{font-size:var(--fs-micro);color:var(--muted);}
+
+/* ---- typed-edge legend (§8; VF8: 11 --muted words beside the 28×10 glyph) ---- */
+.intl-gs__edgelabel{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-label);color:var(--muted);}
+/* figure numerals after bars (§8: 12.5/700, never 17) */
+.intl-gs__num--fig{font-size:var(--fs-sm);font-weight:700;}
+
 /* ---- fixture helpers (test/evidence only) ---- */
 .intl-gs__statematrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:8px;}
 .intl-gs__demorow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+/* VF13: the fixture page reserves space under the floating copilot launcher
+   so no specimen is covered (production pages never carry this class). */
+.intl-gs--fixture{padding-bottom:96px;}
+/* VF14: the specimen chip sits in the fixture header row with >=12px below. */
+.intl-gs__specimen-head{margin:0 0 12px;}
 
 /* ---- motion ---- */
 .intl-gs__btn,.intl-gs__seg__opt,.intl-gs__chip--link,.intl-gs__table tbody tr{transition:background-color 120ms ease,color 120ms ease;}
@@ -213,7 +257,9 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
 @media (max-width:1099px){.intl-gs__split{flex-direction:column;}.intl-gs__rail{width:100%;position:static;}.intl-gs__kpirow{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media (max-width:900px){
   .intl-gs{padding:16px 16px 40px;}
-  .intl-gs__qstrip{grid-template-columns:repeat(3,minmax(0,1fr));}
+  /* VF12 (§11): the six-question strip is a 2×3 grid at ≤900 so no EN or ZH
+     label clips or ellipsises at 390. */
+  .intl-gs__qstrip{grid-template-columns:repeat(2,minmax(0,1fr));}
   .intl-gs__snapshot{flex-direction:column;align-items:stretch;}
   .intl-gs__seg{height:40px;width:100%;}
   .intl-gs__seg__opt{flex:1;justify-content:center;min-height:40px;}
@@ -224,3 +270,10 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
   .intl-gs__table td{height:auto;padding:4px 14px;display:flex;justify-content:space-between;gap:12px;border-bottom:none;}
   .intl-gs__statematrix{grid-template-columns:1fr;}
 }
+/* ==== W2A region (IM13 scanner + coverage): the W2A lane inserts its rules between this line and the next ==== */
+/* ==== end W2A region ==== */
+/* spacer 1: keep unchanged; separates the two lane regions */
+/* spacer 2: keep unchanged */
+/* spacer 3: keep unchanged */
+/* ==== W2B region (IM14 dossier): the W2B lane inserts its rules between this line and the next ==== */
+/* ==== end W2B region ==== */
