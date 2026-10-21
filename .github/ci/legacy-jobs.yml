@@ -7290,6 +7290,10 @@ jobs:
       - "tests/test_run_options_sparse_selector.py"
       - "tests/test_options_structure_intraday.py"
       - "tests/test_private_auth_dict.py"
+      - "collectors/thetadata.py"
+      - "scripts/calibrate_flow_signing.py"
+      - "tests/fixtures/thetadata/**"
+      - "tests/test_thetadata.py"
       - "tests/test_thetadata_store.py"
       # AD-1T1 (2026-08-22): full-universe incremental T1 daily maintainer —
       # legacy characterization (F17), the --daily hostile suite, and the
@@ -7414,7 +7418,7 @@ jobs:
       - name: flow derivative source clocks (enrich + chain heat, fail-closed provenance)
         run: python -m pytest tests/test_flow_enrich.py tests/test_build_chain_heat.py tests/test_options_structure.py tests/test_options_pilot_study_adapter.py tests/test_options_pilot_identity_offset.py -q
       - name: ThetaData PIT store (narrow OI projection, exact-date filter, cache bypass)
-        run: python -m pytest tests/test_thetadata_store.py -q
+        run: python -m pytest tests/test_thetadata.py tests/test_thetadata_store.py -q
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
