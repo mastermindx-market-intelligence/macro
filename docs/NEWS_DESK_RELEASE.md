@@ -252,3 +252,53 @@ verification. The independent direct SSH-origin inspection refusal is not bypass
 Shared Company News and its normal deploy remain separate owners; the rendered
 News consumer, live source-health clocks and signed-in retained-history behavior
 must be verified after the normal release path, not inferred from these fixtures.
+
+
+## 2026-10-21 current-main integration
+
+The original News source `3a663ae70ecbd8a4130de9c95dbb6d940d181e04` was
+composed with Macro main `2ebe9b7d52665ce4b37dbdb5845f4ce5cea879b1` on the
+original managed branch. The measured conflicts were `tests/test_ci_pack.py`
+and a routine old-template render of `site/news.html`.
+
+The merged manifest preserves the exact union of 344 jobs, including all seven
+`engine/marketing/intelligence_history.py` registrations. Canonical packing
+measurements are 5,835 / 5,808 / 5,584 estimator units for index / build-free /
+plan-book. Every probe remains at ten packs. Only the first two weight ceilings
+are updated to their measured composition; selectors, job ceilings and the
+plan-book ceiling remain unchanged. These are planning weights, not runtime.
+
+Main did not change the five canonical News template/controller/style sources.
+The generated News conflict therefore retains the previously qualified cockpit
+artifact (SHA-256 `0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`)
+rather than adopting the old page's render. This is not a fresh source/provider
+snapshot or production proof; the normal canonical render and installed API/press
+worker verification remain release obligations. Prior browser evidence is retained
+for its unchanged source scope only. New-head CI and applicable independent review
+are required; the original failed reviewer packet remains immutable.
+
+
+### Current-main integration validation
+
+The affected packing, contract-delta, News page-render and News JavaScript
+modules completed with 363 passing tests and three failures. Two failures
+required the committed P0B receipt tree omitted by this sparse checkout; after
+the existing sparse-checkout helper materialized mockups, both exact tests
+passed. No assertions or source evidence were weakened.
+
+The remaining closure audit finds the pre-existing ignored
+`site/stockdata/AAPL.json` cache. That file is absent from both the prior News
+commit and the imported main commit, and its presence is the same filesystem
+sensitivity already documented above for the original News qualification.
+The existing ticker test names this optional data path, so the physical cache
+widens the local scanner's inferred closure. It was preserved; no fictitious
+AAPL trigger was added and no local cache was staged. A clean hosted exact-head
+run remains required. The complete local run is not represented as green.
+
+The combined native repair continues on Mastermind PR #1665 after the original
+#1661 head merged without its later provenance/transport composition. Neither
+that landing nor this News integration reconciles original failed reviewer
+`news-9612-exact-3a663-release-review-20261021`. Its retained packet continues to
+refer to original News source `3a663ae70ecb` and must not be rewritten as this
+new integration candidate. Independent applicable review and actual signed-in
+production News acceptance remain outstanding.
