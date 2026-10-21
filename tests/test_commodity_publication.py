@@ -276,3 +276,46 @@ def test_symlinked_site_directory_refuses_without_writing_target(repo, outside):
     assert (target / "other.html").read_bytes() == other_before
     assert (repo / "data/source.json").read_bytes() == source_before
     assert site.is_symlink()
+
+
+def test_production_head_keeps_canonical_theme_through_publication(repo):
+    """The normal builder must retain the qualified theme and its real imports."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    from lib.pages import css_imports
+    from scripts.externalize_css import externalize
+    from scripts.optimize_assets import make_optimizer
+
+    source = Path(__file__).resolve().parents[1]
+    site = repo / "site"
+    theme = (source / "templates/theme.css").read_bytes()
+    for name in ("theme.css", "product-nav-icons.css", "navigation-refresh.css"):
+        (site / name).write_bytes((source / "templates" / name).read_bytes())
+    env = Environment(loader=FileSystemLoader(source / "templates"),
+                      autoescape=True, undefined=StrictUndefined)
+    # Render the production head, including its actual style partials, without
+    # running commodity collectors, economic calculations or legacy body loops.
+    template = (source / "templates/commodities.html.j2").read_text()
+    head = env.from_string(template.split("</head>", 1)[0] + "</head>").render(
+        as_of="2026-10-16", commodity_workspace=True)
+    destination = site / "commodities.html"
+    destination.write_text(head + "<body>" + page().split("<body>", 1)[1])
+    accepted = commit(repo, "production head before publication transforms")
+
+    externalize(site)
+    optimized = make_optimizer(site)(destination.read_text(), site)
+    destination.write_text(optimized)
+    result = guard.verify_publication(repo, accepted)
+    assert result["action"] == "kept"
+    assert result["freshness_verified"] is False
+
+    sheets = [repo / path for path in guard._asset_paths(optimized)
+              if path.endswith(".css")]
+    canonical = [path for path in sheets if path.read_bytes().strip() == theme.strip()]
+    assert canonical, "the normal renderer lost the accepted canonical theme"
+    for sheet in canonical:
+        for imported in css_imports(sheet.read_text()):
+            target = sheet.parent / imported.split("?", 1)[0].split("#", 1)[0]
+            assert target.is_file(), f"relocated theme import is missing: {target}"
+    # A second normalization pass must not introduce a broken preload or churn.
+    assert externalize(site) == 0
+    assert make_optimizer(site)(destination.read_text(), site) == optimized
