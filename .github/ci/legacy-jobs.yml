@@ -6814,6 +6814,7 @@ jobs:
       - "engine/options_matrix.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_surface.py"
+      - "engine/options_scenario_admission.py"
       - "engine/options_payoff.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
@@ -7176,6 +7177,7 @@ jobs:
       - "tests/test_options_episode_outcome_coverage.py"
       - "tests/test_options_matrix.py"
       - "tests/test_options_scenario_surface.py"
+      - "tests/test_options_scenario_admission.py"
       - "tests/test_options_payoff.py"
       - "tests/test_options_market_memory_local_receipts.py"
       - "tests/test_options_market_memory_local_replica.py"
@@ -7305,7 +7307,7 @@ jobs:
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
-        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
+        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
         run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
@@ -7769,6 +7771,33 @@ jobs:
       - name: International research context and route state
         run: node --test tests/intl_workspace_state.test.cjs
 
+  international-global-universe:
+    # IM11: global universe v1, capability coverage and source-rights matrix (data contract only).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/intl_global_universe.py"
+      - "tests/test_intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install contract test dependencies
+        run: pip install pytest pyyaml
+      - name: International global universe contract
+        run: python -m pytest tests/test_intl_global_universe.py -q
+
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
     # Scope includes the measured first-party import closure and config input.
@@ -8076,6 +8105,10 @@ jobs:
       - "lib/intl_macro_publication.py"
       - "tests/test_intl_macro_mount.py"
       - "tests/test_intl_macro_publication.py"
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "tests/test_intl_global_observation.py"
+      - "tests/test_intl_global_observation_adapter.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8086,7 +8119,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -8915,6 +8948,7 @@ jobs:
           tests/test_cn_live_pack.py
           tests/test_cn_live_evaluator.py
           tests/test_cn_live_vps_lane.py
+          tests/test_cn_live_pack_frozen.py
           tests/test_cn_live_reconcile.py -q
 
   fif-kernel-guards:
@@ -10536,6 +10570,8 @@ jobs:
     # index-template (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes.
     # scope: exclusive pins it to its static import closure plus ancestor inits; the probe
     # ceilings stay fixed.
+    # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
+    # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
     paths:
       - "templates/china_altdata.html.j2"
       - "tests/test_china_altdata.py"
@@ -10597,14 +10633,18 @@ jobs:
       - "lib/exchange_holidays.py"
       - "lib/filing_value_units.py"
       - "lib/hk_calendar.py"
+      - "lib/illus.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
       - "lib/stooq.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      - "scripts/build_china_altdata.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
     timeout-minutes: 5
