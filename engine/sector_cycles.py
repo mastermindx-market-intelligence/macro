@@ -26,6 +26,7 @@ Pure-read + additive: any failure on one sector is logged and skipped, never fat
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 
@@ -1621,7 +1622,9 @@ def compute(asof: str | None = None) -> dict | None:
     # payload.  Read inside a try — meta disclosure never breaks the build.
     try:
         from engine.hazard_parity import LIVE_HAZARD_PARITY as _live_parity
-        live_hazard_parity = dict(_live_parity)
+        # RB12b: deep copy — a shallow dict() shared the nested report with the
+        # module constant, so an in-process consumer could mutate LIVE_HAZARD_PARITY.
+        live_hazard_parity = copy.deepcopy(_live_parity)
     except Exception:  # noqa: BLE001 — additive disclosure, never fatal
         live_hazard_parity = None
 

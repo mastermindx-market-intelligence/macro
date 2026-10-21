@@ -179,7 +179,8 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
                      else "parity_failed" if _parity.get("verdict") == "PARITY_FAILS"
                      else "parity_not_established")
             live_parity = ({"verdict": _parity.get("verdict"),
-                            "failing": _parity.get("failing"),
+                            # RB12b: own list — never the constant's own object
+                            "failing": list(_parity.get("failing") or ()),
                             "report_ref": "meta.live_hazard_parity"}
                            if any_qualified else None)
         except Exception:  # noqa: BLE001 — disclosure degrades, never raises
