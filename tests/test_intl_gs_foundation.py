@@ -586,16 +586,53 @@ def test_fixture_restricted_loading_and_specimen_rules():
 
 
 def test_fixture_every_number_lives_in_specimen_scope():
-    pytest.importorskip("bs4")
-    from bs4 import BeautifulSoup
-    html = _render_fixture()
-    soup = BeautifulSoup(html, "html.parser")
-    scopes = [el for el in soup.find_all(class_="intl-gs__specimen-scope")]
-    assert scopes, "fixture must carry a specimen scope"
-    chips = soup.find_all(class_="intl-gs__chip--specimen")
-    assert chips and any(chip.find_parent(class_="intl-gs__specimen-scope") for chip in chips)
-    for number in soup.find_all(class_="intl-gs__num"):
-        assert number.find_parent(class_="intl-gs__specimen-scope"), str(number)
+    from html.parser import HTMLParser
+
+    class Scope(HTMLParser):
+        """Stack-walking specimen-scope checker (stdlib only, no bs4 gate)."""
+
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+            self.scopes = 0
+            self.numbers = 0
+            self.bad = 0
+            self.chips_in_scope = 0
+
+        def _classes(self, attrs):
+            return (dict(attrs).get("class") or "").split()
+
+        def handle_starttag(self, tag, attrs):
+            classes = self._classes(attrs)
+            is_scope = "intl-gs__specimen-scope" in classes
+            self.stack.append(is_scope)
+            if is_scope:
+                self.scopes += 1
+                return
+            in_scope = any(self.stack[:-1])
+            if "intl-gs__num" in classes:
+                if in_scope:
+                    self.numbers += 1
+                else:
+                    self.bad += 1
+            if "intl-gs__chip--specimen" in classes and in_scope:
+                self.chips_in_scope += 1
+
+        def handle_startendtag(self, tag, attrs):
+            self.handle_starttag(tag, attrs)
+            if self.stack:
+                self.stack.pop()
+
+        def handle_endtag(self, tag):
+            if self.stack:
+                self.stack.pop()
+
+    parser = Scope()
+    parser.feed(_render_fixture())
+    assert parser.scopes >= 1, "fixture must carry a specimen scope"
+    assert parser.chips_in_scope >= 1, "specimen chip must live inside the scope"
+    assert parser.numbers > 0, "fixture must render specimen numbers"
+    assert parser.bad == 0, f"{parser.bad} specimen numbers outside the specimen scope"
 
 
 def test_fixture_not_referenced_by_production_templates():

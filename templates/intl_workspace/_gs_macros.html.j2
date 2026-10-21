@@ -80,7 +80,7 @@
     {{ gs_state_chip(state, note) }}
   </div>
   {%- if state == 'restricted' %}
-  <span class="intl-gs__rights-slot" role="img" aria-label="{{ t('Value withheld · rights restricted', '数值保留 · 权限受限') }}"></span>
+  <span class="intl-gs__rights-slot" role="img" aria-label="Value withheld · rights restricted · 数值保留 · 权限受限"></span>
   {%- elif state == 'loading' %}
   <span class="intl-gs__skel" aria-hidden="true"></span>
   <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
@@ -172,7 +172,7 @@
 {% macro gs_minibar(local_pct, fx_pct) -%}
 {%- set lw = ((local_pct|abs) / 5 * 44)|round(1) -%}
 {%- set fw = ((fx_pct|abs) / 5 * 44)|round(1) -%}
-<svg class="intl-gs__minibar" width="88" height="12" viewBox="0 0 88 12" role="img" aria-label="{{ t('Local and FX legs around a zero tick · ±5% full scale', '围绕零刻度的本币与汇率贡献 · ±5% 满量程') }}">
+<svg class="intl-gs__minibar" width="88" height="12" viewBox="0 0 88 12" role="img" aria-label="Local and FX legs around a zero tick · ±5% full scale · 围绕零刻度的本币与汇率贡献 · ±5% 满量程">
   <line class="intl-gs__zero-tick" x1="44" y1="0" x2="44" y2="12"></line>
   {%- if local_pct and local_pct > 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--local" x="44" y="2" width="{{ lw }}" height="8" rx="2"></rect>{% endif %}
   {%- if local_pct and local_pct < 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--local" x="{{ 44 - lw }}" y="2" width="{{ lw }}" height="8" rx="2"></rect>{% endif %}
@@ -183,7 +183,7 @@
 
 {% macro gs_divergence(z) -%}
 {%- set len = (([z|abs, 3]|min) / 3 * 40)|round(1) -%}
-<svg class="intl-gs__divbar" width="80" height="14" viewBox="0 0 80 14" role="img" aria-label="{{ t('Signed divergence from a centred zero · ±2σ ticks', '相对中心零位的带符号背离 · ±2σ 刻度') }}">
+<svg class="intl-gs__divbar" width="80" height="14" viewBox="0 0 80 14" role="img" aria-label="Signed divergence from a centred zero · ±2σ ticks · 相对中心零位的带符号背离 · ±2σ 刻度">
   <line class="intl-gs__zero-tick" x1="40" y1="0" x2="40" y2="14"></line>
   <line class="intl-gs__divbar__tick" x1="13.3" y1="3" x2="13.3" y2="11"></line>
   <line class="intl-gs__divbar__tick" x1="66.7" y1="3" x2="66.7" y2="11"></line>
@@ -203,7 +203,7 @@
 {%- if gap_before_index is not none and loop.index0 >= gap_before_index %}{% if tail.append(x ~ ',' ~ y) %}{% endif %}
 {%- else %}{% if head.append(x ~ ',' ~ y) %}{% endif %}{% endif -%}
 {%- endfor -%}
-<svg class="intl-gs__spark" width="88" height="24" viewBox="0 0 88 24" role="img" aria-label="{{ t('20-session path, no smoothing, gap breaks the line', '20 个交易日的走势，无平滑，缺口断线') }}">
+<svg class="intl-gs__spark" width="88" height="24" viewBox="0 0 88 24" role="img" aria-label="20-session path, no smoothing, gap breaks the line · 20 个交易日的走势，无平滑，缺口断线">
   <line class="intl-gs__spark__baseline" x1="0" y1="{{ points[0] }}" x2="88" y2="{{ points[0] }}"></line>
   {%- if head|length > 1 %}<polyline class="intl-gs__spark__line" points="{{ head|join(' ') }}"></polyline>{% endif %}
   {%- if tail|length > 1 %}<polyline class="intl-gs__spark__tail" points="{{ tail|join(' ') }}"></polyline>{% endif %}
@@ -233,7 +233,7 @@
 
 {# ---- rights slot / skeleton / correction note / footnote ---- #}
 {% macro gs_rights_slot() -%}
-<span class="intl-gs__rights-slot" role="img" aria-label="{{ t('Restricted · value withheld', '受限 · 数值保留') }}"></span>
+<span class="intl-gs__rights-slot" role="img" aria-label="Restricted · value withheld · 受限 · 数值保留"></span>
 {%- endmacro %}
 
 {% macro gs_correction_note(old, new, clock) -%}
