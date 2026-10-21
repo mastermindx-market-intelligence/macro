@@ -522,9 +522,15 @@
       s.src = "theme.js"; s.defer = true;
       s.onload = function () {
         restoreLightOnlyHostTheme();
-        resolve(window.MDXAuth || null);
+        var broker = window.MDXAuth || null;
+        if (!broker) _themeLoad = null; // A missing broker must be retryable.
+        resolve(broker);
       };
-      s.onerror = function () { resolve(null); };
+      s.onerror = function () {
+        _themeLoad = null; // A transient SDK failure must not poison future login.
+        if (s.parentNode) s.parentNode.removeChild(s);
+        resolve(null);
+      };
       (document.head || document.documentElement).appendChild(s);
     });
     return _themeLoad;
