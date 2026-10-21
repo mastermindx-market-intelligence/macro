@@ -44,22 +44,24 @@ waves:
     pr: 9917
   - id: P04-P06
     title: Backend packets B01–B12 (generation, membership, metrics, phase age, grader, contracts, adapters, history, engine upgrades)
-    status: in_progress
+    status: done
     depends_on: [P01-P03]
-    next_action: "Merge ORCH-DATA's B05 r2 repair ref (weekend forward-log rows must not count as sessions) and B12 on top of d3f08a76; re-run the ci-pack closure + ceiling probe after each new engine module; then consume RB12/RB04/B13/RB13."
+    next_action: ""
   - id: P07-P08
     title: Complete editable Paper boards (desktop/mobile, both themes, all states) + dedicated Sector Cycles workspace
-    status: in_progress
+    status: done
     depends_on: [P01-P03]
-    next_action: "Adjudicate the ORCH-PAPER return against the node ledger and screenshots; admit the design reference before integration lanes start."
+    next_action: "ORCH-PAPER returned PLATFORM_FAILURE r2 (file-wide size warning); seat decision (c): items 2/4/5 + 8 axis cells PAPER_CAPACITY_LIMITED, acceptance via rendered-product browser proof under the Full RIG."
   - id: P09
     title: Genuine design/reference admission and the applicable Full RIG scope record
-    status: todo
+    status: in_progress
     depends_on: [P07-P08]
+    next_action: "Re-export 6W1R-0, re-freeze RIG sector-intelligence-cycles-20261021, commission Reviewer A (GLM review lane -> reviews/product_regression.yml) and Reviewer B (Opus READ_ONLY auditor -> reviews/visual_taste.yml) against the frozen sha."
   - id: P10-P13
     title: One complete Macro investigation (Brief → Rotation → Dossier → Cycles → dated members → stock/Prophet/Research → restored origin)
-    status: todo
+    status: in_progress
     depends_on: [P04-P06, P07-P08]
+    next_action: "I-wave merged on PR #9917 (I09A2/I05R2/I06R/I07R2, reviews PASS_WITH_NOTES, MINORs fixed, site pairs shipped at 72e4cca3); resolve the merge against current main, then run the complete investigation journey on the rendered product."
   - id: P14-P18
     title: Lenses, comparisons, history, Cycles depth, watches/saved investigations, compatibility, bounded scientific disposition
     status: todo

@@ -118,3 +118,21 @@ on the same base. PR #9917 stays a draft.
 ORCH-PAPER has boards #0–#13 on R3 page `p-24-0` (components, eight Cycles boards, three Watches
 boards, Brief desktop + mobile); Rotation, Dossier and Research R3 boards are next. No node id in
 any record was typed by the seat; all come from the orchestrator's ledger.
+
+## Checkpoint 3 — I-wave integration boundary (2026-10-21 08:5xZ)
+
+ORCH-DATA completed its programme (B05 r2, B12, B12 r2, B13 and B04 r3 accepted and merged; RB12b and RB13
+consumed; it is not re-spawned). ORCH-PAPER returned PLATFORM_FAILURE r2 against a file-wide Paper size warning;
+the seat recorded decision (c): items 2/4/5 and eight axis cells are `PAPER_CAPACITY_LIMITED` and their acceptance
+moves to rendered-product browser proof under the Full RIG. R3 page `p-24-0` holds 22 original boards plus
+`6W1R-0`; no node id in any record was typed by the seat.
+
+The four integration lanes landed on the PR branch with their reviews consumed: I09A2 (RI09b), I05R2 (RI05b),
+I06R (RI06) and I07R2 (RI07b) all PASS_WITH_NOTES, every MINOR fixed in a seat commit. The tier-gate run line now
+registers five suites and is byte-pinned in both contract suites; I06R and I07R run as their own steps. The
+exclusive-curation closure was funded by the integrated measurement (+10 on all three probes), and the five
+plain-copy site pairs ship in `72e4cca3`. PR #9917 remote head is `72e4cca36d9c`, still a draft; it reports a
+conflict against current `main` that the seat resolves next by merging `main` into the branch (never a rebase).
+
+Next: RIG re-freeze and the two independent reviewers (GLM product-regression lane; Opus READ_ONLY visual-taste
+auditor), the P10–P18 journeys on the rendered product, then undraft → CI → merge → P19–P23 natural-update proof.
