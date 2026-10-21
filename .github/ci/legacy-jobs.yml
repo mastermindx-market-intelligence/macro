@@ -6290,6 +6290,14 @@ jobs:
       # job's venv line (the suite's own test_import_stays_light pins that).
       - name: tier-preview split contract (sector_central act-now board)
         run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py -q
+      # SIC-I07R: saved sector investigations through the existing watch/save
+      # owner (templates/watchstore.js designated list, section 'si'). Runs as
+      # its own step because test_sector_receiver_contracts.py pins the step
+      # above as an exact substring. node-shelled like the hydration harness —
+      # node is preinstalled on ubuntu-latest and the suite skips cleanly if it
+      # ever is not; it needs nothing beyond the job's pytest install.
+      - name: tier-preview split contract (saved sector investigations)
+        run: python -m pytest tests/test_watchstore_sector_investigations_js.py -q
       - name: public dashboard preview-tier contracts (anon shell allowlist + controller caps)
         # Found unwired by the 2026-08-02 adversarial review of #4331: the suite
         # pins the public/anon split for the dashboard shells (site_access.yml
