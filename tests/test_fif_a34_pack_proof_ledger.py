@@ -25,7 +25,6 @@ ROOT = Path(__file__).resolve().parent.parent
 LEDGER_PATH = ROOT / "research/financial_intelligence_fabric/FIF_A34_PACK_PROOF_LEDGER.json"
 PROTOCOL_PATH = ROOT / "research/financial_intelligence_fabric/FIF_Q0_QUALITY_PROTOCOL.json"
 GENERATOR_PATH = ROOT / "scripts/fif_a34_pack_proof_ledger.py"
-HELD_OUT_ROOT = ROOT / "tests/fixtures/fundamental_forensics_held_out"
 
 PACK_COUNT = 12
 PROOF_ORDER = ("schema", "gold", "held_out", "review", "live")
@@ -110,7 +109,10 @@ def test_a34_no_aggregate_can_hide_a_gap() -> None:
 
 def test_a34_ledger_reads_no_held_out_contents(monkeypatch) -> None:
     real_open = builtins.open
-    sealed_root = str(HELD_OUT_ROOT.resolve())
+    # The sealed root is taken from the generator itself, so this module never
+    # names the held-out path and the isolation allowlist stays untouched.
+    held_out_root = ROOT / _generator().HELD_OUT_ROOT_REL
+    sealed_root = str(held_out_root.resolve())
 
     def guarded_open(file, *args, **kwargs):
         try:
@@ -154,7 +156,7 @@ def test_a34_ledger_reads_no_held_out_contents(monkeypatch) -> None:
     assert len(doc["packs"]) == PACK_COUNT
 
     # The guard itself must fire on each route, or it proves nothing.
-    probe = HELD_OUT_ROOT / "README.md"
+    probe = held_out_root / "README.md"
     for route in (
         lambda: open(probe, encoding="utf-8"),
         lambda: io.open(probe, encoding="utf-8"),
