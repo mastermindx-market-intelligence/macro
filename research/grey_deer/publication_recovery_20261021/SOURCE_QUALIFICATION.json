@@ -58,7 +58,7 @@
     "head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
     "accepted_application_head": "dd44a6b69587e048a5346387436ab441f1b85512",
     "current_head_delta": "one documentation sentence specifies required voting sources; application and tests unchanged",
-    "source_state": "READY / NATIVE_MERGE_QUEUE",
+    "source_state": "MERGED / PROTECTED SOURCE VERIFIED",
     "local_tests": {
       "passed": 472,
       "skipped": 1,
@@ -150,9 +150,53 @@
         "head": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
         "ci_run": 39586671816,
         "created_at": "2026-10-21T10:43:30Z",
-        "status": "in_progress"
+        "status": "completed",
+        "conclusion": "success",
+        "aggregate_check": 119191966611,
+        "completed_at": "2026-10-21T11:19:43Z"
       },
-      "protected_landing": null
+      "protected_landing": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+      "following_composition": {
+        "head": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+        "ci_run": 39586673741,
+        "status": "completed",
+        "conclusion": "success",
+        "aggregate_check": 119192103008,
+        "completed_at": "2026-10-21T11:20:03Z"
+      },
+      "predecessor_ci": {
+        "pr": 1669,
+        "head": "5a5f89b7ed7eabf59d14c3b947acde00a68c99be",
+        "ci_run": 39586670042,
+        "status": "completed",
+        "conclusion": "success",
+        "updated_at": "2026-10-21T11:21:37Z"
+      }
+    },
+    "landing": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+    "merged_at": "2026-10-21T11:21:56Z",
+    "cleanup": {
+      "process": 67474,
+      "completed_at": "2026-10-21T11:24:34.358219+00:00",
+      "preserved_test_artifacts": 26,
+      "preserved_root": "/tmp/rr-publisher-fixture-evidence-20261021-h59hmj0t",
+      "manifest_sha256": "9209407e5f8c85a037af2c3ab01f5f0c146792978504a1a7ca31209f8ecb6f71",
+      "removed_reproducible": [
+        ".venv",
+        ".pytest_cache",
+        "vendor/macro_src",
+        "147 __pycache__ .pyc files"
+      ],
+      "tracked_vendor_symlink_preserved": true
+    },
+    "workspace_release": {
+      "operation": "risk-radar-natural-publication-20261021",
+      "process": 70439,
+      "effect": "APPLIED",
+      "receipt_state": "REMOVED",
+      "clean": true,
+      "published_head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+      "history_preserved": true
     }
   },
   "composition": {
@@ -213,7 +257,8 @@
       "strict_health_file": "COMPOSED_HEALTH_PREFLIGHT.json",
       "strict_health_passed": false
     },
-    "health_dependency": "HEALTH_DEPENDENCY.json"
+    "health_dependency": "HEALTH_DEPENDENCY.json",
+    "release_ready": false
   },
   "held": [
     "Fresh eligible upstream MTF and natural paired publication",
@@ -257,7 +302,7 @@
     "worker_start": "UNPROBED",
     "change": "Fabric tools became exposed during this continuation; this supersedes earlier absence only. No paid request dispatched by this publisher owner, no original-owner review request retried."
   },
-  "updated_at": "2026-10-21 11:03:48 UTC",
+  "updated_at": "2026-10-21 11:24:02 UTC",
   "integration_rehearsal": {
     "summary_file": "INTEGRATED_REHEARSAL_SUMMARY.json",
     "full_report_file": "INTEGRATED_REHEARSAL_RESULT.json",
@@ -276,7 +321,7 @@
     "restoration_verified": true
   },
   "final_archive_qualification": {
-    "state": "COMPOSED CANDIDATE REHEARSAL PASSED; protected admission/binding and release health unresolved",
+    "state": "PASSED AND BOUND TO EXACT PROTECTED SOURCE; production health/recovery and reserved decision unresolved",
     "imports_added": [
       "portfolio.performance_read",
       "portfolio.performance_projection",
@@ -284,13 +329,14 @@
       "brain.codex_bridge",
       "brain.provider_waterfall"
     ],
-    "reason": "Scoped C3 review identifies new lazy/changed imported modules after the rehearsed integration; one final admitted archive execution is required. No provider/performance/portfolio function is to be invoked.",
+    "reason": "The expanded-import rehearsal candidate subsequently became the exact protected commit and complete tree. No reexecution or relabelled earlier result is needed. Changed future source requires scoped qualification.",
     "composition_review_file": "COMPOSITION_REVIEW.json",
     "startup_sha256": "daa374604acc11144722ccc25b079b2e8cd780f6b4182afb53f07ab3b71eae29",
     "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
     "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
     "production_release_ready": false,
-    "health_gate": "FAILED observed strict six-second check; incumbent repair/security custody retained"
+    "health_gate": "FAILED observed strict six-second check; incumbent repair/security custody retained",
+    "protected_source_binding_file": "PROTECTED_SOURCE_BINDING.json"
   },
   "composed_rehearsal": {
     "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
@@ -318,13 +364,20 @@
     "authority_files_unchanged": 10,
     "production_identity_unchanged": true,
     "restoration_verified": true,
-    "protected_landing_binding": "PENDING"
+    "protected_landing_binding": "EXACT_COMMIT_AND_FULL_TREE_EQUAL: 87d4af0a152eefa3c5f441f5600fae9133b3deaa"
   },
   "release_decision": "RELEASE_DECISION.md — HOLD, not ready for production authorization",
   "release_decision_review": {
     "file": "DECISION_REVIEW.json",
     "ruling": "ACCEPTED / HOLD",
     "production_authorized": false,
-    "baseline_recovery_health": "unproved under observed failed six-second contract"
+    "baseline_recovery_health": "unproved under observed failed six-second contract",
+    "protected_source_delta": "ACCEPTED; exact rehearsal-to-protected binding only; production HOLD unchanged"
+  },
+  "rehearsal_cleanup": {
+    "file": "REHEARSAL_CLEANUP.json",
+    "process": 80090,
+    "production_operation": false,
+    "canonical_full_reports_preserved": true
   }
 }

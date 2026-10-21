@@ -19,5 +19,22 @@
     "Full1MB report not read.",
     "No edits, imports, tests, dispatch, production operation or668 takeover by reviewer.",
     "Internal principal judgment, not formal GitHub approval or production authorization."
-  ]
+  ],
+  "protected_source_delta": {
+    "reviewer": "release_contract_review",
+    "ruling": "ACCEPTED; protected-source binding only",
+    "files_read": [
+      "PROTECTED_SOURCE_BINDING.json",
+      "RELEASE_DECISION.md"
+    ],
+    "protected_commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "observed_at": "2026-10-21 11:24:02 UTC",
+    "conclusion": "Exact committed source and complete tree equal the already executed composed rehearsal. Existing rehearsal carries without identical-archive reexecution. Health, security, baseline recovery health and reserved production decision remain HOLD.",
+    "limits": [
+      "Recorded observations accepted as reported; this reviewer did not independently repeat remote readback or execution.",
+      "Internal C3 source/evidence judgment, not GitHub approval or production authorization.",
+      "Later material protected-source changes require scoped qualification."
+    ]
+  }
 }

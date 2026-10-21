@@ -1,6 +1,6 @@
 # MAS-258 release decision preparation
 
-**Disposition at 2026-10-21 11:03 UTC: HOLD — not ready for production authorization.** This is a concrete qualification record for the existing Census / Grey Deer / Risk Radar / Risk On–Risk Off programme. It is not a deployment approval, installation receipt or whole-programme acceptance.
+**Disposition at 2026-10-21 11:24 UTC: HOLD — not ready for production authorization.** This is a concrete qualification record for the existing Census / Grey Deer / Risk Radar / Risk On–Risk Off programme. It is not a deployment approval, installation receipt or whole-programme acceptance.
 
 ## Candidate and intended result
 
@@ -17,7 +17,7 @@ The candidate repairs current risk serving and the existing natural publication 
 | Archive SHA-256 | `ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf` |
 | Installed baseline | `fe7afd0111141bae27927715e709d074fea729e2` |
 | Established cohort SHA-256 | `75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c` |
-| Protected admission / final landing binding | Pending; a queue candidate is not protected landing |
+| Protected admission / final landing binding | Exact protected commit `87d4af0a152eefa3c5f441f5600fae9133b3deaa` and full tree match the actual rehearsal; independently read back at 11:24:02 UTC |
 
 This full composition also includes the existing owners' performance-reader (#1580), instruction-audit (#1669), and provider/scheduler-result (#715) changes. The [bounded compatibility review](COMPOSITION_REVIEW.json) accepts the Risk Radar, custody, startup and release-helper relationships within its stated scope. It does not replace those components' own tests, security checks or admission.
 
@@ -31,15 +31,15 @@ All ten copied book/cohort authority files and their ten canonical counterparts 
 
 The earlier integration rehearsal at da548855 remains separately valid. Neither isolated run attests to natural scheduled publication, real provider semantics, predictive performance or entitled browser delivery.
 
-## Concrete unresolved release gates
+## Concrete release gates
 
 | Gate | Current evidence | Required closure |
 |---|---|---|
-| Protected source | #1667 is ready in the normal native queue. Current observed queue CI 39586671816 is running at 041b8ab5; following #715 composition is 87d4af0. | Consume actual integrated checks and normal landing. Read the protected revision independently and bind owned blobs and the full release archive. Material source differences require bounded review; an earlier rehearsal cannot be relabelled. |
+| Protected source — PASSED | #1667 merged at 11:21:56 UTC as041b8ab5 after CI39586671816 succeeded. #715 followed at 11:21:57 UTC as87d4af0 after CI39586673741 succeeded. [Independent protected readback](PROTECTED_SOURCE_BINDING.json) proves exact commit/full-tree equality with the actual composed rehearsal, including all24 owned/helper blobs. | No repeat of the identical archive is necessary. Preserve this exact binding; qualify any later material source difference before a release decision. |
 | Production health | [The helper-budget observation](COMPOSED_HEALTH_PREFLIGHT.json) failed at 10:57:57 UTC: curl -m6 exited 28 after 6.002257 seconds, zero response bytes, unchanged service identity. The later rehearsal preflight also timed out at 10 seconds. | Resolve the existing health dependency through its incumbent or otherwise establish an accepted current health contract. The earlier200 had no measured duration and does not clear these failures. |
 | Reserved deployment decision | Canonical strategic state is PRE_REVENUE_MVP_CONVERGENCE and reserves production deployment. The October 20 approval has already been executed for its earlier release. | Only after the technical gates are concrete and satisfied, present the exact qualified full release for the reserved decision. No new approval is inferred from source publication. |
 
-[Health dependency evidence](HEALTH_DEPENDENCY.json) identifies the installed availability-to-provider-ranking path and repeated Macro ledger reads as a source mechanism, not a sampled-stack attribution of the observed latency. Existing Mastermind #668 owns the lightweight health repair. Its exact head 9a524ada retains a failed CodeQL aggregate reporting six high alerts. This continuation made no competing patch, source transfer, security waiver, rerun or merge.
+[Health dependency evidence](HEALTH_DEPENDENCY.json) identifies the installed availability-to-provider-ranking path and repeated Macro ledger reads as a source mechanism, not a sampled-stack attribution of the observed latency. Existing Mastermind #668 owns the lightweight health repair. Its exact head 9a524ada retains a failed CodeQL aggregate reporting six high alerts. Read-only retrieval of that check's six annotations identifies one clear-text storage sink in brain/runlog.py and five clear-text logging sinks in scripts/demo_research.py, dryrun_desk.py, dryrun_diag.py, dryrun_strat_raw.py and review_ticker.py. These sink locations are outside the two changed PR files; that fact does not establish false positives or waive a taint-flow review. The full annotation receipt and finite C3 triage are retained in HEALTH_DEPENDENCY.json. Exact source inspection establishes a boolean presence/authorization path and status-printing script sinks; the generic runlog sink still requires its exact caller/value flow. That narrows the investigation but does not clear an alert, prove successful provider authentication, or establish complete health-route latency. This continuation made no competing patch, source transfer, security waiver, rerun or merge.
 
 ## Controlled execution after the gates close
 
