@@ -25,8 +25,14 @@ def main():
     assert sha(rp) == c['source_roster_sha256']
     m = json.loads(mp.read_text())
     assets = []
+    local_prices = ROOT / 'private/prices'
+    local_prices.mkdir(parents=True, exist_ok=True)
     for a in m['assets']:
         assert sha(a['path']) == a['parquet_sha256'], a['ticker']
+        link = local_prices / (a['ticker'] + '.parquet')
+        if not link.exists():
+            link.symlink_to(Path(a['path']).resolve())
+        assert sha(link) == a['parquet_sha256']
         assets.append({k: v for k, v in a.items() if k not in ('path', 'source_receipt')})
     sp = next(a for a in m['assets'] if a['ticker'] == 'SPY')
     ix = pd.read_parquet(sp['path']).sort_index().loc['2010-01-04':c['cutoff']].index
@@ -47,7 +53,9 @@ def main():
     (ROOT / 'inputs').mkdir(exist_ok=True)
     path = ROOT / 'inputs/signal_roster.csv'
     pd.DataFrame(out).sort_values(['signal_t', 'symbol']).to_csv(path, index=False)
-    manifest = {'created_utc': datetime.now(timezone.utc).isoformat(),
+    prior_export = ROOT / 'inputs/source_manifest.json'
+    created = json.loads(prior_export.read_text())['created_utc'] if prior_export.exists() else datetime.now(timezone.utc).isoformat()
+    manifest = {'created_utc': created,
                 'previous_merge': c['previous_merge'],
                 'source_manifest_sha256': sha(mp), 'source_roster_sha256': sha(rp),
                 'signal_roster_sha256': sha(path), 'cutoff': c['cutoff'],

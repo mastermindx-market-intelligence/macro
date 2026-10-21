@@ -35,7 +35,7 @@ Each account starts empty. Exactly **$1,000** arrives immediately before the fir
 
 A signal from the session immediately preceding a funding day may nominate that funding-day open. Earlier signals are not carried forward. Multiple nominations spend a budget once. A signal on the mandatory deadline is labeled `signal_at_deadline`; it has zero timing difference from the blind control. Alerts arriving after that month's budget is spent remain recorded as unfunded alerts. No additional contribution is invented for them.
 
-Month-end dates come from exchange-session month boundaries, verified by an observed following-month session. The final partial month has no observed month-end deadline. The cutoff must never become an artificial deadline. Pending October cash stays cash unless a qualifying signal already executes. No future prices or outcomes determine deadline or funding dates.
+Month-end dates come from a fixed session calendar, with month boundaries verified by a following-month session in that calendar. Keep that calendar independent of any truncated priced prefix: a prefix ending on a certified month-end still executes its deadline. The final partial month of the fixed calendar has no certified month-end deadline. The cutoff must never become an artificial deadline. Pending October cash stays cash unless a qualifying signal already executes. No future prices or outcomes determine deadline or funding dates.
 
 Every spent budget is split equally by dollars among the basket's names, including accrued cash interest. Hold acquired shares through the common cutoff. No rebalance of existing holdings, sale, fixed-horizon exit, stop, replacement entry, or occupancy exclusion. Equal-dollar purchases on different dates acquire different share vectors; report the exact per-asset waiting decomposition rather than implying identical acquired portfolio weights.
 
@@ -53,13 +53,13 @@ Primary descriptive decision outcome: **net terminal wealth difference, SIGNAL m
 
 Keep a labeled contribution ledger. At a common endpoint **126 observed sessions after funding**, compare both policies' marked liquidation wealth, irrespective of actual purchase date. Include every contribution whose common endpoint is observed. All immature contributions remain in the account path. Show positive absolute outcomes, paired mean/median differences, fraction favoring waiting, and downside quantiles. These overlapping monthly cohorts are not independent trades.
 
-For paired cohort differences only, report an exploratory 95% circular moving-block interval with 12 consecutive monthly contributions per block, 2,000 draws, seed 20261021. Retain the ordered full calendar. Do not describe this as a confidence interval for account CAGR, a causal effect, or an adjustment for prior signal selection. Show funding-year and calendar-half splits without fitting. Show the full result and the contribution of the 2020 funding cohort, not an ex-post exclusion claimed as validation.
+For paired cohort differences only, report an exploratory 95% circular moving-block interval with 12 consecutive monthly contributions per block, 2,000 draws, seed 20261021. Retain the ordered full calendar. Do not describe this as a confidence interval for account CAGR, a causal effect, or an adjustment for prior signal selection. Show funding-year summaries and the fixed funding-date split 2020-2022 versus 2023-cutoff without fitting. Show the full result and the contribution of the 2020 funding cohort, not an ex-post exclusion claimed as validation.
 
 For each contribution and asset, record cash growth during the wait, asset return over exactly the same open-to-open interval, acquired adjusted shares, and contribution to terminal wealth difference. For a completed purchase, the exact terminal difference against immediate purchase is
 
 `sum_i [B*w_i/(1+fee)] * [cash_gross(s,t)/open_i(t) - 1/open_i(s)] * close_i(H) * (1-fee)`.
 
-Split this into avoided/forgone asset movement (cash gross=1) and cash interest. This is an accounting identity, not causal identification. For any still-pending budget, compare its actual cash with the immediate holdings at cutoff, without inventing a purchase. Aggregate by signal, deadline, funding year, and basket. Identify whether one episode dominates the difference.
+Split this into avoided/forgone asset movement (cash gross=1) and cash interest. This is an accounting identity, not causal identification. For any still-pending budget, compare its actual cash with the immediate holdings at cutoff, without inventing a purchase; isolate unincurred purchase/liquidation fees as a separate component so flat-price fee savings are not labeled avoided price movement. Aggregate by signal, deadline, funding year, and basket. Identify whether one episode dominates the difference.
 
 ## Minimum verification and reporting
 

@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from analyze import make_schedule, simulate, xirr, load_inputs
+from analyze import make_schedule, simulate, xirr, load_inputs, waiting_components
 
 ROOT = Path(__file__).resolve().parent
 
@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent
 def synthetic_checks():
     passed = []
     ix = pd.bdate_range('2020-01-01', '2020-03-10')
-    schedule = make_schedule(ix, [2, 5, 25, 30], 1000)
+    schedule = make_schedule(ix, [2, 5, 25, 30], 1000, ix)
     assert len(schedule) == 3 and schedule[-1]['deadline_i'] is None
     assert schedule[0]['SIGNAL'] == 2
     assert schedule[1]['SIGNAL'] == 25
@@ -42,7 +42,7 @@ def synthetic_checks():
     # Funding on an overnight doubling issues half as many units, preserving NAV.
     ix2 = pd.to_datetime(['2020-01-30','2020-01-31','2020-02-03','2020-02-04'])
     op = np.array([[10.],[10.],[20.],[20.]])
-    d, _ = simulate(ix2, op, op, make_schedule(ix2, [], 1000), 'IMMEDIATE', 0, 0)
+    d, _ = simulate(ix2, op, op, make_schedule(ix2, [], 1000, ix2), 'IMMEDIATE', 0, 0)
     assert np.allclose(d.unit_nav,[1,1,2,2])
     assert np.allclose(d.units,[1000,1000,1500,1500])
     assert np.allclose(d.wealth,[1000,1000,3000,3000])
@@ -51,17 +51,25 @@ def synthetic_checks():
     assert math.isclose(got,1.1**(365.25/366)-1,abs_tol=1e-11)
     passed.append('dated_money_weighted_return_known_example')
     # Truncation cannot create a last-day purchase before a true month boundary.
-    full = make_schedule(ix, [], 1000)
+    full = make_schedule(ix, [], 1000, ix)
     cut = ix[:10]
-    short = make_schedule(cut, [], 1000)
+    short = make_schedule(cut, [], 1000, ix)
     assert short[0]['SIGNAL'] is None and short[0]['MONTH_END'] is None
     for policy in ['IMMEDIATE','SIGNAL','MONTH_END']:
         df, _ = simulate(ix, opens, closes, full, policy, .001, .03)
         ds, _ = simulate(cut, opens[:10], closes[:10], short, policy, .001, .03)
         assert np.allclose(df.gross_wealth.iloc[:10],ds.gross_wealth)
     passed.append('prefix_invariance_without_false_cutoff_deadline')
+    cut_end = ix[ix <= '2020-01-31']
+    end_schedule = make_schedule(cut_end,[],1000,ix)
+    assert end_schedule[0]['MONTH_END'] == len(cut_end)-1
+    for policy in ['IMMEDIATE','SIGNAL','MONTH_END']:
+        df,_=simulate(ix,opens,closes,full,policy,.001,.03)
+        ds,_=simulate(cut_end,opens[:len(cut_end)],closes[:len(cut_end)],end_schedule,policy,.001,.03)
+        assert np.allclose(df.gross_wealth.iloc[:len(cut_end)],ds.gross_wealth)
+    passed.append('month_end_prefix_uses_fixed_calendar')
     # A duplicate nomination never buys twice; previous-session signal can buy at funding open.
-    day = make_schedule(ix, [0,0,2], 1000)
+    day = make_schedule(ix, [0,0,2], 1000, ix)
     assert day[0]['SIGNAL'] == 0
     d, lots = simulate(ix, opens, closes, day, 'SIGNAL',0,0)
     assert np.isclose(d.wealth.iloc[-1],3000)
@@ -69,16 +77,24 @@ def synthetic_checks():
     passed.append('same_open_funding_and_duplicate_nomination')
     # Equality at deadline is explicitly labeled; it does not imply an earlier entry.
     end = schedule[0]['deadline_i']
-    eq = make_schedule(ix,[end],1000)
+    eq = make_schedule(ix,[end],1000,ix)
     assert eq[0]['SIGNAL_reason'] == 'signal_at_deadline'
     assert eq[0]['SIGNAL'] == eq[0]['MONTH_END']
     passed.append('signal_at_deadline_tie')
+    movement,interest,unincurred,delta=waiting_components(1000,10,None,10,.001,1)
+    assert movement==0 and interest==0
+    assert math.isclose(unincurred,1000*(1-.999/1.001),abs_tol=1e-10)
+    assert math.isclose(delta,unincurred,abs_tol=1e-10)
+    movement,interest,unincurred,delta=waiting_components(1000,10,8,12,.001,1.01)
+    expected=1000/1.001*.999*12*(1.01/8-1/10)
+    assert unincurred==0 and math.isclose(delta,expected,abs_tol=1e-9)
+    passed.append('pending_fee_separation_and_executed_waiting_identity')
     return passed
 
 
 def real_checks(prices_dir):
     c,m,prices,ix,calendar = load_inputs(prices_dir)
-    schedule=make_schedule(ix,calendar.entry_i,c['monthly_contribution'])
+    schedule=make_schedule(ix,calendar.entry_i,c['monthly_contribution'],ix)
     daily=pd.read_csv(ROOT/'results/daily_paths.csv.gz')
     ledger=pd.read_csv(ROOT/'results/contribution_ledger.csv').fillna({'buy_date':''})
     cohorts=pd.read_csv(ROOT/'results/completed_cohorts.csv')

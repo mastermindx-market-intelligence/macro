@@ -55,16 +55,24 @@ def load_inputs(prices_dir):
     return c, m, prices, ix, calendar
 
 
-def make_schedule(ix, signal_indices, contribution):
-    """Future prices are irrelevant; only genuine observed month transitions count."""
+def make_schedule(ix, signal_indices, contribution, session_calendar):
+    """Certify deadlines from a fixed calendar, independently of the priced prefix."""
     periods = ix.to_period('M')
+    calendar_periods = session_calendar.to_period('M')
+    assert ix.isin(session_calendar).all()
+    known_ends = {}
+    for month in calendar_periods.unique():
+        last = int(np.flatnonzero(calendar_periods == month)[-1])
+        if last + 1 < len(session_calendar) and calendar_periods[last + 1] != month:
+            known_ends[month] = session_calendar[last]
+    positions = {date: i for i, date in enumerate(ix)}
     signal_indices = set(int(x) for x in signal_indices)
     records = []
     for month in periods.unique():
         indices = np.flatnonzero(periods == month)
         first, last = int(indices[0]), int(indices[-1])
-        # A later-month observation certifies the last observed day as month-end.
-        deadline = last if last + 1 < len(ix) and periods[last + 1] != month else None
+        # A cutoff cannot create or erase a deadline already known from the fixed calendar.
+        deadline = positions.get(known_ends.get(month))
         candidates = sorted(i for i in signal_indices if first <= i <= last)
         signal_buy = candidates[0] if candidates else deadline
         signal_reason = ('signal_at_deadline' if signal_buy is not None and signal_buy == deadline
@@ -75,6 +83,25 @@ def make_schedule(ix, signal_indices, contribution):
                         'IMMEDIATE': first, 'SIGNAL': signal_buy, 'MONTH_END': deadline,
                         'SIGNAL_reason': signal_reason})
     return records
+
+
+def waiting_components(budget, scheduled_open, buy_open, terminal_close, fee, cash_gross):
+    """Per-asset identity, with unincurred fees separated for an unspent budget."""
+    net_factor = (1-fee)/(1+fee)
+    baseline = budget * net_factor * terminal_close / scheduled_open
+    if buy_open is None:
+        movement = budget * net_factor * (1-terminal_close/scheduled_open)
+        interest = budget * (cash_gross-1)
+        unincurred = budget * (1-net_factor)
+        actual = budget * cash_gross
+    else:
+        factor = budget * net_factor * terminal_close
+        movement = factor * (1/buy_open-1/scheduled_open)
+        interest = factor * (cash_gross-1)/buy_open
+        unincurred = 0.0
+        actual = factor * cash_gross/buy_open
+    assert math.isclose(movement+interest+unincurred,actual-baseline,abs_tol=1e-8)
+    return movement, interest, unincurred, actual-baseline
 
 
 def xirr(funding_dates, amounts, final_date, terminal):
@@ -222,7 +249,7 @@ def main():
     p.add_argument('--prices-dir', type=Path, required=True)
     args = p.parse_args()
     c, manifest, prices, ix, calendar = load_inputs(args.prices_dir)
-    schedule = make_schedule(ix, calendar.entry_i, c['monthly_contribution'])
+    schedule = make_schedule(ix, calendar.entry_i, c['monthly_contribution'], ix)
     out = ROOT / 'results'
     out.mkdir(exist_ok=True)
     calendar.to_csv(out / 'signal_calendar.csv', index=False)
@@ -264,23 +291,17 @@ def main():
                     if policy != 'IMMEDIATE':
                         for j, name in enumerate(names):
                             budget = lot['amount'] / len(names)
-                            base = budget / (1+fee) / opens[f,j] * closes[-1,j] * (1-fee)
                             if buy is not None:
                                 gross = (1+rate) ** ((ix[buy]-ix[f]).days/365.25)
-                                factor = budget/(1+fee) * closes[-1,j] * (1-fee)
-                                movement = factor * (1/opens[buy,j] - 1/opens[f,j])
-                                interest = factor * (gross-1)/opens[buy,j]
-                                actual = factor * gross/opens[buy,j]
                                 wait_return = opens[buy,j]/opens[f,j]-1
                                 units_gain = gross*opens[f,j]/opens[buy,j]-1
                             else:
                                 gross = (1+rate) ** ((ix[-1]-ix[f]).days/365.25)
-                                movement = budget-base
-                                interest = budget*(gross-1)
-                                actual = budget*gross
                                 wait_return = closes[-1,j]/opens[f,j]-1
                                 units_gain = np.nan
-                            assert math.isclose(movement+interest, actual-base, abs_tol=1e-9)
+                            movement, interest, unincurred, delta = waiting_components(
+                                budget,opens[f,j],opens[buy,j] if buy is not None else None,
+                                closes[-1,j],fee,gross)
                             attribution.append({**meta, 'month': lot['month'], 'symbol': name,
                                 'fund_date': str(ix[f].date()),
                                 'buy_date': str(ix[buy].date()) if buy is not None else '',
@@ -291,7 +312,8 @@ def main():
                                 'actual_adjusted_units': budget*gross/(1+fee)/opens[buy,j] if buy is not None else 0.0,
                                 'price_movement_component': movement,
                                 'cash_interest_component': interest,
-                                'terminal_difference': actual-base})
+                                'unincurred_fee_component': unincurred,
+                                'terminal_difference': delta})
                 cohorts[policy] = np.asarray(values)
             for a, b in [('SIGNAL','IMMEDIATE'), ('SIGNAL','MONTH_END'), ('MONTH_END','IMMEDIATE')]:
                 contrasts.append({'scenario': scenario, 'basket': basket, 'comparison': a+'-'+b,
@@ -318,7 +340,7 @@ def main():
     attr = pd.DataFrame(attribution)
     attr['funding_year'] = attr.month.str[:4].astype(int)
     grouped = attr.groupby(['scenario','basket','policy','funding_year','reason'],dropna=False)[
-        ['price_movement_component','cash_interest_component','terminal_difference']].sum().reset_index()
+        ['price_movement_component','cash_interest_component','unincurred_fee_component','terminal_difference']].sum().reset_index()
     grouped.to_csv(out/'funding_year_attribution.csv', index=False)
     cohort = pd.DataFrame(cohort_rows)
     cohort['funding_year'] = cohort.month.str[:4].astype(int)
@@ -340,6 +362,8 @@ def main():
                      (attr.policy==row['comparison'].split('-')[0])].terminal_difference.sum()
             assert math.isclose(a,row['terminal_difference'],abs_tol=1e-6)
     report = {'protocol_sha256':sha(ROOT/'PROTOCOL.md'), 'config_sha256':sha(ROOT/'config.json'),
+        'executed_analyze_sha256':sha(ROOT/'analyze.py'),
+        'verification_source_sha256':sha(ROOT/'verify.py'),
         'input_manifest_sha256':sha(ROOT/'inputs/source_manifest.json'),
         'sessions':len(ix), 'months':len(schedule), 'signal_nominations':manifest['signal_rows'],
         'signal_execution_dates':len(calendar), 'source_final_unexecutable':int((~pd.read_csv(ROOT/'inputs/signal_roster.csv').executable).sum()),
