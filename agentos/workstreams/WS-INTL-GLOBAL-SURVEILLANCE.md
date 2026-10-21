@@ -79,8 +79,8 @@ waves:
   depends_on:
   - IM17
   next_action: Commission after Wave 4.
-next_action: Consume the Wave 1 orchestrator return (W1A PR @686eb9a7, W1B PR @78711372 under review) and the R14 design
-  orchestrator return, freeze the design spec, then cut Wave 2 packets.
+next_action: R14 design FROZEN (DEC:INTL-GS-R14-DESIGN-FREEZE); spawn ORCH-2 for Wave 2 (IM13 scanner + IM14 dossier) from the
+  frozen spec, consume the Wave 1 orchestrator return (W1A PR @686eb9a7, W1B PR @78711372 under review), seat merges.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md

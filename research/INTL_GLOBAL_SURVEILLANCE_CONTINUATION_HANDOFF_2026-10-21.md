@@ -30,6 +30,7 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - ORCH-D (Opus): Paper R14 masterpiece page + spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md`, PNGs in seat scratch `r14/`.
 - ORCH-1 (Opus): census + IM11/IM12 packets → lanes W1A/W1B → review lanes; records `$K/orch/fabric/reviews/INTL-GS-W1*.md`.
 - Seat SSD worktrees intl-gs-w0a-6c9c36115aa4036d / intl-gs-w0b-b67a2895768398e0 were minted but are UNUSED (lanes run remotely); reclaim later.
+<<<<<<< HEAD
 
 ## Checkpoint 2026-10-21 03:18Z — W0A PR OPEN, review lane running
 - W0A r2 DONE rc=0 → draft PR **#9920** (mastermindx-market-intelligence/macro) head 898edeccaf3219838fc1c9b0b3cac5f2d5af9753, branch `lane/intl-gs-w0a-r2`, 2 files, +16/−4. Seat verified the token-diff of all four Caddy matchers = exactly the nine intl paths added, nothing removed; yml `public:` block added with comment. Lane reported 94 passed on the five boundary suites (watchstore baseline red is inherited on origin/main), caddy hub boundary 22 passed, contract delta 0/0, 12 packs validate. Lane did NOT cat its record (summary only) — review lane re-runs everything.
@@ -57,3 +58,11 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - IM-W0 → `done` (PRODUCTION_PROOF). ACCEPTANCE of the served journeys (anonymous + entitled, masterplan §15 Wave 0) is recorded against §14 tests at the Wave 2 boundary; this checkpoint claims only the access repair.
 - Wave 1 under ORCH-1: lane W1A → PR open @686eb9a7, lane W1B → PR open @78711372; review lanes W1A-REVIEW/W1B-REVIEW launched 04:06Z on fabric (W1B-REVIEW r1 refused by economic policy, relaunched). Seat consumes ORCH-1's return, never the lanes directly.
 - Agent OS handoff record committed: `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md`.
+=======
+>>>>>>> 6e096d7b21719 (docs(intl-gs): International Markets Global Surveillance masterplan + continuation handoff (2026-10-21))
+
+## Checkpoint 2026-10-21 04:3xZ — R14 design FROZEN (DEC:INTL-GS-R14-DESIGN-FREEZE)
+- ORCH-D (Opus orchestrator abd45165af1bdea65) returned DONE: Paper page "Global Surveillance · R14 · Masterpiece" (14 boards; R13 untouched), spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md` (789 lines, §0–§17, blob 5d9c51dc25005935a6be5846a01baa48246f9375), 14 PNGs. Seat inspected the scanner dark/EN/1440 and Brazil dossier boards directly and ACCEPTS; PNGs committed under `mockups/refs/intl-gs-r14/`.
+- Six rulings recorded in `agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md` (tokens scoped .intl-gs in a new surveillance stylesheet; §14 file plan ratified; IM16 matrix adopted; no further Paper pass; PNGs in repo; packets owe the 8 crops + focus captures, green gate ≠ acceptance).
+- Seat docs PR #9925 MERGED → main a580ce7e earlier; this checkpoint rides a NEW seat PR after rebase onto origin/main (bc9b3231).
+- NEXT: spawn ORCH-2 (Opus, Wave 2 IM13 scanner + IM14 dossier) now that an Opus slot is free; Wave 2 build lanes start from the surveillance stylesheet/view scaffold (no Wave 1 dependency) and wire data once ORCH-1's W1A/W1B land.
