@@ -163,3 +163,12 @@ Delivery-ladder rung per item; nothing below is merged unless it says MERGED.
 - **After #9929 lands**: launch `pro-regional-cnp1arch-20261021` (F7) with BASE = the new main. **After #9934 lands**: message REGIONAL `a2d300d1951816b47` ONCE (F1–F12 + merge notice). Records PR r3 (this file + INTEL/SOURCE snapshots + d06num + the two review reports) opened from a temp-index tree on main.
 - **Still RUNNING**: DESIGN `a84208a865fe09119` (Paper R7 award-grade page), SOURCE `a4008b36fbbc6c0e3` (Stage 2/3 journey). Never re-spawn; consume their returns by opening the artifacts.
 - Session branch `claude/ssd-prophet-end-to-end-dbeaec-7e88fffefdd61737` carries every live-write snapshot (last merge of main `5395d52e`).
+
+### Seat ruling F16 — Asia carve-out independent review (05:2xZ)
+Lane `pro-asia-carveout-review-20261021-r1`, report commit `0247b1f76bd` → `refs/pro/asiarev` (carried in records r4). STATUS **FAIL on F1 only**; all nine attack surfaces DISMISSED; D1–D4 ACCEPT; R1/R2 not blocking; 70 passed in the carve suites; battery failure set identical on BASE and HEAD.
+- **F1** (undeclared `.github/ci/legacy-jobs.yml` path): **REMEDIED BY DECLARATION** — the #9934 body already names it ("the one registration line for the new test file"); only the lane's own D-list omitted it. No port change.
+- **F5** (no paired `ci.yml` entry): **NOT APPLICABLE** — that pairing is the falsifier-tripwires job's convention. Every job in `legacy-jobs.yml` is `if: false` by design and is run by `scripts/run_ci_pack.py`, which infers each job's scope from its `run:` lines; the intake job's subjects reach CI through the global `tests/**` and `.github/workflows/**` globs, and no existing intake test is listed in `ci.yml`. The same ruling covers #9935's registration step.
+- **F2** (render-heal `git add site/` at asia-close.yml:1155 can publish small `site/qledger` bytes on a carved night): **OPEN follow-up for the asia-close incumbent** — policy, not GH001; candidate = exclude `site/qledger` from the render-heal add when `QLEDGER_CARVED`; not part of this port.
+- **F3 / R1** (withhold path leaves the engine push GH001-red, equal to parent): **ACCEPT**; carve-out r2 after the cron witness keys the engine guard on `qledger_withheld`.
+- **F4** (park/restore/push pinned structurally): **ACCEPT** — bytes identical to daily's executed twin.
+- **#9934: REVIEW-CLEARED**; merge on green by the standing rule (fence → `--match-head-commit`).
