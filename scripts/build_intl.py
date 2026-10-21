@@ -31,6 +31,7 @@ from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_history_mount import attach_history  # noqa: E402
 from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
+from lib.intl_gs_observations import build_observation_set  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -137,11 +138,12 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         raise ValueError("invalid_international_chart_sink")
     generation = "im-workspace-generation:" + str(uuid4())
     publication_inputs = None
+    eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
     try:
         from lib.intl_eod_publication import build_eod_inputs
         admitted = build_eod_inputs(
             closes, data_root=Path(data_root), evaluated_at=evaluated_at,
-            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
+            rights=eod_rights,
         )
         if admitted is not None:
             closes, publication_inputs = admitted
@@ -207,10 +209,21 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         )
     except Exception as exc:
         log.error("International History panel unavailable (%s)", type(exc).__name__)
+    observation_set = None
+    try:
+        # W2F-X X2/X4: the incumbent chain as Wave 1 observations, built from
+        # the SAME admitted frame and the SAME eod grant object as the page.
+        # A failure withholds observations; it never suppresses the page.
+        observation_set = build_observation_set(
+            closes, publication_inputs=publication_inputs, evaluated_at=evaluated_at,
+            data_root=Path(data_root), rights=eod_rights)
+    except Exception as exc:
+        log.error("International Surveillance observations unavailable (%s)", type(exc).__name__)
+        observation_set = None
     try:
         # W2F seam: surveillance views mount independently; a missing or failed
         # builder only disables its own sub-tab and never the page.
-        workspace = attach_surveillance(workspace)
+        workspace = attach_surveillance(workspace, observations=observation_set)
     except Exception as exc:
         log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
     return workspace
