@@ -5157,8 +5157,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_833),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_806),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_836),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_809),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5167,6 +5167,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC-RCV registers tests/test_sector_receiver_contracts.py on
+    the same tier-gate run line. The local probe on 66bc4205ab measures the
+    two code probes at the SIC-I01 ceilings (5,833 / 5,806); the registration
+    adds exactly three estimator units to each (5,836 / 5,809), no job-count
+    or pack change, no new entrant. Fund only that measured excess. Job
+    counts, the plan_book probe, selectors and the ten-pack bound remain
+    unchanged.
 
     2026-10-21 SIC-I01 registers tests/test_sector_central_contract.py on the
     tier-gate run line next to tests/test_sector_central_gate.py. The local
