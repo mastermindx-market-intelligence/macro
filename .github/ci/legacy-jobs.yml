@@ -7771,6 +7771,33 @@ jobs:
       - name: International research context and route state
         run: node --test tests/intl_workspace_state.test.cjs
 
+  international-global-universe:
+    # IM11: global universe v1, capability coverage and source-rights matrix (data contract only).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/intl_global_universe.py"
+      - "tests/test_intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install contract test dependencies
+        run: pip install pytest pyyaml
+      - name: International global universe contract
+        run: python -m pytest tests/test_intl_global_universe.py -q
+
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
     # Scope includes the measured first-party import closure and config input.
