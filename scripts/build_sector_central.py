@@ -601,6 +601,41 @@ def main(*, strict: bool = False) -> int:
             return 1
         _sc_pgate = None
 
+    # ── SIC-D-B13: crowding-input activation disclosure ───────────────────────
+    # The basket crowding cap went live with score version 2 (member id resolved via
+    # `ticker`). The publication record says WHAT the crowding input actually resolved
+    # this build and WHEN the first version-2 call was logged — pure .get() reads off
+    # data already in hand (engine meta + the scorecard above), so this can never
+    # raise and never changes a value the builder used.
+    _meta = data.get("meta") or {}
+    _mc = _meta.get("membership_coverage") or {}
+    _n_baskets = _meta.get("n_baskets") or 0
+    _n_unres = _mc.get("n_crowding_unresolved") or 0
+    _n_res = max(_n_baskets - _n_unres, 0)
+    if _n_baskets > 0 and _n_unres == 0:
+        _crowd_status = "resolved"
+    elif _n_res == 0:
+        _crowd_status = "no_members_resolved"
+    else:
+        _crowd_status = "partial"
+    _grader_out = data.get("grader") or {}
+    _first_active = ((_grader_out.get("score_version_segments") or {})
+                     .get("2") or {}).get("first_date")
+    _crowding_input = {
+        "status": _crowd_status,
+        "score_version": _meta.get("conviction_score_version"),
+        "first_active_session": _first_active,
+        "n_baskets": _n_baskets,
+        "n_baskets_resolved": _n_res,
+    }
+    if _first_active is None:
+        # an off-lane render never logs (COLLECT_LANE gate), so "not yet" is the
+        # normal state on every non-nightly build; a scorecard without segments at
+        # all means the grader itself failed above.
+        _crowding_input["first_active_note"] = (
+            "grader unavailable" if "score_version_segments" not in _grader_out
+            else "no version-2 call logged yet")
+
     # ── PUBLICATION RECORD (B10, masterplan §6.1) ────────────────────────────
     # The free artifacts are written HERE — after the secondary reads and the tier
     # split, before the render — so they can carry a typed record of what this
@@ -631,6 +666,8 @@ def main(*, strict: bool = False) -> int:
             "basis": "no native correction or revision field in Central inputs "
                      "(capability row R3A-92)",
         },
+        # SIC-D-B13: the crowding-input activation disclosure (see the block above).
+        "crowding_input": _crowding_input,
     }
     # ── SOURCE-BOUND RESEARCH HANDOFF (B09, masterplan §5) ────────────────────
     # Every selectable group row (data["sectors"] / data["baskets"]) carries a
