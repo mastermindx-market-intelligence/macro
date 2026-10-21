@@ -7805,6 +7805,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_surveillance_mount.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_sources.yml"
+      - "config/theme_crosswalk.yml"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -16169,6 +16176,13 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_surveillance_mount.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_sources.yml"
+      - "config/theme_crosswalk.yml"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -16487,6 +16501,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_surveillance_mount.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
