@@ -27,6 +27,7 @@ import scripts.capture_prophet_b4_same_read as capture
 from engine import us_context_vector as ucv
 from engine.prophet_b4_same_read import evaluate_same_read_entry_availability
 from engine.prophet_entry_availability import AVAILABILITY_STATES
+from engine.prophet_entry_availability_sources import RuntimeOwnerFactError
 from engine.prophet_strategy_definition import (
     build_early_leadership_sector_rotation_definition,
 )
@@ -251,6 +252,12 @@ def test_durable_run_writes_one_row_per_candidate_x_strategy_with_typed_unavaila
     assert doc["rows"] == doc["candidates"] * doc["strategies"] == 2
     assert doc["rows_written"] == 2
     assert doc["counts_by_state"] == {"UNAVAILABLE_DATA": 2}
+    assert doc["dry_run"] is False
+    # F3: the run document names the root it wrote under and whether --root
+    # overrode the repository default, so a night's receipt is auditable.
+    assert doc["root_override"] is True
+    assert doc["data_root"] == str(tmp_path.resolve())
+    assert Path(doc["data_root"]) / _CAPTURE_REL == _capture_file(tmp_path).parent.parent
     # ONE HEAD-backed snapshot for the whole run — never a second read per
     # candidate.
     assert len(loads) == 1
@@ -451,20 +458,241 @@ def test_alias_seam_is_unbound_at_base_and_the_gap_is_typed_not_guessed(
 # ── Spec 8: ZERO AUTHORITY — no product builder or template reads the stream ─
 
 
-def test_no_product_builder_or_template_reads_the_capture_stream():
-    fences = sorted(Path("scripts").glob("build_*.py")) + [
-        Path("engine/prophet_bridge.py"),
-        Path("engine/prophet_opportunity_presentation.py"),
-        Path("engine/prophet_candidate_state.py"),
-    ] + sorted(Path("templates").rglob("*"))
-    needles = ("b4_capture", "capture_prophet_b4_same_read")
+_FENCE_NEEDLES = ("b4_capture", "capture_prophet_b4_same_read")
+
+
+def _capture_stream_consumers(root: Path) -> list[tuple[str, str]]:
+    """Every (file, needle) under ``root`` where a product builder, a presentation
+    engine module or a template names the capture stream.  Anchored on the
+    root passed in — never the process cwd — so the scan reads the repository
+    the script under test lives in."""
+    fences = sorted((root / "scripts").glob("build_*.py")) + [
+        root / "engine" / "prophet_bridge.py",
+        root / "engine" / "prophet_opportunity_presentation.py",
+        root / "engine" / "prophet_candidate_state.py",
+    ] + sorted((root / "templates").rglob("*"))
     assert fences
+    hits = []
     for path in fences:
         if not path.is_file():
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
-        for needle in needles:
-            assert needle not in text, f"{path} mentions {needle}"
+        hits.extend(
+            (path.relative_to(root).as_posix(), needle)
+            for needle in _FENCE_NEEDLES
+            if needle in text
+        )
+    return hits
+
+
+def test_no_product_builder_or_template_reads_the_capture_stream(tmp_path):
+    repo_root = Path(capture.__file__).resolve().parents[1]
+    assert (repo_root / "scripts" / "capture_prophet_b4_same_read.py").is_file()
+    assert _capture_stream_consumers(repo_root) == []
+
+    # Positive control: a planted consumer IS reported, so the empty result
+    # above means the fence held — not that the scan looked at nothing.
+    planted = tmp_path / "scripts" / "build_planted_consumer.py"
+    planted.parent.mkdir(parents=True)
+    planted.write_text("ROWS = load('data/us_prophet_rank/b4_capture')\n", encoding="utf-8")
+    (tmp_path / "templates").mkdir()
+    assert _capture_stream_consumers(tmp_path) == [
+        ("scripts/build_planted_consumer.py", "b4_capture"),
+    ]
+
+
+# ── Review repairs F1 / F2 / F4 / F12 (seat ruling F27) ──────────────────────
+
+
+def _synthetic_evaluated_envelope(**availability_extra):
+    availability = {
+        "state": "VERDICT_TOKEN_NEVER_PERSISTED",
+        "entry_open": False,
+        "chase_state": "VERDICT_CHASE",
+        "availability_id": "sha256:" + "0" * 64,
+        "blockers": ["NBBO_QUALITY_MISSING"],
+        "reasons": ["QUOTE_STALE"],
+        "quote_age_seconds": 12.5,
+        "gate_inputs": {"nbbo": "MISSING", "lifecycle": "OPEN"},
+    }
+    availability.update(availability_extra)
+    return {
+        "schema": "prophet.b4.same_read/v1",
+        "state": "EVALUATED",
+        "availability": availability,
+        "b3_projection_id": None,
+        "episode_id": None,
+        "binding": None,
+        "owner_read_schema": None,
+        "nbbo_quality": "MISSING",
+        "unavailable_reasons": [],
+        "receipts": [],
+    }
+
+
+def _build_row(world, envelope):
+    return capture._capture_row(
+        stamp_date=_SESSION,
+        captured_at=capture._now_iso(_FIRST_CAPTURED_AT),
+        ticker="UNIT",
+        source_event_id=f"candidate:{_SESSION}:UNIT:gap_continuation",
+        source_receipt="sha256:" + "a" * 64,
+        definition=build_early_leadership_sector_rotation_definition(),
+        definition_receipt="sha256:" + "b" * 64,
+        envelope=envelope,
+        snapshot=world["snapshot"],
+    )
+
+
+def test_row_builder_strips_the_verdict_trace_blockers_and_reasons(tmp_path):
+    """F1: ``blockers`` / ``reasons`` are the state-decision branch's verdict
+    trace — an encoded verdict — so the row builder strips them with the other
+    verdict fields; only the evaluator's INPUT facts survive."""
+    world = _world(tmp_path)
+    row = _build_row(world, _synthetic_evaluated_envelope())
+
+    assert {"blockers", "reasons"} <= set(capture.VERDICT_FIELDS)
+    assert row["facts"] == {
+        "quote_age_seconds": 12.5,
+        "gate_inputs": {"nbbo": "MISSING", "lifecycle": "OPEN"},
+    }
+    assert "blockers" not in row and "reasons" not in row
+    # No mapping anywhere in the row — facts, binding, receipts — carries a
+    # verdict-trace key (``unavailable_reasons`` is the same-read envelope's
+    # own typed-reason list, a different field).
+    for mapping in capture._walk_mappings(row):
+        assert not ({"blockers", "reasons"} & set(mapping)), mapping
+
+
+def test_write_fence_refuses_a_smuggled_verdict_trace_anywhere_in_facts(tmp_path):
+    world = _world(tmp_path)
+    lawful = _build_row(world, _synthetic_evaluated_envelope())
+    capture._assert_row_is_lawful(lawful)  # the control row passes
+
+    top_level = dict(lawful)
+    top_level["reasons"] = ["QUOTE_STALE"]
+    with pytest.raises(capture.TypedRefusal) as refused:
+        capture._assert_row_is_lawful(top_level)
+    assert refused.value.token == "CAPTURE_ROW_PERSISTS_A_VERDICT_TRACE"
+
+    in_facts = dict(lawful)
+    in_facts["facts"] = dict(lawful["facts"], reasons=["QUOTE_STALE"])
+    with pytest.raises(capture.TypedRefusal) as refused:
+        capture._assert_row_is_lawful(in_facts)
+    assert refused.value.token == "CAPTURE_ROW_PERSISTS_A_VERDICT_TRACE"
+
+    nested = dict(lawful)
+    nested["facts"] = {"gate_inputs": {"trace": [{"blockers": []}]}}
+    with pytest.raises(capture.TypedRefusal) as refused:
+        capture._assert_row_is_lawful(nested)
+    assert refused.value.token == "CAPTURE_ROW_PERSISTS_A_VERDICT_TRACE"
+
+
+def test_capture_key_is_the_candidate_source_event_so_unbound_candidates_never_collide(
+        tmp_path, monkeypatch, capsys):
+    """F2: two bound + two UNBOUND candidates (owner fact absent → the typed
+    ``UNAVAILABLE_DATA`` fallback envelope, ``security_id`` None) are FOUR rows
+    under four keys; keying on ``security_id`` collapsed the unbound pair onto
+    one ``None`` key and refused the night as a false conflict."""
+    world = _world(tmp_path, tickers=("UNIT", "UNIT2", "LONE", "ORPH"))
+    real_evaluate = capture.evaluate_same_read_entry_availability
+
+    def evaluate_with_two_unbound(root, snapshot, **kwargs):
+        event = kwargs["candidate_source_event_id"]
+        if event.split(":")[2] in {"LONE", "ORPH"}:
+            raise RuntimeOwnerFactError(f"owner fact absent for {event}")
+        return real_evaluate(root, snapshot, **kwargs)
+
+    monkeypatch.setattr(
+        capture, "evaluate_same_read_entry_availability", evaluate_with_two_unbound
+    )
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["rows"] == doc["rows_written"] == 4
+    rows = _read_rows(_capture_file(tmp_path))
+    by_ticker = {row["ticker"]: row for row in rows}
+    assert set(by_ticker) == {"UNIT", "UNIT2", "LONE", "ORPH"}
+    assert by_ticker["LONE"]["security_id"] is None
+    assert by_ticker["ORPH"]["security_id"] is None
+    assert by_ticker["UNIT"]["security_id"] == "SEC:US-XNAS-AAPL"
+    for ticker in ("LONE", "ORPH"):
+        assert by_ticker[ticker]["state"] == "UNAVAILABLE_DATA"
+        assert by_ticker[ticker]["unavailable_reasons"] == [
+            f"RuntimeOwnerFactError: owner fact absent for candidate:{_SESSION}:{ticker}:gap_continuation"
+        ]
+    keys = [capture._row_key_of(row) for row in rows]
+    assert len(set(keys)) == 4
+    assert {key[1] for key in keys} == {row["candidate_source_event_id"] for row in rows}
+
+    # The second night is idempotent: nothing appended, captured_at kept.
+    assert _run(monkeypatch, tmp_path, world, "--nightly", now=_SECOND_CAPTURED_AT) == 0
+    assert json.loads(capsys.readouterr().out)["rows_written"] == 0
+    assert {row["ticker"]: row["captured_at"] for row in _read_rows(_capture_file(tmp_path))} == {
+        ticker: "2026-09-17T20:05:00Z" for ticker in ("UNIT", "UNIT2", "LONE", "ORPH")
+    }
+
+
+def test_conflict_reports_body_digests_never_bodies(tmp_path, monkeypatch, capsys):
+    world = _world(tmp_path)
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    capsys.readouterr()
+    target = _capture_file(tmp_path)
+    tampered = _read_rows(target)
+    tampered[0]["unavailable_reasons"] = ["SOMETHING_ELSE"]
+    target.write_text(
+        json.dumps(tampered[0], sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    assert _run(monkeypatch, tmp_path, world, "--nightly", now=_SECOND_CAPTURED_AT) == 2
+    conflict = json.loads(capsys.readouterr().out)
+    assert conflict["conflict"][1] == f"candidate:{_SESSION}:UNIT:gap_continuation"
+    for digest in (conflict["committed"], conflict["incoming"]):
+        assert digest.startswith("sha256:") and len(digest) == len("sha256:") + 64
+    assert conflict["committed"] != conflict["incoming"]
+    assert "SOMETHING_ELSE" not in json.dumps(conflict)
+
+
+def test_dry_run_is_not_lane_gated_builds_every_row_and_writes_nothing(
+        tmp_path, monkeypatch, capsys):
+    """F4: ``--nightly --dry-run`` is the no-write preview of the nightly
+    shape — unarmed it still runs, prints the run document and leaves no file
+    and no directory behind."""
+    world = _world(tmp_path, tickers=("UNIT", "UNIT2"))
+    code = _run(monkeypatch, tmp_path, world, "--nightly", "--dry-run", lane=None)
+    assert code == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["mode"] == "dry-run"
+    assert doc["dry_run"] is True
+    assert doc["rows"] == doc["candidates"] * doc["strategies"] == 2
+    assert doc["rows_written"] == 0
+    assert doc["target"] == str(_capture_file(tmp_path))
+    assert not _capture_file(tmp_path).exists()
+    assert not (tmp_path / _CAPTURE_REL).exists()
+    # The armed, non-dry nightly on the same world is unchanged by the preview.
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    assert json.loads(capsys.readouterr().out)["rows_written"] == 2
+
+
+def test_malformed_committed_day_file_is_a_typed_error_exit_2_and_writes_nothing(
+        tmp_path, monkeypatch, capsys):
+    """F12: a day file the merge cannot read is a typed ``CaptureDayFileError``
+    document with exit code 2 — never a traceback — and the file is untouched."""
+    world = _world(tmp_path)
+    target = _capture_file(tmp_path)
+    target.parent.mkdir(parents=True)
+    target.write_text("this is not a capture row\n", encoding="utf-8")
+    before = target.read_bytes()
+
+    code = _run(monkeypatch, tmp_path, world, "--nightly")
+
+    assert code == 2
+    doc = json.loads(capsys.readouterr().out)
+    assert set(doc) == {"error"}
+    assert doc["error"]["type"] == "CaptureDayFileError"
+    assert doc["error"]["detail"]
+    assert target.read_bytes() == before
+    assert [entry.name for entry in target.parent.iterdir()] == [target.name]
 
 
 def test_docstring_pins_zero_authority_and_capture_only():

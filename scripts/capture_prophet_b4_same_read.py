@@ -21,7 +21,9 @@ only with ``--nightly`` AND ``engine.ledger_lane.nightly_advance_enabled()``
 (``COLLECT_LANE=nightly``); any other invocation is report mode — rows are
 built and printed, nothing is written, no directory is created.  Outside the
 lane the script refuses with a typed message and exit code 3 BEFORE any store
-read.  ``stamp_date`` is the committed board as_of
+read.  ``--nightly --dry-run`` is the no-write preview of the nightly shape: it
+is not lane-gated, builds every row, prints the run document and writes nothing
+(no file, no directory).  ``stamp_date`` is the committed board as_of
 (``engine.us_prophet_w3.resolve_board_as_of``) — never wall-clock, run id or
 Pages — and ``captured_at`` is the writer's own UTC clock, stamped once per
 run.  Owner inputs are never guessed: the native live root is the publishers'
@@ -32,13 +34,17 @@ stays its owner's (``None`` at BASE).
 
 NO AVAILABILITY VERDICT IS EVER PERSISTED (seat ruling R6-D11-01 rule 3:
 ``ENTRY_OPEN`` is never persisted and it is forbidden to create it).  The row
-stores the same-read envelope's facts and typed reasons verbatim; the
-availability verdict fields are stripped from ``facts`` and the verdict is
-re-derivable from those facts plus the pinned strategy definition through
-``engine.prophet_entry_availability_sources.evaluate_runtime_entry_availability``.
-A write-time guard refuses to persist any availability state token anywhere in
-a row.  The row-level ``state`` is the SAME-READ envelope's own vocabulary
-(``EVALUATED`` / ``UNAVAILABLE_DATA``), not an availability verdict.
+stores the evaluator's INPUT facts and the same-read envelope's typed reasons
+verbatim; every verdict field — ``state``, ``entry_open``, ``chase_state``,
+``availability_id`` and the verdict trace ``blockers`` / ``reasons`` — is
+stripped from ``facts``.  The verdict is NOT re-derivable from a capture row
+alone: the gates, quote freshness, chase_above and lifecycle inputs that decide
+it are not stored, so deriving it again means a fresh evaluation of the owners'
+live reads through the pinned strategy definition, never a read of this stream.
+A write-time guard refuses to persist any availability state token, and any
+``blockers`` / ``reasons`` field, anywhere in a row.  The row-level ``state`` is
+the SAME-READ envelope's own vocabulary (``EVALUATED`` / ``UNAVAILABLE_DATA``),
+not an availability verdict.
 
 Run (nightly / DAG):  python -m scripts.capture_prophet_b4_same_read --nightly
 Run (safe preview):   python -m scripts.capture_prophet_b4_same_read
@@ -47,7 +53,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import tempfile
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -113,9 +121,17 @@ SAME_READ_STATES = frozenset({"EVALUATED", "UNAVAILABLE_DATA"})
 #: persisted anywhere in a capture row (D11 rule 3).  ``state`` is the
 #: ENTRY_OPEN-class availability token, ``entry_open`` its boolean shadow,
 #: ``chase_state`` the evaluator's derived chase classification, and
-#: ``availability_id`` a digest over the verdict-bearing material.  The verdict
-#: is re-derived from the remaining facts plus the pinned strategy definition.
-VERDICT_FIELDS = ("state", "entry_open", "chase_state", "availability_id")
+#: ``availability_id`` a digest over the verdict-bearing material, and
+#: ``blockers`` / ``reasons`` the state-decision branch's verdict TRACE — an
+#: encoded form of the verdict.  What remains is the evaluator's INPUT facts;
+#: the verdict is NOT re-derivable from them alone.
+VERDICT_FIELDS = (
+    "state", "entry_open", "chase_state", "availability_id", "blockers", "reasons",
+)
+
+#: The verdict-trace keys the write-time fence refuses wherever they appear —
+#: at the top level of a row or anywhere inside ``facts``.
+VERDICT_TRACE_KEYS = ("blockers", "reasons")
 
 #: Every registered strategy definition on main.  At BASE exactly the one
 #: immutable, authority-false proving definition.
@@ -144,13 +160,14 @@ _EPISODE_STORE_PARTS = ("data", "us_prophet_rank", "episodes")
 
 #: The only per-candidate exceptions the evaluation chain may lawfully raise for
 #: an absent or contradictory mandatory owner fact; each is captured verbatim as
-#: ``"<ExceptionClass>: <message>"`` in ``unavailable_reasons`` (the same-read
-#: module's own convention).  Anything else is a real defect and propagates.
+#: ``"<ExceptionClass>: <message>"`` in ``unavailable_reasons``.  EXACTLY the
+#: list ``engine.prophet_b4_same_read._CONTRACT_ERRORS`` itself declares — an
+#: ``EpisodeContractError`` escaping the same-read module is a defect, not a
+#: typed reason, and propagates.
 _CONTRACT_ERRORS = (
     RuntimeOwnerFactError,
     EntryAvailabilityContractError,
     CandidateStateContractError,
-    EpisodeContractError,
 )
 
 
@@ -167,15 +184,17 @@ class CaptureConflictError(ValueError):
     """A frozen capture key was presented with a different row body.
 
     The W3ConflictError analogue: exit code 2, NOTHING written — the committed
-    day file is left byte-identical and the refusal names the key.
+    day file is left byte-identical and the refusal names the key and the
+    sha256 digests of the two canonical row bodies (never the bodies).
     """
 
-    def __init__(self, key: tuple, existing: str, incoming: str) -> None:
+    def __init__(self, key: tuple, existing_digest: str, incoming_digest: str) -> None:
         self.key = key
-        self.existing_digest = existing
-        self.incoming_digest = incoming
+        self.existing_digest = existing_digest
+        self.incoming_digest = incoming_digest
         super().__init__(
-            f"b4 capture conflict on {key}: committed={existing} incoming={incoming}"
+            f"b4 capture conflict on {key}: committed={existing_digest} "
+            f"incoming={incoming_digest}"
         )
 
 
@@ -325,19 +344,45 @@ def _walk_scalars(value: object):
         yield value
 
 
+def _walk_mappings(value: object):
+    """Every mapping node under ``value`` (``value`` itself included)."""
+    if isinstance(value, Mapping):
+        yield value
+        for item in value.values():
+            yield from _walk_mappings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from _walk_mappings(item)
+
+
 def _assert_row_is_lawful(row: Mapping[str, object]) -> None:
     """The write-time D11 fence: no availability state token is ever persisted.
 
     The row-level ``state`` is the same-read envelope's own vocabulary and is
     checked against THAT closed set; every other scalar anywhere in the row —
     including ``facts``, ``binding`` and every receipt — must not equal an
-    availability state token.  A violation refuses the run rather than writing
-    an unlawful row.
+    availability state token, and the verdict trace (``blockers`` /
+    ``reasons``) may appear neither at the top level nor anywhere inside
+    ``facts``.  A violation refuses the run rather than writing an unlawful row.
     """
+    for trace_key in VERDICT_TRACE_KEYS:
+        if trace_key in row:
+            raise TypedRefusal(
+                "CAPTURE_ROW_PERSISTS_A_VERDICT_TRACE",
+                f"capture row would persist verdict trace field {trace_key!r}",
+            )
     if set(row) != set(ROW_KEYS):
         raise TypedRefusal(
             "CAPTURE_ROW_KEYS_NOT_CLOSED", "capture row key set is not closed"
         )
+    for mapping in _walk_mappings(row.get("facts")):
+        for trace_key in VERDICT_TRACE_KEYS:
+            if trace_key in mapping:
+                raise TypedRefusal(
+                    "CAPTURE_ROW_PERSISTS_A_VERDICT_TRACE",
+                    f"capture row would persist verdict trace field {trace_key!r} "
+                    "inside facts",
+                )
     if row["state"] not in SAME_READ_STATES:
         raise TypedRefusal(
             "CAPTURE_ROW_STATE_INVALID",
@@ -439,12 +484,26 @@ def _evaluate(
 
 
 def _row_key_of(row: Mapping[str, object]) -> tuple:
+    """The frozen capture key (spec point 6 as amended by seat ruling F27).
+
+    ``candidate_source_event_id`` (``candidate:{stamp_date}:{ticker}:{board_definition}``)
+    is unique per candidate per stamp whether or not the candidate's
+    ``security_id`` is bound; ``security_id`` stays in the row BODY.  Keying on
+    ``security_id`` collapsed every unbound candidate — and the script's own
+    ``UNAVAILABLE_DATA`` fallback envelope — onto one ``None`` key, so two
+    unbound candidates were a false conflict and the night's census was lost.
+    """
     return (
         row.get("stamp_date"),
-        row.get("security_id"),
+        row.get("candidate_source_event_id"),
         row.get("candidate_generation_id"),
         row.get("strategy_definition_id"),
     )
+
+
+def _body_digest(body: str) -> str:
+    """sha256 of one canonical row body — what a conflict reports, never the body."""
+    return "sha256:" + sha256(body.encode("utf-8")).hexdigest()
 
 
 def _sort_key(key: tuple) -> tuple:
@@ -488,8 +547,9 @@ def _read_day_file(target: Path) -> list[dict[str, object]]:
 def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
     """Keep-first merge of the run's rows into the day file; append-only.
 
-    An existing key keeps its committed row verbatim (``captured_at`` included);
-    only new keys are appended; the whole day file is rewritten canonical-JSON,
+    The key is ``_row_key_of`` (stamp_date, candidate_source_event_id,
+    candidate_generation_id, strategy_definition_id).  An existing key keeps its
+    committed row verbatim (``captured_at`` included); only new keys are appended; the whole day file is rewritten canonical-JSON,
     sorted by key, via temp file + atomic rename.  A changed body under an
     existing key is a typed conflict and NOTHING is written.
     """
@@ -499,7 +559,9 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
         if key in committed:
             if _row_body(committed[key]) != _row_body(row):
                 raise CaptureConflictError(
-                    key, _row_body(committed[key]), _row_body(row)
+                    key,
+                    _body_digest(_row_body(committed[key])),
+                    _body_digest(_row_body(row)),
                 )
             continue  # keep-first inside the committed file
         committed[key] = row
@@ -509,12 +571,13 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
         existing = committed.get(key)
         if existing is not None:
             if _row_body(existing) != _row_body(row):
-                raise CaptureConflictError(key, _row_body(existing), _row_body(row))
+                raise CaptureConflictError(
+                    key, _body_digest(_row_body(existing)), _body_digest(_row_body(row))
+                )
             continue  # keep-first: the committed row (and its captured_at) stand
         committed[key] = row
         written += 1
     target.parent.mkdir(parents=True, exist_ok=True)
-    temp = target.with_name(f".{target.name}.tmp")
     payload = "".join(
         json.dumps(
             committed[key], sort_keys=True, separators=(",", ":"),
@@ -522,8 +585,22 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
         ) + "\n"
         for key in sorted(committed, key=_sort_key)
     )
-    temp.write_text(payload, encoding="utf-8")
-    temp.replace(target)
+    # A UNIQUE temp name in the day directory (two writers never share one),
+    # fsync'd before the atomic rename so a crash leaves either the old file or
+    # the complete new one — never a torn day file.
+    handle, temp_name = tempfile.mkstemp(
+        prefix=f".{target.name}.", suffix=".tmp", dir=target.parent
+    )
+    temp = Path(temp_name)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp, target)
+    except BaseException:
+        temp.unlink(missing_ok=True)
+        raise
     return written
 
 
@@ -541,12 +618,14 @@ def run(
             "--live-root is a report-mode inspection flag; the nightly lane reads "
             "the publishers' fixed native live root only",
         )
-    if nightly and not ledger_lane.nightly_advance_enabled():
+    # --dry-run short-circuits the lane gate: it is the sanctioned no-write
+    # preview of the nightly shape and writes nothing, so it needs no lane.
+    if nightly and not dry_run and not ledger_lane.nightly_advance_enabled():
         raise TypedRefusal(
             "NIGHTLY_LANE_NOT_ARMED",
             "nightly is the sole advancer: durable capture requires --nightly AND "
             "engine.ledger_lane.nightly_advance_enabled() (COLLECT_LANE=nightly); "
-            "run report mode for a no-write preview",
+            "run report mode or --nightly --dry-run for a no-write preview",
         )
 
     root_path = Path(root).resolve() if root is not None else _repo_root()
@@ -621,6 +700,9 @@ def run(
             counts_by_reason[str(reason)] = counts_by_reason.get(str(reason), 0) + 1
     return {
         "mode": mode,
+        "dry_run": bool(nightly and dry_run),
+        "root_override": root is not None,
+        "data_root": str(root_path),
         "stamp_date": stamp_date,
         "snapshot_generation_id": str(snapshot.generation_id),
         "candidates": len(native_rows),
@@ -676,6 +758,17 @@ def main(argv: list[str] | None = None) -> int:
                     "committed": exc.existing_digest,
                     "incoming": exc.incoming_digest,
                 },
+                sort_keys=True,
+            )
+        )
+        return 2
+    except CaptureDayFileError as exc:
+        # A malformed committed day file: typed, exit 2, nothing written (the
+        # read precedes every write) — never a traceback the nightly lane
+        # cannot classify.
+        print(
+            json.dumps(
+                {"error": {"type": "CaptureDayFileError", "detail": str(exc)}},
                 sort_keys=True,
             )
         )
