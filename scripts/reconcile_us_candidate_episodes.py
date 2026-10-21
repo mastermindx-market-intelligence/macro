@@ -674,4 +674,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except ReconcileRefused as exc:
+        # B01 review F1: a refusal is one operator-readable line, never a traceback.
+        sys.stderr.write(f"reconcile refused: {exc}\n")
+        raise SystemExit(2)

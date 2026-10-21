@@ -192,3 +192,27 @@ def test_main_docstring_pins_the_writer_clock_contract():
     doc = writer.main.__doc__ or ""
     assert "stamps its own wall clock" in doc
     assert "report/replay override only" in doc
+
+
+def test_cli_durable_recorded_at_refusal_is_one_stderr_line_not_a_traceback(tmp_path: Path):
+    """B01 review F1: the refusal exits 2 with one `reconcile refused:` line and no traceback."""
+    repo_root = Path(__file__).resolve().parent.parent
+    completed = subprocess.run(
+        [
+            sys.executable, "-m", "scripts.reconcile_us_candidate_episodes",
+            "--nightly", "--recorded-at", RECORDED_AT,
+            "--repo-root", str(tmp_path),
+        ],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 2
+    assert completed.stdout == ""
+    assert "Traceback" not in completed.stderr
+    assert completed.stderr.rstrip("\n").splitlines()[-1] == (
+        "reconcile refused: durable write refused: --recorded-at is a report/replay override; "
+        "the durable writer stamps its own wall clock"
+    )
+    assert _snapshot(tmp_path) == {}
