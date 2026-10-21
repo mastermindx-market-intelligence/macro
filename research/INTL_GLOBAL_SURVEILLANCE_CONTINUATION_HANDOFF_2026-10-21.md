@@ -85,3 +85,19 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924 MERGED · #9937 CI · ORCH-2/ORCH-3 RUNNING.
 - NEXT: on watcher return → `gh pr ready 9937` → `gh pr merge 9937 --squash --match-head-commit
   9a2931a440f039451da85b246c64697090e559a5` → read mergeCommit → message ORCH-2/ORCH-3 "SPEC ON MAIN <sha>".
+
+## Checkpoint 2026-10-21 05:5xZ — R14 freeze MERGED (#9937 → main 556d3333)
+
+- Watcher returned 05:51:41Z: rollup on 1b45b1d0 complete, 20 checks, only the standing non-gating
+  `ci-authority/codex/merge-queue-pilot=FAILURE`. reviewDecision empty, no labels, no hold on this PR.
+- Seat act: `gh pr ready 9937` → `gh pr merge 9937 --squash --match-head-commit 1b45b1d0…` →
+  GitHub read: **MERGED 556d3333210b5b27eb1456c3e1a6d99a9bc034e4 at 05:52:24Z**. Rung = MERGED.
+- Main now carries: masterplan copy, R14 design spec, 14 reference boards + contrast table,
+  DEC:INTL-GS-R14-DESIGN-FREEZE, Agent OS handoff (Wave 1→2 boundary), Wave 1 IM11/IM12.
+- ORCH-2 and ORCH-3 messaged "SPEC ON MAIN 556d3333" (new fabric worktrees base on it; running lanes keep
+  their base). One main-baseline watcher armed for 556d3333 (`watch_main.sh`); the 5d454fbe watcher still armed.
+- Seat branch rotated: `claude/ssd-intl-gs-seat-r3-8e4e57e69f466313` from main 556d3333 (same SSD tree).
+- Wave 4 orchestrator commission drafted: scratchpad `orch4_commission_draft.txt` (spawn only when an
+  Opus slot frees — ORCH-2/ORCH-3 hold both).
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937 MERGED · main baselines 5d454fbe + 556d3333 at CI ·
+  ORCH-2/ORCH-3 RUNNING. No design or Wave 1 PR remains open.
