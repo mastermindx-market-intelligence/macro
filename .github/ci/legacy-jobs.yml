@@ -6221,7 +6221,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
-        run: python -m pytest tests/test_cycle_forward_log.py -q
+        run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py -q
 
   tier-gate:
     if: ${{ false }}
