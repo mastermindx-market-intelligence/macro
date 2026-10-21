@@ -83,6 +83,21 @@
     "scope": "Existing BOT renewal provider result and scheduler health work; ordinary auto-merge was already enabled.",
     "limit": "Its owner-reported live revoked-auth evidence and source changes are not credential recovery or a new root production attestation."
   },
-  "boundary": "Health/runtime qualification remains open. A fast Market View200 response or an active PID is not a passing deployment health contract.",
-  "next_action": "Preserve the incumbent health repair and its security gate; consume a qualified repair or fresh passing real health observation before claiming release readiness."
+  "boundary": "Intermittent health behavior: earlier measured timeouts remain; the later successful HTTP200 observation did not measure duration. A fresh strict six-second health observation is required before release readiness. Incumbent668 custody/security remain unchanged.",
+  "next_action": "Preserve the incumbent health repair and its security gate; consume a qualified repair or fresh passing real health observation before claiming release readiness.",
+  "followup_observations": [
+    {
+      "during": "2026-10-21T10:39:25.558184+00:00 through 2026-10-21T10:39:39.059369+00:00",
+      "source": "INTEGRATED_REHEARSAL_RESULT.json production_before.health",
+      "http_status": 200,
+      "status": "ok",
+      "paper_only": true,
+      "reasoning_policy_ok": true,
+      "scheduled_runtime_ok": true,
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+      "latency_measured": false,
+      "timeout_seconds": 10,
+      "strict_six_second_budget": "NOT_PROVED"
+    }
+  ]
 }

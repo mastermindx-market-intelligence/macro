@@ -58,7 +58,7 @@
     "head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
     "accepted_application_head": "dd44a6b69587e048a5346387436ab441f1b85512",
     "current_head_delta": "one documentation sentence specifies required voting sources; application and tests unchanged",
-    "source_state": "DRAFT / CI_HOLD",
+    "source_state": "READY / NATIVE_MERGE_QUEUE",
     "local_tests": {
       "passed": 472,
       "skipped": 1,
@@ -71,8 +71,11 @@
     },
     "ci": {
       "run": 39580529597,
-      "conclusion": null,
-      "status": "in_progress"
+      "aggregate_check": 119173199093,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-21T10:34:00Z",
+      "timestamp_precision": "minute"
     },
     "codeql": {
       "run": 39580522600,
@@ -134,7 +137,23 @@
       "a crash before decision append can leave no receipt",
       "UTC-day attribution deliberately withholds ambiguous cross-day evidence",
       "no production publisher execution or deployment proved"
-    ]
+    ],
+    "queue": {
+      "method": "normal native gh merge-queue admission; exact head fence; no administrator/waiver",
+      "receipt_process": 6620,
+      "receipt_exit_code": 0,
+      "first_merge_group": {
+        "head": "f8b259e0938db461e964cbd9e3d474d9ed6507f3",
+        "ci_run": 39586187259
+      },
+      "latest_observed_merge_group": {
+        "head": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+        "ci_run": 39586671816,
+        "created_at": "2026-10-21T10:43:30Z",
+        "status": "in_progress"
+      },
+      "protected_landing": null
+    }
   },
   "composition": {
     "before": "2151a89f7ea3a340ec04932cbcfdf6a838df79b1",
@@ -166,9 +185,17 @@
     "new_deployment": false,
     "reserved_exact_release_approval_required": true,
     "latest_health": {
-      "observed_at": "2026-10-21T10:20:54.719492+00:00",
-      "exception_type": "TimeoutError",
-      "error": "timed out"
+      "observed_during": "2026-10-21T10:39:25.558184+00:00 through 2026-10-21T10:39:39.059369+00:00",
+      "http_status": 200,
+      "status": "ok",
+      "paper_only": true,
+      "reasoning_policy_ok": true,
+      "scheduled_runtime_ok": true,
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+      "latency_recorded": false,
+      "timeout_seconds": 10,
+      "strict_six_second_acceptance": "NOT_PROVED",
+      "earlier_timeouts_retained": true
     },
     "health_dependency": "HEALTH_DEPENDENCY.json"
   },
@@ -187,7 +214,7 @@
     "initial_ruling": "NOT_ACCEPTED",
     "finding": "A timeout could kill only the unshare launcher and permit restoration while its child was alive.",
     "proposed_repair": "unshare --kill-child=KILL; dedicated process session/group; kill and reap launcher plus bounded process-group absence verification before restoration; preserve receiver without restoration if child exit remains unverified.",
-    "execution": "not_started",
+    "execution": "PASSED at exact integration da548855; not final protected release qualification",
     "repair_review": "ACCEPTED finite C3 timeout/child-custody closure; no remaining design blocker; execution result excluded",
     "repair_controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
     "namespace_timeout_probe": {
@@ -213,5 +240,37 @@
     "worker_admission": "UNPROBED",
     "worker_start": "UNPROBED",
     "change": "Fabric tools became exposed during this continuation; this supersedes earlier absence only. No paid request dispatched by this publisher owner, no original-owner review request retried."
+  },
+  "updated_at": "2026-10-21 10:50:45 UTC",
+  "integration_rehearsal": {
+    "summary_file": "INTEGRATED_REHEARSAL_SUMMARY.json",
+    "full_report_file": "INTEGRATED_REHEARSAL_RESULT.json",
+    "full_report_sha256": "de1bf3394237687ad85bfd74ab3dd50b3e9205ad7ed4a3ec282ecde62d246178",
+    "candidate": "da54885500484235d3ca06b14237e06d6676e654",
+    "tree": "9d39c30093d2a88fdb460b3e4126853a830f7852",
+    "archive_sha256": "828107b554ba10c124f90a446aefb330fb234e99b7ed41854f44c666ffde392c",
+    "qualified": true,
+    "started_at": "2026-10-21T10:39:25.558184+00:00",
+    "completed_at": "2026-10-21T10:39:39.059369+00:00",
+    "job_count": 18,
+    "dispatch_attempt_count": 0,
+    "first_run_attempt_count": 0,
+    "authority_files_unchanged": 10,
+    "production_identity_unchanged": true,
+    "restoration_verified": true
+  },
+  "final_archive_qualification": {
+    "state": "PENDING actual admitted composition",
+    "imports_added": [
+      "portfolio.performance_read",
+      "portfolio.performance_projection",
+      "brain.cli_bridge",
+      "brain.codex_bridge",
+      "brain.provider_waterfall"
+    ],
+    "reason": "Scoped C3 review identifies new lazy/changed imported modules after the rehearsed integration; one final admitted archive execution is required. No provider/performance/portfolio function is to be invoked.",
+    "composition_review_file": "COMPOSITION_REVIEW.json",
+    "startup_sha256": "daa374604acc11144722ccc25b079b2e8cd780f6b4182afb53f07ab3b71eae29",
+    "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878"
   }
 }

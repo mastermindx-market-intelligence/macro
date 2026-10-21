@@ -96,8 +96,14 @@ try:
     threading.Thread.start = guarded_thread_start
     from app import main
     from brain import perception_publication, perception_receipt
+    from brain import cli_bridge, codex_bridge, provider_waterfall
+    from portfolio import performance_read, performance_projection
 
-    imported = (main, perception_publication, perception_receipt)
+    imported = (
+        main, perception_publication, perception_receipt,
+        cli_bridge, codex_bridge, provider_waterfall,
+        performance_read, performance_projection,
+    )
     assert all(pathlib.Path(module.__file__).resolve().is_relative_to(receiver) for module in imported)
     result["candidate_modules"] = {
         module.__name__: hashlib.sha256(pathlib.Path(module.__file__).read_bytes()).hexdigest()
