@@ -355,6 +355,9 @@ MAX_PULL_CAP = 100
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
+# Extra commit-file pagination reads shared by every PR and commit in one sweep.
+# Exhaustion keeps the affected inventory incomplete; it never clears a proof.
+COMMIT_FILE_PAGE_READ_CAP = 100
 FULL_SWEEP_FIXED_REQUESTS = 87
 MAX_REQUESTS_PER_PULL = 19
 # A 25-pull reference pass now needs 87 fixed + 25 x up-to-19 + refresh headroom =
@@ -369,7 +372,9 @@ MARK_ONLY_RATE_LIMIT_FLOOR = 20
 # Mid-sweep reserve. It covers the in-flight pull request's remaining reads and
 # writes plus the calls spendable between two budget polls, so the stop is clean
 # rather than a 403 half-way through.
-RATE_LIMIT_RESERVE = 120
+# Fund the entire shared pagination allowance even if one PR spends it between
+# rate-limit polls. pull_cap_for_budget subtracts this reserve at admission too.
+RATE_LIMIT_RESERVE = 120 + COMMIT_FILE_PAGE_READ_CAP
 # Poll `GET /rate_limit` every N evaluated pull requests rather than every one. It
 # costs no core budget but it is still a round trip; at <=18 calls per pull request
 # (proof identity, live compare, and lease bookkeeping included) the reserve above
@@ -1847,6 +1852,48 @@ def ownership_matches(rel: str, patterns: list[str] | None) -> list[str]:
     return matching_patterns(rel, owned)
 
 
+def _is_full_sha(value: Any) -> bool:
+    """True for a full lowercase 40-character hex git sha."""
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
+    """``(sha, tree_sha, parent_shas)`` from a commit body, else ``None``.
+
+    The pagination stitch compares this tuple across every page, so each
+    identity must be present and a full lowercase 40-hex sha: a short,
+    uppercased or absent sha is not something this lane can prove page
+    equality on, and a page that moved underneath the sweep must never be
+    stitched into one commit's footprint.
+    """
+    if not isinstance(payload, dict):
+        return None
+    sha = payload.get("sha")
+    commit = payload.get("commit")
+    tree = commit.get("tree") if isinstance(commit, dict) else None
+    if not _is_full_sha(sha) or not isinstance(tree, dict):
+        return None
+    tree_sha = tree.get("sha")
+    if not _is_full_sha(tree_sha):
+        return None
+    parents = payload.get("parents")
+    if not isinstance(parents, list):
+        return None
+    parent_shas: list[str] = []
+    for parent in parents:
+        if not isinstance(parent, dict):
+            return None
+        parent_sha = parent.get("sha")
+        if not _is_full_sha(parent_sha):
+            return None
+        parent_shas.append(parent_sha)
+    return sha, tree_sha, tuple(parent_shas)
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -1902,6 +1949,7 @@ class ProofFreshness:
         self._merge_bases: dict[str, str | None] = {}
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
+        self._commit_file_page_reads = 0
 
     # -- construction ---------------------------------------------------------
 
@@ -2304,6 +2352,80 @@ class ProofFreshness:
             for root in sorted(changed_roots & pipeline_roots)
         ]
 
+    def _complete_commit_files(
+        self, sha: str, probe: dict[str, Any]
+    ) -> list[str] | None:
+        """Complete a truncated inventory, or retain its conservative verdict.
+
+        The tree shortcut runs first. This fallback accepts at most ten 100-row
+        pages of the same SHA/tree/ordered parents, ending in a short page. The
+        sweep shares an additional-read budget and caches incomplete results too.
+        Every original file/rename binding must survive the completed inventory.
+        """
+        identity = _commit_identity(probe)
+        if identity is None or identity[0] != sha:
+            return None
+
+        def bindings(rows: Any) -> dict[str, tuple[Any, str | None]] | None:
+            if not isinstance(rows, list):
+                return None
+            result: dict[str, tuple[Any, str | None]] = {}
+            for row in rows:
+                if not isinstance(row, dict):
+                    return None
+                name = row.get("filename")
+                previous = row.get("previous_filename")
+                status = row.get("status")
+                if not isinstance(status, str) or status not in {
+                    "added", "removed", "modified", "renamed", "copied", "changed", "unchanged"
+                }:
+                    return None
+                if not isinstance(name, str) or not name or name in result:
+                    return None
+                if "previous_filename" in row and (
+                    not isinstance(previous, str) or not previous
+                ):
+                    return None
+                if row.get("status") == "renamed" and previous is None:
+                    return None
+                result[name] = (row.get("status"), previous)
+            return result
+
+        original = bindings(probe.get("files"))
+        if not original:
+            return None
+        collected: dict[str, tuple[Any, str | None]] = {}
+        rows: list[dict[str, Any]] = []
+        for page in range(1, 11):
+            if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+                return None
+            self._commit_file_page_reads += 1
+            self.commit_file_reads += 1
+            try:
+                status, payload = _request(
+                    "GET",
+                    f"{GITHUB_API}/repos/{self.repo}/commits/{sha}"
+                    f"?per_page=100&page={page}",
+                    self.token,
+                )
+            except (RuntimeError, OSError, ValueError):
+                return None
+            if status != 200 or _commit_identity(payload) != identity:
+                return None
+            page_rows = payload.get("files")
+            page_bindings = bindings(page_rows)
+            if page_bindings is None or len(page_rows) > 100:
+                return None
+            if collected.keys() & page_bindings.keys():
+                return None
+            collected.update(page_bindings)
+            rows.extend(page_rows)
+            if len(page_rows) < 100:
+                if any(collected.get(name) != binding for name, binding in original.items()):
+                    return None
+                return _changed_file_paths(rows)
+        return None
+
     def files_of(self, sha: str) -> tuple[list[str], bool]:
         """``(files, truncated)`` for one main commit. Cached for the whole sweep."""
         cached = self._commit_files.get(sha)
@@ -2325,6 +2447,11 @@ class ProofFreshness:
             if proven_pipeline_paths is not None:
                 names = proven_pipeline_paths
                 truncated = False
+            else:
+                complete = self._complete_commit_files(sha, payload)
+                if complete is not None:
+                    names = complete
+                    truncated = False
         answer = (names, truncated)
         self._commit_files[sha] = answer
         return answer
