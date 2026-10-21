@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-09-28"
+updated: "2026-10-21"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -149,6 +149,49 @@ checks:
       guard shipped with each got their own emitter fix, and
       tests/test_check_site_asset_refs.py ratchets the empty state so a re-pin has
       to be argued in review rather than riding in with a fresh 404.
+
+  - law_id: ui.commodity_publication_integrity
+    summary: >
+      Commodities publishers must retain a supported display-only workspace and
+      export-only research contract. Recovery may copy only one qualified pinned
+      accepted page; the exact committed push candidate and its local CSS/JS
+      references must pass independently before publication.
+    source_ref:
+      - scripts/check_commodity_publication.py
+      - tests/test_commodity_publication.py
+      - research/COMMODITIES_PUBLICATION_GUARD_2026-10-20.md
+      - "PRs #9878 #9926"
+    severity: hard
+    check_script: scripts/check_commodity_publication.py
+    ci_wiring:
+      - workflow: .github/workflows/render.yml
+        job: render
+        lane: render
+      - workflow: .github/workflows/engine-render.yml
+        job: engine-render
+        lane: render
+      - workflow: .github/workflows/daily.yml
+        job: engine
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      The existing Commodities PR code job runs tests/test_commodity_publication.py:
+      malformed and duplicate payloads, unsupported versions, unsafe paths,
+      missing assets, exact committed-candidate checks, real stale-render rebase
+      recovery, and canonical-theme publication normalization fixtures.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Publication structure does not establish economic freshness, builder
+        success, served artifact identity, authentication or browser behavior.
+      - Local CSS/JS existence is checked separately from the full-site reference
+        guard and does not authorize asset restoration or collector execution.
+    owner_program: commodities-dashboard
+    notes: >
+      Normal metadata replay, normal and express porcelain rebases, and the nightly
+      output helper validate their actual push candidate. Worktree healing cannot
+      certify a failed or skipped repair commit. Receipts keep freshness_verified
+      false; covering-render and authenticated live acceptance remain separate.
 
   - law_id: ui.government_revenue_projection_integrity
     summary: >
