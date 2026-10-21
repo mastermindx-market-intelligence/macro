@@ -2246,7 +2246,12 @@
   }
   /* Public: save. Idempotent on the cloud row (a second save of the same ETF
      updates the device-local note, never a second row — read-first, because
-     watchlist_symbols carries no unique index on (watchlist_id, symbol)). */
+     watchlist_symbols carries no unique index on (watchlist_id, symbol)).
+     RI07 finding 4: read-first loses to a RACE — two saves of one symbol in
+     flight together both read "absent" and both insert. One in-flight save per
+     symbol: a second call for the same etf chains after the first, re-reads,
+     and finds the row the first one minted. */
+  var _siSaveInFlight = {};
   function saveSectorInvestigation(payload) {
     var etf = String((payload && payload.etf) == null ? '' : payload.etf).trim().toUpperCase();
     var note = String((payload && payload.note) == null ? '' : payload.note);
@@ -2263,6 +2268,15 @@
       _siNoteWrite('mdash.watchlist.v1', etf, note);
       return Promise.resolve({ etf: etf, synced: false });
     }
+    var prev = _siSaveInFlight[etf];
+    var run = (prev ? prev.catch(function () {}) : Promise.resolve())
+      .then(function () { return _siSave(etf, note); });
+    _siSaveInFlight[etf] = run;
+    run.then(function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; },
+             function () { if (_siSaveInFlight[etf] === run) delete _siSaveInFlight[etf]; });
+    return run;
+  }
+  function _siSave(etf, note) {
     return siEnsureList().then(function (list) {
       return siRowsFetch(list.id).then(function (rows) {
         var exists = false, maxPos = -1;
@@ -2285,26 +2299,44 @@
   }
   /* Public: readback, from the store. [{etf, added, note, synced}] — `added` is
      the cloud row's created_at signed in; `note` is always the device-local
-     copy (the recorded GAP); `synced` names which store answered. */
+     copy (the recorded GAP); `synced` names which store answered.
+     RI07 finding 4: ONE row per symbol even when the cloud still holds
+     duplicates an old race minted — the earliest created_at (when the
+     investigation was first saved) carrying the device-local note (the newest
+     copy; the note store is per-symbol, last write wins). */
   function listSectorInvestigations() {
     if (!user) {
       /* Signed out: the anonymous blob. Its items carry no kind marker — a
          non-empty `note` is the device-local signature of a saved investigation
          (an ordinary star add writes note: ''). */
       var b = _siBlobRead('mdash.watchlist.v1');
-      return Promise.resolve(b.items
-        .filter(function (it) { return it && it.t && it.note; })
-        .map(function (it) {
-          return { etf: it.t, added: it.added || '', note: it.note, synced: false };
-        }));
+      var pickL = {}, orderL = [];
+      b.items.forEach(function (it) {
+        if (!it || !it.t || !it.note) return;
+        var k = String(it.t), prev = pickL[k];
+        if (!prev) {
+          pickL[k] = { etf: it.t, added: it.added || '', note: it.note, synced: false };
+          orderL.push(k);
+          return;
+        }
+        if (it.added && (!prev.added || it.added < prev.added)) prev.added = it.added;
+        prev.note = it.note;   // array order is write order: the newest note wins
+      });
+      return Promise.resolve(orderL.map(function (k) { return pickL[k]; }));
     }
     return siFindList().then(function (list) {
       if (!list) return [];   // never create on read
       return siRowsFetch(list.id).then(function (rows) {
         var byT = {};
         cacheRead(list.id).items.forEach(function (it) { byT[it.t] = it; });
-        return rows.map(function (r) {
-          var it = byT[r.symbol];
+        var pick = {}, order = [];
+        rows.forEach(function (r) {
+          var k = String(r.symbol);
+          if (!pick[k]) { pick[k] = r; order.push(k); }
+          else if ((r.created_at || '') < (pick[k].created_at || '')) pick[k] = r;
+        });
+        return order.map(function (k) {
+          var r = pick[k], it = byT[k];
           return {
             etf: r.symbol,
             added: r.created_at || (it && it.added) || '',

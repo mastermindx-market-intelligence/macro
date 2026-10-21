@@ -818,7 +818,96 @@ def test_the_save_rejects_symbols_outside_the_ticker_allowlist():
 
 
 # ===========================================================================
-# 8. the page side — chip, dossier link, device-local disclosure (static)
+# 8. RI07 finding 4 — racing saves and duplicate rows
+# ===========================================================================
+@needs_node
+def test_racing_saves_of_one_symbol_create_exactly_one_row():
+    """RI07 finding 4: the save is read-first, but two saves of one symbol in
+    flight together both read 'absent' and both insert (no unique index on
+    (watchlist_id, symbol)). One in-flight save per symbol: the second call
+    chains after the first, re-reads, and finds the row — exactly one si row,
+    and the second call's note is the one that survives (newest note wins)."""
+    out = _ws(
+        """
+        // both lists pre-exist, so the two saves run the SAME async chain and
+        // their read-first checks genuinely overlap (with an empty account the
+        // second save's list-create clash would serialize them by accident)
+        var db = makeDb({watchlists: [
+          {id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0},
+          {id: 'L-SI', user_id: 'u1', name: 'Sector Intelligence', position: 1}],
+          watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        var a = WS.saveSectorInvestigation({etf: 'XLE', note: 'first question'});
+        var b = WS.saveSectorInvestigation({etf: 'XLE', note: 'second question'});
+        Promise.all([a, b]).then(function (rs) {
+          return WS.listSectorInvestigations().then(function (rows) {
+            OUT({results: rs.map(function (r) { return [r.etf, !!r.skipped]; }),
+                 siRows: db.tables.watchlist_symbols.filter(function (s) {
+                   return s.section === 'si'; }).length,
+                 readback: rows});
+          });
+        });
+        """
+        , {"USER": USER},
+    )
+    assert out["siRows"] == 1                      # one row, not two
+    assert sorted(out["results"]) == [["XLE", False], ["XLE", True]]
+    assert out["readback"] == [{"etf": "XLE", "added": out["readback"][0]["added"],
+                                "note": "second question", "synced": True}]
+
+
+@needs_node
+def test_readback_collapses_duplicate_rows_to_one_per_symbol():
+    """The read half of RI07 finding 4: duplicates an OLD race already minted
+    still sit in the dedicated list (no unique index). listSectorInvestigations()
+    reports ONE row per symbol — the earliest created_at (when the investigation
+    was first saved) carrying the device-local note."""
+    out = _ws(
+        """
+        var db = makeDb({watchlists: [
+          {id: 'L-SI', user_id: 'u1', name: 'Sector Intelligence', position: 0}],
+          watchlist_symbols: [
+            {id: 's1', watchlist_id: 'L-SI', symbol: 'XLE', section: 'si', position: 0,
+             created_at: '2026-10-03T00:00:00.000Z'},
+            {id: 's2', watchlist_id: 'L-SI', symbol: 'XLE', section: 'si', position: 1,
+             created_at: '2026-10-01T00:00:00.000Z'},
+            {id: 's3', watchlist_id: 'L-SI', symbol: 'XLK', section: 'si', position: 2,
+             created_at: '2026-10-02T00:00:00.000Z'}]});
+        WS._setTestSession(USER, db.client);
+        WS.listSectorInvestigations().then(function (rows) {
+          OUT({rows: rows});
+        });
+        """
+        , {"USER": USER},
+    )
+    # one row per symbol; XLE reports the EARLIEST created_at of its two rows
+    assert out["rows"] == [
+        {"etf": "XLE", "added": "2026-10-01T00:00:00.000Z", "note": "", "synced": True},
+        {"etf": "XLK", "added": "2026-10-02T00:00:00.000Z", "note": "", "synced": True},
+    ]
+
+
+@needs_node
+def test_signed_out_readback_also_reports_one_row_per_symbol():
+    out = _ws(
+        """
+        localStorage.setItem('mdash.watchlist.v1', JSON.stringify({
+          v: 1, updated: '2026-10-01T00:00:00.000Z',
+          items: [{t: 'XLE', added: '2026-10-03T00:00:00.000Z', note: 'older note'},
+                  {t: 'XLE', added: '2026-10-01T00:00:00.000Z', note: 'newest note'},
+                  {t: 'MSFT', added: '2026-09-30T00:00:00.000Z', note: ''}],
+          order: ['XLE', 'MSFT'], settings: {}}));
+        WS.listSectorInvestigations().then(function (rows) {
+          OUT({rows: rows});
+        });
+        """
+    )
+    assert out["rows"] == [{"etf": "XLE", "added": "2026-10-01T00:00:00.000Z",
+                            "note": "newest note", "synced": False}]
+
+
+# ===========================================================================
+# 9. the page side — chip, dossier link, device-local disclosure (static)
 # ===========================================================================
 def test_the_dedicated_lists_rows_carry_a_chip_that_links_the_dossier():
     src = WATCHLIST.read_text(encoding="utf-8")
