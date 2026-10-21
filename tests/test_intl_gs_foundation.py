@@ -1171,8 +1171,9 @@ def test_x3_snapshot_block_latest_qualified_clocks(monkeypatch):
     snapshot = result["surveillance"]["snapshot"]
     assert set(snapshot) == {"local", "usd_unhedged", "usd_hedged"}
     for basis in snapshot:
-        assert set(snapshot[basis]) == {"clocks", "qualified", "total"}
+        assert set(snapshot[basis]) == {"clocks", "clock_display", "qualified", "total"}
         assert set(snapshot[basis]["clocks"]) == set(REQUIRED_CLOCKS)
+        assert set(snapshot[basis]["clock_display"]) == set(REQUIRED_CLOCKS)
     assert snapshot["local"]["qualified"] == 1 and snapshot["local"]["total"] == 2
     assert snapshot["local"]["clocks"]["computation"] == "2026-10-09T20:30:00+00:00"
     assert snapshot["local"]["clocks"]["source_publication"] == "2026-10-09T15:00:00+00:00"
@@ -1269,19 +1270,29 @@ def test_x5_gs_questions_strip_six_bilingual_questions():
 
 
 def test_x5_gs_snapshot_populated_and_all_none():
+    horizon = {"id": "1m", "en": "1M", "zh": "1月"}
     populated = {"local": {"clocks": {
         "observation": "2026-10-07", "source_publication": "2026-10-09T15:00:00+00:00",
         "ingestion": "2026-10-09T15:00:00+00:00", "computation": "2026-10-09T20:30:00+00:00"},
-        "qualified": 35, "total": 35}}
+        "qualified": 35, "total": 35,
+        "clock_display": {}}}
     empty = {"local": {"clocks": {name: None for name in (
         "observation", "source_publication", "ingestion", "computation")},
-        "qualified": 0, "total": 0}}
-    out = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', '1m') }}", snapshot=populated)
+        "qualified": 0, "total": 0, "clock_display": {}}}
+    module = _display_module()
+    populated = module.snapshot_display(populated)
+    empty = module.snapshot_display(empty)
+    out = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', horizon) }}",
+                        snapshot=populated, horizon=horizon)
     assert "2026-10-09T20:30:00+00:00" in out and "2026-10-07" in out
+    assert "9 Oct 20:30 UTC" in out and "10月9日 20:30 UTC" in out
+    assert "1M" in out and "1月" in out
     assert "No qualified observation" not in out
-    blank = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', '1m') }}", snapshot=empty)
+    blank = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', horizon) }}",
+                          snapshot=empty, horizon=horizon)
     assert blank.count("No qualified observation") >= 1 and "无合格观测" in blank
-    hedged = _macro_render("{{ gs.gs_snapshot(snapshot, 'usd_hedged', '1m') }}", snapshot=empty)
+    hedged = _macro_render("{{ gs.gs_snapshot(snapshot, 'usd_hedged', horizon) }}",
+                           snapshot=empty, horizon=horizon)
     assert "Hedged basis not supported" in hedged and "不支持对冲口径" in hedged
     assert "Local" in out and "本币" in out
     assert "USD · Hedged" in hedged and "美元 · 已对冲" in hedged
@@ -1409,7 +1420,8 @@ def test_vf5_muted_states_never_carry_direction_ink():
 def test_vf6_corrected_cell_shows_same_metric_old_and_new():
     html = _render_fixture()
     corrected = html.split('data-state="corrected"', 1)[1].split('data-state="recovered"', 1)[0]
-    assert "+2.9%" in corrected and "2.60%" in corrected, "old and new must be the same metric"
+    assert "+2.90%" in corrected and "+2.60%" in corrected, \
+        "old and new must be the same metric at the same precision"
     assert "5.712" not in corrected
     assert 'intl-gs__old' in corrected
 
@@ -1478,3 +1490,288 @@ def test_vf7_glyph_clocks_are_micro_muted():
     assert ".intl-gs__glyphwrap .intl-gs__num{font-size:var(--fs-micro);color:var(--muted);}" in css
     html = _render_fixture()
     assert "intl-gs__glyphwrap" in html
+
+
+# ------------------------------------------------------------ FX fix round
+# (orchestrator visual review FX1–FX7 + independent-review findings F2/F3/F7;
+# written RED before any implementation — see LANE_RECORD_INTL-GS-W2F-FX.md)
+
+from html.parser import HTMLParser  # noqa: E402  (FX scans parse rendered pages)
+
+RAW_ISO_TEXT = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
+
+
+def _display_module():
+    spec = importlib.util.spec_from_file_location(
+        "intl_gs_display", REPO / "lib/intl_gs_display.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class _PageScan(HTMLParser):
+    """Collects visible text nodes and every attribute value of a page."""
+
+    def __init__(self):
+        super().__init__()
+        self.text = []
+        self.attr_values = []
+
+    def handle_starttag(self, tag, attrs):
+        for _name, value in attrs:
+            if value is not None:
+                self.attr_values.append(value)
+
+    def handle_data(self, data):
+        self.text.append(data)
+
+
+def _scan(html):
+    parser = _PageScan()
+    parser.feed(html)
+    return parser
+
+
+# ---------------------------------------------------------------- FX1 clocks
+
+def test_fx1_format_clock_unit_cases():
+    display = _display_module()
+    format_clock = display.format_clock
+    # Z and +00:00 suffixes: same instant, original string kept in `datetime`.
+    assert format_clock("2026-10-09T15:00:00Z") == {
+        "datetime": "2026-10-09T15:00:00Z", "en": "9 Oct 15:00 UTC", "zh": "10月9日 15:00 UTC"}
+    assert format_clock("2026-10-09T15:00:00+00:00") == {
+        "datetime": "2026-10-09T15:00:00+00:00", "en": "9 Oct 15:00 UTC", "zh": "10月9日 15:00 UTC"}
+    # +08:00 converts to UTC first (spec §13.3: 23:30 wall -> 15:30 UTC).
+    assert format_clock("2026-10-09T23:30:00+08:00") == {
+        "datetime": "2026-10-09T23:30:00+08:00", "en": "9 Oct 15:30 UTC", "zh": "10月9日 15:30 UTC"}
+    # Naive datetime is already UTC; seconds are dropped (24h HH:MM).
+    assert format_clock("2026-10-09T15:00:30")["en"] == "9 Oct 15:00 UTC"
+    # Spec §13.3 Dates row verbatim.
+    assert format_clock("2026-10-21T08:00:00+00:00") == {
+        "datetime": "2026-10-21T08:00:00+00:00", "en": "21 Oct 08:00 UTC", "zh": "10月21日 08:00 UTC"}
+    # Date-only (PROPOSAL, record gap): EN "7 Oct 2026", ZH "2026年10月7日".
+    assert format_clock("2026-10-07") == {
+        "datetime": "2026-10-07", "en": "7 Oct 2026", "zh": "2026年10月7日"}
+    # datetime/date objects (naive datetime = UTC; aware converts).
+    from datetime import date, datetime, timedelta, timezone
+    assert format_clock(datetime(2026, 10, 9, 15, 0))["en"] == "9 Oct 15:00 UTC"
+    aware = datetime(2026, 10, 9, 23, 30, tzinfo=timezone(timedelta(hours=8)))
+    assert format_clock(aware)["en"] == "9 Oct 15:30 UTC"
+    assert format_clock(aware)["zh"] == "10月9日 15:30 UTC"
+    assert format_clock(date(2026, 10, 7))["zh"] == "2026年10月7日"
+    # None / empty -> None; unparseable -> ValueError (never echoed into markup).
+    assert format_clock(None) is None and format_clock("") is None
+    with pytest.raises(ValueError):
+        format_clock("not a date")
+    with pytest.raises(ValueError):
+        format_clock("2026-13-99T99:99")
+
+
+def test_fx1_snapshot_display_one_composition_path():
+    display = _display_module()
+    raw = {"local": {"clocks": {"observation": "2026-10-07",
+                                "computation": "2026-10-09T20:30:00+00:00",
+                                "ingestion": None},
+                     "qualified": 35, "total": 35}}
+    out = display.snapshot_display(raw)
+    # The raw clocks pass through unchanged, plus one clock_display per clock.
+    assert out["local"]["clocks"] == raw["local"]["clocks"]
+    assert out["local"]["qualified"] == 35 and out["local"]["total"] == 35
+    display_map = out["local"]["clock_display"]
+    assert display_map["observation"] == {"datetime": "2026-10-07", "en": "7 Oct 2026",
+                                         "zh": "2026年10月7日"}
+    assert display_map["computation"]["en"] == "9 Oct 20:30 UTC"
+    assert display_map["ingestion"] is None
+
+
+def test_fx1_render_shows_formatted_clocks_and_no_raw_iso():
+    site = _fixture_site()
+    states = site.render_states_page()
+    # The populated snapshot variant keeps the machine instant in <time datetime>
+    # and prints the §13.3 form as the visible value.
+    assert 'datetime="2026-10-09T15:00:00+00:00"' in states
+    assert "9 Oct 15:00 UTC" in states and "10月9日 15:00 UTC" in states
+    assert 'datetime="2026-10-07"' in states
+    assert "7 Oct 2026" in states and "2026年10月7日" in states
+    # No visible text node anywhere carries a raw ISO instant (fixture + production).
+    for html in (states, site.render_intl_page()):
+        scan = _scan(html)
+        leaks = [node for node in scan.text if RAW_ISO_TEXT.search(node)]
+        assert not leaks, f"raw ISO-8601 leaked into visible text: {leaks[:3]}"
+    # The all-None variant keeps the withheld state copy.
+    assert "No qualified observation" in states and "无合格观测" in states
+
+
+def test_fx1_mount_snapshot_carries_clock_display_all_bases(monkeypatch):
+    mount = _load_mount()
+    _install_builder(monkeypatch, "scanner", lambda **_kwargs: [])
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {},
+                                       observations=_sample_observations())
+    snapshot = result["surveillance"]["snapshot"]
+    assert set(snapshot) == {"local", "usd_unhedged", "usd_hedged"}
+    for basis in snapshot:
+        assert "clock_display" in snapshot[basis], basis
+    assert snapshot["local"]["clock_display"]["computation"]["en"] == "9 Oct 20:30 UTC"
+    assert snapshot["local"]["clock_display"]["computation"]["zh"] == "10月9日 20:30 UTC"
+    assert snapshot["local"]["clock_display"]["observation"]["en"] == "7 Oct 2026"
+    assert all(entry is None for entry in snapshot["usd_hedged"]["clock_display"].values()), \
+        "usd_hedged never has a qualified observation"
+
+
+# ---------------------------------------------------------------- FX2 attributes
+
+def test_fx2_no_markup_inside_any_html_attribute():
+    site = _fixture_site()
+    pages = {
+        "states": site.render_states_page(),
+        "stub shell": site.render_intl_page(stub_coverage=True),
+        "production intl.html": site.render_intl_page(),
+    }
+    for name, html in pages.items():
+        scan = _scan(html)
+        bad = [value for value in scan.attr_values
+               if "<" in value or "l-en" in value or "l-zh" in value]
+        assert not bad, f"{name} carries markup inside an attribute: {bad[:3]}"
+    # And the source templates never place t() markup in an attribute slot.
+    for path in (MACROS_PATH, FIXTURE_PATH, REPO / "tests/intl_gs_fixture_site.py"):
+        source = path.read_text(encoding="utf-8")
+        hits = re.findall(r'="\{\{\s*t\(', source)
+        assert not hits, f'{path.name} places t() inside an attribute: {hits[:3]}'
+
+
+def test_fx2_stub_market_section_names_its_visible_bandhead():
+    site = _fixture_site()
+    html = site.render_intl_page(stub_coverage=True)
+    assert 'aria-labelledby="intl-gs-market-selection"' in html
+    assert '<h2 class="intl-gs__bandhead__title" id="intl-gs-market-selection">' in html
+
+
+# ---------------------------------------------------------------- FX5 horizon
+
+def test_fx5_horizon_label_vocabulary():
+    display = _display_module()
+    horizon_label = display.horizon_label
+    assert horizon_label("1m") == ("1M", "1月")
+    assert horizon_label("3m") == ("3M", "3月")
+    assert horizon_label("20d") == ("20D", "20日")
+    assert horizon_label("6m") == ("6m", "6m")
+    assert horizon_label("ytd") == ("ytd", "ytd")
+
+
+def test_fx5_snapshot_readout_and_control_share_one_vocabulary():
+    site = _fixture_site()
+    states = site.render_states_page()
+    # The read-out prints the label pair, never the raw id.
+    assert ">1m<" not in states and "1M" in states and "1月" in states
+    readout = re.search(
+        r'<span class="intl-gs__seg__opt is-active intl-gs__num">(.*?)</span>', states)
+    assert readout, "the horizon read-out option is missing"
+    assert "1M" in readout.group(1) and "1月" in readout.group(1)
+    # The fixture segmented control binds the same label pair per horizon id.
+    control = re.search(
+        r'<button type="button" class="intl-gs__seg__opt[^"]*" aria-pressed="true" data-value="1m">(.*?)</button>',
+        states)
+    assert control, "the fixture horizon control is missing"
+    assert "1M" in control.group(1) and "1月" in control.group(1)
+    assert control.group(1) == readout.group(1), \
+        "the segmented control and the read-out must share one vocabulary"
+
+
+def test_fx5_mount_publishes_horizon_labels_for_every_config_horizon(monkeypatch):
+    mount = _load_mount()
+    display = _display_module()
+    _install_builder(monkeypatch, "scanner", lambda **_kwargs: [])
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {}, observations=None)
+    labels = result["surveillance"]["horizon_labels"]
+    assert set(labels) == set(_base_workspace()["config"]["horizons"])
+    for horizon, pair in labels.items():
+        assert pair == {"en": display.horizon_label(horizon)[0],
+                        "zh": display.horizon_label(horizon)[1]}, horizon
+
+
+# ---------------------------------------------------------------- FX6 fixture copy
+
+def test_fx6_zh_fixture_copy_is_real_chinese():
+    from html.parser import HTMLParser
+
+    class ZhSpans(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+            self.spans = []
+
+        def handle_starttag(self, tag, attrs):
+            classes = (dict(attrs).get("class") or "").split()
+            self.stack.append("l-zh" in classes)
+
+        def handle_endtag(self, tag):
+            if self.stack:
+                self.stack.pop()
+
+        def handle_data(self, data):
+            if any(self.stack):
+                self.spans.append(data)
+
+    parser = ZhSpans()
+    parser.feed(_render_fixture())
+    for text in parser.spans:
+        for word in ("fixture", "Fixture", "stub"):
+            assert word not in text, f"English word {word!r} inside a ZH span: {text!r}"
+    joined = "".join(parser.spans)
+    assert "仅限测试页面" in joined and "示例数值仅用于排版" in joined
+
+
+# ---------------------------------------------------------------- FX7 precision
+
+def test_fx7_corrected_old_and_new_share_precision():
+    html = _render_fixture()
+    corrected = html.split('data-state="corrected"', 1)[1].split('data-state="recovered"', 1)[0]
+    old = re.search(r'class="intl-gs__old">(.*?)</span>', corrected)
+    new = re.search(r'class="intl-gs__statecell__value[^"]*">(.*?)</span>', corrected)
+    assert old and new, "the corrected cell must render old and new numerals"
+    strip = lambda markup: re.sub(r"<[^>]+>", "", markup)
+    old_digits = strip(old.group(1)).strip()
+    new_digits = strip(new.group(1)).strip()
+    assert old_digits == "+2.90%" and new_digits == "+2.60%", (old_digits, new_digits)
+    old_dp = len(old_digits.split(".")[1]) if "." in old_digits else 0
+    new_dp = len(new_digits.split(".")[1]) if "." in new_digits else 0
+    assert old_dp == new_dp == 2, (old_digits, new_digits)
+
+
+def test_fx7_string_old_is_no_longer_accepted():
+    with pytest.raises(TypeError):
+        _macro_render("{{ gs.gs_state_cell('corrected', 'Brazil', 2.6, '%', 'USD', 'clock', old='+2.9%') }}")
+
+
+# ---------------------------------------------------------------- F3 single span
+
+def test_f3_gs_value_renders_exactly_one_num_element():
+    parts = {"label": "USD move", "unit": "%", "basis": "USD", "clock": "21 Oct 08:00 UTC",
+             "tier": "T1", "ink": "up", "dp": 2}
+    out = _macro_render("{{ gs.gs_value(1.24, parts=parts) }}", parts=parts)
+    elements = re.findall(r'class="[^"]*\bintl-gs__num\b[^"]*"', out)
+    assert len(elements) == 1, f"gs_value must emit exactly one .intl-gs__num element: {out}"
+    assert out.count("<span") == 1, out
+
+
+# ---------------------------------------------------------------- F7a chip borders
+
+def test_f7a_loading_and_empty_chips_declare_muted_border():
+    css = _css()
+    assert ".intl-gs__chip--loading,.intl-gs__chip--empty{border-color:var(--muted);}" in css
+    for state in ("loading", "empty"):
+        out = _macro_render("{{ gs.gs_state_cell(state, 'Market') }}", state=state)
+        assert 'intl-gs__chip--%s' % state in out, state
+
+
+# ---------------------------------------------------------------- F6 mobile H1
+
+def test_f6_mobile_pagehead_title_uses_the_22px_token():
+    css = _css()
+    block = re.search(r"@media \(max-width:900px\)\{(.*?)\}\s*\n", css, re.DOTALL)
+    assert block, "the ≤900 breakpoint block must exist"
+    assert ".intl-gs__pagehead__title{font-size:var(--fs-num-lg);}" in css, \
+        "the mobile H1 must reuse the existing 22px token (no px literal, no new token)"

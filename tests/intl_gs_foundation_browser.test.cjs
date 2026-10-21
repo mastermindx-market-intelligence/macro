@@ -424,3 +424,107 @@ test('VF16: both fixture pages load with zero console errors and zero failed req
     assert.deepEqual(failures.responses, [], 'failed responses on the shell page');
   }, {page: 'intl', stub: true, trackFailures: true});
 });
+
+// ---------------------------------------------------------------- FX fix round
+
+// FX3: a chip that is a direct child of a flex-column panel keeps its content
+// width (the specimen chip must never stretch to the panel width).
+test('FX3: specimen chip keeps intrinsic width in flex-column panels', async () => {
+  await withRoutedPage(async page => {
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({width, height: width === 1440 ? 900 : 844});
+      const measure = await page.evaluate(() => {
+        const chip = document.querySelector('.intl-gs__panel > .intl-gs__chip--specimen');
+        if (!chip) return null;
+        const panel = chip.closest('.intl-gs__panel');
+        const previous = chip.style.width;
+        chip.style.width = 'max-content';
+        const maxContent = chip.getBoundingClientRect().width;
+        chip.style.width = previous;
+        return {width: chip.getBoundingClientRect().width, maxContent,
+                panel: panel.getBoundingClientRect().width};
+      });
+      assert.ok(measure, 'the stub coverage panel must carry a direct specimen chip');
+      assert.ok(measure.width <= measure.maxContent + 2,
+        `chip stretched at ${width}: ${measure.width} > max-content ${measure.maxContent} + 2`);
+      assert.ok(measure.width < measure.panel / 2,
+        `chip must stay under half the panel at ${width}: ${measure.width} of ${measure.panel}`);
+    }
+  }, {page: 'intl', stub: true});
+});
+
+// FX4: at 390 the snapshot labels and read-only pills stay one line tall in
+// every theme × language, and nothing horizontally scrolls.
+test('FX4: snapshot controls never break per character at 390', async () => {
+  await withRoutedPage(async page => {
+    for (const theme of ['dark', 'light']) {
+      for (const lang of ['en', 'zh']) {
+        await page.evaluate(({theme, lang}) => {
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute('data-lang', lang);
+        }, {theme, lang});
+        await page.setViewportSize({width: 390, height: 844});
+        const result = await page.evaluate(() => {
+          const lineHeightOf = node => {
+            const style = getComputedStyle(node);
+            if (style.lineHeight !== 'normal') return parseFloat(style.lineHeight);
+            return 1.5 * parseFloat(style.fontSize);
+          };
+          const tall = [];
+          const nodes = [
+            ...document.querySelectorAll('.intl-gs__snapctl__label'),
+            ...document.querySelectorAll('.intl-gs__snapshot .intl-gs__seg__opt'),
+          ];
+          for (const node of nodes) {
+            const height = node.getBoundingClientRect().height;
+            if (height > 1.3 * lineHeightOf(node) + 0.5) {
+              tall.push(`${node.className}: ${height}px`);
+            }
+          }
+          return {tall, scrollWidth: document.scrollingElement.scrollWidth};
+        });
+        assert.deepEqual(result.tall, [],
+          `one-line labels required at 390 ${theme}/${lang}: ${result.tall}`);
+        assert.ok(result.scrollWidth <= 390,
+          `no horizontal scroll at 390 ${theme}/${lang}: ${result.scrollWidth}`);
+      }
+    }
+  }, {page: 'states'});
+});
+
+// F6 (only when fixed): the mobile page-header title computes to the 22px token.
+test('F6: pagehead title computes to 22px at 390 through the token', async () => {
+  await withRoutedPage(async page => {
+    await page.setViewportSize({width: 390, height: 844});
+    const fontSize = await page.evaluate(() => {
+      const scope = document.querySelector('.intl-gs');
+      const probe = document.createElement('h1');
+      probe.className = 'intl-gs__pagehead__title';
+      probe.textContent = 'probe';
+      scope.appendChild(probe);
+      const size = getComputedStyle(probe).fontSize;
+      probe.remove();
+      return size;
+    });
+    assert.equal(fontSize, '22px', 'the ≤900 override must resolve to the 22px token');
+    const declared = await declaredRule(page, 'intl-gs__pagehead__title');
+    assert.match(declared || '', /font-size:\s*var\(--fs-num-lg\)/,
+      'the override must use the existing token, never a px literal');
+  }, {page: 'states'});
+});
+
+// F7a: the Loading and Empty state chips carry the --muted border (spec §7).
+test('F7a: loading and empty chips carry the muted border in both themes', async () => {
+  await withRoutedPage(async page => {
+    for (const theme of ['dark', 'light']) {
+      await page.evaluate(name => document.documentElement.setAttribute('data-theme', name), theme);
+      for (const state of ['loading', 'empty']) {
+        const border = await page.evaluate(name =>
+          getComputedStyle(document.querySelector(
+            `.intl-gs__statecell--${name} .intl-gs__chip`)).borderColor, state);
+        assert.equal(border, await tokenColor(page, '--muted'),
+          `${state} chip border must be --muted in ${theme}`);
+      }
+    }
+  }, {page: 'states'});
+});
