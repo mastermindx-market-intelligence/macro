@@ -8595,6 +8595,16 @@ jobs:
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
 
+      # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
+      # and admissibility literals for the Prophet Lab dossier reader. Hermetic
+      # (fixtures under tests/fixtures/prophet_lab_dossier/); imports
+      # engine.prophet_lab + lib.dataos.identity, both already exercised by the
+      # projection step above, so this job's deps cover it. Belongs HERE
+      # (gate: code) so it runs on every PR: prophet-anticipation-intake is
+      # gate: data and is packed only by data-health.yml after merge.
+      - name: Prophet Lab evidence dossier B04-A0 (closed reason map, forbidden-key refusal, admissibility literals)
+        run: python -m pytest tests/test_prophet_lab_dossier_b04a.py -q
+
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
@@ -27236,8 +27246,6 @@ jobs:
         run: python -m pytest tests/test_prophet_whynot_receipts.py -q
       - name: Prophet leader-observation shelf (real publisher, tier split, plan-byte invariance, rendered consumer)
         run: python -m pytest tests/test_prophet_leader_observation_shelf.py -q
-      - name: Prophet Lab evidence dossier B04-A0 (closed reason map, forbidden-key refusal, admissibility literals)
-        run: python -m pytest tests/test_prophet_lab_dossier_b04a.py -q
       - name: zone-basis copy (no raw enum/slug/internal state on the published entry_zone; EN+ZH)
         # Same job as the intake because it guards the same payload: `entry_zone` is
         # whitelisted onto site/prophet/index.json, so its `basis`/`conversion_evidence`
