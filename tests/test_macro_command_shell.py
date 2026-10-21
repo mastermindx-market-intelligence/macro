@@ -179,6 +179,9 @@ def _assert_reviewed_default_off_host_only(upstream: bytes, local: bytes) -> Non
     if not local.endswith(_REVIEWED_DEFAULT_OFF_HOST):
         raise AssertionError("local must end with the reviewed default-off host suffix")
 
+    # ``origin/main`` has carried the reviewed host itself since the Shared Shell
+    # integration (#7949) merged, so the byte-for-byte recovery strips that one
+    # include from both sides; any other shared-chrome mutation still fails here.
     upstream_count = upstream.count(_REVIEWED_DEFAULT_OFF_HOST)
     if upstream_count > 1:
         raise AssertionError(
