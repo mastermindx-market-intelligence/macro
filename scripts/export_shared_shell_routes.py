@@ -58,6 +58,22 @@ def navigation_labels(texts: list[str]) -> dict[str, dict[str, str]]:
     return out
 
 
+def document_heading_label(text: str) -> dict[str, str]:
+    """Read the existing bilingual H1; never invent a slug translation."""
+    heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", text, re.S)
+    if heading is None:
+        raise ValueError("directory source has no H1")
+    translated = TRANSLATION.search(heading[1])
+    if translated:
+        return {"en": html.unescape(translated[2].strip()),
+                "zh": html.unescape(translated[4].strip())}
+    plain = html.unescape(re.sub(r"<[^>]+>", "", heading[1])).strip()
+    parts = plain.split(" · ", 1)
+    if len(parts) != 2 or not all(parts):
+        raise ValueError("directory source H1 is not bilingual")
+    return {"en": parts[0], "zh": parts[1]}
+
+
 def derive_projection(registry: dict[str, Any], tracked_html: list[str],
                       deny: dict[str, Any], labels: dict[str, dict[str, str]],
                       *, registry_digest: str, inventory_ref: str,
@@ -249,6 +265,11 @@ def main() -> int:
     labels = navigation_labels([source("templates/_navlinks.html.j2"),
                                 source("templates/_public_nav.html.j2"),
                                 source("templates/_public_footer.html.j2")])
+    # These retained documents have canonical bilingual headings but no nav label.
+    # Preserve the moved-page identity of baskets_china rather than translating its slug.
+    for path in ("allocation", "baskets_china"):
+        labels.setdefault("/" + path + ".html", document_heading_label(
+            source("templates/" + path + ".html.j2")))
     doc = derive_projection(registry, paths, denied, labels,
                             registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=ref,
                             document_paths=document_inventory(ROOT, ref, paths))

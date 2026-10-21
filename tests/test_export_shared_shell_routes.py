@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.export_shared_shell_routes import derive_projection, is_html_document, navigation_labels, normalized_path
+from scripts.export_shared_shell_routes import derive_projection, document_heading_label, is_html_document, navigation_labels, normalized_path
 
 PIN = "a" * 40
 
@@ -120,6 +120,16 @@ def test_directory_names_come_from_the_existing_bilingual_navigation():
     assert labels == {"/macro.html": {"en": "Market & economy", "zh": "市场与经济"}}
     p = project(catalog(row("/macro.html")), ["/macro.html"], labels=labels)
     assert p["directory"][0]["title"] == labels["/macro.html"]
+
+
+def test_document_heading_keeps_existing_bilingual_title_and_moved_identity():
+    assert document_heading_label("<h1>{{ t('Narrative Rotation', '主题轮动') }} <span>{{ t(d.market_en, d.market_zh) }}</span></h1>") == {
+        "en": "Narrative Rotation", "zh": "主题轮动"}
+    assert document_heading_label("<h1>China Thematic Baskets now live in China Sector Intelligence · A股主题篮子已并入中国行业情报</h1>") == {
+        "en": "China Thematic Baskets now live in China Sector Intelligence",
+        "zh": "A股主题篮子已并入中国行业情报"}
+    with pytest.raises(ValueError, match="not bilingual"):
+        document_heading_label("<h1>Baskets China</h1>")
 
 
 def test_recursive_members_match_canonical_directory_family_without_runtime_wildcards():
