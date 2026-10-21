@@ -75,7 +75,9 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
   issuer ``request_log.jsonl`` and ``capture_index.json`` are written under the
   fixture output root: ``--out-root``, default
   ``tests/fixtures/fundamental_forensics/g_src`` under the repo root (every
-  pre-flag caller stays byte-identical in behaviour).
+  pre-flag caller stays byte-identical in behaviour); an empty ``--out-root``
+  is refused with ``gsrc_refusal: out_root_empty`` before any fetch or write,
+  and a relative one resolves against the repo root, never the caller's cwd.
 """
 from __future__ import annotations
 
@@ -971,7 +973,9 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         "--out-root",
         default=None,
         help="fixture output root for manifests/capture_index/request_log "
-        "(default: tests/fixtures/fundamental_forensics/g_src under the repo root)",
+        "(default: tests/fixtures/fundamental_forensics/g_src under the repo "
+        "root); empty is refused (gsrc_refusal: out_root_empty) and a relative "
+        "path resolves against the repo root, not the caller's cwd",
     )
     parser.add_argument(
         "--min-interval",
@@ -1154,13 +1158,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         if extra not in known_extras:
             print(f"gsrc_refusal: extra_accession_not_in_d0: {extra}")
             return 2
+    if args.out_root is not None and not args.out_root.strip():
+        print(f"gsrc_refusal: out_root_empty: {args.out_root!r}")
+        return 2
 
     stage_root = Path(args.stage_root).expanduser()
-    out_root = (
-        Path(args.out_root).expanduser()
-        if args.out_root
-        else _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
-    )
+    if args.out_root:
+        out_root = Path(args.out_root).expanduser()
+        if not out_root.is_absolute():
+            out_root = _ROOT / out_root
+    else:
+        out_root = _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
     pacer = SecRequestPacer(min_interval_seconds=args.min_interval)
 
     plan: dict[str, list[SelectedAccession]] = {}
