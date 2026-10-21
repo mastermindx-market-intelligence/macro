@@ -675,7 +675,11 @@ html[data-theme="light"] :is(
 {% if commodity_workspace %}<style>{% include "commodity-workspace.css" %}</style>{% endif %}
 </head>
 <body class="page-commod{% if commodity_workspace %} cw-enabled{% endif %}">
+{# Logo configuration is injected at deployment; its Git placeholder is not a cache key.
+   Keep this exception local: shared navigation is pinned by other product receipts. #}
+{% filter replace('<script src="logo_config.js"></script>', '<script src="logo_config.js?runtime-config" defer></script>' | safe) %}
 {% include "_site_nav.html.j2" %}
+{% endfilter %}
 
 {# Aurora layer — class keyed to stance tone; protect=red wins, watch=amber, else blank #}
 {% if vm and vm.stance %}
