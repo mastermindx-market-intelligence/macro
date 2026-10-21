@@ -112,7 +112,14 @@ _RANGE_DISCLOSED_ARMS = (
         # F2 (second review): the not-possible / impossible and estimate-
         # cannot-be-made sentences. The "of ..." gap may never cross a "."
         # (one sentence) and is bounded at 80 chars.
-        r"|(?:is |was )?not possible to (?:reasonably )?(?:estimate|determine)"
+        # F3-1 (third review): "determine" is object-bound — it values
+        # not_estimable only when an amount/range/loss object follows inside
+        # a three-word window; "not possible to determine the outcome" says
+        # nothing about estimability of a loss amount and never matches.
+        r"|(?:is |was )?not possible to (?:reasonably )?estimate"
+        r"|(?:is |was )?not possible to (?:reasonably )?determine "
+        r"(?:the |an? )?(?:[a-z]+ ){0,3}?"
+        r"(?:amount|range|loss|losses|exposure|liability)"
         r"|impossible to (?:reasonably )?estimate"
         r"|estimates? (?:of [^.]{0,80}?)?(?:cannot|can not|could not) be made",
     ),
