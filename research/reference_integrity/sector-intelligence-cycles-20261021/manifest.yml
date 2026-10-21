@@ -1,0 +1,36 @@
+schema: mastermind.rig_manifest.v1
+reference_id: sector-intelligence-cycles-20261021
+scope: full
+status: draft
+surface:
+  route: sector_central.html
+  registry_row: "macro:sector_central"
+  archetype: intelligence_desk
+  # Full replacement of BOTH Macro sector surfaces by the one R3 Paper workspace
+  # (programme macro#7646, operation sector-central-redesign-20260921-sol-001).
+  # /sector_cycles.html ("macro:sector_cycles", regime_dashboard) folds into the
+  # shell per SIC-MAP; it is declared as a shared surface in baseline.yml and its
+  # capabilities (C01-C28) are ledgered there, so one dual review covers both.
+author:
+  identity: "Fable Meta-CEO seat 1a26b044 (macro#7646) — Paper boards by ORCH-PAPER (Opus suborchestrator, single admitted Paper writer); component/copy/IA/state specs by Fabric lanes sic-p-comp/copy/cyc/states"
+  role: designer
+lineage:
+  predecessors:            # every prior set on sector_central.html, ordered
+    - mastermind-xpv2-sector-r3b
+    - mastermind-xpv2-sector-r3b-1
+    - mastermind-xpv2-sector-r3b-2
+reference_files:            # frozen at the commit that lands the exports + specs (set at freeze; never pre-filled)
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/
+    frozen_sha: 76d0fb0ea65c17e73a0ecb7aa7d63b814a8a139c
+    note: "Paper R3 page p-24-0 board exports (PNG 1x) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P"
+  - path: design_refs/sector-paper-20261021/
+    frozen_sha: 76d0fb0ea65c17e73a0ecb7aa7d63b814a8a139c
+    note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs)"
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml
+  continuity: continuity.yml

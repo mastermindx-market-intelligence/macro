@@ -1,0 +1,62 @@
+# Derived: python3 scripts/check_reference_integrity.py --mandate sector-intelligence-cycles-20261021
+# Machine-complete closure set (RIG §13.5) — the WHOLE list, from the record.
+# Fill every disposition with one of CARRIED_BLOCK | OVERRIDDEN | RESOLVED_BY_CHANGE | SUPERSEDED
+# plus its mandatory fields.  <REQUIRED> is not a legal value: the checker
+# fires continuity-invalid-disposition until it is replaced.
+# Declared lineage (oldest → nearest): mastermind-xpv2-sector-r3b, mastermind-xpv2-sector-r3b-1, mastermind-xpv2-sector-r3b-2
+# The closure obligation runs against the NEAREST only: mastermind-xpv2-sector-r3b-2
+# Earlier entries are provenance — the chain is closed link by link.
+# 5 open item(s) derived from mastermind-xpv2-sector-r3b-2/verdict.yml.
+schema: mastermind.rig_continuity.v1
+reference_id: sector-intelligence-cycles-20261021
+predecessors:
+- reference_id: mastermind-xpv2-sector-r3b-2
+  verdict: APPROVE_WITH_CONDITIONS
+  source: on_disk
+  closure:
+  - id: R3C-HEATMAP-LEGIBILITY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: >
+      CARRIED_BLOCK: the heatmap legibility condition needs a composited-background contrast determination on the LIVE candidate (P19/P20 browser proof); the R3 boards 14-15 redraw the map with a list alternative but a design export cannot discharge a rendered-contrast condition. No D/I/P lane resolved it.
+    predecessor_note: Heatmap colour-field glyph legibility remains UNMEASURED, never PASS.
+      No seat in this cycle held a valid blended/painted-substrate method, and the Mobile
+      seat explicitly declined an invalid flat-surface substitution (MA2-002). R3C must obtain
+      an appropriate composited-background or human-equivalent determination before production
+      acceptance; failure blocks shipping until a bounded treatment is adjudicated by design
+      authority.
+  - id: R3C-AUTH-PREMIUM
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: >
+      CARRIED_BLOCK: auth/premium settlement (free / essential / pro hydrate, /premiumdata 401/403/offline) is a P19-P21 live-surface proof; the 2026-10-21 captures are anonymous shells that returned 401 on every data asset, which demonstrates the gate exists but not its settled behaviour. Boards 11 and 20 draw the no-access cells only.
+    predecessor_note: R3C must prove real auth settlement, /premiumdata/sector_central.json
+      authorization, successful hydrate, preview preservation for the ungated state, and 401
+      / 403 / offline / malformed behavior against the live surface. The static reference
+      cannot establish any of these and does not claim to.
+  - id: R3C-TIME-MACHINE
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: >
+      CARRIED_BLOCK: the live Time Machine condition belongs to the Dossier Record / Time Machine / Methods home (rows R3A-35/58/89) which has no dedicated R3 board (sic-p-rev major) and no production capture beyond the shell; discharge requires the P15 history depth proof on the served surface.
+    predecessor_note: 'R3C must prove live Time Machine behavior end to end: manifest, episode
+      feed, per-period and per-year chunks, and the empty, missing and failure paths. Recorded-not-executed
+      evidence is not production proof.'
+  - id: R3C-VALIDATED-21D
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: >
+      CARRIED_BLOCK: the banned word is absent from all 22 R3 boards (ORCH-PAPER copy sweep: 0 occurrences) and B13 reframes the grader denominator, but the condition binds the SERVED surface wording; it is discharged only when the released build (P21) renders the 21d window without that word. Not resolved by a design file.
+    predecessor_note: 'R3C must resolve the broader production-owned "Forward track record:
+      Validated" wording, the unproven-21d horizon, and the overloaded customer word "validated"
+      -- while preserving the candidate''s explicit and narrower disclosure, "Context only
+      · evidence proven at 5d · never sizes decisions", together with its native ZH twin and
+      the visual separation from explicitly labelled 21d figures.'
+  - id: R3C-NO-UNSUPPORTED-INVENTION
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: >
+      CARRIED_BLOCK: no board invents a signal, sizing, correction marker or Baskets disclosure (SC-066 / SC-092 stay BLOCKED_DATA; Prophet labels on boards 16-17 are declared placeholders; PARITY_FAILS is disclosed, not repaired). The condition is re-judged by the two independent reviewers against the frozen artifact and again at P19 against the build.
+    predecessor_note: Baskets thin/gateable disclosure and any correction/revision UI remain
+      FORBIDDEN until real producer contracts exist. No implementation may invent local producer
+      truth, local rank, local state or local score to satisfy a surface.
