@@ -58,23 +58,44 @@ waves:
   next_action: Commission with IM13 under the frozen R14 design spec.
 - id: IM15
   title: Dislocation research
-  status: todo
+  status: done
   depends_on:
   - IM13
-  next_action: Commission after Wave 2 lands; market-by-capability acceptance matrix is mandatory.
+  next_action: >
+    MERGED (engine side). PR 9943 (lane/intl-gs-w3a-r1 @a7340535, fabric review PASS + confirmation lane)
+    → main 63f3bc835ab23928899ff173994a1d1db48b161c (GitHub mergeCommit read 08:31:59Z).
+    engine/intl_global_dislocation.py + 917-line suite registered in the international pack.
+    Board 11 (dislocation view) UI rides a later UI wave on the W2 foundation.
 - id: IM16
   title: EM credit and dollar context
-  status: todo
+  status: done
   depends_on:
   - IM13
-  next_action: Commission with IM15.
+  next_action: >
+    MERGED (engine side). PR 9944 (lane/intl-gs-w3b-r1 @37c10fc6, fabric review PASS r2) → main
+    2d50943eb154430efda02ffc117bb37b5addc242 (GitHub mergeCommit read 08:42:08Z). Board 12 UI rides a later UI wave. Engine-side only: engine/intl_global_dollar_credit.py + engine/intl_global_acceptance_matrix.py
+    (counts-only matrix). Honest gaps (no invented coverage): cds_5y no_admitted_source for all 63;
+    DTWEXBGS/DFII10/ICE-BofA series have no rights-matrix row → rights_unconfirmed
+    (DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS proposed); dollar_funding_external and
+    us_exposure_transmission unavailable for all 63; local_rates_credit partial 5 / unavailable 58;
+    im16_complete=False by fact.
 - id: IM17
   title: Typed transmission evidence and US exposure
-  status: todo
+  status: in_progress
   depends_on:
   - IM15
   - IM16
-  next_action: Commission after Wave 3; the frozen 11-market links graph and 14-ETF VAR stay unchanged.
+  next_action: >
+    Engine half LANDED: W4A PR 9960 (lane/intl-gs-w4a-r1 @8aa58025, fabric review PASS r4, 0 blocking / 5 NITs)
+    MERGED by seat at the exact head → main 5c6fdb2ed1f013ffc008fde904e3be72b4524873 (GitHub mergeCommit read 11:26:07Z):
+    engine/intl_transmission_evidence.py, config/intl_transmission_channels_v1.json, NEW exclusive CI job
+    international-transmission-evidence (+ its tests/test_ci_pack.py curated pin). Frozen 11-market links graph and
+    14-ETF VAR unchanged (empty diff; AST scan finds no import). Gaps by fact: every documented-exposure value is
+    null (withheld, never 0) because bis.statistics / imf.data / ishares / licensed_feed rights are unresolved and
+    us_treasury_tic / us_census_trade / usda_fas have no rights row; broad_usd / us_rates ride IM16 keys with null
+    rights_ref; leverage_liquidity abstains; only the two frozen house models can display. W4B UI
+    (templates/intl_workspace/transmission.html.j2, 8 crops) NOT STARTED — ORCH-4 holds it until the seat messages
+    "W2 ON MAIN <sha>" naming a main sha that contains both #9949 and 5c6fdb2e.
 - id: IM18
   title: Replay, saved investigations and watch lifecycle
   status: todo
@@ -82,8 +103,10 @@ waves:
   - IM17
   next_action: Commission after Wave 4.
 next_action: >
-  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → main 556d3333). Consume ORCH-2 (Wave 2 IM13+IM14 UI) and
-  ORCH-3 (Wave 3 engine-side IM15+IM16) returns; seat verifies and merges; then Wave 4–5 and the §14 hard acceptance tests.
+  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → 556d3333); Wave 3 engines MERGED (#9943 → 63f3bc83, #9944 → 2d50943e); W4A IM17 engine MERGED (#9960 → 5c6fdb2e).
+  Consume ORCH-2 (foundation #9949 → IM13/IM14) return → merge → message ORCH-2 + ORCH-4 "W2 ON MAIN <sha>";
+  then W4B UI, Wave 3 UI (boards 9/11/12), Wave 5 IM18 and the §14 hard
+  acceptance tests on mastermind-x.com/intl.html.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md
@@ -106,13 +129,14 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 `research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md` (§14, §15); the running frontier lives in
 `research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md`.
 
-## Current result (2026-10-21 04:0xZ)
+## Current result (2026-10-21 08:3xZ)
 
 | Wave | Carrier | State | Evidence |
 | --- | --- | --- | --- |
 | W0 asset access | PR 9920 @898edecc | ready, awaiting ci-pack-0 | independent review PASS (fabric lane intl-gs-w0a-review-r1); pre-merge baseline intl.html 200, nine assets 401 |
 | W0 #9596 diagnosis | read-only lane intl-gs-w0b-r1 | DIAGNOSED 5 | packs 2/3 base-stale, pack 9 PR_CAUSED (theme.css receipt), pack 0 unknown, gate downstream |
 | W1 IM11/IM12 | Opus orchestrator ORCH-1 → fabric lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
-| W2 IM13/IM14 UI | Opus orchestrator ORCH-2 → fabric lanes W2F/W2A/W2B | running (spawned 05:2xZ) | frozen spec R14; evidence under `mockups/evidence/<packet>/` |
-| W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B | running (spawned 05:2xZ) | engine/config/tests only; matrix counts-only |
+| W2 IM13/IM14 UI | Opus orchestrator ORCH-2 → fabric lanes W2F/W2A/W2B | running; foundation PR 9949 @b2eae89c open (draft, its review lane running), not yet returned to the seat | frozen spec R14; evidence under `mockups/evidence/intl-gs-w2f/{shell,states}/` |
+| W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B (+ W3A-CONFIRM, W3B-REREVIEW) | RETURNED + LANDED; #9943 → 63f3bc83; #9944 → 2d50943e | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`; IM16 gaps recorded above |
+| W4 IM17 engine+UI | Opus orchestrator ORCH-4 → fabric lanes W4A/W4B | W4A RETURNED + LANDED (#9960 → 5c6fdb2e); W4B NOT STARTED, gated on "W2 ON MAIN" | NEW exclusive CI job; frozen models read-only |
 | Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (DEC:INTL-GS-R14-DESIGN-FREEZE, PR 9937) | design spec path above |
