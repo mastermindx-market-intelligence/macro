@@ -207,10 +207,10 @@ def test_mixed_legacy_and_new_clusters_join_labels(tmp_path):
     flow = _flow(db)
     assert flow["stories_24h"] == 2
     assert flow["provenance"]["cluster_policy_version"] == (
-        "qbus_news_cluster.v2 + unknown (pre-column)"
+        "qbus_news_cluster.v3 + unknown (pre-column)"
     )
     assert _versions_24h(db) == [
-        "qbus_news_cluster.v2",
+        "qbus_news_cluster.v3",
         "unknown (pre-column)",
     ]
 
@@ -266,7 +266,7 @@ def test_no_clustered_story_in_window_names_the_policy_in_force(tmp_path):
 def test_no_clustered_story_in_window_names_custom_policy_in_force(tmp_path):
     db = tmp_path / "custom-policy-unclustered.sqlite3"
     label = (
-        "qbus_news_cluster.v2 (title_threshold=0.9, "
+        "qbus_news_cluster.v3 (title_threshold=0.9, "
         "window_seconds=21600, max_candidates=128)"
     )
     with NewsStore(
@@ -536,7 +536,7 @@ def test_alter_duplicate_error_without_column_still_raises(
 def test_custom_policy_is_stamped_not_the_constant(tmp_path):
     db = tmp_path / "custom-policy.sqlite3"
     label = (
-        "qbus_news_cluster.v2 (title_threshold=0.9, "
+        "qbus_news_cluster.v3 (title_threshold=0.9, "
         "window_seconds=21600, max_candidates=128)"
     )
     with NewsStore(
@@ -558,7 +558,7 @@ def test_custom_policy_is_stamped_not_the_constant(tmp_path):
     assert _flow(db)["provenance"]["cluster_policy_version"] == label
 
 
-def test_default_policy_stamps_exactly_v2(tmp_path):
+def test_default_policy_stamps_exactly_v3(tmp_path):
     db = tmp_path / "default-policy.sqlite3"
     with NewsStore(db, source_key="benzinga-rest") as store:
         store.commit(
@@ -569,10 +569,10 @@ def test_default_policy_stamps_exactly_v2(tmp_path):
         rows = store._conn.execute(
             "SELECT cluster_policy_version FROM news_clusters"
         ).fetchall()
-    assert [row[0] for row in rows] == ["qbus_news_cluster.v2"]
+    assert [row[0] for row in rows] == ["qbus_news_cluster.v3"]
     from engine.qbus_news_cluster import cluster_policy_version
 
-    assert cluster_policy_version(ClusterPolicy()) == "qbus_news_cluster.v2"
+    assert cluster_policy_version(ClusterPolicy()) == "qbus_news_cluster.v3"
     assert " + " not in cluster_policy_version(
         ClusterPolicy(title_threshold=0.9)
     )

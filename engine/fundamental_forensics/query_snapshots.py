@@ -39,6 +39,7 @@ from .query import (
     MetricMatrix,
     QueryEntity,
     QueryValidationError,
+    _export_reason_text,
 )
 from .raw_ledger import (
     HARD_MAX_RAW_LEDGER_EVENTS,
@@ -498,7 +499,9 @@ def _projection_row(matrix: MetricMatrix, cell: Any) -> dict[str, str | None]:
         "state": cell.state.value,
         "value": decimal_text(cell.value),
         "unit": cell.unit,
-        "reason": cell.reason,
+        # Same reason-column text as the CSV/XLSX rows: a qualified sum carries
+        # the in-row not-presented qualifier marker (query._export_reason_text).
+        "reason": _export_reason_text(cell),
         "provenance_kind": provenance.kind.value,
         "accession": provenance.accession,
         "document_id": provenance.document_id,

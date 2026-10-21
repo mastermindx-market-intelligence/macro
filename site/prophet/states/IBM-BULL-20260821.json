@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IBM-BULL-20260821",
-  "asof": "2026-10-18",
+  "asof": "2026-10-21",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.3,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 72.9,
-    "progress": 0.0,
-    "pace": 12.7,
-    "retention": 0.0,
-    "overlay": 32.9
+    "validity": 100.0,
+    "progress": 13.0,
+    "pace": 8.7,
+    "retention": 46.5,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.792,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 128.9,
-    "p1": -0.1389,
-    "p2": -0.0695,
+    "dist_to_stop_r": 1.166,
+    "dist_to_t1_r": 1.334,
+    "dist_to_t2_r": 2.834,
+    "horizon_pct_used": 135.6,
+    "p1": 0.1105,
+    "p2": 0.0553,
     "p3": null,
-    "move_r": -0.208,
+    "move_r": 0.166,
     "mfe_r": 0.357,
     "mae_r": -0.42
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889
+  "days_elapsed": 61,
+  "tau": 1.3556
 }

@@ -231,7 +231,7 @@ def test_snapshot_keys_are_strict_superset(monkeypatch, tmp_path):
     assert response.status_code == 200, response.text
     keys = set(response.json())
     assert PARENT_KEYS < keys
-    assert keys - PARENT_KEYS == {"universe_known_at", "rights_basis", "flow"}
+    assert keys - PARENT_KEYS == {"universe_known_at", "rights_basis", "flow", "change_sequence", "editorial_policy"}
 
 
 def test_provenance_exact_values_against_committed_receipt(monkeypatch, tmp_path):

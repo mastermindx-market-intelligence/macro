@@ -1,0 +1,193 @@
+{
+  "at": "2026-10-20T08:14:07.781245+00:00",
+  "diff_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "agentos": {
+    "exit_code": 0,
+    "summary": [
+      "::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-HYBRID-PRICE-ACTIVITY-SCOPE.md: [review-overdue] review_by 2026-08-21 has passed",
+      "::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed",
+      "::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed",
+      "::warning title=agentos-review-overdue::agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed",
+      "agentos: 1868 records (99 workstreams, 503 decisions, 540 discoveries, 726 handoffs) \u2014 0 error(s), 163 warning(s)"
+    ],
+    "full_log": "/tmp/rr-final-agentos-validation-20261020.txt"
+  },
+  "changed_or_new_paths": 32,
+  "out_of_scope": [],
+  "active_code_paths": [],
+  "missing_relative_links": [],
+  "secret_pattern_match_count": 0,
+  "secret_scan_exit": 1,
+  "paths": [
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "sha256": "16b05f4b7ff8b112d70b1fbc9a356df3c010ab7783fd7230c388874701de6f20",
+      "bytes": 55166
+    },
+    {
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "sha256": "82af677d534269e0b896df039410b5647454e781ac68646b1d74f25bcc862942",
+      "bytes": 32212
+    },
+    {
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "sha256": "3bc559ff3bdd199a8e80cef477a340803fddb5077caf0a26a79714c5dc137ec5",
+      "bytes": 50506
+    },
+    {
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "sha256": "28ec1ec3a96faeb114e92617cd5bffcbdb2627a46ace6eba05b2727dd37aef46",
+      "bytes": 56311
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md",
+      "sha256": "b8de6fc19e063c16e44635d6f7c65ed97c6dec1614465f89cc6a8e27f7a6efd3",
+      "bytes": 24613
+    },
+    {
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "sha256": "760aceb81a2efdd1820264dcd143deb672821001e3fc110350a71ddc50fa4f93",
+      "bytes": 51143
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/CURRENT_RUNTIME_HOST_NAMESPACE_2026-10-20.json",
+      "sha256": "6217826f21e6c58907cc46e50ff19e1b8cbb3b3a8b764baac6f619bded5071c2",
+      "bytes": 7447
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/CURRENT_RUNTIME_SERVICE_NAMESPACE_2026-10-20.json",
+      "sha256": "125643e4426a5d30cbd7063bab8dcf2ce31228f5647fbf1dd43cfc932857f7fd",
+      "bytes": 5414
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/FINAL_QUALIFICATION_FRONTIER_UPDATE_2026-10-20.json",
+      "sha256": "f1ca5f9df9ac91d9ca195eae00b5addd1858ff8aeba03ae93c667bbdbf6cdcac",
+      "bytes": 1954
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_ARTIFACT_RECEIPT_2026-10-20.json",
+      "sha256": "b2f901af7d3d768f91163952a28f47ae5d7c3ab5328dd48447db66fc00d1831d",
+      "bytes": 7054
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-REHEARSAL_RESULT.json",
+      "sha256": "c138a7dcf64742a5d85627a0b54c2038662e86661ea428aceef02e41290eb219",
+      "bytes": 808184
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-controller-result.json",
+      "sha256": "4ee7e7a375526e115f0dedd856b0eacd04ddc7652e70211b4cb8d9ea23759797",
+      "bytes": 2687
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup-result.json",
+      "sha256": "2518ea2108fe4fc9096d24ce2aab11115f80d13befdecf2f37f83b80b81b3aac",
+      "bytes": 2074
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.py.txt",
+      "sha256": "05e61a69ea27a14a758c41643b46554234d9fa3ee01f1ce0d08ca15848da5eaf",
+      "bytes": 2372
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.stdout.txt",
+      "sha256": "cec58aa8f03aa368a977d4bca65dc294ba5a5c0f5749a146463e35c0a31bba8b",
+      "bytes": 2064
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-REHEARSAL_RESULT.json",
+      "sha256": "d063d010a84d20a601deedd462b166bbcb9f5b015b98857bea5fb92c34288c45",
+      "bytes": 505732
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-controller-result.json",
+      "sha256": "133cfa9cccd8e9cd65009efabe96ab84599a9c9ffd69e4c4c855e762c979cc8b",
+      "bytes": 3632
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-controller.py.txt",
+      "sha256": "768b21fc9b854527d3c236569d777388e78ffda3a59f7821665f4ff2c1c95bcd",
+      "bytes": 4321
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup-result.json",
+      "sha256": "30d676f7e34819978ec17d861bae48874602a77adc4252fcc786837a6e0b4599",
+      "bytes": 5516
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.py.txt",
+      "sha256": "6c4a65af82e9bd0b83b424f2d84994fac3e2d9ed1a29d646595e9062ce1a5826",
+      "bytes": 2470
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.stdout.txt",
+      "sha256": "a299dde31b23a0700f7cdcac2902e61f01fbfce1b0f8013ac1843a8a1ff7cc6f",
+      "bytes": 4856
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_controller.py.txt",
+      "sha256": "665dac02c5dc57e2b7f39fcebdb408874fe5c84db5f3894e2b462cad9edd2e29",
+      "bytes": 8309
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/QUALIFIED_RELEASE_DECISION_2026-10-20.json",
+      "sha256": "400463a59e90a39868570852174490559cd8f6708f63d07d69045e284b475b49",
+      "bytes": 4534
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_ACCEPTANCE_RECEIPTS_2026-10-20.json",
+      "sha256": "8b87978a10290f450739af4dbad0f824e9ab134a24980c92d6f5663da01caf9b",
+      "bytes": 6247
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_FABRIC_PACKET_2026-10-20.txt",
+      "sha256": "f5dcb178d28c170e89d391c96b10c86237fd643a27865816d881811cc3325605",
+      "bytes": 14800
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_FABRIC_RETURN_2026-10-20.json",
+      "sha256": "c8a25b977764442636f7c2fe1929420ffb6adc34fbf72297f15c9660df5b61c6",
+      "bytes": 17404
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/STARTUP_PREFLIGHT_ROOT_ADJUDICATION_2026-10-20.json",
+      "sha256": "2fb6ff5d08c20f85427b070817133b014803cc2b21f14ac4992bf08ad192b056",
+      "bytes": 2790
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SUCCESSOR_ARCHIVE_RECEIVER_COMPARISON_2026-10-20.json",
+      "sha256": "46008203d9d6eeba019af9dcdfd9a84ac6899c6c99e713b752f2fd86bc6352d7",
+      "bytes": 1152495
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SUCCESSOR_DELTA_QUALIFICATION_2026-10-20.json",
+      "sha256": "b3448ecc840a9c3aecd4c8e1dcbac501b7d5180b54b6b34bf62940df2337abae",
+      "bytes": 5941
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SUCCESSOR_PRINCIPAL_ADJUDICATION_2026-10-20.json",
+      "sha256": "9f309578a714bbcf948de3d0d37d8513316f0acb1aa8f763e86a3e7690360e38",
+      "bytes": 1959
+    }
+  ],
+  "first_scan_error_preserved": {
+    "exit_code": 2,
+    "reason": "Pattern began with hyphens and needed the rg -- argument terminator; no successful scan was inferred from that exit2."
+  },
+  "corrected_scan_at": "2026-10-20T08:15:17.222731+00:00",
+  "publication_strategy": "Publish the substantive final qualification on the same unarmed carrier. Existing CI concurrency may supersede the older 5a run automatically; no manual cancellation, unchanged rerun, authority waiver or alternate controller is requested. Final enclosing head must obtain its own actual integrated gates."
+}

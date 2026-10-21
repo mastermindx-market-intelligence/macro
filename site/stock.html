@@ -35,6 +35,8 @@
 <title>Stock analyzer — cycle & momentum</title>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=2e861147">
+<link rel="stylesheet" href="ticker_news.css?v=0183d5f2">
+<script defer src="ticker_news.js?v=fe8322cd"></script>
 <link rel="stylesheet" href="assets/css/dbc8d0a9.css?v=dbc8d0a9">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
@@ -496,6 +498,35 @@
       <div id="r_smartmoney"></div>
     </div>
     </details>
+    <section class="tn-panel" data-ticker-news data-ticker="" aria-labelledby="tn-heading">
+  <header class="tn-heading">
+    <div>
+      <p class="tn-eyebrow"><span class="l-en">Company news</span><span class="l-zh">公司新闻</span></p>
+      <h2 id="tn-heading"><span class="l-en">The latest reporting</span><span class="l-zh">最新报道</span> <span data-tn-symbol></span></h2>
+      <p class="tn-intro"><span class="l-en">One story, with the reporting behind it.</span><span class="l-zh">将同一事件汇总，保留各来源报道。</span></p>
+    </div>
+    <a class="tn-terminal" data-tn-terminal href="https://app.mastermind-x.com/terminal"><span class="l-en">Open in Terminal</span><span class="l-zh">在终端打开</span> <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="tn-toolbar">
+    <div class="tn-filters" role="group" aria-label="News coverage">
+      <button type="button" data-tn-filter="signal" aria-pressed="true"><span class="l-en">High signal</span><span class="l-zh">重点新闻</span></button>
+      <button type="button" data-tn-filter="all" aria-pressed="false"><span class="l-en">All reporting</span><span class="l-zh">全部报道</span> <span data-tn-count></span></button>
+    </div>
+    <span class="tn-status" data-tn-status role="status"><span class="l-en">Checking access…</span><span class="l-zh">正在检查访问权限…</span></span>
+  </div>
+  <p class="tn-coverage" data-tn-coverage hidden></p>
+  <div class="tn-message" data-tn-message hidden></div>
+  <button class="tn-updates" data-tn-updates type="button" hidden></button>
+  <div class="tn-rows" data-tn-rows></div>
+  <footer class="tn-footer">
+    <button type="button" data-tn-retry hidden><span class="l-en">Retry</span><span class="l-zh">重试</span></button>
+    <a data-tn-signin href="index.html?signin=1" hidden><span class="l-en">Sign in</span><span class="l-zh">登录</span></a>
+    <button type="button" data-tn-more hidden><span class="l-en">Earlier reporting</span><span class="l-zh">更早报道</span> <span aria-hidden="true">↓</span></button>
+    <button type="button" data-tn-latest hidden><span class="l-en">Back to latest</span><span class="l-zh">返回最新</span></button>
+    <a href="news.html"><span class="l-en">News Intelligence</span><span class="l-zh">新闻情报</span> <span aria-hidden="true">↗</span></a>
+  </footer>
+  <noscript><p><span class="l-en">Enable JavaScript and sign in to view current company reporting.</span><span class="l-zh">请启用 JavaScript 并登录以查看当前公司报道。</span></p></noscript>
+</section>
     <!-- ===== W4 stock-personality panel — display-only trading character context ===== -->
     
     
@@ -2885,6 +2916,7 @@
   function render(d) {
     document.getElementById('result').style.display = 'block';
     document.getElementById('r_name').textContent = d.name + ' (' + d.ticker + ')';
+    window.dispatchEvent(new CustomEvent("mmx-ticker-news", {detail:{ticker:d.ticker}}));
     liveHeaderPx(d);
     if (d.limited) { renderLimited(d); return; }
     // a full record may follow a limited one — re-show the panels it hid
@@ -3153,7 +3185,7 @@
 })();
 </script>
 <script src="mtf.js?v=b62aea2f" defer></script>
-<script src="theme.js?v=831dd241" defer></script>
+<script src="theme.js?v=1c9d7ad5" defer></script>
 <link rel="stylesheet" href="assets/css/5abb1379.css?v=5abb1379">
 <script>
 /* Anticipation panel — additive; fetches anticipationdata/<ticker>.json (watchlist/
@@ -3246,7 +3278,7 @@
   window.addEventListener('hashchange',load); load();
 })();
 </script>
-<p class="muted" style="font-size:12px">Generated 2026-10-20 08:37 UTC · charts rendered in-house with
+<p class="muted" style="font-size:12px">Generated 2026-10-21 15:07 UTC · charts rendered in-house with
 Lightweight Charts™ on our own price data · methodology &amp; caveats: see any sector page footer.</p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
