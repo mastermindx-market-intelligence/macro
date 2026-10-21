@@ -73,3 +73,15 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Seat tree moved: the original session tree was quarantined mid-rebase (detached HEAD, squash-merged seat commits conflicted); fresh SSD tree `intl-gs-seat-r2-8e4e57e69f466313` on `claude/ssd-intl-gs-seat-r2-8e4e57e69f466313`, freeze commit cherry-picked and amended with the 14 PNGs → draft PR **#9937** (R14 freeze). The old tree still holds a half-applied rebase: leave it; `git rebase --abort` there is the cleanup, never a force-push.
 - Wave 1 modules on main: `config/intl_global_universe_v1.json`, `config/intl_source_rights_matrix_v1.json`, `engine/intl_global_universe.py`, `engine/intl_global_observation.py`, `lib/intl_global_observation_adapter.py`; CI job `international-global-universe` (pack 9) + two suites appended to `international-workspace-foundation` (pack 11).
 - NEXT: ORCH-2 (Wave 2 IM13 scanner + IM14 dossier, UI to the frozen R14 spec) and ORCH-3 (Wave 3 engine-side IM15 dislocation + IM16 EM credit/dollar + capability matrix, no UI) spawned as Opus orchestrators driving fabric lanes; seat merges their PRs after direct verification; #9937 merge after CI.
+
+## Checkpoint 2026-10-21 05:3xZ — handoff record rewritten at the Wave 1 → Wave 2 boundary
+
+- `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md` rewritten in place (Agent OS = one
+  record per workstream per date): #9923/#9924 MERGED with GitHub mergeCommit reads, #9937 at CI,
+  ORCH-2/ORCH-3 RUNNING, verified[] claims carry runnable commands. Validate → 0 errors.
+- Seat branch head moved 7b75f4c6 → **9a2931a4** (push 05:31Z); PR #9937 CI restarts on that head.
+  One watcher armed on 9a2931a4; the 7b75f4c6 watcher stopped by the seat.
+- Main-baseline watcher for 5d454fbe (Wave 1 landing proof) still armed.
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924 MERGED · #9937 CI · ORCH-2/ORCH-3 RUNNING.
+- NEXT: on watcher return → `gh pr ready 9937` → `gh pr merge 9937 --squash --match-head-commit
+  9a2931a440f039451da85b246c64697090e559a5` → read mergeCommit → message ORCH-2/ORCH-3 "SPEC ON MAIN <sha>".
