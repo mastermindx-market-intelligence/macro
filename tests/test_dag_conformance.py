@@ -781,8 +781,11 @@ class TestLiveConformance:
                 assert lane_text.index("push_fetch_main_for_rebase") < rebase_at
             else:
                 rebase_at = lane_text.index(
-                    "git pull --rebase --autostash -X theirs origin main"
+                    'git rebase --autostash -X theirs "$COMMODITY_ACCEPTED"'
                 )
+                fetch_at = lane_text.index("if ! push_fetch_main_for_rebase; then")
+                pin_at = lane_text.index("COMMODITY_ACCEPTED=$(git rev-parse", fetch_at)
+                assert fetch_at < pin_at < rebase_at
             rebuild_at = lane_text.index(
                 site_only_command, rebase_at
             )
