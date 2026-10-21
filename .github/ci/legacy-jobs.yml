@@ -5180,7 +5180,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        # jinja2: scripts/build_policy_watch.py:30 does `from jinja2 import Environment,
+        # FileSystemLoader` at module scope; tests/test_uk_policy_brain.py imports that
+        # builder, so the desk → spine writers step died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: desk → spine wiring — stock_desk's per-thesis outcome ledger
         # The append-only scored.jsonl engine.spine._DESK_SCORED reads for this desk. Pins the
         # properties a track record cannot: a published verdict is never re-graded from a
@@ -6256,7 +6259,14 @@ jobs:
         # ETF board synthesis imports the rotation constants from etf_pulse,
         # which imports numpy and pandas at module scope.  Keep this environment
         # closed over the real production import graph.
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas
+        # beautifulsoup4: tests/test_us_board_gate.py:1134 does `from bs4 import
+        # BeautifulSoup` inside the gate-payload assertions. plotly:
+        # scripts/build_site.py:22 does `import plotly.graph_objects as go` at
+        # module scope; both died ModuleNotFoundError in the split-contract step.
+        # pyarrow: second-order once those land — the same gate tests reach
+        # scripts/build_stock_library.py:1563 → engine/us_candidate_episode.py:19,
+        # which does `import pyarrow` at module scope.
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: tier-preview split contract (no paid row in the free shell)
         run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
       # The split's OTHER half: how the page puts the two sides back together.
@@ -7434,7 +7444,12 @@ jobs:
         # Forensics workbench (#4184) and predate it respectively, are reachable only
         # through lazy first-party paths, and are RETAINED deliberately — nothing here
         # proves those paths unreachable, and a wrong subtraction costs a red lane.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5
+        # playwright: tests/test_intraday_flow_w11_r5.py:109 does
+        # `from playwright.sync_api import sync_playwright` at test level for the
+        # computed-style probe — the suite died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+      - name: Install Chromium for the browser-backed render guards
+        run: python -m playwright install --with-deps chromium
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
       # onto ONE shell line, where `#` starts a SHELL comment — everything after it,
       # including every remaining test path and the trailing `-q`, silently vanishes
@@ -8817,7 +8832,10 @@ jobs:
         # No boto3: engine/prophet_live/r2io.py imports it lazily inside client() and
         # the prophet-live suites monkeypatch that factory; the only boto3 mentions in
         # this lane are string assertions ABOUT another workflow's pip line.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema rjsmin==1.2.5
+        # beautifulsoup4: tests/test_us_board_gate.py:1134 does `from bs4 import
+        # BeautifulSoup` inside the gate-payload assertions, which died
+        # ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema rjsmin==1.2.5 beautifulsoup4
       # The import-light tier-gate runs the shell/boundary cases, while the two
       # builder assertions intentionally require pandas + plotly. Pair the suite
       # with this lane's fat deps so those assertions execute instead of skip
@@ -11602,7 +11620,14 @@ jobs:
         #    which pulls admin.analytics_first_party, which does
         #    `try: import requests / except: requests = None`. Drop the dep and the lane silently
         #    exercises that degraded branch instead of the shipped one.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+        # fastapi: app/company_intelligence.py:22 does `from fastapi import APIRouter,
+        # HTTPException, Query, Request, Response` at module scope (the company-intelligence
+        # suites import it at collection). httpx is NOT required — with fastapi installed the
+        # full step runs with no httpx import anywhere. jsonschema:
+        # engine/intelligence_workspace/registry.py:11 does `from jsonschema import
+        # Draft202012Validator, FormatChecker` at module scope (test_issuer_profiles_a5a and
+        # the world_state thematic_state lobe reach it); without it the step failed 7 deep.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests fastapi jsonschema
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
         run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
 
@@ -12662,7 +12687,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+        # jsonschema: engine/intelligence_workspace/registry.py:11 does
+        # `from jsonschema import Draft202012Validator, FormatChecker` at module scope —
+        # the MO-J1A affected-company continuation suite died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 jsonschema
       - name: transmission chains — engine + state machine + validator + smoke
         run: python -m pytest tests/test_transmission_chains.py -q
       - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
@@ -15245,7 +15273,10 @@ jobs:
         # requests: the v8 reflex-arc reping tests (#2442) patch scripts.notify.send_telegram,
         # and scripts/notify.py does a real `import requests` at module import — without it
         # the patch target fails to resolve and 5 reflex tests die at import, not on behavior.
-        run: pip install pytest pandas numpy pyyaml anthropic pyarrow requests
+        # jsonschema: engine/neuralweb/theme_state_generation_reader.py:14 imports it at module
+        # scope (the ADB-W3 suite reaches it through tests/test_theme_state_generation.py), so
+        # test_cortex_adb_w3.py died ModuleNotFoundError at call time without it.
+        run: pip install pytest pandas numpy pyyaml anthropic pyarrow requests jsonschema
       - name: capability-redline selftest (planted secret caught; clean real files pass)
         run: python3 scripts/check_capability_redline.py --selftest
       - name: capability-redline live scan (hard fail on secret values or value-capture)
@@ -26312,7 +26343,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        # jsonschema: engine/neuralweb/theme_state_generation.py:20 imports it at module
+        # scope; tests/test_til_nw_citizenship.py:577 imports that module's test helpers,
+        # so the citizenship suite died ModuleNotFoundError at collection without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       - name: neural-web cortex world-state consumers + the factor-contradiction plane
         run: python -m pytest tests/test_build_active_build_map.py tests/test_build_cycle_pattern_state.py tests/test_imce_prospective.py tests/test_factor_contradictions.py tests/test_nw_consumers_w3.py tests/test_nw_health_escalation.py tests/test_options_nw_wiring.py tests/test_til_nw_citizenship.py tests/test_world_state_special_sits.py tests/test_world_state_stage_analysis.py -q
       - name: three-repository advisory Active Build Map
@@ -29802,7 +29836,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        # jsonschema: lib/evidence_foundation.py:19 does `from jsonschema import
+        # Draft202012Validator, FormatChecker, SchemaError` at module scope, so the
+        # intraday-lane suites died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       # P1 unrun backfill 2026-08-14 — three consumers of plumbing this step already
       # owns joined the list, appended rather than given a step of their own because a
       # step is the masking unit here (run_ci_pack.py returns on the first non-zero
@@ -30742,7 +30779,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
+        # jsonschema: engine/theme_graph/change_report.py:17 imports it at module
+        # scope (the theme-tree suites reach it through
+        # engine/theme_graph/structural_navigation.py:15), so
+        # tests/test_theme_tree_ticker_lookup.py died at collection without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5 jsonschema
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
