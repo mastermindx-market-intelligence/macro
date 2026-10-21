@@ -1008,6 +1008,154 @@ def decide_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
     return "clean", []
 
 
+def _authority_workflow_binding(
+    repo: str, pull: dict[str, Any], check: dict[str, Any], run: dict[str, Any]
+) -> tuple[tuple[Any, ...], dt.datetime] | None:
+    """Authenticate the workload, not merely a same-name Actions check."""
+    head = pull.get("head") or {}
+    base = pull.get("base") or {}
+    if not isinstance(head, dict) or not isinstance(base, dict):
+        return None
+    association = run.get("pull_requests")
+    if not isinstance(association, list) or len(association) != 1:
+        return None
+    associated = association[0]
+    if not isinstance(associated, dict):
+        return None
+    nodes = [
+        head, base, head.get("repo"), base.get("repo"),
+        run.get("repository"), run.get("head_repository"),
+        associated.get("head"), associated.get("base"), check.get("check_suite"),
+    ]
+    if not all(isinstance(node, dict) for node in nodes):
+        return None
+    head_repo, base_repo = head["repo"], base["repo"]
+    event_head, event_base = associated["head"], associated["base"]
+    if not all(isinstance(node.get("repo"), dict) for node in (event_head, event_base)):
+        return None
+    ids = [
+        pull.get("number"), check.get("id"), check["check_suite"].get("id"),
+        run.get("workflow_id"), run.get("id"), head_repo.get("id"), base_repo.get("id"),
+    ]
+    if any(type(value) is not int or value <= 0 for value in ids):
+        return None
+    head_sha = head.get("sha")
+    base_sha = event_base.get("sha")
+    created_text = run.get("created_at")
+    # Unlike baseline age calculations, supersession cannot invent a missing zone.
+    if not isinstance(created_text, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})",
+        created_text,
+    ):
+        return None
+    created = _parse_dt(created_text)
+    if (
+        not isinstance(head_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", head_sha)
+        or not isinstance(base_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", base_sha)
+        or created is None
+        or run.get("status") != "completed"
+        or run.get("conclusion") != check.get("conclusion")
+        or run.get("path") != ".github/workflows/ci-authority.yml"
+        or run.get("event") != "pull_request_target"
+        or run.get("head_sha") != head_sha
+        or run.get("check_suite_id") != check["check_suite"]["id"]
+        or associated.get("number") != pull["number"]
+        or associated.get("url") != f"{GITHUB_API}/repos/{repo}/pulls/{pull['number']}"
+        or event_head.get("sha") != head_sha
+        or event_head.get("ref") != head.get("ref")
+        or event_base.get("ref") != base.get("ref")
+        or base_repo.get("full_name") != repo
+        or run["repository"].get("id") != base_repo["id"]
+        or run["repository"].get("full_name") != repo
+        or run["head_repository"].get("id") != head_repo["id"]
+        or run["head_repository"].get("full_name") != head_repo.get("full_name")
+        or event_head["repo"].get("id") != head_repo["id"]
+        or event_head["repo"].get("url") != f"{GITHUB_API}/repos/{head_repo.get('full_name')}"
+        or event_base["repo"].get("id") != base_repo["id"]
+        or event_base["repo"].get("url") != f"{GITHUB_API}/repos/{repo}"
+    ):
+        return None
+    # Matching event bases is separate from the existing current-main freshness gate.
+    return (run["workflow_id"], head_repo["id"], base_repo["id"], base["ref"], base_sha), created
+
+
+def authority_effective_checks(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]], token: str
+) -> list[dict[str, Any]]:
+    """Drop only an older cancelled native authority job replaced by a success.
+
+    The workflow cancels older pull_request_target events in its concurrency
+    group. GitHub still returns their checks beside the replacement suite even
+    with filter=latest. Keep raw evidence intact and require native run identity
+    before excluding anything from the judgment set. Failures and newer/pending
+    cancellations are never made nonbinding by a same-name success.
+    """
+    head_sha = (pull.get("head") or {}).get("sha")
+    candidates: list[tuple[dict[str, Any], int]] = []
+    for check in runs:
+        if (
+            check.get("name") != "ci-authority"
+            or check.get("status") != "completed"
+            or check.get("conclusion") not in {"cancelled", "success"}
+            or not isinstance(check.get("app"), dict)
+            or check["app"].get("id") != 15368
+            or check.get("head_sha") != head_sha
+            or type(check.get("id")) is not int
+        ):
+            continue
+        match = re.fullmatch(
+            rf"https://github\.com/{re.escape(repo)}/actions/runs/([1-9][0-9]*)/job/{check['id']}",
+            str(check.get("details_url") or ""),
+        )
+        if match:
+            candidates.append((check, int(match.group(1))))
+    if {check["conclusion"] for check, _ in candidates} != {"cancelled", "success"}:
+        return runs
+    # No unbounded historical scan. An unusually crowded head remains incomplete.
+    run_ids = {run_id for _, run_id in candidates}
+    if len(run_ids) > 8:
+        return runs
+    native_runs: dict[int, dict[str, Any]] = {}
+    try:
+        for run_id in sorted(run_ids):
+            status, native = _request(
+                "GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}", token
+            )
+            if status >= 400 or not isinstance(native, dict):
+                raise _read_failed(status, native, "authority supersession lookup failed")
+            if type(native.get("id")) is not int or native["id"] != run_id:
+                return runs
+            native_runs[run_id] = native
+    except RateLimited:
+        raise
+    except (OSError, ValueError, RuntimeError) as exc:
+        _annotate("warning", "authority supersession", f"PR #{pull.get('number')}: {exc}")
+        return runs
+    bound = [
+        (check, run_id, _authority_workflow_binding(repo, pull, check, native_runs[run_id]))
+        for check, run_id in candidates
+    ]
+    superseded = {
+        check["id"]
+        for check, run_id, identity in bound
+        if check["conclusion"] == "cancelled" and identity is not None
+        and any(
+            other["conclusion"] == "success" and other_id != run_id
+            and other_identity is not None and identity[0] == other_identity[0]
+            and identity[1] < other_identity[1]
+            for other, other_id, other_identity in bound
+        )
+    }
+    if superseded:
+        if any(sum(check.get("id") == ident for check in runs) != 1 for ident in superseded):
+            return runs
+        print(
+            f"PR #{pull.get('number')}: later successful native authority run "
+            f"supersedes cancelled check(s) {sorted(superseded)}.", flush=True,
+        )
+    return [check for check in runs if check.get("id") not in superseded]
+
+
 def head_check_runs(repo: str, head_sha: str, token: str) -> list[dict[str, Any]]:
     """Every check run on ``head_sha``, paginated to the end (fail-closed).
 
@@ -6507,9 +6655,10 @@ def sweep_pull(
         _annotate("warning", "merge-on-green", f"PR #{number}: no head sha; skipped.")
         return "unproven"
 
-    runs = check_runs if check_runs is not None else head_check_runs(
+    raw_runs = check_runs if check_runs is not None else head_check_runs(
         repo, head_sha, read_token
     )
+    runs = authority_effective_checks(repo, pull, raw_runs, read_token)
     anchor_verdict, anchor_names = proof_anchor_verdict(runs)
     if budget is not None:
         budget.observed_anchor_states[number] = anchor_verdict

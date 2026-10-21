@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AESI-BULL-20260826",
-  "asof": "2026-10-20",
+  "asof": "2026-10-21",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.2,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.048,
+    "dist_to_stop_r": -0.16,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 120.0,
-    "p1": -0.6986,
-    "p2": -0.3493,
+    "horizon_pct_used": 122.2,
+    "p1": -0.7732,
+    "p2": -0.3866,
     "p3": null,
-    "move_r": -1.048,
+    "move_r": -1.16,
     "mfe_r": 0.505,
-    "mae_r": -1.048
+    "mae_r": -1.16
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5799999237060547,
-  "_mae": -3.2799997329711914,
+  "_mae": -3.630000114440918,
   "_max_p1": 0.33652820526220545,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 54,
-  "tau": 1.2
+  "days_elapsed": 55,
+  "tau": 1.2222
 }
