@@ -3152,11 +3152,13 @@ def main() -> None:
             # admission helpers (entry_status / admission_class) and returns the
             # per-name view. Additive and display tier: it reports the gate above, it
             # never moves it. This call site — unlike build_site's — knows tonight's
-            # origination run, so it can also disclose the `plan_not_built` cohort.
+            # origination run AND its failure record, so it can also disclose the
+            # `validation_failed` and `plan_not_built` cohorts.
             "receipts": refusal_receipts(
                 _standouts_doc,
                 active_keys,
                 {str(p.get("asset") or "") for p in new_plans},
+                validation_failures=intake_stats.get("validation_failures"),
             ),
             # The receipt that separates "the organ saw these names and none qualified"
             # from "the organ saw none of them" — a bare zero admission count cannot.
