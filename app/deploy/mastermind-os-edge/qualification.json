@@ -1,0 +1,151 @@
+{
+  "caddy_version": "2.11.4",
+  "ci_registration": {
+    "binding": "local unbound selection diagnostic; not exact-head CI acceptance",
+    "existing_unscoped_policy_preserved": true,
+    "hosted_execution_claimed": false,
+    "input_changed_files": [
+      "app/deploy/mastermind-os-edge/asset-manifest.json"
+    ],
+    "local_plan_only": true,
+    "plan_sha256": "c31383aa0e7ff89b7dfeabd223824ff99b1b54f98f0d67811b3f51b215ddb46b",
+    "prelaunch_hardening_eligible": true,
+    "source_sha256": {
+      ".github/ci/legacy-jobs.yml": "1ff4b19d7b41637b96c5d8d922cdd6132e00e2e160c77ce1ccd66b594d42d3c3",
+      ".github/workflows/ci.yml": "1f6fa15f7cc11b5126a7a49b3caa73c0798dbdda5ca415426fc75debd86346d7"
+    }
+  },
+  "comparison_contract": "remove one exact new host and its single explicit TLS subject; preserve every array and all other fields; typed Route.group bijection over each full server; new group disjoint",
+  "final_source_matches_qualified_adaptation": true,
+  "installed_assets": {
+    "all_content_digests_byte_counts_mimes_match": true,
+    "all_regular_root_owned_mode_0444": true,
+    "executive_config_matches_disabled_optin_receipt": true,
+    "executive_config_sha256": "7604f1e966d5a20eab1361c88268ee001006eb0307dba4c9d3e17e454eadcf1d",
+    "file_count": 9,
+    "manifest": {
+      "canonical_value_sha256": "af739803551d254a8bb67dcf751dc180da5df3b72950f81a7e9f31d7a59a96b2",
+      "installed_bytes": 1535,
+      "installed_is_compact_sorted_with_newline": true,
+      "installed_raw_sha256": "98ae8aad4b6ae16e0ef60361cc3d0b4ac8df9e21f3b9f3026eee4c4d015c4b48",
+      "parsed_manifests_equal": true,
+      "snapshot_bytes": 1925,
+      "snapshot_is_indented_sorted_with_newline": true,
+      "snapshot_raw_sha256": "3fc4a5f952afa87144a4f30dcbdf10aa3e93de3b289add8906e921b9de7e2282"
+    },
+    "mcp_service": {
+      "pid": "85849",
+      "state": "running"
+    }
+  },
+  "installed_gateway_release": "91c1cac5a20a01f4bf1ac9e92e55613fd4640e1f",
+  "macro_base": "a2c2930ad3611e8137054b8f732243f935256060",
+  "mastermind_renderer_ref": "b66e64ad57b50f77253eeacf62ac72dc165a50aa",
+  "qualified_at_utc": "2026-10-21T06:00:19.687795+00:00",
+  "release_state": "DRAFT / HOLD-FOR-SOL: Macro #9340 actual entry and old-inode custody; separate installed-input, TLS and public acceptance gates",
+  "rendered_site_sha256": "9c6965fb31f296fbc8fb0b5813075ee27763021d58561930430ced270de63744",
+  "schema": "mastermind.os_origin.source_qualification.v1",
+  "scope": "source-only; no installation, service reload, certificate issuance or Executive submission",
+  "semantic_comparison": {
+    "local_base": "PASS",
+    "vps_combined": "PASS"
+  },
+  "source_sha256": {
+    "app/deploy/Caddyfile": "e68d1d91c8929fe9fc43243d2c309b23914171053c6d082446a48886b7ce6208",
+    "app/deploy/mastermind-os-edge/asset-manifest.json": "3fc4a5f952afa87144a4f30dcbdf10aa3e93de3b289add8906e921b9de7e2282",
+    "tests/test_os_public_edge_caddy.py": "4fa7c00153395a2a0fd743dd6c3269e1980afb74df11ece77afdff0660229fbd"
+  },
+  "tests": {
+    "after_configuration_change": {
+      "failed": 0,
+      "passed": 17,
+      "skipped": 0
+    },
+    "before_configuration_change": "FAIL: require one exact OS host; zero hosts in baseline",
+    "files": [
+      "tests/test_os_public_edge_caddy.py",
+      "tests/test_control_room_caddy.py"
+    ],
+    "green_log_sha256": "8ec3608bd919bb70a142f5747a48f17e9af6718e09951b37bf2e23a7577ed79f",
+    "red_log_sha256": "23c4853db9ab972283a0fdc42926d86ec3834443e5b1126f7c1fea7fc67730ab"
+  },
+  "updater_entry_observation": {
+    "entry_closed": false,
+    "files": {
+      "/opt/macro/app/deploy/update.sh": {
+        "device": 64769,
+        "inode": 524345,
+        "mode": "0o755",
+        "old_caddy_reload_restart_present": true,
+        "protective_caddy_defer_marker_present": false,
+        "sha256": "dbfa190fe81c47149050fbdfec2fd90c34fb2cd93bb2b4db5b467465532ea4d9",
+        "uid": 0
+      },
+      "/usr/local/bin/macro-update": {
+        "device": 64769,
+        "inode": 2762,
+        "mode": "0o755",
+        "old_caddy_reload_restart_present": true,
+        "protective_caddy_defer_marker_present": false,
+        "sha256": "dbfa190fe81c47149050fbdfec2fd90c34fb2cd93bb2b4db5b467465532ea4d9",
+        "uid": 0
+      },
+      "/var/lock/macro-update.lock": {
+        "device": 27,
+        "inode": 6,
+        "mode": "0o644",
+        "uid": 0
+      }
+    },
+    "observed_update_processes": [],
+    "old_images_drained": false,
+    "other_cron_files": [],
+    "read_only": true,
+    "root_crontab_exit": 0,
+    "root_crontab_sha256": "7c9a03a216de28feb634d4b3cc317f778fcb260e661f710a0fb8b4a79a989521",
+    "root_updater_entries": [
+      {
+        "entry_sha256": "e31c563f1e4d12ef320b006df11097ed444b406789eb873b9c5d25f323138864",
+        "line": 1,
+        "paths": [
+          "/usr/local/bin/macro-update"
+        ],
+        "schedule": [
+          "*/3",
+          "*",
+          "*",
+          "*",
+          "*"
+        ]
+      }
+    ],
+    "schema": "mastermind.os_origin.updater_entry_observation.v1"
+  },
+  "vps_combined": {
+    "adapted_document_sha256": {
+      "baseline": "972de99897d50203554879f3dbe820fd9039f98fd5a4175509971de60226d998",
+      "candidate": "08697d95f5218b66cf49557078640e829e94842a03dc4a21c34c4d297e2c0d37"
+    },
+    "after": {
+      "files": {
+        "/etc/caddy/Caddyfile": "91e6670d68ad69235dc3f80088c3a69ca930ee8a3f9a4ae24ecd74f8b3e7e959",
+        "/etc/caddy/Caddyfile.combined": "201760f4a4f57bfb253252db1b7f8af0110ecff500e62dfec346006267e1b4ad",
+        "/etc/caddy/livingstonpan.caddy": "8c1655101fb56650467401d7d0897cd29eb6b39b3f433bb292e402cb69f816d8",
+        "/etc/caddy/mm-travel.caddy": "4c259b6005511c33af791e3ac83e1c644242558d31e69661021ced32502aa7d0"
+      },
+      "live": "bd643fb9a4745382364c5d695059df6d0d9c881ec843aa146b097a39ac841b2a"
+    },
+    "before": {
+      "files": {
+        "/etc/caddy/Caddyfile": "91e6670d68ad69235dc3f80088c3a69ca930ee8a3f9a4ae24ecd74f8b3e7e959",
+        "/etc/caddy/Caddyfile.combined": "201760f4a4f57bfb253252db1b7f8af0110ecff500e62dfec346006267e1b4ad",
+        "/etc/caddy/livingstonpan.caddy": "8c1655101fb56650467401d7d0897cd29eb6b39b3f433bb292e402cb69f816d8",
+        "/etc/caddy/mm-travel.caddy": "4c259b6005511c33af791e3ac83e1c644242558d31e69661021ced32502aa7d0"
+      },
+      "live": "bd643fb9a4745382364c5d695059df6d0d9c881ec843aa146b097a39ac841b2a"
+    },
+    "production_files_written": false,
+    "services_reloaded": false,
+    "unchanged": true
+  }
+}

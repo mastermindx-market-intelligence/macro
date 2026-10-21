@@ -22285,6 +22285,7 @@ jobs:
             tests/test_admin_control_room.py \
             tests/test_control_room_auth.py \
             tests/test_control_room_caddy.py \
+            tests/test_os_public_edge_caddy.py \
             tests/test_publish_control_room_active_builds.py -q
 
 

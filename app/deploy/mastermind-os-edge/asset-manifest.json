@@ -1,0 +1,59 @@
+{
+  "files": [
+    {
+      "byte_count": 352240,
+      "mime": "font/woff2",
+      "path": "assets/Inter-Variable-DiVDrmQJ.woff2",
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
+    },
+    {
+      "byte_count": 165420,
+      "mime": "font/ttf",
+      "path": "assets/Manrope-Variable-FzEoaBTQ.ttf",
+      "sha256": "d0639be45d0af36e798172419d7bd173c4bd4f29e2b76cbb69db1d11bf8b0a40"
+    },
+    {
+      "byte_count": 27302,
+      "mime": "image/jpeg",
+      "path": "assets/atelier-office-poIrp4_y.jpg",
+      "sha256": "5ffdd2a6a1296a0565d495756010d8c3f68d9c787b4061e29324b286bab70b62"
+    },
+    {
+      "byte_count": 56668,
+      "mime": "text/css; charset=utf-8",
+      "path": "assets/index-B0ewcH8_.css",
+      "sha256": "d5d21cd3e7833a769e2b5ba9d51b53ca270bff7a8bc4af26e91f961feb127096"
+    },
+    {
+      "byte_count": 543468,
+      "mime": "text/javascript; charset=utf-8",
+      "path": "assets/index-dP5lZ6yG.js",
+      "sha256": "3326d25c1ab438068affeee50bf2bbae0a8497898e5c47967ff0da9214bb4aae"
+    },
+    {
+      "byte_count": 366,
+      "mime": "text/html; charset=utf-8",
+      "path": "index.html",
+      "sha256": "1e079951bf4fd81c83f75c9ab846f9ba1337dfb755c4dfb8507f0e3b9abc7de8"
+    },
+    {
+      "byte_count": 4380,
+      "mime": "text/plain; charset=utf-8",
+      "path": "licenses/fonts/Inter-OFL.txt",
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "byte_count": 3075,
+      "mime": "text/plain; charset=utf-8",
+      "path": "licenses/fonts/Manrope-FONTLOG.txt",
+      "sha256": "b6b54bcc1dbd1b18d5afd087ec0b578097644b1c9ec3e0a642d4df7808f449c2"
+    },
+    {
+      "byte_count": 4384,
+      "mime": "text/plain; charset=utf-8",
+      "path": "licenses/fonts/Manrope-OFL.txt",
+      "sha256": "e01b637272e0cbdfb240184dd98ea5cc671556d9894dae2668d92ab2c906787c"
+    }
+  ],
+  "schema": "mastermind.os_assets.v1"
+}
