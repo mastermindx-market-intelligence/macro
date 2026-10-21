@@ -713,3 +713,61 @@ def test_aggregate_read_budget_fails_closed(dual, monkeypatch):
     monkeypatch.setattr(mc, "TOTAL_MAX_BYTES",
                         mc.BODY_MAX_BYTES + len(served.manifest_raw))
     _assert_unavailable(client.get(COMMAND_PATH))
+
+
+def test_assembled_app_auth_success_and_failure_are_private_no_store(monkeypatch, served):
+    import app.main as main_mod
+
+    _patch_admitted_pages(monkeypatch, NARROW_PAGES)
+    _bind_served_root(monkeypatch, served)
+    assembled = TestClient(main_mod.app, raise_server_exceptions=False)
+    overrides = dict(main_mod.app.dependency_overrides)
+    try:
+        main_mod.app.dependency_overrides.clear()
+        response = assembled.get(COMMAND_PATH)
+        assert response.status_code == 401
+        assert response.headers["cache-control"] == "private, no-store"
+        _install_registered_user(main_mod.app)
+        response = assembled.get(COMMAND_PATH)
+        assert response.status_code == 200
+        assert response.json()["schema"] == RESPONSE_SCHEMA
+        assert response.json()["state"] == "ready"
+        assert response.headers["cache-control"] == "private, no-store"
+        served.manifest_path().unlink()
+        response = assembled.get(COMMAND_PATH)
+        assert response.status_code == 503
+        assert response.json() == {"error": "macro command unavailable"}
+        assert response.headers["cache-control"] == "private, no-store"
+    finally:
+        main_mod.app.dependency_overrides.clear()
+        main_mod.app.dependency_overrides.update(overrides)
+
+
+def test_router_auth_survives_unavailable_composer_dependencies():
+    import subprocess
+
+    code = '''import sys, importlib.abc
+class RefuseComposerDependency(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname.split('.')[0] in ('jinja2', 'jsonschema'):
+            raise ImportError('composer dependency intentionally unavailable')
+sys.meta_path.insert(0, RefuseComposerDependency())
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from app import macro_command
+from fastapi import HTTPException
+application = FastAPI()
+application.include_router(macro_command.router)
+def deny():
+    raise HTTPException(status_code=401)
+application.dependency_overrides[macro_command.require_user] = deny
+client = TestClient(application)
+assert client.get('/api/macro/command').status_code == 401
+application.dependency_overrides[macro_command.require_user] = lambda: {'id': 'registered'}
+response = client.get('/api/macro/command')
+assert response.status_code == 503
+assert response.json() == {'error': 'macro command unavailable'}
+assert response.headers['cache-control'] == 'private, no-store'
+'''
+    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True,
+                   capture_output=True, text=True)

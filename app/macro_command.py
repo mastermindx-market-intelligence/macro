@@ -15,9 +15,6 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, Header
 from fastapi.responses import JSONResponse
 
-from lib import macro_suite_view
-from scripts import build_macro_suite_pages as builder
-
 router = APIRouter()
 MANIFEST_MAX_BYTES = 256 * 1024
 BODY_MAX_BYTES = 2 * 1024 * 1024
@@ -59,6 +56,11 @@ def _bounded_bytes(path: Path, root: Path, maximum: int) -> bytes:
 def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
     headers = {"Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, noarchive"}
     try:
+        # Composition dependencies are request-scoped; auth and unrelated APIs
+        # remain available while this artifact reader is unavailable.
+        from lib import macro_suite_view
+        from scripts import build_macro_suite_pages as builder
+
         root = _served_root()
         if not root.is_absolute() or root.resolve(strict=True) != root or not root.is_dir():
             raise ValueError("unqualified served root")
