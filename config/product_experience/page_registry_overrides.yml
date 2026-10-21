@@ -1120,6 +1120,26 @@ pages:
     evidence: [terminal/app/(shell)/options/futures/page.tsx]
     why: "The paid Terminal futures workspace, mounted through FuturesWorkspaceMount and governed like the existing options view."
 
+  terminal:legacypath:
+    archetype: "chart_workspace"
+    evidence: ['terminal/app/(shell)/[...legacyPath]/page.tsx']
+    why: "The persistent Terminal route host follows Terminal doctrine; each embedded Macro document keeps its own canonical archetype."
+
+  terminal:monitor:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/monitor/page.tsx]
+    why: "A signed-in Terminal app view, governed by the existing Terminal doctrine divergence like alerts and discover."
+
+  terminal:research:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/research/page.tsx]
+    why: "A signed-in Terminal app view; its native reader follows Terminal doctrine while retained Macro documents keep their own archetypes."
+
+  terminal:today:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/today/page.tsx]
+    why: "A signed-in Terminal app view, governed by the existing Terminal doctrine divergence rather than the Macro command-center layout law."
+
   terminal:portfolio:
     priority: "P0"
     archetype: "chart_workspace"
