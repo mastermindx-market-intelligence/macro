@@ -173,6 +173,15 @@ window. Local rendering is not public acceptance.
   native rows and two canonical stock pages were added; no removal or access/lifecycle
   drift. All paths resolve exactly once; seven internal tools remain excluded.
   Product imported exact bytes and family acceptance independently qualified the delta.
+  Current hosted CI exposed four missing design-overlay archetypes: the existing
+  Terminal rule supplies chart_workspace for legacy catchall and Today/Research/Monitor.
+  Source8100c5ac plus canonical generation0d1b775665016 passes the actual combined
+  registry/design/export job239 cases. New projection SHA56a7bb19 has identical
+  consumer inventories/coverage and is imported verbatim at product13cae17dd1351ea5579804f906d05bd74107f885.
+  Family qualifies only this bounded metadata delta. Separately pack1 exposed369
+  inherited-init declarations versus ceiling344; compatibility is repairing exact
+  missing declarations against the same tracked inventory without raising the ceiling.
+  Observer99279 remains the sole current-run result owner through the full failure census.
 - Product integrated protected Terminal master b02b86d3c (existing session-recovery
   repair) without losing its11 auth files. Clean candidate3187baba6b29f04fb01e6e92a243e0361a016dc2
   contains the exact final projection, Monitor followups and canonical bilingual
@@ -194,6 +203,17 @@ window. Local rendering is not public acceptance.
   TypeScript/affected lint/language guard PASS. Root read the actual focused diffs.
   Family owns real keyboard/focus recheck; existing acceptance was reactivated
   against exactfbc for actual captures of three changed surfaces. No blind rebinding.
+  Subsequent local keyboard checks passed first-Escape dismissal/focus3/3. Actual
+  primary-content/skip-navigation gaps prompted bounded semantic repair414309e79
+  and no-target fragment-preservation repair42d78dbb108eae0dc37fd73d7ece947612cb1ce0.
+  Auth logic/layout classes stay unchanged; existing native/legacy main owners are
+  preserved and status announcements remain separate. Final changed-case keyboard
+  checks and captures belong to the same family/acceptance owners. Original fbc
+  functional matrix30/30 and Analysis6/PL6-12 captures passed; unchanged ordinary
+  profile functional evidence retains its actual source identity, with final affected
+  crops captured separately. Local production3187 measurements show bounded48-link
+  output for10,760 matches and flat settled DOM/listener counts across repeated
+  transitions; no prior comparative baseline or public/mobile/INP claim is made.
   Remote#1063 remains3187 pending the one coherent corrective push. An isolated
   production-mode build of exact3187
   passed with all three new routes emitted; reuse it for unchanged build behavior.
@@ -329,12 +349,13 @@ accepted historical production matrices or authorize unrelated schema changes.
 ## Exact next actions
 
 1. Product consumes the original12795 CI result, joins actual reviewed visual
-   recaptures and directory keyboard recheck to the qualified localfbc source,
+   recaptures and final keyboard/semantic checks to the qualified local42d78 source,
    then makes one coherent corrective#1063 push and observes that exact run.
    Reuse accepted Monitor/helper/source/build evidence where unchanged. Normal
    protected landing is authorized; product must not invoke default production deploy.
 2. Compatibility consumes sole observer99279 for#7949 head9fcef/run39620460168,
-   repairs only actual new failures, then advances normal source landing, covering
+   joins the diagnosed overlay/init repairs into one corrective push with its own
+   exact required-CI return path, then advances normal source landing, covering
    renderer/generated commit, updater/API restart and exact served-byte verification.
    No successor carrier exists; all original proposal returns are settled.
 3. Compatibility is the sole explicit beta release owner after qualified source and
