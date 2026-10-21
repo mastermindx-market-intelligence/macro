@@ -43,6 +43,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -1897,6 +1898,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -2810,6 +2812,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -6615,6 +6618,7 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
       - "engine/exposure_math.py"
@@ -9017,6 +9021,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -20006,6 +20011,7 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -20787,6 +20793,7 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -22805,6 +22812,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -25282,6 +25290,7 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -30861,6 +30870,7 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -31363,6 +31373,7 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -34377,6 +34388,7 @@ jobs:
       - engine/massive_news.py
       - engine/qbus_news_intake.py
       - engine/qbus_news_quality.py
+      - engine/qbus_news_editorial.py
       - engine/qbus_news_context.py
       - scripts/benchmark_ticker_news.py
       - scripts/verify_ticker_news_ui.py
