@@ -7786,6 +7786,18 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
       - "config.yml"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "tests/test_intl_global_dollar_credit.py"
+      - "tests/test_intl_global_acceptance_matrix.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "engine/intl_global_observation.py"
+      - "lib/store.py"
+      - "lib/config.py"
+      - "engine/canon.py"
+      - "lib/__init__.py"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -7794,9 +7806,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install contract test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy pyarrow
       - name: International global universe contract
         run: python -m pytest tests/test_intl_global_universe.py -q
+      - name: International dollar credit transmission and IM16 acceptance matrix
+        run: python -m pytest tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q
 
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
@@ -26249,6 +26263,9 @@ jobs:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/prophet_journey_lab_serve.py"
+      - "scripts/prophet_journey_latency_report.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -26327,6 +26344,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/prophet_journey_latency.yml"
       - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
@@ -26742,6 +26760,60 @@ jobs:
       - "engine/prophet_live/interval.py"
       - "engine/prophet_live/live_states.py"
       - "engine/prophet_live/r2io.py"
+      # China P1 archive-first publish (cnp1arch): the CN live-pack writer and its
+      # archive test run in THIS gate: code job so a PR edit to either re-runs it;
+      # express-render-guards is gate: data (nightly only) and never runs on a PR.
+      - "scripts/build_cn_live_pack.py"
+      - "tests/test_cn_live_pack_archive.py"
+      # cnp1arch closure: washout-turn-organ is scope: exclusive, so the CN live-pack
+      # archive test must declare its whole import closure (cn_pack -> armed_pack ->
+      # build_china_library -> the china tree). Derived by curated_exclusive_closure_findings
+      # on this head; an undeclared import here is a silent false green (test_ci_pack).
+      # cnp1arch closure r2: the china tree reads these site/*.json data files by
+      # literal path (string references count toward the exclusive closure; see
+      # curated_exclusive_closure_findings). CI run 39561003560 named exactly these six.
+      - "site/china_intel/analogs.json"
+      - "site/chinaaltdata/by_ticker.json"
+      - "site/chinanews/by_ticker.json"
+      - "site/chinaradar/radar.json"
+      - "site/chinaspecialdata/special.json"
+      - "site/factordata/china_standouts.json"
+      - "collectors/china_ths_concepts.py"
+      - "engine/china_board_rank.py"
+      - "engine/china_continuation_watch.py"
+      - "engine/china_fundamentals.py"
+      - "engine/china_intel_hub.py"
+      - "engine/china_intel_interest.py"
+      - "engine/china_liquidity.py"
+      - "engine/china_lowvol.py"
+      - "engine/china_microstructure.py"
+      - "engine/china_name_score.py"
+      - "engine/china_name_score_grader.py"
+      - "engine/china_narrative_radar.py"
+      - "engine/china_narrative_tags.py"
+      - "engine/china_prophet_shadow.py"
+      - "engine/china_reversal.py"
+      - "engine/china_reversal_watch.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/china_sector_turn.py"
+      - "engine/china_signals.py"
+      - "engine/china_standout_audit.py"
+      - "engine/cn_prophet_audit.py"
+      - "engine/confluence_latch.py"
+      - "engine/hub_track_record.py"
+      - "engine/narrative_radar_fields.py"
+      - "engine/pick_lab/cn_snapshot.py"
+      - "engine/pick_lab/profile.py"
+      - "engine/pick_lab/reversion_desk.py"
+      - "engine/prophet_live/armed_pack.py"
+      - "engine/prophet_live/cn_clock.py"
+      - "engine/prophet_live/cn_pack.py"
+      - "engine/signal_governor.py"
+      - "engine/track_era.py"
+      - "engine/track_ledger.py"
+      - "scripts/build_china_library.py"
+      - "scripts/seed_china_ths_baskets.py"
       - "engine/prophet_management.py"
       - "engine/prophet_stage_inputs.py"
       - "engine/prophet_strategy_definition.py"
@@ -27151,6 +27223,8 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
+      - "tests/test_prophet_journey_lab_serve.py"
+      - "tests/test_prophet_journey_latency_report.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
       - "engine/company_intelligence/defense_space_profiles.py"
@@ -27257,6 +27331,10 @@ jobs:
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
+      - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
+        run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
+      - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
+        run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
