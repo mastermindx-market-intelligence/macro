@@ -40,3 +40,10 @@ confidence: verified
 
 The census and closure tests are the same functions `scripts/check_contract_delta.py`
 runs on the head side of a PR, so a local measurement predicts the gate exactly.
+
+Two producers hooked into the same entry script share one closure: once `main` carried
+both `emit_relative_trend_additive` (W2A, `engine/rotation_relative_trend.py`) and
+`emit_holdings_coverage_additive` (W2B, `scripts/build_sector_holdings_coverage.py`) in
+`scripts/build_sector_central.py`, each exclusive job had to name the other producer's
+module (#9991, `cd3a4ad62`). A job declared against its own files alone is red the day
+the second hook lands, whichever PR merges first.
