@@ -91,38 +91,68 @@ window. Local rendering is not public acceptance.
   an uncertain operation before POST. Exact post-operation membership confirmation
   is required; reload cannot silently create a replacement write. Product adopted
   `67ce3e9811b268bd10f1f943274f6a49971d748a` with 29 affected tests. Independent
-  acceptance found an unbounded GET/loading defect; the author is repairing it.
+  acceptance found an unbounded GET/loading defect; `fa20b12275cc5625b5193bc5a2bcf52936b773b8`
+  repaired it and product adopted it as `370f4c705`. Independent first-vertical
+  source/risk review passed `4ee94349b1659b0e11b2bad991bf9de7a49fa69f` with actual
+  local negative/auth-expiry/chart-return checks. Positive authenticated save is owed.
   Scope is same-origin consumer continuity, not server or cross-device idempotency.
-- Research API source is `b343e8c0f1f58bfbff47d4da177ea822c51373d3`;
-  Today API source is `1e35196536dedab2b3a53b871b801d2c9beabcb9`. Existing Research
+- Research API source is `b343e8c0f1f58bfbff47d4da177ea822c51373d3` plus
+  `a81e1681f3fe010e45aa46ec5bf8ec6c5c77d257`; Today API source is
+  `1e35196536dedab2b3a53b871b801d2c9beabcb9` plus tests
+  `a7e34c3159928e1f5c710feb5cdf04e177b7475f`. Existing Research
   rights/catalog/rate limits remain; selected revision mismatch returns 409 without
   latest-body substitution. Today reads a bounded immutable manifest from the
   qualified served root and reuses actual Macro composition and coverage. The
-  independent Today source review passed; 152 Research and 41 Today incumbent
-  regressions passed. Focused Research tests/review and Today tests remain on their
-  original three Fabric operations. BFF, route/mount, publication and runtime
-  integration remain unaccepted. These APIs use a coherent successor Macro carrier,
+  independent source reviews passed. Research has 44 focused and 152 incumbent
+  passes; Today has 25 focused and 41 incumbent passes. Original Fabric results were
+  consumed; test-only interface drift was repaired against actual implementations,
+  not treated as unchanged first-pass acceptance. The actual non-symlink served root,
+  stable publication manifest and all 14 referenced bodies passed host qualification.
+  Mount, publication and runtime integration remain unaccepted. These APIs use a coherent successor Macro carrier,
   not a late unready addition to the running #7949 candidate.
+- W7 native source passed independent review at `3a594f4fb2ed02b6bebe6d23653a020eedbb87de`
+  atop `9804673e4a708006600f3ed2adfa69efc2b53154`, adopted by product as `ea25c7d5a`.
+  Both review findings (A-to-B-to-A lifetime reuse and catalog/search 401 recovery)
+  are closed. There are 116 focused passes, TypeScript/lint and twelve clean body
+  fixture captures. Five fixed GET BFFs preserve actual auth, rights, revisions,
+  bounded transport and private caching. Fixture evidence is not live authentication.
+- Monitor inventory and bounded/hydration-safe return repair are `f020bd3b45c0c7b4a7059f49eb43f294743d436f`
+  and `bc30d697fca37ae62c1ce3240be648c730cd41af`, adopted as `73378e79a` and `cf826b438`.
+  Root viewed dark desktop/light Chinese mobile evidence. W6 remains incomplete:
+  the same Monitor owner is completing actual qualified event/revision attention
+  through existing owners; inventory alone does not fulfill the assigned journey.
+- Real native Today/Research/Monitor routes and member admission were committed at
+  `f1366d0784c6426b70293fb436cbc4e4c62225ca`, with 146 focused passes. Research
+  redirect/private-header/lockdown repair `2b0596be99b6e3e629a2ed0253ca072c162bd0dd`
+  passed the same independent review addendum and seven discriminating tests. Product
+  will regenerate the registry from all three qualified immutable sources.
 - Macro #7949 is now pushed at `f30662bed212ff463ba8557ac54d970e0b2c6228`.
   Focused injection/regwall/Caddy, ten loopback cases, FIF census and packing/closure
   repairs passed. Hosted CI run `39604775831` has a launched sole observer,
   foreground exec handle `59404`, owned by compatibility. Consume that same handle;
-  do not create another poller. Concluded required checks and source landing remain
-  owed; source/CI is not publication proof.
+  do not create another poller. Packs 5/8/9 found real generated-pair or publication
+  fixture failures after the new capability assets, plus a mutable-ref assumption
+  in the registry test. Compatibility owns the full same-run census and three original
+  disjoint Fabric repairs: `ss-glossary-publication-fix-20261021-c245`,
+  `ss-pack8-publication-fix-20261021-c245`, and `ss-pack9-publication-fix-20261021-c245`.
+  Pack 11 additionally found one moved Caddy backend-map line pin, repaired by its
+  existing local owner without changing the map or its accepted security boundary.
+  No guard weakening or blind rerun. Required checks and source landing remain owed.
 - The canonical registry has 346 classified rows (SHA256 `69e11f6ef13e56273eb4fb95cc9857b57b8a481ec9def5d87c523b4850c95b62`).
   Its qualified projection (SHA256 `1204bc0f9ce94c08b7262310bec9905abe441397d02fc15d681dcd59b09ab93d`)
   has 13,017 legacy paths, 14 native paths and 288 directory entries; zero ambiguous
   or unresolved legacy paths. All eleven internal rows are excluded. Product
   adopted these bytes, and acceptance verified Committee/Crossasset absence in the
-  actual local search. New Today/Monitor/Research routes are not yet admitted.
+  actual local search. Newly committed Today/Monitor/Research routes still need the
+  final qualified registry/projection export.
 - Root accepted the family disposition plan in
   `/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/CURRENT.md`.
   All 24 consumer groups and 19 generated shapes retain explicit consumer obligations.
   Runtime acceptance is still pending the common compatibility join, not implied by
   route membership. Do not repeat family-body cases against the unjoined fixture.
 - Local independent browser review has verified repaired Discover composition,
-  dark/light and EN/ZH cases, narrow reflow and navigation. It found a search-dialog
-  focus/semantics defect now assigned to product. Company evidence/return, Save,
+  dark/light and EN/ZH cases, narrow reflow, search dialog focus and navigation.
+  First-vertical repair review is PASS; real positive Company evidence, Save,
   Monitor, Research, Portfolio and full public journeys remain acceptance work.
 
 ## Beta edge and origin
@@ -148,6 +178,11 @@ Compatibility owns normal source/gates/landing before apply. No extra CEO approv
 is required for that qualified continuation; no temporary bypass was commissioned.
 Public serving, exact build/publication identity and A-to-B-to-A recovery/rollback
 remain owed. Production port 3000 has not been changed by this commission.
+
+Root's native Chrome profile 1 tab `1925928144` verified the existing product account
+session through the normal app Account UI (Chris, current October 21 sign-in) and
+read the incumbent Saved research surface. No secret was extracted or session
+transferred. This is a lawful browser path for later acceptance, not beta auth proof.
 
 Preserve WS:MARKET-OS A1A/A1B accepted population and mutation semantics. Watchlists
 are attention, portfolio_positions are holdings. The new shell does not reopen the
@@ -179,16 +214,15 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Exact next actions
 
-1. Product integrates retained Company context and focused watchlist/search repairs;
-   acceptance consumes their exact source and actual browser journey.
+1. Product completes actual route/redirect/header integration and Portfolio hydration;
+   Monitor completes the missing qualified attention-to-exact-context journey.
 2. Compatibility consumes CI handle 59404 and advances required source landing,
    covering publication and qualified beta release through the incumbent owners.
-3. Consume the original Monitor and Portfolio Fabric returns in their assigning
-   coordinators. Reactivate the same completed coordinator at a material integration
-   boundary; a completed child turn is not an idle result-consumption service.
-4. Reading integrates Today/Research consumers and a fixed-target verified-session
-   BFF. Continuation consumes its original three test/review returns. Compatibility
-   serially owns successor Macro app/main/CI/release; product owns native admission.
+3. Consume each original CI repair result through compatibility and push one coherent
+   corrected candidate. Preserve same-carrier identity and accepted unchanged checks.
+4. Compatibility serially owns the qualified Research/Today successor app/main,
+   actual mounted headers and CI/release; product owns native admission. Completed
+   coordinator turns are not idle wake or live result-consumption services.
 5. Regenerate routes only from qualified committed source in all three repositories,
    then prove real account, source/revision, save/readback, chart-return, responsive
    design and distinct family bodies against the final served candidate. Root must
