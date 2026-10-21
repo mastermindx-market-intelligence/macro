@@ -215,3 +215,79 @@ DESIGN (a84208a865fe09119) returned DONE for the design deliverable only: Paper 
 - **OPEN**: #9947 (B23) @`cfb8b81f` watcher `bmn1v307k` + review lane `blkfzc66t`; #9945 (B05) @`b0f8eb3b` watcher `bw2plzlqo`; **#9940 RED** @`d09eae69` (triage above; watcher `b2kbx3qil` finished). Merge rule unchanged: review PASS + green + reviewDecision + fence + `--match-head-commit`; never arm.
 - **Orchestrators**: DESIGN / INTEL / REGIONAL / SOURCE all COMPLETED (message only, never re-spawn). NEXT: spawn ONE BUILD orchestrator for Wave A (F20); then browser-proof commission (mastermind-product-path-proof) after Wave A merges; Wave B routing packet at Stage 6.
 - Session branch `claude/ssd-prophet-end-to-end-dbeaec-7e88fffefdd61737` @ `f7df8846` + this record. Fence last read 08:3xZ = `6306863736 mastermindxryan 2026-10-21T02:54:39Z`.
+
+### Seat ruling F21 — #9940 inherited red remedied at the root (closure declaration), not by retry (08:5xZ)
+- Cause: `washout-turn-organ` (`gate: code`, `scope: exclusive`, probe-free) refused the cnp1arch
+  test registration because the test's load closure includes six `site/*.json` files read by
+  literal path (`analogs.json`, `chinaaltdata/by_ticker.json`, `chinanews/by_ticker.json`,
+  `chinaradar/radar.json`, `chinaspecialdata/special.json`, `factordata/china_standouts.json`)
+  that the job's `paths:` did not declare; a `ManifestError` reds every pack plus contract-delta.
+- Remedy: the six declarations inserted into that job's `paths:` (`$S/fix9940.py`, anchored on the
+  unique cnp1arch comment line). Proof on the exact remedied tree 0a1ae02c, run on the MERGE tree:
+  `washout-turn-organ: closure=1011 declared=1006 globs=6 MISS=0`. Carrier fence read intact
+  (6306863736) → pushed fast-forward d09eae69 → **0bb0cc63** on `claude/prophet-r7-cn-p1-archive`
+  (#9940). Watcher bfmldru9g (head 0bb0cc63). Merge rule unchanged: green + F17 review PASS →
+  reviewDecision → fence → `--match-head-commit 0bb0cc63…`.
+- Law for the recipe memory: string-referenced data paths count toward an exclusive closure; prove
+  closures on the merge tree; capture the whole washout output; capture `origin/main` ONCE per
+  operation (the shared object store moves it under you).
+
+### Seat ruling F22 — B4 same-read capture target (SOURCE R1 NEEDS-FABLE-DECISION resolved) (09:0xZ)
+Decision: the first production-shaped caller of the merged B4 runtime library is a CAPTURE-ONLY
+nightly, `scripts/capture_prophet_b4_same_read.py`, writing an append-only JSONL stream under the
+incumbent prospective-evaluation root as a sibling of the W3 grain store:
+`data/<us_context_vector.STORE_DIR>/b4_capture/<YYYY-MM>/<stamp_date>.jsonl`.
+1. Discipline is W3's plus B01's: nightly is the sole advancer (`--nightly` AND
+   `engine.ledger_lane.nightly_advance_enabled()`, else typed refusal exit 3 before any read);
+   `stamp_date` = `us_prophet_w3.resolve_board_as_of()` (committed board as_of, never wall-clock /
+   run id); `captured_at` = the writer's own UTC clock stamped once per run; no CLI clock in
+   durable mode; `--dry-run` builds rows and writes nothing.
+2. Row = schema `prophet.b4.capture/v1` with a closed key set: identity (ticker, security_id,
+   episode_id, candidate_generation_id, market_session), source key + receipt derived
+   byte-identically to `scripts/build_stock_library.py:1719-1720`, strategy id + receipt (the policy
+   pin), the same-read envelope's state / nbbo_quality / b3_projection_id / owner_read_schema /
+   binding / unavailable_reasons / receipts verbatim, and `facts` = the availability row with every
+   verdict field removed (null when UNAVAILABLE_DATA). D11 rule 3 holds: no ENTRY_OPEN-class token
+   is ever persisted; the verdict is re-derivable from facts + policy pin through
+   `engine.prophet_entry_availability_sources.evaluate_runtime_entry_availability`.
+3. Enumeration: ONE HEAD-backed candidate-episode snapshot per run; candidates = the durable
+   `us_prophet_rank.candidates/v1` rows for `stamp_date`; one row per candidate × registered
+   strategy (at BASE exactly `build_early_leadership_sector_rotation_definition`); the script never
+   classifies a candidate itself.
+4. Owner inputs are bound through seams that return the owners' own typed refusals at BASE:
+   `NATIVE_LIVE_ROOT = /var/lib/macro-live` (`scripts/prophet_live_evaluator.py:112/127`;
+   `--live-root` report-only), `resolve_alias_table()` → None (no in-repo Data OS
+   `vendor_symbol_for/resolve` provider), `signal_gate_artifact=None` (D01 stays its owner's).
+   Every row at BASE is honestly `UNAVAILABLE_DATA` with the adapter's `RuntimeOwnerFactError`
+   text — that census IS the deliverable (prereg :64 "the first run is capture-only"). Never an
+   invented geometry / metric / NBBO / alias fact; NBBO owner facts remain #7734's.
+5. Idempotence: key (stamp_date, security_id, candidate_generation_id, strategy_definition_id);
+   keep-first, append new keys, atomic rename; changed bytes under an existing key →
+   `CaptureConflictError`, exit 2, nothing written (W3ConflictError analogue).
+6. ZERO AUTHORITY + consumer fence: no builder, bridge, presentation, candidate-state module or
+   template reads the stream (grep-asserted by test). Outcomes attach later through the incumbent
+   forward ruler — no new outcome authority (PREREG.json reuse_law).
+7. Scope fence: new script + new test + one manifest line and one run step in the job that holds
+   `tests/test_prophet_b4_same_read.py` (closure declared if exclusive). `daily.yml` / `dag.yml`
+   (held by #9852/#9774/#9677/#9639/#9590/#9574/#9450), `build_stock_library.py`, W3 and every engine
+   module are untouched; the seat adds the workflow step after acceptance.
+Packet: `$S/pk/pro-source-b4nightly-20261021.md` (148 lines, FROZEN SPEC 1–9, 13 named tests);
+lane `pro-source-b4nightly-20261021-r1` (class build, host auto, BASE = origin/main at launch).
+
+### Seat ruling F23 — B01 (R2) SOURCE return consumed and shipped as #9951 (09:0xZ)
+- Lane `pro-source-b1recordedat-20261021-r1` DONE rc=0 (USED, never relaunch). `lane/<run>` fetch
+  from the promisor clone failed in the remote upload-pack → host-side bundle rescue
+  (`git bundle create … HEAD --not HEAD~1`, scp, `git fetch <bundle> HEAD`) → refs/pro/b1rec =
+  **e0acbb96** (parent 2ebe9b7d; "b1: durable CLI refuses caller-supplied recorded_at").
+- Seat check: five spec items each carry a named test (7 tests, 194 lines); guard sits in `main()`
+  before any read/write; registration in `prophet-lab` (`gate: code`) whose `paths:` already
+  declare the reconciler/episode suites the new test imports fixtures from; combined 144 passed
+  (7 + 63 + 11 + 39 + 24). DEVIATION accepted: packet cited `config/dag.yml:1899-1901`, at BASE the
+  invocation is `:1925-1926` (`args: [--nightly]`) — same substance.
+- Shipped: fence read intact (6306863736) → `refs/pro/b1rec` pushed as
+  `claude/prophet-r7-b01-recorded-at` → **PR #9951** (head e0acbb96, base main). Watcher
+  bulutwfm2. Independent review lane `pro-source-b1rec-review-20261021-r1` (READ_ONLY, BASE
+  e0acbb96, report `reviews/B01_RECORDED_AT_REVIEW_2026-10-21.md`). Merge rule: green +
+  PASS/PASS_WITH_NOTES → reviewDecision → fence → `--match-head-commit e0acbb96…`; never armed.
+- #7581 closure post: intent unrecoverable after compaction — NO post made (never improvise an
+  outward post whose intent is unrecoverable).
