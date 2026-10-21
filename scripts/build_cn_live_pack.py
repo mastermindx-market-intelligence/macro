@@ -7,8 +7,9 @@ a red settlement.
     python -m scripts.build_cn_live_pack [--publish] [--out PATH] [--now ISO]
                                          [--limit N]
 
-Universe = ``build_china_library.universe()`` minus Sector ETF / Index, through
-``stock_tradability_ok`` when maps are supplied. Probe uses the CN calendar and
+Universe = ``build_china_library.universe()`` minus Sector ETF / Index, gated by
+a strict, complete ``stock_tradability_ok`` map (a missing key refuses the build
+— the pack never fails open on tradability). Probe uses the CN calendar and
 the per-class daily-limit band. T2 latch is loaded read-only.
 
 FAIL-CLOSED ON PARITY (G0.1 inherited): unpublished / mismatched edges are
@@ -28,6 +29,7 @@ from typing import Any
 _CODE_ROOT = str(Path(__file__).resolve().parent.parent)
 sys.path.insert(0, _CODE_ROOT)
 
+from engine import china_liquidity  # noqa: E402
 from engine.prophet_live import cn_pack as CP  # noqa: E402
 from engine.prophet_live import r2io  # noqa: E402
 from engine.prophet_live import armed_pack as AP  # noqa: E402
@@ -91,11 +93,38 @@ def load_frozen(root: Path) -> dict[str, dict[str, Any]]:
     return {}
 
 
+def tradability_map(tickers, *, meta: dict, liq_by: dict) -> dict[str, bool]:
+    """Strict Boolean tradability for every ticker — the nightly predicate.
+
+    ``stock_tradability_ok`` returns a REJECTION reason (``st`` / ``mcap`` /
+    ``adv``) or ``None`` for a pass, so the map value is ``... is None`` —
+    passing the raw result would INVERT the gate. Same argument sourcing as the
+    nightly board's ``_tradability_ok`` wrapper; unknown cap / ADV pass through
+    (nightly semantics, unchanged).
+    """
+    from scripts.build_china_library import stock_tradability_ok  # noqa: PLC0415
+
+    st_flag_by = meta["st_flag_by"]
+    name_zh_by = meta["name_zh_by"]
+    mktcap_by = meta["mktcap_by"]
+    return {
+        t: stock_tradability_ok(
+            t,
+            st_flag=st_flag_by.get(t, False),
+            name_zh=name_zh_by.get(t),
+            mktcap=mktcap_by.get(t),
+            adv_yi=(liq_by.get(t) or {}).get("adv_yi"),
+        ) is None
+        for t in tickers
+    }
+
+
 def build(*, root: Path | None = None, cfg: dict[str, Any] | None = None,
           now: datetime | None = None, limit: int | None = None,
           series: dict[str, Any] | None = None,
           gate_fn=None, frozen: dict[str, dict[str, Any]] | None = None,
-          tradable: dict[str, bool] | None = None) -> dict[str, Any]:
+          tradable: dict[str, bool] | None = None,
+          universe_rows: list[tuple] | None = None) -> dict[str, Any]:
     """Assemble the CN armed pack. ``series`` injects a test universe."""
     from lib import cn_calendar  # noqa: PLC0415
 
@@ -106,9 +135,20 @@ def build(*, root: Path | None = None, cfg: dict[str, Any] | None = None,
 
     if series is None:
         from scripts.build_china_library import universe  # noqa: PLC0415
-        rows = CP.filter_universe(universe())
-        if tradable:
-            rows = [r for r in rows if tradable.get(r[0], True)]
+        rows = universe_rows if universe_rows is not None else \
+            CP.filter_universe(universe())
+        if tradable is not None:
+            # STRICT COVERAGE (P1): the map must answer for every universe row.
+            # BASE failed OPEN (``.get(t, True)``) and shipped an actual ST name;
+            # a missing key — or an empty map over a non-empty universe — is the
+            # same refusal: incomplete metadata preparation must publish nothing
+            # (main turns the raise into ``::error`` + rc 1).
+            missing = [r[0] for r in rows if r[0] not in tradable]
+            if missing:
+                raise RuntimeError(
+                    f"tradability map missing {len(missing)}/{len(rows)} universe "
+                    f"tickers — refusing to build (first five: {', '.join(missing[:5])})")
+            rows = [r for r in rows if tradable[r[0]]]
         series = {}
         for row in rows:
             tkr, close = row[0], row[1]
@@ -230,8 +270,41 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001
             print(f"::warning title=cn-live-pack::config.yml unreadable ({exc})",
                   flush=True)
+        # Tradability gate (P1): the SAME predicate + metadata owner the nightly
+        # board applies, mapped strictly over the pack's stock universe. Missing
+        # metadata values keep the nightly pass-through semantics; what is refused
+        # is an incomplete MAP, never a silent fail-open.
+        from scripts.build_china_library import (  # noqa: PLC0415
+            load_tradability_metadata, stock_tradability_ok, universe)
+        rows = CP.filter_universe(universe())
+        tickers = [r[0] for r in rows]
+        meta = load_tradability_metadata()
+        liq_by = china_liquidity.liquidity_map(tickers)
+        tradable = tradability_map(tickers, meta=meta, liq_by=liq_by)
+        assert set(tradable) == set(tickers), "tradability map lost tickers"
+        assert all(isinstance(v, bool) for v in tradable.values()), \
+            "tradability map values must be bool"
         payload = build(root=Path(args.root), cfg=cfg, now=_now(args.now),
-                        limit=args.limit)
+                        limit=args.limit, tradable=tradable, universe_rows=rows)
+        # Receipt: why each dropped name was dropped, from the map's reasons.
+        drop = {"st": 0, "mcap": 0, "adv": 0}
+        for t, ok in tradable.items():
+            if ok:
+                continue
+            reason = stock_tradability_ok(
+                t,
+                st_flag=meta["st_flag_by"].get(t, False),
+                name_zh=meta["name_zh_by"].get(t),
+                mktcap=meta["mktcap_by"].get(t),
+                adv_yi=(liq_by.get(t) or {}).get("adv_yi"),
+            )
+            if reason:
+                drop[reason] += 1
+        payload["meta"]["tradability"] = {
+            "universe": len(tradable),
+            "pass": sum(1 for v in tradable.values() if v),
+            "drop": drop,
+        }
     except Exception as exc:  # noqa: BLE001
         print(f"::error title=cn-live-pack::{exc}", flush=True)
         return 1
