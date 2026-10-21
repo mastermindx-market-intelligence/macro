@@ -472,7 +472,7 @@ function sbClient() {
   return Promise.resolve({auth:{getUser:() => {
     VERIFIED++;
     if (CURRENT.sdk === 'transport') return Promise.reject(new Error('offline'));
-    return Promise.resolve(CURRENT.result);
+    return Promise.resolve(CURRENT.steps ? CURRENT.steps[Math.min(VERIFIED - 1, CURRENT.steps.length - 1)] : CURRENT.result);
   }}});
 }
 __REAL_HELPER__
@@ -491,12 +491,21 @@ async function run() {
   for (const [name,result,shouldRevoke] of inputs) {
     CURRENT={result}; REVERTED=0; VERIFIED=0;
     await verifyRejectedNavigationSession();
-    out.push({name,reverted:REVERTED,verified:VERIFIED,shouldRevoke});
+    out.push({name,reverted:REVERTED,verified:VERIFIED,shouldRevoke,expectedCalls: (name==='auth-missing' || name==='ambiguous') ? 2 : 1});
+  }
+  for (const [name,first] of [
+    ['race-missing', {data:{user:null},error:{name:'AuthSessionMissingError'}}],
+    ['race-discarded', {data:{user:null},error:{name:'AuthRefreshDiscardedError'}}],
+    ['race-empty', {data:{user:null},error:null}],
+  ]) {
+    CURRENT={steps:[first,{data:{user:{id:'winning-session'}},error:null}]}; REVERTED=0; VERIFIED=0;
+    await verifyRejectedNavigationSession();
+    out.push({name,reverted:REVERTED,verified:VERIFIED,shouldRevoke:false,expectedCalls:2});
   }
   for (const mode of ['absent','offline','transport']) {
     CURRENT={sdk:mode,result:null}; REVERTED=0; VERIFIED=0;
     await verifyRejectedNavigationSession();
-    out.push({name:mode,reverted:REVERTED,verified:VERIFIED,shouldRevoke:false});
+    out.push({name:mode,reverted:REVERTED,verified:VERIFIED,shouldRevoke:false,expectedCalls: mode==='absent' || mode==='offline' ? 0 : 1});
   }
   process.stdout.write(JSON.stringify(out));
 }
@@ -505,10 +514,10 @@ run().catch((err)=>{console.error(err);process.exitCode=1;});
     res = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=30)
     assert res.returncode == 0, res.stderr
     rows = json.loads(res.stdout)
-    assert len(rows) == 11
+    assert len(rows) == 14
     for row in rows:
         assert row["reverted"] == int(row["shouldRevoke"]), row
-        assert row["verified"] == (0 if row["name"] in ("absent", "offline") else 1), row
+        assert row["verified"] == row["expectedCalls"], row
 
 
 @pytest.mark.parametrize("rel", REL_ONBOARD)

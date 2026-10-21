@@ -3041,7 +3041,16 @@
   function verifyRejectedNavigationSession() {
     return sbClient().then(function (sb) {
       if (!sb) return; // Auth SDK unavailable is not an invalid session.
-      return sb.auth.getUser().then(function (result) {
+      return sb.auth.getUser().then(function (first) {
+        // Concurrent subdomain/tab refresh may yield one stale null-session read
+        // although another client has already saved the winning session. Re-read
+        // the SAME Auth client once; never infer login from the cookie alone.
+        var e = first && first.error;
+        if (first && first.data && first.data.user && !e) return first;
+        if (!e || e.name === "AuthSessionMissingError" ||
+            e.name === "AuthRefreshDiscardedError") return sb.auth.getUser();
+        return first;
+      }).then(function (result) {
         if (result && result.data && result.data.user && !result.error) return;
         var e = result && result.error;
         if (!e) return; // Ambiguous results also preserve the session.
