@@ -1039,6 +1039,37 @@ def test_x2_each_basis_list_is_single_basis(tmp_path):
         assert_single_basis(result["bases"][basis])
 
 
+def test_x2_hedged_call_receives_the_usd_unhedged_qualification(tmp_path):
+    """The adapter contract: the usd_hedged basis is fed the usd_unhedged
+    qualification (never the local one), so no hedged observation can borrow
+    an unhedged incumbent receipt."""
+    import json as _json
+    from lib.intl_global_observation_adapter import observations_from_qualification
+    observations_module = _gs_module("lib.intl_gs_observations")
+    selected, inputs = _w2fx_admitted(tmp_path)
+    seen = {}
+    real = observations_from_qualification
+
+    def spy(records, qualification, **kwargs):
+        basis = kwargs.get("currency_basis")
+        if basis in ("local", "usd_unhedged", "usd_hedged"):
+            seen[basis] = _json.dumps(qualification, sort_keys=True, default=str)
+        return real(records, qualification, **kwargs)
+
+    observations_module.observations_from_qualification = spy
+    try:
+        observations_module.build_observation_set(
+            selected, publication_inputs=inputs, evaluated_at=W2FX_EVALUATED,
+            data_root=tmp_path, rights=W2FX_GRANT)
+    finally:
+        observations_module.observations_from_qualification = real
+    assert set(seen) == {"local", "usd_unhedged", "usd_hedged"}
+    assert seen["local"] != seen["usd_unhedged"], \
+        "the two supported bases must carry different qualifications"
+    assert seen["usd_hedged"] == seen["usd_unhedged"], \
+        "the hedged basis must be fed the usd_unhedged qualification"
+
+
 # ---------------------------------------------------------------- X3 mount seam
 
 
