@@ -5162,9 +5162,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_798),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_600),
+    ("templates/index.html", 136, 5_880),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_843),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_619),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5172,6 +5172,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC post-merge integrated measurement (seat, PR #9917 merge
+    commit b081a82d0e72 = main 2d50943eb154 merged INTO the integration
+    branch at 418093a864b5): main's B04-A0 funding (PR #9935, below) and the
+    SIC I-wave funding (the next paragraph) each measured against a base the
+    other did not contain, so the merge resolved the three tuples
+    provisionally to main's values (5,825 / 5,798 / 5,600) pending one
+    integrated probe. That probe, on the merged tree, measures
+    5,880 / 5,843 / 5,619 — exactly the SIC closure values (5,877 / 5,840 /
+    5,616) plus the three units B04-A0 adds to each (its own pytest step
+    lands in a job all three probes select). Fund exactly that measured
+    integrated value; neither side's claim is re-funded on its own. No
+    job-count, selector, pack or entrant change; the ten-pack bound is
+    untouched.
 
     2026-10-21 SIC integration funding (seat, PR #9917 head 67ccd15e51d5 +
     the RI07b MINOR 6 fix fdc3e02b29e3): the four I-wave lanes landed on the
