@@ -3,8 +3,9 @@
 Pure module: no network, no wall clock, no store.  ``computed_at`` is the caller's
 ``--as-of`` instant, never "now".  The v1 relationship-observation module
 (``engine.company_intelligence.relationship_observations``) is untouched; this is
-its versioned successor and imports only its purpose/authority/content-boundary
-dicts.
+its versioned successor and re-declares its purpose/content-boundary dicts
+identically (contracts 3/4 const-pin every value) instead of importing the C01
+chain behind v1.
 
 Every derived fact here is transcription or bookkeeping over rows that are already
 hash-pinned: directed edges keyed to named counterparties, magnitude revisions that
@@ -459,20 +460,31 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
 
 
 def _v1_purpose_v2() -> dict:
-    """The v1 purpose dict with this package's operation (v1 module untouched)."""
-    from engine.company_intelligence.relationship_observations import _purpose
+    """The v1 purpose dict with this package's operation.
 
-    purpose = dict(_purpose())
-    purpose["operation"] = "relationship_observation_package_v2"
-    return purpose
+    Re-declared identical to ``engine.company_intelligence.relationship_observations``
+    ``_purpose()`` (v1, read-only) rather than imported: the v1 module drags the
+    C01 candidate-inspection chain with it, and this derivation must stay a bounded
+    closure.  Contracts 3/4 const-pin every value, so any drift from v1 fails the
+    output conformance check and the producer writes nothing.
+    """
+    return {
+        "operation": "relationship_observation_package_v2",
+        "source_purpose_permission": "NOT_ESTABLISHED",
+        "production": False,
+        "public_export": False,
+        "training": False,
+    }
 
 
 def _v1_content_boundary() -> dict:
-    from engine.company_intelligence.relationship_observations import (
-        _content_boundary,
-    )
-
-    return dict(_content_boundary())
+    """Re-declared identical to the v1 module's ``_content_boundary()`` (see above)."""
+    return {
+        "private_evidence": True,
+        "source_text_may_be_present": True,
+        "quote_free_payload": "NOT_CERTIFIED",
+        "public_safe_payload": "NOT_CERTIFIED",
+    }
 
 
 def _record_non_edge(non_edges: list, row: dict, accession: str, known_at: str,
