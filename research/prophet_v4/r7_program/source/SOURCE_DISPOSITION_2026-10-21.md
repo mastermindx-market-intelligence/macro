@@ -157,9 +157,20 @@ A unit can carry two verdicts when it has separable halves; each half names its 
   (12 states x 6 + `timing_basis`); TOOL_VERSION 1.4.0; viewports `narrow-320` (320x720), `tablet-768` (768x1024).
   ACCEPTED source-level by ORCH-SOURCE (no independent review owed: dev tooling, not a consequential change).
   Lane GAP: the design file is not at BASE (it lives only on the seat branch) — heights fell back to the packet's.
-- BU4+BU5 lane launched 04:38Z stacked on the BU1 commit (`pro-source-b23bu45-20261021-r1`, ubuntu2), design facts
-  inlined because the design file is absent at BASE; ships after BU1 in the same or a follow-on seat PR.
-- Verdict: harness **READY** (BU1 DONE; BU4/5 RUNNING); B23 UI surface
+- BU4+BU5 lane DONE: `pro-source-b23bu45-20261021-r1`, ubuntu2, rc=0 05:04Z, commit `86357017f569` on
+  `lane/pro-source-b23bu45-20261021-r1` (BASE = BU1 commit 15576984). Diff = 6 owned files (+2441/-1):
+  `scripts/prophet_journey_lab_serve.py` (BU4), `scripts/prophet_journey_latency_report.py` +
+  `config/prophet_journey_latency.yml` (BU5), two tests, one CI line (data-gated job — move per §4 item 7). 112 passed
+  (27 new + 85 BU1). Spec 1-6 each a named `test_specN_*`; spot-checked bytes: `BIND_HOST = "127.0.0.1"` constant,
+  only `--port` is a flag (serve :75, :367); journal `os.O_WRONLY|O_CREAT|O_APPEND` (serve :113); nearest-rank
+  `math.ceil(q*n)` (report :131); no clock in the report module (only `perf_counter` in the server's elapsed_ms).
+  ACCEPTED source-level by ORCH-SOURCE. Ship-time correction (data, not code): the lane declared journey routes
+  `/index.html`, `/us_stocks.html`, `/anticipation.html` because the design was absent; the design's journey is
+  Today = `us_stocks.html` then Candidate = `stock.html#<SYM>` (`requires_auth: True`, design Q3 :124-131) — edit the
+  yml steps (and `gated_routes`) before the first lab run. Lane notes: CPython 3.12 collapses `//` targets upstream,
+  so absolute-path 403 is proven via `%2F`; failure class 6 is a construction fact (`no-store` on every response),
+  not a measured zero; class 4 reports 0 until a journey runner exists.
+- Verdict: harness **READY** (BU1 + BU4/5 DONE, accepted source-level; ship in one seat PR); B23 UI surface
   **READY-AFTER-DESIGN-SPEC** — packet `$S/pk/pro-source-b23ui-20261021.md` (`__HARNESS_DESIGN__` now fillable).
 
 ### B26 — Execute phased flagship cutover and rollback proof (D10, D11)
@@ -286,11 +297,11 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 | Packet (`$S/pk/`) | Class | State | Trigger |
 | --- | --- | --- | --- |
 | pro-source-b05sameread-20261021 | build C2 | DONE r1 ubuntu1 39b2767ffe21 (3 files, 256 passed); ACCEPTED source-level; review PASS_WITH_NOTES | seat claude/* PR, CI line moved to a PR-gated job (§4 item 7) |
-| pro-source-b05review-20261021 | review C1 | DONE r1 ubuntu1 e4433f5713d6 (1 file) **PASS_WITH_NOTES**; report copied to `source/B05_SAME_READ_REVIEW_2026-10-21.md` | independent review of B05 (spec 1-8 + attack surfaces A1-A8); report `source/B05_SAME_READ_REVIEW_2026-10-21.md` on the lane branch |
+| pro-source-b05review-20261021 | review C1 | DONE r1 ubuntu1 e4433f5713d6 (1 file) **PASS_WITH_NOTES**; report copied to `source/B05_SAME_READ_REVIEW_2026-10-21.md` | consumed; no repair owed (two NOTEs only) |
 | pro-source-b23harness-20261021 | census | DONE r1 ubuntu2, 4490397b | accepted by ORCH-SOURCE; report here |
 | pro-source-b21contract-20261021 | census | DONE r1 ubuntu3, 6eed43cb | accepted with notes; report here |
 | pro-source-b1recordedat-20261021 | build C1 | unlaunched, READY | seat acceptance (R2) |
-| pro-source-b4nightly-20261021 | build | unlaunched, BLOCKED | B05 return + #7734 + Fable ruling (R1) |
+| pro-source-b4nightly-20261021 | build | unlaunched, BLOCKED | B05 merged (fill `__SAME_READ_HEAD__`) + #7734 + Fable ruling on capture target (R1) |
 | pro-source-b23bu1-20261021 | build C1 | DONE r1 ubuntu2 155769840281 (2 files, 85 passed); ACCEPTED source-level | seat claude/* PR (no independent review owed) |
-| pro-source-b23bu45-20261021 | build C1 | RUNNING r1 ubuntu2 (BASE = BU1 lane commit 15576984, launched 04:38Z) | BU4 lab-serve journal + BU5 report generator; design facts inlined |
+| pro-source-b23bu45-20261021 | build C1 | DONE r1 ubuntu2 86357017f569 (6 files, 112 passed); ACCEPTED source-level; fix yml journey to us_stocks → stock.html at ship | seat claude/* PR together with BU1 (no independent review owed) |
 | pro-source-b07journey / b20workspace / b22record / b23ui | build | unlaunched | design spec acceptance |

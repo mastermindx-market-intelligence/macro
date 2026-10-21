@@ -82,3 +82,11 @@ Seat-only acts (push/PR/label/merge/post) are never performed here.
   so neither is PR-gated. Disposition §4 item 7 = move pure-code suites to `gate: code` jobs at ship time.
 - Seat merged origin/main (#9928) into the branch at 04:42Z; conflicts in source/ files resolved to HEAD by the seat;
   my edits applied after MERGE_HEAD cleared. BU4/5 lane still POLL_PENDING (ubuntu2).
+
+## 05:0xZ — BU4/5 consumed (ACCEPTED source-level); first wave complete
+- `pro-source-b23bu45-20261021-r1` ubuntu2 rc=0 05:04Z, commit `86357017f569`, 6 owned files, 112 passed, spec 1-6
+  named tests; bytes spot-checked (loopback constant, O_APPEND journal, nearest-rank ceil, no clock in report).
+- Ship-time data fix: yml journey routes must follow design Q3 (us_stocks.html → stock.html#SYM, auth) not the
+  lane's index/us_stocks/anticipation declaration.
+- No live lanes. Unlaunched by design: b1recordedat (F5 budget hold), b4nightly (BLOCKED), 4 UI packets (design spec).
+  Returning to the seat.
