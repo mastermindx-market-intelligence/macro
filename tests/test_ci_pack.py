@@ -5168,6 +5168,16 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-10-21 SIC-I05R registers tests/test_research_receiver_entry.py on
+    the same tier-gate run line. The local probe on f4a1747e5e0 measures
+    the two code probes at the SIC-RCV ceilings (5,861 / 5,828) and
+    plan_book at 5,604; the registration adds exactly two estimator units
+    to each probe (5,863 / 5,830 / 5,606), no job-count or pack change, no
+    new entrant. Fund only that measured excess — the packet's "two tuples"
+    anticipated the code probes; the same +2 lands on plan_book's tuple
+    too, so all three are funded. Job counts, selectors and the ten-pack
+    bound remain unchanged.
+
     2026-10-21 SIC-I09A registers tests/test_sector_central_history.py on the
     same tier-gate run line. The local probe on f4a1747e5e0 measures the three
     probes at the after-B06 ceilings (5,861 / 5,828 / 5,604 — probe re-run green

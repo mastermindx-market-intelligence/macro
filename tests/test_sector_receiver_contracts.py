@@ -8,6 +8,7 @@ observed receiver drifted from it; update both together.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,8 +111,11 @@ CONTRACT_SECTIONS = [
 ]
 
 #: surfaces the contract records as reading NO url parameter (grep → 0 hits).
+#: RI05 MAJOR-2: research_vault.html.j2 left this list — its #si-research-entry
+#: island reads URL state (new URL(document.URL).searchParams evades the three
+#: patterns below, which is exactly the pin evasion the repair closes); the
+#: island's exact six-parameter set is pinned negatively below.
 NO_PARAM_SURFACES = [
-    "templates/research_vault.html.j2",
     "templates/research_index.html.j2",
     "templates/research_report.html.j2",
     "templates/research_screener.html.j2",
@@ -121,6 +125,16 @@ NO_PARAM_SURFACES = [
 ]
 
 _PARAM_PATTERNS = ("URLSearchParams", "location.search", "location.hash")
+
+#: the SIC-I05R receiver island's exact parameter set (RI05 MAJOR-2).
+RESEARCH_ENTRY_PARAMS = {
+    "si_subject",
+    "si_q",
+    "si_snap",
+    "si_obs",
+    "si_ev",
+    "si_origin",
+}
 
 
 def _read(rel: str) -> str:
@@ -165,6 +179,21 @@ def test_no_param_surfaces_still_read_nothing():
         text = _read(path)
         hits = [p for p in _PARAM_PATTERNS if p in text]
         assert not hits, f"{path} now reads url state ({hits}); contract NOT FOUND rows drifted"
+
+
+def test_research_vault_island_reads_exactly_the_six_si_params():
+    """RI05 MAJOR-2 negative pin: the vault island is the one research surface
+    that reads URL state, and it reads exactly the six si_* parameters — any
+    seventh reader (raw('…') or a direct searchParams.get('…')) fails this."""
+    html = _read("templates/research_vault.html.j2")
+    start = html.index("/* SIC-I05R")
+    script = html[start:html.index("</script>", start)]
+    reads = set(re.findall(r"raw\('([^']+)'\)", script))
+    reads |= set(re.findall(r"(?:searchParams|params)\.get\('([^']+)'\)", script))
+    assert reads == RESEARCH_ENTRY_PARAMS, (
+        f"the research entry island must read exactly {sorted(RESEARCH_ENTRY_PARAMS)}, "
+        f"found {sorted(reads)}"
+    )
 
 
 def test_served_prophet_page_is_dashboard_in_stocks_mode():

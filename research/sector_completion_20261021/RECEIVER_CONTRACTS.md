@@ -8,13 +8,13 @@ Surfaces: `site/research_vault.html`, `site/research/index.html`, `site/research
 
 ### Params
 
-`grep -nE "URLSearchParams|location\.search|location\.hash|searchParams"` over the four research templates + `fif_saved_briefcase.js` → **0 hits**.
+`grep -nE "URLSearchParams|location\.search|location\.hash|searchParams"` over the four research templates + `fif_saved_briefcase.js` → one reader since SIC-I05R (updated SIC-I05R2, 2026-10-21): the `#si-research-entry` island inside `templates/research_vault.html.j2` — `new URL(document.URL).searchParams` (`:789`), wrapped by `raw()` (`:790`); the other three templates + the store → 0 hits. The vault now reads **exactly six `si_*` parameters**, no more — pinned negatively by `tests/test_sector_receiver_contracts.py::test_research_vault_island_reads_exactly_the_six_si_params`.
 
 | parameter | reader | effect | ignored-if-unknown? |
 |---|---|---|---|
-| (none read) | — | URL never read | n/a |
+| `si_subject` `si_q` `si_snap` `si_obs` `si_ev` `si_origin` | `templates/research_vault.html.j2` `#si-research-entry` island (`:692` markup, `:789`-`:820` parse) | link-carried research context: verbatim textContent readback (a clipped field carries a visible “(shortened)” mark), composer prefill from `si_q`, allowlisted `si_origin` return link, explicit-Save-only briefcase write with `source_snapshot_at = si_snap`; store loaded by the page (`:722`) | yes — per-field validators (subject RE, date shape + calendar round-trip + ≤ today+1, ev enum, origin allowlist) drop anything invalid; no valid `si_subject` → island stays hidden |
 
-Pre-fill per field: subject **NOT FOUND**; question **NOT FOUND**; source snapshot **NOT FOUND as a link-read** — `source_snapshot_at` exists only as a stored policy key (`templates/fif_saved_briefcase.js:42` `var POLICY_KEYS = ['selection', 'source_snapshot_at', 'recorded_at'];`); observation date **NOT FOUND**; evidence mode **NOT FOUND** (greps: the one above + `subject|question|observation|evidence_mode`).
+Pre-fill per field (the SIC-I05R island): subject `si_subject`; question `si_q`; source snapshot `si_snap` (`source_snapshot_at` also a stored policy key, `templates/fif_saved_briefcase.js:42`); observation date `si_obs`; evidence mode `si_ev`; origin `si_origin`.
 
 ### State
 
