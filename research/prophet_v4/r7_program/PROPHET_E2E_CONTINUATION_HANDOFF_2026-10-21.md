@@ -92,3 +92,7 @@ themes; 320/390/768/1440; a passing test is not served proof.
 - Merge rule: review PASS/PASS_WITH_NOTES + CI green on the merge ref → `gh pr merge 9921 --squash
   --match-head-commit 7e0cf6c6…`; FAIL → fix lane under a new run id (-r2), never edit on the seat.
 - Still running: `pro-clockprov-20261021-r1` (ubuntu2, watcher bdyjfabdb); ORCH-DESIGN/INTEL/REGIONAL/SOURCE.
+- 03:4xZ: records PR **#9922** (Draft, session branch → main; docs/records only; Ready at a natural checkpoint) opened so
+  every checkpoint commit lands on a carrier; the PR monitor is bound to #9922 with #9921 as the other bound PR.
+  REGIONAL disposition snapshot committed as interim (verdicts READY/BLOCKED-CUSTODY/BLOCKED-DATA/BLOCKED-ORDER per
+  obligation; §7 Decisions and §8 Lanes fill as its lanes return).
