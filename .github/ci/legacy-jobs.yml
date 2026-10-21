@@ -8133,6 +8133,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace/_gs_state_fixture.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -11205,6 +11214,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_surveillance_mount.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -19820,6 +19830,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/intl_global_universe.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
