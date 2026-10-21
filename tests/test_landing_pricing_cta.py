@@ -479,9 +479,12 @@ __REAL_HELPER__
 async function run() {
   const inputs = [
     ['verified-valid', {data:{user:{id:'verified'}},error:null}, false],
-    ['auth-401', {data:{user:null},error:{status:401}}, true],
-    ['auth-403', {data:{user:null},error:{status:403}}, true],
+    ['auth-401', {data:{user:null},error:{status:401,name:'AuthApiError'}}, true],
+    ['auth-403', {data:{user:null},error:{status:403,name:'AuthApiError'}}, true],
     ['auth-missing', {data:{user:null},error:{name:'AuthSessionMissingError'}}, true],
+    ['proxy-403', {data:{user:null},error:{status:403,name:'AuthUnknownError'}}, false],
+    ['auth-400', {data:{user:null},error:{status:400,name:'AuthApiError'}}, false],
+    ['auth-404', {data:{user:null},error:{status:404,name:'AuthApiError'}}, false],
     ['auth-408', {data:{user:null},error:{status:408}}, false],
     ['auth-429', {data:{user:null},error:{status:429}}, false],
     ['auth-503', {data:{user:null},error:{status:503}}, false],
@@ -514,7 +517,7 @@ run().catch((err)=>{console.error(err);process.exitCode=1;});
     res = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=30)
     assert res.returncode == 0, res.stderr
     rows = json.loads(res.stdout)
-    assert len(rows) == 14
+    assert len(rows) == 17
     for row in rows:
         assert row["reverted"] == int(row["shouldRevoke"]), row
         assert row["verified"] == row["expectedCalls"], row

@@ -1837,6 +1837,7 @@
   var _sbCfg = window.SUPABASE_CFG;
   var _authEnabled = !!(_sbCfg && _sbCfg.url && _sbCfg.anonKey);
   var _sb = null, _sbLoading = null, _curUser = null, _authReady = false, _authBooted = false;
+  var _explicitSignOut = false; // A deliberate logout must suppress background restoration.
   var _SDK_URL = 'supabase.js';
 
   function _loadSDK() {
@@ -1922,6 +1923,10 @@
   // clears the user. Broadcast every change so the gear's account section AND
   // the watchlist's cloud-sync (auth.js) react off one shared session.
   function _onAuth(evt, session) {
+    // A late INITIAL_SESSION/TOKEN_REFRESHED callback from an in-flight SDK
+    // operation cannot undo the user's explicit local logout.
+    if (_explicitSignOut && evt !== 'SIGNED_OUT' && evt !== 'SIGNED_IN') return;
+    if (evt === 'SIGNED_IN') _explicitSignOut = false;
     _curUser = (session && session.user) ? session.user : (evt === 'SIGNED_OUT' ? null : _curUser);
     if (evt === 'SIGNED_OUT') _curUser = null;
     // Drop any cached entitlement when the account changes, so a stale plan never shows for the
@@ -1931,6 +1936,14 @@
     _authReady = true;
     _emitAuth({ user: _curUser, event: evt });
     _renderAcct();
+  }
+
+  function _clearLocalAuthCookies() {
+    // Reuse the same parent-domain and host-only removal routine as the
+    // canonical Supabase cookie storage; include the PKCE verifier.
+    var key = _storageKey();
+    _clearCookieKey(key);
+    _clearCookieKey(key + '-code-verifier');
   }
 
   window.MDXAuth = {
@@ -1948,11 +1961,17 @@
     open: function (mode) { _mmOpenOnboard(mode || 'signin'); },
     signOut: function () {
       if (!_authEnabled) return Promise.resolve();
-      // sb.auth.signOut() fires SIGNED_OUT via onAuthStateChange -> _onAuth, which
-      // owns the UI reset. Only fall back to a manual emit if that path errors,
-      // so a normal sign-out updates each subscriber exactly once.
-      return getSupabaseClient().then(function (sb) { return sb.auth.signOut({ scope: 'local' }); })
-        .catch(function () { _curUser = null; _emitAuth({ user: null, event: 'SIGNED_OUT' }); _renderAcct(); });
+      _explicitSignOut = true;
+      // The Auth service may return {error} without rejecting, or the SDK
+      // script itself may fail. Either way this browser MUST lose its cookies.
+      // Scope remains local; never revoke another device's refresh session.
+      function settle() {
+        _clearLocalAuthCookies();
+        if (_curUser || !_authReady) _onAuth('SIGNED_OUT', null);
+      }
+      return getSupabaseClient().then(function (sb) {
+        return sb.auth.signOut({ scope: 'local' });
+      }).then(settle, settle);
     },
     onChange: function (cb) {
       window.addEventListener('mdx-auth', function (e) {
@@ -1974,7 +1993,7 @@
     _renderAcct();
   }
   function _authBoot() {
-    if (_authBooted || !_authEnabled) return;
+    if (_explicitSignOut || _authBooted || !_authEnabled) return;
     _authBooted = true;
     if (_isAuthReturn() || _hasSessionCookie()) {
       // Restore the session; a transient SDK/Auth outage is NOT revocation.
@@ -1988,7 +2007,7 @@
 
   // Recover on a real browser/network return, without a polling loop or new auth store.
   function _retryRestoreOnReturn() {
-    if (!_authBooted && !_curUser && (_hasSessionCookie() || _isAuthReturn())) _authBoot();
+    if (!_explicitSignOut && !_authBooted && !_curUser && (_hasSessionCookie() || _isAuthReturn())) _authBoot();
   }
   window.addEventListener('online', _retryRestoreOnReturn);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) _retryRestoreOnReturn(); });

@@ -3061,8 +3061,11 @@
         var e = result && result.error;
         if (!e) return; // Ambiguous results also preserve the session.
         var status = Number(e.status);
+        // This response came from Supabase Auth getUser(), not /api/me.
+        // A proxy 400/404, a 409 concurrent refresh or 429 must not destroy
+        // the shared parent-domain session on all Mastermind subdomains.
         if (e.name === "AuthSessionMissingError" ||
-            (status >= 400 && status < 500 && status !== 408 && status !== 429)) {
+            (e.name === "AuthApiError" && (status === 401 || status === 403))) {
           revertAuthChrome();
         }
       });
