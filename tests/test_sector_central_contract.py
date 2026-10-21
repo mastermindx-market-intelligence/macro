@@ -132,13 +132,14 @@ def test_legacy_jobs_gate_line_lists_contract_suite():
 
     SIC-RCV appended tests/test_sector_receiver_contracts.py to the same run line;
     the pin tracks the line as registered (update together with the yml edit).
-    SIC-I09A appended tests/test_sector_central_history.py to the same line.
+    SIC-I09A appended tests/test_sector_central_history.py to the same line;
+    SIC-I05R appended tests/test_research_receiver_entry.py.
     """
     yml = _read(LEGACY_JOBS)
     line = (
         "run: python -m pytest tests/test_sector_central_gate.py "
         "tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py "
-        "tests/test_sector_central_history.py -q"
+        "tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q"
     )
     assert line in yml, "tier-gate run line no longer registers test_sector_central_contract.py"
     # the neighbouring suite's registration is untouched

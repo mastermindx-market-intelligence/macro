@@ -245,3 +245,15 @@ def test_single_new_global_snapshot():
         f"no new globals beyond window.SI_RESEARCH_ENTRY (+ the existing store): {globals_touched}"
     )
     assert "window.SI_RESEARCH_ENTRY = Object.freeze(" in script
+
+
+def test_langchange_refreshes_the_clipped_mark_language():
+    """RI05b MINOR: a clipped field's '(shortened)' mark follows the page
+    language after a switch; the six verbatim values are never rewritten."""
+    script = _island_script(_html())
+    assert "function currentShortenedMark()" in script
+    region = _langchange_region(script)
+    assert "shortenedMark = currentShortenedMark();" in region
+    assert "paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''))" in region
+    assert "paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''))" in region
+    assert "si-rb-subject" not in region and "si-rb-obs" not in region and "si-rb-ev" not in region

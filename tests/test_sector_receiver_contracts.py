@@ -194,6 +194,14 @@ def test_research_vault_island_reads_exactly_the_six_si_params():
         f"the research entry island must read exactly {sorted(RESEARCH_ENTRY_PARAMS)}, "
         f"found {sorted(reads)}"
     )
+    # RI05b pin strength: no second reader shape may exist in the island — every
+    # URL read is raw('<literal>'), and raw() is the only params.get caller
+    for forbidden in ("location.search", "URLSearchParams", ".has(", ".match("):
+        assert forbidden not in script, f"island must not read URL state via {forbidden}"
+    raw_args = re.findall(r"(?<!function )\braw\(([^)]*)\)", script)
+    assert raw_args and all(re.fullmatch(r"'si_[a-z]+'", a) for a in raw_args), raw_args
+    get_args = re.findall(r"\.get\(([^)]*)\)", script)
+    assert get_args == ["name"], f"only raw() may call .get(), found {get_args}"
 
 
 def test_served_prophet_page_is_dashboard_in_stocks_mode():
@@ -281,13 +289,15 @@ def test_contract_records_premise_correction_and_verdicts():
 def test_legacy_jobs_gate_line_lists_contract_suite():
     """The one CI line this packet edits must keep the gate suite and add this file.
 
-    SIC-I09A appended tests/test_sector_central_history.py to the same line.
+    SIC-I09A appended tests/test_sector_central_history.py to the same line;
+    SIC-I05R appended tests/test_research_receiver_entry.py (the seat merge put
+    it before the trailing -q so the registration reads like the others).
     """
     yml = LEGACY_JOBS.read_text(encoding="utf-8")
     line = (
         "run: python -m pytest tests/test_sector_central_gate.py "
         "tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py "
-        "tests/test_sector_central_history.py -q"
+        "tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q"
     )
     assert line in yml, "tier-gate run line no longer registers test_sector_receiver_contracts.py"
     # the neighbouring suites' registrations are untouched

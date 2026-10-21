@@ -831,10 +831,14 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
 
   /* readback — textContent only, verbatim; absent optionals read as "—".
      RI05 MINOR: a carried field that was clipped on arrival says so inline —
-     the mark rides the painted text once, in the page's language at load (the
-     six values themselves are never rewritten, language switch included). */
-  var shortenedMark = (document.documentElement.getAttribute('data-lang') === 'zh'
-    ? '（已缩短）' : ' (shortened)');
+     the mark rides the painted text in the page's language and follows a
+     language switch (RI05b MINOR 4: the langchange handler repaints the two
+     clipped fields with the current mark); the six values themselves are never
+     rewritten. */
+  function currentShortenedMark() {
+    return document.documentElement.getAttribute('data-lang') === 'zh' ? '（已缩短）' : ' (shortened)';
+  }
+  var shortenedMark = currentShortenedMark();
   function paint(id, value) {
     var el = document.getElementById(id);
     if (el) el.textContent = value || '—';
@@ -925,6 +929,12 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
      dispatches langchange; the switch never reloads the page). */
   document.addEventListener('langchange', function () {
     applyPlaceholder();
+    if (qCarried.shortened || snapCarried.shortened) {
+      // RI05b: the clipped mark follows the page language; the six verbatim values never change
+      shortenedMark = currentShortenedMark();
+      paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''));
+      paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''));
+    }
     if (!statusKey) return;
     var parts = statusKey.split('|');
     paintStatus(parts[0], parts.length > 1 ? parts[1] : undefined);
