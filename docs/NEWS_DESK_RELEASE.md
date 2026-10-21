@@ -295,10 +295,83 @@ widens the local scanner's inferred closure. It was preserved; no fictitious
 AAPL trigger was added and no local cache was staged. A clean hosted exact-head
 run remains required. The complete local run is not represented as green.
 
-The combined native repair continues on Mastermind PR #1665 after the original
-#1661 head merged without its later provenance/transport composition. Neither
-that landing nor this News integration reconciles original failed reviewer
+The combined native repair now continues as the single composed release on
+Mastermind PR #1674, incorporating the implementation carried by #1665 and the
+protected physical-root and canonical slot changes. The original #1661 head
+merged separately. Neither that landing nor this News integration reconciles
+original failed reviewer
 `news-9612-exact-3a663-release-review-20261021`. Its retained packet continues to
 refer to original News source `3a663ae70ecb` and must not be rewritten as this
 new integration candidate. Independent applicable review and actual signed-in
 production News acceptance remain outstanding.
+
+
+### 2026-10-21 integration through c694 and publication-boundary census
+
+The original workspace composed protected main
+`c694272be0f9b8690c18835897603d57affbdada` with News head
+`81df0f97de259457a6a93f90e726240a98d20b82`. The sole textual conflict
+was generated `site/news.html`; its resolution preserves the already qualified
+News artifact, SHA-256
+`0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`.
+The five canonical News template/controller/style sources remain unchanged.
+The 345 CI job IDs are the exact three-way union, with no job payload changed
+on both sides and every one-sided payload preserved. All seven canonical
+`engine/marketing/intelligence_history.py` registrations remain present.
+
+A fresh canonical `check_contract_delta.run(c694)` diagnostic, using the
+existing tracked-path inventory and canonical base-tree helper, measured:
+
+| Probe | Composed jobs / weight / packs | Base jobs / weight / packs | Existing jobs / weight ceilings |
+| --- | --- | --- | --- |
+| `templates/index.html` | 135 / 5,835 / 10 | 135 / 5,825 / 10 | 136 / 5,835 |
+| `scripts/build_free_content.py` | 135 / 5,808 / 10 | 135 / 5,798 / 10 | 135 / 5,808 |
+| `engine/prophet/plan_book.py` | 128 / 5,584 / 10 | 128 / 5,574 / 10 | 130 / 5,600 |
+
+The job sets are identical between the two canonical measurements. Their
+ten-unit weight difference is exactly the existing News
+`collector-registry` payload, 17 to 27: two additional command blocks and
+four explicit test paths. These are deterministic estimator units, not
+measured runtime. No packing ceiling, ten-pack limit, selector, job coverage,
+or command timeout was changed.
+
+A preceding direct measurement without the tracked-path inventory selected
+141/142/135 jobs and had 11 unscoped jobs, compared with two in the canonical
+measurement. Its extra selected IDs were `board-contradictions`,
+`calculator-input-integrity`, `crypto-shelves`, `nav-gap`, `nav-mega`,
+and `site20-s4-chart-brief-js`, plus `title-i18n` for the latter two probes.
+That materialization-sensitive diagnostic is not represented as a canonical
+packing regression.
+
+The canonical differential completed in 835.471 seconds with return 1:
+zero packing breaches, one introduced closure finding for
+`unrun-picks-boards -> site/stockdata/AAPL.json`. The preserved physical
+cache is a regular 140,579-byte file, SHA-256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`,
+ignored by `.gitignore`'s `site/stockdata` rule and absent from the index,
+News HEAD and protected c694 Git trees. The tracked-path oracle supplements
+physical existence and does not exclude this cache. This matches the prior
+disclosed local finding; it is not a green whole-gate result or proof of a
+new committed News dependency. The file was not deleted, staged or rewritten.
+
+This was explicitly an uncommitted-composition diagnostic: HEAD remained
+81df, MERGE_HEAD c694, and the unchanged staged tree was
+`2780a4f203c7b84bf52d90ad80bad11dbe92ea03`. The oracle still anchored
+its inventory at HEAD. A fresh canonical measurement and required CI on the
+frozen integrated head remain the qualification boundary.
+
+The separate News render/artifact guard passed all 77 tests
+(`tests/test_news_page_render.py`, 40.091 seconds command wall time).
+Six pytest cleanup warnings concerned pre-existing temporary browser trees;
+the test result was 77 passed, with no assertion or cleanup rule changed.
+
+At the publication boundary, protected main advanced five commits to
+`566bf7b89cb0ac0e5e8dc081c7bc1598c9b1a30f`: 19 paths, with only
+`.github/ci/legacy-jobs.yml` overlapping News-owned paths. The registry
+retains 345 jobs; only the protected `flow-surface` payload changes, adding
+ThetaData paths and its test to an existing command. It remains exclusive,
+matches none of these probes, and retains its fixed weight of 267. The
+integration must preserve that exact payload alongside the News
+`collector-registry` additions. This bounded source census does not replace
+the frozen-head measurement, required independent News review, protected
+release, or actual signed-in production acceptance.

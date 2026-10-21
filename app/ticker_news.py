@@ -56,7 +56,8 @@ from engine.qbus_news_store import (
 )
 from engine.qbus_news_universe import QualifiedSecurity, qualify_universe
 from engine.qbus_news_receipts import additional_rights_paths, combine_news_rights, load_rights_set
-from engine.qbus_news_quality import publisher_identity, story_quality
+from engine.qbus_news_quality import EDITORIAL_POLICY_VERSION, curated_source, publisher_identity, story_quality
+from engine.qkernel import publisher_category
 from lib import config
 from app.ticker_news_stream import BlockingReadPool, SharedChangeReader
 
@@ -261,6 +262,7 @@ def _open_store() -> NewsStore:
         return NewsStore.open_readonly(
             _news_db_path(),
             source_key="benzinga-rest",
+            curated=True,
         )
     except (StoreUnavailable, StoreSchemaError):
         raise _private_error(503, "ticker news temporarily unavailable") from None
@@ -367,6 +369,34 @@ def _source_health() -> dict[str, Any]:
             max_catchup_age_seconds=120.0,
         )
     )
+
+
+def _curated_health(health: Mapping[str, Any], rights: NewsReadRights) -> dict[str, Any]:
+    """Scope delivery evidence to publishers this reader can actually see."""
+    eligible = frozenset(
+        source for source in rights.allowed_sources
+        if rights.allows(source, "title") and curated_source(source)
+    )
+    result = dict(health)
+    if "benzinga" not in eligible:
+        result.update(state="unavailable", last_successful_catchup=None,
+                      last_stream_event_at=None, reason="no_curated_primary_source")
+    if "additional_sources" in health:
+        extras = []
+        for item in health.get("additional_sources") or []:
+            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+                continue
+            publishers = [publisher for publisher in item.get("configured_publishers", [])
+                          if isinstance(publisher, str) and "massive:" + publisher in eligible]
+            if not publishers:
+                continue
+            entry = dict(item, configured_publishers=publishers)
+            # The writer count includes rejected articles and cannot describe
+            # this curated population. Keep its untouched receipt at the writer.
+            entry.pop("accepted_reports_since_start", None)
+            extras.append(entry)
+        result["additional_sources"] = extras
+    return result
 
 
 def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
@@ -634,6 +664,7 @@ def _attach_annotation(
     source = str(payload.get("source") or "")
     url = str(payload.get("url") or "")
     payload["publisher"] = publisher_identity(source, url)
+    payload["content_kind"] = publisher_category(payload["publisher"])
     payload["provider"] = "massive" if source.startswith("massive:") else None
     if title:
         score, reason = story_quality(title=title, url=url, source=source)
@@ -685,6 +716,7 @@ def _snapshot_payload(
     state = _state_from_health(health, row_count=len(snapshot.rows))
     payload: dict[str, Any] = {
         "schema": "ticker_news.snapshot.v1",
+        "editorial_policy": EDITORIAL_POLICY_VERSION,
         "ticker": ticker,
         "security_id": security_id,
         "state": state,
@@ -724,6 +756,7 @@ def _changes_payload(
     ]
     return {
         "schema": "ticker_news.changes.v1",
+        "editorial_policy": EDITORIAL_POLICY_VERSION,
         "ticker": ticker,
         "security_id": security_id,
         "rows": rows,
@@ -752,6 +785,7 @@ def ticker_news_story(
     permitted = _derivative_permitted_after_rights()
     payload = jsonable_encoder(asdict(detail))
     payload["schema"] = "ticker_news.story.v1"
+    payload["editorial_policy"] = EDITORIAL_POLICY_VERSION
     for encoded, member in zip(payload["members"], detail.members, strict=True):
         _attach_annotation(
             encoded,
@@ -840,7 +874,7 @@ def ticker_news_snapshot(
                 ticker=normalized,
                 security_id=security_id,
                 snapshot=snapshot,
-                health=_source_health(),
+                health=_curated_health(_source_health(), rights),
                 permitted=_derivative_permitted_after_rights(),
                 flow=flow,
                 provenance=provenance,
