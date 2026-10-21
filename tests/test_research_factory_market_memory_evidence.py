@@ -184,8 +184,9 @@ def test_installed_current_proposal_and_binding_are_exact_readonly_records():
     protocol_body = (root / "research/market_memory/protocols" / (trial["implementation"]["config_sha256"] + ".json")).read_bytes()
     protocol = json.loads(protocol_body)
     assert sha256(protocol_body).hexdigest() == trial["implementation"]["config_sha256"]
-    for relative, digest in protocol["code_manifest"].items():
-        assert sha256((root / relative).read_bytes()).hexdigest() == digest
+    # This registration preserves the original implementation, not the current
+    # checkout. Current-context attachment does not replay that historical trial.
+    assert sha256(cohort.canonical(protocol["code_manifest"])).hexdigest() == trial["implementation"]["code_sha256"]
     assert cohort.utc_instant(binding["query_cutoff"]) <= cohort.utc_instant(trial["registered_at"]) <= cohort.utc_instant(binding["registered_at"])
     candidate = old.build_market_memory_candidate(exact_trial_registration_bytes=body, created_at=binding["registered_at"])
     assert candidate["status"] == "proposed" and candidate["trial_accounting"]["mode"] == "read_only"
