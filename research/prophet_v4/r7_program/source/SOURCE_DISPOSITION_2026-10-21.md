@@ -68,8 +68,8 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 - Verdict: same-read composition **DONE (lane), ACCEPTED at source level by ORCH-SOURCE** — lane
   `pro-source-b05sameread-20261021-r1`, ubuntu1, rc=0 04:24Z, commit `39b2767ffe21` on
   `~/lanes/wt/pro-source-b05sameread-20261021-r1`; diff = `engine/prophet_b4_same_read.py` (+411),
-  `tests/test_prophet_b4_same_read.py` (+582), `.github/ci/legacy-jobs.yml` (+1, job `prophet-anticipation-intake`, no
-  `paths:`); lane-run suites 256 passed (same_read 30, strategy_definition 143, candidate_state 64, validity 19).
+  `tests/test_prophet_b4_same_read.py` (+582), `.github/ci/legacy-jobs.yml` (+1, job `prophet-anticipation-intake`, which is `gate: data`
+  (legacy-jobs.yml:27085) — packed only by nightly/scheduled `data-health.yml`, NOT by PR CI; §4 item 7); lane-run suites 256 passed (same_read 30, strategy_definition 143, candidate_state 64, validity 19).
   Copies: `$S/ret/b05/`. Spec 1-8 each has a named test (key set/determinism :156; one read + no projector :195;
   happy = direct evaluator, not ENTRY_OPEN :247; binding :299; passthrough :350; bytes changed :382; retraction :405;
   D01 x4 :462-498; `classify_nbbo` 7 outcomes + boundary :532-548; early close :564). No wall-clock read
@@ -80,8 +80,12 @@ A unit can carry two verdicts when it has separable halves; each half names its 
   to route them through the existing catch; (b) `read_native_b4_owner_inputs` is not inside a try (it returns typed
   refusals at BASE); (c) D01/happy tests monkeypatch the evaluator to inject geometry/metric fixtures and assert the
   module itself passed `{}` — confirm that assertion; (d) GAP: `lib/nyse_calendar.py:10-13` models no early close —
-  2026-11-27 13:00 ET half day is an ordinary session; only `engine/prophet_entry_policy.py:68-74` knows it. Ships via
-  a seat claude/* PR after one independent review lane (D01 closure needs it). Wiring into the builder **BLOCKED-CUSTODY** (#9495/#9369). Any positive (non-UNAVAILABLE) B4 state
+  2026-11-27 13:00 ET half day is an ordinary session; only `engine/prophet_entry_policy.py:68-74` knows it. Independent
+  review DONE: `pro-source-b05review-20261021-r1`, ubuntu1, commit `e4433f5713d6`, **PASS_WITH_NOTES** — spec 1-8
+  PASS; A1 NOTE: the six raises (note a) are correct fail-loud reader-contract guards, unreachable at BASE, but the
+  docstring (:282-285) overstates coverage; A8 NOTE: the CI line is data-gated, not per-PR. Report:
+  `B05_SAME_READ_REVIEW_2026-10-21.md` (this folder). Ships via a seat claude/* PR with the test moved to a PR-gated
+  job (§4 item 7). Wiring into the builder **BLOCKED-CUSTODY** (#9495/#9369). Any positive (non-UNAVAILABLE) B4 state
   **BLOCKED-DATA**: no native geometry/metric owner exists (sources docstring, census E Q2). NBBO **BLOCKED-CUSTODY**
   on #7734 plus a D08 decision (§4).
 - #7734 review finding to route (not ours to fix): its diff drops `early_close`/`is_session` from
@@ -178,7 +182,7 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 - Open sub-facts: v1 has no revocation beyond retraction; shortened sessions are not modelled (`lib.nyse_calendar`).
 - Verdict: **READY** to close — B05 lane DONE (39b2767ffe21): four D01 cases through the real composer (prior
   completed session valid next session; late emit UNKNOWN not FAIL; expired window UNKNOWN; lineage mismatch UNKNOWN).
-  Remaining: one independent review lane on that commit, seat PR, then the seat posts the closure on #7581's carrier
+  Independent review DONE (e4433f5713d6, PASS_WITH_NOTES). Remaining: seat PR, then the seat posts the closure on #7581's carrier
   (seat act). Shortened-session sub-fact stays an open calendar-owner GAP (B05 note d).
 
 ### D02 — Independent anchors and episode admission (register meaning)
@@ -245,7 +249,7 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 
 ## 4. Decisions for Fable (recommendations)
 1. **D01 wording.** Keep `signal_gate.validity/v1` + `next_session_only/v1` as the accepted contract; close the register
-   row on: B05 same-read tests through the real composer, one independent review lane, seat note on #7581. Record two
+   row on: B05 same-read tests through the real composer, one independent review lane (DONE, PASS_WITH_NOTES), seat note on #7581. Record two
    explicit v1 limits instead of inventing rules: no revocation beyond retraction; shortened sessions not modelled, so a
    half-day decision session keeps confluence UNKNOWN until a calendar owner models early closes.
 2. **D02/D03 vs "entry-language rules".** Rule on the register meaning (anchors; rights). For entry language: the only
@@ -268,12 +272,21 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 6. **D11 release-proof shape + ENTRY_OPEN.** Allow R1 capture to record the evaluated B4 state only in a
    research-capture-only append ledger reused from the incumbent prospective evaluation path, with no product reader,
    never under `site/`, guarded by a consumer-fence test; D11 rule 3 continues to bind every served surface.
+7. **CI placement (material, affects shipped work).** The COMMON lane rule appends new tests to
+   `prophet-anticipation-intake`, which is `gate: data` (`.github/ci/legacy-jobs.yml:27085`): `scripts/run_ci_pack.py`
+   packs it only from `data-health.yml --gate data` (nightly `workflow_run`, 13:30 UTC schedule, dispatch), never on a
+   PR. #9921's `tests/test_prophet_whynot_receipts.py` sits in the same job (main legacy-jobs.yml:27234), so #9921's
+   new cases were never PR-gated. Recommendation: when shipping, put pure-code suites in a `gate: code` job —
+   B05 → `signal-gate-pair-coherence` (code, no `paths:`) or `washout-turn-organ` (code; extend `paths:` to the new
+   module); B23 BU1/BU4/BU5 → `product-experience-capture` (code, no `paths:`, already runs
+   `test_capture_page_evidence.py`); consider the same move for the whynot suite. Amend `$S/pk/common_build_rules.md`
+   before the next build wave. This is a placement change, not a guard change.
 
 ## 5. Packet set returned for seat acceptance
 | Packet (`$S/pk/`) | Class | State | Trigger |
 | --- | --- | --- | --- |
-| pro-source-b05sameread-20261021 | build C2 | DONE r1 ubuntu1 39b2767ffe21 (3 files, 256 passed); ACCEPTED source-level | independent review lane, then seat claude/* PR |
-| pro-source-b05review-20261021 | review C1 | RUNNING r1 ubuntu1 (BASE 39b2767f, launched 04:29Z) | independent review of B05 (spec 1-8 + attack surfaces A1-A8); report `source/B05_SAME_READ_REVIEW_2026-10-21.md` on the lane branch |
+| pro-source-b05sameread-20261021 | build C2 | DONE r1 ubuntu1 39b2767ffe21 (3 files, 256 passed); ACCEPTED source-level; review PASS_WITH_NOTES | seat claude/* PR, CI line moved to a PR-gated job (§4 item 7) |
+| pro-source-b05review-20261021 | review C1 | DONE r1 ubuntu1 e4433f5713d6 (1 file) **PASS_WITH_NOTES**; report copied to `source/B05_SAME_READ_REVIEW_2026-10-21.md` | independent review of B05 (spec 1-8 + attack surfaces A1-A8); report `source/B05_SAME_READ_REVIEW_2026-10-21.md` on the lane branch |
 | pro-source-b23harness-20261021 | census | DONE r1 ubuntu2, 4490397b | accepted by ORCH-SOURCE; report here |
 | pro-source-b21contract-20261021 | census | DONE r1 ubuntu3, 6eed43cb | accepted with notes; report here |
 | pro-source-b1recordedat-20261021 | build C1 | unlaunched, READY | seat acceptance (R2) |

@@ -73,3 +73,12 @@ Seat-only acts (push/PR/label/merge/post) are never performed here.
 - Rewrote `$S/pk/pro-source-b23bu45-20261021.md` (BASE = BU1 lane commit, design facts inlined, CI rule aligned to
   COMMON's single-line rule) and launched `pro-source-b23bu45-20261021-r1` pinned ubuntu2 at 04:38Z.
 - Live lanes: B05 review (ubuntu1) + BU4/5 (ubuntu2) = 2.
+
+## 04:4xZ — B05 review consumed (PASS_WITH_NOTES); CI-placement finding
+- `pro-source-b05review-20261021-r1` ubuntu1 rc=0, commit `e4433f5713d6` (1 file, report only). Spec 1-8 PASS.
+  A1 NOTE (docstring overstates; raises are correct reader-contract guards); A8 NOTE (CI line data-gated).
+  Report copied to `B05_SAME_READ_REVIEW_2026-10-21.md` (sha 5f7ff01f590c). B05 + D01 now ready for the seat PR.
+- Verified: `prophet-anticipation-intake` is `gate: data` (:27085); #9921's whynot suite sits there too (main :27234),
+  so neither is PR-gated. Disposition §4 item 7 = move pure-code suites to `gate: code` jobs at ship time.
+- Seat merged origin/main (#9928) into the branch at 04:42Z; conflicts in source/ files resolved to HEAD by the seat;
+  my edits applied after MERGE_HEAD cleared. BU4/5 lane still POLL_PENDING (ubuntu2).
