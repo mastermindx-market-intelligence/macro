@@ -27,6 +27,27 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  options-r1-sector-holdings-coverage:
+    if: ${{ false }}
+    gate: code
+    # Options R1 W2B: sector holdings coverage emitter — separate denominators, unknown total stays null, Terminal contract, additive hook
+    paths:
+      - "scripts/build_sector_holdings_coverage.py"
+      - "scripts/build_sector_central.py"
+      - "collectors/sector_holdings.py"
+      - "lib/store.py"
+      - "data/sector_holdings/**"
+      - "tests/test_sector_holdings_coverage.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas pyarrow
+      - name: Options R1 W2B holdings coverage tests
+        run: python -m pytest tests/test_sector_holdings_coverage.py -q
   bea-gvc-current-descriptive-consumer:
     # Source, paid HTTP and actual browser contracts run on pull requests.
     # All fixtures are nonpublic; native source admission is a separate gate.

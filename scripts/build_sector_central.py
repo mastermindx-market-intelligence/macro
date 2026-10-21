@@ -617,6 +617,12 @@ def main(*, strict: bool = False) -> int:
     log.info("built site/sector_central.html (%d sectors, %d baskets, %d calls logged, grader=%s)",
              len(data["sectors"]), len(data.get("baskets", [])), n_logged,
              (data.get("grader") or {}).get("available"))
+    # Options R1 W2B: holdings coverage feed (additive, never fatal; see scripts/build_sector_holdings_coverage.py).
+    try:
+        from scripts.build_sector_holdings_coverage import emit_holdings_coverage_additive
+        emit_holdings_coverage_additive(fdir, log=log)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sector_central: holdings coverage feed skipped: %s", e)
     return 0
 
 
