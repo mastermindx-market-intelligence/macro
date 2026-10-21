@@ -5256,6 +5256,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       - "tests/test_ipo_prospectus_terms.py"
       - "data/ipo/lockups.parquet"
       - "data/ipo/calendar.parquet"
@@ -10747,6 +10749,9 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
+      - "engine/ledger_lane.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -15336,6 +15341,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -15436,6 +15443,8 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -15527,6 +15536,9 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
+      - "engine/sector_generation_guard.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -16335,6 +16347,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -17518,6 +17532,10 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
+      - "engine/ledger_lane.py"
+      - "engine/sector_generation_guard.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -23359,6 +23377,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "engine/fundamental_forensics/models.py"
@@ -27400,6 +27420,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -29787,8 +29809,12 @@ jobs:
       # Uses pandas+pyarrow for the on-disk sponsor receipt; both are above.
       - name: etf partial-NAV sleeve — declared bounds and sweep/swap guards
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
-      - name: sector_central board order — fast-lens rotation rank, failing open to conviction (+ SIC-D-B02 generation-guard suite)
-        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py -q
+      - name: sector_central board order — fast-lens rotation rank, failing open to conviction
+        run: python -m pytest tests/test_sector_central.py -q
+      # SIC-D-B02/B03/B07 (macro #7646): generation guard, dated membership coverage,
+      # grader v2 — their own step so the pinned sector_central line above stays byte-exact.
+      - name: sector_central D-wave suites — generation guard, membership coverage, grader v2
+        run: python -m pytest tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py -q
       # SIC-MAP (macro #7646): the capability-map census — every producer/route
       # citation recorded in the sector-completion CSV must resolve in the tree.
       # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.
@@ -32398,6 +32424,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -37833,6 +37863,8 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / generation guard / research handoff / ledger lane).
+      - "engine/cycle_phase_age.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/commodity_carry.py"

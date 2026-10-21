@@ -145,7 +145,8 @@ def test_heat_and_breadth_formula_pins():
     assert 'cap_weighted = (hm.get("size_basis") != "weight_proxy")' in src
     assert 'for tf in ("1D", "1M", "YTD")' in src
     assert 'row["heat_" + tf] = round(a["vals"][tf] / w, 2) if w else None' in src
-    assert 'row["breadth_pct"] = round(100.0 * adv / max(adv + dec, 1), 0)' in src
+    # SIC-D-B03: breadth is None (not 0) when no tile moved — honest null, no max(…, 1) floor
+    assert 'row["breadth_pct"] = round(100.0 * adv / (adv + dec), 0) if (adv + dec) else None' in src
 
 
 def test_grader_scorecard_formula_pins():

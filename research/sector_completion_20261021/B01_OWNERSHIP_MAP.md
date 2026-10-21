@@ -163,6 +163,9 @@ Defects and hazards seen while mapping. None fixed (read-only packet).
 - **F3 — 48 h guard accepts two clocks.** `engine/sector_central.py:668` reads `ts` or
   `asof`; midnight-anchored `asof` ages faster than write-time `ts`
   (`engine/us_sector_rotation.py:885-886`). Same artifact, two stale verdicts.
+  *Superseded at integration (SIC-D-B02, 2026-10-21): the wall-clock guard is replaced by the
+  settled-session generation guard `engine/sector_generation_guard.session_alignment`
+  (`engine/sector_central.py:1008-1013`); `session`/`asof` is the gate, `ts` is provenance only.*
 - **F4 — basket RS benchmark gap tolerance differs from sector RS.** Sector RS ffills
   the benchmark with `RS_BENCH_FFILL_LIMIT = 5` (`engine/sector_cycles.py:412,441`);
   `_basket_rs` ffills SPY without a limit (`engine/sector_cycles.py:1141`). Same-named
@@ -174,7 +177,8 @@ Defects and hazards seen while mapping. None fixed (read-only packet).
 - **F6 — rotation freshness posture is inconsistent across the hub.** `latest.json`
   has a 48 h wall-clock guard (`engine/sector_central.py:677`); `rotation_events.json`
   — read by the same engine (`:688-699`) and by `templates/sector_cycles.js:2052` — has
-  no age check at all.
+  no age check at all. *Post-B02 the `latest.json` side is the generation guard above;
+  the `rotation_events.json` gap is tracked by the same packet's Cycles guard (B02/B1011).*
 - **F7 — `templates/sector_central.html.j2:46` prefetches `heatmap.js`** while the
   page's rendered heat context is computed server-side from `sp500_heatmap.json`
   (`engine/sector_central.py:175-224`). Whether the prefetched script fetches the raw

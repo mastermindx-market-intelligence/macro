@@ -128,7 +128,20 @@ ROWS = [
          disposition="incorporated", native="none_native"),
 ]
 
-_CORRECTION_KEY = re.compile(r"correct|revis|supersede", re.I)
+# "correction"/"corrected" (not bare "correct": SIC-D-B07 grader v2 counts
+# n_correct_directional — a scoring tally, not a correction channel).
+_CORRECTION_KEY = re.compile(r"correction|corrected|revis|supersed", re.I)
+
+
+def _declares_none_native(value: ast.AST) -> bool:
+    """True for a dict literal whose "status" key is the literal "none_native"."""
+    if not isinstance(value, ast.Dict):
+        return False
+    for k, v in zip(value.keys, value.values):
+        if (isinstance(k, ast.Constant) and k.value == "status"
+                and isinstance(v, ast.Constant) and v.value == "none_native"):
+            return True
+    return False
 
 
 def _source(rel: str) -> str:
@@ -223,9 +236,14 @@ def test_none_native_rows_have_no_correction_dict_keys():
         hits: list[str] = []
         for node in ast.walk(ast.parse(src)):
             if isinstance(node, ast.Dict):
-                for key in node.keys:
+                for key, value in zip(node.keys, node.values):
                     if (isinstance(key, ast.Constant) and isinstance(key.value, str)
                             and _CORRECTION_KEY.search(key.value)):
+                        if _declares_none_native(value):
+                            # SIC-D-B1011: the publication record's own disclosure that
+                            # NO native correction channel exists ("status": "none_native")
+                            # is the census claim restated in code, not a correction key.
+                            continue
                         hits.append(f"{row['writer_file']}:{node.lineno}:{key.value}")
         assert not hits, (
             f"census row {row['artifact']} claims none_native but writer has "
@@ -246,11 +264,15 @@ def test_single_native_revision_channel_is_the_narratives_one():
 
 
 def test_duplicate_owner_claims_are_cited_in_code():
-    """The §2 claims the test can mechanically verify: the 48 h guard, the ts-or-asof
-    key, the always-written payload rule, and the ungated forward-log append."""
+    """The §2 claims the test can mechanically verify: the session-or-asof clock pair,
+    the settled-session generation guard (SIC-D-B02 replaced the 48 h wall-clock rule
+    the B01 census recorded as F3/F6), the always-written payload rule, and the
+    ungated forward-log append."""
     central = _source("engine/sector_central.py")
-    assert 'raw.get("ts") or raw.get("asof")' in central          # two clocks, one guard
-    assert "age_h > 48" in central                                 # the 48 h wall-clock rule
+    assert 'rotation_raw.get("session") or rotation_raw.get("asof")' in central  # two clocks, one guard
+    assert "_sgg.session_alignment(" in central                    # SIC-D-B02 generation guard
+    assert 'rotation_alignment["status"] != "aligned"' in central  # … is the only gate; ts = provenance
+    assert "age_h > 48" not in central                             # the wall-clock rule is gone
     builder = _source("scripts/build_sector_central.py")
     assert "ALWAYS written" in builder                             # premium payload rule
     fwd_log = _source("engine/cycle_forward_log.py")
