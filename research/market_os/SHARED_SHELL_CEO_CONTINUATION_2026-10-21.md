@@ -130,8 +130,9 @@ window. Local rendering is not public acceptance.
   contract, preserving the failed run and without retrieval, replay or replacement.
   Exact failure: `/Volumes/Mastermind/agent-workspaces/codex/6e18/monitor-component-proof/ATTENTION_DELIVERY_FAILURE.md`.
   Direct source a45e8bddf plus repairs a7744367c/330a8736a now has59 focused passes.
-  Review closed wrong consumer page, misleading quiet copy and lost signin context;
-  final review is consuming the parent401 abort/hide/reverify repair. Root inspected
+  Independent combined source review passed exact product3187, including the
+  parent401 abort/hide/reverify repair and all eight author-file identities. Review
+  closed wrong consumer page, misleading quiet copy and lost signin context. Root inspected
   dark desktop EN/light mobile ZH fixture materials. Authenticated/public proof remains owed.
 - Real native Today/Research/Monitor routes and member admission were committed at
   `f1366d0784c6426b70293fb436cbc4e4c62225ca`, with 146 focused passes. Research
@@ -145,7 +146,7 @@ window. Local rendering is not public acceptance.
 - W6 source qualification found actual non-2xx retained-owner reasons flattened to
   generic HTTP failure. Shared failure-only repair `cdd0d969f1cf60bda7bcb6ebd2fd4f7c76214964`
   is adopted as `feb469ac2`, with 101 parent helper/wrapper passes; the combined new
-  Monitor boundary still owes its narrow independent addendum. Monitor uses the
+  Monitor boundary passed its narrow independent addendum. Monitor uses the
   helper directly. Its per-owned-symbol
   evidence check opens the actual retained event with all four immutable pins and
   source date. No unsupported new-since or watchlist/report relationship is claimed.
@@ -179,7 +180,28 @@ window. Local rendering is not public acceptance.
   forward-only language guard pass. Original copy leaf ss-product-copy-routing-20261021-001
   settled rc1/provider429/QWEN_FINAL_RESPONSE_UNCONFIRMED; no artifact imported or
   accepted, no replay/replacement. Parent completed the local deterministic integration.
-  Existing#1063 remains the sole carrier and awaits the one current Monitor verdict.
+  Existing#1063 normal-fast-forwarded to3187 with requiredCI39621638381 and sole
+  child observer12795. Its actual unit job reported15,198 passes and13 failures:
+  missing native-route loading skeletons plus historical visual locks invalidated
+  by six added core dictionary keys and three actually changed surfaces. Product
+  owns loading/copy-placement repair through admitted C1 Fabric
+  ss-product-native-gates-ci-20261021-001 (GLM5.3Flash/ubuntu0, controller65007).
+  The existing acceptance coordinator owns actual local recapture of the three
+  changed surfaces; unaffected evidence must not be blindly rebound. One coherent
+  corrective push remains on#1063. An isolated production-mode build of exact3187
+  passed with all three new routes emitted; reuse it for unchanged build behavior.
+- The beta unit classified installed Next16.2.9's explicit post-SIGTERM exit143
+  as a failure. The minimal comment plus SuccessExitStatus=143 patch passed
+  independent source review at SHA256
+  `9d6f18d8975ffa83ff9bbbb14e8057f2f5d5be0fb57ae72090b1b46a502186b2`;
+  product's two focused tests pass and the patch joins the same#1063 corrective push.
+  Signal,30-second timeout,Restart=no and hardening remain unchanged. This setting
+  does not prove cleanup: real inactive/dead, no PID/cgroup tasks/listener, no timeout
+  or forced kill/error, and negative failure cases remain owed. The installed owner
+  and unit match protected93e303cc and3187. Existing attended host configuration
+  owns canonical landed-unit installation; terminal-build does not install units.
+  Current acceptedA receipts exclude/etc/systemd and have no unit identity field:
+  preserve them, qualify the installed unit separately, and never rewrite A as proof.
 - Root accepted the family disposition plan in
   `/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/CURRENT.md`.
   All 24 consumer groups and 19 generated shapes retain explicit consumer obligations.
@@ -290,23 +312,29 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Exact next actions
 
-1. Same acceptance coordinator consumes the final composed Monitor parent401 repair;
-   product then advances clean3187baba through existing#1063 by normal fast-forward
-   after fresh custody checks, with one verified required-CI return path. Monitor
-   source and final canonical projection are already integrated. Reuse unchanged proof.
+1. Product consumes the original12795 CI result, integrates the bounded admitted
+   loading/copy repair, actual reviewed visual recaptures and reviewed beta-unit
+   patch, then makes one coherent corrective#1063 push and observes that exact run.
+   Reuse accepted Monitor/helper/source/build evidence where unchanged. Normal
+   protected landing is authorized; product must not invoke default production deploy.
 2. Compatibility consumes sole observer99279 for#7949 head9fcef/run39620460168,
    repairs only actual new failures, then advances normal source landing, covering
    renderer/generated commit, updater/API restart and exact served-byte verification.
    No successor carrier exists; all original proposal returns are settled.
-3. Qualified source/publication permits the existing reviewed beta Caddy/runtime
-   continuation, exact build identity, real A-to-B-to-A rollback/stop/withdrawal and
-   ordinary production invariance checks. Preserve current locks, writers and effects.
+3. Compatibility is the sole explicit beta release owner after qualified source and
+   publication: canonical unit installation, reviewed Caddy/runtime continuation,
+   exact build identity, real A-to-B-to-A rollback/stop/withdrawal and production3000
+   invariance. Root decides ordinary production continuation from the beta evidence.
+   Preserve current locks, writers and effects; merging does not itself deploy.
 4. The Chrome extension dialog is the one pending human browser control. After
    Chris clears it, reconcile the unconfirmed tab through the same browser rather
    than creating a duplicate; then prove real account, source/revision, save/readback,
    chart-return, responsive design and distinct family bodies at the served candidate.
-5. Reactivate the existing family coordinator for its distinct runtime cases once
-   the common served tuple is qualified. Source membership is already accepted;
+5. The existing family coordinator now qualifies independent local performance,
+   keyboard and reflow behavior from existing tooling/evidence while the common
+   public join waits. Fixture measurements do not replace held normal-browser proof.
+   Its distinct family/runtime cases follow the qualified common served tuple.
+   Source membership is already accepted;
    do not repeat generation absent a relevant invalidator. Root inspects final
    browser output before whole-product acceptance. Completed turns are not idle wake.
 
