@@ -35003,6 +35003,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Private-news/Press integration also reaches the reviewed release boundary.
+      - "engine/press/adjusted_baseline.py"
+      - "templates/press/press_news.css"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
