@@ -6,6 +6,10 @@ ended_because: blocked
 mission: Make available Tiingo overnight history appear promptly and consistently in Terminal, then qualify continuous delivery through the existing producers.
 state_before: Terminal had an existing 24H consumer, but daytime acquisition could delay overnight history and chart refreshes could mishandle cold completion or observation ordering; the persistent producer activation hold remained.
 changed:
+- path: scripts/run_boats_session.py
+  what: Exposes the existing validated total_max_seconds as --total-max-seconds, preserving the eight-hour default and the original lock, permanent receipts and calendar guards.
+- path: tests/test_boats_session_runner.py
+  what: Adds CLI regressions for the sixty-second canary, lock ownership, immutable receipt/replay refusal, invalid budgets, unchanged defaults and effect-free dry runs.
 - path: terminal:terminal/docs/pr-crops/tiingo-24h-fastpath-20261021/README.md
   what: Terminal PR 1093 records the shipped consumer repair, targeted regressions and actual browser evidence.
 - path: docs/tiingo-evidence/20261021-terminal-24h/activation.md
@@ -17,6 +21,12 @@ changed:
 - path: agentos/workstreams/WS-TIINGO-DATA-OS.md
   what: Advances the consumer-delivery frontier while retaining historical acceptance and unresolved source/runtime boundaries.
 verified:
+- claim: The Chairman explicitly approved the finite quote canary and conditional activation of the three existing jobs.
+  command: Direct user reply on 2026-10-21, Yes approved, continue, to the concrete sixty-second and 20000-message canary proposal and its real-trade, clearing, exclusion and activation conditions.
+  result: Same action does not require another approval. Actual applicable provider denials, human-only authentication, live writers and unresolved effects remain binding; historical prose alone is not an originating denial receipt.
+- claim: The CLI can express the approved finite budget without bypassing the existing session owner.
+  command: python3 -m pytest -q tests/test_boats_session_runner.py --tb=short; original Studio Direct PID 76316, exit 0.
+  result: 46 tests and four invalid-budget subtests passed after the new CLI tests failed against the old unrecognized option. Real temporary locks and receipts were exercised with a stubbed provider; no live publication or schedule was started. The capture budget is not a strict process wall-time guarantee.
 - claim: The shipped consumer source has accepted local regression and browser evidence.
   command: Terminal PR 1093 head 19d75a2fac0f623b9eee239ceb58310a35bd363d; retained proof README and actual source-bound capture manifests.
   result: 205 targeted tests passed; the overnight responsive matrix and subsequent focused repairs passed. Existing chart capture owners produced four ChartChrome, five options-axis and thirty Visual Intelligence results. All 23 affected evidence/replay guard tests passed before and after protected-master integration.
@@ -43,13 +53,13 @@ unverified:
 - claim: Full vendor history, dated canonical identity, fundamentals depth and genuine PIT eligibility.
   what_would_verify: Preserve the separate acquisition, identity, revision and known-at acceptance requirements in the prior handoff.
 unresolved:
-- Original automatic approval review rejection of persistent publication/scheduling remains held; the deployed consumer and private SSH delivery do not clear it.
-- The prior original-carrier public-relay HTTP403 and Cloudflare user-presence frontier require current same-carrier reconciliation. Later merged Macro PR 9805 records settled finite quote/history captures; their underlying access-resolution receipt is not verified here.
+- Current direct user approval covers the bounded canary and conditional three-job activation. Resolve actual originating refusal provenance and current access through the same carrier; never treat an unverified historical rejection claim as a platform-wide prohibition or bypass a verified applicable denial.
+- Bounded same-carrier review retrieved historical rejection and HTTP403 prose but no originating denial receipt or verified current provider denial. Macro PR 9805 confirms later settled finite captures and explicitly non-publishing offline replay; successful live PUT and final-invalidation receipts were not retrieved. The approved canary must supply those observations, stopping on any actual current denial.
 - Recent retrieval clocks do not establish current market completeness; Tiingo documentation does not explain an expected two-hour delay.
 next_actions:
-- Resolve the specific retained publication and scheduling frontiers before executing the conditional activation proposal.
-- Qualify a bounded real-trade canary through the existing producer, relay, Quote Hub and deployed chart without replaying a settled session or overlapping a writer.
-- Only after explicit clearance and successful qualification, install and bootstrap the exact three prepared labels and consume their first scheduled run receipts.
+- Install the accepted CLI repair as a new sealed runtime release and rehash the complete manifest; preserve the current selector and unloaded schedules until their own conditions pass.
+- Reconcile publication access and qualify the approved sixty-second and 20000-message real-trade canary through the existing locked runner, relay, Quote Hub and deployed chart at a real overnight opening. The next opening is 2026-10-22T00:00Z, October 21 at 19:00 Chicago.
+- Only after successful trade-path and final clearing qualification, use the current approval to install and bootstrap the exact three prepared labels. Consume the first scheduled run receipts; the canary session cannot also become a full-night quote run.
 do_not_redo:
 - Do not retry, rename, replace or delete the frozen Fabric operation or original settled producer start/final receipts.
 - Do not replay or extend the independently owned current-night capture.
@@ -59,9 +69,9 @@ do_not_redo:
 danger_areas:
 - Preserve actual foreign producer writers and incumbent News, Quote Hub, private history and beta deployment custody.
 - A loaded job, a fresh fetch, successful transport, a cache transition and full-night live consumer proof are distinct facts.
-- The installed session-runner CLI has no short total-time option; its fixed eight-hour total cannot become a sixty-second canary by specifying a single short segment.
+- Old sealed release 21ff4afc1e87de2e6832e2ad1d84548aebdcb2e3 lacks the new total-time CLI flag. Install accepted source as a new sealed release; do not hot-patch its manifest or bypass the runner with a direct segment.
 ---
 
-The consumer repair is deployed and verified. Full continuous 24H delivery remains blocked at the retained producer activation frontier and unproved source completeness; this record does not grant runtime authority.
+The consumer repair is deployed and verified. The Chairman has approved the finite canary and conditional activation. Source qualification and approval do not prove live overnight delivery: the real-trade/clearing checks must pass in an eligible session, then the existing scheduled owners must return actual run receipts. This record preserves the direct instruction and evidence; it does not create a new runtime authority.
 
 Executed by ChatGPT (GPT-6 Astra Pro); the frontmatter uses the schema's existing `sol` workflow label.
