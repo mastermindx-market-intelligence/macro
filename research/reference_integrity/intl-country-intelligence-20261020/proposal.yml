@@ -1,63 +1,67 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-country-intelligence-20261020
 proposed_artifact:
-  frozen_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
+  frozen_sha: 883a1e48efdf9c334c08665262efa0961b1997a0
   paths:
-  - research/reference_integrity/intl-country-intelligence-20261020/proposed/intl.html
-  - research/reference_integrity/intl-country-intelligence-20261020/proposed
+  - research/reference_integrity/intl-country-intelligence-20261020/proposed_dock4_repair/intl.html
+  - research/reference_integrity/intl-country-intelligence-20261020/proposed_dock4_repair
   - templates/intl.html.j2
   - templates/intl_country_cockpit.html.j2
   - templates/intl_country_cockpit.css
   - templates/intl_country_cockpit.js
   screenshots:
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-en-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-desktop-en-light.png
     viewport: desktop
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-en-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-desktop-en-dark.png
     viewport: desktop
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-zh-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-desktop-zh-light.png
     viewport: desktop
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-desktop-zh-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-desktop-zh-dark.png
     viewport: desktop
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-en-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-mobile-en-light.png
     viewport: mobile
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-en-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-mobile-en-dark.png
     viewport: mobile
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-zh-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-mobile-zh-light.png
     viewport: mobile
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-mobile-zh-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-mobile-zh-dark.png
     viewport: mobile
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-en-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-narrow-en-light.png
     viewport: narrow
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-en-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-narrow-en-dark.png
     viewport: narrow
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-zh-light.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-narrow-zh-light.png
     viewport: narrow
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/viewport-narrow-zh-dark.png
+  - path: mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_repair/viewport-narrow-zh-dark.png
     viewport: narrow
     theme: dark
     locale: zh
+  source_commit: 442042e591d255dd24b540ff240edb4c0410c297
+  html_sha256: ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0
+  evidence: research/reference_integrity/intl-country-intelligence-20261020/FINAL_ARTIFACT_EVIDENCE.json
+  original_first_pass_artifact: 46f02fa355abbfaa4387203c0e3190db6747bed9
 dispositions:
 - id: navigation.site-sections
   disposition: RETAIN
@@ -90,416 +94,415 @@ dispositions:
 - id: workspace.view-selection
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → view selector → buttons or select'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:17;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:17; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: workspace.return-horizon
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → horizon selector → 1m / 3m / 6m / 12m / YTD'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:28;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:28; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: workspace.currency-basis
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → currency basis selector'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:33;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:33; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: workspace.url-context
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools; existing query context on intl.html'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace_state.js:508;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace_state.js:508; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: workspace.snapshot-status
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → workspace heading → snapshot and context status'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:6;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/shell.html.j2:6; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: overview.market-summary
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Overview → summary'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:53;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:53; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: overview.leaders-laggards
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Overview → focus list'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:87;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:87; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: overview.all-markets
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Overview → All markets'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:110;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:110;
+    repair_dock4/complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently
+    unavailable data states remain described in baseline.yml.'
 - id: overview.return-components
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Overview → market return rows'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:161;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/overview.html.j2:161;
+    repair_dock4/complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently
+    unavailable data states remain described in baseline.yml.'
 - id: compare.market-cohort
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Compare → market pin selector and remove controls'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:54;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:54; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: compare.calculation-evidence
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Compare → calculation-window sections'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:102;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:102; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: compare.source-charts
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Compare → source charts'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:111;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/compare.html.j2:111; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: macro.cycle-coverage
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Macro → Cycle coverage and Economic evidence'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:119;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:119; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: macro.growth-inflation
   disposition: IMPROVE
-  target: 'Primary country assessment observations and policy section; Data & tools → #intl-analysis-tools → Macro
-    → Available macro observations → GDP and CPI'
-  rationale: Country assessments now carry dated growth/inflation observations and a separately sourced national
-    policy decision. The original tool remains available with its own qualification boundary.
+  target: 'Primary country assessment observations and policy section; Data & tools → #intl-analysis-tools → Macro →
+    Available macro observations → GDP and CPI'
+  rationale: Country assessments now carry dated growth/inflation observations and a separately sourced national policy
+    decision. The original tool remains available with its own qualification boundary.
 - id: macro.policy-observations
   disposition: IMPROVE
-  target: 'Primary country assessment observations and policy section; Data & tools → #intl-analysis-tools → Macro
-    → Realized policy and policy columns'
-  rationale: Country assessments now carry dated growth/inflation observations and a separately sourced national
-    policy decision. The original tool remains available with its own qualification boundary.
+  target: 'Primary country assessment observations and policy section; Data & tools → #intl-analysis-tools → Macro →
+    Realized policy and policy columns'
+  rationale: Country assessments now carry dated growth/inflation observations and a separately sourced national policy
+    decision. The original tool remains available with its own qualification boundary.
 - id: macro.yields
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Macro → Available macro observations → yield columns'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:210;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:210; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: macro.composite-evidence
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Macro → composite evidence'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:163;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:163; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: macro.market-research
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Macro → market selector and Research destinations'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:182;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/macro.html.j2:182; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: risk.return-transmission
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Risk → market selector and return channels'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:210;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:210; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: risk.company-exposure
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Risk → Company exposure requirements'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:242;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:242; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: risk.pressure-resilience
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Risk → Fast pressure. Slow resilience. table'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:264;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:264; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: risk.research-domains
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Risk → Retained research'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:335;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/risk.html.j2:335; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: history.recomputed-observations
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Recomputed history'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:31;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:31; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: history.attached-changes
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Attached changes'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:54;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:54; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: history.original-known-boundary
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Original-known history unavailable'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:59;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:59; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: history.forward-record
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Forward record'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:61;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:61; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: scenario.manual-assumptions
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Scenario → two assumption inputs'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:77;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:77; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: scenario.usd-illustration
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Scenario → Conditional USD return'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:97;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:97; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: scenario.confirm-reset
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → History → Scenario → confirmation and reset controls'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:89;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/history.html.j2:89; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: library.question-groups
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Library → six research groups'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:19;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:19; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: library.search
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Library → search and group navigation'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:11;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:11; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: library.destinations
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → Library → tool links'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:38;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/library.html.j2:38; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: inspector.market-read
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → market inspector → What the returns show'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:39;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:39;
+    repair_dock4/complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently
+    unavailable data states remain described in baseline.yml.'
 - id: inspector.evidence-ledger
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → market inspector → Evidence ledger'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:54;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:54;
+    repair_dock4/complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently
+    unavailable data states remain described in baseline.yml.'
 - id: inspector.navigation
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → market inspector → Go deeper / Back / Close'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:80;
-    complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently unavailable
-    data states remain described in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl_workspace/inspector.html.j2:80;
+    repair_dock4/complete_browser_receipt.json records view and legacy-fragment navigation. Source-only or currently
+    unavailable data states remain described in baseline.yml.'
 - id: world.regime-context
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → rendered global-regime fragment'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:502; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:502; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: world.risk-appetite
   disposition: RELOCATE
-  destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → Global Macro Compass → risk-appetite
-    gauge'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:564; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → Global Macro Compass → risk-appetite gauge'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:564; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: world.market-turns
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-market-turns'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:701; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:701; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: world.market-lens
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → market lens → read and details'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:743; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:743; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: world.pullback-evidence
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → market lens → pullback odds/evidence'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:787; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:787; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: world.recent-changes
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → What changed'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:857; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:857; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: markets.usd-performance
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #lb-seg and #lb-board'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:880; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:880; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: markets.relative-rotation
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → US vs World RRG'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:902; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:902; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.full-tables
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → Full tables disclosure'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:942; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:942; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.country-scorecard
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-cross-country'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:946; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:946; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.rates-curves
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-rates-curves'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1008; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1008; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.euro-fragmentation
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-euro-fragmentation'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1055; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1055; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.ecb-liquidity
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-euro-fragmentation → ECB balance-sheet
     impulse'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1071; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1071; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.risk-desk
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → International Risk Desk'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1332; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1332; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.us-transmission
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-contagion'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1429; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1429; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.central-banks
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-central-banks'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1513; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1513; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.credit-bonds
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-credit-bonds'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1581; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1581; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.dollar-conditions
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-dollar-conditions'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1669; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1669; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.structural-fragility
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-structural-fragility'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1737; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1737; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.directed-pressure
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → directed crash-pressure panel'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1836; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1836; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.growth-inflation
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-growth-inflation'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1903; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1903; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.cross-market-correlation
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-cross-market-correlation'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1924; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1924; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.leadership-ranks
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → #intl-leadership-rotation'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1956; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1956; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: research.economic-risk-ranks
   disposition: RELOCATE
   destination: 'Data & tools → #intl-analysis-tools → #intl-legacy-research → Where each economy ranks'
-  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that
-    disclosure, and existing section fragments open their containing disclosures. templates/intl.html.j2:1966; complete_browser_receipt.json
-    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described
-    in baseline.yml.'
+  reachability: 'Data & tools in the page navigation opens #intl-analysis-tools. Existing ?view= contexts open that disclosure,
+    and existing section fragments open their containing disclosures. templates/intl.html.j2:1966; repair_dock4/complete_browser_receipt.json
+    records view and legacy-fragment navigation. Source-only or currently unavailable data states remain described in
+    baseline.yml.'
 - id: stocks.sector-rotation
   disposition: RETAIN
   target: intl_stocks.html → sector rotation table
@@ -511,150 +514,150 @@ dispositions:
   target: intl_stocks.html → intl_stock.html#<ticker>
 additions:
 - id: country.analysis
-  description: Seven country assessments join current observations, policy decisions, fiscal/external context and
-    market interpretation.
+  description: Seven country assessments join current observations, policy decisions, fiscal/external context and market
+    interpretation.
 - id: country.official-projections
   description: Published historical points and official growth/inflation projections have distinct chart treatments,
     period conventions and source dates.
 - id: country.conditional-paths
   description: Stronger/weaker paths describe conditions to examine; they are not predicted asset-return scenarios.
 - id: country.global-connections
-  description: Demand, energy-price and financing channels link to relevant country assessments; no measured causal
-    coefficient is claimed.
+  description: Demand, energy-price and financing channels link to relevant country assessments; no measured causal coefficient
+    is claimed.
 user_tasks:
 - id: task.country.current-state
   task: Choose a country, read its assessment, identify the principal current conditions, and locate the information
     date and research source.
   critical: true
-  production: 'Source destinations: Macro → economic evidence; #intl-cross-country; International menu → existing
-    country dashboards. Actual anonymous baseline has failed workspace resources and its data qualifications remain
-    as captured.'
-  proposal: 'Source destinations: #imc-countries; #imc-country-<CC>. templates/intl_country_cockpit.html.j2:39'
+  production: 'Source destinations: Macro → economic evidence; #intl-cross-country; International menu → existing country
+    dashboards. Actual anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
+  proposal: 'Source destinations: #imc-countries; #imc-country-<CC>. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.published-path
-  task: Locate the country's published growth and inflation path, distinguish observed and projected periods, and
-    identify provider, release date, units and horizon.
+  task: Locate the country's published growth and inflation path, distinguish observed and projected periods, and identify
+    provider, release date, units and horizon.
   critical: true
   production: 'Source destinations: Macro → GDP/CPI observations; #intl-growth-inflation; International menu → existing
-    country dashboards. Actual anonymous baseline has failed workspace resources and its data qualifications remain
-    as captured.'
-  proposal: 'Source destinations: #imc-outlook-<CC>. templates/intl_country_cockpit.html.j2:52'
+    country dashboards. Actual anonymous baseline has failed workspace resources and its data qualifications remain as
+    captured.'
+  proposal: 'Source destinations: #imc-outlook-<CC>. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.policy-decision
   task: Locate the national policy decision, its effective or announcement status, rationale and dated primary evidence;
     inspect any monthly cross-check qualification separately.
   critical: true
   production: 'Source destinations: Macro → Realized policy; #intl-central-banks; #intl-rates-curves. Actual anonymous
     baseline has failed workspace resources and its data qualifications remain as captured.'
-  proposal: 'Source destinations: #imc-policy-<CC>. templates/intl_country_cockpit.html.j2:99'
+  proposal: 'Source destinations: #imc-policy-<CC>. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.fiscal-external
-  task: Locate available current-account, budget or debt observations/projections; identify their units, periods
-    and interpretation.
+  task: Locate available current-account, budget or debt observations/projections; identify their units, periods and
+    interpretation.
   critical: true
   production: 'Source destinations: Risk → Fast pressure. Slow resilience.; #intl-structural-fragility; #intl-cross-country.
     Actual anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
-  proposal: 'Source destinations: #imc-balances-<CC>. templates/intl_country_cockpit.html.j2:121'
+  proposal: 'Source destinations: #imc-balances-<CC>. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.market-observations
   task: Read the country index and currency observations, identify dates and return intervals, and locate the interpretation
     connecting them to country conditions.
   critical: true
-  production: 'Source destinations: Overview → return components; market inspector; #lb-board. Actual anonymous
-    baseline has failed workspace resources and its data qualifications remain as captured.'
-  proposal: 'Source destinations: #imc-country-<CC> → Market conditions. templates/intl_country_cockpit.html.j2:141'
+  production: 'Source destinations: Overview → return components; market inspector; #lb-board. Actual anonymous baseline
+    has failed workspace resources and its data qualifications remain as captured.'
+  proposal: 'Source destinations: #imc-country-<CC> → Market conditions. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.conditional-paths
-  task: Find the described stronger and weaker paths, the conditions attached to each and the source boundary for
-    the interpretation.
+  task: Find the described stronger and weaker paths, the conditions attached to each and the source boundary for the
+    interpretation.
   critical: true
-  production: 'Source destinations: World market lenses; International menu → existing country dashboards. Actual
-    anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
-  proposal: 'Source destinations: #imc-country-<CC> → What changes the view. templates/intl_country_cockpit.html.j2:169'
+  production: 'Source destinations: World market lenses; International menu → existing country dashboards. Actual anonymous
+    baseline has failed workspace resources and its data qualifications remain as captured.'
+  proposal: 'Source destinations: #imc-country-<CC> → What changes the view. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.source-trace
-  task: Open a country's evidence disclosure; trace an observation, a policy claim and a projected series to their
-    dated sources and inspect another published view where supplied.
+  task: Open a country's evidence disclosure; trace an observation, a policy claim and a projected series to their dated
+    sources and inspect another published view where supplied.
   critical: true
-  production: 'Source destinations: market inspector → Evidence ledger; Macro evidence details; legacy research
-    source disclosures. Actual anonymous baseline has failed workspace resources and its data qualifications remain
-    as captured.'
-  proposal: 'Source destinations: #imc-country-<CC> → Sources, dates & interpretation. templates/intl_country_cockpit.html.j2:178'
+  production: 'Source destinations: market inspector → Evidence ledger; Macro evidence details; legacy research source
+    disclosures. Actual anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
+  proposal: 'Source destinations: #imc-country-<CC> → Sources, dates & interpretation. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: The repaired evidence disclosure identifies canonical provider/series, geography, unit and actual stored dates,
+    with five raw quarterly levels and the year-over-year formula where qualified GDP exists. All seven equity series
+    disclose their actual prices, windows and calculation inputs. Missing TW/IN GDP and unqualified FX remain withheld.
+    Source audit and independent arithmetic review are preserved; final narrow source disclosures pass12 checks.
 - id: task.country.global-connections
-  task: Read the world brief and a demand, price or financing channel, then follow any available country link to
-    its assessment and supporting research.
+  task: Read the world brief and a demand, price or financing channel, then follow any available country link to its
+    assessment and supporting research.
   critical: true
   production: 'Source destinations: rendered global-regime fragment; #intl-contagion; #intl-cross-market-correlation.
     Actual anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
-  proposal: 'Source destinations: #imc-world; #imc-connections. templates/intl_country_cockpit.html.j2:207'
+  proposal: 'Source destinations: #imc-world; #imc-connections. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.country.navigation-context
-  task: Use country links and disclosure summaries, open a country URL directly, and navigate Back/Forward while
-    observing the selected country and reading location.
+  task: Use country links and disclosure summaries, open a country URL directly, and navigate Back/Forward while observing
+    the selected country and reading location.
   critical: true
-  production: 'Source destinations: International menu → existing country dashboards; workspace URL context. Actual
-    anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
+  production: 'Source destinations: International menu → existing country dashboards; workspace URL context. Actual anonymous
+    baseline has failed workspace resources and its data qualifications remain as captured.'
   proposal: 'Source destinations: #imc-country-JP; #imc-country-KR; #imc-country-TW; #imc-country-IN; #imc-country-AU;
-    #imc-country-GB; #imc-country-EZ. templates/intl_country_cockpit.html.j2:34'
+    #imc-country-GB; #imc-country-EZ. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: 'Final actual browser proof: toolbar_dock4_landings.json132 checks and country_history_dock4.json112 checks
+    pass. Includes same-document country fragments, native Back/Forward, rapid hash changes and empty-hash restoration;
+    no manual scroll correction. The earlier Japan failure and diagnostic uncertainty are preserved.'
 - id: task.country.evidence-state
-  task: Inspect any provided partial, dated, unavailable or review-needed evidence state and identify which claim,
-    metric or decision remains available.
+  task: Inspect any provided partial, dated, unavailable or review-needed evidence state and identify which claim, metric
+    or decision remains available.
   critical: true
-  production: 'Source destinations: Overview unavailable rows; Macro evidence status; Risk evidence status; History
-    unavailable qualifications. Actual anonymous baseline has failed workspace resources and its data qualifications
-    remain as captured.'
-  proposal: 'Source destinations: #imc-country-<CC> → country status, policy status and evidence disclosure. templates/intl_country_cockpit.html.j2:99'
+  production: 'Source destinations: Overview unavailable rows; Macro evidence status; Risk evidence status; History unavailable
+    qualifications. Actual anonymous baseline has failed workspace resources and its data qualifications remain as captured.'
+  proposal: 'Source destinations: #imc-country-<CC> → country status, policy status and evidence disclosure. templates/intl_country_cockpit.html.j2'
   verdict: BETTER
-  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance
-    claim. Existing unavailable qualified FX and legacy observations are not converted to current evidence.
+  notes: Comparative assessment based on direct artifacts and source. No timed user study or investment performance claim.
+    Existing unavailable qualified FX and legacy observations are not converted to current evidence.
 - id: task.supporting-tools
   task: Open a supporting research view, preserve its context and follow an old section link.
   critical: true
-  production: Workspace view controls are initially prominent, but captured public JS/CSS failures prevent their
-    normal operation.
-  proposal: One Data & tools entry precedes the same view controls; ?view= and existing fragment links reveal the
-    requested content.
+  production: Workspace view controls are initially prominent, but captured public JS/CSS failures prevent their normal
+    operation.
+  proposal: One Data & tools entry precedes the same view controls; ?view= and existing fragment links reveal the requested
+    content.
   verdict: BETTER
-  notes: Actual complete_browser_receipt.json covers six query views, six activated views and four legacy fragments
-    on desktop and mobile. Compared with a functioning source design, general browsing adds one disclosure action;
-    direct links retain immediate access.
+  notes: Actual repair_dock4/complete_browser_receipt.json covers six query views, six activated views and four legacy
+    fragments on desktop and mobile. Compared with a functioning source design, general browsing adds one disclosure
+    action; direct links retain immediate access.
 - id: task.scan-legacy-world
   task: Scan existing global-regime, market-turn and full reference-table observations.
   critical: true
   production: These source sections appear below the original workspace in an initially open legacy disclosure.
   proposal: The same source sections are inside Data & tools, with the legacy disclosure initially open within it.
   verdict: WORSE
-  notes: Discoverability of the old aggregate boards is reduced by one outer disclosure and their lower placement.
-    Root design authority must explicitly adjudicate this primary-hierarchy tradeoff; source and deep links remain
-    available.
+  notes: Discoverability of the old aggregate boards is reduced by one outer disclosure and their lower placement. Root
+    design authority must explicitly adjudicate this primary-hierarchy tradeoff; source and deep links remain available.
 - id: task.language-theme-mobile
   task: Read the main assessment and supporting controls in English/Chinese, light/dark, desktop/mobile.
   critical: true
   production: Shared controls exist, with actual public resource failures recorded separately.
   proposal: Both languages and themes at1440/390/320; mobile supporting views use the existing compact selector.
   verdict: BETTER
-  notes: Actual complete browser receipt:46/46 cases, no page exceptions or document overflow. No authenticated-tier
-    claim.
+  notes: Final real-Chrome artifact:46 canonical plus109 focused checks pass across1440/390/320 EN/ZH light/dark; no
+    page exceptions or document overflow. All local UI assets load; assistant opening, Escape close, focus return and
+    loaded-control geometry are tested. Anonymous only.
 - id: task.separate-stock-research
   task: Open the existing country and International stock research destinations.
   critical: false
@@ -669,12 +672,11 @@ authority_delta:
   proposal_claim: An official provider projects country and world growth/inflation over stated periods.
   direction: stronger
   warranted: true
-  evidence: config/intl_country_baseline.json archived release records; lib/intl_country_inputs.py admission and
-    custody; templates/intl_country_cockpit.html.j2 period labels and history/projection separation.
+  evidence: config/intl_country_baseline.json archived release records; lib/intl_country_inputs.py admission and custody;
+    templates/intl_country_cockpit.html.j2 period labels and history/projection separation.
 - id: auth.country-thesis
   production_claim: Fragmented regime labels and observations.
-  proposal_claim: A short interpretation joins a national primary-source assessment with separately dated market
-    observations.
+  proposal_claim: A short interpretation joins a national primary-source assessment with separately dated market observations.
   direction: stronger
   warranted: true
   evidence: Country thesis source and date are visible; country policy narrative retains national decision and independent
@@ -688,12 +690,12 @@ authority_delta:
     estimates. No probability, expected return or recommendation is produced.
 - id: auth.market-freshness
   production_claim: Qualified workspace observations or unavailable states.
-  proposal_claim: Market-state description uses dated equity windows; FX requires source-qualified observations
-    and otherwise shows unavailable.
+  proposal_claim: Market-state description uses dated equity windows; FX requires source-qualified observations and otherwise
+    shows unavailable.
   direction: equal
   warranted: true
-  evidence: Actual production-input render has Observation unavailable for unqualified copied FX. Copy receipts
-    explicitly do not acquire source evidence; producer acquisition and served acceptance remain release obligations.
+  evidence: Actual production-input render has Observation unavailable for unqualified copied FX. Copy receipts explicitly
+    do not acquire source evidence; producer acquisition and served acceptance remain release obligations.
 - id: auth.legacy
   production_claim: Existing tools and composites retain their own source qualifications.
   proposal_claim: The same tool claims behind a disclosure.
@@ -706,20 +708,21 @@ information_economics:
     production: No comparable primary country-assessment card exists in captured production. The actual broken-resource
       desktop page exposes13,888 whitespace-separated visible tokens over many panels; this is not a normal functioning
       before-card measure.
-    proposal: Default desktop page exposes782 English whitespace-separated visible tokens including shared chrome,
-      one expanded country, six collapsed country rows and connection cards. Chinese whitespace counts are not comparable
-      word measures. Complete browser receipt supplies exact states.
+    proposal: 'The final default desktop page exposes790 English whitespace-separated visible tokens including shared
+      chrome, one expanded country, six collapsed rows and connection cards; its document height is3371px. The320px English
+      page exposes759 tokens over5658px. These are whole-page state measures, not card-only or comparable Chinese word
+      counts. Exact measured states: repair_dock4/complete_browser_receipt.json.'
   findings:
-  - One expanded country provides a consistent sequence from thesis to path, policy, balances, market conditions
-    and evidence.
-  - Older aggregate boards and research panels require the Data & tools disclosure; this raises browsing effort
-    for a user starting with those panels.
+  - One expanded country provides a consistent sequence from thesis to path, policy, balances, market conditions and
+    evidence.
+  - Older aggregate boards and research panels require the Data & tools disclosure; this raises browsing effort for a
+    user starting with those panels.
   - The default is still a substantive long assessment on mobile. Collapsed country rows and charts compress navigation
     and published paths; no claim of universally faster task completion is made.
-  - The production before image has failed resource delivery. Do not advertise a percentage compression gain as
-    an apples-to-apples comparison with a functioning old workspace.
+  - The production before image has failed resource delivery. Do not advertise a percentage compression gain as an apples-to-apples
+    comparison with a functioning old workspace.
   preserved:
-  - Existing charts, source tables, calculators and evidence ledgers remain in their source hierarchy under the
-    outer disclosure.
+  - Existing charts, source tables, calculators and evidence ledgers remain in their source hierarchy under the outer
+    disclosure.
   - Published history and projection use distinct line treatments and a visible legend.
   - Country summaries expose thesis, growth path and market state before expansion.

@@ -1,3 +1,29 @@
+# Owner checkpoint — recovered approval bound; current-main composition next
+
+Updated 2026-10-21T22:40:04.370294+00:00. This continues operation `intl-country-cockpit-20261018`, original branch `sol/web-intl-country-cockpit-20261018` and draft Macro PR #9596 from predecessor conversation `6ad430fc-45bc-83e9-87d6-6925261eae24`. The predecessor browser turn was explicitly stopped and its stopped state verified before further mutation. Original publication status remains local `883a1e48efdf9c334c08665262efa0961b1997a0`, remote `6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7`; no unresolved push is being replayed.
+
+Recovery readback passed 144 immutable binding checks, errors=[], and the full reference-integrity evaluation passed with zero findings. `RECOVERY_VERIFICATION_20261021.json` binds the retained source, review, image and browser receipts to artifact `883a1e48efdf9c334c08665262efa0961b1997a0`, source `442042e591d255dd24b540ff240edb4c0410c297` and reviewed HTML SHA256 `ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0`. The 411 browser assertions are retained historical execution, not a new run. No country source or production observation was changed by recovery. Protected Mastermind law was read at `c9cbee5569ba50e30e28715d930809061a169517`.
+
+Shared render repair PR #9894 is merged at `f0389b9a4283af47a66bfafa9c035f5ac1c3d03d`. The Global Surveillance masterplan and handoffs preserve this original country-cockpit owner/release path. They do not supersede PR #9596 or satisfy its production acceptance.
+
+Read-only composition against pinned main `2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915` found five real conflicts: `.github/ci/legacy-jobs.yml`, `app/deploy/Caddyfile`, and the Prophet P0B manifest plus two mobile-layout JSON files. Incoming main also changes the shared assistant, theme and International shell entry consumers. Accepted country/source-trace evidence is reusable; exact merged source needs a bounded shared-runtime integration supplement. A source review identified a country fragment listener that handles hashchange but not the shared bridge's `mmx:shell-location`; reproduce through the real bridge contract before any repair. Shared evidence must bind genuine source/output bytes, never a guessed textual union or restamped old capture.
+
+Next: (1) native expected-head commit of this recovered approval/evidence package; (2) resolve current-main composition on the same branch, reproduce/repair the bounded navigation seam and verify the actual shared-runtime paths; (3) native expected-head publication, exact-head hosted checks, normal protected-main acceptance, genuine intl_prices acquisition, covering normal render/updater and served anonymous proof. PR remains draft until required release gates permit transition. No production merge, acquisition, render or served acceptance is claimed. Missing TW/IN GDP and unqualified FX remain honestly unavailable. Original review history and first failed receipts remain below and in their original files.
+
+---
+
+# Owner checkpoint — final review approved, publication next
+
+Updated 2026-10-20 21:20 UTC. Frozen artifact883a1e48efdf9c334c08665262efa0961b1997a0 contains the complete dock4 build/captures from source442042e. Product review PASS after38 actual final images; visual review PASS after80 final images. Both exact authored returns are retained and hash-verified. Original first-pass/rationale findings remain unchanged; allPRC-001/002 andVTC-001/002/003/004 are resolved by actual repairs. Root's eight-question verdict explicitly accepts task.scan-legacy-world=WORSE and keeps production acquisition/served acceptance as separate conditions.
+
+The full reference evaluation and repository RIG guard pass with zero findings. Final design-system, runtime-style, visual-evidence, template/site sync and CI-manifest guards all pass. All411 final browser assertions pass. Prepublication main0bd1bed composes cleanly;342 CI jobs preserve candidate and new-main changes, with zero composition issues. No International/shared UI source changed in that incoming main range.
+
+The India official GDP PDF is retained with the independently matching152d9020 source hash, genuine HTTP acquisition receipts and18 executed research-parser checks.20 of21 worker artifacts are retained; the derived page PNG remains reproducible from the original PDF in scratch. Taiwan official HTTPS requests fail at the network/TLS chain boundary without disabling verification; no release bytes or production observation are invented. An isolated follow-up India integration patch is being prepared in scratch; it has no effect on this approved candidate.
+
+Next3: (1) native commit/push this approval/evidence metadata and complete applicable hosted CI on the published head; (2) normal protected-main merge followed by genuine intl_prices acquisition and source-qualified canonical-store acceptance; (3) covering International render, normal updater adoption, served browser/access proof and final durable shipment checkpoint. PR9596 remains draft at prior remote6ad0c3 until the native publication receipt says otherwise. No release watcher, production merge, acquisition workflow or render has been dispatched by this checkpoint. No user permission or login is presently needed.
+
+---
+
 # Owner checkpoint — 2026-10-20 final artifact freeze preparation
 
 The country cockpit source is committed at442042e591d255dd24b540ff240edb4c0410c297. The final dock4 no-overlay build uses all510 retained inputs and the pinned production fonts, account, navigation, favicon and shared assistant visual assets. HTML SHA256ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0. FINAL_ARTIFACT_EVIDENCE.json binds actual build, receipts, images and source hashes.

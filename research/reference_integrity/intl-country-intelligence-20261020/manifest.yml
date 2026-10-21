@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: intl-country-intelligence-20261020
 scope: full
-status: in_review
+status: approved
 surface:
   route: intl.html
   registry_row: macro:intl
@@ -10,8 +10,8 @@ author:
   identity: /root
   role: designer
 reference_files:
-- path: research/reference_integrity/intl-country-intelligence-20261020/proposed/intl.html
-  frozen_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
+- path: research/reference_integrity/intl-country-intelligence-20261020/proposed_dock4_repair/intl.html
+  frozen_sha: 883a1e48efdf9c334c08665262efa0961b1997a0
 files:
   baseline: baseline.yml
   proposal: proposal.yml
@@ -19,3 +19,4 @@ files:
     product_regression: reviews/product_regression.yml
     visual_taste: reviews/visual_taste.yml
   verdict: verdict.yml
+  approval: approval.yml
