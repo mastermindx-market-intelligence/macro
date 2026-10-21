@@ -1845,7 +1845,11 @@
     _sbLoading = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
       s.src = _SDK_URL; s.async = true;
-      s.onload = resolve; s.onerror = function () {\n        _sbLoading = null; // A transient failure must not permanently poison future restores.\n        if (s.parentNode) s.parentNode.removeChild(s);\n        reject(new Error('sdk'));\n      };
+      s.onload = resolve; s.onerror = function () {
+        _sbLoading = null; // A transient failure must not permanently poison future restores.
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(new Error('sdk'));
+      };
       (document.head || document.documentElement).appendChild(s);
     });
     return _sbLoading;
