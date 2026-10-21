@@ -297,6 +297,51 @@ def test_every_relocated_string_is_inside_mc_details_on_a_workspace_page(
     assert leaked == [], f"relocated string still in the reading path: {leaked}"
 
 
+def test_labor_unavailable_copy_preserves_partial_readings() -> None:
+    """Insufficient overall coverage must not imply every reading is absent."""
+    from copy import deepcopy
+    from lib import macro_suite_view
+
+    entry = {
+        "implication_id": "state_unavailable",
+        "text": {
+            "en": "US labor-market state cannot be classified: axis coverage is below "
+                  "the disclosed floor. No quadrant is asserted rather than defaulting "
+                  "to a neutral state.",
+            "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+        },
+        "evidence_class": "DESCRIPTIVE",
+        "confidence": {},
+        "horizon": "current",
+        "channels": ["hiring", "layoffs", "wages"],
+        "contradictions": [],
+        "trace_ref": "data/regime/latest.json#labor_nowcast",
+    }
+    before = deepcopy(entry)
+    rendered = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert not rendered["absent"]
+    assert len(rendered["entries"]) == 1
+    item = rendered["entries"][0]
+    assert "no overall reading is shown" in item["text"]["en"]
+    assert "Missing data is not treated as a neutral reading" in item["text"]["en"]
+    assert "不展示总体读数" in item["text"]["zh"]
+    assert "缺失数据不会被当作中性读数" in item["text"]["zh"]
+    for language in ("en", "zh"):
+        assert guard.find_violations(f"<p>{item['text'][language]}</p>") == []
+    assert item["text_original"] is None
+    assert item["implication_id"] == entry["implication_id"]
+    assert item["evidence_class"] == entry["evidence_class"]
+    assert item["trace_ref"] == entry["trace_ref"]
+    assert len(item["channels"]) == 3 and all(item["channels"])
+    assert entry == before
+
+    clean = "Hiring has slowed while layoff notices stayed broadly flat."
+    entry["text"] = {"en": clean, "zh": "招聘放缓，裁员通知大致持平。"}
+    entry["implication_id"] = "labor_reading"
+    available = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert available["entries"][0]["text"]["en"] == clean
+
+
 def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
     """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
     .mc-details / .mc-primer."""
