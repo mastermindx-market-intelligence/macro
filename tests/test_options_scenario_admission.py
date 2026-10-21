@@ -305,3 +305,14 @@ def test_selected_scope_is_carried_to_result_without_population_reinterpretation
     assert out['coverage']['expiry_scope']==out['surface']['expiry_scope']==['2026-10-28']
     assert out['coverage']['max_dte_days']==10
     assert out['coverage']['expected']==out['coverage']['selected']==1
+
+
+def test_conflicting_native_deliverables_cannot_hide_behind_standard_label():
+    for key, value in [('shares_per_contract', 50),
+                       ('additional_underlyings', [{'ticker': 'XYZ', 'amount': 1}]),
+                       ('additional_underlyings', None)]:
+        g, oi, asof, req, ctx = strict_book()
+        ctx['contract_terms'][0][key] = value
+        out = strict_call(g, oi, asof, req, ctx)
+        assert out['surface'] is None
+        assert out['unavailable_reasons'] == ['exact_series_terms_unqualified']

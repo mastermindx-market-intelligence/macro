@@ -203,6 +203,8 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
                 or term["series_id"] in series_ids or term.get("security_id") != context["security_id"]
                 or term.get("currency") != "USD" or term.get("deliverable") != "100_underlying_shares"
                 or _number(term.get("multiplier")) != numbers["mult"]
+                or ("shares_per_contract" in term and _number(term["shares_per_contract"]) != 100)
+                or ("additional_underlyings" in term and term["additional_underlyings"] != [])
                 or term.get("exercise_style") != "american"):
             return refuse("exact_series_terms_unqualified")
         series_ids.add(term["series_id"])
