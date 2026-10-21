@@ -4975,7 +4975,61 @@ CURATED_EXCLUSIVE = {
     # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
+    # 2026-10-21 Decision Desk: the R4 capture helper reaches app/ imports,
+    # whose opaque fallback selected unrelated packing probes. Preserve its
+    # full literal closure, Node/fixture inputs and ancestor inits; no ceilings move.
+    "biocatalyst-decision-desk",
 }
+
+
+def test_decision_desk_exclusive_scope_keeps_real_inputs_and_drops_unrelated_probes() -> None:
+    """Curation must retain dynamic Node reads that Python closure cannot follow."""
+    job_id = "biocatalyst-decision-desk"
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST) if job.job_id == job_id)
+    assert job.exclusive
+    required = (
+        "tests/test_biocatalyst_decision_desk.py",  # ci-trigger-closure: data
+        "tests/test_biocatalyst_decision_desk.cjs",  # ci-trigger-closure: data
+        "tests/test_biocatalyst_decision_desk_host.cjs",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/generate_company_evidence_fixtures.py",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/company-page.json",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/capture-receipt.json",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r2/company-detail.json",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r2/capture-receipt.json",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r10/company-page.json",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r10/capture-receipt.json",  # ci-trigger-closure: data
+        "scripts/build_biocatalyst.py",  # ci-trigger-closure: data
+        "templates/biocatalyst.html.j2",  # ci-trigger-closure: data
+        "templates/biocatalyst.css",  # ci-trigger-closure: data
+        "templates/biocatalyst.js",  # ci-trigger-closure: data
+        "templates/biocatalyst_decision_desk.css",  # ci-trigger-closure: data
+        "templates/biocatalyst_decision_desk.js",  # ci-trigger-closure: data
+        "templates/biocatalyst_decision_desk_host.js",  # ci-trigger-closure: data
+        "templates/_seo_head.html.j2",  # ci-trigger-closure: data
+        "templates/_site_nav.html.j2",  # ci-trigger-closure: data
+        "templates/theme.css",  # ci-trigger-closure: data
+        "templates/theme.js",  # ci-trigger-closure: data
+        "templates/navigation-refresh.css",  # ci-trigger-closure: data
+        "templates/nav_market.js",  # ci-trigger-closure: data
+        "site/biocatalyst.html",  # ci-trigger-closure: data
+        "site/biocatalyst.css",  # ci-trigger-closure: data
+        "site/biocatalyst.js",  # ci-trigger-closure: data
+        "site/biocatalyst_decision_desk.css",  # ci-trigger-closure: data
+        "site/biocatalyst_decision_desk.js",  # ci-trigger-closure: data
+        "site/biocatalyst_decision_desk_host.js",  # ci-trigger-closure: data
+        "app/biocatalyst.py",  # ci-trigger-closure: data
+        "app/main.py",  # ci-trigger-closure: data
+        "engine/biocatalyst/__init__.py",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+    )
+    for dependency in required:
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job_id], (dependency, reason)
+        match = PACK._job_diff_match(job, [dependency])
+        assert match and match[1] == "declared", (dependency, match)
+    for unrelated, _jobs, _weight in PACKING_PROBES:
+        selected, reason = PACK.select_jobs([job], [unrelated])
+        assert not selected, (unrelated, reason)
 
 
 def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:

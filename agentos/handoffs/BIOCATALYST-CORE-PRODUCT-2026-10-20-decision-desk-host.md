@@ -362,3 +362,112 @@ source-change/correction journey and obtain explicit release acceptance.
 R10 and Codex keep their exact operations and prior denials. This continuation
 is not a competing native writer, deployment, live qualification or an active
 daemon. The overall Catalyst Intelligence mission remains incomplete.
+
+
+## R5 continuation — exact CI selection repair
+
+The current Chairman assignment resumes original #9611 from checkpoint
+comment6291000963. Source parent is
+`78669041847758d3dc601ded781e585d2e1c8611`; the containing commit identifies
+this repair. Preserve the same registered SSD workspace, branch and operation
+`biocatalyst-decision-desk-r1-20261018`. The predecessor chat's repeated
+Thinking-failed condition was resolved by this fresh attended continuation;
+no source/runtime owner was replaced. Protected Mastermind procedure pin:
+`d3537d6dd1cf63178a1493eb70fa2eccc6c01fe0`, Skillpack1.0.1/bootstrap1.
+
+### Diagnosis and bounded change
+
+Hosted code run39504748868 failed in ci-pack-1 / ci-control-plane-contracts
+and contract-delta because Decision Desk's R4 fixture helper reached broad
+opaque fallback scopes. Its Python3.12/Node20/four-minute job was selected
+for unrelated ordinary code. The unchanged local packing assertion reproduced
+all three overages before repair: index weight5826>5822, free-content136>135
+jobs and5799>5795 weight; 1 failed in125.27s.
+
+Only `biocatalyst-decision-desk` in `.github/ci/legacy-jobs.yml` now declares
+`scope: exclusive`: all831 canonical literal import/read dependencies,
+22 explicit Node/fixture/page/build/paired-asset entries, and16 additional
+tracked ancestor initializers,869 total. The bounded existing fixture corpus
+uses `research/catalyst_intelligence/decision_desk_r1/fixtures/**` to cover
+receipt-selected filenames. No repository-root wildcard is added. None of
+all three packing probes belongs to the literal closure; only the103 opaque
+fallback patterns cease selecting this job. The large literal closure is
+intentional: the accepted R4 helper's static import reaches app.biocatalyst,
+app.main and their transitive dependencies. No import is reasoned away.
+
+`tests/test_ci_pack.py` registers the job in the existing equality-pinned
+CURATED_EXCLUSIVE set and adds one positive/negative selection regression.
+Non-reading selector path labels carry the existing ci-trigger-closure data
+annotation. The actual Node modules, both Node suites, all retained fixture
+families, capture helper and paired host assets remain selecting dependencies.
+The generic closure audit remains active for later Python dependency changes.
+
+Structural comparison against parent7866904 proved that every other manifest
+job, this job's execution definition, every previous test function and all
+other module-level constants remain identical. Python3.12, Node20, code gate,
+four-minute timeout and the same pytest invocation are retained. PACKING_PROBES,
+PACKING_PROBE_MAX_PACKS and the ancestor-init ratchet are unchanged. No check,
+suite, assertion or runtime guard is removed or weakened.
+
+### Completed local proof
+
+- `python3.12 -B -m pytest` on test_the_curated_exclusive_set_is_actually_declared,
+  test_curated_exclusive_scopes_cover_their_own_import_closure,
+  test_curated_exclusivity_drops_only_the_opaque_fallback_tier,
+  test_exclusive_curation_narrows_ordinary_code_prs,
+  test_ancestor_init_census_does_not_grow and the new
+  test_decision_desk_exclusive_scope_keeps_real_inputs_and_drops_unrelated_probes
+  in tests/test_ci_pack.py, plus tests/test_biocatalyst_decision_desk.py,
+  with --basetemp=.pytest_cache/ci_scope_r5_green: **19 passed in250.83s**, exit0.
+  The Decision Desk wrappers execute the real existing Node checks; counts
+  overlap and are not added to historical R4 totals.
+- `python3.12 -B scripts/check_contract_delta.py --base
+  747a4b1a3315f9a860cbd224b18af3ff17910c7a`: **0 introduced,0 inherited**, exit0,
+  429.31s. This is the exact failed hosted run's base. Retained log:
+  .pytest_cache/decision_desk_ci_scope_r5_contract_delta.log; SHA256
+  `0697d4adcfc5c079561dc9d1f6f798f89b0a449e7c4e519be7f7b028a5f3f8ca`.
+- Head and base both measure index135jobs/5822weight/10packs,
+  free-content135jobs/5795weight/10packs, and Prophet128jobs/5571weight/10packs.
+  Unchanged ceilings respectively136/5822/10,135/5795/10 and130/5600/10.
+  These weights are planner estimates, not measured runtime seconds.
+- `git diff --check` passed. `python3.12 -B scripts/agentos.py validate`
+  checked1911records with0errors and155warnings, exit0. The retained log SHA256
+  is `3721354cae2d0556206e17e7a04a20736b985a611b9bf40f35e5947e55310da4`.
+  Local Node is26.5.0; hosted Node20 acceptance remains the exact-head CI gate.
+  Publication/hosted-CI receipts belong to the current canonical PR checkpoint.
+
+The latest observed PR base9b716c624d66d5af812c2a2f29caf0ffbefe7c1c is already
+an ancestor of the parent; no main merge is needed to obtain that source.
+No Bio native/consumer boundary changed in the relevant base movement.
+Local proof is not the new candidate's hosted Node20/CI verdict.
+
+### Continuing integration and unchanged holds
+
+R4 source, retained bodies, capture guards and browser evidence are unchanged;
+no capture/browser run, native admission or deployment was repeated. The
+previous R4 evidence remains reusable only within its stated synthetic scope.
+A bounded native reasoning consultation reviewed the CI approach, but that is
+not independent R2/R3/R4 product/source/visual release acceptance. The installed
+Session Bridge again returned backend_unavailable. No paid worker, replacement
+release reviewer or background wake was created. Direct bounded execution was
+retained because original source custody and permitted tools remained available.
+
+Fresh GitHub reads retain #9662 at902465f7, #6712 at9239d53f and #9617 at674d8067,
+all OPEN/DRAFT. R10 Correction Admission, Codex receiver
+01a158fd-eaba-7342-8b59-081a483f2fc2 and DataOS remain separate. Native admission,
+identity observations, shared publication/lock/pointer state, reader-before-writer
+rollout and real entitled later-correction proof remain unreturned through
+existing #9662 comment6291265578. All previous production/staging/reviewer and
+legacy verification-summary.json/IMPLEMENTATION.md refusals remain preserved.
+GitHub independent review submissions remain zero; the existing reviewer request
+is unchanged. The real browser path still needs the originating connected
+extension context after native admission; synthetic auth cannot replace it.
+
+Next action: publish this verified repair once through the original typed
+operation and consume that exact head's hosted CI. Repair introduced findings
+on the same branch if any. Then obtain existing independent current-head
+source/visual review and the admitted native return, prove the real entitled
+case and later correction, and obtain explicit release-hold clearance.
+Keep DRAFT/HOLD, no Ready, auto-merge, merge-to-main, deployment or activation.
+Catalyst Intelligence remains BUILT_NOT_PROVEN and MISSION_COMPLETE=false.
+The current cumulative publication/CI frontier remains #9611 comment6291000963.
