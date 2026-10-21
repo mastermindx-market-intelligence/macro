@@ -42,16 +42,16 @@ waves:
       process settlement before the complete native-delivery canary.
   - id: W2
     title: Publish the project plan and recoverable checkpoint in Agent OS
-    status: in_progress
+    status: awaiting_ci
     next_action: >
-      Publish these records and handoff. Retain the bounded owner-read proof of
-      goal, phases, next action and accepted-work constraints.
+      Qualify Macro PR 9967 and retain its source proof and exact remaining
+      delivery gaps. Advance the shared owner checkout through its normal owner.
   - id: W3
     title: Compose and qualify full semantic continuation through existing owners
     status: in_progress
     next_action: >
-      Review repair PR 1673 into PR 656 and the 385-case composition at PR 1289.
-      Publish the lifecycle proof while preserving its production hold and custody.
+      Review PR 1673 into PR 656 and integration PR 1676 into PR 1289.
+      Reconcile accepted dependency heads while preserving production hold and custody.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo

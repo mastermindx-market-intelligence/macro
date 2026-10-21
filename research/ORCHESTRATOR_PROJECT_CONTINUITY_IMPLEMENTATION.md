@@ -65,6 +65,14 @@ working long-project principal loop:
   work therefore continued directly under the assigned principal's source custody,
   with independent review.
 
+Those availability observations are historical. The read-only Executive state
+route returned successfully at 2026-10-21T10:46:34Z from installed Mastermind
+80f384b8f58b7ca46422d9783aa5c0613c7bf4b2 and Macro
+88804ed7079700c598bb8e04aa64307d1335402d. Its active-builds view was reported as
+583 hours old and truncated. The exact Fabric roots route recovered at 10:47:31Z
+and retained ceo_submit_armed: false. Neither read creates admission, removes the
+arm restriction, qualifies Session Bridge, or proves the candidates installed.
+
 The screenshot attachment could not be opened at its supplied local path.
 This implementation is grounded in the user's stated outcome and the inspected
 estate; it makes no claim to have observed the screenshot or Claude's private internals.
@@ -210,6 +218,9 @@ The workstream carries the project objective, phase dependencies and next action
 A cumulative handoff carries verified source heads, tests, current gaps,
 outstanding effects and do-not-redo facts. This plan carries the architecture
 and acceptance sequence. These are existing Agent OS record types.
+Macro PR 9967 publishes these records and the compiler improvement. The numeric
+handoff PR field contains that Macro identity; cross-repository source carriers
+remain explicit Mastermind links instead of incorrect numeric joins.
 
 At a material phase boundary, the orchestrator should update the current phase
 and next action, record new decisions or discoveries only when warranted, and
@@ -269,9 +280,49 @@ It does not establish rate-limit rollover, native cross-provider continuation,
 delivery, model consumption, successor action or parent acceptance. The isolated
 composition remains reviewable source work, not release of PR 1289's HOLD.
 
+The reviewed integration is published as Mastermind PR 1676 at
+012449874afbd2a6dc92563f6b7f0f03a8d7cfc4, targeting PR 1289's existing branch.
+That commit records the tested lifecycle file unchanged. Its cherry-picks are
+dependency snapshots for review: before merging the contribution, reconcile
+them with accepted PR 656/1673 source heads. Keep further builder corrections
+on that original carrier.
+
+The successor is already synthetically RUNNING before PREPARE in both cases;
+this proves the release gate on preparation, not on launch. The fixed GitHub,
+Agent OS, authority and RUNTIME_SOURCE_PIN references are supplied fixtures,
+not fresh external acquisition or an attestation to the composed checkout.
+
+### Reviewable attended installation candidate
+
+The proposed canary uses the existing context-review workspace and focused
+Macro owner below. These exact paths exist in the acquired source estate; this
+is a definition for review, not an installed setting. Reconcile their source
+heads through the existing installation owner after source acceptance, and
+resolve the read-latency/process-settlement gap before executing the canary.
+
+```json
+{
+  "matcher": "^(startup|resume|clear|compact|fork)$",
+  "hooks": [{
+    "type": "command",
+    "command": "env MACRO_MASTERMIND_REPO='/Volumes/Mastermind 2/agent-workspaces/web/astra-project-context-20261021-001' python3 -B '/Volumes/Mastermind 2/agent-workspaces/web/astra-project-context-20261021-001/integrations/session_bridge/agentos_session_start.py' --workspace-root '/Volumes/Mastermind 2/agent-workspaces/web/astra-project-context-20261021-001' --workstream WS:ORCHESTRATOR-PROJECT-CONTINUITY --macro-root '/Volumes/Mastermind 2/agent-workspaces/macro/web/astra-long-horizon-agentos-20261021-001' --budget 3200",
+    "timeout": 35,
+    "async": false,
+    "additionalContextLimit": 0
+  }]
+}
+```
+
+The native installation owner must merge this reviewed SessionStart entry with
+existing definitions and pin the reviewed source/dependency closure. Actual
+native Codex review/trust is still required; no trusted_hash is supplied or
+written. Budget 3,200 is an explicit candidate, not a claim that the failed
+configured-owner read passed. The return-hook definition remains held pending
+review of the exact seven private source lines denied by automatic review.
+
 ## Remaining implementation and acceptance order
 
-1. Qualify both source candidates through required hosted checks and review.
+1. Qualify the published source candidates through required hosted checks and review.
    Reuse exact unchanged local evidence; investigate genuine candidate failures.
    Do not rerun suites or start duplicate CI just because the session resumes.
 2. Complete the held installed-adapter provenance review before repinning a return
@@ -333,3 +384,6 @@ the exact current publication and held-action state.
 - [Official Codex hooks contract](https://learn.chatgpt.com/docs/hooks)
 - [Return diagnostic source PR](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1664)
 - [Attended project-context source PR](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1666)
+- [Macro compiler and durable project records](https://github.com/mastermindx-market-intelligence/macro/pull/9967)
+- [Existing continuation-builder repair](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1673)
+- [Public Runtime integration proof](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676)
