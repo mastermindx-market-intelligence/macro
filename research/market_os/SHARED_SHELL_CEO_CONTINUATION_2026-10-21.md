@@ -184,11 +184,18 @@ window. Local rendering is not public acceptance.
   child observer12795. Its actual unit job reported15,198 passes and13 failures:
   missing native-route loading skeletons plus historical visual locks invalidated
   by six added core dictionary keys and three actually changed surfaces. Product
-  owns loading/copy-placement repair through admitted C1 Fabric
-  ss-product-native-gates-ci-20261021-001 (GLM5.3Flash/ubuntu0, controller65007).
-  The existing acceptance coordinator owns actual local recapture of the three
-  changed surfaces; unaffected evidence must not be blindly rebound. One coherent
-  corrective push remains on#1063. An isolated production-mode build of exact3187
+  consumed admitted C1 Fabric ss-product-native-gates-ci-20261021-001
+  (GLM5.3Flash/ubuntu0, controller65007), which settled naturally rc0 after698s.
+  Exact manifested patch b58caea4 was verified, integrated at3dbc and accepted
+  deterministically after64 affected passes; original metadata-observation refusal75
+  remains preserved, with no retry or replay. Core i18n again matches masterb02.
+  Local clean candidatefbc850932e778fb53543d26e07f6ac11c5c70611 also contains the
+  beta unit and disjoint first-Escape directory fix, with7 navigation passes,
+  TypeScript/affected lint/language guard PASS. Root read the actual focused diffs.
+  Family owns real keyboard/focus recheck; existing acceptance was reactivated
+  against exactfbc for actual captures of three changed surfaces. No blind rebinding.
+  Remote#1063 remains3187 pending the one coherent corrective push. An isolated
+  production-mode build of exact3187
   passed with all three new routes emitted; reuse it for unchanged build behavior.
 - The beta unit classified installed Next16.2.9's explicit post-SIGTERM exit143
   as a failure. The minimal comment plus SuccessExitStatus=143 patch passed
@@ -235,6 +242,15 @@ Compatibility owns normal source/gates/landing before apply. No extra CEO approv
 is required for that qualified continuation; no temporary bypass was commissioned.
 Public serving, exact build/publication identity and A-to-B-to-A recovery/rollback
 remain owed. Production port 3000 has not been changed by this commission.
+
+Root consumed the actual unchanged-A/PID3306695 namespace qualification: dedicated
+UID987/GID981, zero effective/bounding capabilities, NoNewPrivs and strict filesystem.
+Both data aliases resolve to the same device/inode under effective read-only mounts;
+same-user reads pass, nontruncating write-opens refuseEACCES, and scoped cache
+create/read/remove passes. This qualifies A isolation, not future B behavior.
+One normal certificate-verified public status preflight returns trusted hostname TLS
+but HTTP525 from EdgeOne while the beta origin vhost is absent. It is not healthy-app
+proof; no TLS bypass or browser retry occurred.
 
 Root's native Chrome profile 1 tab `1925928144` verified the existing product account
 session through the normal app Account UI (Chris, current October 21 sign-in) and
@@ -312,9 +328,9 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Exact next actions
 
-1. Product consumes the original12795 CI result, integrates the bounded admitted
-   loading/copy repair, actual reviewed visual recaptures and reviewed beta-unit
-   patch, then makes one coherent corrective#1063 push and observes that exact run.
+1. Product consumes the original12795 CI result, joins actual reviewed visual
+   recaptures and directory keyboard recheck to the qualified localfbc source,
+   then makes one coherent corrective#1063 push and observes that exact run.
    Reuse accepted Monitor/helper/source/build evidence where unchanged. Normal
    protected landing is authorized; product must not invoke default production deploy.
 2. Compatibility consumes sole observer99279 for#7949 head9fcef/run39620460168,
