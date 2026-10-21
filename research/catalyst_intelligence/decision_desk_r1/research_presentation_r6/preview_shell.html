@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Catalyst Intelligence · Research preview</title>
+  <style>/* THEME_TOKENS */</style>
+  <style>/* COMPONENT_CSS */</style>
+  <style>
+    body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
+    .research-preview-controls { max-width:1280px; margin:0 auto; padding:var(--sp-4,16px) var(--sp-6,24px); border-bottom:1px solid var(--line); }
+    .research-preview-controls .bci-dd-toolbar { margin:0; flex-wrap:wrap; }
+    .research-preview-controls label { display:flex; align-items:center; gap:var(--sp-2,8px); }
+    .research-preview-controls select { min-height:44px; max-width:100%; padding:var(--sp-2,8px); background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:var(--r-ctl,8px); font:inherit; }
+    @media(max-width:700px) { .research-preview-controls .bci-dd-toolbar { display:flex; flex-direction:column; align-items:stretch; gap:var(--sp-3,12px); } .research-preview-controls label { justify-content:space-between; } }
+  </style>
+</head>
+<body>
+  <aside class="research-preview-controls bci-decision-desk" aria-label="Research preview controls">
+    <div class="bci-dd-toolbar">
+      <label><span data-copy="theme">Theme</span><select id="previewTheme" aria-label="Theme"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+      <label><span data-copy="language">Language</span><select id="previewLanguage" aria-label="Language"><option value="en">English</option><option value="zh">中文</option></select></label>
+      <label><span data-copy="case">Example</span><select id="previewCase" aria-label="Example"><option value="delayed_reconstruction">Source correction</option><option value="history_missing">Prior evidence missing</option></select></label>
+    </div>
+  </aside>
+  <main id="research"></main>
+  <script>/* RESEARCH_COMPONENT_JS */</script>
+  <script type="application/json" id="researchCaptures">/* RESEARCH_CAPTURES */</script>
+  <script>
+  'use strict';
+  const captures=JSON.parse(document.getElementById('researchCaptures').textContent);
+  const params=new URLSearchParams(location.search);
+  let locale=params.get('lang')==='zh'?'zh':'en';
+  const initialCase=params.get('case')==='history_missing'?'history_missing':'delayed_reconstruction';
+  const theme=document.getElementById('previewTheme');
+  const language=document.getElementById('previewLanguage');
+  const example=document.getElementById('previewCase');
+  theme.value=params.get('theme')==='light'?'light':'dark';
+  language.value=locale; example.value=initialCase;
+  document.documentElement.dataset.theme=theme.value;
+  const component=CatalystResearchAssessment.mount(document.getElementById('research'),{assessment:captures[initialCase],locale});
+  function labels(){
+    document.documentElement.lang=locale==='zh'?'zh-CN':'en';
+    document.documentElement.dataset.lang=locale;
+    const copy=locale==='zh'?{theme:'主题',language:'语言',case:'示例',dark:'深色',light:'浅色',correction:'来源更正',missing:'缺少先前证据',title:'催化剂情报 · 研究预览'}:{theme:'Theme',language:'Language',case:'Example',dark:'Dark',light:'Light',correction:'Source correction',missing:'Prior evidence missing',title:'Catalyst Intelligence · Research preview'};
+    document.querySelectorAll('[data-copy]').forEach(node=>{node.textContent=copy[node.dataset.copy];});
+    theme.setAttribute('aria-label',copy.theme); language.setAttribute('aria-label',copy.language); example.setAttribute('aria-label',copy.case);
+    theme.options[0].textContent=copy.dark;theme.options[1].textContent=copy.light;
+    example.options[0].textContent=copy.correction;example.options[1].textContent=copy.missing;
+    document.title=copy.title;
+  }
+  labels();
+  theme.addEventListener('change',()=>{document.documentElement.dataset.theme=theme.value;});
+  language.addEventListener('change',()=>{locale=language.value;labels();component.setLocale(locale);});
+  example.addEventListener('change',()=>{component.setAssessment(captures[example.value]);});
+  // QA-only handle in a standalone artifact; no production host loads this page.
+  window.researchPreview={component,captures};
+  </script>
+</body>
+</html>

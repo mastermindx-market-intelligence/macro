@@ -4991,6 +4991,14 @@ def test_decision_desk_exclusive_scope_keeps_real_inputs_and_drops_unrelated_pro
         "tests/test_biocatalyst_decision_desk.py",  # ci-trigger-closure: data
         "tests/test_biocatalyst_decision_desk.cjs",  # ci-trigger-closure: data
         "tests/test_biocatalyst_decision_desk_host.cjs",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/build_preview.py",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/preview_shell.html",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/verify_preview.py",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/theme_excerpt.css",  # ci-trigger-closure: data
+        "site/catalyst_research_assessment.js",  # ci-trigger-closure: data
+        "templates/catalyst_research_assessment.js",  # ci-trigger-closure: data
+        "tests/test_catalyst_research_assessment.cjs",  # ci-trigger-closure: data
+        "research/catalyst_intelligence/decision_desk_r1/fixtures/stock_assessment_r8/delayed_reconstruction.assessment.json",  # ci-trigger-closure: data
         "research/catalyst_intelligence/decision_desk_r1/generate_company_evidence_fixtures.py",  # ci-trigger-closure: data
         "research/catalyst_intelligence/decision_desk_r1/fixtures/company-page.json",  # ci-trigger-closure: data
         "research/catalyst_intelligence/decision_desk_r1/fixtures/capture-receipt.json",  # ci-trigger-closure: data

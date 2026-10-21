@@ -1,0 +1,267 @@
+{
+  "schema": "catalyst.research_presentation_browser.v1",
+  "scope": "SYNTHETIC_RESEARCH_PREVIEW_ONLY",
+  "owner_head": "13b528d07e52680570a837f27571b64eb8176ca8",
+  "owner_receipt_sha256": "7c059aec43adf4514659d8571dcb43ba9e407441a093188c4c2c5c0d275f70e8",
+  "source_admission": false,
+  "live_wmn_binding": false,
+  "entitled_runtime_verified": false,
+  "production_publication_verified": false,
+  "browser": "151.0.7922.34",
+  "checks": [
+    "two exact owner captures render in sixteen EN/ZH, dark/light and desktop/mobile states",
+    "missing prior evidence remains distinct while current company evidence survives",
+    "language and theme controls update the actual component",
+    "owner-authored evidence is text and cannot execute markup",
+    "an invalid replacement clears all prior research content synchronously",
+    "a restored valid packet renders and teardown removes the view",
+    "no network calls, browser exceptions or console errors"
+  ],
+  "layouts": [
+    {
+      "case": "delayed_reconstruction",
+      "locale": "en",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "delayed_reconstruction-dark-en-1440.png",
+      "sha256": "8e3b11c06a6c065160e7ce58cd92972c7cea8d67e6bc8d6d3e46f436d6a0f0b7"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "en",
+      "theme": "dark",
+      "width": 390,
+      "screenshot": "delayed_reconstruction-dark-en-390.png",
+      "sha256": "fbd06d5290055c0f1a17a35f54239319c1e2016c50d34170f94b8cd38afc921d"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "en",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "delayed_reconstruction-light-en-1440.png",
+      "sha256": "77f7a3056ff7055017dea44a8133fa44296600fd72b7f5ff955e61cdc082e6a7"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "delayed_reconstruction-light-en-390.png",
+      "sha256": "2a0281da4ed8118ba0e8fc58bd632fcdee9c7582c1e3cb4f767ce7c5ed32dfe5"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "delayed_reconstruction-dark-zh-1440.png",
+      "sha256": "1cbbcbe886673ee667e5f2594f3783f7ce739f239745a4075f0509c06c8b92eb"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 390,
+      "screenshot": "delayed_reconstruction-dark-zh-390.png",
+      "sha256": "07d0effa5bf362a52d5ef01de50b890bb93c2d4185272411b8fca451dbfe4d6d"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "zh",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "delayed_reconstruction-light-zh-1440.png",
+      "sha256": "cf3c279283493a3181e6ee91c517acbd3ef3665e91e325a1338ee103fc505a7d"
+    },
+    {
+      "case": "delayed_reconstruction",
+      "locale": "zh",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "delayed_reconstruction-light-zh-390.png",
+      "sha256": "a0d8b5793eeb1bacdceb4522fb8d483fbc2d8ac33e4ab432e7679a8b6bdf1a4e"
+    },
+    {
+      "case": "history_missing",
+      "locale": "en",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "history_missing-dark-en-1440.png",
+      "sha256": "a5d8470f6f1b0c7dff323d47d73af3bd41112dca2227e3a947ca8b42fcfd9517"
+    },
+    {
+      "case": "history_missing",
+      "locale": "en",
+      "theme": "dark",
+      "width": 390,
+      "screenshot": "history_missing-dark-en-390.png",
+      "sha256": "038590c23dfdc8c8deb75735915fdae2b073d0c880d030ea965e384d6b7b869b"
+    },
+    {
+      "case": "history_missing",
+      "locale": "en",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "history_missing-light-en-1440.png",
+      "sha256": "5cb240897b14fdbe060a94406bb9913140199a72468e0bc68b0338d59720efbf"
+    },
+    {
+      "case": "history_missing",
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "history_missing-light-en-390.png",
+      "sha256": "d868c29de4bae6ed2e67a2ce94ff1e142d944fa4920adb46b07832c90d3d1947"
+    },
+    {
+      "case": "history_missing",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "screenshot": "history_missing-dark-zh-1440.png",
+      "sha256": "f6d21b80e934f671a8b53148b67bca793d977e5ea1d1439310d391182c0cebd9"
+    },
+    {
+      "case": "history_missing",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 390,
+      "screenshot": "history_missing-dark-zh-390.png",
+      "sha256": "5ed3e6658b7a66846f9772e65af13b0ec94358ebde61760abd684e07f5308db3"
+    },
+    {
+      "case": "history_missing",
+      "locale": "zh",
+      "theme": "light",
+      "width": 1440,
+      "screenshot": "history_missing-light-zh-1440.png",
+      "sha256": "c318129763cfb0816bc3f2e4424d429aba44da22e9e76d4d5a0a28531d0118fc"
+    },
+    {
+      "case": "history_missing",
+      "locale": "zh",
+      "theme": "light",
+      "width": 390,
+      "screenshot": "history_missing-light-zh-390.png",
+      "sha256": "43154f1b72c3ef114a39ca51deee920bc342b327cd53b9297e4f2e7a82dd0104"
+    }
+  ],
+  "font_checks": [
+    {
+      "case": "delayed_reconstruction",
+      "theme": "dark",
+      "width": 1440,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "delayed_reconstruction",
+      "theme": "dark",
+      "width": 390,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "delayed_reconstruction",
+      "theme": "light",
+      "width": 1440,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "delayed_reconstruction",
+      "theme": "light",
+      "width": 390,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "history_missing",
+      "theme": "dark",
+      "width": 1440,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "history_missing",
+      "theme": "dark",
+      "width": 390,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "history_missing",
+      "theme": "light",
+      "width": 1440,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    },
+    {
+      "case": "history_missing",
+      "theme": "light",
+      "width": 390,
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 4
+        }
+      ]
+    }
+  ],
+  "network_requests": [],
+  "browser_errors": [],
+  "source_sha256": {
+    "templates/catalyst_research_assessment.js": "7bbd57bed1cf013e643d47dba7da37104e9ee0ae1ed4581362a4d68557e0697a",
+    "templates/biocatalyst_decision_desk.css": "5d69fcef78a99727a0902905f16a782b8ddc3d6af97f177e6d610bd52565c03b",
+    "research/catalyst_intelligence/decision_desk_r1/theme_excerpt.css": "b4a38d4d90e1a20dbc0b59fb2a7f6654945e229c47ed1e2df11cd1c577a1c2d7",
+    "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/build_preview.py": "b850cd529554e22c0dd7b8fd5ee518c58bb3d05f4d40e453962f40cd05f90229",
+    "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/preview_shell.html": "d01cc71bb1ac8dbd9ada246e2cb95c49b0ba03869c3601f5d944798919303f11",
+    "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/verify_preview.py": "8146605384f79d79c8009b9f5ad6d4bcdfdff8c1e739a1e914e0b7a96cc40f5b"
+  },
+  "html_sha256": "c3c27f49ab896099e250c65d2e5346c1838561efa12250d46f10b5b72014e933"
+}

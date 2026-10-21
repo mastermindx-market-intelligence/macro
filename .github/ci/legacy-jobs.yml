@@ -38734,6 +38734,13 @@ jobs:
       - "tests/test_biocatalyst_decision_desk.cjs"
       - "tests/test_biocatalyst_decision_desk.py"
       - "tests/test_biocatalyst_decision_desk_host.cjs"
+      - "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/build_preview.py"
+      - "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/preview_shell.html"
+      - "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/verify_preview.py"
+      - "research/catalyst_intelligence/decision_desk_r1/theme_excerpt.css"
+      - "site/catalyst_research_assessment.js"
+      - "templates/catalyst_research_assessment.js"
+      - "tests/test_catalyst_research_assessment.cjs"
     timeout-minutes: 4
     runs-on: ubuntu-latest
     steps:

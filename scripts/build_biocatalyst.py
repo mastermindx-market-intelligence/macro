@@ -66,6 +66,7 @@ def render_shell(root: Path) -> Path:
     for name in (
         "biocatalyst.css", "biocatalyst.js", "biocatalyst_decision_desk.css",
         "biocatalyst_decision_desk.js", "biocatalyst_decision_desk_host.js",
+        "catalyst_research_assessment.js",
     ):
         _atomic_copy(root / "templates" / name, site / name)
     return page

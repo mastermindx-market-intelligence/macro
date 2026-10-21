@@ -471,3 +471,135 @@ case and later correction, and obtain explicit release-hold clearance.
 Keep DRAFT/HOLD, no Ready, auto-merge, merge-to-main, deployment or activation.
 Catalyst Intelligence remains BUILT_NOT_PROVEN and MISSION_COMPLETE=false.
 The current cumulative publication/CI frontier remains #9611 comment6291000963.
+
+
+## R6 — existing company-research output made readable (2026-10-21)
+
+### Bounded outcome and custody
+
+Continue original #9611, branch sol/web-biocatalyst-decision-desk-r1-20261018,
+operation biocatalyst-decision-desk-r1-20261018, from published R5 parent
+549aaee4f586d15a60fca697a61e6f52d8294698. The user requested continued buildout.
+Protected procedure pin d010b161386853586198a43f9ea9f535bbebb377,
+Skillpack1.0.1/bootstrap1. Draft/HOLD-FOR-SOL, no auto-merge and the separate
+R10/Company, Codex-native and DataOS owners remain binding.
+
+A pure renderer for catalyst.stock_research_assessment.v3 now presents company
+news changes and missing history, descriptive peer movement and coverage, the
+existing entry owner's research state, explicit unavailable advanced estimates,
+and separate identity/source/information/composition details. EN/ZH and
+dark/light use existing Decision Desk components. The build emits the paired
+data-free asset without loading it in the production Bio host.
+
+The owner contract is #9616 at13b528d07e52680570a837f27571b64eb8176ca8.
+Two historical synthetic CLI bodies and their original capture receipt were
+copied byte-for-byte to fixtures/stock_assessment_r8/. These are neither new
+native captures nor current market facts. SHA256s: delayed
+c4799c41792553d19234b9bdd978b27170f11b9e804c1927a36e4f041de651fb;
+missing history39defcc38d635182c05c1bac28a05ffc357f0f70614fb370aa124572fc7b52b2;
+receipt7c059aec43adf4514659d8571dcb43ba9e407441a093188c4c2c5c0d275f70e8.
+The builder refuses altered captures and replacement of different retained HTML.
+The browser verifier requires a fresh directory under the new R6 directory.
+Accepted R4 evidence and denied legacy documentation remain untouched.
+
+### Meaning and owner boundary
+
+NewsImpact-generated wording is labeled as an owner summary, not as original
+primary-source quotation. Missing history never becomes no change. An owner
+source-correction indicator never becomes a numeric magnitude reduction; the
+older retained R8 weakening-condition issue is not projected. Peer returns are
+observations from the supplied cohort, not factor residuals, causal spillover
+or predictive leadership. Entry states remain control/shadow research even
+when the supplied state is ENTRY_OPEN. Unqualified estimates remain null.
+
+The component acquires nothing and has no fetch, storage, authentication,
+navigation, order, publication or activation path. Evidence enters text nodes.
+Invalid replacement clears old evidence synchronously; snapshots protect locale
+updates from later caller mutation, and teardown prevents resurrection.
+
+No current WMN join is made. v3 lacks a WMN generation/event-revision binding,
+and the existing WMN identity does not bind the assessment identity epoch.
+Matching security/company alone cannot establish coherence or admitted rights.
+The native/serving owners still owe the admitted identity/source/entitlement
+mapping and correction-safe publication fence before live attachment. Digest
+shape checks are not authenticity, rights, source admission or decision-time
+availability proof.
+
+### Review and reconciled delegation
+
+One bounded native architecture advisory review identified the unsafe cross-
+contract join and recommended the separate pure renderer. The dedicated Fabric
+adapter was available, independently of Session Bridge's backend_unavailable.
+Root/parent biocatalyst-decision-desk-r1-20261018, child
+biocatalyst-dd-r6-research-renderer-20261021, controllerPID13681, terminated
+provider_error rc1 with VERIFIED_TERMINAL lineage and retry_allowed=false.
+Complete result SHA2563254af3cca60badf6bd0347a5601524c4c3aea5eafc33faa1ab929de4e048102.
+It returned no implementation; none was accepted or replayed. Its packet
+forbade original-worktree mutation. Parent retained unique source custody and
+continued bounded implementation directly; no replacement native owner ran.
+
+Independent read-only contract review found and the parent repaired:
+1. Valid legacy peer ISO timestamp forms were falsely rejected by v3's strict
+   parser. Peer-only normalization now preserves the owner language and
+   microsecond truncation; top/envelope/entry clocks remain strict.
+2. Derived owner summaries were mislabeled as original source text.
+3. Blocked-open entry and retrospectively formed cohorts could pass structural
+   checks. Open entry now requires no blockers; formation precedes the return
+   window; cohort purpose and positive age bound remain owner-qualified.
+
+A first closure-review turn hit model capacity before inspection. One bounded
+retry completed, followed by review of the repairs: PASS_WITH_LIMITS with no
+concrete remaining finding. This is advisory source concurrence, not a
+submitted GitHub review or release approval.
+
+### Completed source-dependent verification
+
+- Final Python3.12 focused run:19passed in3.86s, StudioPID90304, exit0.
+  Includes26actual Node contract cases through an explicit TAP wrapper and the
+  real shell/asset emission test. Counts overlap. Initial wrapper failure
+  exposed Node26's default reporter difference; explicit TAP repaired it.
+- Six CI declaration/closure/fallback/packing/ancestor/selection regressions:
+  6passed in255.43s, StudioPID77471; retained log
+  .pytest_cache/research_r6_ci_scope.log. Existing packing limits unchanged.
+- Structural YAML/AST comparison:869->876declared paths, exactly7additions;
+  every other job and this job's execution definition unchanged. The original
+  live host and R4 paths have no diff. No ceiling, check or assertion weakened.
+- Browser:9behaviors,16layouts,8Chinese-font checks,zero network/browser errors,
+  Python3.14/Playwright, Chromium151.0.7922.34, StudioPID90304 exit0.
+  Python3.12's missing Playwright import created no output before using the
+  installed browser environment. Current receipt:
+  research_presentation_r6/evidence_review_repaired/verification.json,
+  SHA2562be24676a02a625f9a587dfa7fed20c07a391803659fa4db1140247094010671.
+  Older evidence/ retains the first implementation; current claims use the
+  repaired source receipt. Parent inspected dark/English desktop and
+  light/Chinese mobile retained PNGs.
+- Design-system enforce-added:0blocking,25374pre-existing nonblocking findings.
+  Runtime-style injection guard passed245JSfiles,44existing injecting files,
+ 88existing allowed hits. Source affirmative-claim guard passed.
+  UI material-style detector found no new governed style surface.
+- git diff --check passed. Local contract-delta and AgentOS results are appended
+  after completion; hosted publication/CI receipts remain in the canonical
+  checkpoint6291000963. Local Node26 does not substitute for hosted Node20.
+
+MISSION_COMPLETE=false. The next safe source step is final local gates,
+same-carrier commit/push and current-head hosted CI, then reconciliation of
+existing native-owner returns. No source-branch merge, deployment, hold release,
+native activation or takeover is authorized by this presentation proof.
+
+### Final R6 local gates
+
+Contract-delta against parent549aaee4 completed with0introduced/0inherited,
+StudioPID93061 exit0,509.31s. Log .pytest_cache/research_r6_contract_delta.log
+SHA256ed6ab79b19435e6063e35334b6f59c4d432638fef48d9fbd6da2d7d196d90d49.
+Head/base both retain index135jobs/5822weight/10packs,
+free-content135jobs/5795weight/10packs and Prophet128jobs/5571weight/10packs;
+ceilings remain136/5822/10,135/5795/10 and130/5600/10 respectively.
+Weights are planner estimates, not measured runtime seconds.
+
+AgentOS completed1911records,0errors,156warnings, StudioPID99713 exit0;
+log SHA256594f6914a3011faca5a7143ae332c894ad7c20feb6a8a596079ea2ffd087ebb2.
+The existing six-check scope log SHA256 is
+f71e035ce21eb107f2e5b200b8581441ed3042156d24240c414897e5a3747324.
+All code and browser sources were frozen for these final local gates.
+The source commit and hosted verdict are recorded in checkpoint6291000963;
+Draft/HOLD and native integration requirements remain unchanged.

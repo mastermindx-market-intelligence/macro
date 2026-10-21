@@ -773,6 +773,9 @@ def test_decision_desk_is_primary_and_builder_emits_its_real_host_assets(tmp_pat
     assert scripts.index("theme.js") < scripts.index("biocatalyst_decision_desk.js")
     assert scripts.index("biocatalyst_decision_desk.js") < scripts.index("biocatalyst_decision_desk_host.js") < scripts.index("biocatalyst.js")
     assert "company-page.json" not in rendered and "reviewHarness" not in rendered
+    research_asset = "catalyst_research_assessment.js"
+    assert (tmp_path / "site" / research_asset).read_bytes() == (root / "templates" / research_asset).read_bytes()
+    assert research_asset not in rendered, "the research-only renderer must not attach to the live host"
 
 
 

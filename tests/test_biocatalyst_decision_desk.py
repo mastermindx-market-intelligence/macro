@@ -147,3 +147,61 @@ def test_failed_owner_fixture_import_restores_python_context_without_output(capt
     assert sys.dont_write_bytecode is before_bytecode
     assert not output.exists()
     assert subprocess.check_output(["git", "-C", str(owner), "status", "--porcelain"], text=True) == ""
+
+
+def _research_preview_helpers():
+    root = Path(__file__).resolve().parents[1]
+    return runpy.run_path(str(root / "research/catalyst_intelligence/decision_desk_r1/research_presentation_r6/build_preview.py"))
+
+
+def test_stock_research_presentation_executes_actual_node_contracts():
+    node = shutil.which("node")
+    assert node, "Stock research presentation requires Node"
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, "--test", "--test-reporter=tap", str(root / "tests/test_catalyst_research_assessment.cjs")],
+        cwd=root, text=True, capture_output=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "# tests " in result.stdout and "# fail 0" in result.stdout
+    assert (root / "templates/catalyst_research_assessment.js").read_bytes() == (
+        root / "site/catalyst_research_assessment.js"
+    ).read_bytes()
+
+
+def test_research_preview_consumes_exact_retained_captures_without_live_host(tmp_path):
+    helpers = _research_preview_helpers()
+    captures = helpers["load_captures"]()
+    assert set(captures) == {"delayed_reconstruction", "history_missing"}
+    assert captures["delayed_reconstruction"]["news_context"]["comparison"]["state"] == "PROJECTED_RESEARCH"
+    assert captures["history_missing"]["news_context"]["comparison"]["state"] == "UNAVAILABLE"
+    output = helpers["build"](tmp_path / "preview.html")
+    html = output.read_text()
+    assert "CatalystResearchAssessment.mount" in html
+    assert "BioCatalystDecisionDeskHost" not in html
+    assert "connect-src 'none'" in html
+    assert "/* RESEARCH_CAPTURES */" not in html
+    assert helpers["build"](output) == output
+
+
+@pytest.mark.parametrize("target", ["delayed_reconstruction.assessment.json", "capture-receipt.json"])
+def test_research_preview_refuses_altered_capture_before_output(tmp_path, monkeypatch, target):
+    helpers = _research_preview_helpers()
+    source = helpers["FIXTURES"]
+    copy = tmp_path / "captures"
+    shutil.copytree(source, copy)
+    changed = copy / target
+    changed.write_bytes(changed.read_bytes() + b" ")
+    monkeypatch.setitem(helpers["load_captures"].__globals__, "FIXTURES", copy)
+    output = tmp_path / "must-not-exist" / "preview.html"
+    with pytest.raises(ValueError, match="changed"):
+        helpers["build"](output)
+    assert not output.parent.exists()
+
+
+def test_research_preview_never_overwrites_a_retained_different_output(tmp_path):
+    output = tmp_path / "retained.html"
+    output.write_text("preserved previous evidence")
+    with pytest.raises(FileExistsError, match="fresh output"):
+        _research_preview_helpers()["build"](output)
+    assert output.read_text() == "preserved previous evidence"
