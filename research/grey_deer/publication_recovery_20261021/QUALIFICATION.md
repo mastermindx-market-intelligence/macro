@@ -1,0 +1,49 @@
+# Natural risk publication and decision-evidence qualification
+
+Programme: **MAS-258 / WS:GREY-DEER-RISK-INTELLIGENCE**. This continues the existing Census / Grey Deer / Risk Radar / Risk On–Risk Off programme. **MISSION_COMPLETE=false.**
+
+## Verified capability change
+
+The current reader repair landed through [Mastermind #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660) as `3960aefcf4724a88812d79d97c1b370dc9f951c4`. It withdraws expired confirmation from the actual UI and reasoning consumers while preserving historical observations, disagreement, clocks and defense floor. Exact-head CI/security and merge-group CI passed. Protected source readback at `2151a89f7ea3a340ec04932cbcfdf6a838df79b1` matched all ten owned reader blobs. Its clean canonical workspace has been released; published Git history and synthetic failure logs were preserved.
+
+[Mastermind #1667](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1667), current head `65c071d9d4820135a54d6d2f7af861bb5e7cebc1`, contains the natural publisher and trusted decision-evidence repair. At this checkpoint it is **draft, pending hosted test completion and normal admission**. CodeQL run39580522600 and aggregate119156961534 passed. CI39580529597 is still running. No installation is inferred.
+
+The publisher captures four fixed upstream inputs under a verified immutable source identity. All three existing voting sources must qualify together, including agreement with the typed consumer at the unchanged regime-date boundary. It publishes content-addressed Market View and decision-context copies, fsyncs reused/new files and directory ancestry, and uses the Market View latest rename as the sole commit point. Uncertain post-commit effects remain uncertain. Duplicate evidence does not acquire new clocks or sequence. The existing macro-refresh lifecycle owns publication; no new scheduler or event store is added.
+
+Decision custody records the actual initial prompt projection immediately before the reasoning call. The trusted local receipt cannot be replaced by model output. Malformed, absent, future or inconsistent clocks remain unavailable. The journal does not borrow current publications to fill historical entry context; ambiguous backdated/cross-day attribution is withheld without changing original decision IDs, targets or cohort dates. The receipt covers **initial_prompt_projection_only**, not later tool use, and cannot guarantee persistence after a crash before log append.
+
+## Tests and independent judgment
+
+The final application/test source at `dd44a6b69587e048a5346387436ab441f1b85512` passed **472 tests, one existing live-vendor skip, 75.66 seconds**, across17 suites under **Python3.12.13**. Current65 changes one documentation sentence only. Earlier458/1 evidence used Python3.12.4 and is kept distinct.
+
+Both bounded C3 source reviews initially returned NOT_ACCEPTED. Root reproduced and repaired voter-membership disagreement, orphan-file durability, invented capture clocks and historical date attribution. Both finite repair reviews accepted dd44. These are internal source judgments, not formal GitHub approval or production acceptance. Failed regressions and failed earlier review retrieval remain retained in [SOURCE_QUALIFICATION.json](SOURCE_QUALIFICATION.json).
+
+The later protected BOT renewal merge `a0faf7e44f76ac77c61e177738663544ddb6949d` changes two shared reader files. A finite composition review accepted the exact small deltas: the complete Market View API route is byte-identical, its no-store rule survives, and the new BOT availability path uses a separate read-only projection. Unchanged reader/publisher custody findings carry only through that inspected delta.
+
+## Runtime and input boundary
+
+The [09:54:36 read-only preflight](RUNTIME_PREFLIGHT_2026-10-21T095436Z.json) observed installed release `fe7afd0111141bae27927715e709d074fea729e2` in both host and service namespace. PID3972732 was active, started08:30:43UTC, restart counter0. This continuation did not restart the service and does not infer the cause of the earlier PID change. All three active books had readable nonempty NAV/account/fills with no pending target, WAL or settlement receipt. The established cohort hash was `75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c`.
+
+The installed August7/built-August10/seq9 publication remains byte-identical. The earlier05:38 actual-source capture found October19 Radar/cycles but August5 MTF; the candidate correctly refuses that cohort. A later Macro HEAD alone does not establish fresh eligible MTF. The original rotation owner retains [Macro #9957](https://github.com/mastermindx-market-intelligence/macro/pull/9957), head26f60b69. Its prospective reason-pair repair does not retrospectively admit the frozen contradictory records.
+
+[Macro #9932](https://github.com/mastermindx-market-intelligence/macro/pull/9932) advanced fromde95aa4 to146d958 through an **owner-authored continuation**, not a controller refresh. Root verified clean local/remote equality and leaves that writer and the four original evidence paths intact. This directory records the separate publisher/release qualification; it creates no new programme, authority or lifecycle owner.
+
+A later [10:20:54 preflight](RUNTIME_PREFLIGHT_2026-10-21T102054Z.json) found the same installed/service and ten authority identities. Immutable Macro capture `ca7edbcf50df21bd321bffa3433e5f105d3335da` now reports regimeOctober20 while MTF remainsAugust5. Working bytes matched the captured Git objects before/after. This is raw input metadata, not new publisher admission.
+
+The real health route timed out after10 seconds; a bounded follow-up at10:23 found Market View200 in0.333s and a static404 in0.303s while health again timed out after6.148s. [HEALTH_DEPENDENCY.json](HEALTH_DEPENDENCY.json) binds the source path and existing [health repair #668](https://github.com/mastermindx-market-intelligence/Mastermind/pull/668), whose CodeQL aggregate still reports six high alerts. Source custody and that failing gate are preserved. Neither a responsive Market View route nor an active service substitutes for deployment health acceptance.
+
+## Release rehearsal preparation
+
+[isolated_rehearsal.py](isolated_rehearsal.py) and [isolated_startup.py](isolated_startup.py) are prepared evidence harnesses. **No rehearsal result or protected release candidate is claimed at this checkpoint.** They must be bound to the final admitted full archive, current installed baseline and the existing cohort before execution.
+
+The controller copies the complete deployment-eligible tree into a temporary receiver, verifies its backup, installs the candidate there and restores the baseline with checksum readback. Actual registered startup uses installed Linux dependencies in private mount/network/PID namespaces. Live code, canonical data and resolved vendor targets are read-only. A Python audit fence denies writes outside the stage and all process/network effects. Scheduled dispatch is held before resume; the executor and first-run thread guard reject any attempt. All ten copied authority artifacts are compared before/after, alongside unchanged canonical authority and live service identity. The new lazy publication/receipt imports are exercised without invoking a publisher or portfolio.
+
+The first concrete harness review rejected a timeout/child-custody gap. The repaired controller `443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878` uses a dedicated process group, supported `unshare --kill-child=KILL`, bounded kill/reap and group-absence proof before restoring the receiver. Unverified child exit retains the isolated receiver. C3 accepted this finite closure; startup source remains `bd2546bc075693167bdece56488bb80a9e10dc71cedbfa5d8723968e0b7332b9`. A bounded Linux namespace timeout probe produced the expected timeout, reaped its launcher and proved group absence; it imported no application or portfolio. This validates that cleanup mechanism, not the application rehearsal.
+
+Paused startup/registration is not natural cron execution. Code restoration does not undo future publication or decision-record data effects. Unchanged deployment-helper fault-matrix evidence retains its earlier scope; it does not waive fresh archive/baseline/runtime bindings.
+
+## Remaining completion gates
+
+Finish #1667 exact-head tests, normal queue admission, merge-group tests and protected-source readback; qualify the admitted full archive; then prepare the concrete reserved production decision. Production deployment remains reserved under the current strategic state. The prior October20 approval was already executed for its earlier release.
+
+Fresh eligible producer output, a natural paired publication, the entitled UI path and actual machine-consumer proof remain open. Preserve all existing warning/recovery owners, source-purpose holds,532 unadmitted fits, frozen failed studies and natural-time W5 outcome maturity. No manual refresh/nightly, model fit, cohort rewrite, early grading, new policy authority or auto-exit is authorized by these source records.

@@ -1,0 +1,88 @@
+{
+  "schema": "grey_deer.release_health_dependency.v1",
+  "programme": "MAS-258",
+  "observed_runtime": {
+    "observed_at": "2026-10-21T10:23:18.001042+00:00",
+    "pid": "3972732",
+    "http_observations": [
+      {
+        "path": "/health",
+        "exception_type": "TimeoutError",
+        "elapsed_seconds": 6.148,
+        "error": "timed out"
+      },
+      {
+        "path": "/api/market_view",
+        "http_status": 200,
+        "bytes": 15145,
+        "elapsed_seconds": 0.333
+      },
+      {
+        "path": "/favicon.ico",
+        "exception_type": "HTTPError",
+        "elapsed_seconds": 0.303,
+        "error": "HTTP Error 404: Not Found"
+      }
+    ],
+    "process": {
+      "Name": "uvicorn",
+      "State": "S (sleeping)",
+      "VmSize": "2333852 kB",
+      "VmRSS": "163720 kB",
+      "Threads": "17"
+    },
+    "wait_channel_counts": {
+      "0": 1,
+      "futex_wait_queue": 14,
+      "io_sq_thread": 1,
+      "hrtimer_nanosleep": 1
+    },
+    "loadavg": "2.76 2.12 1.74 4/384 4067012",
+    "application_mutations_invoked": false
+  },
+  "related_preflight": "RUNTIME_PREFLIGHT_2026-10-21T102054Z.json",
+  "installed_source": "fe7afd0111141bae27927715e709d074fea729e2",
+  "macro_dependency_source": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+  "source_path": [
+    "app.main._runtime_health",
+    "brain.client.available",
+    "brain.cli_bridge.available",
+    "brain.provider_waterfall.available",
+    "brain.provider_waterfall.provider_rungs"
+  ],
+  "source_finding": "Installed availability calls the complete provider ranking path. The current Macro dependency reads the full provider ledger in is_cooling and window_load. This is a demonstrated source mechanism, not a live sampled-stack attribution of this timeout.",
+  "incumbent": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/668",
+    "head": "9a524adaa7624e497170f0869bad23bd98e65fcc",
+    "branch": "sol/health-liveness-fastpath-20260915-sol-001",
+    "draft": false,
+    "state": "open",
+    "source_paths": [
+      "brain/provider_waterfall.py",
+      "tests/test_provider_waterfall.py"
+    ],
+    "scope": "Lightweight presence and lane-authorized availability; actual reasoning ranking remains unchanged.",
+    "test_gate": {
+      "run": 35021156981,
+      "check": 104556863537,
+      "conclusion": "success"
+    },
+    "security_gate": {
+      "run": 35021156617,
+      "aggregate_check": 104557176781,
+      "conclusion": "failure",
+      "summary": "6 new high-severity alerts"
+    },
+    "governance_note": "Existing September16 source-custody comment 5694717832 names the incumbent and excludes competing writer, source transfer or deployment authority.",
+    "local_custody": "Fresh canonical M2 census found no original health-liveness workspace. Absence on this host is not proof that no owner exists elsewhere.",
+    "root_action": "Read-only dependency reconciliation; no edit, takeover, alert suppression, rerun, merge or deployment."
+  },
+  "related_active_owner": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/715",
+    "head": "d0330d0443ae8494da3c57cb71fb4c19af98d940",
+    "scope": "Existing BOT renewal provider result and scheduler health work; ordinary auto-merge was already enabled.",
+    "limit": "Its owner-reported live revoked-auth evidence and source changes are not credential recovery or a new root production attestation."
+  },
+  "boundary": "Health/runtime qualification remains open. A fast Market View200 response or an active PID is not a passing deployment health contract.",
+  "next_action": "Preserve the incumbent health repair and its security gate; consume a qualified repair or fresh passing real health observation before claiming release readiness."
+}
