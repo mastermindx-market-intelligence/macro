@@ -17618,6 +17618,7 @@ jobs:
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_evidence_modes.py"
       - "tests/test_sector_cycles.py"
+      - "tests/test_sector_generation_guard.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -29773,8 +29774,8 @@ jobs:
       # Uses pandas+pyarrow for the on-disk sponsor receipt; both are above.
       - name: etf partial-NAV sleeve — declared bounds and sweep/swap guards
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
-      - name: sector_central board order — fast-lens rotation rank, failing open to conviction
-        run: python -m pytest tests/test_sector_central.py -q
+      - name: sector_central board order — fast-lens rotation rank, failing open to conviction (+ SIC-D-B02 generation-guard suite)
+        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
