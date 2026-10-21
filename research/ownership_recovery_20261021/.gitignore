@@ -1,0 +1,5 @@
+data/
+private/
+__pycache__/
+*.parquet
+deliverables/
