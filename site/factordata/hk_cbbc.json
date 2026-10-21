@@ -1,6 +1,6 @@
 {
   "as_of_trade_date": "16102026",
-  "freshness": "slow",
+  "freshness": "stale",
   "bellwethers": [
     {
       "ticker": "^HSI",
@@ -302,13 +302,19 @@
       "total_outstanding_without_call": 170940000
     }
   ],
-  "banner": null,
+  "banner": {
+    "en": "Leverage data is out of date \u2014 showing the last good read",
+    "zh": "\u6760\u6746\u6570\u636e\u5df2\u8fc7\u671f\uff0c\u663e\u793a\u6700\u8fd1\u4e00\u6b21\u6709\u6548\u8bfb\u6570"
+  },
   "cbbc_total_contracts": 32947,
   "dw_total_contracts": 38583,
   "sld_call_levels_in_store": 4681,
   "sld_max_issue_date": "2026-10-16",
-  "sld_freshness": "slow",
+  "sld_freshness": "stale",
   "sld_pdftotext_available": true,
-  "sld_banner": null,
+  "sld_banner": {
+    "en": "Price-level data last updated 2026-10-16 \u2014 newer leveraged bets may be missing",
+    "zh": "\u4ef7\u4f4d\u6570\u636e\u66f4\u65b0\u81f3 2026-10-16\uff0c\u8f83\u65b0\u7684\u6760\u6746\u4ed3\u4f4d\u53ef\u80fd\u7f3a\u5931"
+  },
   "display_only": true
 }

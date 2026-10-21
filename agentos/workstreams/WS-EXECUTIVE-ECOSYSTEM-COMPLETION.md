@@ -13,7 +13,7 @@ status: active
 program: executive-os
 p0: EXECUTIVE_OS
 repos: [macro, mastermind]
-owner: fable-meta-ceo
+owner: astra-meta-ceo
 class: build
 blast_radius: irreversible
 ambiguity: scoped
@@ -30,19 +30,28 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Land the 2026-10-19 bcf4a2f7 acceptance-failed handoff (canary 01:16:01Z SPENT, acceptance
-      rc 1 at 01:18:08Z on the in-Control Control Room loopback listener, auditor FINAL
-      ARM_NOT_ADMISSIBLE, fix commissioned to the Opus sub-orchestrator) from branch
-      claude/ssd-exec-ecosystem-agentos-c7-873aabd3 together with the
-      WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 refresh in the same PR; the c6 record landed in macro
-      PR 9614. Keep the seat memory checkpoint current; the next record is the fix PR merge and the
-      host chain on the new master sha.
+      Record the October21 directly assigned Astra integration and accepted Sol returns in
+      the existing Mastermind ledger/programme and this workstream. The October19 handoff is
+      retained history; #1637 already merged and installed80f, Gate B already passed. Preserve
+      original host-operation custody and explicit refusals. Next durable delta is qualified
+      original #1362 integration plus resolved host readiness/acceptance prerequisites.
   - id: R1
-    title: Requalify codex-01 provider readiness with the existing credential (Mastermind PR 1591), then supersede the prepared 91c1cac5 acceptance with the current-master successor S2 = 08d78873 (root JOB-003; terminal JOB-006 carried)
+    title: Resolve installed80f credential qualification and current Control-start custody, then the reserved readiness and sealed acceptance operation
     status: in_progress
     depends_on: [A0]
     next_action: >
-      2026-10-19 04:4xZ (seat 873aabd3, Opus 5.5 from 04:3xZ): ACCEPTANCE OF bcf4a2f7 FAILED AND
+      CURRENT October21 — #1637 merged and installed80f384b8; Gate B accepted, no reinstall,
+      migration or maintenance preparation needed. Control PID98032 is enabled/running since
+      10:02:41UTC; ordinary worker disabled. Current start operation/requestID remains unknown,
+      while the autonomy receipt is only a dated October19 DISARMED projection. Native root's
+      original controller41117 returned credential_identity_changed_during_probe before inference;
+      no canary spent, October20 09:00UTC deadline expired. Retained receipt2bca56bc does not match
+      the installed fixed drift predecessor654abd66; a new deadline alone is not a repair. Resolve
+      actual host-operation attribution and lawful qualification through existing controls before
+      the reserved new human canary decision. Use canonical descriptor digest359eac8e for future
+      qualified acceptance, not descriptor file hash15359f28. No replay, credential replacement,
+      service action or arm is granted. See the canonical ledger October21 evidence delta.
+      HISTORY 2026-10-19 04:4xZ (seat 873aabd3, Opus 5.5 from 04:3xZ): ACCEPTANCE OF bcf4a2f7 FAILED AND
       THE FIX IS COMMISSIONED. Gate B passed 01:12:23Z (receipt 17330b78…, root 0600). The
       Chairman's ONE canary passed 01:16:01Z on the renew-device-revalidation route (unchanged
       codex-01 credential, expiry 02:12:00Z) and is SPENT. acceptance.sh (descriptor 7da3c957…)
@@ -237,26 +246,41 @@ do_not_redo:
   - The Control Room off-TCP fix commission (Opus sub-orchestrator ab51377778db486f1, 2026-10-19 04:3xZ) — continue by message only, never re-spawn or duplicate while it runs or awaits consumption.
   - Mastermind PR 1626 (comment/docs follow-up to PR 1623, head 00aad308, one read-only review 2026-10-19, verdict MERGE FINAL, 347 tests) — never re-review or add commits; merge it once.
 next_action: >
-  Lane R: bcf4a2f72538682f2fbe4902f6417e59cd038678 (S3-prime) stays INSTALLED-UNACCEPTED, UNARMED
-  and STOPPED; acceptance failed 2026-10-19 01:18:08Z because the installed composition hosts the
-  Chairman Control Room on 127.0.0.1:8787 inside Control while the host proof forbids any TCP
-  listener (see R1). The Chairman's canary is SPENT and the auditor's FINAL is
-  ARM_NOT_ADMISSIBLE. Next, in order — (1) consume the Opus sub-orchestrator's DRAFT Mastermind
-  PR (Control Room on a peer-checked AF_UNIX socket or out of process, the auditor's negative
-  tests, the acceptance failure artifact, the boot smoke check, the arm sample correction, a
-  workspace_acquisition fixture), route one independent read-only review, repair by message,
-  mark ready and merge through the queue; merge PR 1626 once (review verdict MERGE FINAL); (2) run
-  the host chain once on the new master sha (clone, assets, install-inputs with predecessor
-  bcf4a2f7, maintenance supersede once, seal check, install.sh, release disarm, Gate B); (3) ask
-  the Chairman ONCE for ONE readiness canary; (4) on his word — the canary, acceptance.sh within
-  28 minutes, the same auditor's refreshed FINAL by message, arm in the gap-5-safe order with
-  --foreground-only and device-auth, Phase F H1–H8 with successful and interrupted journeys.
-  Never a loopback allowlist, never a canary on seat authority, never a rerun of acceptance
-  under bcf4a2f7 and control.json 74366b97…. Lane A inputs (publication owner still unnamed)
-  stay open.
+  Current integrator Astra/root01a15741 consumes four verified Sol6.1/high slices under Chris's
+  direct October21 assignment. Complete original #1362 integration at dd9f1bbc through its
+  changed-risk review and exact-head CI; original local staged work remains preserved. Fabric
+  review returned rc78 canonical_source_unreadable before provider work, so no review verdict;
+  same-path admission diagnosis owns that dependency, without retry or provider failover.
+  Resolve R1 current Control-start requestID and lawful credential qualification before asking
+  the reserved new canary decision.80f installation and Gate B are accepted and must not repeat.
+  App signed-out browser behavior passes; sealed OS Executive/Studio transport composition and
+  authenticated Web/native result consumption remain. Preserve #1515 occupied/refused edits,
+  Macro9941/9340 updater custody, #633 unknown effect and original runtime roots. Then qualify
+  one normal and one interrupted Chairman journey across H1-H8, with original-parent result
+  consumption and durable Agent OS outcome. MISSION_COMPLETE remains false.
 ---
 
 ## Context
+
+**Current commission (October21).** Chris directly assigned Astra root
+`01a15741-5e68-7803-8eb4-ccac74a6c04b` the complete masterplan at Mastermind
+`8dd8bebfc525d6f688d7356027f3c3279be93759`,
+`research/EXECUTIVE_ECOSYSTEM_ASTRA_CEO_HANDOFF_2026-10-21.md`.
+Four Sol6.1/high coordinators own release, bridge, app and Fabric integration. Their verified
+ancestry, bounded returns and actual admission/results are retained in the existing root checkpoint
+`/Volumes/Mastermind/evidence/mmos-commission-01a15741/CURRENT.md` and linked canonical ledger/plan.
+This changes programme integration ownership, not original Fable host-operation custody or any
+real refusal. Current evidence supersedes stale instructions below; dated release history is retained.
+
+Verified October21: #1637 installed80f; original Gate B accepted; current Control running; no fresh
+acceptance/arm; descriptor canonical digest359eac differs from byte hash15359; #1359 facade reachable;
+all83 native adapter sequence11 files match their manifest; #1643 and #1652 merged. One supported
+Executive state read returned backend_unavailable; session_targets returned an empty list. Public
+signed-out `/os/` desktop keyboard/preview and390px responsive proof passed, with zero preview requests;
+this is not authenticated H8. Provenance: retained `masterplan-release.md`, `masterplan-fabric.md`,
+`masterplan-app.md`, `bridge-publication.json` and `masterplan-app-negative-browser.json` under the
+same evidence root, plus the canonical Mastermind ledger's October21 delta. No extra census or
+generated Agent OS view was created.
 
 **Brief.** Chairman mission "FABLE CEO META — Executive Ecosystem Completion Mission" (2026-10-17),
 held by the Fable Meta-CEO seat (Claude session `873aabd3`). The seat owns programme-level
