@@ -29171,6 +29171,11 @@ jobs:
       - "scripts/build_foresight.py"
       - "collectors/__init__.py"
       - "templates/foresight.html.j2"
+      - "tests/test_foresight_page_analyst_zh.py"
+      - "tests/test_foresight_page_fingerprint_depth.py"
+      - "tests/test_foresight_page_flag_ledger.py"
+      - "tests/test_foresight_page_score_base.py"
+      - "tests/test_foresight_page_trend_state.py"
       - "engine/__init__.py"
       - "engine/altdata_confirmers.py"
       - "engine/bottleneck.py"
@@ -29226,6 +29231,8 @@ jobs:
       # kill-condition attribution suite.
       - name: Foresight thesis monitor kill conditions
         run: python -m pytest tests/test_thesis_monitor.py -q
+      - name: Foresight page reader chips (score base, trend state, flag ledger, depth, zh)
+        run: python -m pytest tests/test_foresight_page_analyst_zh.py tests/test_foresight_page_fingerprint_depth.py tests/test_foresight_page_flag_ledger.py tests/test_foresight_page_score_base.py tests/test_foresight_page_trend_state.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
