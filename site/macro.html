@@ -134,6 +134,7 @@
 
 
 
+
 <nav class="site-nav">
 
 
@@ -380,6 +381,51 @@
     </div>
   </div>
 </nav>
+
+
+<div data-mmx-all-tools>
+  <button class="mmx-tools-trigger" type="button" data-tools-open hidden
+    aria-haspopup="dialog" aria-controls="mmx-all-tools" aria-expanded="false">All tools</button>
+  <dialog id="mmx-all-tools" class="mmx-tools" aria-labelledby="mmx-all-tools-title">
+    <div class="mmx-tools-shell">
+      <header class="mmx-tools-header">
+        <div>
+          <h2 id="mmx-all-tools-title" data-tools-title tabindex="-1" data-en="All tools" data-zh="所有工具">All tools</h2>
+          <p data-en="Go straight to the right workspace." data-zh="直接进入需要的工作台。">Go straight to the right workspace.</p>
+        </div>
+        <div class="mmx-tools-search">
+          <label class="mmx-tools-search-label" for="mmx-tools-query" data-en="Find a workspace, not a ticker." data-zh="查找工作台，而非股票代码。">Find a workspace, not a ticker.</label>
+          <div class="mmx-tools-search-box">
+            <input id="mmx-tools-query" data-tools-query type="search" autocomplete="off" spellcheck="false" placeholder="Find a tool or topic…">
+            <button class="mmx-tools-icon-button" data-tools-clear type="button" aria-label="Clear tool search" hidden>
+              <svg viewBox="0 0 18 18" aria-hidden="true"><path d="m5 5 8 8m0-8-8 8"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="mmx-tools-icon-button mmx-tools-close" data-tools-close type="button" aria-label="Close all tools">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="m5 5 8 8m0-8-8 8"/></svg>
+        </button>
+      </header>
+      <div class="mmx-tools-categories" data-tools-categories role="group" aria-label="Tool categories"></div>
+      <div class="mmx-tools-body" data-tools-scroll>
+        <div class="mmx-tools-results" data-tools-results></div>
+        <aside class="mmx-tools-aside">
+          <p class="mmx-tools-eyebrow" data-en="YOUR NEXT WORKSPACE" data-zh="下一个工作台">YOUR NEXT WORKSPACE</p>
+          <h3 data-en="Less searching. More understanding." data-zh="少一点寻找，多一点理解。">Less searching. More understanding.</h3>
+          <p data-en="Start with the current section, or search every available category." data-zh="从当前栏目开始，或搜索全部可用分类。">Start with the current section, or search every available category.</p>
+          <div class="mmx-tools-context" data-tools-context></div>
+          <p data-en="Opening tools does not change your market, filters or saved work." data-zh="打开工具菜单不会改变市场、筛选条件或已保存内容。">Opening tools does not change your market, filters or saved work.</p>
+        </aside>
+      </div>
+      <p class="mmx-tools-status" data-tools-status role="status" aria-live="polite" aria-atomic="true"></p>
+      <footer class="mmx-tools-footer">
+        <button data-tools-all type="button" data-en="Browse all destinations →" data-zh="浏览全部目的地 →">Browse all destinations →</button>
+        <span data-tools-count></span>
+      </footer>
+    </div>
+  </dialog>
+</div>
+
 <div class="grid">
 
   
@@ -4688,7 +4734,7 @@
         <g filter="url(#dialGlow5)">
           <line class="fg-mark-s" x1="190" y1="185" x2="190" y2="30"
                 style="stroke:var(--warn)" stroke-width="4" stroke-linecap="round"
-                transform="rotate(-7.2, 190, 185)"/>
+                transform="rotate(-1.8, 190, 185)"/>
           <circle class="fg-mark-s" cx="190" cy="185" r="9"  fill="rgba(8,12,18,.8)" style="stroke:var(--warn)" stroke-width="2.5"/>
           <circle class="fg-mark-f" cx="190" cy="185" r="4"  style="fill:var(--warn)"/>
         </g>
@@ -4717,8 +4763,8 @@
       <span class="l-zh">暂不行动——本面板今日无需操作。</span>
     </div>
     <div class="mx5-sentiment-label">
-      <span class="l-en">Composite at 46 &middot; neutral zone</span>
-      <span class="l-zh">综合指数 46 &middot; 中性区间</span>
+      <span class="l-en">Composite at 49 &middot; neutral zone</span>
+      <span class="l-zh">综合指数 49 &middot; 中性区间</span>
     </div>
     
     
@@ -4749,18 +4795,18 @@
       <div class="mx5-sector-chips">
         
         <span class="mx5-sector-chip cold">
-          <span class="l-en">Robotics &amp; Automation</span>
-          <span class="l-zh">机器人与自动化</span>
-        </span>
-        
-        <span class="mx5-sector-chip cold">
           <span class="l-en">Magnificent Seven</span>
           <span class="l-zh">七巨头</span>
         </span>
         
         <span class="mx5-sector-chip cold">
-          <span class="l-en">AI Software &amp; Platforms</span>
-          <span class="l-zh">AI 软件与平台</span>
+          <span class="l-en">Crypto &amp; Digital Rails</span>
+          <span class="l-zh">加密与数字轨道</span>
+        </span>
+        
+        <span class="mx5-sector-chip cold">
+          <span class="l-en">Cybersecurity</span>
+          <span class="l-zh">网络安全</span>
         </span>
         
       </div>
@@ -4772,18 +4818,6 @@
     <div class="mx5-sector-heat-divider hero">
       <div class="mx5-sector-heat-label"><span class="l-en">Sector Heat</span><span class="l-zh">板块热图</span></div>
       <div class="mx5-sector-heat-bars">
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-sector-heat-col" data-tip-en="Robotics &amp; Automation — cooling" data-tip-zh="机器人与自动化 — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
-        </div>
         
         
         
@@ -4805,7 +4839,7 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="AI Software &amp; Platforms — cooling" data-tip-zh="AI 软件与平台 — 退潮">
+        <div class="mx5-sector-heat-col" data-tip-en="Crypto &amp; Digital Rails — cooling" data-tip-zh="加密与数字轨道 — 退潮">
           <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
         </div>
         
@@ -4817,7 +4851,19 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="Crypto &amp; Digital Rails — cooling" data-tip-zh="加密与数字轨道 — 退潮">
+        <div class="mx5-sector-heat-col" data-tip-en="Cybersecurity — cooling" data-tip-zh="网络安全 — 退潮">
+          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <div class="mx5-sector-heat-col" data-tip-en="AI Agents &amp; Applications — cooling" data-tip-zh="AI 智能体与应用 — 退潮">
           <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
         </div>
         
@@ -5033,7 +5079,7 @@
         
         <span class="mx5-ai-ticker-pill">TSLA</span>
         
-        <span class="mx5-ai-ticker-pill">NFLX</span>
+        <span class="mx5-ai-ticker-pill">USO</span>
         
         <span class="mx5-ai-ticker-pill">XLF</span>
         
@@ -5043,14 +5089,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 High-Impact Items</span><br>
-          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">rates</span><br>
-          8 high-impact signals across channels
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 High-Impact Items</span><br>
+          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">earnings</span><br>
+          4 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 条高影响信息</span><br>
-          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">利率</span><br>
-          8 条高影响信号
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 条高影响信息</span><br>
+          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">业绩</span><br>
+          4 条高影响信号
         </span>
         
       </div>
@@ -5133,11 +5179,11 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">SA analyst upgrades/downgrades: TSLA, V, NFLX, GOOG</span>
-              <span class="l-zh">SA 分析师上调/下调评级：TSLA、V、NFLX、GOOG</span>
+              <span class="l-en">SpaceX stock jumps 10% after earnings beat and Musk hints at Tesla tie-up</span>
+              <span class="l-zh">SpaceX股价上涨10%，此前财报超预期且马斯克暗示可能与特斯拉联手</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>Seeking Alpha - Market Currents</span> · 
+              <span>CNBC - Tech</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -5931,26 +5977,26 @@
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr cool">&#9661;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">Robotics &amp; Automation</span><span class="l-zh">机器人与自动化</span></span>
-              <span class="mx5-dlg-sector-rk">#10</span>
-            </div>
-            
-            <div class="mx5-dlg-sector-row">
-              <span class="mx5-dlg-sector-arr cool">&#9661;</span>
               <span class="mx5-dlg-sector-name"><span class="l-en">Magnificent Seven</span><span class="l-zh">七巨头</span></span>
-              <span class="mx5-dlg-sector-rk">#12</span>
-            </div>
-            
-            <div class="mx5-dlg-sector-row">
-              <span class="mx5-dlg-sector-arr cool">&#9661;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></span>
-              <span class="mx5-dlg-sector-rk">#14</span>
+              <span class="mx5-dlg-sector-rk">#13</span>
             </div>
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr cool">&#9661;</span>
               <span class="mx5-dlg-sector-name"><span class="l-en">Crypto &amp; Digital Rails</span><span class="l-zh">加密与数字轨道</span></span>
-              <span class="mx5-dlg-sector-rk">#15</span>
+              <span class="mx5-dlg-sector-rk">#16</span>
+            </div>
+            
+            <div class="mx5-dlg-sector-row">
+              <span class="mx5-dlg-sector-arr cool">&#9661;</span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">Cybersecurity</span><span class="l-zh">网络安全</span></span>
+              <span class="mx5-dlg-sector-rk">#20</span>
+            </div>
+            
+            <div class="mx5-dlg-sector-row">
+              <span class="mx5-dlg-sector-arr cool">&#9661;</span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">AI Agents &amp; Applications</span><span class="l-zh">AI 智能体与应用</span></span>
+              <span class="mx5-dlg-sector-rk">#21</span>
             </div>
             
           </div>
@@ -7775,7 +7821,7 @@
         <section class="riskdlg-vw" data-sx-vw-host="risk-detail">
           <div class="riskdlg-sec-h">
             <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
-            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-20</small>
+            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-21</small>
           </div>
           <div class="riskdlg-vw-note">
             <span class="l-en">Detailed volatility, curve, correlation and dispersion context. Display-only — the regime read above remains primary.</span>
@@ -7825,7 +7871,7 @@
   
   
   
-  <div class="sx-vw-row sx-vw-row--rising_fast" data-sx-vw-chip="vix_velocity" data-tier="rising_fast">
+  <div class="sx-vw-row sx-vw-row--quiet" data-sx-vw-chip="vix_velocity" data-tier="quiet">
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
       <div class="sx-vw-name">
@@ -8045,12 +8091,12 @@
               <div class="rkc-mood-lens-top">
                 <span class="rkc-mood-lens-name"><span class="l-en">Sentiment mix</span><span class="l-zh">情绪合成</span></span>
                 <span class="rkc-mood-scoreline">
-                  <strong class="rkc-mood-score">46</strong><span class="rkc-mood-unit">/100</span>
+                  <strong class="rkc-mood-score">49</strong><span class="rkc-mood-unit">/100</span>
                   <span class="chip c-muted"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
                 </span>
               </div>
-              <div class="rkc-mood-mini-track" role="img" aria-label="Sentiment mix 46 out of 100">
-                <span class="rkc-mood-pin" style="--rkc-pos:46%"></span>
+              <div class="rkc-mood-mini-track" role="img" aria-label="Sentiment mix 49 out of 100">
+                <span class="rkc-mood-pin" style="--rkc-pos:49%"></span>
               </div>
             </div>
             
@@ -8154,13 +8200,13 @@
         
         
         <div class="riskdlg-leadership">
-        <div class="riskdlg-sec-h"><span class="l-en">Leadership context</span><span class="l-zh">领涨背景</span><small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-19</small></div>
+        <div class="riskdlg-sec-h"><span class="l-en">Leadership context</span><span class="l-zh">领涨背景</span><small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-20</small></div>
         <div class="rsx-leaders">
           
           
           <div class="rkc-rot-head">
             <span><span class="l-en">Current theme pulse</span><span class="l-zh">当前主题脉搏</span></span>
-            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-19</small>
+            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-20</small>
           </div>
           <div class="riskdlg-rot">
             
@@ -8174,14 +8220,14 @@
             
             <a class="riskdlg-theme" href="basket/ai_agents.html">
               <span class="riskdlg-tn"><span class="l-en">AI Agents</span><span class="l-zh">AI 智能体</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#20</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#21</span></span>
             </a>
             
             
             
             <a class="riskdlg-theme" href="basket/non_ai_software.html">
               <span class="riskdlg-tn"><span class="l-en">Other Software</span><span class="l-zh">其他软件</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#4</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#2</span></span>
             </a>
             
             
@@ -8191,28 +8237,28 @@
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/ai_semiconductors.html">
               <span class="riskdlg-tn"><span class="l-en">AI Semis</span><span class="l-zh">AI 半导体</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#30</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#34</span></span>
             </a>
             
             
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/ai_infra.html">
               <span class="riskdlg-tn"><span class="l-en">AI Infrastructure</span><span class="l-zh">AI 基础设施</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#31</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#35</span></span>
             </a>
             
             
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/semicap_equipment.html">
               <span class="riskdlg-tn"><span class="l-en">Semicap Equipment</span><span class="l-zh">半导体设备</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#32</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#39</span></span>
             </a>
             
             
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/memory_storage.html">
               <span class="riskdlg-tn"><span class="l-en">Memory &amp; Storage</span><span class="l-zh">存储与内存</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#36</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#37</span></span>
             </a>
             
             </details>
@@ -9166,10 +9212,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655214-sa-analyst-upgradesdowngrades-tsla-v-nflx-goog?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/spacex-spcx-stock-musk-merger-tesla.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
-              <span class="nbx-title"><span class="l-en">SA analyst upgrades/downgrades: TSLA, V, NFLX, GOOG</span><span class="l-zh">SA 分析师上调/下调评级：TSLA、V、NFLX、GOOG</span></span>
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">SpaceX stock jumps 10% after earnings beat and Musk hints at Tesla tie-up</span><span class="l-zh">SpaceX股价上涨10%，此前财报超预期且马斯克暗示可能与特斯拉联手</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9202,10 +9248,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/spacex-spcx-stock-musk-merger-tesla.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/tesla-tsla-q3-2026-earnings-report.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">SpaceX stock jumps 8% after earnings beat and Musk hints at Tesla tie-up</span><span class="l-zh">SpaceX 股价在财报超预期及马斯克暗示与特斯拉合作后上涨 8%</span></span>
+              <span class="nbx-title"><span class="l-en">Tesla earnings loom after Musk calls SpaceX merger a &#39;good idea&#39;</span><span class="l-zh">马斯克称SpaceX合并是“好主意”后，特斯拉财报备受关注</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9220,13 +9266,13 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/21/australia-data-center-operator-nexdc-datacenter.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.rttnews.com/story.aspx?Id=3701157" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Australian data center operator NextDC&#39;s shares plunge 40% after it slashes earnings forecast</span><span class="l-zh">澳大利亚数据中心运营商NextDC大幅下调盈利预测后股价暴跌40%</span></span>
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">UK Inflation Rises To 3 . 5 % On Energy Costs ; Bolsters Rate Hike Case</span><span class="l-zh">英国通胀因能源成本升至3.5%；强化加息理由</span></span>
             </div>
             <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
+              <span class="nbx-src">gdelt</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Oct 21</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
@@ -9256,10 +9302,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655285-yieldmax-ultra-short-option-income-strategy-etf-declares-0_2091-dividend?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655422-jpm-sees-corning-posting-strong-revenue-on-ai-demand?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Buybacks</span><span class="l-zh">回购/分红</span></span>
-              <span class="nbx-title"><span class="l-en">YieldMax Ultra Short Option Income Strategy ETF declares $0.2091 dividend</span><span class="l-zh">YieldMax Ultra Short Option Income Strategy ETF 宣布每股派息 0.2091 美元</span></span>
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">JPM sees Corning posting strong revenue on AI demand</span><span class="l-zh">摩根大通预计康宁将因AI需求而实现强劲营收</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9274,10 +9320,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655283-yieldmax-s-and-p-500-0dte-covered-call-etf-declares-0_1811-dividend?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655424-meta-to-pay-25b-to-new-mexico-in-cambridge-analytica-case?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Buybacks</span><span class="l-zh">回购/分红</span></span>
-              <span class="nbx-title"><span class="l-en">YieldMax® S&amp;P 500 0DTE Covered Call ETF declares $0.1811 dividend</span><span class="l-zh">YieldMax® S&amp;P 500 0DTE Covered Call ETF 宣布每股派息 0.1811 美元</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Meta to pay $25B to New Mexico in Cambridge Analytica case</span><span class="l-zh">Meta将在剑桥分析案中向新墨西哥州支付250亿美元</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9292,10 +9338,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4655281-yieldmax-r2000-0dte-covered-call-etf-declares-0_2332-dividend?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655428-microsofts-next-gen-xbox-device-price-is-a-big-pill-to-swallow-even-for-the-mega-cap-company-sas-chris-ciaccia?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Buybacks</span><span class="l-zh">回购/分红</span></span>
-              <span class="nbx-title"><span class="l-en">YieldMax® R2000 0DTE Covered Call ETF declares $0.2332 dividend</span><span class="l-zh">YieldMax® R2000 0DTE Covered Call ETF 宣布每股派息 0.2332 美元</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Microsoft’s next gen Xbox device price is ‘a big pill to swallow’ even for the mega-cap company – SA’s Chris Ciaccia</span><span class="l-zh">微软下一代Xbox设备价格“难以接受”，即便对这家巨型市值公司也是如此——SA的Chris Ciaccia</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9310,31 +9356,31 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/metas-ai-spending-spree-has-investors-taking-a-page-from-the-financial-crisis-playbook-4ea05f5c?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4655412-blackstone-apollo-unit-may-be-able-to-buy-minority-stakes-in-nfl-teams---report?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">Blackstone, Apollo unit may be able to buy minority stakes in NFL teams - report</span><span class="l-zh">报道称Blackstone、Apollo部门或可购买NFL球队少数股权</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 21</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.proactiveinvestors.com/companies/news/1100440/markets-live-wall-street-opens-stronger-as-ai-stocks-rally-ftse-closes-higher-1100440.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Macro</span><span class="l-zh">宏观</span></span>
-              <span class="nbx-title"><span class="l-en">Meta’s AI spending spree has investors taking a page from the financial-crisis playbook</span><span class="l-zh">Meta的AI支出狂潮让投资者借鉴金融危机时期的策略</span></span>
+              <span class="nbx-title"><span class="l-en">MARKETS LIVE : Wall Street opens stronger as AI stocks rally ; FTSE closes higher</span><span class="l-zh">市场直播：华尔街开盘走强，AI股上涨；富时指数收高</span></span>
             </div>
             <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 21</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/why-spacexs-stock-is-surging-and-lifting-the-broader-ai-universe-along-with-it-0cd62f39?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Macro</span><span class="l-zh">宏观</span></span>
-              <span class="nbx-title"><span class="l-en">Why SpaceX’s stock is surging — and lifting the broader AI universe along with it</span><span class="l-zh">为何SpaceX股价飙升——并带动整个AI板块上涨</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
+              <span class="nbx-src">gdelt</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Oct 21</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
@@ -9957,7 +10003,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <div class="fg-neutral sg-hero">
-          <div class="sg-hero-num" style="color:var(--fg-col, #f59e0b)">46</div>
+          <div class="sg-hero-num" style="color:var(--fg-col, #f59e0b)">49</div>
           <div>
             <div class="sg-hero-band" style="color:var(--fg-col, #f59e0b)"><span class="l-en">Neutral</span><span class="l-zh">中性</span></div>
             <div class="sg-hero-sub"><span class="l-en">Composite of 11 market gauges — a mood read, not a signal.</span><span class="l-zh">11 项市场指标合成 — 情绪参考，非交易信号。</span></div>
@@ -9968,7 +10014,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
             <span class="sg-track-tick" style="left:40%"></span>
             <span class="sg-track-tick" style="left:60%"></span>
           </div>
-          <div class="sg-track-marker" style="--sg-pos:46%"></div>
+          <div class="sg-track-marker" style="--sg-pos:49%"></div>
           <div class="sg-track-axis"><span>0 · <span class="l-en">Fear</span><span class="l-zh">恐慌</span></span><span><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Greed</span><span class="l-zh">贪婪</span> · 100</span></div>
         </div>
         <div class="mx5-dlg-sep"></div>
@@ -10047,34 +10093,34 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         
-        <div class="mx5-dlg-factor-row fg-fear" style="--sg-c:#ef4444" data-rpop tabindex="0" role="button" aria-label="52-week strength (new-high ratio) — sentiment gauge detail">
+        <div class="mx5-dlg-factor-row fg-greed" style="--sg-c:#22d97a" data-rpop tabindex="0" role="button" aria-label="52-week strength (new-high ratio) — sentiment gauge detail">
           <div>
             <div class="mx5-dlg-factor-name"><span class="l-en">52-week strength (new-high ratio)</span><span class="l-zh">52周强势（新高比例）</span><span class="sg-hint" aria-hidden="true">i</span></div>
-            <div class="mx5-dlg-factor-read" style="color:var(--fg-col, #ef4444)">
+            <div class="mx5-dlg-factor-read" style="color:var(--fg-col, #22d97a)">
               <span class="l-en">Highs and lows roughly balanced</span><span class="l-zh">新高与新低大致持平</span>
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:31.0%;background:var(--fg-col, #ef4444)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #ef4444)">31</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:65.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">65</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
               <span class="row-pop-name"><span class="l-en">52-week strength (new-high ratio)</span><span class="l-zh">52周强势（新高比例）</span></span>
-              <span class="row-pop-tag dn"><span class="l-en">Fear</span><span class="l-zh">恐慌</span></span>
+              <span class="row-pop-tag up"><span class="l-en">Greed</span><span class="l-zh">贪婪</span></span>
             </div>
             <div class="row-pop-div"></div>
-            <div class="sg-pop-dialwrap"><div class="sg-dial" style="--sg-c:#ef4444">
+            <div class="sg-pop-dialwrap"><div class="sg-dial" style="--sg-c:#22d97a">
 <svg viewBox="0 0 132 74" preserveAspectRatio="xMidYMid meet" role="img" aria-hidden="true">
 <path class="sg-dial-track" d="M14 64 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(-34.2 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(27.0 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">31</div>
-<div class="sg-dial-cap">Fear</div>
+<div class="sg-dial-val">65</div>
+<div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
               
@@ -10092,14 +10138,14 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,15.69 5.42,3.0 10.85,18.81 16.27,25.44 21.69,25.95 27.12,3.0 32.54,16.65 37.97,19.44 43.39,21.12 48.81,14.55 54.24,18.63 59.66,16.02 65.08,16.95 70.51,13.74 75.93,15.75 81.36,21.81 86.78,23.88 92.2,3.0 97.63,23.55 103.05,21.87 108.47,20.76 113.9,18.27 119.32,22.11 124.75,25.41 130.17,19.47 135.59,28.47 141.02,27.45 146.44,23.31 151.86,15.99 157.29,27.06 162.71,28.59 168.14,29.25 173.56,30.36 178.98,27.24 184.41,27.21 189.83,27.81 195.25,29.64 200.68,26.97 206.1,30.69 211.53,28.62 216.95,27.93 222.37,29.25 227.8,29.25 233.22,27.24 238.64,29.76 244.07,28.8 249.49,29.67 254.92,29.91 260.34,28.47 265.76,25.86 271.19,21.15 276.61,28.59 282.03,23.28 287.46,23.85 292.88,24.72 298.31,21.87 303.73,25.02 309.15,3.0 314.58,14.52 320.0,23.55 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,3.0 5.42,18.81 10.85,25.44 16.27,25.95 21.69,3.0 27.12,16.65 32.54,19.44 37.97,21.12 43.39,14.55 48.81,18.63 54.24,16.02 59.66,16.95 65.08,13.74 70.51,15.75 75.93,21.81 81.36,23.88 86.78,3.0 92.2,23.55 97.63,21.87 103.05,20.76 108.47,18.27 113.9,22.11 119.32,25.41 124.75,19.47 130.17,28.47 135.59,27.45 141.02,23.31 146.44,15.99 151.86,27.06 157.29,28.59 162.71,29.25 168.14,30.36 173.56,27.24 178.98,27.21 184.41,27.81 189.83,29.64 195.25,26.97 200.68,30.69 206.1,28.62 211.53,27.93 216.95,29.25 222.37,29.25 227.8,27.24 233.22,29.76 238.64,28.8 244.07,29.67 249.49,29.91 254.92,28.47 260.34,25.86 265.76,21.15 271.19,28.59 276.61,23.28 282.03,23.85 287.46,24.72 292.88,21.87 298.31,25.02 303.73,3.0 309.15,14.52 314.58,23.55 320.0,13.5 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 0.7 · 31/100 in its own history</span>
-              <span class="l-zh">读数：0.7 · 历史百分位 31/100</span>
+              <span class="l-en">Reading: 0.967 · 65/100 in its own history</span>
+              <span class="l-zh">读数：0.967 · 历史百分位 65/100</span>
             </div>
           </span>
         </div>
@@ -10117,8 +10163,8 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:78.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">78</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:92.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">92</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10132,10 +10178,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(50.4 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(75.6 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">78</div>
+<div class="sg-dial-val">92</div>
 <div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10154,14 +10200,14 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,16.14 5.42,11.28 10.85,16.56 16.27,20.07 21.69,21.66 27.12,16.98 32.54,11.58 37.97,13.59 43.39,17.55 48.81,14.13 54.24,16.35 59.66,15.93 65.08,16.38 70.51,13.41 75.93,14.28 81.36,21.96 86.78,23.19 92.2,21.21 97.63,25.68 103.05,21.21 108.47,18.42 113.9,21.12 119.32,19.44 124.75,24.6 130.17,25.2 135.59,28.74 141.02,30.33 146.44,28.08 151.86,23.37 157.29,26.07 162.71,28.86 168.14,31.29 173.56,31.68 178.98,28.8 184.41,26.52 189.83,28.47 195.25,29.79 200.68,27.18 206.1,29.07 211.53,26.19 216.95,24.78 222.37,26.85 227.8,28.05 233.22,23.22 238.64,25.8 244.07,26.46 249.49,29.34 254.92,26.04 260.34,22.11 265.76,17.13 271.19,11.64 276.61,17.76 282.03,12.15 287.46,8.97 292.88,6.84 298.31,7.02 303.73,8.1 309.15,5.1 314.58,5.91 320.0,9.48 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,11.28 5.42,16.56 10.85,20.07 16.27,21.66 21.69,16.98 27.12,11.58 32.54,13.59 37.97,17.55 43.39,14.13 48.81,16.35 54.24,15.93 59.66,16.38 65.08,13.41 70.51,14.28 75.93,21.96 81.36,23.19 86.78,21.21 92.2,25.68 97.63,21.21 103.05,18.42 108.47,21.12 113.9,19.44 119.32,24.6 124.75,25.2 130.17,28.74 135.59,30.33 141.02,28.08 146.44,23.37 151.86,26.07 157.29,28.86 162.71,31.29 168.14,31.68 173.56,28.8 178.98,26.52 184.41,28.47 189.83,29.79 195.25,27.18 200.68,29.07 206.1,26.19 211.53,24.78 216.95,26.85 222.37,28.05 227.8,23.22 233.22,25.8 238.64,26.46 244.07,29.34 249.49,26.04 254.92,22.11 260.34,17.13 265.76,11.64 271.19,17.76 276.61,12.15 282.03,8.97 287.46,6.84 292.88,7.02 298.31,8.1 303.73,5.1 309.15,5.91 314.58,9.48 320.0,5.28 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 33.8 · 78/100 in its own history</span>
-              <span class="l-zh">读数：33.8 · 历史百分位 78/100</span>
+              <span class="l-en">Reading: 60.8 · 92/100 in its own history</span>
+              <span class="l-zh">读数：60.8 · 历史百分位 92/100</span>
             </div>
           </span>
         </div>
@@ -10340,14 +10386,14 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" points="0.0,22.8 5.42,17.1 10.85,14.61 16.27,14.28 21.69,15.84 27.12,14.22 32.54,12.9 37.97,12.39 43.39,13.5 48.81,13.11 54.24,11.67 59.66,11.82 65.08,11.04 70.51,12.96 75.93,14.28 81.36,12.39 86.78,14.67 92.2,12.87 97.63,14.31 103.05,13.47 108.47,12.99 113.9,11.55 119.32,11.37 124.75,12.45 130.17,15.48 135.59,12.99 141.02,11.16 146.44,11.61 151.86,13.17 157.29,14.04 162.71,15.78 168.14,18.48 173.56,14.31 178.98,17.16 184.41,17.34 189.83,18.24 195.25,13.44 200.68,12.21 206.1,12.36 211.53,10.95 216.95,12.96 222.37,13.98 227.8,12.36 233.22,14.85 238.64,14.79 244.07,15.51 249.49,15.63 254.92,13.2 260.34,13.65 265.76,12.63 271.19,12.78 276.61,13.38 282.03,12.27 287.46,13.02 292.88,13.11 298.31,16.71 303.73,15.81 309.15,21.9 314.58,19.44 320.0,17.58 "/>
+<polyline fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" points="0.0,17.1 5.42,14.61 10.85,14.28 16.27,15.84 21.69,14.22 27.12,12.9 32.54,12.39 37.97,13.5 43.39,13.11 48.81,11.67 54.24,11.82 59.66,11.04 65.08,12.96 70.51,14.28 75.93,12.39 81.36,14.67 86.78,12.87 92.2,14.31 97.63,13.47 103.05,12.99 108.47,11.55 113.9,11.37 119.32,12.45 124.75,15.48 130.17,12.99 135.59,11.16 141.02,11.61 146.44,13.17 151.86,14.04 157.29,15.78 162.71,18.48 168.14,14.31 173.56,17.16 178.98,17.34 184.41,18.24 189.83,13.44 195.25,12.21 200.68,12.36 206.1,10.95 211.53,12.96 216.95,13.98 222.37,12.36 227.8,14.85 233.22,14.79 238.64,15.51 244.07,15.63 249.49,13.2 254.92,13.65 260.34,12.63 265.76,12.78 271.19,13.38 276.61,12.27 282.03,13.02 287.46,13.11 292.88,16.71 298.31,15.81 303.73,21.9 309.15,19.44 314.58,17.58 320.0,17.82 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 17.3 · 51/100 in its own history</span>
-              <span class="l-zh">读数：17.3 · 历史百分位 51/100</span>
+              <span class="l-en">Reading: 17.5 · 51/100 in its own history</span>
+              <span class="l-zh">读数：17.5 · 历史百分位 51/100</span>
             </div>
           </span>
         </div>
@@ -10365,8 +10411,8 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:16.0%;background:var(--fg-col, #ef4444)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #ef4444)">16</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:22.0%;background:var(--fg-col, #ef4444)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #ef4444)">22</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10380,10 +10426,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(-61.2 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(-50.4 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">16</div>
+<div class="sg-dial-val">22</div>
 <div class="sg-dial-cap">Fear</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10402,14 +10448,14 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,29.49 5.42,21.3 10.85,18.6 16.27,20.43 21.69,20.76 27.12,14.55 32.54,16.23 37.97,18.75 43.39,12.27 48.81,14.04 54.24,14.43 59.66,11.04 65.08,6.51 70.51,7.89 75.93,14.1 81.36,12.09 86.78,9.36 92.2,7.92 97.63,9.06 103.05,9.21 108.47,5.52 113.9,9.69 119.32,12.84 124.75,15.18 130.17,18.63 135.59,16.62 141.02,15.66 146.44,17.67 151.86,18.63 157.29,21.09 162.71,25.65 168.14,28.26 173.56,24.87 178.98,25.68 184.41,24.15 189.83,27.57 195.25,16.83 200.68,17.94 206.1,15.0 211.53,13.95 216.95,19.2 222.37,23.52 227.8,21.09 233.22,23.49 238.64,18.0 244.07,23.43 249.49,26.07 254.92,22.23 260.34,20.13 265.76,16.14 271.19,13.41 276.61,10.08 282.03,14.94 287.46,11.61 292.88,11.49 298.31,15.6 303.73,23.07 309.15,30.39 314.58,28.71 320.0,28.08 "/>
+<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,21.3 5.42,18.6 10.85,20.43 16.27,20.76 21.69,14.55 27.12,16.23 32.54,18.75 37.97,12.27 43.39,14.04 48.81,14.43 54.24,11.04 59.66,6.51 65.08,7.89 70.51,14.1 75.93,12.09 81.36,9.36 86.78,7.92 92.2,9.06 97.63,9.21 103.05,5.52 108.47,9.69 113.9,12.84 119.32,15.18 124.75,18.63 130.17,16.62 135.59,15.66 141.02,17.67 146.44,18.63 151.86,21.09 157.29,25.65 162.71,28.26 168.14,24.87 173.56,25.68 178.98,24.15 184.41,27.57 189.83,16.83 195.25,17.94 200.68,15.0 206.1,13.95 211.53,19.2 216.95,23.52 222.37,21.09 227.8,23.49 233.22,18.0 238.64,23.43 244.07,26.07 249.49,22.23 254.92,20.13 260.34,16.14 265.76,13.41 271.19,10.08 276.61,14.94 282.03,11.61 287.46,11.49 292.88,15.6 298.31,23.07 303.73,30.39 309.15,28.71 314.58,28.08 320.0,26.52 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 3.1 · 16/100 in its own history</span>
-              <span class="l-zh">读数：3.1 · 历史百分位 16/100</span>
+              <span class="l-en">Reading: 2.28 · 22/100 in its own history</span>
+              <span class="l-zh">读数：2.28 · 历史百分位 22/100</span>
             </div>
           </span>
         </div>
@@ -10526,14 +10572,14 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,31.41 5.42,30.66 10.85,29.67 16.27,29.79 21.69,30.15 27.12,29.82 32.54,24.54 37.97,27.57 43.39,28.08 48.81,27.33 54.24,28.89 59.66,28.32 65.08,28.65 70.51,27.93 75.93,29.25 81.36,30.6 86.78,30.78 92.2,30.63 97.63,30.72 103.05,30.87 108.47,31.2 113.9,30.72 119.32,30.63 124.75,30.9 130.17,31.89 135.59,31.74 141.02,31.83 146.44,30.9 151.86,32.01 157.29,32.13 162.71,31.77 168.14,31.83 173.56,31.47 178.98,32.46 184.41,32.19 189.83,31.38 195.25,31.26 200.68,31.17 206.1,31.62 211.53,30.36 216.95,31.02 222.37,31.29 227.8,31.26 233.22,31.02 238.64,31.29 244.07,30.96 249.49,30.27 254.92,30.51 260.34,31.02 265.76,30.57 271.19,30.06 276.61,30.24 282.03,31.8 287.46,32.46 292.88,32.49 298.31,32.46 303.73,32.64 309.15,32.76 314.58,32.91 320.0,32.79 "/>
+<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,30.66 5.42,29.67 10.85,29.79 16.27,30.15 21.69,29.82 27.12,24.54 32.54,27.57 37.97,28.08 43.39,27.33 48.81,28.89 54.24,28.32 59.66,28.65 65.08,27.93 70.51,29.25 75.93,30.6 81.36,30.78 86.78,30.63 92.2,30.72 97.63,30.87 103.05,31.2 108.47,30.72 113.9,30.63 119.32,30.9 124.75,31.89 130.17,31.74 135.59,31.83 141.02,30.9 146.44,32.01 151.86,32.13 157.29,31.77 162.71,31.83 168.14,31.47 173.56,32.46 178.98,32.19 184.41,31.38 189.83,31.26 195.25,31.17 200.68,31.62 206.1,30.36 211.53,31.02 216.95,31.29 222.37,31.26 227.8,31.02 233.22,31.29 238.64,30.96 244.07,30.27 249.49,30.51 254.92,31.02 260.34,30.57 265.76,30.06 271.19,30.24 276.61,31.8 282.03,32.46 287.46,32.49 292.88,32.46 298.31,32.64 303.73,32.76 309.15,32.91 314.58,32.79 320.0,32.73 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 161.9 · 1/100 in its own history</span>
-              <span class="l-zh">读数：161.9 · 历史百分位 1/100</span>
+              <span class="l-en">Reading: 160.4 · 1/100 in its own history</span>
+              <span class="l-zh">读数：160.4 · 历史百分位 1/100</span>
             </div>
           </span>
         </div>
@@ -10680,7 +10726,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <span><span class="l-en">Sentiment context only — display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.</span><span class="l-zh">仅为情绪参考 — 公开市场指标的仅展示合成。不计分，不进入周期引擎，无前瞻性判断。贪婪/恐惧读数若无周期背景，不构成反向信号。</span></span>
           
           
-          <span class="sg-foot-asof" style="margin-left:auto"><span class="l-en">As of 2026-10-20</span><span class="l-zh">数据日期 2026-10-20</span></span>
+          <span class="sg-foot-asof" style="margin-left:auto"><span class="l-en">As of 2026-10-21</span><span class="l-zh">数据日期 2026-10-21</span></span>
           
         </div>
         
@@ -10721,49 +10767,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
     <div class="sct-body">
-      <div class="sct-name"><span class="l-en">Robotics &amp; Automation</span><span class="l-zh">机器人与自动化</span></div>
-      <div class="sct-sub">
-        <span class="sct-rk">#10</span>
-        <span class="sct-stance"><span class="l-en">fading</span><span class="l-zh">fading</span></span>
-      </div>
-    </div>
-    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
-      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 15.0 L124 15.0"/>
-      <circle class="sct-dot-old" cx="8" cy="15.0" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="15.0" r="3.4"/>
-    </svg>
-    <div class="sct-delta">
-      <span class="sct-delta-v">0</span>
-      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
-    </div>
-  </div>
-  <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
-    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
-    <div class="sct-body">
       <div class="sct-name"><span class="l-en">Magnificent Seven</span><span class="l-zh">七巨头</span></div>
       <div class="sct-sub">
-        <span class="sct-rk">#12</span>
-        <span class="sct-stance"><span class="l-en">fading</span><span class="l-zh">fading</span></span>
-      </div>
-    </div>
-    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
-      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 15.0 L124 15.0"/>
-      <circle class="sct-dot-old" cx="8" cy="15.0" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="15.0" r="3.4"/>
-    </svg>
-    <div class="sct-delta">
-      <span class="sct-delta-v">0</span>
-      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
-    </div>
-  </div>
-  <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
-    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
-    <div class="sct-body">
-      <div class="sct-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></div>
-      <div class="sct-sub">
-        <span class="sct-rk">#14</span>
+        <span class="sct-rk">#13</span>
         <span class="sct-stance"><span class="l-en">deteriorating</span><span class="l-zh">deteriorating</span></span>
       </div>
     </div>
@@ -10783,7 +10789,47 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     <div class="sct-body">
       <div class="sct-name"><span class="l-en">Crypto &amp; Digital Rails</span><span class="l-zh">加密与数字轨道</span></div>
       <div class="sct-sub">
-        <span class="sct-rk">#15</span>
+        <span class="sct-rk">#16</span>
+        <span class="sct-stance"><span class="l-en">deteriorating</span><span class="l-zh">deteriorating</span></span>
+      </div>
+    </div>
+    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
+      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
+      <path class="sct-ln" d="M8 15.0 L124 15.0"/>
+      <circle class="sct-dot-old" cx="8" cy="15.0" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="15.0" r="3.4"/>
+    </svg>
+    <div class="sct-delta">
+      <span class="sct-delta-v">0</span>
+      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
+    </div>
+  </div>
+  <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
+    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
+    <div class="sct-body">
+      <div class="sct-name"><span class="l-en">Cybersecurity</span><span class="l-zh">网络安全</span></div>
+      <div class="sct-sub">
+        <span class="sct-rk">#20</span>
+        <span class="sct-stance"><span class="l-en">deteriorating</span><span class="l-zh">deteriorating</span></span>
+      </div>
+    </div>
+    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
+      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
+      <path class="sct-ln" d="M8 15.0 L124 15.0"/>
+      <circle class="sct-dot-old" cx="8" cy="15.0" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="15.0" r="3.4"/>
+    </svg>
+    <div class="sct-delta">
+      <span class="sct-delta-v">0</span>
+      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
+    </div>
+  </div>
+  <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
+    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
+    <div class="sct-body">
+      <div class="sct-name"><span class="l-en">AI Agents &amp; Applications</span><span class="l-zh">AI 智能体与应用</span></div>
+      <div class="sct-sub">
+        <span class="sct-rk">#21</span>
         <span class="sct-stance"><span class="l-en">deteriorating</span><span class="l-zh">deteriorating</span></span>
       </div>
     </div>
@@ -10808,7 +10854,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <span class="l-zh">排名每晚更新，反映相对强弱而非绝对判断。轨迹向上表示板块排名上升，向下则为下滑。观望为主，勿追单周变动。</span>
         </div>
         
-        <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));text-align:right;margin-top:6px"><span class="l-en">As of 2026-10-19</span><span class="l-zh">数据日期 2026-10-19</span></div>
+        <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));text-align:right;margin-top:6px"><span class="l-en">As of 2026-10-20</span><span class="l-zh">数据日期 2026-10-20</span></div>
         
         
       </div>
@@ -10885,7 +10931,8 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
          tiers; until it does, fail toward the non-destructive sign-in sheet. */
       if(document.body && document.body.classList.contains('page-macro') &&
          (!window.MMXAccessPreview || window.MMXAccessPreview.isAnon())){
-        if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
+        if(window.MMXSharedShell) window.MMXSharedShell.openAuth('signin');
+        else if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
         else if(window.MMOnboard && window.MMOnboard.open) window.MMOnboard.open('signin', {});
         else location.href='/?signin=1&ret=/macro.html';
         return;
@@ -11021,7 +11068,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
       var legacy = false;
       if(_legacyAnchor[h]){
         var tgt = _legacyAnchor[h];
-        if(tgt.indexOf('.html') !== -1){ location.replace(tgt); return; }
+        if(tgt.indexOf('.html') !== -1){ var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(tgt, 'replace'); } else { location.replace(tgt); } return; }
         h = tgt; legacy = true;
       }
       var el = document.getElementById(h);
@@ -11053,6 +11100,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
       window.addEventListener('load', function(){ setTimeout(_resolveAlertHashOnce, 500); });
     }
     window.addEventListener('hashchange', _resolveAlertHash);
+    window.addEventListener('mmx:shell-location', _resolveAlertHash);
 
   })();
   </script>
@@ -12867,9 +12915,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-21 15:07 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-21 18:18 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-21 15:07 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-21 18:18 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>
@@ -12962,6 +13010,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;

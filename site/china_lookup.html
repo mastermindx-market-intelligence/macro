@@ -306,6 +306,8 @@
     </div>
   </div>
 </nav>
+
+
   <div class="panel">
     <div class="topline">
       <h1><span class="l-en">A-Share analyzer</span><span class="l-zh">A股分析</span></h1>
@@ -502,6 +504,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   q.addEventListener('input', function () {
     var v = q.value.trim().toLowerCase();
@@ -545,9 +548,9 @@
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'china_lookup.html') {
-      location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
+      var _d = items[i]._tgt + '#' + encodeURIComponent(items[i].t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d; return;
     }
-    location.hash = encodeURIComponent(items[i].t);
+    var _h = encodeURIComponent(items[i].t); var _ss2 = window.MMXSharedShell; if (_ss2) { if (_ss2.navigate('#' + _h, 'push') && (location.hash || '').slice(1) === _h) fromHash(); } else { location.hash = _h; }
   }
 
   function load(t) {
@@ -987,7 +990,7 @@
     else if (r.left + r.width / 2 - half < 0) h.classList.add('edge-left');
   });
 </script>
-<p class="muted" style="font-size:12px"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-21 15:27 UTC UTC · <span class="l-en">charts by TradingView · curated A-share universe, not exhaustive</span><span class="l-zh">图表由 TradingView 提供 · 精选 A 股范围，非全市场</span></p>
+<p class="muted" style="font-size:12px"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-21 18:38 UTC UTC · <span class="l-en">charts by TradingView · curated A-share universe, not exhaustive</span><span class="l-zh">图表由 TradingView 提供 · 精选 A 股范围，非全市场</span></p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
