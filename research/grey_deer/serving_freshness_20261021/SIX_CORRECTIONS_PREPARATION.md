@@ -1,3 +1,39 @@
+## Current bounded refresh — 2026-10-21T19:20:25.085720+00:00
+
+**REFRESHED_SOURCE_ONLY / DRAFT / HOLD-FOR-SOL. This section supersedes the complete-file fingerprints and source-base predicates below; the original preparation is retained as historical evidence.**
+
+The same operation `census-mtf-six-corrections-20261021` and PR #9980 were resumed for a material source invalidator. Published signal documents changed in engine-render commits `ef728799f01e726806ea4d096dadd81152d50adb` and `71a8d1556b6803f8dde049c584c1522c885740d7`. Their six target markers, counts, primary verdicts, clocks and stale companion reasons remained unchanged. The newer trailing stops, point-in-time counters and GOOGL `above200: false` must be preserved.
+
+Composed source base: `37e2ce7e96add3c6fa7cc3db28a1e291999f6461`. Latest observed main before composition: `2a2f4228e4ec68eaf90451b1355b588829e21c52`; all six target files plus the validator, schema, marker integrity, MTF, signal quality, ledger consumer, ledger builder and ledger blob were identical to that base. This is a standard two-parent source composition into the existing clean owned workspace, resolving only the six data-file conflicts with qualified replacements derived from the newer published bytes.
+
+Each refreshed candidate removes exactly one 62-byte `reasons` field at the same accepted marker. All six candidates were checked before the first source write. Full parsed-document equality after that one deletion and exact byte omission checks passed. The actual `validate_ticker_doc` returned one known reason mismatch for each current original and zero errors for each refreshed candidate. The validator and schema SHA256 remain `b6a28b65747958c4e78f7735c2813b27806d7fa5b6414fd272b347be430d7a9e` and `f44f4d7b964f77f604ca591e8dab5dcf19ee314f7785bfbfd65654c6795439b9` respectively. No CLI audit writer or whole-corpus claim is involved.
+
+| Ticker | Current published Git blob | Refreshed candidate Git blob |
+|---|---|---|
+| AMZN | `081c55583dc6374e2581ed773bd72711f3b76f8d` | `2106123eaf221b0eb2b46b48e7c3d2908217a00b` |
+| EQIX | `7de0ebdb4acf93aa8ebfcd80ec64170d2cc724e2` | `62704cf7ea9fcb369fe55ed929e4d9cad832e65a` |
+| GOOGL | `4513a767832454ff1cfb8eaab94b2305503b1456` | `217d73ffc392f04ba24ceb7e0174d56a584580ea` |
+| HST | `af667bd9bd948609ef4dbc906baaa5f1a4d2c87b` | `525545ea458f5c09b82e6adbf04b382cfa820831` |
+| KMI | `8a73a55f1c1e324b9d59d4ac75329b087a4ad322` | `44b20fa9251c73ac26ecb146e980e89dc8487bbf` |
+| MU | `7ce19cce054cfab9e890c8b445f6ce065d75bf0f` | `b944f2fb852d22cc060ae67d861d464495c10238` |
+
+| Ticker | Current published SHA256 | Refreshed candidate SHA256 |
+|---|---|---|
+| AMZN | `b9204777d710a7b1576c9aa758635f19ec6f20321f1ff83c5c2591c2e2bc8ddc` | `94d5f27e99a8a98cb90bd2c671101749c883ecbfd828ee0aab371d2716c9fc39` |
+| EQIX | `06d3512612608f3eb91010544b09e7624b2620c0f88dbcb4212cc413070fe2b8` | `fc49bb9732549bc627a5efac90e47ab8c41f10d94524c21c4dcb9ebddda3f6dc` |
+| GOOGL | `935e7078f4c0287027ee549b415d61077446beb635557c3c306ed8ca3a01a2a1` | `251e164ebec3e16abef1f5678f63fce0287f8af99e2a48e5aaab0613e8778075` |
+| HST | `1699549afd5ca0e3f1a80bce7f5053e43a90c7d66b1112c229414f78dc529caa` | `7e2ce337b4ee192424245f6e31b8773a9e996cd491e116bf1a6405a879818ff7` |
+| KMI | `42fcdb5b9dae6b7f75e63fb75eeb62bced2d501f0f53f1dc563ab415c40424a7` | `4dcd7af21f4c6e6cfa86563a56aafc1dafa7df7addc8cb46cc4ab8ebfb37ffa1` |
+| MU | `f33a6bcf4dfcc7b162607c0adc2740451914af24a6cdbb259f83c47501a2b650` | `8593aecfa4f93043c7ff6f2d66ed5c19218a190dff5a263f0fc00cce6c4433fd` |
+
+The ledger remains Git blob `1950e457e7ec34fc967b5aab96aab320d54fa89c`. No producer, ledger writer, backfill, rebuild, fit, deployment or canonical data application ran. The historical eligibility and chart/ledger disagreements below remain intact. The separate HST.last contradiction and publication fail-open paths are not repaired here.
+
+Independent review and binding CI for the resulting new head remain pending at preparation time. The accepted old-head checks are historical, not proof for the refreshed head. The prospective prevention review on #9957 remains held on original run `mas258-mtf-published-review-20261021-01` and root `6ad8240e-707c-83ea-babc-1ceaae3669e0`; this data refresh does not replace or accept that review.
+
+Sol retains merge authority. Keep PR #9980 Draft, without merge-on-green or native auto-merge. Release still requires separately accepted #9957 prevention, current target/dependency/ledger and canonical writer/publication sequencing, concluded binding checks, and an actual application receipt. No release or production-readiness claim follows from this refresh.
+
+---
+
 # Six accepted MTF explanation corrections — isolated source preparation
 
 **PREPARED_SOURCE_ONLY / DRAFT / HOLD-FOR-SOL. Canonical main application and production publication remain pending.**
