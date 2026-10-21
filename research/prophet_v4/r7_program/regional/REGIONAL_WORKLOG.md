@@ -15,7 +15,9 @@ Writes only under `research/prophet_v4/r7_program/regional/`; nothing committed,
 | run id | class | host | status | report / commit |
 |---|---|---|---|---|
 | pro-regional-cazb-20261021-r1 | build | mmx-ubuntu0 | DONE rc=0 03:31Z, lane STATUS PARTIAL (see 03:35 note) | lane commit c9a6553bbab on `lane/pro-regional-cazb-20261021-r1`: `scripts/build_canada.py` +18/-6, `tests/test_board_shadow.py` +186 |
-| pro-regional-cnscout-20261021-r1 | census | mmx-ubuntu0 | RUNNING (poll 17 @03:27Z) | — |
+| pro-regional-cnscout-20261021-r1 | census | mmx-ubuntu0 | DONE rc=0 03:33Z, lane STATUS DONE | lane commit f18ef8a8ea7: `research/prophet_v4/r7_program/regional/CN_CORRECTNESS_CENSUS_2026-10-21.md` (12 questions: PRESENT 2 / PARTIAL 7 / ABSENT 3) |
+| pro-regional-hkscout-20261021-r1 | census | mmx-ubuntu3 | RUNNING (poll 27 @03:45Z) | — |
+| pro-regional-cascout-20261021-r1 | census | mmx-ubuntu3 | RUNNING (poll 24 @03:45Z) | — |
 - 03:27Z: CNA-CIE04-06 row corrected to BLOCKED-DATA (CIE package pin 1b0f2ee2 absent from macro + local Mastermind) → Decision F4. Both round-1 lanes on mmx-ubuntu0, pending.
 - 03:32Z: hkscout round-2 lane launched (`pro-regional-hkscout-20261021-r1`, census). cnscout still pending.
 - 03:35Z: cazb consumed. Diff read on ubuntu0 and matches the frozen spec: `setups` None/non-dict keeps SKIP; a dict with empty buy no longer returns early; `append_board` is withheld with an info log; scorecard/grade/track/shadow still run; health starts with the identical SKIP row; the non-empty path is unchanged. T6 showed T1 fails at BASE ("write_shadow must run exactly once; got 0"). Suites: board_shadow 69 passed, canada_build 13, board_ledger 69, canada_canonical_board 35. prophet_board_since: 2 failed, which the lane reproduced at a pristine BASE extraction, so they are pre-existing.
@@ -23,3 +25,14 @@ Writes only under `research/prophet_v4/r7_program/regional/`; nothing committed,
   - `:626` expects one `include "_us_board_cards.html.j2"` in `templates/dashboard.html.j2`, but BASE has two (lines 17097 and 17341, last touched by #9517/#9550 on 10-17);
   - `:377` checks the Canada laggards strip tokens.
   A CA-ZB PR therefore inherits a red `unrun-picks-boards` until those are repaired. This is a seat routing item and outside this lane's owned files.
+
+- 03:40Z: cascout round-2 lane launched (`pro-regional-cascout-20261021-r1`, census: Canada + shared). Both live slots are now the two scouts on mmx-ubuntu3.
+- 03:40Z: cnscout consumed. The report was read from the lane tree and copied to seat scratchpad `cn_census.md`. It drives the CN-P0..P4 rows.
+- 03:42Z: China collision census from the PR file sets of the named incumbents (#6871 4 files, #8444 71, #7669 all 471, #8184 3, #7018 27, #7286 4, #7385 4, #7288 4, #7303 3, #7248 3, #6996 2, #7499 52). Results:
+  - Nothing touches `scripts/build_cn_live_pack.py`, `scripts/build_china_library.py`, `collectors/china_margin_detail.py`, `templates/cn_prophet_live.js` or the China test files.
+  - `templates/_prophet_card.html.j2` is in #8444, and `templates/china.html.j2` is in #8184 (sol/).
+- 03:44Z: round-3 build packets written. Both passed the launcher pre-checks (no `HOLD-` token, no stray `validated`, only `__BASE__`, `{COMMON}` present):
+  - `$S/pk/pro-regional-cnp1trad-20261021.md`: China P1 full-universe tradability wired into the live pack, strict on a missing key or empty map. CI job `express-render-guards`.
+  - `$S/pk/pro-regional-cnp4margin-20261021.md`: China P4 margin prior-window repair at `collectors/china_margin_detail.py:156`. CI job `unrun-intl-collectors`.
+  - Both wait for a free slot once the scouts end.
+- 03:46Z: disposition §1 rows CN-P0..P4 written: P0 BLOCKED-CUSTODY (#6871 R0 carrier), P1 READY, P2 BLOCKED-ORDER + F3b, P3 F2 + SSR half behind #8444, P4 margin READY. F3 rewritten and F6 added (inherited reds on `unrun-picks-boards`).
