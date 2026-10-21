@@ -1,0 +1,84 @@
+{
+  "started_at": "2026-10-20T23:25:36.679494+00:00",
+  "source_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "source_tree": "b550a88360e5ffe3d5be7938d0318c72717c5342",
+  "scope": "Existing canonical anonymous About-only browser capture for missing visual-evidence matrix. Source input hashes bound separately; About LIGHT_ONLY canvas retained. No Terminal qualification, public beta or auth proof.",
+  "commands": [
+    {
+      "name": "fixture-manifest",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "/tmp/shared-shell-local-browser-r7-20261019/kit/fixture_manifest.py",
+        "--macro-root",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "--macro-head",
+        "bd89047e4e403a93183c6a4763274e09acfdd044",
+        "--out",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-fixture-manifest.json"
+      ],
+      "started_at": "2026-10-20T23:25:37.363261+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-fixture-manifest.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T23:26:06.933035+00:00",
+      "log_bytes": 279,
+      "log_sha256": "2060717e15157e4bc9796c49df9a36eb0d9f564abd1594433c9d34805866ea54"
+    },
+    {
+      "name": "canonical-capture",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/capture_page_evidence.py",
+        "--site-dir",
+        "site",
+        "--routes",
+        "/about.html",
+        "--viewports",
+        "desktop,mobile",
+        "--locales",
+        "en,zh",
+        "--themes",
+        "light,dark",
+        "--max-pages",
+        "1",
+        "--settle-ms",
+        "1500",
+        "--manifest",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical/manifest.json",
+        "--smells",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical/ux_smell_report.json",
+        "--output-dir",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical/evidence"
+      ],
+      "started_at": "2026-10-20T23:26:06.934674+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical-capture.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T23:26:38.259106+00:00",
+      "log_bytes": 244,
+      "log_sha256": "7396f3033d7da482e771d781c422c0afc688c80ac9c3c6485c8357dec49b430a"
+    }
+  ],
+  "fixture_inventory": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-fixture-manifest.json",
+    "sha256": "ed60b0b1d82bcba54efb0715fdc0175d242c0530a7f0fedbce3217198029bbe7",
+    "files": 53
+  },
+  "capture_owner": {
+    "path": "scripts/capture_page_evidence.py",
+    "sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+  },
+  "capture_exit": 0,
+  "manifest": {
+    "schema": "mastermind.p0_evidence.v2",
+    "bytes": 9829,
+    "sha256": "9f4cb1874bb2246792a7017631d711f39ee7cf4b4d8207e40fb636a67c82ec0c"
+  },
+  "source_unchanged": true,
+  "capture_owner_unchanged": true,
+  "head_unchanged": true,
+  "worktree_clean": true,
+  "capture_completed": true,
+  "gate_acceptance_pending": true,
+  "finished_at": "2026-10-20T23:26:39.142329+00:00"
+}

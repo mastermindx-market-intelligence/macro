@@ -2465,6 +2465,10 @@ except Exception as _government_revenue_exc:  # noqa: BLE001
 from app.research import router as research_router  # noqa: E402
 app.include_router(research_router)
 
+# Registered-user Macro Command reads use the qualified served publication.
+from app.macro_command import router as macro_command_router  # noqa: E402
+app.include_router(macro_command_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing

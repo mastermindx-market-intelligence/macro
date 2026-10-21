@@ -1076,7 +1076,7 @@ window.__HUB_SECEN={{ ((hub.sector_keys if hub else []) | map(attribute='key') |
     if (e.key === "Escape") { q.value = ""; state.q = ""; state.page = 1; render(); }
     if (e.key === "Enter") {
       var first = out.querySelector("a.rrow");
-      if (first) window.location.href = first.getAttribute("href");
+      if (first) { var _d = first.getAttribute("href"); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; } }
     }
   });
   document.addEventListener("keydown", function (e) {

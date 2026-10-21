@@ -3508,7 +3508,7 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
+    else if (a === 'home') { var _d = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html'; var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; } }
     else if (a === 'search') toggleSearch();
     else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }

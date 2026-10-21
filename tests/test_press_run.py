@@ -1080,6 +1080,61 @@ def test_emit_helpers_it_borrows_from_the_estate_builder_still_exist():
         assert callable(getattr(B, name, None)), f"build_free_content.{name} is gone"
 
 
+
+@pytest.mark.parametrize("case", [
+    "missing_committed", "missing_rendered", "article_change", "link_change",
+    "content_inside_block", "incomplete_marker", "duplicate_marker",
+    "outside_marker", "non_html",
+])
+def test_press_comparison_respects_common_shell_owner(tmp_path, monkeypatch, case):
+    """A common-owner sweep cannot turn a press replay into unrelated writes."""
+    from lib import shared_shell as shell
+
+    plain = (
+        '<!doctype html><html><head><title>Article</title></head>'
+        '<body><article>Original article <a href="/original">source</a>'
+        '</article></body></html>'
+    )
+    marked = shell.inject_shared_shell_text(
+        plain, "../", version="12345678", css_version="87654321",
+    )
+    rendered_text, committed_text = marked, plain
+    expected = case in {"missing_committed", "missing_rendered"}
+    if case == "missing_rendered":
+        rendered_text, committed_text = plain, marked
+    elif case == "article_change":
+        rendered_text = marked.replace("Original article", "Changed article")
+    elif case == "link_change":
+        rendered_text = marked.replace('href="/original"', 'href="/changed"')
+    elif case == "content_inside_block":
+        # Regenerating an existing block would erase this real content change.
+        rendered_text = marked.replace(
+            shell.START, shell.START + "<p>Substantive extra article text</p>",
+        )
+    elif case == "incomplete_marker":
+        rendered_text = marked.replace(shell.END, "")
+    elif case == "duplicate_marker":
+        rendered_text = marked.replace(shell.START, shell.START + shell.END + shell.START)
+    elif case == "outside_marker":
+        rendered_text = plain.replace(
+            "</head>", '<meta name="mmx-shell-document" content="20261018.1"></head>',
+        )
+    suffix = ".xml" if case == "non_html" else ".html"
+    rendered = tmp_path / "rendered" / "site" / "blog" / ("probe" + suffix)
+    committed = tmp_path / "committed" / "site" / "blog" / ("probe" + suffix)
+    for path, text in [(rendered, rendered_text), (committed, committed_text)]:
+        path.parent.mkdir(parents=True)
+        path.write_text(text, encoding="utf-8")
+    before = {path: path.read_bytes() for path in [rendered, committed]}
+
+    def forbidden_provision(*args, **kwargs):
+        raise AssertionError("comparison must not provision shared assets")
+
+    monkeypatch.setattr(shell, "ensure_shared_shell_asset", forbidden_provision)
+    assert R._same_page(rendered, committed) is expected
+    assert {path: path.read_bytes() for path in before} == before
+
+
 def test_render_replay_is_idempotent_against_the_committed_estate():
     """A press emit with no new article must write NOTHING under site/blog/.
 
