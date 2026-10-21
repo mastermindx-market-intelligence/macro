@@ -14,5 +14,12 @@ Writes only under `research/prophet_v4/r7_program/regional/`; nothing committed,
 ## Lanes
 | run id | class | host | status | report / commit |
 |---|---|---|---|---|
-| pro-regional-cazb-20261021-r1 | build | (pending) | RUNNING | — |
-| pro-regional-cnscout-20261021-r1 | census | (pending) | RUNNING | — |
+| pro-regional-cazb-20261021-r1 | build | mmx-ubuntu0 | DONE rc=0 03:31Z, lane STATUS PARTIAL (see 03:35 note) | lane commit c9a6553bbab on `lane/pro-regional-cazb-20261021-r1`: `scripts/build_canada.py` +18/-6, `tests/test_board_shadow.py` +186 |
+| pro-regional-cnscout-20261021-r1 | census | mmx-ubuntu0 | RUNNING (poll 17 @03:27Z) | — |
+- 03:27Z: CNA-CIE04-06 row corrected to BLOCKED-DATA (CIE package pin 1b0f2ee2 absent from macro + local Mastermind) → Decision F4. Both round-1 lanes on mmx-ubuntu0, pending.
+- 03:32Z: hkscout round-2 lane launched (`pro-regional-hkscout-20261021-r1`, census). cnscout still pending.
+- 03:35Z: cazb consumed. Diff read on ubuntu0 and matches the frozen spec: `setups` None/non-dict keeps SKIP; a dict with empty buy no longer returns early; `append_board` is withheld with an info log; scorecard/grade/track/shadow still run; health starts with the identical SKIP row; the non-empty path is unchanged. T6 showed T1 fails at BASE ("write_shadow must run exactly once; got 0"). Suites: board_shadow 69 passed, canada_build 13, board_ledger 69, canada_canonical_board 35. prophet_board_since: 2 failed, which the lane reproduced at a pristine BASE extraction, so they are pre-existing.
+- 03:38Z: CI consequence verified at BASE. `scripts/build_canada.py` is a path trigger of job `unrun-picks-boards` (`.github/ci/legacy-jobs.yml:28132`), and that job runs `tests/test_prophet_board_since.py` (`:28523`). The two pre-existing failures are deterministic text asserts:
+  - `:626` expects one `include "_us_board_cards.html.j2"` in `templates/dashboard.html.j2`, but BASE has two (lines 17097 and 17341, last touched by #9517/#9550 on 10-17);
+  - `:377` checks the Canada laggards strip tokens.
+  A CA-ZB PR therefore inherits a red `unrun-picks-boards` until those are repaired. This is a seat routing item and outside this lane's owned files.

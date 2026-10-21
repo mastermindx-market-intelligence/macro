@@ -83,7 +83,7 @@ These map onto masterplan A4's valid dispositions: ACCEPTED = accepted with evid
 | SH-7248 | Continuity documentation only | open draft | PENDING `cascout` Q10 | — |
 | SH-6996 | Entry-copy specimen | open draft | PENDING `cascout` Q10 | — |
 | SH-6872 | Replace the #6872 citation with the actual main source of the Prophet integrity restart dependency | #6872 = WTI Live Trace, merged 09-24 | PENDING `cascout` Q11 | — |
-| SH-PROOF | Per-region proof set: identity, tz/session, basis, stale/empty/outage, population, Plan semantics, action readback, privacy, correction, natural refresh; HK Grid→Table→Grid; CA zero-buy visibility; outage ≠ exit; 320px Chinese reflow | proof obligations that follow adoption | BLOCKED-ORDER | qualified per region after adoption |
+| SH-PROOF | Per-region proof set: identity, tz/session, basis, source-ordered preview/entitlement, stale/empty/outage, complete entitled population, exact/related/unavailable Plan semantics, action readback, privacy, correction, natural refresh; HK Grid→Table→Grid; CA zero-buy visibility; outage ≠ exit; 320px Chinese reflow | proof obligations that follow adoption | BLOCKED-ORDER | qualified per region after adoption |
 
 ## 6. Appendix A4 crosswalk
 - China Prophet correctness: P0–P4 → CN-P0..CN-P4; P5 → CN-P5; disputed R0 → CN-R0.
@@ -105,10 +105,24 @@ These map onto masterplan A4's valid dispositions: ACCEPTED = accepted with evid
   - zero-buy-safe shadow → CA-ZB, CA-7286;
   - rank/sector-name accrual, PIT replay, evaluator, promotion → CA-PIT/ACCRUAL/PROMO, CA-EVAL;
   - typed Plan-owner limitation → CA-AUTH.
-- Shared → SH-*.
+- Shared regional delivery:
+  - accepted shared-interface adoption sequence → SH-ORDER;
+  - source-ordered preview/entitlement, Grid/Table/search identity parity, local language and mobile, source outage versus healthy empty, exact/related/no-Plan behavior, and publication/correction continuity → SH-PROOF (per region, after adoption), with HK-PARITY and CN-P3 as the region-specific parts;
+  - reference integrity and copy → SH-7499, SH-7303, SH-7248, SH-6996, SH-6872.
 
 ## 7. Decisions for Fable
-(filled after lanes return)
+
+Each decision is a reserved parameter or priority call. The seat holds the workstream for HK/CA (`WS-PROPHET-HK-CA-REVAMP`, owner fable) and the Prophet commission. Where the seat does not hold the call, the decision is to name the owner.
+
+| id | decision | why it is reserved | recommendation |
+|---|---|---|---|
+| F1 | Canada zero-buy day semantics: (a) no watch-only rows in the board ledger; (b) the full-pool shadow capture and the track-ledger emit still run; (c) the health row keeps today's SKIP text, so "no official buys" stays distinct from an outage | It changes what a zero-buy day records. Masterplan §10.4 names the hole but not the record shape | Ratify (a)–(c) as frozen in lane `cazb`. A watch-only ledger append would mix screen rows into the official-call history, which `authority=screen` forbids |
+| F2 | China P3 publication timings: 30 s request lifetime and 60 s future allowance, as proposed by #8714 | Both are product parameters, and #8714 left them unratified | Ratify both for the P3 build, with an explicit constant and a named test each. If the seat does not hold China publication, name the owner (#8714's commissioner) |
+| F3 | China P0 owner calls: quote basis of the original record; quarantine of the five bakes (08-26, 08-27, 09-04, 09-15, 09-18); 133/289 kept as the original accounting with 129/289 as a separately named comparison; accounting labels | P0 rewrites how the original record is read. #8714 froze the requirements but did not decide them | Ratify #8714's frozen proposals as written. Do not reopen the evidence, since its 104 producer and 86 vintage controls are DO_NOT_REDO. Then commission one P0 build lane |
+| F4 | CIE package location (pin `1b0f2ee2`), and the owner who accepts CIE-02 | Full CIE-06, CIE-02/03 and L0 cannot be censused or started without the package. Accepting CIE-02 gates CIE-03/L0 under the activation law | The seat supplies the package path or its Mastermind PR, then commissions one remaining-obligation census lane. Until then, China Alpha stays at its accepted bounded slice |
+| F5 | Priority of China Alpha P2 (shadow) and R1 relative to China Prophet P0–P4 | Both compete for the same China scheduler and data planes, and the masterplan sets no order between them | China Prophet P0 → P1 → P3 first. Start China Alpha P2 as a shadow-only census after the P0 and P1 lanes are running. Keep R1 behind F4 |
+
+Further decisions from the HK/CA scouts are appended as F6+ when they return.
 
 ## 8. Lanes
 (filled as lanes return)
