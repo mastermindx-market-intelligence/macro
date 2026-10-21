@@ -103,3 +103,39 @@ themes; 320/390/768/1440; a passing test is not served proof.
   #9921 state: head 7e0cf6c6, non-draft, UNARMED; ci-plan/ci-authority/fence-pack SUCCESS, contract-delta + ci-pack-0…11
   IN_PROGRESS, only `ci-authority/codex/merge-queue-pilot` FAILURE (standing X, not a #9921 defect). Review lane
   `pro-receipt-truth-review-20261021-r1` POLL_PENDING on ubuntu0 (launched 03:23Z).
+- 03:4xZ: **records PR #9922 MERGED** → main `82ba78f1c3d4` (docs/records checkpoint: handoff, Agent OS WS + handoff,
+  clock_provenance census + §10 ruling, orchestrator snapshots). Session branch merged `origin/main` back (8c40d21c) so
+  later records PRs diff only new commits. **Review lane returned PASS_WITH_NOTES** for #9921 @7e0cf6c6
+  (`research/prophet_v4/r7_program/reviews/RECEIPT_TRUTH_REVIEW_2026-10-21.md`, lane commit 3ba6c23e → cherry-picked
+  ad9d0fd1): every spec point PASS; N1 = 22 host-environment failures (html5lib/module missing, classified root-cause,
+  not defects); N2 = non-Mapping failure entries skipped silently (producer only emits dicts; no action). #9921 CI:
+  13 pass / 7 ci-packs pending / only merge-queue-pilot X (standing); background `gh pr checks --watch` armed (one
+  notification). On green: carrier re-read (last edge must still be 6306863736) → `gh pr merge 9921 --squash
+  --match-head-commit 7e0cf6c6…` → launch `pro-receipt-newbase-20261021-r1` against post-merge main.
+  CI watcher launched: background handle `bzr72esbg` (`gh pr checks 9921 --watch --interval 180`, PR #9921 head 7e0cf6c6; output $S/../tasks/bzr72esbg.output; consumed by harness notification).
+
+## Checkpoint 2026-10-21 03:58Z — INTEL orchestrator wave 1 consumed; F1–F8 RULED
+
+- INTEL (a6822c097960d27d8) returned DONE 03:5xZ; its four lane reports are landed on this branch
+  (censusA 9e8c95a7 ← lane 1b5114fb ubuntu2; censusB a26dc303 ← d166114c ubuntu2; b27 036d04ec ← be515d3c ubuntu0;
+  b08gates 740f13dd ← 42547cfd ubuntu3) under `research/prophet_v4/r7_program/intel/`.
+- Seat GitHub read: #8069 comment 5894923827 EXISTS (mastermidx4/Sol, 2026-09-29T17:05Z, "SOL ACCEPTED / CONTINUE —
+  Gate S factual field accepted; Gate E remains closed"). F1 precondition satisfied.
+- RULINGS (seat): F1 ACCEPTED (ratify recorded acceptance; manifest-only records lane; never byte-edit the contract;
+  D07 PUBLIC_INFO_REPLAY row DEFERRED) · F2 ACCEPTED (B04-A split: A0 now, A1 after #8004/#7426/#7264; #8004 ask deferred
+  until A0 merges) · F3 ACCEPTED hold (never run v1; #7868 B1/B2 repair queued for Stage 4 under custody check) ·
+  F4 ACCEPTED (source-blind numeric D06 proposal, research lane) · F5 ACCEPTED (B10/B12 prospective-only; B4 runtime caller +
+  write-time recorded_at writer ROUTED-TO-SOURCE Stage 3) · F6 ACCEPTED (#8308 stays with Sol; note for Stage 6 records) ·
+  F7 ACCEPTED (not asked) · F8 RULED (B27 draft ACCEPTED: five sleeves SPEC_ONLY_RETAINED_B27, no scope removal, §8 order
+  1→5, gated on B00/B06, read-only census first; B27 DISPOSITIONED).
+- INTEL resumed by message with the rulings; lanes to mint (never reuse): `pro-intel-b08records-20261021-r1` (build),
+  `pro-intel-b04a0-20261021-r1` (build, after collision check vs #8004/#7426/#7264/#9714/#9821/#9921/#9495),
+  `pro-intel-d06num-20261021-r1` (research, after one of the two finishes). BASE for each = current origin/main at launch.
+- #9921 still under watcher bzr72esbg (packs running at 03:57Z); merge rule unchanged (carrier last edge 6306863736 at 03:5xZ).
+
+## Checkpoint 2026-10-21 04:12Z — Stage 1 receipt-truth MERGED; newbase + asia carve-out lanes launched (READ THIS ONE FIRST)
+- **#9921 MERGED** 04:08:07Z → main `4623f0f74184ff41debdeb2ca86e225506a05911` (squash, `--match-head-commit 7e0cf6c6`; watcher bzr72esbg exit 0; every pack green, only `ci-authority/codex/merge-queue-pilot` red = standing X; carrier #6817 last edge 6306863736 unchanged at merge time). Rung reached: MERGED. Not PRODUCTION_PROOF — the next nightly render is the witness.
+- Session branch merged origin/main → `e8bc7a46` pushed (includes a regional disposition/worklog snapshot; REGIONAL keeps writing live).
+- Lane **pro-receipt-newbase-20261021-r1** (build, BASE 4623f0f7) launched. First launch call passed the packet name with `.md` → launcher printed `missing …md.md` and exited before remote_sub (run id unused, so the relaunch is not a reuse). Launcher contract: `<label> <packet basename WITHOUT .md> <run id> <host|auto> <base sha40>`.
+- **REGIONAL early alert**: Asia-close GH001 (`data/qledger/claims.jsonl` 100.05 MB) on every real run since 10-17 (39023996637 … 39419107676); HK/China per-ticker data ~97 h stale; #9556 (861de75d, merged 10-20 05:42Z) carved qledger out of daily.yml only; asia-close.yml collect commit still `git add data/ site/qledger/`. GraphQL search: no open PR ports it; #9556 author is the fleet account → no live sibling owner → seat commissioned lane **pro-asia-carveout-20261021-r1** (build, BASE 4623f0f7; frozen spec = 861de75d daily.yml diff; owned `.github/workflows/asia-close.yml` + new `tests/test_asia_close_collect_commit_path.py`). Publication-path change → review lane before PR. Never dispatch asia-close/daily. `claims.jsonl` rotation = routed item for the qledger owner (Stage 6 records PR).
+- Next: consume both lanes (fetch+cherry-pick), review lane each, PR, merge `--match-head-commit`; consume INTEL wave 2 (b08records launched 04:09:47Z per lanes.tsv), DESIGN/REGIONAL/SOURCE returns.

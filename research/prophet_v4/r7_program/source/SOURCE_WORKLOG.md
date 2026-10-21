@@ -27,3 +27,21 @@ Seat-only acts (push/PR/label/merge/post) are never performed here.
   (B28 = US program scope acceptance). Packets use B23.
 - Deviation noted: research Rules block extended by one read-only verb (`git diff <BASE> <sha>`, and `git merge-base`
   for census J) on PR heads; no checkout/branch/commit on a PR head.
+
+### 2026-10-21 04:1xZ — Phase B written; Phase C lanes live
+- Census E (`$S/ret/CENSUS_E_B4_ENTRY_SUBSTRATE_2026-10-21.md`) and census J (`$S/ret/CENSUS_J_JOURNEY_ALERTS_2026-10-21.md`)
+  consumed; findings folded into `SOURCE_DISPOSITION_2026-10-21.md` (written 04:1xZ, 12 units + 6 decisions + routed F5 items).
+- B23 harness design lane `pro-source-b23harness-20261021-r1`: launched 03:50Z, host ubuntu2, returned 04:09Z, DONE,
+  commit 4490397b. Report copied verbatim to `B23_LATENCY_RELEASE_HARNESS_DESIGN_2026-10-21.md` (sha256 fe6b9188ed21).
+  Accepted by ORCH-SOURCE: Q1–Q9 answered, BU1/BU4/BU5 READY, no outcome data opened.
+- B05 same-read build lane `pro-source-b05sameread-20261021-r1`: first local launch refused by the packet lint
+  ("validated appears 2 times"), no remote effect; reworded, relaunched 04:01Z, host ubuntu1, RUNNING.
+- B21 alert contract lane `pro-source-b21contract-20261021-r1`: launched 04:09Z, host ubuntu3, RUNNING.
+- Seat routing F5 (03:5xZ): R1 nightly B4 caller = BLOCKED (data + B05 return + #7734 + Fable ruling vs D11 rule 3),
+  packet `pro-source-b4nightly-20261021` unlaunched; R2 recorded_at writer = exists at system level, residual
+  `--recorded-at` durable override → packet `pro-source-b1recordedat-20261021` READY, unlaunched (seat budget rule).
+- UI packets b07journey/b20workspace/b22record/b23ui carry `__DESIGN_SPEC__`/`__OWNED_FILES__` and the census-J
+  collision fence; unlaunched by commission rule.
+- Custody scan: #9821 touches only `.github/ci/legacy-jobs.yml` in common with SOURCE packets (disjoint line insert);
+  #9714/#7929 no overlap; #7734 gates NBBO; daily.yml/dag.yml held by 7 open PRs → seat adds any workflow step.
+- Next: consume B05 (spec items 1–8, diff-stat to owned files) and B21 (9 questions); then return to the seat.
