@@ -65,9 +65,9 @@ working long-project principal loop:
   work therefore continued directly under the assigned principal's source custody,
   with independent review.
 
-The screenshot that motivated the assignment shows visible task planning and
-continued work around compaction. It is not evidence of Claude's private internals
-or of automatic recovery from a crashed or idle process.
+The screenshot attachment could not be opened at its supplied local path.
+This implementation is grounded in the user's stated outcome and the inspected
+estate; it makes no claim to have observed the screenshot or Claude's private internals.
 
 ## Source slices implemented
 
@@ -81,13 +81,18 @@ loading and delivery as UNOBSERVED.
 The local acceptance command is:
 
 ```sh
-python3 -B -m pytest -q tests/test_fabric_stop_preflight.py tests/test_fabric_stop_return.py tests/test_fabric_stop_subscriptions.py tests/test_fabric_stop_retirement.py
+python3 -B -m pytest -q tests/test_fabric_stop_preflight.py tests/test_fabric_stop_return.py tests/test_fabric_stop_subscriptions.py tests/test_fabric_stop_retirement.py tests/test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults
 git diff --check
 ```
 
-The exact source candidate b740b9afce945d15884076a14bbc6f9471716a46 passed 121
-tests and independent review. Installed drift was reproduced by read-only
-inspection. The checker never repairs pins or trust and is not a runtime rollout.
+The original source candidate b740b9afce945d15884076a14bbc6f9471716a46 passed 121
+focused tests. Broader hosted CI then found a D8 source-guard interaction: a mode
+literal shared a physical line with a UID check. Commit
+7e68f7d3bc5aa90c553c6fe6aaaa3259fe7ae1c3 separates those checks without changing
+their behavior or the guard. All 122 cases, including the exact D8 test against
+committed HEAD, passed locally after the correction and independent review.
+Installed drift was reproduced by read-only inspection. The checker never
+repairs pins or trust and is not a runtime rollout.
 
 ### W1: startup and compaction orientation
 
@@ -128,6 +133,50 @@ the guide therefore uses additionalContextLimit: 0 only for the strictly bounded
 handler. Actual installed-version loading, trust and model behavior remain
 separate evidence.
 
+### W1 dependency: compiler latency
+
+The first focused reads timed out at the incumbent 25-second limit, both before
+and after committing the records. A 55-second diagnostic completed store loading
+in 1.835 seconds, then spent the remainder in repeated Git history walks. The
+compiler requested both creation and update dates for every candidate while
+discarding every creation date. A membership-only diagnostic counted 48 distinct
+date paths; that diagnostic substituted no-date results and is not an owner-read
+or delivery proof.
+
+Removing unused creation-history queries alone still timed out at 25.025 seconds.
+The reviewed fix therefore queries exact per-path update dates with at most four
+concurrent reads. It deduplicates original Path objects within one invocation and
+fills every eligible item before budget costing, including workstream constraint
+copies. It retains no cache and changes no selection, source-digest, omission or
+mandatory-content rule. The old date readers remain unchanged.
+
+Reusing the older combined-path batch reader was rejected after a real Git
+merge-resolution fixture returned August 3 where the per-path oracle correctly
+returned August 4. That pre-existing batch-helper defect is not silently propagated
+or repaired in unrelated consumers by this change.
+
+The compiler source SHA256
+21b1857ab7c30b9b41cf37903ceb74fd369d9ed5cf2450e870e92c92024a32a0
+passed independent review and all 104 tests in tests/test_agentos_compile.py.
+The tests cover real merge-resolution, rename/re-add and fresh-commit dates;
+bounded concurrency; and complete bundle parity under two budgets.
+Its actual M2 composition through Mastermind PR 1666
+completed in 17.105 seconds, supplying 32,236 bytes of additional context from a
+31,031-byte owner bundle. Goal, phase plan, next action, do-not-redo facts and the
+handoff were present. The owner reported three degraded inputs and 44 omissions;
+its 6,309-token estimate exceeded the requested 4,000 without hiding that fact.
+This proves complete delivery by the source adapter to its JSON output, not
+native hook firing or model consumption. Subsequent record wording is shortened
+to leave more capacity under the unchanged 32-KiB bound.
+
+The next complete read supplied 32,424 bytes in 22.346 seconds. Its three degraded
+inputs are explicit: the sparse worktree lacks active_builds.json for PR joins;
+the configured Mastermind P0 source is unavailable; and mandatory material plus
+accounting tails exceed the requested token budget. The latter two are not
+silently turned into current strategic or runtime facts. The small remaining byte
+margin requires an explicitly smaller packing budget for the native canary, with
+another complete-owner-read check; the adapter's hard limit stays unchanged.
+
 ### W2: durable planning and checkpoint
 
 The workstream carries the project objective, phase dependencies and next action.
@@ -147,6 +196,20 @@ source-acquisition/installation owner must keep it current; source revisions and
 publication state must be reconciled before its records are treated as current
 shared knowledge. Native acceptance must include a real recorded decision change
 reaching that intended owner root, not only a changed fixture in a unit test.
+
+### W3: reconcile existing continuation source carriers
+
+The protected pin lacks the production draft builder, but existing open source
+carriers were subsequently located: Mastermind PR 656 at
+9a461ee416437f5b8591154f00b608e9b0ce0a32 contains the builder and tests;
+PR 1289 at 9b7318baeb63399bd264bfb4fad2bd1617fff61c contains fenced PREPARE/ACK
+integration. PR 656 has requested changes for accepting empty or malformed Git
+head identity. PR 1289 is draft and explicitly held from production. Its source
+test result is not permission to activate it. Reconcile these carriers and their
+ownership before repairing or integrating; do not create another implementation.
+Native SessionStart qualification is not a prerequisite for this source review
+and repair. End-to-end continuation acceptance still needs authentic current
+owner records, model delivery, original-parent custody and effect reconciliation.
 
 ## Remaining implementation and acceptance order
 
@@ -211,3 +274,4 @@ the exact current publication and held-action state.
 - [Agent OS owner contract](../agentos/README.md)
 - [Official Codex hooks contract](https://learn.chatgpt.com/docs/hooks)
 - [Return diagnostic source PR](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1664)
+- [Attended project-context source PR](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1666)

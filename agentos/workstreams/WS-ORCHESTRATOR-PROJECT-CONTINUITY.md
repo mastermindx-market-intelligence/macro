@@ -20,7 +20,10 @@ owns_paths:
   - mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md
   - mastermind:tests/test_fabric_stop_preflight.py
   - mastermind:tests/test_agentos_session_start.py
+  - scripts/agentos.py
+  - tests/test_agentos_compile.py
   - agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md
+  - agentos/discoveries/DSC-CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION.md
   - agentos/handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-*
   - research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
 depends_on: []
@@ -29,49 +32,43 @@ waves:
     title: Expose installed Codex return-binding drift
     status: awaiting_ci
     next_action: >
-      Qualify Mastermind PR 1664 at b740b9afce945d15884076a14bbc6f9471716a46;
-      preserve the separate private-source review and native trust gates before
-      changing any installed adapter pin.
+      Qualify Mastermind PR 1664. Review the held private adapter delta before
+      changing installed bindings; native trust remains a separate gate.
   - id: W1
     title: Supply existing Agent OS context at startup and compaction
     status: awaiting_ci
     next_action: >
-      Qualify Mastermind PR 1666 at f48ed994cb1a1800ecfbf3d343fd4c98f27c17f5,
-      then prove actual native loading,
-      complete delivery and continued action in one intended Astra session.
+      Qualify Mastermind PR 1666 and the Macro compiler fix, then prove complete
+      native delivery and continued action in one intended Astra session.
   - id: W2
     title: Publish the project plan and recoverable checkpoint in Agent OS
     status: in_progress
     next_action: >
-      Validate and publish this record, the implementation plan and the cumulative
-      handoff; prove the incumbent compiler supplies their current objective and
-      next action within the bounded attended-context adapter.
+      Publish these records and handoff. Retain the bounded owner-read proof of
+      goal, phases, next action and accepted-work constraints.
   - id: W3
     title: Compose and qualify full semantic continuation through existing owners
-    status: todo
-    depends_on: [W1, W2]
+    status: in_progress
     next_action: >
-      After native ingress is qualified, bind authentic SessionTruth and Executive
-      observations to the existing continuation and turn-input owners. Implement
-      missing production composition without fabricating PREPARE or supplied-input
-      receipts; reconcile outstanding effects on their original carriers.
+      Reconcile existing continuation PRs 656 and 1289 and their review gates.
+      Source repair can proceed before native ingress; preserve original effect custody.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo
-    depends_on: [W0, W3]
+    depends_on: [W0, W1, W2, W3]
     next_action: >
-      Run the controlled project canary in the intended Astra entrypoint, including
-      real paid Fabric START, retained return, review, acceptance, compaction and
-      continued phase execution; then qualify each other provider adapter separately.
+      Prove paid START, retained return, review, acceptance, compaction and continued
+      phases. Repeat with interruption and qualify each provider separately.
 discoveries:
   - DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION
 do_not_redo:
-  - "Reuse Macro Agent OS, its compiler and Mastermind runtime owners; do not create another task registry, priority queue or memory store (agentos/README.md)."
-  - "Reuse ops.fabric_launch.agentos.read_context for exact owner expansion; ContextResolver selects references and does not materialize mission prose (Mastermind d010b161)."
-  - "121 return/preflight tests and 61 context/owner tests passed on M2; reuse their exact unchanged source evidence and rerun only for material changes or required release checks."
+  - "Reuse Agent OS and Mastermind runtime owners; no second task registry, priority queue or memory store (agentos/README.md)."
+  - "Use ops.fabric_launch.agentos.read_context for exact owner expansion; ContextResolver selects references (Mastermind d010b161)."
+  - "121 return/preflight tests and 61 context/owner tests passed; reuse exact unchanged source evidence in the handoff. Broader CI remains separate."
 landmines:
   - "A matching static hook pin is not native loading or original-parent consumption; see DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION."
   - "The compiler may preserve mandatory material beyond its requested budget; inspect exclusions and the adapter's complete-output limit (agentos/README.md)."
+  - "Keep exact per-path Git date semantics: the older batch helper loses merge-resolution dates (scripts/agentos.py)."
   - "This authored workstream and its owner field establish no live lease, runtime assignment or transfer of an older parent's workers (agentos/README.md)."
 artifacts:
   - research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
