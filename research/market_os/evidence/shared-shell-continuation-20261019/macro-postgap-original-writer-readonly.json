@@ -1,0 +1,58 @@
+{
+  "started_at": "2026-10-20T00:05:06.642435+00:00",
+  "worktree": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "status": "",
+  "common_git": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git",
+  "active_git_state": [],
+  "fetch": {
+    "exit": 0,
+    "stderr": ""
+  },
+  "remote_head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "main": "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92",
+  "merge_base": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "counts": "74\t128",
+  "authority": {
+    "AGENTS.md": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "7aa82fbb309081c6d1297ee35405507d30e7d3c6"
+    },
+    "CLAUDE.md": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419"
+    },
+    ".github/workflows/ci-authority.yml": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "d80eb2497d5f2e0c5de4e1051bfaa8be2db3ce40",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "d80eb2497d5f2e0c5de4e1051bfaa8be2db3ce40"
+    },
+    ".github/workflows/engine-render.yml": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "3db374453982ef1d3f08e44bbef5c0513fe0ab8f",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "071763bec708c8b596d2ef7f958242cfda73b127"
+    },
+    ".github/workflows/render.yml": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "8430d71dad2ef0a6209b9b605190551078c21819",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "54d1e69add408cd3532451f85b355626c78c451a"
+    },
+    ".github/workflows/public-render.yml": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "909610c07c275dba1ec02165146a934cd678b89d",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "909610c07c275dba1ec02165146a934cd678b89d"
+    },
+    "scripts/capture_page_evidence.py": {
+      "e22e1c33c810da99f7389f5069dd2ee045270c85": "6f184c6469f6fd653d003716ad96605055e71f56",
+      "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92": "6f184c6469f6fd653d003716ad96605055e71f56"
+    }
+  },
+  "incoming_path_count": 5903,
+  "incoming_paths_sha256": "b31a1f5b000029a1d031bdd0d3c8e40e9fa3ac2bb43c644fdd76ab86668ff525",
+  "merge_tree": {
+    "exit": 1,
+    "stdout": "167df5d775c1e79471db639d01ebb2f5ac4b9f8d\n100644 3a4cf83d05ced9b974d7a3b4bec99ca0b7128c13 1\t.github/ci/legacy-jobs.yml\n100644 880ab70cc0e2093b1b42bc944f90350e0b9e312b 2\t.github/ci/legacy-jobs.yml\n100644 883b92777d236c81dc60b82915429d289bf9bf49 3\t.github/ci/legacy-jobs.yml\n100644 2db815f91be506a7744aec17eedcf43b1717c9d1 1\tapp/deploy/Caddyfile\n100644 873b40f8742cd8b22528a01cd51132023fb53f78 2\tapp/deploy/Caddyfile\n100644 4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d 3\tapp/deploy/Caddyfile\n100755 e882221ee481467e1645aa295ea391549fc22e3d 1\tapp/deploy/update.sh\n100755 3fa8a0b1043b52fcdba5fa869adb540ccefb12bf 2\tapp/deploy/update.sh\n100755 d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6 3\tapp/deploy/update.sh\n100644 fbe7561c17c773b04128b59c4534e7d16a855267 1\tsite/etfs.html\n100644 16a0e41725b2d0dfeefd7642749094423c01b3c0 2\tsite/etfs.html\n100644 b8d1809081df4e7006760544e77f96ceccb1bff4 3\tsite/etfs.html\n100644 c51d59bc0b3e5a1b3feb001e82bb8b916f3c44d7 1\tsite/us_stocks.html\n100644 5556125a618429abb40e6be61fe4292d914b7aa3 2\tsite/us_stocks.html\n100644 2a7633efd420607c9db2f8f263f2f9257ac08847 3\tsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/Caddyfile\nCONFLICT (content): Merge conflict in app/deploy/Caddyfile\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging config/site_access.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. aa208d3c9ca38a57e92bd8e912eadd17d08f8d92)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/finance_intelligence.js\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nAuto-merging site/tech_lab.html\nwarning: Cannot merge binary files: site/us_stocks.html (e22e1c33c810da99f7389f5069dd2ee045270c85 vs. aa208d3c9ca38a57e92bd8e912eadd17d08f8d92)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/finance_intelligence.js\nAuto-merging templates/fundamental_forensics.js\nAuto-merging templates/tech_lab.html.j2\nAuto-merging tests/test_regwall_json_gate.py\n",
+    "stderr": "",
+    "sha256": "899f4924c75f636b6d482789ace2a0e069b0691d3f026ced26f57b2338ee7ab6"
+  },
+  "post_head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "post_status": "",
+  "finished_at": "2026-10-20T00:05:27.886747+00:00"
+}

@@ -3,11 +3,11 @@
   "contract_phase": "w0",
   "display_only": true,
   "as_of": "2026-10-21",
-  "generated_at": "2026-10-21T12:06:25+00:00",
+  "generated_at": "2026-10-21T17:19:59+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 82942.02,
-    "change_24h_pct": 0.0,
+    "price": 83442.99,
+    "change_24h_pct": 0.61,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
     "summary_en": "The big picture reads risk-on. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
@@ -133,9 +133,9 @@
           "label_en": "Stablecoin tide",
           "label_zh": "稳定币潮汐",
           "source": "master.board.stbl",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Contracting",
+          "state_zh": "收缩",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         },
         {

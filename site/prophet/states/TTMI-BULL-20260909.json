@@ -6,7 +6,7 @@
   "detection_phase": "invalidated",
   "management_confidence": 11.2,
   "raw_confidence": 8.0,
-  "delta_vs_base": -48.9,
+  "delta_vs_base": -48.8,
   "recommended_action": "invalidated",
   "human_state": "Invalidated",
   "components": {
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
