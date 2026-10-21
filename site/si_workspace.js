@@ -262,10 +262,19 @@ function paintFoot(){
     return;
   }
   var bh=GR.by_horizon||{}, h=bh['21d']||bh['63d']||bh['126d']||null;
-  g.innerHTML=(h&&h.dir_hit_rate!=null)
+  g.innerHTML=((h&&h.dir_hit_rate!=null)
     ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0),
         '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0))
-    : L('Self-grader: accruing','自评分器：累积中');
+    : L('Self-grader: accruing','自评分器：累积中'))+graderVersionFrame(GR);
+}
+/* RB13 F1: the rail summary is the version-1 cohort once version 2 is active — frame it. */
+function graderVersionFrame(GR){
+  var seg=GR.score_version_segments||{}, s1=seg['1']||null;
+  var v2=(GR.by_score_version||{})['2']||null;
+  if(!s1||!s1.last_date) return '';
+  var out=L(' · v1 calls through '+esc(s1.last_date),' · 版本1判断截至 '+esc(s1.last_date));
+  if(v2) out+=L(' · v2 accruing n='+(v2.n_calls||0),' · 版本2累积中 n='+(v2.n_calls||0));
+  return out;
 }
 function reads(){
   var o=document.getElementById('si-read-overview');
@@ -300,8 +309,12 @@ var current=null;
    no entry and keeps native behaviour; history.scrollRestoration is never touched —
    this is additive memory on top of the browser's, not a replacement for it. */
 var SCROLL_MEM={};
+var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
+                       still-pending replay frame from an earlier activation — a stale
+                       frame must not scroll a view that is no longer on screen */
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
+  var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
   /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
   if(current) SCROLL_MEM[current]=window.scrollY;
   var i, secs=document.querySelectorAll('.si-view'), btns=document.querySelectorAll('.si-view-btn');
@@ -354,8 +367,16 @@ function activate(view,target){
   }else if(typeof SCROLL_MEM[view]==='number'){
     /* hashchange path with no explicit target (Back/Forward between views): replay where
        this view was last left, one frame after the section swap so the layout has settled.
-       First visit (no entry) never reaches here and native behaviour stands. */
-    requestAnimationFrame(function(){ window.scrollTo(0,SCROLL_MEM[view]||0); });
+       First visit (no entry) never reaches here and native behaviour stands. RI09: the
+       frame compares before it writes — if the viewport already sits at the remembered
+       origin (the browser's own restoration settled there) the write is skipped instead
+       of racing it, and a frame whose activation was superseded returns without touching
+       the scroll. history.scrollRestoration stays untouched: additive memory, not a
+       takeover of the browser's own restoration. */
+    requestAnimationFrame(function(){
+      if(gen!==SCROLL_GEN) return;
+      if(window.scrollY!==SCROLL_MEM[view]) window.scrollTo(0,SCROLL_MEM[view]||0);
+    });
   }
 }
 function route(){

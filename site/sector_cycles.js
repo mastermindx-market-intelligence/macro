@@ -990,7 +990,16 @@
 
   /* ---- focus orchestration ----------------------------------------------- */
   function toggleFocus(id) { setFocus(state.focus === id ? null : id); }
-  function setFocus(id) {
+  // RI09b finding 6: the traversal reader below dedupes on the last-handled href, but an
+  // in-app focus write moves the URL by replaceState without firing any event — a user
+  // hash-edit back to the previously handled href would then be eaten. The in-app write
+  // resets that dedupe (installed by the listener block; null when no listener is bound).
+  var _navDedupeReset = null;
+  // fromHistory (traversal path only): the URL already matches the traversed entry, so
+  // the closing replaceState below is skipped — rewriting it fragment-less would strip
+  // the entry's hash (RI09). In-app callers keep the write: it is what keeps the URL
+  // honest on a chip tap or the panel's back button.
+  function setFocus(id, fromHistory) {
     clearFirstHint();                              // any focus change = the user has engaged
     if (id && window.SC_LAZY_EXTRAS) _scheduleExtras();  // host deferred extras — load on first focus
     // focusing a basket-like record implies selecting it onto the chart
@@ -1015,7 +1024,7 @@
       if (isCnMobile()) { if (id) openSheet("half"); else closeSheet(); }   // hidden-at-rest detent sheet
       else if (id) expandSheet(true);                                       // US legacy peek sheet
     }
-    try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {}
+    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -2023,7 +2032,7 @@
     if (!(h && byId[h])) return false;
     var hs = byId[h];
     if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
-    setFocus(h);
+    setFocus(h, true);   // RI09b finding 7: the URL already carries #h — no traversal-path write exists
     return true;
   }
 
@@ -2051,14 +2060,29 @@
     // J-restore (§8/§10): Back/Forward (popstate) or a same-page hash edit (hashchange)
     // re-applies the focus deep link through the shared reader without a reload; a hash
     // that no longer names an entity clears focus back to the default panel. Standalone
-    // page only (US + China) — inside the Sector Central shell (SC_LAZY_EXTRAS, set by
-    // si_workspace.js loadCycles before injecting this file) the hash belongs to the
+    // page only (US + China) — inside a Sector Central shell the hash belongs to the
     // shell's own view router, and a setFocus from here would replaceState-clobber the
-    // shell's #view entry. The in-shell Cycles contract is SIC-I03/I09B's to build.
-    if (!window.SC_LAZY_EXTRAS) {
-      var syncFocusHash = function () { if (!applyFocusHash()) setFocus(null); };
+    // shell's #view entry. Two independent guards, either sufficient (RI09): the host
+    // loaders set SC_LAZY_EXTRAS before injecting this file (si_workspace.js /
+    // si_workspace_china.js loadCycles — the China hub once shipped without it), and the
+    // shell root itself is detectable — activate() in both routers owns the .si-view
+    // sections, so when one is present the hash is that router's, flag or no flag. The
+    // in-shell Cycles contract is SIC-I03/I09B's to build.
+    if (!window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
+      // one traversal fires BOTH popstate and hashchange — the second arrival is the same
+      // navigation and must not run the reader twice. Last-handled href dedupe; starts
+      // null, never the bind-time href, or the first Back onto it would be eaten.
+      var lastNavHref = null;
+      var syncFocusHash = function () {
+        if (location.href === lastNavHref) return;
+        lastNavHref = location.href;
+        // fromHistory=true: the traversed entry's URL is already where the browser put
+        // it — setFocus(null) must not replaceState it fragment-less
+        if (!applyFocusHash()) setFocus(null, true);
+      };
       window.addEventListener("popstate", syncFocusHash);
       window.addEventListener("hashchange", syncFocusHash);
+      _navDedupeReset = function () { lastNavHref = null; };
     }
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)

@@ -165,7 +165,12 @@
       return it && typeof it.t === 'string' && it.t;
     }).map(function (it) {
       return { t: it.t, added: typeof it.added === 'string' ? it.added : nowISO(),
-               note: typeof it.note === 'string' ? it.note : '' };
+               note: typeof it.note === 'string' ? it.note : '',
+               // SIC-I07R / RI07 finding 5: a saved investigation's item carries
+               // section 'si' (watchstore.js _siNoteWrite). Keep it so the row
+               // source can gate the chip on the ROW, not on the list. Absent on
+               // ordinary items — undefined never reaches the persisted blob.
+               section: typeof it.section === 'string' ? it.section : undefined };
     }) : [];
     var have = {}; b.items.forEach(function (it) { have[it.t] = 1; });
     b.order = (Array.isArray(raw.order) ? raw.order : []).filter(function (t) { return have[t]; });
@@ -942,6 +947,7 @@
     var rows = blob.items.map(function (it, i) {
       return { t: it.t, added: it.added, n: tickerName(it.t) || it.t,
                s: tickerSector(it.t), st: tickerSt(it.t),
+               section: it.section,
                pos: (pos[it.t] == null ? blob.order.length + i : pos[it.t]) };
     });
     // A1A (§11): no book filter applies to the Watchlist table — see lgViewItems.
@@ -993,6 +999,38 @@
       '<th></th>' +
     '</tr></thead>';
 
+  /* ---- SIC-I07R: rows of the dedicated 'Sector Intelligence' list ------------
+     The list itself is watchstore.js's (WatchStore.saveSectorInvestigation — one
+     watchlist_symbols row, section 'si', inside the user's dedicated list). This
+     page only RENDERS it: the same row component, plus a chip that links the ETF
+     to its sector dossier, plus the device-local note disclosure. The chip copy
+     is baked in watchlist.html.j2 (window.WL_SI_COPY, strings only); an absent
+     global (JS deploy ahead of its bake) degrades to the English half, never to
+     missing markup. */
+  function siCopy() {
+    var c = (window.WL_SI_COPY) || {};
+    return {
+      chip: function () {
+        return te(esc((c.chip && c.chip.en) || 'Sector investigation'),
+                  esc((c.chip && c.chip.zh) || 'Sector investigation'));
+      },
+      device: function () {
+        return te(esc((c.device && c.device.en) || 'Notes are saved on this device — they don’t sync'),
+                  esc((c.device && c.device.zh) || 'Notes are saved on this device — they don’t sync'));
+      }
+    };
+  }
+  function isActiveSiList() {
+    return !!(window.WatchStore && window.WatchStore.si && listId &&
+              listName === window.WatchStore.si.listName());
+  }
+  /* The chip reuses the page's existing pill grammar (.ws-chip) — no new CSS,
+     no accent edge, focus outline untouched. It IS the dossier link. */
+  function siChipHTML(t) {
+    return '<a class="ws-chip si-chip" href="sectors/' + esc(t) + '.html">' +
+      siCopy().chip() + '</a>';
+  }
+
   function wlRowHTML(r) {
     var signedIn = !!window.SD;
     var d = DELTA[r.t];
@@ -1010,7 +1048,9 @@
     var sect = r.s ? '<span class="mut" style="font-size:12px">' + secCell(r.s) + '</span>'
                    : '<span class="dash">—</span>';
     return '<tr data-t="' + esc(r.t) + '" aria-expanded="' + (openRows[r.t] ? 'true' : 'false') + '">' +
-      '<td class="c-sym"><b>' + esc(r.t) + '</b><span class="co">' + esc(r.n) + '</span></td>' +
+      '<td class="c-sym"><b>' + esc(r.t) + '</b>' +
+        (isActiveSiList() && r.section === 'si' ? siChipHTML(r.t) : '') +
+        '<span class="co">' + esc(r.n) + '</span></td>' +
       '<td class="c-val num">' + px + '<span class="w">' + dayCell() + '</span></td>' +
       '<td class="c-sig">' + sig + '</td>' +
       '<td class="c-att">' + flag + '</td>' +
@@ -1151,6 +1191,10 @@
       var parts = ['<span><b class="fig">' + total + '</b> ' + te('names', '只') + '</span>'];
       if (nChanged) parts.push('<span class="sep">·</span><span><b class="fig">' + nChanged + '</b> ' +
         te('changed since your last visit', '自上次访问有变化') + '</span>');
+      // SIC-I07R: the dedicated list's readback states its device-local limit —
+      // the note (question / snapshot / origin) is saved on this device and
+      // never implied to sync (the recorded cross-device GAP).
+      if (isActiveSiList()) parts.push('<span class="sep">·</span><span>' + siCopy().device() + '</span>');
       facts.innerHTML = parts.join('');
     }
     var name = el('wl_listname');
