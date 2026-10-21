@@ -843,3 +843,75 @@ def test_import_surface_is_contract_only():
     assert roots <= allowed, sorted(roots - allowed)
     assert not any(root.startswith("engine.contagion") for root in roots)
     assert "pandas" not in roots and "numpy" not in roots
+
+
+# 17 review round 1: pinned window-end exclusion and lowest-id tie rules ------------
+
+
+def test_peer_with_different_window_end_is_excluded():
+    # A peer whose window_end date differs from the subject's is excluded
+    # window_end_mismatch and changes nothing else in the receipt.
+    subject = _observation("JP", 0)
+    peers = [_observation(mid, 0, shift=shift) for mid, shift in
+             (("KR", 0.0), ("TW", 0.7), ("IN", 1.9), ("AU", -1.3))]
+    clean = dislocation_peer_divergence(
+        subject, peers, kind="peer_divergence_return", computed_at=COMPUTED_AT,
+        peer_rule="all_qualified")
+    assert clean["state"] == "qualified"
+    _invariant(clean)
+    extra = _observation("GB", 1)  # window_end one month earlier
+    assert extra["identity"]["window_end"] != subject["identity"]["window_end"]
+    assert extra["observation_id"] not in {
+        peer["observation_id"] for peer in peers}
+    extended = dislocation_peer_divergence(
+        subject, peers + [extra], kind="peer_divergence_return",
+        computed_at=COMPUTED_AT, peer_rule="all_qualified")
+    excluded = extended["references"]["excluded_by_reason"]
+    assert excluded["window_end_mismatch"] == 1
+    assert extra["observation_id"] not in \
+        extended["references"]["used_observation_ids"]
+    assert extended["references"]["used_observation_ids"] == \
+        clean["references"]["used_observation_ids"]
+    assert extended["references"]["used"] == clean["references"]["used"]
+    assert extended["evidence"] == clean["evidence"]
+    assert extended["dislocation_id"] == clean["dislocation_id"]
+    _invariant(extended)
+
+
+def test_duplicate_peer_keeps_the_lowest_observation_id():
+    subject = _observation("JP", 0)
+    peers = [_observation(mid, 0, shift=shift) for mid, shift in
+             (("TW", 0.7), ("IN", 1.9), ("AU", -1.3))]
+    first = _observation("KR", 0, tag="a", shift=0.0)
+    second = _observation("KR", 0, tag="b", shift=2.5)
+    assert first["observation_id"] != second["observation_id"]
+    low, high = sorted([first["observation_id"], second["observation_id"]])
+    receipt = dislocation_peer_divergence(
+        subject, peers + [first, second], kind="peer_divergence_return",
+        computed_at=COMPUTED_AT, peer_rule="all_qualified")
+    assert low in receipt["references"]["used_observation_ids"]
+    assert high not in receipt["references"]["used_observation_ids"]
+    assert receipt["references"]["excluded_by_reason"]["duplicate_window"] == 1
+    _invariant(receipt)
+
+
+def test_volatility_subject_block_tie_keeps_the_lowest_observation_id():
+    subject = _observation("JP", 0)
+    predecessors = [_observation("JP", 1), _observation("JP", 2)]
+    duplicate = _observation("JP", 1, tag="dup")
+    assert duplicate["observation_id"] != predecessors[0]["observation_id"]
+    low, high = sorted([predecessors[0]["observation_id"],
+                        duplicate["observation_id"]])
+    history = predecessors + [duplicate] + _references(count=60, start=3)
+    receipt = dislocation_own_history(
+        subject, history, kind="own_history_volatility",
+        computed_at=COMPUTED_AT)
+    assert receipt["state"] == "qualified"
+    assert low in receipt["references"]["subject_block_ids"]
+    assert high not in receipt["references"]["subject_block_ids"]
+    excluded = receipt["references"]["excluded_by_reason"]
+    # The leftover duplicate is counted under exactly one reason: its
+    # (window_start, window_end) pair re-enters the protected subject block.
+    assert excluded["duplicate_window"] == 1
+    assert sum(excluded.values()) == 1
+    _invariant(receipt)
