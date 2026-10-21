@@ -46,7 +46,7 @@ waves:
     title: Backend packets B01–B12 (generation, membership, metrics, phase age, grader, contracts, adapters, history, engine upgrades)
     status: in_progress
     depends_on: [P01-P03]
-    next_action: "Adjudicate the ORCH-DATA return; merge accepted claude/sic-d-* refs into the PR branch in the returned order."
+    next_action: "Merge ORCH-DATA's B05 r2 repair ref (weekend forward-log rows must not count as sessions) and B12 on top of d3f08a76; re-run the ci-pack closure + ceiling probe after each new engine module; then consume RB12/RB04/B13/RB13."
   - id: P07-P08
     title: Complete editable Paper boards (desktop/mobile, both themes, all states) + dedicated Sector Cycles workspace
     status: in_progress
@@ -72,7 +72,7 @@ waves:
     title: Normal release, served user journeys, next natural update or qualified no-change, explicit closeout
     status: todo
     depends_on: [P19-P20]
-next_action: "Consume the SIC-MAP census lane (sic-map-20261021-r1, ubuntu0) and the two Opus orchestrator returns; freeze the seat-owned integration packets I01–I09 from the capability map; merge accepted lane refs into PR #9917 as the single branch writer."
+next_action: "Consume ORCH-DATA B05 r2 (RB05 MAJOR repair) + B12 + RB12 and merge the accepted refs on top of the D-wave chain (B06 merged d3f08a76); consume the ORCH-PAPER Rotation/Dossier/Research R3 boards, freeze I02/I03/I04/I08, launch I05R/I06R/I07R/I09A on the pushed head; #9917 stays draft."
 ---
 
 # Sector Intelligence + Sector Cycles completion

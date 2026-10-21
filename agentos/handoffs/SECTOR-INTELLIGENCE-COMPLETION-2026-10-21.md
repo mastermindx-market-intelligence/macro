@@ -52,6 +52,12 @@ verified:
   - claim: "Both Opus orchestrators were admitted by the routing guard"
     command: "Agent(subagent_type=orchestrator, model=opus) with ROUTE: orchestration + WHY OPUS + MISSION/WHY/SCOPE/OUT OF SCOPE/NOT DONE UNLESS/RETURN sections"
     result: "two async agents launched 2026-10-21 03:0xZ (ORCH-DATA, ORCH-PAPER); earlier spawns without the labelled sections were rejected"
+  - claim: "Eight ORCH-DATA-accepted D-wave refs are merged --no-ff into the PR branch in chain order and the B06-affected + reconciled-pin suites pass on the merged tree"
+    command: "git log --oneline --first-parent f6dfc6b1..HEAD; python3 -m pytest -q -p no:cacheprovider tests/test_cycle_rhythm_disclosure.py tests/test_sector_cycles.py tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_cycle_forward_log_fence.py tests/test_sector_central_publication.py tests/test_sector_central.py tests/test_sector_completion_ownership_map.py tests/test_sector_metric_definitions.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py"
+    result: "chain a4427c8a (B02) f5ddee72 (B03) a8949aaf (B05 r1) d836833c (B07) 75d35a24 (B01+B04) 05a0222f (B10+B11) 04ef5d0e (B09) ce9f7a2d (reconciliation) d3f08a76 (B06); 143 passed, 2 skipped (2026-10-21 05:0xZ)"
+  - claim: "The ci-pack exclusive-curation and import-closure probes pass on the D-wave head after the cycle_rhythm closure/ceiling fund"
+    command: "python3 -m pytest tests/test_ci_pack.py -q -p no:cacheprovider -k 'exclusive_curation or closure'"
+    result: "8 passed, 2 skipped (2026-10-21 05:1xZ; before the fund: 11 scopes missing engine/cycle_rhythm.py and ceilings +7/+1/+1)"
 unverified:
   - claim: "Hosted CI on PR #9917 is green apart from the standing merge-queue-pilot X"
     what_would_verify: "mcp ccd_pr get_status for #9917 at head 3d8d14ac, or gh pr checks 9917 at a real integration boundary (no short-cycle polling)"
@@ -64,16 +70,16 @@ unresolved:
   - "The applicable Full RIG scope and an independent receipt for the before/after design are not obtained; the Oct 18 design packet stays unadmitted; the RIG-RECEIPT gap lives on heatmap #7193's branch."
   - "Production and natural-update portions of J15 are PENDING by design until P21–P23."
 next_actions:
-  - "Consume the SIC-MAP lane: lane_status → pull_lane → inspect CAPABILITY_MAP_2026-10-21.md and the filled CSV columns → accept or launch sic-map-20261021-r2 with a repair packet."
-  - "Consume the ORCH-DATA return; merge accepted claude/sic-d-* refs into the PR branch in the returned order (seat is the only branch writer); push; let hosted CI run."
-  - "Consume the ORCH-PAPER return; verify node ids with get_node_info and the exported screenshots; record the design admission (P09) in a decision record."
-  - "Freeze integration packets I01–I09 from the scratchpad outline using the capability map; launch seat-owned GLM build lanes (sic-i-*) on the post-merge branch head; one GLM review lane per surface packet."
+  - "Consume ORCH-DATA's sic-d-B05-20261021-r2 repair (RB05 MAJOR: non-business-day forward_log rows counted as sessions, cycle_phase_age.py:154-169) and sic-d-B12-20261021-r1; merge accepted refs on top of d3f08a76 as the single branch writer; re-run the ci-pack closure + ceiling probe after each new engine module; push."
+  - "Consume RB12 / RB04 / B13 / RB13 verdicts; repair lanes only on FAIL; PASS_WITH_NOTES minors are recorded in ORCH_DATA_NOTES, not re-opened."
+  - "Consume the ORCH-PAPER Rotation / Dossier / Research R3 boards (ledger node ids + screenshots); freeze I02/I03/I04/I08; record the P09 design admission; launch I05R/I06R/I07R/I09A on the pushed head only."
   - "P10–P13: prove one complete investigation on the rendered site; then P14–P18; then the Opus READ_ONLY auditor before P19."
   - "Release through the normal merge path (--match-head-commit; HOLD is a merge barrier), then production and next natural nightly update proof; close only with every gate's evidence."
 do_not_redo:
   - "P01–P03: merge 3d8d14ac, PR #9917 and the packing-test funding are accepted; never recommit or rebuild an identical candidate."
   - "Never re-spawn ORCH-DATA or ORCH-PAPER; message the running agents instead. Never relaunch a used Fabric run id (sic-map-20261021-r1 is used)."
   - "Never revive Terminal #1055 or re-publish through the Studio managed publisher."
+  - "D-wave refs B02/B03/B07/B0104/B1011/B09/B06 are ACCEPTED and merged (chain above); never re-review or re-merge them. B05 r1 (a8949aaf) stays in the chain as a known defect until the r2 ref merges on top — never rewrite history to remove it."
 danger_areas:
   - "sol/web-sector-central-macro-paper-pivot-20261020-sol-001 and its Studio workspace: read-only forever."
   - "Donor lane trees are sparse cone checkouts: a lane that writes under site/ or data/ without sparse-adding silently produces nothing."
@@ -91,3 +97,24 @@ The session is still live when this record is written; it is an as-you-go checkp
 stranger can continue if the context is cleared. The three durable executions (ORCH-DATA,
 ORCH-PAPER, lane sic-map-20261021-r1) were running at 03:1xZ. Their results are consumed from
 their return files and the donor branch, never assumed.
+
+## Checkpoint 2 — D-wave integration boundary (2026-10-21 05:1xZ)
+
+ORCH-DATA accepted eight backend refs (B02, B03, B05 r1, B07, B01+B04, B10+B11, B09, B06) and the
+seat merged them `--no-ff` in chain order on top of the SIC-RCV head `f6dfc6b1`. Cross-packet
+conflicts were integration-only and resolved forward in one reconciliation commit (`ce9f7a2d`):
+the tier-gate run line is restored byte-exact beside a new D-wave step; the B01+B04 ownership and
+metric pins now cite B02's generation guard and B03's honest `breadth_pct = None`; B10+B11's
+`none_native` correction disclosure is exempted from the correction-key scan; the correction regex
+no longer matches B07's `n_correct_directional`; eleven curated exclusive scopes were widened for
+the new engine modules and the three packing ceilings were funded. B06 added `engine/cycle_rhythm.py`,
+which needed a second closure/ceiling fund.
+
+RB05 returned FAIL (MAJOR): `engine/cycle_phase_age.py` counts non-business-day forward-log rows as
+sessions (16 pre-#7211 weekend rows; a weekend triple counts 3 for 1). ORCH-DATA launched the repair
+lane `sic-d-B05-20261021-r2` on base `a038b3f3`; its accepted ref lands on top of the chain. B12 runs
+on the same base. PR #9917 stays a draft.
+
+ORCH-PAPER has boards #0–#13 on R3 page `p-24-0` (components, eight Cycles boards, three Watches
+boards, Brief desktop + mobile); Rotation, Dossier and Research R3 boards are next. No node id in
+any record was typed by the seat; all come from the orchestrator's ledger.
