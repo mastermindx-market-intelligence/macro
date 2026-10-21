@@ -909,6 +909,37 @@ def test_signed_out_readback_also_reports_one_row_per_symbol():
 # ===========================================================================
 # 9. the page side — chip, dossier link, device-local disclosure (static)
 # ===========================================================================
+@needs_node
+def test_the_chip_paints_only_on_investigation_rows_inside_the_list():
+    """RI07 finding 5, rendered through the real row component (window.WS.rowHTML):
+    inside the dedicated list, an ordinary row hand-added by the user must carry
+    NO investigation chip — only a row whose item is section 'si' does. Before
+    the gate, every row of that list painted the chip."""
+    out = _run(
+        """
+        var WLJS = require(%s);   // watchlist.js — window.WL live, WLJS the node seam
+        window.WatchStore = { si: { listName: function () { return 'Sector Intelligence'; } } };
+        localStorage.setItem('mdash.wl.L-SI.v1', JSON.stringify({
+          v: 1, updated: '2026-10-01T00:00:00.000Z',
+          items: [{t: 'XLE', added: '2026-09-28T00:00:00.000Z', note: 'q', section: 'si'},
+                  {t: 'MSFT', added: '2026-09-29T00:00:00.000Z', note: ''}],
+          order: ['XLE', 'MSFT'], settings: {}}));
+        window.WL.bindList('L-SI', 'Sector Intelligence');
+        var rows = {};
+        WLJS.viewItems().forEach(function (r) { rows[r.t] = WLJS.rowHTML(r); });
+        var xleRow = WLJS.viewItems().filter(function (r) { return r.t === 'XLE'; })[0];
+        OUT({boundName: window.WL.listName(),
+             siRowHasChip: rows.XLE.indexOf('si-chip') >= 0,
+             ordinaryRowHasChip: rows.MSFT.indexOf('si-chip') >= 0,
+             rowCarriesSection: xleRow && xleRow.section});
+        """ % json.dumps(str(WATCHLIST)),
+    )
+    assert out["boundName"] == "Sector Intelligence"    # the list gate is active
+    assert out["rowCarriesSection"] == "si"             # the row source carries it
+    assert out["siRowHasChip"] is True
+    assert out["ordinaryRowHasChip"] is False           # RI07 finding 5
+
+
 def test_the_dedicated_lists_rows_carry_a_chip_that_links_the_dossier():
     src = WATCHLIST.read_text(encoding="utf-8")
     # the chip is gated on the ACTIVE list being the dedicated one
@@ -919,8 +950,16 @@ def test_the_dedicated_lists_rows_carry_a_chip_that_links_the_dossier():
         r"return '<a class=\"ws-chip si-chip\" href=\"sectors/' \+ esc\(t\) \+ '\.html\">'",
         src)
     assert m, "siChipHTML must render a .ws-chip anchor to sectors/<ETF>.html"
-    # the row component emits it only inside the dedicated list
-    assert re.search(r"isActiveSiList\(\) \? siChipHTML\(r\.t\) : ''", src)
+    # RI07 finding 5: the row component emits it only for rows whose own item is
+    # section 'si' AND inside the dedicated list — an ordinary row inside that
+    # list (the switcher allows hand-adding one) carries no chip
+    assert re.search(
+        r"\(isActiveSiList\(\) && r\.section === 'si' \? siChipHTML\(r\.t\) : ''\)", src)
+    # the section travels: the blob's migrate keeps it, the row source carries it
+    assert re.search(
+        r"section: typeof it\.section === 'string' \? it\.section : undefined", src)
+    m = re.search(r"function viewItems\(\) \{.*?section: it\.section", src, re.S)
+    assert m, "viewItems must carry the item's section onto the row"
 
 
 def test_the_readback_states_the_device_local_limit():

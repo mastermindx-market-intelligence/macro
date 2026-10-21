@@ -165,7 +165,12 @@
       return it && typeof it.t === 'string' && it.t;
     }).map(function (it) {
       return { t: it.t, added: typeof it.added === 'string' ? it.added : nowISO(),
-               note: typeof it.note === 'string' ? it.note : '' };
+               note: typeof it.note === 'string' ? it.note : '',
+               // SIC-I07R / RI07 finding 5: a saved investigation's item carries
+               // section 'si' (watchstore.js _siNoteWrite). Keep it so the row
+               // source can gate the chip on the ROW, not on the list. Absent on
+               // ordinary items — undefined never reaches the persisted blob.
+               section: typeof it.section === 'string' ? it.section : undefined };
     }) : [];
     var have = {}; b.items.forEach(function (it) { have[it.t] = 1; });
     b.order = (Array.isArray(raw.order) ? raw.order : []).filter(function (t) { return have[t]; });
@@ -942,6 +947,7 @@
     var rows = blob.items.map(function (it, i) {
       return { t: it.t, added: it.added, n: tickerName(it.t) || it.t,
                s: tickerSector(it.t), st: tickerSt(it.t),
+               section: it.section,
                pos: (pos[it.t] == null ? blob.order.length + i : pos[it.t]) };
     });
     // A1A (§11): no book filter applies to the Watchlist table — see lgViewItems.
@@ -1043,7 +1049,7 @@
                    : '<span class="dash">—</span>';
     return '<tr data-t="' + esc(r.t) + '" aria-expanded="' + (openRows[r.t] ? 'true' : 'false') + '">' +
       '<td class="c-sym"><b>' + esc(r.t) + '</b>' +
-        (isActiveSiList() ? siChipHTML(r.t) : '') +
+        (isActiveSiList() && r.section === 'si' ? siChipHTML(r.t) : '') +
         '<span class="co">' + esc(r.n) + '</span></td>' +
       '<td class="c-val num">' + px + '<span class="w">' + dayCell() + '</span></td>' +
       '<td class="c-sig">' + sig + '</td>' +

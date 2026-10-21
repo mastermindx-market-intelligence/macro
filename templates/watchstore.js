@@ -250,7 +250,10 @@
       updated: nowISO(),
       items: order.map(function (t) {
         var e = byT[t];
-        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '' };
+        return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '',
+                 // RI07 finding 5: an investigation item's section stamp survives
+                 // a membership refresh the same way its local note does
+                 section: (e && e.section) || undefined };
       }),
       order: order,
       settings: prev.settings,
