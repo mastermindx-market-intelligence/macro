@@ -1,12 +1,12 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-10-21T14:40:45Z",
+  "generated_at": "2026-10-21T15:32:22Z",
   "sources": {
     "macro": {
       "available": true,
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-compatibility-c245-3a3aec382182fb78",
       "ref": "HEAD",
-      "sha": "7a8cabcc66dd474ca1b2efcd285f8f9495bfdbfc",
+      "sha": "8100c5ac97f0b569f22fa6fdf4f53d6a70278a3e",
       "page_inventory": "git ls-files site/*.html",
       "tracked_html_pages": 13048,
       "write_page_sites": 159,
@@ -13778,7 +13778,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14424,7 +14424,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14592,7 +14592,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14758,7 +14758,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
