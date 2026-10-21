@@ -20,7 +20,8 @@ the lead-lag STOP are unchanged.
 The verdict is wired into the disclosure chain: `engine/hazard_parity.py::LIVE_HAZARD_PARITY`
 (frozen from the measurement run below) → `engine/cycle_rhythm.py::estimate_kinds`
 now stamps `model_cell_current_claim: "parity_failed"` (was `"parity_not_established"`)
-plus `live_feature_parity: {verdict, failing, report}` on every Cycles record.
+plus a `live_feature_parity` disclosure on qualified records (B12r2: a
+{verdict, failing, report_ref} pointer — see Receiver follow-on).
 
 ## Method
 
@@ -150,4 +151,15 @@ must read `estimate_kinds.model_cell_current_claim` BEFORE any current-MODEL wor
 the value is now `"parity_failed"`, so a MODEL cell may only be phrased as a
 historically qualified estimate whose live feature parity has failed — never as a
 current calibrated probability. `estimate_kinds.live_feature_parity` carries
-{verdict, failing, report} for that disclosure.
+{verdict, failing, report_ref} — qualified records only — for that disclosure.
+
+Payload size (B12r2 / RB12 repair, measured on the synthetic qualified record of
+the disclosure test set): the per-record payload is **268 bytes**
+(`len(json.dumps(...))`, default separators; 249 compact) — it was **10,824 bytes**
+(10,353 compact, ≈10.1 KiB) when the full report rode every record, i.e. ~798 KiB
+across the 79 Cycles records of the boot-critical `site/sector_cycles_data.js`.
+The report itself is published **exactly once per payload, in
+`meta.live_hazard_parity`** (10,883 bytes by the same measure): verdict, failing,
+provenance keys and the full report, read from the recorded `LIVE_HAZARD_PARITY`
+inside a try (`None` on any failure); no record's `estimate_kinds` carries a
+`report` key, and unqualified records carry `live_feature_parity: null`.
