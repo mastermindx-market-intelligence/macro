@@ -759,7 +759,66 @@ def test_the_signed_out_note_signature_storage_shape_is_pinned():
 
 
 # ===========================================================================
-# 7. the page side — chip, dossier link, device-local disclosure (static)
+# 7. RI07 finding 3 — the ticker allowlist
+# ===========================================================================
+@needs_node
+def test_the_save_rejects_symbols_outside_the_ticker_allowlist():
+    """RI07 finding 3: `etf` was taken as-is after trim+uppercase, so anything a
+    caller could pass — an injection-shaped string, a 9-letter run — minted a
+    cloud row and a dossier route. The save now refuses, with its existing
+    'bad-args' failure shape, any etf that is not 1-8 plain upper-ASCII letters
+    after the existing normalization; a plain lowercase ticker still lands as
+    its uppercase self. The refusal guards BOTH auth paths — signed out it must
+    not touch the anonymous blob either."""
+    out = _ws(
+        """
+        // signed out first: a refused etf must not reach the anonymous blob
+        WS.saveSectorInvestigation({etf: "xlk; drop"}).then(function () {
+          OUT({signedOutResolved: true});
+        }, function (e) {
+          OUT({signedOutRejected: String(e && e.message || e),
+               anonymousUntouched: localStorage.getItem('mdash.watchlist.v1') === null});
+        });
+        """
+    )
+    assert out["signedOutRejected"] == "bad-args"
+    assert out["anonymousUntouched"] is True
+
+    out2 = _ws(
+        """
+        var db = makeDb({watchlists: [
+          {id: 'L-SI', user_id: 'u1', name: 'Sector Intelligence', position: 0}],
+          watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        var bad = ['xlk; drop', 'XLKXLKXLK', 'a b', "x'or--", 'X;L;K'];
+        var results = [];
+        var seq = Promise.resolve();
+        bad.forEach(function (v) {
+          seq = seq.then(function () {
+            return WS.saveSectorInvestigation({etf: v}).then(function () {
+              results.push([v, 'resolved']);
+            }, function (e) {
+              results.push([v, String(e && e.message || e)]);
+            });
+          });
+        });
+        seq.then(function () {
+          return WS.saveSectorInvestigation({etf: 'xlk', note: 'q'}).then(function (r) {
+            OUT({results: results, accepted: r,
+                 rows: db.tables.watchlist_symbols.map(function (s) { return s.symbol; })});
+          });
+        });
+        """
+        , {"USER": USER},
+    )
+    for v, outcome in out2["results"]:
+        assert outcome == "bad-args", (v, outcome)
+    assert out2["accepted"]["etf"] == "XLK"      # normalized, then accepted
+    assert out2["rows"] == ["XLK"]               # only the clean row landed
+
+
+# ===========================================================================
+# 8. the page side — chip, dossier link, device-local disclosure (static)
 # ===========================================================================
 def test_the_dedicated_lists_rows_carry_a_chip_that_links_the_dossier():
     src = WATCHLIST.read_text(encoding="utf-8")

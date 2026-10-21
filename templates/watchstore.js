@@ -2251,6 +2251,12 @@
     var etf = String((payload && payload.etf) == null ? '' : payload.etf).trim().toUpperCase();
     var note = String((payload && payload.note) == null ? '' : payload.note);
     if (!etf) return Promise.reject(new Error('bad-args'));
+    /* RI07 finding 3: ticker allowlist. After the existing trim+uppercase, a
+       saved symbol is 1-8 plain upper-ASCII letters and nothing else — the
+       shape the dossier route (sectors/<ETF>.html) and the cloud row can own.
+       Anything else keeps the function's existing failure shape, on BOTH auth
+       paths (a refused etf never reaches the anonymous blob either). */
+    if (!/^[A-Z]{1,8}$/.test(etf)) return Promise.reject(new Error('bad-args'));
     if (!user) {
       // signed out: the anonymous local blob IS the store (same key the page
       // reads). The item's `note` is the device-local home of the question.
