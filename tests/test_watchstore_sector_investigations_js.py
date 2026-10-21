@@ -642,7 +642,124 @@ def test_a_signed_in_session_is_never_routed_to_the_anonymous_blob():
 
 
 # ===========================================================================
-# 6. the page side — chip, dossier link, device-local disclosure (static)
+# 6. RI07 finding 2 — a note saved signed-out survives the sign-in fold
+# ===========================================================================
+@needs_node
+def test_signed_out_save_folds_into_the_dedicated_list_on_sign_in():
+    """RI07 finding 2, reproduced end to end: a question saved signed-out sat in
+    the anonymous `mdash.watchlist.v1` blob, and pull()'s one-shot fold delivered
+    it into the plain 'Watchlist' as a bare ticker — so listSectorInvestigations()
+    (a section-filtered read of the DEDICATED list) returned [] and the note was
+    orphaned. The fold must capture the full local item and route investigations
+    through siEnsureList + _siInsert + _siNoteWrite; ordinary stars keep the
+    ordinary fold."""
+    out = _ws(
+        """
+        // signed out: one ordinary star, one saved investigation
+        localStorage.setItem('mdash.watchlist.v1', JSON.stringify({
+          v: 1, updated: '2026-10-01T00:00:00.000Z',
+          items: [{t: 'MSFT', added: '2026-09-30T00:00:00.000Z', note: ''}],
+          order: ['MSFT'], settings: {}}));
+        WS.saveSectorInvestigation({etf: 'XLE', note: 'energy question'}).then(function () {
+          // sign in on the same device: the page still holds the anonymous blob
+          global.window.WL = {
+            getBlob: function () { return JSON.parse(localStorage.getItem('mdash.watchlist.v1')); },
+            merge: function () { return 0; }
+          };
+          var db = makeDb({watchlists: [], watchlist_symbols: []});
+          WS._setTestSession(USER, db.client);
+          return WS.pull().then(function () {
+            return WS.listSectorInvestigations().then(function (rows) {
+              var si = db.tables.watchlists.filter(function (l) {
+                return l.name === 'Sector Intelligence'; })[0];
+              var wl = db.tables.watchlists.filter(function (l) {
+                return l.name === 'Watchlist'; })[0];
+              OUT({rows: rows,
+                   plainFold: symbolsOf(db, wl && wl.id).sort(),
+                   siFold: symbolsOf(db, si && si.id).sort(),
+                   marker: localStorage.getItem('mdash.watchstore.folded.v1')});
+            });
+          });
+        });
+        """
+        , {"USER": USER},
+    )
+    # the investigation is in the DEDICATED list, note intact — not orphaned
+    assert out["rows"] == [{"etf": "XLE", "added": out["rows"][0]["added"],
+                            "note": "energy question", "synced": True}]
+    assert out["rows"][0]["added"]
+    assert out["siFold"] == ["XLE"]
+    # the ordinary star keeps the ordinary fold into the plain 'Watchlist'
+    assert out["plainFold"] == ["MSFT"]
+    assert out["marker"] == "1"          # the one-shot fold ran and completed
+
+
+@needs_node
+def test_fold_routes_on_the_section_stamp_and_nothing_else():
+    """The fold's discriminator is the `section: 'si'` stamp, and it is the ONLY
+    one: an ordinary item that carries a user note ('my note' — notes are a
+    first-class field of ordinary items, local by ruling) keeps the ordinary
+    Watchlist fold. The RI07 packet's alternative arm (route any non-empty note
+    to the dedicated list) is contradicted by that pinned owner behavior
+    (tests/test_watchstore_multilist_js.py, the R1 branch-2 end-to-end) and is
+    reported as a deviation rather than taken."""
+    out = _ws(
+        """
+        global.window.WL = {
+          getBlob: function () { return {
+            v: 1, updated: '2026-10-01T00:00:00.000Z',
+            items: [{t: 'XLF', added: '2026-09-28T00:00:00.000Z', note: 'banks question',
+                     section: 'si'},
+                    {t: 'AAPL', added: '2026-09-29T00:00:00.000Z', note: 'my note'}],
+            order: ['XLF', 'AAPL'], settings: {}}; },
+          merge: function () { return 0; }
+        };
+        var db = makeDb({watchlists: [], watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          return WS.listSectorInvestigations().then(function (rows) {
+            OUT({rows: rows,
+                 landed: db.tables.watchlist_symbols.map(function (s) {
+                   return [s.symbol, s.section]; }).sort()});
+          });
+        });
+        """
+        , {"USER": USER},
+    )
+    assert out["rows"] == [{"etf": "XLF", "added": out["rows"][0]["added"],
+                            "note": "banks question", "synced": True}]
+    # XLF landed as the investigation row; AAPL kept the ordinary fold, note and all
+    assert out["landed"] == [["AAPL", "Watchlist"], ["XLF", "si"]]
+
+
+@needs_node
+def test_the_signed_out_note_signature_storage_shape_is_pinned():
+    """RI07 note: the signed-out readback's whole authority is the anonymous item
+    shape — an investigation is `note` non-empty (what listSectorInvestigations
+    filters on signed out), now stamped `section: 'si'` (what the sign-in fold
+    routes on). Pin the exact keys so a future writer cannot silently break
+    either half: the star-save keeps the three-key shape, the save adds the
+    section key and nothing else."""
+    out = _ws(
+        """
+        localStorage.setItem('mdash.watchlist.v1', JSON.stringify({
+          v: 1, updated: '2026-10-01T00:00:00.000Z',
+          items: [{t: 'MSFT', added: '2026-09-30T00:00:00.000Z', note: ''}],
+          order: ['MSFT'], settings: {}}));
+        WS.saveSectorInvestigation({etf: 'XLK', note: 'q'}).then(function () {
+          var b = JSON.parse(localStorage.getItem('mdash.watchlist.v1'));
+          OUT({star: b.items[0], saved: b.items[1]});
+        });
+        """
+    )
+    assert out["star"] == {"t": "MSFT", "added": "2026-09-30T00:00:00.000Z", "note": ""}
+    assert out["saved"] == {"t": "XLK", "added": out["saved"]["added"],
+                            "note": "q", "section": "si"}
+    assert out["saved"]["added"]
+
+
+# ===========================================================================
+# 7. the page side — chip, dossier link, device-local disclosure (static)
 # ===========================================================================
 def test_the_dedicated_lists_rows_carry_a_chip_that_links_the_dossier():
     src = WATCHLIST.read_text(encoding="utf-8")

@@ -863,8 +863,11 @@
            what the visitor accumulated, and nothing else.
 
            Taken BEFORE the bind below: bindList re-points the blob at the list cache,
-           and capturing after that would fold the cloud membership, not the visitor's. */
-        var localBeforeMerge = _tickersOf(
+           and capturing after that would fold the cloud membership, not the visitor's.
+           RI07 finding 2: the capture is the FULL item (note + section included), so
+           the fold can route a saved investigation to its own dedicated list instead
+           of losing it inside the plain Watchlist. */
+        var localBeforeMerge = _itemsOf(
           (window.WL && window.WL.getBlob) ? window.WL.getBlob() : null);
 
         /* Bind the page to the list we just read, WITH its name. Leaving listId
@@ -1021,7 +1024,7 @@
     return Promise.all(tasks.map(function (t) { return t.catch(function () {}); }));
   }
 
-  // ---- one-time fold: local tickers not in cloud -> insert -------------------
+  // ---- one-time fold: local items not in cloud -> insert ---------------------
   /* Retargeted in W1a: the fold lands in the list NAMED 'Watchlist' (created if
      absent), not in "whatever list sorted first". Both shipped behaviours are kept
      verbatim: ONE shot per device via the marker, and the marker is NOT written on an
@@ -1031,8 +1034,18 @@
      ORDER IS LOAD-BEARING (ruling R1). The marker check and the empty-book check come
      BEFORE the target is resolved, so an account with nothing to fold never triggers
      the create-if-absent path. That is what makes creation here on-demand rather than
-     spurious, and it is why resolveBoundList() above is free to create nothing. */
-  function _foldLocalIntoCloud(localTickers) {
+     spurious, and it is why resolveBoundList() above is free to create nothing.
+
+     RI07 finding 2: the fold now has TWO targets. An item the anonymous store marked
+     as a saved investigation (`section === 'si'`, the stamp _siNoteWrite writes)
+     folds into the DEDICATED list through the save's own path, so
+     listSectorInvestigations() still returns it after sign-in. Everything else —
+     including an ordinary item carrying a user note — keeps the W1a ordinary fold
+     verbatim: notes are a first-class field of ORDINARY items too (they are local
+     by ruling, cacheWrite/mergeInto preserve them), so a non-empty note cannot
+     identify an investigation at fold time. That arm of the RI07 packet is
+     contradicted by the owner's pinned fold behavior and is reported, not taken. */
+  function _foldLocalIntoCloud(localItems) {
     // Only fold once per device (not per session) to avoid repeated inserts on
     // every sign-in after the ongoing diff-push is the real mechanism.
     var already = false;
@@ -1040,27 +1053,74 @@
     if (already) return Promise.resolve();
     if (!user || !sb) return Promise.resolve();
 
-    // `localTickers` is the PRE-MERGE capture from pull(). It is a parameter and not a
-    // re-read of window.WL precisely so this function cannot see the merged blob.
-    var tickers = (localTickers || []).filter(function (t) { return !!t; });
-    if (tickers.length === 0) {
+    /* `localItems` is the PRE-MERGE capture from pull(). It is a parameter and not a
+       re-read of window.WL precisely so this function cannot see the merged blob.
+       A bare ticker string (the pre-RI07 test seam's shape) is tolerated as an item
+       with no note and no section — it can only ever take the ordinary fold. */
+    var items = (localItems || []).map(function (x) {
+      return (typeof x === 'string') ? { t: x } : x;
+    }).filter(function (it) { return it && !!it.t; });
+    if (items.length === 0) {
       // Do NOT mark folded: local is empty (fresh device or signed-out-built list).
       // Marking here would permanently consume the one-shot fold before any items exist.
       // Nor resolve a target: there is nothing to deliver, so nothing to create.
       return Promise.resolve();
     }
 
-    // There IS content to deliver — now resolve (and if necessary create) the target,
-    // and diff against ITS server rows, never the bound list's.
-    return resolveFoldTarget()
-      .then(function (id) {
-        foldTargetId = id;
-        if (_cloudOf(id)) return _foldInsert(tickers);
-        return symbolsFetch(id).then(function () { return _foldInsert(tickers); });
-      })
+    var siItems = [], plainTickers = [];
+    items.forEach(function (it) {
+      if (it.section === SI_SECTION) siItems.push(it);
+      else plainTickers.push(it.t);
+    });
+
+    // There IS content to deliver — now resolve (and if necessary create) the target
+    // of each half, and diff against THAT target's server rows, never the bound list's.
+    var siFold = (siItems.length === 0) ? Promise.resolve() : _siFold(siItems);
+    var plainFold = (plainTickers.length === 0) ? Promise.resolve()
+      : resolveFoldTarget()
+          .then(function (id) {
+            foldTargetId = id;
+            if (_cloudOf(id)) return _foldInsert(plainTickers);
+            return symbolsFetch(id).then(function () { return _foldInsert(plainTickers); });
+          });
+
+    return Promise.all([siFold, plainFold])
+      .then(function () { _markFolded(); })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
       });
+  }
+
+  /* The investigation half of the one-time fold (RI07 finding 2): read-first per
+     symbol through the SAME primitives a save uses — siEnsureList, _siInsert
+     (section 'si'), _siNoteWrite — so the row the fold lands is indistinguishable
+     from one the signed-in save would have written, note included. */
+  function _siFold(siItems) {
+    return siEnsureList().then(function (list) {
+      return siRowsFetch(list.id).then(function (rows) {
+        var have = {}, maxPos = -1;
+        rows.forEach(function (r) {
+          have[String(r.symbol)] = true;
+          if ((r.position || 0) > maxPos) maxPos = r.position || 0;
+        });
+        // a read full-membership high-water mark outranks the section read, so
+        // the folded row's position never collides below an ordinary row's
+        var c = _cloudOf(list.id);
+        if (c && (c.maxPos || -1) > maxPos) maxPos = c.maxPos || -1;
+        var seq = Promise.resolve();
+        siItems.forEach(function (it) {
+          seq = seq.then(function () {
+            var done = have[it.t]
+              ? Promise.resolve({ symbol: it.t, skipped: true })
+              : _siInsert(list.id, it.t, maxPos).then(function (r) { maxPos += 1; return r; });
+            return done.then(function () {
+              _siNoteWrite(cacheKey(list.id), it.t, it.note || '');
+            });
+          });
+        });
+        return seq;
+      });
+    });
   }
 
   function _foldInsert(tickers) {
@@ -1071,7 +1131,7 @@
     if (!c) return Promise.resolve();
 
     var toInsert = tickers.filter(function (t) { return !c.set[t]; });
-    if (toInsert.length === 0) { _markFolded(); return Promise.resolve(); }
+    if (toInsert.length === 0) return Promise.resolve();
 
     // Insert sequentially; use maxPos+1 to avoid collisions after delete+add cycles
     var base = _nextPos(foldTargetId);
@@ -1084,11 +1144,12 @@
       .then(function (res) {
         if (res.error) throw res.error;
         _noteInserted(foldTargetId, toInsert);
-        _markFolded();
       })
       .catch(function (err) {
         warnOnce('fold', 'one-time fold failed: ' + (err && err.message || err));
-        // Don't mark folded on error so we retry next session
+        // Rethrow: the marker moved to _foldLocalIntoCloud, which must not mark a
+        // failed fold as done (the retry-next-session law). warnOnce keeps this quiet.
+        throw err;
       });
   }
 
@@ -1124,6 +1185,29 @@
       if (!it || !it.t || seen[it.t]) return;
       seen[it.t] = 1;
       out.push(it.t);
+    });
+    return out;
+  }
+
+  /* RI07 finding 2: the fold's capture is the FULL local item — symbol, note,
+     section, added ts — not just the ticker, because the fold now has to decide
+     per item WHICH list it belongs to. Duplicate tickers collapse to one entry:
+     earliest `added`, and a note/section from whichever occurrence carries one. */
+  function _itemsOf(blob) {
+    var seen = {}, out = [];
+    if (!blob || !Array.isArray(blob.items)) return out;
+    blob.items.forEach(function (it) {
+      if (!it || !it.t) return;
+      var e = seen[it.t];
+      if (!e) {
+        seen[it.t] = e = { t: it.t, added: it.added || '', note: it.note || '',
+                           section: it.section || '' };
+        out.push(e);
+        return;
+      }
+      if (it.added && (!e.added || it.added < e.added)) e.added = it.added;
+      if (!e.note && it.note) e.note = it.note;
+      if (!e.section && it.section) e.section = it.section;
     });
     return out;
   }
@@ -2116,8 +2200,10 @@
   }
   /* Device-local note read/write on a blob key — the ONLY place the question
      text is persisted. Preserves every other field of the raw blob verbatim
-     (the per-list cache carries account-scoped outbox state), and never adds
-     fields the anonymous store does not already tolerate. */
+     (the per-list cache carries account-scoped outbox state). The item this
+     writes carries `section: 'si'` (RI07 finding 2): it is what the sign-in
+     fold routes on, and what the page's row source reads to gate the chip —
+     the one field beyond the shape the anonymous store already tolerated. */
   function _siBlobRead(key) {
     try {
       var raw = localStorage.getItem(key);
@@ -2136,8 +2222,9 @@
     }
     if (it) {
       it.note = note || '';
+      it.section = SI_SECTION;
     } else {
-      b.items.push({ t: etf, added: nowISO(), note: note || '' });
+      b.items.push({ t: etf, added: nowISO(), note: note || '', section: SI_SECTION });
       if (!Array.isArray(b.order)) b.order = [];
       if (b.order.indexOf(etf) < 0) b.order.push(etf);
     }
