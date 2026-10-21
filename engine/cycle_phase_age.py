@@ -16,9 +16,16 @@ caller for records the log never captures, e.g. amalgam families).
 Reader discipline: this module is READ-ONLY over the log (the writer owns it —
 never write, truncate or create it from here) and never raises; every failure
 degrades to a status string a renderer can display verbatim.
+
+v2 (B05-r2, review RB05): only the benchmark's REAL sessions count.  A log row
+dated on a non-session (weekend restamp, calendar-union tip) is dropped before
+the walk, and a contiguous pair that spans a session with no usable row no
+longer reads ``measured`` — the transition is then known only to a window, so
+the age is a minimum (``lower_bound``).
 """
 from __future__ import annotations
 
+import bisect
 import logging
 
 import numpy as np
@@ -28,7 +35,7 @@ log = logging.getLogger(__name__)
 
 # Method stamp — receivers render this beside the count so an age is never
 # mistaken for a bar-by-bar replay of the price tape inside the kernel.
-PHASE_AGE_METHOD = "forward_log_replay.v1"
+PHASE_AGE_METHOD = "forward_log_replay.v2"
 
 # Contiguity: two sessions are contiguous when at most 2 business days span
 # them — the next session, or one weekday holiday in between.  np.busday_count
@@ -89,8 +96,51 @@ def _contiguous(earlier: str, later: str) -> bool:
     return int(np.busday_count(earlier, later)) <= _MAX_GAP_BUSDAYS
 
 
+def _is_weekday(d: str | None) -> bool:
+    """Mon–Fri by numpy's business-day calendar (R1's fallback session rule).
+
+    A holiday calendar is deliberately NOT consulted (same contract as
+    ``_MAX_GAP_BUSDAYS``); an unparseable date is not a session, never fatal.
+    """
+    if d is None:
+        return False
+    try:
+        return bool(np.is_busday(d))
+    except ValueError:
+        return False
+
+
+def _normalize_sessions(sessions) -> list[str] | None:
+    """Deduped, sorted ISO session dates from the caller's iterable.
+
+    ``None`` → ``None`` (the weekday rule applies).  An iterable that cannot be
+    consumed degrades to ``None`` — a session list that cannot be built never
+    becomes an error.
+    """
+    if sessions is None:
+        return None
+    try:
+        return sorted({d for d in (_iso_date(s) for s in sessions) if d})
+    except Exception:  # noqa: BLE001 — broken session list → weekday rule
+        return None
+
+
+def _unobserved_session_between(earlier: str, later: str,
+                                sessions_sorted: list[str] | None) -> bool:
+    """R2 (RB05-2): a contiguous pair spans at least one session with no usable row.
+
+    With the benchmark session list: any session strictly between ``earlier``
+    and ``later``.  Without it (weekday rule): more than one business day in
+    ``[earlier, later)`` — i.e. a weekday passed with no row for it.
+    """
+    if sessions_sorted is not None:
+        j = bisect.bisect_right(sessions_sorted, earlier)
+        return j < len(sessions_sorted) and sessions_sorted[j] < later
+    return int(np.busday_count(earlier, later)) > 1
+
+
 def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
-                      current_asof, basis) -> dict:
+                      current_asof, basis, sessions=None) -> dict:
     """Measure how many contiguous sessions ``current_phase`` has been running.
 
     Walks the retained history for ``entity_id`` backwards from the CURRENT
@@ -101,13 +151,17 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
     absorbed).  Statuses:
 
     ``measured``           a contiguous prior row with a different phase_v2 was
-                           observed → the transition bounds the run;
+                           observed and every session in between has a usable
+                           row → the transition bounds the run;
                            ``run_start`` is the run's earliest date (the current
                            session when ``sessions == 1``) and ``observed_from``
                            is the transition row's date.
-    ``lower_bound``        the walk ended at the start of usable history or at
-                           a non-contiguous hole without observing a transition
-                           → ``sessions`` is a MINIMUM, ``run_start`` is None,
+    ``lower_bound``        the walk ended at the start of usable history, at
+                           a non-contiguous hole, or crossed a BRIDGED pair —
+                           a contiguous pair with at least one real session
+                           between it that has no usable row — so the
+                           transition is known only to a window → ``sessions``
+                           is a MINIMUM, ``run_start`` is None, and
                            ``observed_from`` is the earliest date counted.
     ``insufficient_history``  no usable prior row, or the latest one is not
                            contiguous with ``current_asof`` → the log cannot
@@ -115,6 +169,14 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
     ``source_unavailable`` ``history`` is None (absent/unreadable log), or an
                            internal exception was absorbed.
     ``unknown_phase``      ``current_phase`` falsy — nothing to age.
+
+    ``sessions`` (R1, RB05-1): an iterable of ISO dates (``YYYY-MM-DD``) of
+    the benchmark's real sessions.  A log row is usable only if its date is a
+    session: membership in ``set(sessions)`` when given, ``numpy.is_busday``
+    (Mon–Fri) when ``None``.  Non-session rows (weekend restamps of the
+    pre-#7211 calendar-union tip) are dropped BEFORE the keep-first dedup and
+    the walk and never count toward ``history_rows``.  A session list that
+    cannot be built degrades to the weekday rule, never to an error.
 
     Never raises.
     """
@@ -131,9 +193,11 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
         if history is None:
             return out
         asof = _iso_date(current_asof)
-        # usable rows: this entity, strictly before the live session, with an
-        # observed phase_v2 on the SAME structure basis (a null basis reads
-        # "tr", mirroring the writer's default).
+        sessions_sorted = _normalize_sessions(sessions)
+        session_set = set(sessions_sorted) if sessions_sorted is not None else None
+        # usable rows: this entity, strictly before the live session, dated on
+        # a real session, with an observed phase_v2 on the SAME structure basis
+        # (a null basis reads "tr", mirroring the writer's default).
         dates = history["date"].astype(object).map(_iso_date)
         phases = history["phase_v2"]
         if "basis" in history.columns:
@@ -148,9 +212,14 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
             out["status"] = "insufficient_history"
             return out
         mask &= dates < asof
+        if session_set is not None:
+            mask &= dates.map(lambda d: d in session_set)
+        else:
+            mask &= dates.map(_is_weekday)
         usable = pd.DataFrame({"date": dates[mask], "phase": phases[mask]})
-        # keep-first per date on read (the writer's keep-FIRST invariant),
-        # then chronological order for the backwards walk.
+        # keep-first per date on read (the writer's keep-FIRST invariant) —
+        # AFTER the session filter, so a dropped restamp never shadows a real
+        # row — then chronological order for the backwards walk.
         usable = usable.drop_duplicates(subset=["date"], keep="first")
         usable = usable.sort_values("date", kind="stable")
         out["history_rows"] = len(usable)
@@ -166,6 +235,7 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
             return out
         counted: list[str] = []          # newest → oldest same-phase dates
         status = "lower_bound"           # default: walk exhausted usable history
+        bridged = False                  # R2: crossed an unobserved session
         for i in range(len(rows) - 1, -1, -1):
             d, ph = rows[i]
             later = rows[i + 1][0] if i + 1 < len(rows) else asof
@@ -173,11 +243,18 @@ def measure_phase_age(history: pd.DataFrame | None, *, entity_id, current_phase,
                 # a hole inside the retained history — the run may extend
                 # past it, so the count is a minimum, not a measurement.
                 break
+            pair_bridged = _unobserved_session_between(d, later, sessions_sorted)
             if ph != current_phase:
                 status = "measured"      # transition observed at d
                 out["observed_from"] = d
+                bridged = bridged or pair_bridged   # incl. transition-to-run pair
                 break
             counted.append(d)
+            bridged = bridged or pair_bridged
+        if bridged:
+            # R2: the walk crossed a session with no usable row — the
+            # transition is known only to a window, so the age is a minimum.
+            status = "lower_bound"
         out["status"] = status
         out["sessions"] = 1 + len(counted)
         if status == "measured":
