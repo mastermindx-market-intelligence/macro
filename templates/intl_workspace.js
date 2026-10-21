@@ -1323,7 +1323,8 @@
   }
 
   function panelValid(panel, config, source, version) {
-    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library'].includes(panel.getAttribute('data-view')) ||
+    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library',
+          'scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage'].includes(panel.getAttribute('data-view')) ||
         !config.horizons.includes(panel.getAttribute('data-horizon')) ||
         !config.bases.includes(panel.getAttribute('data-basis')) ||
         !panel.hasAttribute('data-source') || (version === 2 ?

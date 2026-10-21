@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+"""Render the INTL-GS W2F evidence site: the real intl.html (render_fixture
+seam, real attach_surveillance) and the state-matrix fixture page.
+
+CLI:
+    python3 tests/intl_gs_fixture_site.py --out <dir> [--stub-coverage]
+    python3 tests/intl_gs_fixture_site.py --print-html [--stub-coverage]
+
+``--stub-coverage`` injects a TEST-ONLY builder module + view template (never
+committed to lib/ or templates/intl_workspace/) so exactly the coverage tab is
+available — the browser proof (tests/intl_gs_foundation_browser.test.cjs) and
+pytest 2.6 use it to exercise the mount seam end to end. Importable: render_intl_page /
+render_states_page are used by tests/test_intl_gs_foundation.py.
+"""
+import argparse
+import json
+import shutil
+import sys
+import types
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader  # noqa: E402
+
+from engine import i18n  # noqa: E402
+from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
+from lib.intl_library_mount import render_international_pages  # noqa: E402
+from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
+
+STUB_MODULE = "lib.intl_gs_coverage_view"
+STUB_TEMPLATE = "intl_workspace/coverage.html.j2"
+
+# Test-only stub view: opens with the production gs_panel_root contract so
+# panelValid() accepts it, and shows no market number (L10).
+STUB_COVERAGE_HTML = """{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+{% call gs.gs_panel_root(view='coverage', panel=gs_panel) %}
+{{ gs.gs_bandhead(t('Coverage and data states', '覆盖与数据状态'), qnum=t('Coverage stub', '覆盖占位'), sub=t('Test-only stub for the W2F foundation seam.', 'W2F 基础接缝的测试专用占位视图。'), clock=t('21 Oct 08:00 UTC', '10月21日 08:00 UTC')) }}
+{{ gs.gs_specimen_chip() }}
+<p class="intl-gs__footnote">{{ t('Stub panel: no production view is shipped by this packet. IM13 lands the real coverage board.', '占位面板：本包不投产任何视图。真实覆盖面板由 IM13 落地。') }}</p>
+{% endcall %}
+"""
+
+
+def _stub_module():
+    module = types.ModuleType(STUB_MODULE)
+    module.__doc__ = "Test-only coverage builder injected by intl_gs_fixture_site."
+
+    def build_view(*, universe, rights, contexts, workspace):
+        return [dict(view="coverage", context_id="im-gs-coverage", context={},
+                     generation=None, payload={"stub": True})]
+
+    module.build_view = build_view
+    return module
+
+
+def _env(extra=None):
+    loader = FileSystemLoader(str(ROOT / "templates"))
+    if extra:
+        loader = ChoiceLoader([DictLoader(extra), loader])
+    env = Environment(loader=loader, autoescape=False)
+    env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
+    return env
+
+
+def _vm():
+    summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
+    vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
+          "built": "fixture", "records": [], "summary": summary, "rankings": {},
+          "heatmap": [], "periphery": None, "sector_board": [], "setups": {},
+          "global_regime_html": '<section id="fixture-owner-fragment">Existing research</section>'}
+    vm["intl_workspace"] = _workspace_overviews(None)
+    return vm
+
+
+def render_intl_page(*, include_surveillance=True, stub_coverage=False):
+    """The real intl.html via the render_fixture seam (no data I/O)."""
+    vm = _vm()
+    overlay = {}
+    injected = False
+    if stub_coverage:
+        sys.modules[STUB_MODULE] = _stub_module()
+        injected = True
+        overlay[STUB_TEMPLATE] = STUB_COVERAGE_HTML
+    try:
+        if include_surveillance:
+            vm["intl_workspace"] = attach_surveillance(vm["intl_workspace"])
+        catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
+        pages = render_international_pages(_env(overlay).get_template("intl.html.j2"), vm, catalogue=catalogue)
+        return pages[0]
+    finally:
+        if injected:
+            sys.modules.pop(STUB_MODULE, None)
+
+
+def render_states_page():
+    """Minimal fixture document: html[data-theme][data-lang] + theme.css +
+    intl_workspace.css + intl_workspace_surveillance.css + theme.js, no site
+    nav, everything wrapped in one .intl-gs scope (spec §10.8)."""
+    template = _env().from_string(
+        '<!DOCTYPE html>\n'
+        '<html lang="en" data-theme="dark">\n'
+        '<head>\n'
+        '<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        '<title>INTL-GS state matrix fixture</title>\n'
+        '<link rel="stylesheet" href="theme.css">\n'
+        '<link rel="stylesheet" href="intl_workspace.css">\n'
+        '<link rel="stylesheet" href="intl_workspace_surveillance.css">\n'
+        '<script defer src="theme.js"></script>\n'
+        '</head>\n'
+        '<body>\n'
+        '<div class="intl-gs">\n'
+        "{% include 'intl_workspace/_gs_state_fixture.html.j2' %}\n"
+        '</div>\n'
+        '</body>\n'
+        '</html>\n')
+    return template.render()
+
+
+def write_site(out_dir, *, stub_coverage=False):
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "intl.html").write_text(render_intl_page(stub_coverage=stub_coverage), encoding="utf-8")
+    (out / "intl-gs-states.html").write_text(render_states_page(), encoding="utf-8")
+    copied = 0
+    for pattern in ("*.css", "*.js"):
+        for asset in (ROOT / "templates").glob(pattern):
+            shutil.copy2(asset, out / asset.name)
+            copied += 1
+    return copied
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--out", help="write <out>/intl.html, <out>/intl-gs-states.html and templates assets")
+    parser.add_argument("--stub-coverage", action="store_true", help="test-only stub coverage view (pytest 2.6 / browser proof)")
+    parser.add_argument("--print-html", action="store_true", help="print the rendered intl.html to stdout")
+    args = parser.parse_args(argv)
+    if args.print_html:
+        sys.stdout.write(render_intl_page(stub_coverage=args.stub_coverage))
+    if args.out:
+        copied = write_site(args.out, stub_coverage=args.stub_coverage)
+        print(f"wrote {args.out}/intl.html, intl-gs-states.html + {copied} assets", file=sys.stderr)
+    if not (args.out or args.print_html):
+        parser.error("nothing to do: pass --out and/or --print-html")
+
+
+if __name__ == "__main__":
+    main()

@@ -8,7 +8,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  var VIEWS = ['overview', 'compare', 'macro', 'risk', 'history', 'library'];
+  var VIEWS = ['overview', 'compare', 'macro', 'risk', 'history', 'library',
+    'scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage'];
   var BASES = ['local', 'usd_unhedged'];
   var CONFIG_FIELDS = ['markets', 'horizons', 'bases', 'default_horizon', 'default_basis', 'source_reference', 'anchor_ids', 'library_group_ids'];
   var STATE_FIELDS = ['view', 'selected_market', 'compare_markets', 'horizon', 'currency_basis', 'return_basis', 'source_reference', 'expanded', 'library_group', 'baseline', 'return_stack'];

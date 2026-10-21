@@ -30,6 +30,7 @@ from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_history_mount import attach_history  # noqa: E402
+from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -40,7 +41,8 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
           "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
-          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
+          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js",
+          "intl_workspace_surveillance.css")
 
 
 def _ecb_publication_measure(materialized, *, evaluated_at, generation):
@@ -205,6 +207,12 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         )
     except Exception as exc:
         log.error("International History panel unavailable (%s)", type(exc).__name__)
+    try:
+        # W2F seam: surveillance views mount independently; a missing or failed
+        # builder only disables its own sub-tab and never the page.
+        workspace = attach_surveillance(workspace)
+    except Exception as exc:
+        log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
     return workspace
 
 
