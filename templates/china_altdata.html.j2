@@ -203,8 +203,8 @@
     {%- set arc = 175.9 -%}{%- set fill = tape.score/100.0*arc -%}{%- set ndeg = tape.score/100.0*180.0 - 90.0 -%}
     <div class="cad-tape">
       <div class="cad-gauge cad-gauge-{{ tape.tone }}" role="img"
-           data-tip-en="Positioning-cycle dial from the participation tape: 0 = capitulation / fire-sale, 50 = neutral, 100 = euphoria. The needle sits at the current regime. High is NOT good — both ends are cautionary."
-           data-tip-zh="来自参与度盘面的仓位周期表盘：0＝恐慌抛售，50＝中性，100＝狂热。指针停在当前状态。数值高≠好——两端都需谨慎。">
+           data-tip-en="Positioning-cycle dial from the participation tape: 0 = capitulation / fire-sale, 50 = neutral, 100 = euphoria. The needle sits at the regime of the dated tape row shown beside the read. High is NOT good — both ends are cautionary."
+           data-tip-zh="来自参与度盘面的仓位周期表盘：0＝恐慌抛售，50＝中性，100＝狂热。指针停在旁注日期那一行盘面的状态。数值高≠好——两端都需谨慎。">
         <div class="g-arcwrap">
           <svg viewBox="0 8 140 74" fill="none" aria-hidden="true">
             <path class="arc-track" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none" opacity=".55"/>
@@ -233,6 +233,28 @@
                 data-tip-zh="盘面证据 — {{ tape.evidence|join(' · ')|e }}">{{ t('Why ›','依据 ›') }}</span>
           {% endif %}
           {% if tape.date %}<span class="cad-asof">· {{ t('tape','盘面') }} {{ tape.date }}</span>{% endif %}
+          {%- if tape.snapshot_note %}
+          {%- set st = tape.staleness -%}
+          {%- set sen = ('Row ' ~ st.row_date ~ ' · ' ~ st.lag_days ~ ' days behind tape tail '
+            ~ st.tail_date) if st
+            else 'Row ' ~ (tape.date or '—') ~ ' · behind the tape tail' -%}
+          {%- set szh = ('数据行' ~ st.row_date ~ ' · 落后盘面末端' ~ st.tail_date ~ '共'
+            ~ st.lag_days ~ '天') if st
+            else '数据行' ~ (tape.date or '—') ~ ' · 落后于盘面末端' -%}
+          <span class="cad-chip c-warn">{{ t(sen, szh) }}</span>
+          {%- endif %}
+          {%- if tape.margin_chg_5d is not none %}
+          {%- set mv = ('%+.2f'|format(tape.margin_chg_5d)) ~ '%' -%}
+          <span class="cad-chip">{{ t('Margin 5d ' ~ mv, '融资5日 ' ~ mv) }}</span>
+          {%- endif %}
+          {%- if tape.southbound_net is not none %}
+          {%- set sv = '%+.0f'|format(tape.southbound_net) -%}
+          <span class="cad-chip">{{ t('Southbound net (万 CNY) ' ~ sv, '南向净额(万元) ' ~ sv) }}</span>
+          {%- endif %}
+          {%- if tape.qvix is not none %}
+          {%- set qv = '%.1f'|format(tape.qvix) -%}
+          <span class="cad-chip">{{ t('QVIX ' ~ qv) }}</span>
+          {%- endif %}
         </div>
       </div>
     </div>
@@ -456,6 +478,25 @@
     <p class="cad-sec-intro">{{ t('Hard, disclosed events that move A-share names: share unlocks, exchange inquiry letters, corporate buybacks, pledge stress and ST-board changes. Ranked by disclosed size and exchange-published type — no directional score, just the calendar.', '推动A股个股的、已披露的硬性事件：限售解禁、交易所问询函、公司回购、质押压力与ST变动。按披露规模与交易所公布类型排序——不作方向性评分，只呈现日历。') }}</p>
 
     {% if special %}
+    {%- set fr = special.hero.freshness if (special.hero and special.hero.freshness) else none -%}
+    {%- if fr and fr.all_fresh is sameas false %}
+    <div class="cad-sec-bar">
+      <span class="cad-asof">{{ t(
+        fr.n_fresh ~ ' of ' ~ fr.n_planes ~ ' planes up to date · Lagging:',
+        fr.n_planes ~ '条数据线中' ~ fr.n_fresh ~ '条已更新 · 滞后：') }}</span>
+      {%- for stale in fr.stale_labels %}
+      <span class="cad-chip c-warn">{{ bl(stale.en, stale.zh) }}</span>
+      {%- endfor %}
+      {%- if fr.n_unreadable %}
+      <span class="cad-chip c-warn">{{ t(fr.n_unreadable ~ ' unreadable',
+        fr.n_unreadable ~ '条无法读取') }}</span>
+      {%- endif %}
+      {%- if fr.oldest_stale_asof %}
+      <span class="cad-asof">{{ t('oldest lagging plane as of ' ~ fr.oldest_stale_asof,
+        '最早滞后数据截至' ~ fr.oldest_stale_asof) }}</span>
+      {%- endif %}
+    </div>
+    {%- endif %}
     <div class="cad-grid">
       {% if special.unlocks and special.unlocks.events %}
       <div class="cad-card">
@@ -566,8 +607,18 @@
 
     {% if ad and ad.crowding_flags %}
     <div class="cad-card">
-      <h3>{{ t('Leverage building fastest','杠杆累积最快') }}</h3>
-      <p class="sub">{{ t('20-day financing balance jumped most here — the crowd is adding leverage. Cuts both ways: it fuels rallies and deepens unwinds.', '这些名单20日融资余额跳升最多——市场在加杠杆。双刃剑：既助涨，也加深回撤。') }}</p>
+      <h3>{{ t('Crowded names — fragility watch','拥挤名单 — 脆弱度观察') }}</h3>
+      <p class="sub">{{ t(
+        'A name lists here when at least 3 of 5 fragility legs light — Margin froth,'
+        ~ ' Pledge tail-risk, Limit-up froth, Attention spike, Rich valuation — or, when'
+        ~ ' none of those light, the older leverage-crowded flag (financing balance up'
+        ~ ' more than 25% over 20 days). Names come from the convergence board above,'
+        ~ ' highest convergence first, up to 20. Margin froth is a level — financing'
+        ~ ' balance against float market cap — not a change.',
+        '名单条件：5项中至少3项脆弱度线索亮起——融资拥挤、质押尾部风险、涨停拥挤、关注度飙升、'
+        ~ '估值偏高；若均未亮起，则沿用较早的融资拥挤标记（融资余额20日增幅超过25%）。'
+        ~ '名单取自上方共振板，按共振从高到低，最多20只。'
+        ~ '融资拥挤是水平而非变化（融资余额相对流通市值）。') }}</p>
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:4px">
         {% for tk in ad.crowding_flags %}<span class="cad-chip c-warn">{{ tk }}</span>{% endfor %}
       </div>
