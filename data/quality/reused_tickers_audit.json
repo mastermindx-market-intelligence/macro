@@ -674,7 +674,7 @@
     {
      "name": "STRS",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-19) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-20) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "SVC",
@@ -1056,8 +1056,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-10-19",
-     "days_past_death": 1249,
+     "store_tip": "2026-10-20",
+     "days_past_death": 1250,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -2623,7 +2623,7 @@
     },
     {
      "ticker": "STRS",
-     "store_tip": "2026-10-19",
+     "store_tip": "2026-10-20",
      "acked": true
     },
     {
