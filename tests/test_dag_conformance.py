@@ -520,6 +520,57 @@ class TestLiveConformance:
             "difference is intentional), then re-run this test."
         )
 
+    def test_asia_communique_diff_runs_once_after_collect_commit_before_china_spine(self):
+        """CIE-09 runs once and only against a collection proven settled on main."""
+        workflow = REPO_ROOT / ".github" / "workflows" / "asia-close.yml"
+        import yaml
+
+        doc = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+        steps = doc["jobs"]["asia"]["steps"]
+        names = [step.get("name") for step in steps]
+        diff_name = "China Communiqué Diff — settled official-policy corpus (CIE-09)"
+
+        # Count the actual parsed module, not only the expected human step label:
+        # a differently named duplicate/refetch invocation must RED this test.
+        parsed = _parse_workflow(workflow)["asia"]
+        diff_invocations = [
+            step for step in parsed
+            if step.module == "scripts.build_communique_diff"
+        ]
+        assert len(diff_invocations) == 1
+
+        assert names.count(diff_name) == 1
+        diff_step = next(step for step in steps if step.get("name") == diff_name)
+        diff_run = diff_step["run"]
+        assert diff_run.count("python -m scripts.build_communique_diff") == 1
+        assert "--fetch" not in diff_run
+        assert 'cie09_official_corpus_settled' in diff_run
+        assert 'if [ ! -f "$RUNNER_TEMP/cie09_official_corpus_settled" ]' in diff_run
+        assert diff_step.get("continue-on-error") is True
+        assert diff_step.get("timeout-minutes") == 5
+
+        commit_step = next(
+            step for step in steps if step.get("name") == "commit collected asia data"
+        )
+        commit_run = commit_step["run"]
+        marker_touch = 'touch "$RUNNER_TEMP/cie09_official_corpus_settled"'
+        assert 'rm -f "$RUNNER_TEMP/cie09_official_corpus_settled"' in commit_run
+        # Exactly two success routes establish the receipt: no changes to push,
+        # or a confirmed push_do win. push_lost itself never creates the marker.
+        assert commit_run.count(marker_touch) == 2
+        assert "push_lost" in commit_run
+        assert commit_run.rfind(marker_touch) < commit_run.rfind("push_lost")
+
+        collect_i = names.index(
+            "collect China/HK data (graceful degradation — never fails on one source)"
+        )
+        commit_i = names.index("commit collected asia data")
+        diff_i = names.index(diff_name)
+        spine_i = names.index(
+            "build china a-share dashboard (spine — serial head, every CN surface reads it)"
+        )
+        assert collect_i < commit_i < diff_i < spine_i
+
     def test_dag_yml_parses(self):
         """config/dag.yml must be valid YAML with the expected top-level keys."""
         dag_path = REPO_ROOT / "config" / "dag.yml"
