@@ -1559,6 +1559,17 @@ def compute(asof: str | None = None) -> dict | None:
     x_lo = round(_yf(win_start), 3)
     x_hi = round(_yf(last_ts) + _TODAY_PAD, 3)
     x_lo_default = round(_yf(last_ts - pd.DateOffset(years=DEFAULT_WINDOW_YEARS)), 3)
+
+    # ── B12r2 (RB12 repair): the full live-feature parity report, exactly once ──
+    # Records carry only the {verdict, failing, report_ref} pointer (cycle_rhythm
+    # .estimate_kinds); the ~10 KiB report itself is published here, one copy per
+    # payload.  Read inside a try — meta disclosure never breaks the build.
+    try:
+        from engine.hazard_parity import LIVE_HAZARD_PARITY as _live_parity
+        live_hazard_parity = dict(_live_parity)
+    except Exception:  # noqa: BLE001 — additive disclosure, never fatal
+        live_hazard_parity = None
+
     return {
         "meta": {
             "asOf": str(last_ts.date()),
@@ -1584,6 +1595,9 @@ def compute(asof: str | None = None) -> dict | None:
                 "basis": "no native correction or revision field in Cycles "
                          "inputs (capability row R3A-92)",
             },
+            # B12r2: the full recorded live-feature parity report, published
+            # ONCE per payload (records carry only the report_ref pointer).
+            "live_hazard_parity": live_hazard_parity,
             "rs_history": {
                 "schema": "sector_cycles.rs_history.v1",
                 "mode": "reconstructed_price_history",

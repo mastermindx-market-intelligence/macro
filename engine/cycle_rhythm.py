@@ -140,8 +140,11 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
     feature vector has earned one — B12 measured that parity
     (engine/hazard_parity.py, LIVE_HAZARD_PARITY) — so any qualified cell now
     carries `model_cell_current_claim: "parity_holds" | "parity_failed"` from the
-    recorded verdict, plus a `live_feature_parity` {verdict, failing, report}
-    disclosure of the measurement itself.
+    recorded verdict, plus a `live_feature_parity` {verdict, failing, report_ref}
+    pointer.  B12r2 (RB12 repair): the ~10 KiB report itself is NEVER stamped per
+    record — only qualified records carry the pointer, and the full report is
+    published once in the payload meta (`meta.live_hazard_parity`,
+    engine/sector_cycles.compute).
 
     Reads `now["hazard"]`; never writes it.  Never raises.
     """
@@ -168,14 +171,17 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             hazard_kinds[h] = "missing_estimate"
 
         # B12: the recorded live-feature parity verdict gates the current claim.
+        # B12r2 (RB12 repair): a record carries only {verdict, failing,
+        # report_ref} — never the report — and only when a qualified cell exists.
         try:
             from engine.hazard_parity import LIVE_HAZARD_PARITY as _parity
             claim = ("parity_holds" if _parity.get("verdict") == "PARITY_HOLDS"
                      else "parity_failed" if _parity.get("verdict") == "PARITY_FAILS"
                      else "parity_not_established")
-            live_parity = {"verdict": _parity.get("verdict"),
-                           "failing": _parity.get("failing"),
-                           "report": _parity.get("report")}
+            live_parity = ({"verdict": _parity.get("verdict"),
+                            "failing": _parity.get("failing"),
+                            "report_ref": "meta.live_hazard_parity"}
+                           if any_qualified else None)
         except Exception:  # noqa: BLE001 — disclosure degrades, never raises
             claim = "parity_not_established"
             live_parity = None
