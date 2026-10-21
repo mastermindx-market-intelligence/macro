@@ -650,10 +650,10 @@ _EDITORIAL_OTHER = 'Nvidia secures export approval for its data center chips'
 _EDITORIAL_FOOL = "Where Will VGT Be in 20 Years? Here's What History Suggests."
 _EDITORIAL_ZACKS = 'AI Stock Sell-Off: Are Mag 7 Stocks Still Buys? ETFs in Focus'
 
-def _editorial_report(source, item, title, minute=1):
+def _editorial_report(source, item, title, minute=1, *, url=None):
     clock = _EDITORIAL_T0 + timedelta(minutes=minute)
     if source == 'benzinga':
-        rev = normalize_news({'id': item, 'title': title, 'url': 'https://benzinga.com/news/' + item, 'teaser': 'Fictional test summary.', 'created': _EDITORIAL_T0.isoformat(), 'updated': clock.isoformat(), 'stocks': ['NVDA']}, transport='benzinga_rest', received_at=clock)
+        rev = normalize_news({'id': item, 'title': title, 'url': url or 'https://benzinga.com/news/' + item, 'teaser': 'Fictional test summary.', 'created': _EDITORIAL_T0.isoformat(), 'updated': clock.isoformat(), 'stocks': ['NVDA']}, transport='benzinga_rest', received_at=clock)
     else:
         domain = source.removeprefix('massive:')
         rev = normalize_massive_news({'id': item, 'title': title, 'article_url': 'https://' + domain + '/news/' + item, 'description': 'Fictional test summary.', 'published_utc': clock.isoformat(), 'tickers': ['NVDA'], 'publisher': {'name': 'Fixture', 'homepage_url': 'https://' + domain}}, received_at=clock)
@@ -811,3 +811,116 @@ def test_curated_health_preserves_qualified_parsed_additional_source(primary, ad
     assert 'accepted_reports_since_start' not in extra
     assert parsed['additional_sources'][0]['accepted_reports_since_start'] == 100
     assert ticker_news._state_from_health(scoped, row_count=1) == expected
+
+
+@pytest.mark.parametrize("title,reason", [
+    ("Occidental Petroleum To Rally Over 18%? Here Are 10 Top Analyst Forecasts For Tuesday", "stock_pick_roundup"),
+    ("This Apple Analyst Is No Longer Bullish; Here Are Top 5 Downgrades For Tuesday", "stock_pick_roundup"),
+    ("Top 5 Analyst Upgrades For Wednesday", "stock_pick_roundup"),
+    ("10 Top Analyst Forecasts For Tuesday", "stock_pick_roundup"),
+    ("Comparing Apple With Industry Competitors In Technology Hardware, Storage & Peripherals Industry", "routine_peer_profile"),
+    ("10 Information Technology Stocks With Whale Alerts In Today’s Session", "routine_options_template"),
+    ("5 Financials Stocks With Whale Alerts In Today's Trading Session", "routine_options_template"),
+])
+def test_live_editorial_template_variants(title, reason):
+    assert ticker_editorial_reason(title, "benzinga.com") == reason
+
+
+@pytest.mark.parametrize("url,reason", [
+    ("https://www.benzinga.com/Opinion/26/10/1/market-outlook", "publisher_opinion"),
+    ("https://benzinga.com/personal-finance/management/26/10/2/investing-advice", "personal_finance_advice"),
+    ("https://www.benzinga.com/%4Fpinion/26/10/1/market-outlook", "publisher_opinion"),
+    ("https://benzinga.com/news/26/10/1/opinion-poll", None),
+    ("https://benzinga.com/news/26/10/1/report?section=opinion", None),
+    ("https://benzinga.com/opinions/26/10/1/report", None),
+    ("https://notbenzinga.com/Opinion/1", None),
+    ("https://benzinga.com.evil.test/Opinion/1", None),
+    ("https://reuters.com/Opinion/1", None),
+    ("https://[invalid/Opinion/1", None),
+    ("", None),
+])
+def test_editorial_sections_use_only_exact_publisher_url_categories(url, reason):
+    assert ticker_editorial_reason(_EDITORIAL_GOOD, "benzinga.com", url=url) == reason
+
+
+@pytest.mark.parametrize("title", [
+    "Morgan Stanley upgrades Apple to overweight and raises price target to $250",
+    "Apple reports $95 billion quarterly revenue after the closing bell",
+    "Apple secures regulatory approval for its new device",
+    "Apple wins antitrust appeal against competitors",
+    "Berkshire increases its Apple holding",
+    "SEC issues rules for personal financial advisers",
+    "Company IPO shares decline 32% after trading begins",
+])
+def test_live_editorial_screen_preserves_factual_company_reports(title):
+    assert ticker_editorial_reason(title, "benzinga.com") is None
+
+
+@pytest.mark.parametrize("global_url,source_url", [
+    (True, None), (False, None), (False, True), (True, False),
+])
+def test_url_category_corrections_respect_field_rights_across_every_read(tmp_path, global_url, source_url):
+    db = tmp_path / "url-category.sqlite3"
+    fields = () if source_url is None else (SourceReadRights("benzinga", True, source_url, True),)
+    grant = NewsReadRights(frozenset({"benzinga"}), allow_url=global_url, source_fields=fields)
+    can_read_url = grant.allows("benzinga", "url")
+    with NewsStore(db, source_key="test") as writer, _editorial_reader(db) as reader:
+        _editorial_commit(writer, [_editorial_report("benzinga", "url-change", _EDITORIAL_GOOD)])
+        before = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=grant)
+        story_id = before.rows[0].story_id
+        _editorial_commit(writer, [_editorial_report(
+            "benzinga", "url-change", _EDITORIAL_GOOD, 2,
+            url="https://www.benzinga.com/Opinion/26/10/url-change",
+        )])
+        current = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=grant)
+        detail = reader.story(story_id, rights=grant)
+        changes = reader.projected_changes_for_security(
+            _EDITORIAL_SECURITY, after_sequence=before.change_sequence, limit=20, rights=grant,
+        )
+        flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant)
+        assert len(current.rows) == flow["reports_24h"] == flow["stories_24h"] == int(not can_read_url)
+        assert (detail is None) == can_read_url
+        assert len(changes.rows) == 1
+        assert changes.rows[0].kind == ("remove" if can_read_url else "upsert")
+        assert changes.rows[0].url == ""
+        assert changes.next_sequence > before.change_sequence
+        if detail is not None:
+            assert detail.members[0].url == ""
+        # Raw retention remains independent of this public editorial view.
+        assert writer.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=_editorial_rights()).rows
+        _editorial_commit(writer, [_editorial_report("benzinga", "url-change", _EDITORIAL_GOOD, 3)])
+        restored = reader.projected_changes_for_security(
+            _EDITORIAL_SECURITY, after_sequence=changes.next_sequence, limit=20, rights=grant,
+        )
+        assert len(restored.rows) == 1 and restored.rows[0].kind == "upsert"
+        assert reader.story(story_id, rights=grant).item_count == 1
+        assert reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant)["reports_24h"] == 1
+
+
+@pytest.mark.parametrize("allow_benzinga_url", [True, False])
+def test_url_category_projection_keeps_group_members_and_counts_consistent(tmp_path, allow_benzinga_url):
+    db = tmp_path / "group-url-category.sqlite3"
+    grant = NewsReadRights(
+        frozenset({"benzinga", "massive:reuters.com"}),
+        source_fields=(
+            SourceReadRights("benzinga", True, allow_benzinga_url, True),
+            SourceReadRights("massive:reuters.com", True, True, True),
+        ),
+    )
+    with NewsStore(db, source_key="test") as writer:
+        _editorial_commit(writer, [
+            _editorial_report("massive:reuters.com", "reported", _EDITORIAL_GOOD),
+            _editorial_report("benzinga", "opinion", _EDITORIAL_GOOD, 2, url="https://benzinga.com/Opinion/1"),
+        ])
+    with _editorial_reader(db) as reader:
+        page = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=grant)
+        row = page.rows[0]
+        detail = reader.story(row.story_id, rights=grant)
+        expected = 1 if allow_benzinga_url else 2
+        assert row.item_count == row.source_count == detail.item_count == detail.source_count == expected
+        assert {member.source for member in detail.members} == (
+            {"massive:reuters.com"} if allow_benzinga_url else {"massive:reuters.com", "benzinga"}
+        )
+        flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant)
+        assert flow["reports_24h"] == expected
+        assert flow["stories_24h"] == 1

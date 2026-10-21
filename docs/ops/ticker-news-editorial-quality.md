@@ -41,6 +41,18 @@ A premium-source addition must bind the actual upstream endpoint, exact publishe
 
 Release through the ordinary Macro and Terminal source/CI/deployment lanes. The Macro reader change can deploy first: the old Terminal parser tolerates additive metadata and already benefits from the filtered API. The Terminal change then supplies the source and release labels. Check an ordinary authenticated ticker page, source choices, grouped detail, stream refresh, and returned flow counts after deployment. A merged commit, local build, or configured publisher alone is not live proof.
 
+## Signed-in acceptance and article-class follow-up — 21 October 2026
+
+Macro [#9942](https://github.com/mastermindx-market-intelligence/macro/pull/9942) and Terminal [#1094](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1094) completed their ordinary merge/deploy lanes. The backend merge was `526ce826f0898d8724e79acf3a884f9cec6f3096`; the Terminal merge was `d9ec4d2b86e9e9e0129d7fcd4c646f25f7670c49`, served by build `build-TfctsWXpff2fKS`. Their PRs retain CI and deployment receipts.
+
+The ordinary signed-in News panel was checked after reload at approximately 09:42 UTC. AAPL's first 20 rows were Benzinga, with no Fool/Zacks or raw transport labels. MSFT offered All curated sources, Benzinga and GlobeNewswire; selecting GlobeNewswire showed three reports, each labelled Press release. Reload returned to the ordinary all-source view with 20 rows, including three releases. No review-state action was taken. The sample contained no expandable multi-report control, so it does not establish live grouped-detail or correction delivery proof.
+
+That same live check exposed residual Benzinga article classes: numbered analyst forecasts/downgrades, the “with industry competitors” peer-comparison template, sector whale-alert roundups, and explicit Opinion/personal-finance URLs. Publisher admission alone did not remove these formats. The follow-up extends the shared headline patterns narrowly and classifies only the exact first URL path segments `opinion` and `personal-finance` on a valid Benzinga host. Factual single-company rating changes, earnings, regulatory actions and disclosed investments remain eligible.
+
+URL-based classification must use the current reader's permitted URL. The common SQL predicate projects a denied URL to an empty string before classification. A hidden URL therefore cannot change visible membership, grouped counts, details or flow. A URL-permitted correction into an excluded section removes the report; a later qualifying correction restores it. Raw writer history remains intact. The existing `ticker_news.curated.v1` contract is retained; this is a recognition repair, with no new publisher, entitlement or client contract.
+
+The follow-up is a candidate until its own concluded checks, ordinary backend rollout and fresh signed-in readback are recorded on its PR. Authentication has been resolved; article-class acceptance is the remaining release gate.
+
 ## Verification
 
 Editorial regressions are co-located in `tests/test_shared_news_intelligence.py`, already enrolled in the existing ticker-news-qbus CI job alongside its source-diversity, rights and live-consistency tests. It covers the user's screenshot headlines, aliases and lookalike hosts, before-pagination rejection, mixed story members, corrections/removals/restoration, title permissions, real API reads, release classification and scoped health. Existing qbus/ticker/financial-news suites check the shared-policy integration.
