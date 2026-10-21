@@ -1,47 +1,47 @@
 {
-  "checked_at": "2026-10-20T17:09:57+00:00",
-  "expected_session": "2026-10-20",
+  "checked_at": "2026-10-21T11:45:27+00:00",
+  "expected_session": "2026-10-21",
   "stores": {
     "cache": {
       "asof": "2026-10-16",
-      "lag_days": 4,
-      "lag_sessions": 1,
+      "lag_days": 5,
+      "lag_sessions": 2,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "bellwether": {
       "asof": "2026-10-16",
-      "lag_days": 4,
-      "lag_sessions": 1,
+      "lag_days": 5,
+      "lag_sessions": 2,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "standouts": {
       "asof": "2026-10-16",
-      "lag_days": 4,
-      "lag_sessions": 1,
+      "lag_days": 5,
+      "lag_sessions": 2,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "regime": {
       "asof": "2026-10-16",
-      "lag_days": 4,
-      "lag_sessions": 1,
-      "state": "slow",
+      "lag_days": 5,
+      "lag_sessions": 2,
+      "state": "stale",
       "data_state": "late",
       "calendar_verified": true
     },
     "southbound": {
       "asof": "2026-10-15",
-      "lag_days": 5,
-      "lag_sessions": 2,
-      "state": "slow",
+      "lag_days": 6,
+      "lag_sessions": 3,
+      "state": "stale",
       "data_state": "late",
       "calendar_verified": true,
-      "expected_session": "2026-10-20"
+      "expected_session": "2026-10-21"
     }
   },
   "coherence": {
@@ -59,6 +59,9 @@
     "curr_cache_max": "2026-10-16",
     "note": null
   },
-  "verdict": "ok",
-  "banner_message": null
+  "verdict": "degraded",
+  "banner_message": {
+    "en": "Some background feeds are a step behind \u2014 prices and picks are current. (prices current as of 2026-10-16)",
+    "zh": "\u90e8\u5206\u540e\u53f0\u6570\u636e\u6765\u6e90\u7a0d\u6709\u6ede\u540e \u2014 \u4ef7\u683c\u548c\u9009\u80a1\u4ecd\u662f\u6700\u65b0\u7684\u3002\uff08\u4ef7\u683c\u622a\u81f3 2026-10-16 \u4e3a\u6700\u65b0\uff09"
+  }
 }
