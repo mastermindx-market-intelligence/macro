@@ -1,0 +1,44 @@
+{
+  "schema": "intl.fabric_interrupted_request_reconciliation.v1",
+  "recorded_at": "2026-10-21T23:57:33.261335+00:00",
+  "scope": "One interrupted request only; not a general provider-availability conclusion",
+  "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "parent_id_submitted": "/root",
+  "run_id": "intl-20261021-shell-country-repair-r1",
+  "task_class": "fix_build",
+  "task_complexity": "C1_ROUTINE_BOUNDED",
+  "intended_effect": "Scratch-only patch return for International country adapter shared-shell location event and its real-bridge harness tests; original workspace writes, Git publication, deployment, and messaging prohibited.",
+  "original_observation": "Tool exchange aborted after 277.2 seconds without a canonical response, action ref, or controller PID.",
+  "status_observations": {
+    "observations": 2,
+    "state": "NOT_FOUND",
+    "root_verified": false,
+    "execution_absence_proven": false,
+    "retry_allowed": false,
+    "result_available": false,
+    "controller_return": "NOT_APPLICABLE",
+    "prior_attempts": []
+  },
+  "principal_diagnosis": {
+    "protected_pin": "c9cbee5569ba50e30e28715d930809061a169517",
+    "source_path": "integrations/studio_direct_mcp/fabric-backend.mjs",
+    "parent_id_pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+    "submitted_parent_id_valid": false,
+    "validation_precedes_dispatch": true,
+    "known_installed_backend_release": "386ab9336b50600f81d767474bf6b26479a5cb55",
+    "known_installed_backend_sha256": "918dd56f60639c0b9720af0fbbff9dc335b4ca918fb474850e65faf319035d09",
+    "limitation": "The inspected installation cannot be bound to the original interrupted exchange. This is a diagnosis, not a canonical original no-effect receipt."
+  },
+  "effect_state": "EFFECT_UNKNOWN",
+  "retry_authority": false,
+  "resolution_needed": "Original tool/transport response proving INVALID_ARGUMENT for this exact request, or original gateway correlation/controller PID plus generation.",
+  "no_retry_or_alternate_dispatch": true,
+  "patch_work_fenced": true,
+  "independent_work_continues": [
+    "normal main integration",
+    "P0B browser remint",
+    "International runtime proof",
+    "original PR publication when otherwise ready"
+  ],
+  "production_claim": false
+}

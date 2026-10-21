@@ -877,3 +877,12 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_internal_document_denials_match_the_canonical_policy():
+    """A Caddy-only denial must never be advertised by the route registry."""
+    matcher = re.search(r"@never_site\s*\{\s*path ([^\n]+)", CADDY)
+    assert matcher, "internal-document serving denial missing"
+    declared = set(POLICY["deny"]["exact"])
+    declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
+    assert set(shlex.split(matcher.group(1))) == declared

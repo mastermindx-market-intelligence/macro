@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-10-20",
-  "scored_total": 438,
-  "open": 257,
+  "as_of": "2026-10-21",
+  "scored_total": 439,
+  "open": 262,
   "unscored_soft": 0,
   "expired": 17,
   "overall": {
-    "n": 438,
-    "hits": 229,
+    "n": 439,
+    "hits": 230,
     "misses": 209,
-    "hit_rate": 0.523,
-    "dir_accuracy": 0.388
+    "hit_rate": 0.524,
+    "dir_accuracy": 0.39
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 438,
-      "hits": 229,
+      "n": 439,
+      "hits": 230,
       "misses": 209,
-      "hit_rate": 0.523,
-      "dir_accuracy": 0.388
+      "hit_rate": 0.524,
+      "dir_accuracy": 0.39
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 438,
-      "hits": 229,
+      "n": 439,
+      "hits": 230,
       "misses": 209,
-      "hit_rate": 0.523,
-      "dir_accuracy": 0.388
+      "hit_rate": 0.524,
+      "dir_accuracy": 0.39
     },
     "level": {
       "n": 0,
@@ -52,7 +52,7 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "438 scored, hit-rate 0.523 (directional accuracy 0.388).",
+  "calibration_note": "439 scored, hit-rate 0.524 (directional accuracy 0.39).",
   "recent": [
     {
       "id": "2026-09-17-VMRK-altconv",
@@ -71,6 +71,15 @@
       "outcome": "hit",
       "realized": -0.0127,
       "check_by": "2026-10-15"
+    },
+    {
+      "id": "2026-09-11-UHS-altconv",
+      "subject": "UHS alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0086,
+      "check_by": "2026-10-12"
     },
     {
       "id": "2026-07-20-KEY-altconv",
@@ -134,17 +143,8 @@
       "outcome": "hit",
       "realized": 0.0911,
       "check_by": "2026-10-15"
-    },
-    {
-      "id": "2026-09-16-AWK-altconv",
-      "subject": "AWK alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0578,
-      "check_by": "2026-10-15"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 438 \u6761\uff0c\u547d\u4e2d\u7387 0.523\uff08\u65b9\u5411\u51c6\u786e\u7387 0.388\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 439 \u6761\uff0c\u547d\u4e2d\u7387 0.524\uff08\u65b9\u5411\u51c6\u786e\u7387 0.39\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }
