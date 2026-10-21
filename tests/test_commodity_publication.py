@@ -347,3 +347,17 @@ def test_commodities_runtime_logo_config_revalidates_after_publication():
         assert 'src="logo_config.js?runtime-config"' in tags[0]
         assert re.search(r"\bdefer(?:\s|>)", tags[0])
         assert optimize(normalized, site) == normalized
+
+
+def test_published_commodities_keeps_canonical_theme_before_page_styles():
+    """A concurrent publisher must not silently drop the accepted theme include."""
+    import re
+    from urllib.parse import urlsplit
+
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "site/commodities.html").read_text()
+    head = html.split("</head>", 1)[0]
+    styles = re.findall(r'<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"', head)
+    paths = [urlsplit(ref).path for ref in styles]
+    assert paths.count("theme.css") == 1
+    assert paths.index("theme.css") < next(i for i, path in enumerate(paths) if path.startswith("assets/css/"))
