@@ -38773,3 +38773,24 @@ jobs:
         run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
+
+  options-r1-rotation-relative-trend:
+    if: ${{ false }}
+    gate: code
+    # Options R1 W2A: weekly sector relative-trend emitter — calendar endpoints, EMA math, vintage, Terminal contract, additive hook
+    paths:
+      - "engine/rotation_relative_trend.py"
+      - "scripts/build_sector_central.py"
+      - "lib/nyse_calendar.py"
+      - "engine/inputs.py"
+      - "tests/test_rotation_relative_trend.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas pyarrow
+      - name: Options R1 W2A relative trend tests
+        run: python -m pytest tests/test_rotation_relative_trend.py -q
