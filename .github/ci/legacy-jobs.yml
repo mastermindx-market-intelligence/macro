@@ -5256,6 +5256,11 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -10750,6 +10755,13 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -15343,6 +15355,13 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -15446,6 +15465,13 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -15540,6 +15566,12 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -16352,6 +16384,11 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -17538,6 +17575,13 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -23384,6 +23428,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -24167,6 +24216,10 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -27428,6 +27481,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -32433,6 +32491,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
@@ -37873,6 +37937,13 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/validation.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
       # SIC-D 2026-10-21 (#7646): D-wave import closure (phase age / cycle rhythm / generation guard / research handoff / ledger lane).
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
