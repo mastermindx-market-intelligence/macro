@@ -14888,6 +14888,9 @@ jobs:
       - templates/forex*.js
       - templates/forex*.css
       - tests/test_forex*.py
+      - tests/js/forex_watch_client.test.cjs
+      - tests/fixtures/forex_account_owner.js
+      - site/forex_watch_client.js
       - tests/test_build_forex_stance.py
       - tests/test_cross_asset_confirm.py
       - tests/test_b3_forex_consumer.py
@@ -14924,16 +14927,22 @@ jobs:
       - lib/pages.py
       - lib/store.py
       - scripts/__init__.py
+      - tests/__init__.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install Forex fixture dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn playwright
+      - name: install isolated Forex browser
+        run: python -m playwright install --with-deps chromium
       - name: R26 decision, consumer and shared-window contracts
-        run: python -m pytest tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py tests/test_forex_hero_spark_window.py tests/test_forex_r26_consumer.py tests/test_forex_r26_consumer_freshness.py tests/test_forex_r26_event_display.py tests/test_forex_r26_workspace.py -q
+        run: python -m pytest tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py tests/test_forex_hero_spark_window.py tests/test_forex_r26_consumer.py tests/test_forex_r26_consumer_freshness.py tests/test_forex_r26_event_display.py tests/test_forex_r26_workspace.py tests/test_forex_watch_client_js.py tests/test_forex_watch_workspace_browser.py -q
 
   quant-q09-venue-concentration:
     if: ${{ false }}

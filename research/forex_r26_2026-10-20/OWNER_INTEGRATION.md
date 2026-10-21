@@ -2,6 +2,20 @@
 
 MISSION_COMPLETE: false. Release and production acceptance remain held.
 
+## Account persistence continuation — 2026-10-21 (current frontier)
+
+Protected procedure remains Mastermind@a0faf7e44f76ac77c61e177738663544ddb6949d. This section supersedes older preparation-only wording below while preserving point-in-time evidence.
+
+The browser now has an explicit inactive-condition account transport and UI using existing MDXAuth/Supabase and the Terminal alerts owner. It distinguishes signed out, unavailable, successful empty, saved inactive, stale revision and unconfirmed mutation states. Account epochs fence late responses, and a sign-in never auto-saves a draft. Save/reload/edit/delete, two tabs, account changes and lost-response readback are tested with a controlled owner fixture. The full focused run passed 272 tests with one sparse canonical-data skip; its Node wrapper runs 18 transport cases and its browser suite runs 10 cases. Source hashes were stable during execution. See ACCOUNT_CONDITIONS.md and account_evidence/validation.json.
+
+The residual-shock P1 repair on 700b7df passed a fresh native independent delta review: 36 independent passes and both old-function negative controls failed. The original db1e review remains REQUEST_CHANGES historically. The new account slice has not yet passed independent review.
+
+The completed db1e hosted run 39581594253 passed 11/12 packs; the Forex job passed 260 tests. Pack 0 failed the ancestor-init census 345>344 because Forex omitted tests/__init__.py. The path declaration is repaired without changing the ceiling; the three original gates passed before the account additions. Post-account manifest verification also caught a Node 22 declaration incompatible with the existing Node 20 pack runner; only this job's input was aligned. Final post-account scope proof is recorded separately in account_evidence/validation.json.
+
+Terminal workspace acquisition was reconciled through the same installed owner. The first aborted attempt left no operation branch/worktree/process. The next typed result was unqualified, but exact owner status and Git registration proved a clean workspace at 8f00622096d0dc574458c134516e802ce78907ae. No alternate clone or primary edit occurred. Backend storage/API implementation now proceeds in that operation-bound workspace; it is not yet tested or applied. No live account, source, evaluator or notification effect has been performed.
+
+Parent retains integration for PRINCIPAL_JUDGMENT on the cross-repository account-intent and uncertain-write boundary; native agents supply independent review and bounded architectural reasoning. Existing failed Fabric operations are unchanged. MISSION_COMPLETE remains false, #9866 stays Draft/HOLD, and no production persistence, finalized-4H monitoring, delivery or release acceptance is claimed.
+
 ## Resumed continuation — 2026-10-21
 
 The current user directed this session to resume timed-out conversation `6ad82699-a1c4-83ea-92e9-c2dc8f878351`, “Resume Forex Project”, and continue its project. The original managed operation, source branch, PR and accepted designs are preserved. Current protected procedure loaded: `Mastermind@b66e64ad57b50f77253eeacf62ac72dc165a50aa`. This section supersedes the execution frontier below; the historical receipts remain as provenance.

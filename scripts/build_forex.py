@@ -1777,7 +1777,7 @@ def main() -> int:
         footer_en=None, footer_zh=None, stance=stance)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
-    for asset in ("forex_r26.css", "forex_r26.js"):
+    for asset in ("forex_r26.css", "forex_watch_client.js", "forex_r26.js"):
         (site / asset).write_bytes((config.ROOT / "templates" / asset).read_bytes())
     write_page(site / "forex.html", html)
     log.info("wrote %s/forex.html (%d KB)", site, len(html) // 1024)

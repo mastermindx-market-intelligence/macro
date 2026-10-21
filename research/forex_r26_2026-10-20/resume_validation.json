@@ -19,7 +19,7 @@
         "name": "design",
         "returncode": 0,
         "log": "/tmp/forex-r26-resume-20261021/design.log",
-        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
+        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
       },
       {
         "name": "targeted",
@@ -85,7 +85,7 @@
     "all_within_frozen_allowances": true
   },
   "production_acceptance": false,
-  "release_independent_review": "REQUEST_CHANGES on db1e; P1 repair delta review pending",
+  "release_independent_review": "P1 repair accepted on700b7df; new account integration requires separate review",
   "ci_pin_integration_repair": {
     "recorded_at": "2026-10-21T09:47:42.079028+00:00",
     "parent_head": "6c7afac115626a5cf1a5a870c6110d9d93059160",
@@ -187,7 +187,42 @@
       "accepted layout",
       "inactive watch boundary"
     ],
-    "delta_review": "pending",
+    "delta_review": {
+      "status": "PASS",
+      "operation": "forex-r26-native-review-700b7df-20261021-002",
+      "head": "700b7df3c01999aea8d99139808c82643f14cb97",
+      "base": "db1e2b4b440e09d15fc8002b27029ff33c71daf1",
+      "independently_passed": 36,
+      "negative_control_failed": 2,
+      "scope": "P1 residual-shock display repair only; no release authorization"
+    },
     "production_acceptance": false
+  },
+  "ci_ancestor_init_repair": {
+    "failed_head": "db1e2b4b440e09d15fc8002b27029ff33c71daf1",
+    "run_id": 39581594253,
+    "pack_job_id": 119161976468,
+    "logical_job": "ci-control-plane-contracts",
+    "test": "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+    "candidate_census": 345,
+    "source_base_census": 344,
+    "unchanged_ceiling": 344,
+    "missing_declared_path": "tests/__init__.py",
+    "owner_job": "forex-r26-consumer",
+    "repair": "Added existing imported ancestor to the existing narrow job path contract; no ceiling or guard change.",
+    "unchanged_focused_gates_passed": 3,
+    "log": "/tmp/forex-r26-resume-20261021/ci-closure-repair.log",
+    "post_account_scope_closure_pending": false
+  },
+  "account_condition_client": {
+    "evidence": "account_evidence/validation.json",
+    "contract": "ACCOUNT_CONDITIONS.md",
+    "passed": 272,
+    "skipped": 1,
+    "node_subtests": 18,
+    "browser_cases": 10,
+    "production_acceptance": false,
+    "database_proof": false,
+    "independent_review": "PENDING"
   }
 }

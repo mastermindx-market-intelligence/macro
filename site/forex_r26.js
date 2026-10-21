@@ -1,5 +1,6 @@
-/* R26 display controller. Reads the embedded owner projection; never writes account,
-   event, watch, feed or delivery state. Prepared rules live in this tab only. */
+/* R26 workspace controller. Market views read the embedded owner projection.
+   Account condition writes use the existing alerts owner through ForexWatchClient.
+   Tab drafts stay local; this controller never activates watches or sends alerts. */
 (function () {
   "use strict";
   const root = document.querySelector("[data-fxr]");
@@ -13,6 +14,9 @@
   const selected = new Set();
   const prepared = [];
   let pendingRule = null, editIndex = -1;
+  const watchClient = window.ForexWatchClient || null, pendingOperations = new Map();
+  let accountView = { status: "checking", rows: [] }, accountRead = 0, priorAccount = null;
+  let editingSaved = null, editorVersion = 0;
   let state = { destination: "today", pair: null, tab: "outlook", from: "today" };
   const q = selector => root.querySelector(selector);
   const all = selector => Array.from(root.querySelectorAll(selector));
@@ -133,6 +137,11 @@
     if (!pendingRule) return;
     q("#fxr-rule-summary").textContent = summary(pendingRule);
     q("#fxr-rule-json").textContent = JSON.stringify(pendingRule, null, 2);
+    q("#fxr-rule-status").textContent = editingSaved ? words("Review changes · Not saved yet", "核对更改 · 尚未保存") : words("Prepared · not active", "已准备 · 未启用");
+    q("#fxr-rule-persistence").textContent = editingSaved ? words("Saved revision ", "已保存版本 ") + editingSaved.condition.revision : words("Not created", "未创建");
+    q("#fxr-rule-note").textContent = editingSaved ? words("Your saved condition stays inactive. Changes take effect only when the account service confirms the new revision.", "已保存条件保持未启用。账户服务确认新版本后，更改才会生效。") : words("No notification will be sent. Keep this draft in the tab, then choose Save to account in My watches if you want to retain it.", "不会发送通知。可先将草稿保留在当前标签页，再到“我的关注”选择保存到账户。 ");
+    q("#fxr-keep-rule").textContent = editingSaved ? words("Save changes", "保存更改") : words("Keep prepared in this tab", "在此标签页保留已准备条件");
+    q("#fxr-keep-rule").disabled = !!editingSaved && (pendingOperations.has(editingSaved.id) || !q("#fxr-reload-saved").hidden);
   }
   function showReview() {
     q("#fxr-rule-form").hidden = true;
@@ -140,8 +149,11 @@
     renderReview();
     q("#fxr-edit-rule").focus();
   }
-  function startRule(pair, opener, existingIndex) {
-    if (!rows.has(pair)) return;
+  function startRule(pair, opener, existingIndex, savedRow) {
+    if ((!rows.has(pair) && !savedRow) || (savedRow && pendingOperations.has(savedRow.id))) return;
+    editorVersion++; editingSaved = savedRow || null;
+    q("#fxr-rule-save-message").textContent = "";
+    q("#fxr-reload-saved").hidden = true;
     const form = q("#fxr-rule-form");
     form.reset();
     q("#fxr-rule-error").textContent = "";
@@ -150,7 +162,7 @@
       pair.slice(3) + words(" per ", " / ") + pair.slice(0,3);
     form.elements.expires_at.value = new Date(Date.now() + 7 * 86400000).toISOString().slice(0,16);
     editIndex = Number.isInteger(existingIndex) ? existingIndex : -1;
-    pendingRule = editIndex >= 0 ? { ...prepared[editIndex] } : null;
+    pendingRule = editingSaved ? { ...editingSaved.condition } : editIndex >= 0 ? { ...prepared[editIndex] } : null;
     form.hidden = false;
     q("#fxr-rule-review").hidden = true;
     if (pendingRule) {
@@ -175,8 +187,164 @@
       const remove = el("button", words("Remove draft", "移除草稿"), "gbtn gbtn-quiet");
       remove.type = "button";
       remove.addEventListener("click", () => { prepared.splice(index, 1); renderPrepared(); q("#fxr-nav-my_watches").focus(); });
-      actions.append(review, remove); card.append(actions); list.append(card);
+      const held = Array.from(pendingOperations.values()).some(operation => operation.draft === rule);
+      review.disabled = remove.disabled = held;
+      const auth = watchClient && watchClient.authState();
+      const save = el("button", auth && auth.status === "signed_out" ? words("Sign in to save", "登录以保存") : words("Save to account", "保存到账户"), "gbtn gbtn-cta");
+      save.type = "button";
+      save.disabled = held || !auth || !["ready", "signed_out"].includes(auth.status);
+      save.addEventListener("click", () => { const request = makeRequest(rule); if (request) beginOperation("save", request, rule); });
+      actions.append(review, save, remove); card.append(actions); list.append(card);
     });
+  }
+  function accountMessage(status) {
+    return ({
+      signed_out: ["Sign in to save a condition to your account.", "登录后可将条件保存到账户。"],
+      checking: ["Checking your account…", "正在检查账户…"],
+      unavailable: ["Account watches are unavailable. Retry to read their current state.", "账户关注暂不可用。请重试以读取当前状态。"],
+      invalid: ["Check the condition and choose a future expiry in UTC.", "请检查条件，并选择未来的UTC到期时间。"],
+      limit: ["Your account has reached its alert limit. Remove an existing condition before saving another.", "账户已达到提醒数量上限。请先移除已有条件。"],
+      conflict: ["This condition changed in another session. Reload the saved version before editing it.", "此条件已在另一会话中更改。请先重新载入已保存版本。"],
+      not_found: ["This condition is no longer available in your account.", "此条件已不在您的账户中。"],
+      unconfirmed: ["The result is not confirmed. Check its status before attempting another write.", "结果尚未确认。再次写入前，请先检查状态。"],
+      session_changed: ["Your account session changed. Read your watches again.", "账户会话已更改。请重新读取关注。"]
+    }[status] || ["The account service could not confirm this action.", "账户服务未能确认此操作。"]);
+  }
+  function messageFor(status) { const text = accountMessage(status); return words(text[0], text[1]); }
+  function announceAccount(text) { q("#fxr-account-message").textContent = text; q("#fxr-account-message").hidden = !text; }
+  function renderAccount() {
+    const auth = watchClient ? watchClient.authState() : { status: "unavailable" };
+    const status = accountView.status;
+    const ready = status === "ready";
+    q("#fxr-account-title").dataset.accountStatus = status;
+    q("#fxr-account-title").textContent = ready ?
+      (accountView.rows.length ? words("Saved conditions", "已保存条件") : words("No saved Forex conditions", "没有已保存的外汇条件")) :
+      status === "updating" ? words("Updating saved conditions…", "正在更新已保存条件…") :
+      status === "unconfirmed" ? words("Change awaiting confirmation", "更改等待确认") :
+      status === "loading" ? words("Loading your watches…", "正在载入关注…") :
+      status === "signed_out" ? words("Save conditions to your account", "将条件保存到账户") :
+      status === "checking" ? words("Checking your account…", "正在检查账户…") :
+      words("Account watch status unavailable", "账户关注状态不可用");
+    q("#fxr-account-description").textContent = ready ?
+      words("Saved conditions remain inactive. Finalized 4H monitoring and notifications are not available yet.", "已保存条件仍未启用。目前尚不支持最终4小时监测与通知。") :
+      ["loading", "updating"].includes(status) ? words("Waiting for the account service to return your records.", "正在等待账户服务返回记录。") : messageFor(status);
+    q("#fxr-account-signin").hidden = auth.status !== "signed_out";
+    q("#fxr-account-refresh").hidden = auth.status !== "ready";
+    q("#fxr-account-refresh").disabled = status === "loading";
+    const list = q("#fxr-saved-list"); list.replaceChildren();
+    q("#fxr-saved-section").hidden = !ready || !accountView.rows.length;
+    if (ready) accountView.rows.forEach(row => {
+      const card = el("article", undefined, "fxr-prepared-item");
+      card.dataset.fxrSavedId = row.id;
+      const expired = new Date(row.condition.expires_at) <= new Date();
+      card.append(el("h3", row.symbol.slice(0,3) + "/" + row.symbol.slice(3)),
+        el("p", summary(row.condition)),
+        el("p", words("Saved inactive · Revision ", "已保存，未启用 · 版本 ") + row.condition.revision +
+          (expired ? words(" · Expired", " · 已到期") : ""), "fxr-muted"));
+      const actions = el("div", undefined, "fxr-actions");
+      const edit = el("button", words("Edit saved condition", "编辑已保存条件"), "gbtn");
+      edit.type = "button"; edit.disabled = pendingOperations.has(row.id);
+      edit.addEventListener("click", () => startRule(row.symbol, edit, undefined, row));
+      const remove = el("button", words("Delete condition", "删除条件"), "gbtn gbtn-quiet");
+      remove.type = "button"; remove.disabled = pendingOperations.has(row.id);
+      remove.addEventListener("click", () => {
+        const request = makeRequest(row.condition, row.id, row.condition.revision);
+        if (request) beginOperation("remove", request);
+      });
+      actions.append(edit, remove); card.append(actions); list.append(card);
+    });
+    renderPending();
+  }
+  async function loadAccount() {
+    if (!watchClient) { accountView = { status: "unavailable", rows: [] }; renderAccount(); return; }
+    const auth = watchClient.authState(), serial = ++accountRead;
+    if (auth.status !== "ready") { accountView = { status: auth.status, rows: [] }; renderAccount(); return; }
+    accountView = { status: "loading", rows: [] }; renderAccount();
+    const result = await watchClient.list();
+    if (serial !== accountRead || auth.epoch !== watchClient.authState().epoch) return;
+    accountView = result.status === "ready" ? result : { status: result.status, rows: [] };
+    renderAccount();
+  }
+  function makeRequest(rule, id, revision) {
+    const auth = watchClient && watchClient.authState();
+    if (!auth || auth.status !== "ready") {
+      if (auth && auth.status === "signed_out" && window.MDXAuth) window.MDXAuth.open("signin");
+      else announceAccount(messageFor(auth ? auth.status : "unavailable"));
+      return null;
+    }
+    const identity = id || watchClient.newId();
+    if (!identity) { announceAccount(words("A secure condition identity could not be created.", "无法创建安全的条件标识。")); return null; }
+    return { id: identity, expectedRevision: revision || 0, rule: { ...rule },
+      userId: auth.userId, accountEpoch: auth.epoch };
+  }
+  function renderPending() {
+    const list = q("#fxr-pending-list"); list.replaceChildren();
+    q("#fxr-pending-section").hidden = pendingOperations.size === 0;
+    pendingOperations.forEach(operation => {
+      const card = el("article", undefined, "fxr-prepared-item");
+      card.dataset.fxrPendingId = operation.request.id;
+      const uncertain = operation.status === "unconfirmed";
+      card.append(el("h3", operation.request.rule.pair),
+        el("p", summary(operation.request.rule)),
+        el("p", uncertain ? messageFor("unconfirmed") :
+          operation.kind === "save" ? words("Saving… Not yet confirmed.", "正在保存…尚未确认。") :
+          words("Deleting… Not yet confirmed.", "正在删除…尚未确认。"), "fxr-muted"));
+      if (uncertain) {
+        const check = el("button", words("Check status", "检查状态"), "gbtn");
+        check.type = "button";
+        check.addEventListener("click", async () => {
+          check.disabled = true;
+          const result = await (operation.kind === "save" ? watchClient.reconcileSave(operation.request) : watchClient.reconcileRemove(operation.request));
+          finishOperation(operation, result);
+        });
+        card.append(check);
+      }
+      list.append(card);
+    });
+  }
+  async function beginOperation(kind, request, draft) {
+    if (pendingOperations.has(request.id)) return;
+    const operation = { kind, request, draft, editor: editorVersion, status: kind === "save" ? "saving" : "deleting" };
+    pendingOperations.set(request.id, operation);
+    accountRead++; accountView = { status: "updating", rows: [] };
+    announceAccount(""); renderAccount(); renderPrepared(); renderReview();
+    const result = await watchClient[kind](request);
+    finishOperation(operation, result);
+  }
+  function finishOperation(operation, result) {
+    const auth = watchClient.authState();
+    if (auth.epoch !== operation.request.accountEpoch || auth.userId !== operation.request.userId ||
+        pendingOperations.get(operation.request.id) !== operation) return;
+    const inEditor = operation.editor === editorVersion && editingSaved && editingSaved.id === operation.request.id;
+    if (result.status === "unconfirmed" || result.status === "unavailable") {
+      // A failed reconciliation read supplies no new write verdict.
+      if (result.status === "unconfirmed" || operation.status === "unconfirmed") {
+        operation.status = "unconfirmed"; accountView = { status: "unconfirmed", rows: [] }; renderAccount(); renderPrepared(); renderReview();
+        announceAccount(messageFor("unconfirmed"));
+        if (inEditor) q("#fxr-rule-save-message").textContent = words("Save not confirmed. Check status in My watches.", "保存尚未确认。请在“我的关注”中检查状态。");
+        return;
+      }
+    }
+    pendingOperations.delete(operation.request.id);
+    if (result.status === "saved" || result.status === "deleted") {
+      if (operation.draft) {
+        const index = prepared.indexOf(operation.draft); if (index >= 0) prepared.splice(index, 1);
+      }
+      announceAccount(result.status === "saved" ? words("Saved inactive. No alerts will be sent.", "已保存，未启用。不会发送提醒。") : words("Condition deleted.", "条件已删除。"));
+      if (inEditor && q("#fxr-watch-dialog").open) {
+        q("#fxr-watch-dialog").close(); editingSaved = null; pendingRule = null;
+        navigate("my_watches"); q("#fxr-nav-my_watches").focus();
+      }
+      loadAccount();
+    } else {
+      announceAccount(messageFor(result.status));
+      if (inEditor) {
+        q("#fxr-rule-save-message").textContent = messageFor(result.status);
+        q("#fxr-reload-saved").hidden = result.status !== "conflict";
+      }
+      loadAccount();
+    }
+    renderAccount(); renderPrepared(); renderReview();
   }
   function renderComparison() {
     const body = q("#fxr-compare-body");
@@ -196,7 +364,7 @@
     all("[data-en][data-zh]").forEach(node => { node.textContent = node.dataset[zh() ? "zh" : "en"]; });
     all("[data-placeholder-en]").forEach(node => { node.placeholder = node.dataset[zh() ? "placeholderZh" : "placeholderEn"]; });
     all("[data-aria-en]").forEach(node => { node.setAttribute("aria-label", node.dataset[zh() ? "ariaZh" : "ariaEn"]); });
-    filterPairs(false); renderPrepared(); renderReview(); renderComparison();
+    filterPairs(false); renderPrepared(); renderReview(); renderComparison(); renderAccount();
   }
 
   root.addEventListener("click", event => {
@@ -262,13 +430,13 @@
     const pair = form.elements.pair.value, threshold = Number(form.elements.threshold.value),
       consecutive = Number(form.elements.consecutive.value), expires = new Date(form.elements.expires_at.value + "Z"),
       operator = form.elements.operator.value;
-    if (!rows.has(pair) || !Number.isFinite(threshold) || threshold <= 0 ||
+    if ((!rows.has(pair) && (!editingSaved || editingSaved.symbol !== pair)) || !Number.isFinite(threshold) || threshold <= 0 ||
         !Number.isInteger(consecutive) || consecutive < 1 || consecutive > 10 ||
         !["gt","gte","lt","lte"].includes(operator) || !Number.isFinite(expires.valueOf()) || expires <= new Date()) {
       q("#fxr-rule-error").textContent = words("Enter a positive price, 1–10 closes and a future expiry in UTC.", "请输入正价格、1–10次收盘，以及未来的UTC到期时间。");
       return;
     }
-    pendingRule = { condition_id: null, revision: null, kind: "price_close", pair, feed: null,
+    pendingRule = { condition_id: editingSaved ? editingSaved.id : null, revision: editingSaved ? editingSaved.condition.revision : null, kind: "price_close", pair, feed: null,
       interval: "4H", calendar: "fx-utc-4h/v1", operator, threshold, consecutive,
       expires_at: expires.toISOString(), quote_basis: "literal", state: "prepared",
       saved: false, active: false, snapshot_id: view.current_read.snapshot_id };
@@ -280,10 +448,49 @@
   });
   q("#fxr-keep-rule").addEventListener("click", () => {
     if (!pendingRule) return;
+    if (editingSaved) {
+      const request = makeRequest(pendingRule, editingSaved.id, editingSaved.condition.revision);
+      if (request) beginOperation("save", request);
+      return;
+    }
     if (editIndex >= 0) prepared[editIndex] = { ...pendingRule }; else prepared.push({ ...pendingRule });
     pendingRule = null; editIndex = -1;
     q("#fxr-watch-dialog").close(); renderPrepared(); navigate("my_watches");
     q("#fxr-nav-my_watches").focus();
+  });
+  q("#fxr-account-signin").addEventListener("click", () => { if (window.MDXAuth) window.MDXAuth.open("signin"); });
+  q("#fxr-account-refresh").addEventListener("click", loadAccount);
+  q("#fxr-reload-saved").addEventListener("click", async () => {
+    if (!editingSaved || !watchClient) return;
+    const target = editingSaved.id, version = editorVersion;
+    q("#fxr-reload-saved").disabled = true;
+    const result = await watchClient.get(target);
+    if (version !== editorVersion) return;
+    q("#fxr-reload-saved").disabled = false;
+    if (result.status === "ready" && result.row) {
+      editingSaved = result.row; pendingRule = { ...result.row.condition };
+      q("#fxr-rule-pair").value = pendingRule.pair;
+      q("#fxr-rule-pair-label").textContent = pendingRule.pair.slice(0,3) + "/" + pendingRule.pair.slice(3) + " · " + pendingRule.pair.slice(3) + words(" per ", " / ") + pendingRule.pair.slice(0,3);
+      for (const field of ["operator", "threshold", "consecutive"]) q("#fxr-rule-form").elements[field].value = pendingRule[field];
+      q("#fxr-rule-form").elements.expires_at.value = pendingRule.expires_at.slice(0,16);
+      q("#fxr-reload-saved").hidden = true; q("#fxr-rule-save-message").textContent = words("Loaded the saved version. Review it before making changes.", "已载入保存版本。更改前请先核对。");
+      renderReview();
+    } else q("#fxr-rule-save-message").textContent = messageFor(result.status === "ready" ? "not_found" : result.status);
+  });
+  if (watchClient) watchClient.subscribeAuth(auth => {
+    accountRead++;
+    if (priorAccount && priorAccount.epoch !== auth.epoch) {
+      pendingOperations.clear();
+      if (priorAccount.userId) {
+        prepared.length = 0; pendingRule = null; editingSaved = null; editorVersion++;
+        q("#fxr-rule-form").reset(); q("#fxr-rule-pair").value = "";
+        ["#fxr-rule-summary", "#fxr-rule-json", "#fxr-rule-save-message", "#fxr-rule-pair-label"].forEach(selector => { q(selector).textContent = ""; });
+        if (q("#fxr-watch-dialog").open) q("#fxr-watch-dialog").close();
+      }
+      announceAccount("");
+    }
+    priorAccount = auth; accountView = { status: auth.status, rows: [] };
+    renderPrepared(); renderReview(); loadAccount();
   });
   window.addEventListener("hashchange", () => { readRoute(); renderRoute(false); });
   new MutationObserver(localize).observe(document.documentElement, { attributes:true, attributeFilter:["data-lang"] });
