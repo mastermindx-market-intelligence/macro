@@ -926,3 +926,28 @@ def ticker_template_reason(title: str, domain: str = "") -> str | None:
     if re.match(r"^in-depth examination of .{1,100}: evaluating performance against (?:its )?industry peers\b", text, re.I):
         return "routine_peer_profile"
     return None
+
+
+def ticker_editorial_reason(title: str, domain: str = "", author: str = "") -> str | None:
+    """Curated ticker display policy, using the shared publisher and title rules.
+
+    Company-specific dividend declarations and scheduled earnings remain useful
+    here even when the broad macro feed treats them as stubs. This view never
+    changes ingestion, rights, raw evidence retention, or trade authority.
+    """
+    category = _qk.publisher_category(domain)
+    if category in {"excluded", "unreviewed"}:
+        return "publisher_excluded" if category == "excluded" else "publisher_unreviewed"
+    reason = low_value_reason(title, domain, author)
+    if reason not in {None, "dividend_declaration_stub", "macro_release_stub"}:
+        return reason
+    routine = ticker_template_reason(title, domain)
+    if routine:
+        return routine
+    if category == "press_release" and re.search(
+        r"\b(?:shareholder alert|investor alert|class action (?:alert|reminder)|"
+        r"recover (?:your|their) losses|deadline (?:alert|reminder))\b",
+        title, re.I,
+    ):
+        return "solicitation_press_release"
+    return None

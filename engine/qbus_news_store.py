@@ -24,7 +24,7 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
-from engine.qbus_news_quality import display_text, publisher_identity, representatives_in_display_order, reporting_state
+from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
@@ -716,6 +716,7 @@ class NewsStore:
         # in qbus_meta by _initialize), passed or not.
         self._cluster_policy_passed = True
         self._read_only = False
+        self._curated = False
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
             str(self.path),
@@ -734,7 +735,10 @@ class NewsStore:
         *,
         source_key: str,
         cluster_policy: ClusterPolicy | None = None,
+        curated: bool = False,
     ) -> "NewsStore":
+        if not isinstance(curated, bool):
+            raise StoreValidationError("qbus_news_store:invalid_editorial_view")
         db = Path(path)
         if not db.exists() or not db.is_file():
             raise StoreUnavailable("qbus_news_store:unavailable")
@@ -744,6 +748,7 @@ class NewsStore:
         obj.cluster_policy = cluster_policy or ClusterPolicy()
         obj._cluster_policy_passed = cluster_policy is not None
         obj._read_only = True
+        obj._curated = curated
         try:
             obj._conn = sqlite3.connect(
                 f"file:{urllib.parse.quote(str(db))}?mode=ro",
@@ -752,6 +757,8 @@ class NewsStore:
                 isolation_level=None,
             )
             obj._conn.row_factory = sqlite3.Row
+            if curated:
+                register_curated_reader(obj._conn)
             obj._conn.execute("PRAGMA query_only=ON")
             row = obj._conn.execute(
                 "SELECT value FROM qbus_meta WHERE key='schema'"
@@ -766,6 +773,21 @@ class NewsStore:
             obj._conn.close()
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
         return obj
+
+    @property
+    def _curated_clause(self) -> str:
+        return "AND qbus_news_is_curated(s.source, p.title)=1" if self._curated else ""
+
+    def _read_sources(self, rights: NewsReadRights) -> frozenset[str]:
+        # Editorial eligibility narrows this read; the rights object and raw
+        # retained reports remain unchanged. Unreadable titles cannot be used
+        # to infer private content through the editorial predicate.
+        if not self._curated:
+            return rights.allowed_sources
+        return frozenset(
+            source for source in rights.allowed_sources
+            if rights.allows(source, "title") and curated_source(source)
+        )
 
     def _require_write(self) -> None:
         if self._read_only:
@@ -1734,15 +1756,15 @@ class NewsStore:
         change_sequence = int(self._conn.execute(
             "SELECT COALESCE(MAX(sequence), 0) FROM news_changes"
         ).fetchone()[0])
-        if not rights.allowed_sources:
+        if not self._read_sources(rights):
             return NewsSnapshot(SCHEMA, security_id, (), cursor, False, change_sequence)
 
-        placeholders = ",".join("?" for _ in rights.allowed_sources)
+        placeholders = ",".join("?" for _ in self._read_sources(rights))
         params: list[object] = [
             security_id,
-            *sorted(rights.allowed_sources),
+            *sorted(self._read_sources(rights)),
             security_id,
-            *sorted(rights.allowed_sources),
+            *sorted(self._read_sources(rights)),
         ]
         having_cursor = ""
         if cursor is not None:
@@ -1771,6 +1793,8 @@ class NewsStore:
               ON s.source=i.source AND s.source_item_id=i.source_item_id
             JOIN news_cluster_members m
               ON m.source=s.source AND m.source_item_id=s.source_item_id
+            JOIN news_state_projection p
+              ON p.source=s.source AND p.source_item_id=s.source_item_id
             LEFT JOIN (
                 SELECT c.cluster_id, MAX(c.sequence) AS change_sequence
                 FROM news_change_targets t
@@ -1781,6 +1805,7 @@ class NewsStore:
             ) w ON w.cluster_id=m.cluster_id
             WHERE i.security_id=?
               AND s.status='active'
+                  {self._curated_clause}
               AND s.source IN ({placeholders})
             GROUP BY m.cluster_id
             {having_cursor}
@@ -1817,6 +1842,7 @@ class NewsStore:
                   ON i.source=s.source AND i.source_item_id=s.source_item_id
                 WHERE i.security_id=?
                   AND s.status='active'
+                  {self._curated_clause}
                   AND s.source IN ({placeholders})
                   AND m.cluster_id IN ({cluster_placeholders})
                 ORDER BY m.cluster_id, s.last_sequence DESC,
@@ -1824,7 +1850,7 @@ class NewsStore:
                 """,
                 (
                     security_id,
-                    *sorted(rights.allowed_sources),
+                    *sorted(self._read_sources(rights)),
                     *selected_ids,
                 ),
             ).fetchall()
@@ -1948,7 +1974,7 @@ class NewsStore:
             or now.utcoffset() is None
         ):
             raise ValueError("now must be a timezone-aware datetime")
-        if not rights.allowed_sources:
+        if not self._read_sources(rights):
             flow: dict = {
                 "schema": "ticker_news.flow.v1",
                 "state": "unavailable",
@@ -1973,7 +1999,8 @@ class NewsStore:
                 conn,
                 security_id=security_id,
                 now=as_of,
-                allowed_sources=rights.allowed_sources,
+                allowed_sources=self._read_sources(rights),
+                curated=self._curated,
             )
         finally:
             conn.close()
@@ -1983,6 +2010,7 @@ class NewsStore:
         as_of_date = as_of.date()
         provenance = {
             "velocity_schema": VELOCITY_SCHEMA,
+            **({"editorial_policy": EDITORIAL_POLICY_VERSION} if self._curated else {}),
             "sources_counted": velocity["sources_counted"],
             "status_counted": "active",
             "distinct_by": "source + source_item_id",
@@ -2053,10 +2081,10 @@ class NewsStore:
         story_id = _validate_token(story_id, "story_id", 1024)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
-        if not rights.allowed_sources:
+        if not self._read_sources(rights):
             return None
         security_filter = ""
-        params = [story_id, *sorted(rights.allowed_sources)]
+        params = [story_id, *sorted(self._read_sources(rights))]
         if security_id is not None:
             security_id = _validate_token(security_id, "security_id", 1024)
             security_filter = """AND EXISTS (
@@ -2065,7 +2093,7 @@ class NewsStore:
                   AND i.security_id=?
             )"""
             params.append(security_id)
-        placeholders = ",".join("?" for _ in rights.allowed_sources)
+        placeholders = ",".join("?" for _ in self._read_sources(rights))
         rows = self._conn.execute(
             f"""
             SELECT s.source, s.source_item_id, s.last_sequence,
@@ -2078,6 +2106,7 @@ class NewsStore:
               ON p.source=s.source AND p.source_item_id=s.source_item_id
             WHERE m.cluster_id=?
               AND s.status='active'
+                  {self._curated_clause}
               AND s.source IN ({placeholders})
               {security_filter}
             ORDER BY s.last_sequence DESC, s.source, s.source_item_id
@@ -2136,10 +2165,10 @@ class NewsStore:
             raise StoreValidationError("qbus_news_store:invalid_limit")
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
-        if not rights.allowed_sources:
+        if not self._read_sources(rights):
             return ChangePage(SCHEMA, (), after_sequence, False)
 
-        placeholders = ",".join("?" for _ in rights.allowed_sources)
+        placeholders = ",".join("?" for _ in self._read_sources(rights))
         rows = self._conn.execute(
             f"""
             SELECT c.*, r.revision_json
@@ -2155,7 +2184,7 @@ class NewsStore:
             (
                 security_id,
                 after_sequence,
-                *sorted(rights.allowed_sources),
+                *sorted(self._read_sources(rights)),
                 limit + 1,
             ),
         ).fetchall()
@@ -2185,7 +2214,7 @@ class NewsStore:
             # The consumed journal row can precede this current projection.
             group_sequences = {}
             if latest:
-                source_marks = ",".join("?" for _ in rights.allowed_sources)
+                source_marks = ",".join("?" for _ in self._read_sources(rights))
                 group_marks = ",".join("?" for _ in latest)
                 group_sequences = {
                     str(item["cluster_id"]): int(item["sequence"])
@@ -2199,7 +2228,7 @@ class NewsStore:
                           AND c.cluster_id IN ({group_marks})
                         GROUP BY c.cluster_id
                         """,
-                        (security_id, *sorted(rights.allowed_sources), *latest),
+                        (security_id, *sorted(self._read_sources(rights)), *latest),
                     ).fetchall()
                 }
             projected = []
