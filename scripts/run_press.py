@@ -1037,10 +1037,10 @@ def _same_page(rendered: Path, committed: Path) -> bool:
     """True when the committed file already IS this render, in the projection
     this lane is accountable for.
 
-    HTML is compared through build_free_content._comparable, which strips the
-    daily.yml-only wh_banner tag and normalises the `?v=` asset stamps — the two
-    sweeps a press emit cannot replay and does not own.  Everything else (the
-    RSS feed) is a plain byte compare.
+    HTML uses build_free_content._comparable for the separately owned banner
+    and asset stamps. A missing common-renderer Shared Shell block is projected
+    in memory before that comparison; an existing block is never regenerated.
+    Everything else (the RSS feed) remains a plain byte compare.
     """
     if not committed.exists():
         return False
@@ -1050,9 +1050,24 @@ def _same_page(rendered: Path, committed: Path) -> bool:
     if rendered.suffix != ".html":
         return False
     from scripts.build_free_content import _comparable  # noqa: PLC0415
+    from lib.pages import dbase_prefix  # noqa: PLC0415
+    from lib.shared_shell import END, START, inject_shared_shell_text  # noqa: PLC0415
+
+    def comparison_text(raw: bytes, path: Path) -> str:
+        text = raw.decode("utf-8")
+        if START not in text and END not in text:
+            # The common renderer owns this additive sweep. Explicit digests
+            # keep this comparison pure; _comparable already ignores stamp values.
+            # Never regenerate a present block: doing so could erase extra content
+            # or malformed markup inside its markers and hide a real difference.
+            text = inject_shared_shell_text(
+                text, dbase_prefix(path), version="00000000", css_version="00000000",
+            )
+        return _comparable(text)
+
     try:
-        return _comparable(a.decode("utf-8")) == _comparable(b.decode("utf-8"))
-    except UnicodeDecodeError:
+        return comparison_text(a, rendered) == comparison_text(b, committed)
+    except (UnicodeDecodeError, ValueError):
         return False
 
 

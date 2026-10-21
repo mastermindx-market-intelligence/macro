@@ -1,0 +1,127 @@
+{
+  "schema": "mastermind.shared_shell.r35_browser_proof.v1",
+  "status": "BUILT_NOT_PROVEN",
+  "production_release_accepted": false,
+  "implementation_commit": "02793e6d59df0d377a15366b0d92370789f1e3a4",
+  "pr": 7949,
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "ed95002d60d8c0370fae40760a3c21fc8d3fd48f",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "environment": {
+    "captured_at_utc": "2026-10-01T05:26:42Z",
+    "browser": "Google Chrome 154.0.8037.58",
+    "playwright_test": "1.62.0",
+    "node": "v26.5.0",
+    "server": "python http.server against the exact local site tree at 127.0.0.1:8877",
+    "navigation_css_digest": "cdac6d7c"
+  },
+  "pilot_pages": [
+    "macro.html",
+    "sector_central.html",
+    "reports.html"
+  ],
+  "browser_matrix": {
+    "passed": 8,
+    "failed": 0,
+    "cases": [
+      "desktop 1440x1000 dark English open/search/no-match/reset/Escape/focus-return on all three pilots",
+      "mobile 390x844 light Chinese heading-focus/translation/viewport/close on all three pilots",
+      "foreign live modal blocks All tools without disturbing the existing overlay",
+      "live source withdrawal removes href, disables projection and announces the change",
+      "desktop footer width equals shell width; max-width none; margin-top zero",
+      "theme.js, account.js and nav_market.js observed with HTTP 200"
+    ]
+  },
+  "source_verification": {
+    "production_controller": {
+      "passed": 97,
+      "failed": 0
+    },
+    "mutation_kills": {
+      "detected": 12,
+      "total": 12,
+      "evidence": "../mutations-r23.json"
+    },
+    "shared_all_tools_integration": "PASS",
+    "validated_claims_source": "PASS",
+    "design_system_forward_ratchet": "PASS",
+    "template_site_sync": {
+      "pairs_checked": 105,
+      "status": "PASS"
+    },
+    "p0b_receipt_closure": {
+      "status": "PASS",
+      "hk_receipt_pass": true,
+      "canada_receipt_pass": true
+    },
+    "changed_contract_targeted_pytest": "PASS",
+    "macro_command_copy_law": {
+      "passed": 108,
+      "skipped": 34,
+      "failed": 0
+    }
+  },
+  "repair": {
+    "default_off_host": "shared nav loads no helper when the exact boolean flag is absent or false while preserving legacy render whitespace",
+    "design_tokens": "eleven All tools literal corner decisions now consume existing r-btn, r-card or r-ctl tokens",
+    "cache_contract": "exactly the three admitted pilots reference navigation-refresh.css?v=cdac6d7c in preload and stylesheet links",
+    "watchstore_test": "late membership responses add no event beyond the legitimate sign-out local-state event",
+    "current_main_test_join": "credit/funding E4 fixture pins capital_structure CURRENT exactly as current main",
+    "receipt_closure": "HK and Canada P0B construction receipts were reminted against the exact changed shared chrome inputs"
+  },
+  "screenshots": {
+    "macro-desktop-dark-en.png": {
+      "bytes": 203539,
+      "sha256": "9187413085e3f0ef13a3de8706297d6b15127a7991b78acd3c55d7906af3f721",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "macro-mobile-light-zh.png": {
+      "bytes": 66427,
+      "sha256": "edb0349dfa5bfb8de3b9cb2d36ca039802823ac58f19c4b6176fd7cecdc5d35b",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    },
+    "reports-desktop-dark-en.png": {
+      "bytes": 179152,
+      "sha256": "7ebd72194bb291199713038332fafef6e23be04c908fd51baa416d31b97f89ee",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "reports-mobile-light-zh.png": {
+      "bytes": 67037,
+      "sha256": "4905b9e81f9475fdf208c5f283fa2ae80cb1ea8c9a0010418a11069ad058b96f",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    },
+    "sector_central-desktop-dark-en.png": {
+      "bytes": 193014,
+      "sha256": "9282ef5e33ad6492fb8672947967bc04013a07cc3773a7790a030183cb8be530",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "sector_central-mobile-light-zh.png": {
+      "bytes": 68534,
+      "sha256": "b7b57154593123e74a7623e1acd817da18e60977f5557230cafc058a4cac976d",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    }
+  },
+  "limits": [
+    "local exact-tree Chrome proof, not deployed CDN or production-edge proof",
+    "no authenticated account, portfolio, watchlist, alert, order or saved-state mutation",
+    "no Safari, Firefox, physical-device, assistive-technology or 200-percent-text acceptance",
+    "PR remains draft and HOLD-FOR-SOL; merge and deployment are not authorized"
+  ]
+}
