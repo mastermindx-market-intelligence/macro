@@ -86,7 +86,7 @@ const history={pushState(){throw Error('no history writes on arrival');},
   replaceState(){throw Error('no history writes on arrival');}};
 """ + src + r"""
 process.stdout.write(JSON.stringify({note:els['si-prophet-note'].textContent,
-  back:els['si-prophet-return'].attrs.href,subject:els['si-prophet-subject'].textContent,
+  back:els['si-prophet-return'].attrs.href,clear:els['si-prophet-clear'].attrs.href,subject:els['si-prophet-subject'].textContent,
   filterCalls:calls}));
 """)
 
@@ -282,3 +282,23 @@ def test_readback_carriers_are_authored_in_the_partial():
     ]:
         assert ('id="%s" hidden' % carrier) in html, carrier
         assert "{{ %s }}" % call in html, carrier
+
+
+def test_generation_rejects_leading_trailing_or_only_whitespace():
+    """RI06 MINOR 2: a generation is printable ASCII with no leading or trailing
+    space — a space-only value is not a generation."""
+    for search in ("?si_sector=XLK&si_gen=%20", "?si_sector=XLK&si_gen=%20%20",
+                   "?si_sector=XLK&si_gen=%20g7", "?si_sector=XLK&si_gen=g7%20"):
+        assert _selection(search).get("gen") is None, search   # dropped, like every other refused gen
+    assert _selection("?si_sector=XLK&si_gen=g%207")["gen"] == "g 7"
+    assert _selection("?si_sector=XLK&si_gen=" + "g" * 64)["gen"] == "g" * 64
+
+
+def test_clear_link_drops_every_si_carrier_param():
+    """RI06 MINOR 1: the clear-context link strips ALL si_* params, keeping
+    unrelated query state and a non-context fragment."""
+    result = _receiver("?si_sector=XLK&si_asof=2026-10-18&si_gen=g7"
+                       "&si_origin=sector_central.html&tab=x", rows=ROWS)
+    assert result["clear"] == "us_stocks.html?tab=x#us-standouts"
+    result = _receiver("?si_sector=XLK&si_asof=2026-10-18", rows=ROWS, fragment="#other")
+    assert result["clear"] == "us_stocks.html#other"

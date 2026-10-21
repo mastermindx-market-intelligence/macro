@@ -44,7 +44,8 @@ function sectorProphetAsof(params) {
 }
 function sectorProphetGen(params) {
   var values = params.getAll('si_gen');
-  if (values.length !== 1 || !/^[\x20-\x7E]{1,64}$/.test(values[0])) return null;
+  // RI06 MINOR 2: printable ASCII, 1-64 chars, no leading/trailing space (space-only is not a generation)
+  if (values.length !== 1 || !/^[\x21-\x7E](?:[\x20-\x7E]{0,62}[\x21-\x7E])?$/.test(values[0])) return null;
   return values[0];
 }
 /* Return destinations are an allowlist of relative Sector Intelligence pages
@@ -123,7 +124,10 @@ function sectorProphetSelection(search) {
     screener.disabled = read.status !== 'selected' || !screenerReady();
     if (read.status === 'absent') return;
     var rest = new URLSearchParams(window.location.search);
-    rest.delete('si_sector');
+    // RI06 MINOR 1: clearing the context drops EVERY si_* carrier param, not just the sector
+    var siKeys = [];
+    rest.forEach(function (_v, k) { if (k.indexOf('si_') === 0) siKeys.push(k); });
+    siKeys.forEach(function (k) { rest.delete(k); });
     var qs = rest.toString();
     var hash = window.location.hash === '#sector-prophet-context' ? '#us-standouts' : window.location.hash;
     clear.setAttribute('href', 'us_stocks.html' + (qs ? '?' + qs : '') + hash);
