@@ -129,6 +129,9 @@ html[data-theme="dark"] .stance{background:var(--grid)}
         #}<span class="m-sub">{{ c.years }}y</span></div>
         {%- endif %}
       </div>
+      {%- if c.as_of %}
+      <span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}</span>
+      {%- endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
         {%- if c.oos_en %}
