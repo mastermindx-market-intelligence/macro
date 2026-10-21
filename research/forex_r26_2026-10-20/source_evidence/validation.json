@@ -35,7 +35,7 @@
     "separate_usdbrl_top_requests": 1,
     "separate_usdbrl_top_status": "EMPTY_CAPTURED"
   },
-  "independent_review": "PENDING_EXACT_COMMIT",
+  "independent_review": "PASS_SCOPED_TO_DIAGNOSTICS_AT_509583b08e689a159fb8079bb6f27e26a9d2d958",
   "hosted_ci": "NOT_OBSERVED_FOR_THIS_DELTA",
   "existing_parent_hosted_ci": {
     "head": "642dbedeb5deb1bbb156bda4c1dbaeb518c558df",
@@ -67,5 +67,20 @@
     "deployment": false,
     "activation": false,
     "delivery": false
+  },
+  "independent_review_receipt": "source_evidence/independent-review-509583b0.json",
+  "independent_review_limitations": [
+    "8 independent unittest methods; no independent84-test or PyArrow integration rerun",
+    "External raw archive not independently reread"
+  ],
+  "metadata_updated_at_utc": "2026-10-21T14:02:47.959764+00:00",
+  "implementation_hosted_ci_observed": {
+    "head": "509583b08e689a159fb8079bb6f27e26a9d2d958",
+    "at_utc": "2026-10-21T14:03:40Z",
+    "ci_run": 39611628516,
+    "ci": "IN_PROGRESS",
+    "fences_run": 39611628353,
+    "fences": "SUCCESS",
+    "all_checks_complete": false
   }
 }

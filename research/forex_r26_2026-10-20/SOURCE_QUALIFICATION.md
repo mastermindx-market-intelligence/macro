@@ -67,3 +67,12 @@ USDBRL is unproven for these exact requests. Offshore CNH still needs the intend
 ## Acceptance boundary
 
 Source acquisition is real; current finalized-4H capability remains unavailable. Account storage and Terminal API/UI are separately reviewed in Terminal PR #1100. Deployed account acceptance, evaluated conditions, delivered notifications and final program release are still distinct acceptance steps. The original R26 design and separate carry/COT holds remain unchanged.
+
+
+## Independent review and concrete provider handoff
+
+Exact implementation `509583b08e689a159fb8079bb6f27e26a9d2d958` received a scoped independent PASS. The reviewer independently verified the two implementation/test hashes, reviewed the incumbent reader/materializer/archive context and CI edits, and passed eight independent unittest methods with parameterized subcases in 0.011 seconds. The reviewer runtime lacked pytest/PyArrow; the author's 84-test and real-Parquet integration suite was not rerun independently. External raw archives were not independently reread. See source_evidence/independent-review-509583b0.json and its retained harness.
+
+Preserve the reader boundary: EMPTY_NORMALIZED creates no materialized Parquet view. Actual empty USDBRL raw responses are accounted for separately; a missing view or failed read must not become a successful empty result.
+
+The concrete remaining questions and their implementation consequences are prepared in TIINGO_PROVIDER_QUALIFICATION_REQUEST.md. That packet has not been sent and contains no token or raw prices. It requests authoritative semantics and the existing account rights mapping; it makes no new-purchase assumption.
