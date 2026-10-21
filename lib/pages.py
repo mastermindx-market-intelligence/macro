@@ -191,6 +191,52 @@ _OUR_STAMP_RE = re.compile(r"^([^?#]+)\?v=[0-9a-f]{8}$")
 # double-fetch the file instead of deduping it.
 _REL_ATTR_RE = re.compile(r'\brel\s*=\s*"([^"]*)"', re.IGNORECASE)
 
+# live.js is included by the global authenticated-navigation partial, so a
+# rendered page historically paid its download/parse/timer cost even when that
+# page had no price, breadth, or runtime-created live surface. The post-render
+# optimizer has the complete final HTML and can make that decision without
+# teaching thousands of builders a new flag. False positives are intentionally
+# cheap: any plausible consumer marker keeps the script.
+_LIVE_JS_CONSUMER_MARKERS = (
+    "nb-px",
+    "nb-chg",
+    "data-live-label",
+    "sbx-",
+    "LiveQuotes",
+    "LIVE_",
+    "/ws/tape",
+    "live/breadth.json",
+    "heatmap.js",
+)
+_EMPTY_EXTERNAL_SCRIPT_TAG_RE = re.compile(
+    r"<script\b([^>]*)>\s*</script\s*>", re.IGNORECASE
+)
+
+
+def prune_unused_live_js_text(text: str) -> str:
+    """Remove the generic live.js tag when final HTML cannot consume it.
+
+    live_config.js deliberately stays: risk/news/intraday sibling runtimes read
+    that configuration even on pages where the generic quote patcher is
+    unnecessary. This transformation is conservative and idempotent; a page
+    carrying any known static/dynamic live-consumer signature is left byte-for-
+    byte unchanged.
+    """
+    if any(marker in text for marker in _LIVE_JS_CONSUMER_MARKERS):
+        return text
+
+    def _rewrite(m: "re.Match[str]") -> str:
+        attrs = m.group(1)
+        am = _SRC_ATTR_RE.search(attrs)
+        if not am or am.group(1).lower() != "src":
+            return m.group(0)
+        bare = am.group(2).split("#", 1)[0].split("?", 1)[0].rstrip("/")
+        if bare.rsplit("/", 1)[-1].lower() != "live.js":
+            return m.group(0)
+        return ""
+
+    return _EMPTY_EXTERNAL_SCRIPT_TAG_RE.sub(_rewrite, text)
+
 
 def _is_local_asset(url: str) -> bool:
     """True for a same-origin relative ref (no scheme, not protocol-relative)."""
