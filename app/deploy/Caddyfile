@@ -600,6 +600,17 @@
 	# Shared Shell presentation admission changes framing only. The existing
 	# region and payload gates below still decide access. Restrict the exception
 	# to HTML explicitly requested by the exact beta parent.
+	# Never let an unmatched parent seed a public cached DENY response for the
+	# same opt-in URL that the beta parent will subsequently frame. Framing below
+	# still requires the exact beta Referer; this selector only narrows caching.
+	@shared_shell_requested {
+		path / *.html
+		query mmx_shell=1
+	}
+	header @shared_shell_requested {
+		Cache-Control "private, no-store"
+		defer
+	}
 	@shared_shell_document {
 		path / *.html
 		query mmx_shell=1
