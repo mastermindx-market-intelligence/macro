@@ -1150,6 +1150,10 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     API DEDUP (2026-07-07): same v3 API full-row duplication as EOD and OI
     (see _normalize_eod_df docstring); the same drop_duplicates is applied here
     after column selection.
+
+    Retain supplied timestamp and underlying_timestamp as raw source evidence.
+    The derived date is a legacy grouping key, not an availability clock; raw
+    clocks are neither receipt times nor a freshness/point-in-time admission.
     """
     if df.empty:
         return df
