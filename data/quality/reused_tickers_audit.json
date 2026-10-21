@@ -1,5 +1,5 @@
 {
- "asof": "2026-10-20",
+ "asof": "2026-10-21",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1792d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1793d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -791,7 +791,7 @@
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60755
+  "ledger_rows": 61498
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -810,8 +810,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-10-19",
-     "days_past_death": 1792,
+     "store_tip": "2026-10-20",
+     "days_past_death": 1793,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
