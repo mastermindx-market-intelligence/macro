@@ -17620,6 +17620,11 @@ jobs:
       - "tests/test_sector_cycles.py"
       - "tests/test_sector_generation_guard.py"
       - "tests/test_cycle_phase_age.py"
+      # SIC-D-B0104 (2026-10-21): B01 ownership-map + B04 metric-definition contracts
+      # also pin cycles-owned sources (writers, rs_history reconstruction labels, the
+      # forward-log keep-first invariant); they RUN in the unrun-scoring-engine job.
+      - "tests/test_sector_completion_ownership_map.py"
+      - "tests/test_sector_metric_definitions.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -29782,6 +29787,14 @@ jobs:
       # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.
       - name: sector completion capability map — cited producers, routes and anchors exist
         run: python -m pytest tests/test_sector_completion_capability_map.py -q
+      # SIC-D-B0104 (2026-10-21): the B01 ownership map and the B04 frozen metric
+      # definitions are contract-tested against the code — writer symbols, artifact
+      # path literals, the none_native correction/version census (R3A-92), and
+      # synthetic window/ratio-vs-pp/basis pins. Source + synthetic pandas only;
+      # no network, no data/, no site/. Listed in lr-rotation-evidence-modes' paths
+      # because they also pin cycles-owned sources.
+      - name: sector completion B01+B04 — ownership map + metric definition contracts
+        run: python -m pytest tests/test_sector_completion_ownership_map.py tests/test_sector_metric_definitions.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
