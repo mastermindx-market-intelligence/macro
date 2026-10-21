@@ -22,7 +22,7 @@ owns_paths:
 waves:
 - id: IM-W0
   title: Wave 0 — access reconciliation and served journey verification
-  status: in_progress
+  status: awaiting_ci
   next_action: Squash-merge PR 9920 (nine International presentation assets public; independent review PASS at
     898edecc) pinned to its head once ci-pack-0 is terminal, then prove anonymous HTTP 200 on the nine assets and
     intl.html; record the PR 9596 reconciliation (base-stale packs 2/3 + author's theme.css receipt remint) and
@@ -80,8 +80,8 @@ waves:
   depends_on:
   - IM17
   next_action: Commission after Wave 4.
-next_action: Merge PR 9920 on ci-pack-0 terminal, prove the nine assets anonymous 200, consume the Wave 1 and
-  R14 design orchestrator returns, then cut Wave 2 packets from the frozen design spec.
+next_action: PR 9920 MERGED (main 3217a6cc); consume live-proof watcher br4783r8o (nine assets anonymous 200), then
+  consume the Wave 1 and R14 design orchestrator returns and cut Wave 2 packets from the frozen design spec.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md
