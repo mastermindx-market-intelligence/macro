@@ -134,8 +134,10 @@ window. Local rendering is not public acceptance.
   and ordinary Terminal defaults. Portfolio hydration repair `07ffd34293eed210519a2e07890cb1d81210b17e`
   is adopted as `ef45571fc`, with 26 affected passes including actual SSR-to-hydration.
 - W6 source qualification found actual non-2xx retained-owner reasons flattened to
-  generic HTTP failure. The original Company helper owner is making one shared,
-  failure-only repair; Monitor will use the helper directly. Its per-owned-symbol
+  generic HTTP failure. Shared failure-only repair `cdd0d969f1cf60bda7bcb6ebd2fd4f7c76214964`
+  is adopted as `feb469ac2`, with 101 parent helper/wrapper passes; the combined new
+  Monitor boundary still owes its narrow independent addendum. Monitor uses the
+  helper directly. Its per-owned-symbol
   evidence check opens the actual retained event with all four immutable pins and
   source date. No unsupported new-since or watchlist/report relationship is claimed.
 - Macro #7949 is now pushed at `f30662bed212ff463ba8557ac54d970e0b2c6228`.
@@ -208,6 +210,27 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 ## Held operations and current risks
 
+- One supported observation of original `ss-glossary-publication-fix-20261021-c245`
+  refused `original_run_observation_unconfirmed` (rc75) before remote transport.
+  Pure local qualification finds 37 retained support files versus the installed
+  reader's closed 31-file generation. Exact six-file difference, paths, four original
+  proposal handles and limits are retained in
+  `/Volumes/Mastermind/agent-workspaces/codex/6e18/compatibility-release/FABRIC_OBSERVATION_DIAGNOSIS.md`.
+  Preserve original completions, leases, deadlines and refusal; no alternate observer,
+  allowlist relaxation or replacement job. No new dispatch while reconciled.
+  The single handoff to `Resume Fabric Implementation 2` returned Too many requests;
+  delivery is UNCONFIRMED and two same-chat reads did not resolve it. No third read or
+  alternate send to that chat. A distinct cross-program source/install ownership
+  escalation was successfully delivered to existing portfolio `META-CEO`
+  `01a14c38-2baf-76c2-9475-b1f0a370ab17`; it requests lawful qualification through
+  the actual incumbent Fabric owner, not the refused observation or job replay.
+  Portfolio returned actual pickup by existing Executive owner
+  `01a15741-5e68-7803-8eb4-ccac74a6c04b` (Initiate Mastermind OS commission), which
+  is reconciling the source compatibility slice through its existing Sol/Fabric.
+  No source/release repair or observation clearance is yet claimed. The original
+  API-closure proposal meanwhile returned rc0 through its normal completion path;
+  same-carrier artifact export is complete with no execution replay. Parent
+  comparison and composed checks remain in progress; the other originals are preserved.
 - Historical `ss-ci-preflight-20261021-001` remains on its original adapter carrier.
   Its retained result is prelaunch rc78 / PLAIN_PACKET_RETENTION_REFUSED;
   facade retry_allowed=false and execution_absence_proven=false remain intact.
