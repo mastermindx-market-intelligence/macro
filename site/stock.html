@@ -291,6 +291,8 @@
     </div>
   </div>
 </nav>
+
+
   <p id="intro-prompt" class="muted" style="margin:4px 2px 14px;font-size:13.5px">🔎 <span class="l-en">Search any stock, ETF, commodity or crypto in the bar above.</span><span class="l-zh">在上方搜索任意股票、ETF、大宗商品或加密货币。</span></p>
 
   <div id="result">
@@ -1636,6 +1638,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   function tf(label, m) {
     if (!m || m.rsi14 == null) return '';
@@ -1817,6 +1820,7 @@
         [].forEach.call(sd.querySelectorAll('.lock-cta'), function (b) {
           b.addEventListener('click', function () {
             var mode = b.getAttribute('data-auth');
+            if (window.MMXSharedShell) { window.MMXSharedShell.openAuth(mode === 'signup' ? 'signup' : 'signin'); return; }
             if (window.MMOnboard && typeof window.MMOnboard.open === 'function') window.MMOnboard.open(mode, {});
             else if (window.MDXAuth && typeof window.MDXAuth.open === 'function') window.MDXAuth.open(mode);
             else location.href = mode === 'signup' ? '/?signup=1' : '/?signin=1';
@@ -3275,10 +3279,10 @@
       if(j&&j.anticipation){ show(j.anticipation); return; }
       return fetch('anticipationdata/'+safeT(t)+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(show);
     }).catch(function(){panel.style.display='none';});}
-  window.addEventListener('hashchange',load); load();
+  window.addEventListener('hashchange',load); window.addEventListener('mmx:shell-location',load); load();
 })();
 </script>
-<p class="muted" style="font-size:12px">Generated 2026-10-21 15:07 UTC · charts rendered in-house with
+<p class="muted" style="font-size:12px">Generated 2026-10-21 19:44 UTC · charts rendered in-house with
 Lightweight Charts™ on our own price data · methodology &amp; caveats: see any sector page footer.</p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>

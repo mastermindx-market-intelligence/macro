@@ -445,3 +445,132 @@ Its correct copied-index preparation passed under the unchanged 15-second
 per-command limit. Ordinary staging/cache preparation followed by one
 exact-head managed attempt succeeded. No publisher source, runtime,
 permissions, timeout or alternate new-tree publication path was changed.
+
+## Shared Shell composition and current-base release frontier — 2026-10-21
+
+The original News workspace and branch remain the sole source carrier. The
+Shared Shell composition is preserved in managed content commit
+`bad40ad250cba481a83198d57d30f07b129fc654`, tree
+`f99e8da56f10ca91b22ade185da5d715890157d7`, and its source-identical
+ancestry commit `bed14796a39ce66f575210092e1a39ebc6fc351c`, whose second
+parent is protected main `96444fd8a3291e98c7f35a20bfbdf4b6d9cfa23e`.
+The ancestry step changes no content and uses the ordinary fast-forward
+owner. No branch is replaced or force-published.
+
+### News and Shared Shell behavior
+
+The redesigned News template, desk controls, Company behavior and public
+News data remain intact. Both News sign-in anchors keep the canonical
+`/?signin=1&ret=news.html` destination. An available qualified
+`MMXSharedShell.openAuth` owns an ordinary primary click, including before
+INIT. The controller requests only the fixed `signin` mode. Modified,
+non-primary, download and non-self-target clicks retain browser navigation;
+an already handled event remains handled. A shell refusal or exception
+does not cause a second standalone auth request.
+
+The deployment updater preserves both owners: all incoming cached-reader
+and Today schema triggers, plus the existing News intelligence-history
+trigger. No service was restarted by source integration.
+
+The generated News page preserves the previously qualified public News,
+calendar and consequence context. Its controller was updated and its
+canonical writer, Shared Shell injection and asset optimizer were applied.
+The inherited navigation was compared with the unchanged canonical
+report-base navigation through the same optimizer; only whitespace on
+blank lines was normalized for that comparison. The finalizer is a fixed
+point. No empty or fixture data replaced the saved public context.
+
+The resulting artifact is 322,469 bytes, SHA-256
+`7ff343e0eb54ae042ca08ac36db615dba90029e7b5eecbd693a1b891c699aec0`.
+This is a source composition, not a fresh data snapshot or a covering
+production render. The normal render, installed services, served bytes and
+actual signed-in browser remain separate release evidence.
+
+### Focused evidence and exact packing attribution
+
+- The News mounted suites and Shared Shell bridge/owner-adapter suites
+  completed with 155 passes, zero failures and zero skips.
+- The News render, Shared Shell injection and deployment-updater group
+  produced 401 passes and one fixture failure. The externalizer fixture
+  now binds the canonical writer's `_site_root` to its own temporary site,
+  so injected asset references belong to that fixture. The exact repaired
+  case then passed. All missing-asset, CSS and idempotence assertions
+  remain intact; this is not represented as a single 402-pass run.
+- News desk and ticker API compatibility suites completed with 99 passes.
+  Previously disclosed cleanup and duplicate-operation warnings remain
+  recorded; no warning-suppression or production-rights change was made.
+- Bash/controller syntax and conflict-marker/scoped-diff checks passed.
+
+Fresh canonical measurement at immutable bed147 used the inventory from
+that same HEAD and measured:
+
+| Probe | Jobs | Weight | Packs |
+| --- | ---: | ---: | ---: |
+| `templates/index.html` | 135 | 5,847 | 10 |
+| `scripts/build_free_content.py` | 135 | 5,820 | 10 |
+| `engine/prophet/plan_book.py` | 128 | 5,596 | 10 |
+
+The initial provisional ceilings failed only the first two weight rows.
+Evaluation of the same selected job IDs with each parent's manifest
+accounts for every unit: News `collector-registry` grows 17 to 27;
+accepted `data-base-shim` and `research-vault-api` each grow 7 to 12;
+`unrun-nav-chrome` grows 30 to 32. Thus retained News adds ten units over
+the incoming manifest and accepted Shared Shell/Research adds twelve over
+prior News 44e33a6. This parent comparison is same-ID weighting, not a
+fresh selection replay of either parent's tree. Only ceilings 5,837 to
+5,847 and 5,810 to 5,820 change. Job bounds, plan-book 5,600, ten packs,
+suites, selectors and exclusive declarations remain intact.
+
+The 345-job composition through bed147 preserved every unilateral payload
+and the exact additive path multisets for all seven jointly changed jobs.
+Inherited duplicate path declarations were preserved. All seven
+intelligence-history and twelve ticker-editorial registrations remain.
+
+### Protected main through 6df9eb23
+
+During the interrupted session, protected main advanced to
+`6df9eb23ee439f5b21a6c6dd780bfc5d03e10855`. A bounded census from 96444
+found 68 commits, 8,794 changed paths and three overlaps with News:
+the CI manifest, generated News and the packing test. Entire templates,
+libraries, collectors, config, contracts, docs and AGENTS are unchanged.
+The canonical shared bridge, CSS, navigation and theme artifacts are
+also unchanged. The ordinary merge has one textual conflict, generated
+News; it retains the composed artifact above.
+
+All accepted upstream changes remain, including the Shared Shell
+`mmx_shell=1` private/no-store cache fix and boundary guards, both new
+Options exclusive CI jobs and their producer closures, the render push
+filter, and the symmetric All-tools navigation regression check. The
+frozen integrated head must pass a fresh canonical packing measurement
+and its applicable hosted CI before release. A prior-head result does
+not qualify this new subject.
+
+The preserved ignored AAPL cache remains SHA-256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`.
+It was not deleted, staged or used to invent a trigger. The previously
+disclosed filesystem-sensitive whole-contract diagnostic remains distinct
+from clean hosted qualification.
+
+### Review and release custody
+
+The interrupted `news-9612-44e-ci-observer-20261021.py` completed with all
+expected runs terminal. GitHub independently reports
+[CI run 39639878277](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39639878277)
+successful for exact head `44e33a6cc42b24ab0e99f8b03ef2ae984b75ac92`.
+This remains historical CI evidence for that head.
+
+Mastermind repairs #1661 and #1674 are merged. The protected native
+generation was separately installed, selected and ingress-qualified.
+The original 3a663 failed News request was reconciled once as terminal
+failure with proven prelaunch absence and no replay. The later 44e33
+paid request actually attempted execution, returned rc 1 without an
+eligible accepted review, and remains immutable with retry false.
+Neither result approves this new source or authorizes a failed-ID replay.
+
+The materially changed final head requires its own full applicable
+independent source review through normal admission, preserving the
+original mission/root and budget. No old source verdict is inherited.
+Mission-owned holds remain until actual premerge gates are satisfied;
+source rights #8697/#7982/#8057 remain. The incumbent merge-on-green path
+is armed last. Protected merge, covering render, normal deployment and
+actual signed-in News workspace acceptance are still outstanding.

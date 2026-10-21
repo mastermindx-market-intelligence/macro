@@ -4999,6 +4999,10 @@ CURATED_EXCLUSIVE = {
     # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
+    # Options R1 W2A: exact import/read closure of the relative-trend suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-rotation-relative-trend",
+    # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-sector-holdings-coverage",
 }
 
 
@@ -5166,8 +5170,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_837),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_847),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_820),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5176,6 +5180,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 News #9612 Shared Shell composition at bed14796a39c
+    (protected base 96444fd8a329) measured index 135 / 5,847, free-content
+    135 / 5,820 and plan-book 128 / 5,596, each at ten packs, using the
+    canonical tracked-tree inventory. Same selected job IDs explain the
+    complete delta: retained News collector-registry 17 -> 27 adds ten
+    estimator units over main; accepted data-base-shim 7 -> 12,
+    research-vault-api 7 -> 12 and unrun-nav-chrome 30 -> 32 add twelve
+    over prior News 44e33a6. Fund only the two measured weight ceilings:
+    5,837 -> 5,847 and 5,810 -> 5,820. Preserve job-count bounds,
+    plan-book 5,600, ten packs, every suite, selector and exclusive scope.
+    The subsequent 6df9eb23 protected-base composition preserves its two
+    Options CI registrations and is measured again on its frozen head.
+    These deterministic estimator units are not observed execution times.
 
     2026-10-21 News #9612 integration with main 2ebe9b7d5266 preserves the
     exact 344-job union and all seven intelligence_history import-closure

@@ -41,6 +41,13 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
   - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
   - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
   - research/grey_deer/risk_radar_architecture_contract_20261017.md
@@ -456,37 +463,33 @@ waves:
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Complete the enclosing Macro 9595 evidence continuation through actual integrated CI, normal controller
-  landing and separate fetched-main owned-blob readback; all edits must precede arming. Recovery head5a228eb5
-  was already published. Old ac08 failure stays failed; three base RIG paths were fixed byte-preservingly by
-  7100, and inactive ci-authority/codex/merge-queue-pilot is non-binding for main. No guard waiver.
-  Mastermind 1610 source landed as a7553e0a with all five blobs separately verified; observer80374 is terminal.
-  Actual full eligible-archive startup/restore at a755 passed in the installed Linux Python/runtime using
-  isolated canonical book/cohort state. Initial audit-fixture failure is retained; corrected startup registered18
-  jobs with readable-history first-run guards and unchanged cohort. Real rsync restoration had zero differences.
-  The actual service data bind is /opt/mastermind-live-data, verified through /proc/1627652/root; host data is stale.
-  The 07:41 read showed88/86/87 NAV rows throughOctober19 and no pending/WAL/settlement receipts for3 active books.
-  Live release732cf7be and PID1627652 were unchanged. The 07:19 health timeout and later07:26 HTTP200 both remain.
-  Protected master8bce27bb731f475885352add0be7f885e0862714 is now qualified through unchanged critical implementation
-  bindings and its newly manifested102789120-byte/5152-member archive, SHA256
-  28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92. Actual non-writing receiver comparison exit0.
-  Present the reserved exact full-archive VPS upgrade/restart decision after source evidence lands.
-  Before any approved execution recheck exact master, runtime/namespace, cohort/NAV/pending/WAL/receipts and custody.
-  Invoke the accepted wrapper with explicit8bce so further master movement refuses; no provider/Parall installer
-  execution is included. Production remains unapproved; source restore cannot undo runtime data effects.
-  Preserve all failed experiments, 113 unchanged passes plus the separately corrected source regression, and
-  original1586/642/124 ownership/HOLDs. Macro9515/9573 source acceptance remains.
-  Use the accepted October16 map only as dated exposure review; four proxies remainOctober14. No current quote,
-  flows/systemic-contagion claim or numerical allocation authority follows.
-  W5 first natural operational issuance is accepted: one30-rowSPY batch with lineage and warning checks,
-  all outcomes immature. No30-independent-events, Friday-close execution, manual nightly, backfill or early grade.
-  R1 remains proposed deterministic reporting; all532 B0/B1 fits NOT_ADMITTED/zero executed pending actual Yahoo
-  source-purpose and executable/runtime acceptance. Preserve FRED HOLD, T13h21 refusal, null independentN and failed studies.
-  Existing Copilot8014/9447 and Radar9548 actual writers retain intersections; source counterexamples remain.
-  Require served source and a useful authenticated answer after writer reconciliation; no provider replay is implied.
-  Preserve publisher8132/8721 HOLDs,9428 refusal and QLedger/nightly custody. Forecast qualifiers, Terminal proof,
-  full warning/recovery delivery and empirical promotion remain open. Envelope rank/gate/size/execute stay false.
-  Update MAS-258 from verified canonical evidence. Whole programme remains active; no autonomous wake is claimed.
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
 
 ---
 
