@@ -8917,6 +8917,7 @@ jobs:
           tests/test_cn_live_pack.py
           tests/test_cn_live_evaluator.py
           tests/test_cn_live_vps_lane.py
+          tests/test_cn_live_pack_frozen.py
           tests/test_cn_live_reconcile.py -q
 
   fif-kernel-guards:
