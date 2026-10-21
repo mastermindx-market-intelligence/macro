@@ -126,3 +126,12 @@ The user explicitly authorized native ChatGPT independent review. Operation `for
 The parent extended only display qualification to `residual_shock`. Original event fields, IDs, direction mathematics and ledgers remain unchanged. New producer/literal-quote and actual-builder/Jinja regressions both failed on the original source; the repaired event-display and workspace suites pass **36 tests**. This is a bounded correction requiring fresh delta review; it is not release acceptance. Earlier receipts remain point-in-time evidence for their recorded source hashes.
 
 A separate account-owner implementation now advances inactive revisioned conditions in the existing Terminal alert owner; no live account mutation, feed admission or delivery proof has been performed by this repair.
+
+
+## Actual source capture and diagnostics — 2026-10-21T13:49:12.001232+00:00
+
+The existing Tiingo acquisition/materialization/reader owner captured and verified the fixed nine-pair 19–20 October minute-bar plan: eight nonempty pairs, 17,011 rows, and an explicit empty USDBRL response. A single separately planned USDBRL top request also returned an exact verified empty response; neither result establishes global non-support. No replacement collector, credential route, pair substitution or retry was introduced.
+
+The new offline diagnostic bridge preserves original observations and lineage, diagnoses duplicate/conflicting instants and timestamp spacing, and unconditionally returns zero eligible finalized-4H observations. The new tests and incumbent reader/history suites passed 84 cases; the three existing CI curation gates passed. Source evidence and unresolved provider semantics are recorded in SOURCE_QUALIFICATION.md and source_evidence/validation.json. Source qualification and product rights are not inferred from a successful HTTP response.
+
+Macro parent 642dbed passed hosted CI run39599988053 and fences39599987785; that does not prove this subsequent delta. Terminal5969bf5 separately passed independent storage and API/UI reviews. Production operator context is unresolved, and no DDL/deployed account/activation/delivery is claimed. Continue exact-head source review, CI evidence repair in Terminal, and the existing operator handoff without recreating authority. The native review route is explicitly user-authorized; parent retention covers cross-owner integration judgment while independent native reviewers remain read-only.

@@ -33575,6 +33575,7 @@ jobs:
       - tests/test_tiingo_archive.py
       - tests/test_tiingo_views.py
       - tests/test_tiingo_reader.py
+      - tests/test_tiingo_forex_source.py
       - tests/test_tiingo_history.py
       - tests/test_tiingo_research_query.py
       - tests/test_tiingo_boats_tape.py
@@ -33606,7 +33607,7 @@ jobs:
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
-          tests/test_tiingo_reader.py tests/test_tiingo_history.py
+          tests/test_tiingo_reader.py tests/test_tiingo_forex_source.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
