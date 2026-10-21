@@ -4733,6 +4733,10 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM17 transmission-evidence contract: edges, qualified transmission
+    # events and the US relevance ordering; the frozen contagion models are
+    # read by the test alone, so its curated scope must pin their closure.
+    "international-transmission-evidence",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
