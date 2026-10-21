@@ -883,7 +883,7 @@
       if (API === '') location.href = '/logout';   // app: also clears mm_session
       else location.reload();                        // macro: back to signed-out
     };
-    if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut(); }).then(fin, fin);
+    if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut({ scope: 'local' }); }).then(fin, fin);
     else fin();
   }
   // S1-04: only an authoritative {ok:true} reply is a global sign-out. A server error, a
