@@ -355,10 +355,15 @@ def test_hero_driver_fear_greed_reads_engine_published_keys_only():
 def test_zh_verdict_word_renders_when_lang_zh():
     """Both EN and ZH verdict words render. The EN word carries `l-en`
     so the ZH locale can hide it via the existing `html[data-lang="zh"] .l-en`
-    rule."""
-    html = _render_macro_with_hero(_real_vm())
-    assert "Risk-on" in html
-    assert "风险偏好" in html
+    rule. The verdict follows the market, so the words asserted are the ones
+    the REAL engine returned for this vm — the hard-coded risk-on literals
+    failed whenever the live regime was not risk-on. Deterministic coverage
+    of all three branches lives in
+    `test_verdict_branches_render_deterministically`."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    assert vm["market_state"]["label_en"] in html
+    assert vm["market_state"]["label_zh"] in html
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     assert 'class="l-en ud-verdict-word' in src, (
         "EN verdict word span must carry l-en class so ZH locale can hide it"
@@ -477,9 +482,14 @@ _QUALIFIER_CLASS_BY_VERDICT = {
 def test_hero_verdict_qualifier_uses_class_modifier_not_inline_custom_property():
     """The qualifier ('narrowing' / 'deepening' / 'steady') lives on a class
     modifier (.ud-verdict-qualifier--{warn,down,muted}) — NEVER an inline
-    style="--c: ..." custom property (which fails the design ratchet)."""
-    html = _render_macro_with_hero(_real_vm())
-    assert "ud-verdict-qualifier--warn" in html
+    style="--c: ..." custom property (which fails the design ratchet). The
+    verdict follows the market, so the asserted modifier is the one the table
+    prescribes for the verdict the REAL engine returned — the hard-coded
+    --warn literal failed whenever the live regime was not risk-on."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    expected = _QUALIFIER_CLASS_BY_VERDICT[vm["market_state"]["verdict"]]
+    assert expected in html
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     assert 'style="--c:' not in src, "hero template must not declare inline --c:"
     css = (TEMPLATES / "theme.css").read_text()
@@ -872,27 +882,30 @@ def test_640_watching_disclosure_row_declared():
 def _last_640_watching_block(css: str) -> str | None:
     """Return the body of the LAST @media (max-width:640px) block that mentions
     `.ud-watch-` (R-L split: watching rules moved out of the 390 block so they
-    cover all mobile widths ≤640, not only ≤390)."""
+    cover all mobile widths ≤640, not only ≤390). theme.css carries several 640
+    blocks — later pages append their own — so walk the blocks from last to
+    first and return the first body that mentions ud-watch; an unrelated later
+    640 block must not blank out the watching one."""
     needle = "@media (max-width:640px)"
     positions = [m.start() for m in re.finditer(re.escape(needle), css)]
-    if not positions:
-        return None
-    pos = positions[-1]
-    open_idx = css.find("{", pos)
-    if open_idx < 0:
-        return None
-    depth = 1
-    i = open_idx + 1
-    while i < len(css) and depth > 0:
-        if css[i] == "{":
-            depth += 1
-        elif css[i] == "}":
-            depth -= 1
-        i += 1
-    if depth != 0:
-        return None
-    body = css[open_idx + 1:i - 1]
-    return body if "ud-watch" in body else None
+    for pos in reversed(positions):
+        open_idx = css.find("{", pos)
+        if open_idx < 0:
+            continue
+        depth = 1
+        i = open_idx + 1
+        while i < len(css) and depth > 0:
+            if css[i] == "{":
+                depth += 1
+            elif css[i] == "}":
+                depth -= 1
+            i += 1
+        if depth != 0:
+            continue
+        body = css[open_idx + 1:i - 1]
+        if "ud-watch" in body:
+            return body
+    return None
 
 
 def _last_390_block(css: str) -> str | None:
