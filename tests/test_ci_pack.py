@@ -5157,9 +5157,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_861),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_828),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_604),
+    ("templates/index.html", 136, 5_863),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_830),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_606),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5167,6 +5167,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC-I09A registers tests/test_sector_central_history.py on the
+    same tier-gate run line. The local probe on f4a1747e5e0 measures the three
+    probes at the after-B06 ceilings (5,861 / 5,828 / 5,604 — probe re-run green
+    with only the registration reverted); the registration adds exactly two
+    estimator units to each (5,863 / 5,830 / 5,606), no job-count or pack
+    change, no new entrant. The packet named only the two data-probe tuples;
+    the plan_book ceiling moves by the same measured +2 because the tier-gate
+    job is selected by all three probe scopes, and leaving it would keep the
+    probe red. Fund only that measured excess. Job counts, selectors and the
+    ten-pack bound remain unchanged.
 
     2026-10-21 SIC-RCV registers tests/test_sector_receiver_contracts.py on
     the same tier-gate run line. The local probe on 66bc4205ab measures the
