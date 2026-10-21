@@ -29776,7 +29776,7 @@ jobs:
       - name: etf partial-NAV sleeve — declared bounds and sweep/swap guards
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction (+ SIC-D-B02 generation-guard suite)
-        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py -q
+        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py tests/test_sector_central_grader_v2.py -q
       # SIC-MAP (macro #7646): the capability-map census — every producer/route
       # citation recorded in the sector-completion CSV must resolve in the tree.
       # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.
