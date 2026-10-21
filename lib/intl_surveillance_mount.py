@@ -31,6 +31,7 @@ import importlib
 import logging
 
 from engine import intl_global_universe as _universe
+from engine.intl_global_observation import REQUIRED_CLOCKS
 from lib.intl_macro_mount import _bound, _contexts, _validate_config
 from lib.intl_workspace_binding import binding_version
 
@@ -38,6 +39,7 @@ log = logging.getLogger(__name__)
 
 GS_VIEWS = ("scanner", "dislocations", "transmission", "dossier", "scenario", "replay", "coverage")
 BUILDERS = {view: f"lib.intl_gs_{view}_view" for view in GS_VIEWS}
+OBSERVATION_BASES = ("local", "usd_unhedged", "usd_hedged")
 
 
 def _view_status(status, reason=None):
@@ -47,13 +49,54 @@ def _view_status(status, reason=None):
     return entry
 
 
-def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None):
+def _observation_counts(observations):
+    """Counts-only projection of an X2 observation set; never a value."""
+    if observations is None:
+        return {basis: {"total": 0, "qualified": 0, "abstain": 0}
+                for basis in OBSERVATION_BASES}
+    counts = {}
+    for basis in OBSERVATION_BASES:
+        entries = (observations.get("bases") or {}).get(basis) or []
+        qualified = sum(1 for entry in entries
+                        if isinstance(entry, dict) and entry.get("state") == "qualified")
+        counts[basis] = {"total": len(entries), "qualified": qualified,
+                         "abstain": len(entries) - qualified}
+    return counts
+
+
+def _snapshot_clocks(observations):
+    """Per basis: the latest `at` among QUALIFIED observations per required
+    clock, or None; hedged never has a qualified observation, so it is all
+    None. Counts only — no observation value ever leaves this projection."""
+    snapshot = {}
+    for basis in OBSERVATION_BASES:
+        entries = ((observations or {}).get("bases") or {}).get(basis) or []
+        qualified = [entry for entry in entries
+                     if isinstance(entry, dict) and entry.get("state") == "qualified"]
+        clocks = {}
+        for clock in REQUIRED_CLOCKS:
+            instants = []
+            for entry in qualified:
+                moment = (entry.get("clocks") or {}).get(clock) or {}
+                at = moment.get("at") if isinstance(moment, dict) else None
+                if isinstance(at, str) and at:
+                    instants.append(at)
+            clocks[clock] = max(instants) if instants else None
+        snapshot[basis] = {"clocks": clocks, "qualified": len(qualified),
+                           "total": len(entries)}
+    return snapshot
+
+
+def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None,
+                        observations=None):
     """Attach the surveillance view table and panels to a composed workspace.
 
     Mirrors attach_history(): returns None for None, deep-copies, validates the
     binding, and never mutates the caller's dict. Loaders default to the Wave 1
     engine functions and are resolved at call time so operators (and tests) can
-    substitute them on the engine module.
+    substitute them on the engine module. ``observations`` is the X2
+    observation set (or None): each builder receives its own deep copy, and the
+    workspace keeps only counts and clock instants — never a value.
     """
     if workspace is None:
         return None
@@ -96,8 +139,10 @@ def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None):
                     views[view] = _view_status("error", type(exc).__name__)
                 continue
             try:
-                built = builder.build_view(universe=universe, rights=rights,
-                                           contexts=contexts, workspace=workspace)
+                built = builder.build_view(
+                    universe=universe, rights=rights, contexts=contexts,
+                    workspace=workspace,
+                    observations=deepcopy(observations) if observations is not None else None)
             except Exception as exc:
                 views[view] = _view_status("error", type(exc).__name__)
                 continue
@@ -119,6 +164,15 @@ def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None):
             # Counts only (Wave 1 IM11 contract): no per-market claims here.
             "universe": {capability: _universe.coverage_summary(universe, capability)
                          for capability in _universe.CAPABILITIES},
+            # X3: counts-only projection of the X2 observation set.
+            "observations": {
+                "status": None if observations is None else observations.get("status"),
+                "source_reference": (None if observations is None
+                                     else observations.get("source_reference")),
+                "counts": _observation_counts(observations),
+            },
+            # X5: snapshot clock instants per basis (no values).
+            "snapshot": _snapshot_clocks(observations),
         }
         result["surveillance_panels"] = panels
         return result
