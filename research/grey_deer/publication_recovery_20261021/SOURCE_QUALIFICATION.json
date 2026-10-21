@@ -221,6 +221,16 @@
         "status": "completed",
         "conclusion": "success",
         "updated_at": "2026-10-21T10:52:05Z"
+      },
+      "current_controller_hold": {
+        "owner_checkpoint": "MAS-258 Census / MTF continuation — 2026-10-21 12:17 UTC",
+        "latest_completed_sweep": 39597422577,
+        "job": 119213096951,
+        "refusal_at": "2026-10-21T12:12:19Z",
+        "active_ci_runs": 11,
+        "capacity": 8,
+        "required_changed_definition_main": "8c02ea8f0d32",
+        "disposition": "Existing armed normal-controller carrier; no manual refresh, cap/lease override, duplicate dispatch or merge."
       }
     },
     "macro_9957": {
@@ -241,7 +251,30 @@
         "execution_absence_proven": false,
         "retry_allowed": false,
         "provenance": "owner read-only reconciliation reported at10:53UTC; no root retry or replacement"
+      },
+      "current_parent_identity_diagnosis": {
+        "owner_checkpoint": "MAS-258 Census / MTF continuation — 2026-10-21 12:17 UTC",
+        "exact_parent": "/root",
+        "observed_error": "INVALID_ARGUMENT / parent_id",
+        "diagnosis": "Committed original-error report plus matched installed validation ordering identify a documented pre-dispatch technical schema rejection. Raw original response bytes remain unavailable; transport audit is corroborative.",
+        "facade_flags": "retry_allowed=false and execution_absence_proven=false are emitted unconditionally for caught errors; retain them as emitted, not as event-specific permission or dispatch proof.",
+        "remaining_blocker": "Verified supported schema-valid representation of the actual immediate parent; incumbent session-target projection returned no targets.",
+        "original_run_retained": "mas258-mtf-published-review-20261021-01",
+        "original_root_retained": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+        "no_identity_substitution_or_retry": true,
+        "source_review_accepted": false
       }
+    },
+    "macro_9980": {
+      "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9980",
+      "head": "dba0935c5572d550156771d54d3cc7b18d3072ee",
+      "operation": "census-mtf-six-corrections-20261021",
+      "state": "open / draft / PARKED / PREPARED_SOURCE_ONLY",
+      "correction_scope": "Six already C3-accepted stale companion-reasons removals; 62 bytes each, 372 total, owner-authored.",
+      "owner_reported_validation": "Exact six candidate hashes, retained bytes, unchanged ledger/preimages and readback verified; CI39594838598 all12 packs and gate passed12:09:51UTC.",
+      "root_metadata_readback": "Exact head, open draft, no labels, unmerged independently read through GitHub.",
+      "application": "HELD; no canonical application receipt. Requires accepted prevention, current target/dependency/ledger predicates and existing canonical writer/publication sequencing.",
+      "ownership": "Original census/MTF owner retained; this release evidence does not take source custody."
     }
   },
   "production": {
@@ -302,7 +335,7 @@
     "worker_start": "UNPROBED",
     "change": "Fabric tools became exposed during this continuation; this supersedes earlier absence only. No paid request dispatched by this publisher owner, no original-owner review request retried."
   },
-  "updated_at": "2026-10-21 11:24:02 UTC",
+  "updated_at": "2026-10-21T12:23:07Z",
   "integration_rehearsal": {
     "summary_file": "INTEGRATED_REHEARSAL_SUMMARY.json",
     "full_report_file": "INTEGRATED_REHEARSAL_RESULT.json",
@@ -321,7 +354,7 @@
     "restoration_verified": true
   },
   "final_archive_qualification": {
-    "state": "PASSED AND BOUND TO EXACT PROTECTED SOURCE; production health/recovery and reserved decision unresolved",
+    "state": "STARTUP_AND_RESTORATION_PASSED_AT_87d4af0; ISOLATED_HEALTH_CONTRACT_NOT_ESTABLISHED; PRODUCTION_HOLD",
     "imports_added": [
       "portfolio.performance_read",
       "portfolio.performance_projection",
@@ -335,7 +368,7 @@
     "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
     "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
     "production_release_ready": false,
-    "health_gate": "FAILED observed strict six-second check; incumbent repair/security custody retained",
+    "health_gate": "Failed live six-second observation retained; exact 87d4af0 isolated candidate also lacked complete response by six seconds; baseline isolated 5.988967098-second pass does not clear live/recovery health.",
     "protected_source_binding_file": "PROTECTED_SOURCE_BINDING.json"
   },
   "composed_rehearsal": {
@@ -379,5 +412,31 @@
     "process": 80090,
     "production_operation": false,
     "canonical_full_reports_preserved": true
+  },
+  "paired_health_route": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_file": "ISOLATED_HEALTH_ROUTE_RESULT.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+    "execution_completed": true,
+    "paired_helper_contract_passed": false,
+    "candidate_deadline": "request_6s / no complete response",
+    "baseline_elapsed_seconds": 5.988967098,
+    "production_release_ready": false
+  },
+  "later_protected_source": {
+    "file": "LATER_PROTECTED_SOURCE_DELTA.json",
+    "head": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+    "scope": "six session-bridge/docs/test files; no application/provider/helper paths changed; exact archive qualification remains 87d4af0"
+  },
+  "prior_evidence_ci": {
+    "head": "b538af5a3e00bd70c97b8de71e761b07fe000cb4",
+    "run": 39593488893,
+    "all_twelve_packs": "success",
+    "contract_delta": "success",
+    "aggregate_check": 119208183490,
+    "completed_at": "2026-10-21T11:58:42Z",
+    "scope": "this prior evidence head only; new material health qualification needs its own admission checks"
   }
 }

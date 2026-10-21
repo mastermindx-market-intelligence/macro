@@ -36,5 +36,32 @@
       "Internal C3 source/evidence judgment, not GitHub approval or production authorization.",
       "Later material protected-source changes require scoped qualification."
     ]
+  },
+  "paired_health_route_review": {
+    "design_reviewer": "/root/release_contract_review",
+    "implementation_ruling": "ACCEPTED after full source read and finite snapshot/presence clarifications",
+    "interpretation_reviewer": "/root/risk_contract_review",
+    "interpretation_ruling": "ACCEPTED for isolated response-contract evidence; no authentication or production claim",
+    "actual_result_reviewer": "/root/release_contract_review",
+    "actual_result_ruling": "ACCEPTED — paired lane complete; retain candidate negative; no unchanged rerun warranted",
+    "specific_limits": [
+      "Candidate timeout supplies neither HTTP status/body nor a precise failure-location attribution.",
+      "The single cold-process pair does not establish a source regression or its cause.",
+      "Read counts belong only to the phase that retained them.",
+      "Baseline 5.988967098-second isolated pass does not clear the observed live timeout, authentication, TCP/uvicorn, active-job contention or recovery health.",
+      "Actual paused state is retained even when literal scheduler.running and scheduled_runtime_ok are true.",
+      "No full-release qualification of later protected 7ab47f0 is inferred."
+    ]
+  },
+  "paired_health_route_result": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "disposition": "HOLD",
+    "independent_lane_complete": true
+  },
+  "later_protected_source": {
+    "file": "LATER_PROTECTED_SOURCE_DELTA.json",
+    "head": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+    "scope": "six session-bridge/docs/test files; no application/provider/helper paths changed; exact archive qualification remains 87d4af0"
   }
 }

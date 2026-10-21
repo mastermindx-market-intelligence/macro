@@ -2,6 +2,23 @@
 
 Programme: **MAS-258 / WS:GREY-DEER-RISK-INTELLIGENCE**. This continues the existing Census / Grey Deer / Risk Radar / Risk On–Risk Off programme. **MISSION_COMPLETE=false.**
 
+## Actual paired health route — 21 October, 12:15 UTC
+
+The [actual paired route report](ISOLATED_HEALTH_ROUTE_RESULT.json) closes the earlier missing candidate/restored-baseline health witness. It ran once from 12:15:33.753551 to 12:15:59.460655 UTC using the exact previously admitted archive at `87d4af0` and a fresh `fe7afd0` process after complete eligible-code restoration.
+
+| Phase | Observed result | Accepted scope |
+|---|---|---|
+| Candidate `87d4af0` | Actual request started; no complete response before the independent six-second deadline. Controller deliberately terminated and settled the isolated process group. | Candidate did not establish the isolated six-second contract. No HTTP status, body or precise failure location is inferred. |
+| Restored baseline `fe7afd0` | HTTP 200; complete 817-byte response in **5.988967098 seconds**; exact commit, policy and runtime predicates satisfied. | One isolated pass with about **11 ms** margin. It does not clear the prior live timeout or establish production recovery health. |
+
+Both processes registered 18 jobs with the scheduler held paused. The actual service settings and complete frozen health-input files were retained; provider variables used explicitly nonsecret presence fixtures, and configured Codex authentication remained absent. The full FastAPI route, middleware and serialization ran through ASGI without network or provider execution. Both launchers were reaped and groups proved gone before restoration. The ten copied and canonical book/cohort authority hashes, frozen input bytes, service context, Macro dependency source and production identity were unchanged. Final full eligible-code checksum verification found no differences.
+
+The completed baseline read trace records 50 capability-manifest reads, 90 Macro ledger reads and 14 local ledger reads. These counts belong to that baseline observation. The timed-out candidate did not retain a complete request-phase audit/result record; its clean startup audit must not be expanded into a claim of zero later audit events. One cold-process pair does not establish a regression or cause.
+
+C3 accepted the [design, implementation and actual result](ISOLATED_HEALTH_ROUTE_SUMMARY.json). **The experiment completed; the pair did not qualify. Production remains HOLD / NOT_READY.** The exact failed live six-second observation remains unchanged. An identical rerun is not warranted. [Cleanup](HEALTH_ROUTE_CLEANUP.json) removed only completed temporary receivers/archives after preserving full reports, complete frozen health inputs and support receipts.
+
+A later [protected-source comparison](LATER_PROTECTED_SOURCE_DELTA.json) found `7ab47f0b62d9a22ff16a13f6b99b96b681874a93`, two commits beyond the tested archive, changing six session-bridge/documentation/test files and no application, provider or release-helper paths. The actual full-archive qualification stays bound to `87d4af0`; no full-release qualification of that later tip is claimed. Rebind and qualify the actual protected target when a healthy release is ready.
+
 ## Verified capability change
 
 The current reader repair landed through [Mastermind #1660](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660) as `3960aefcf4724a88812d79d97c1b370dc9f951c4`. It withdraws expired confirmation from the actual UI and reasoning consumers while preserving historical observations, disagreement, clocks and defense floor. Exact-head CI/security and merge-group CI passed. Protected source readback at `2151a89f7ea3a340ec04932cbcfdf6a838df79b1` matched all ten owned reader blobs. Its clean canonical workspace has been released; published Git history and synthetic failure logs were preserved.
@@ -52,7 +69,11 @@ The expanded rehearsal also **passed** for native queue candidate `87d4af0a152ee
 
 The [strict real health observation](COMPOSED_HEALTH_PREFLIGHT.json) at 10:57:57 UTC **failed**: the same `curl -m6` budget used by the existing deployment helper timed out at 6.002257 seconds, with zero response bytes and unchanged service identity. The composed rehearsal's separate health observation also timed out at 10 seconds. These are current failures, not erased by the earlier200 or by successful isolated startup. [Release decision preparation](RELEASE_DECISION.md) therefore remains **HOLD / not ready for production authorization**. The existing #668 source owner and six-high-alert security hold remain controlling; this continuation made no competing health repair.
 
-Existing upstream #9957 now reports all 12 exact-head CI packs and aggregate success at 10:49:50 UTC. Its independent source review remains NOT_FOUND/UNVERIFIED on the original request, with absence unproven and retry disallowed. It stays draft/HOLD under its owner; no replacement review, historical repair or fresh MTF admission is inferred. Existing evidence carrier #9932's CI 39582392930 passed at 10:52:05 UTC; actual normal landing is separate.
+The incumbent census/MTF owner’s 12:17 UTC checkpoint advances the separate source frontier. #9957 remains draft at `26f60b69` after its 12 CI packs passed. Its committed INVALID_ARGUMENT/parent_id report and matched installed validation ordering identify a pre-dispatch schema rejection for actual parent `/root`; original raw response bytes remain unavailable. The facade’s generic retry/absence flags are retained as emitted, not recast as event-specific permission or dispatch evidence. A supported schema-valid representation of the actual immediate parent is still unresolved; no parent substitution, retry, replacement review or source release occurred.
+
+The same owner prepared [six accepted explanation corrections in #9980](https://github.com/mastermindx-market-intelligence/macro/pull/9980), exact `dba0935c5572d550156771d54d3cc7b18d3072ee`. Its reported CI39594838598 passed all 12 packs and gate at 12:09:51 UTC. Independent GitHub metadata confirms it remains open, draft, unlabelled and unmerged. This is prepared source only: prevention acceptance, fresh target/dependency/ledger predicates, canonical application sequencing and an application receipt remain required. Historical eligibility, ledger first-kept decisions and fresh MTF publication are not created by removing six stale explanation fields.
+
+Evidence #9932 remains on its original normal-controller carrier at `146d958`. Its owner reports the 12:12:19 UTC sweep39597422577 deferred refresh with 11 active CI runs against capacity8 after CI definitions changed. Current-definition refresh/admission and fresh-main readback remain open; no manual refresh or capacity override is substituted.
 
 ## Remaining completion gates
 

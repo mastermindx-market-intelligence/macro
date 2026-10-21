@@ -152,7 +152,7 @@
     "limit": "Its owner-reported live revoked-auth evidence and source changes are not credential recovery or a new root production attestation."
   },
   "boundary": "Release health gate remains unresolved: the strict curl -m6 check timed out after6.002257 seconds and a later rehearsal preflight timed out at10 seconds. The earlier200 observation remains valid only at its recorded scope. Neither successful isolated startup nor a responsive different route replaces real release health.",
-  "next_action": "Reconcile the existing health source owner and original operational carrier; resolve the exact security flows through the incumbent/security authority; then establish exact-composition full health-route proof within the six-second contract and explicitly account for baseline recovery health. A transient passing observation cannot erase the retained failures or clear the security gate.",
+  "next_action": "Incumbent/security owner must resolve exact #668 findings with legitimate gate evidence and a complete accepted health response. Retain original source custody. A new release/recovery qualification must follow a real implementation, composition or accepted-contract change; do not repeat the unchanged pair to obtain a favorable sample.",
   "followup_observations": [
     {
       "during": "2026-10-21T10:39:25.558184+00:00 through 2026-10-21T10:39:39.059369+00:00",
@@ -265,5 +265,46 @@
     "source_transfer": false,
     "retry_or_replacement_dispatch": false,
     "scope": "Finite read-only custody inquiry; retained incumbent branch, source and security gate."
+  },
+  "paired_actual_route": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_file": "ISOLATED_HEALTH_ROUTE_RESULT.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+    "execution_completed": true,
+    "paired_helper_contract_passed": false,
+    "candidate_deadline": "request_6s / no complete response",
+    "baseline_elapsed_seconds": 5.988967098,
+    "production_release_ready": false
+  },
+  "paired_route_review": {
+    "design_reviewer": "/root/release_contract_review",
+    "implementation_ruling": "ACCEPTED after full source read and finite snapshot/presence clarifications",
+    "interpretation_reviewer": "/root/risk_contract_review",
+    "interpretation_ruling": "ACCEPTED for isolated response-contract evidence; no authentication or production claim",
+    "actual_result_reviewer": "/root/release_contract_review",
+    "actual_result_ruling": "ACCEPTED — paired lane complete; retain candidate negative; no unchanged rerun warranted",
+    "specific_limits": [
+      "Candidate timeout supplies neither HTTP status/body nor a precise failure-location attribution.",
+      "The single cold-process pair does not establish a source regression or its cause.",
+      "Read counts belong only to the phase that retained them.",
+      "Baseline 5.988967098-second isolated pass does not clear the observed live timeout, authentication, TCP/uvicorn, active-job contention or recovery health.",
+      "Actual paused state is retained even when literal scheduler.running and scheduled_runtime_ok are true.",
+      "No full-release qualification of later protected 7ab47f0 is inferred."
+    ]
+  },
+  "later_read_only_metadata_receipt": {
+    "action": "One intended exact existing-carrier read of code-scanning alert metadata for the six already observed sink paths",
+    "result": "No output, process ID or dispatch receipt returned before orchestrator interruption; tool reported aborted by user after1123.8s.",
+    "interruption_actor": "root orchestrator; not a user instruction to stop the project",
+    "command_start": "UNVERIFIED",
+    "github_dispatch": "UNVERIFIED",
+    "completion": "UNVERIFIED",
+    "permission_denial_observed": false,
+    "new_rule_or_alert_identifiers_verified": false,
+    "taint_flow_evidence_returned": false,
+    "retry_performed": false,
+    "disposition": "Existing six-finding security HOLD unchanged. This transport loss is not a provider/permission refusal and not successful metadata retrieval."
   }
 }
