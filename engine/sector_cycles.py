@@ -134,15 +134,55 @@ PHASES = {
 }
 
 # B05: declare which `now`-block family every field belongs to — the legacy
-# range-stochastic vocabulary vs the ontology z/CDF one — so receivers never
-# mix them (e.g. render `pos` and `pos_v2` on one axis).  Deliberately picks NO
-# primary family: that is a product decision recorded as a GAP, not settled here.
+# range-stochastic vocabulary vs the ontology z/CDF one vs the reads that
+# depend on neither — so receivers never mix them (e.g. render `pos` and
+# `pos_v2` on one axis).  Deliberately picks NO primary family: that is a
+# product decision recorded as a GAP, not settled here.
+#
+# B05-r2 R4: v2 is COMPLETE — every key of a stamped `now` record appears in
+# exactly one of the three lists (tests/test_cycle_phase_age.py asserts
+# disjointness and full coverage on a fully stamped synthetic record).  Each
+# group is assigned from its writer, cited inline.
 SEMANTIC_FAMILIES: dict = {
-    "schema": "sector_cycles.semantic_families.v1",
-    "legacy": ["phase", "phaseLabel", "pos", "signal", "timing_state", "action"],
+    "schema": "sector_cycles.semantic_families.v2",
+    # Legacy range-stochastic vocabulary (cites are engine/sector_cycles.py):
+    # `pos` is the tip of `_detrended_osc` (:760) and `osc_slope` its 22-bar
+    # momentum (:817); `phase`/`phaseLabel` come from
+    # `_classify_phase(pos_now, ...)` (:823); `signal` thresholds `pos_now`
+    # (:831); `timing_state`/`action` are the legacy `cycles.analyze` timing
+    # ladder read (:927).  `read`/`read_zh` are text reads written by
+    # `_set_engine_read` (:1063) from `_engine_read(phase=..., pos=...)`
+    # (:73) — they depend on the legacy vocabulary, not on neither method.
+    "legacy": [
+        "phase", "phaseLabel", "pos", "signal", "osc_slope",
+        "timing_state", "action", "read", "read_zh",
+    ],
+    # Canonical-zcdf/ontology chain (same file): `pos_v2` is
+    # `onto.canonical_position` (:838); `phase_v2`/`phase_v2_source`/
+    # `phase_v2_position_input` from `onto.classify_phase(pos_for_v2, ...)`
+    # (:863); `stance`…`clocks` from
+    # `onto.resolve_state(pos=pos_for_v2, phase=phase_v2, ...)` (:894);
+    # `phase_v2_age*` written by `_stamp_phase_age` (:1397), which replays
+    # the forward log for `phase_v2`.
     "ontology": [
-        "pos_v2", "phase_v2", "phase_v2_age_sessions", "stance", "divergence",
-        "tone", "stance_zh", "divergence_note", "divergence_note_zh", "clocks",
+        "pos_v2", "phase_v2", "phase_v2_age_bars", "phase_v2_source",
+        "phase_v2_position_input", "phase_v2_age_sessions", "phase_v2_age",
+        "phase_v2_age_status", "stance", "divergence", "tone", "stance_zh",
+        "divergence_note", "divergence_note_zh", "clocks",
+    ],
+    # Reads that depend on NEITHER position method (same file): weekly/3-day
+    # MACD (:928), ZigZag swing dates (:825), 200-bar trend + window return
+    # (:818), the `cycles.analyze` DCL sub-read (:885), the structure basis
+    # mirror (:955), the W3.1 freq/hazard-feature stamps (:961-:962), the
+    # hazard-pillar score (:1162), and RS/leadership (:1070, :1345).
+    # `hazard`/`hazard_features` mix inputs from both vocabularies (features
+    # embed the legacy `pos`; direction prefers the legacy `phase`) — they are
+    # pillar outputs, not a position semantic (B05-r2 GAPS).
+    "method_independent": [
+        "w_macd_up", "t3_macd_up", "lastTrough", "lastPeak", "above200d",
+        "ret_win_pct", "dc_phase", "basis", "freq", "hazard_features",
+        "hazard", "rs_21d", "rs_63d", "rs_126d", "rs_above_trend",
+        "thin_history", "rs_rank", "rs_21d_rank",
     ],
     "legacy_position_method": "range_stochastic",
     "ontology_position_method": "canonical_zcdf",
@@ -1325,7 +1365,7 @@ def _latest_cycle_session(
     return pd.Timestamp(observed.index[-1])
 
 
-def _stamp_phase_age(records, *, asof, history, history_status):
+def _stamp_phase_age(records, *, asof, history, history_status, sessions=None):
     """Stamp measured phase age (B05) into each record's `now` block.
 
     `history`/`history_status` come from ONE `cycle_phase_age.load_phase_history`
@@ -1333,8 +1373,10 @@ def _stamp_phase_age(records, *, asof, history, history_status):
     for records the forward log never captures (amalgam families) instead of
     letting them read as missing evidence.  `phase_v2_age_bars` carries the
     session count only for a MEASURED daily record — a monthly record's bar is a
-    month, and a lower bound is a minimum, not a measurement.  Never raises: a
-    record that cannot be stamped is logged and left unchanged.
+    month, and a lower bound is a minimum, not a measurement.  `sessions` (B05-r2
+    R1) is the benchmark's real-session ISO dates, passed through to the reader
+    so weekend restamps never count.  Never raises: a record that cannot be
+    stamped is logged and left unchanged.
     """
     for rec in records:
         try:
@@ -1350,7 +1392,8 @@ def _stamp_phase_age(records, *, asof, history, history_status):
                 age = cycle_phase_age.measure_phase_age(
                     history, entity_id=rec.get("id"),
                     current_phase=nw.get("phase_v2"), current_asof=asof,
-                    basis=nw.get("basis") or rec.get("basis") or "tr")
+                    basis=nw.get("basis") or rec.get("basis") or "tr",
+                    sessions=sessions)
             nw["phase_v2_age"] = age
             nw["phase_v2_age_sessions"] = age.get("sessions")
             nw["phase_v2_age_status"] = age.get("status")
@@ -1520,12 +1563,24 @@ def compute(asof: str | None = None) -> dict | None:
     # One load for the whole build; sectors + baskets are logged nightly by
     # cycle_forward_log so their age is measured; amalgam family records are NOT
     # logged (nothing to replay) and read not_logged rather than a guess.
+    # B05-r2 R1: only the benchmark's REAL sessions count.  `_latest_cycle_session`
+    # (engine/sector_cycles.py:1348-1365) resolves `last_ts` from the observed
+    # benchmark panel `closes[benchmark].dropna().index[-1]`; the SAME panel index
+    # (already bounded by `closes = closes.loc[:last_ts]` above, so up to and
+    # including `last_ts`) supplies the session dates.  A list that cannot be
+    # built degrades to None — the reader's weekday rule, never an error.
     _history, _history_status = cycle_phase_age.load_phase_history("sector_cycles")
+    try:
+        _sessions = [str(pd.Timestamp(t).date())
+                     for t in closes[benchmark].dropna().index]
+    except Exception:  # noqa: BLE001 — session list unbuildable → weekday rule
+        _sessions = None
     _stamp_phase_age(sectors + baskets, asof=str(last_ts.date()),
-                     history=_history, history_status=_history_status)
+                     history=_history, history_status=_history_status,
+                     sessions=_sessions)
     _stamp_phase_age([r for fam in amalgam_families.values() for r in fam],
                      asof=str(last_ts.date()), history=None,
-                     history_status="not_logged")
+                     history_status="not_logged", sessions=_sessions)
 
     # ── B06: honest rhythm/overdue state, estimate kinds, series provenance ────
     # One additive stamp over EVERY record the build produced (sectors, thematic
@@ -1551,7 +1606,9 @@ def compute(asof: str | None = None) -> dict | None:
             "benchmark": benchmark,
             # B05: phase-age + semantic-family declarations.  No primary family
             # is chosen — that is a product decision recorded as a GAP.
-            "phase_age_version": 1,
+            # B05-r2: version 2 — only real benchmark sessions count and a
+            # bridged (unobserved-session) pair reads lower_bound, not measured.
+            "phase_age_version": 2,
             "semantic_families": SEMANTIC_FAMILIES,
             # B06: rhythm-disclosure version + the correction-contract
             # disposition.  The Cycles inputs (yahoo close/close_price panels,
