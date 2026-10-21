@@ -124,3 +124,45 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
   manifest diff confined to `.evidence_class.basis`, `.next_action`, `.feature.current_d5_state`
   and the added `.feature.gate_s_acceptance`. Lane-reported pytest: 23 passed (Q06 + IV units),
   `test_us_prophet_fusion.py` 293 passed / 9 skipped.
+
+## 2026-10-21 04:1xZ — seat: b08records LANDED; V1 RULED; b04a0 r2 launched
+
+- Seat landed b08records on the session branch (cherry-pick `cce8f4f7`) for records PR r2.
+- V1 RULED for B04-A0. Packet edited: `.github/ci/legacy-jobs.yml` removed from OWNED FILES and
+  from the rules; `.github/` added to OUT OF SCOPE; `test_ci_pack` unregistered-file failure is
+  an expected GAP, never fixed by a registry edit or a test delete/rename. Pre-V1 packet kept
+  as `pk/pro-intel-b04a0-20261021.r1-unlaunched.bak`. Token check: no HOLD-, one "validated",
+  only the launcher-filled `__BASE__`.
+- Refetched main = `4623f0f74184ff41debdeb2ca86e225506a05911` (#9921 merged 04:08Z). A0 inputs
+  are byte-unchanged from `c5ee0941` (diff touches only `config/site_access.yml`).
+- Launched `pro-intel-b04a0-20261021-r2` on ubuntu3 at 04:16Z. Live lanes: d06num + b04a0 r2 = 2.
+
+## 2026-10-21 04:2xZ — d06num consumed
+- `pro-intel-d06num-20261021-r1` DONE rc=0 04:18Z on ubuntu1. Commit `be899fa17f3a`, one file
+  (+261): `research/prophet_v4/r7_program/intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md`. The
+  report stays on the lane branch; the seat lands it by fetch + cherry-pick.
+- Checked: status line "PROPOSED — NOT RULED, NOT REGISTERED, NOT ADMITTED"; source-blind (no
+  `data/` or `site/` read); every number PROPOSED; OPEN fields named.
+- Citation spot-check at `c5ee0941`: PREREG.json:174-180, R6-PREREG-01 ruling :41/:43, Cell G
+  :273-279/:369, DR :151. All match.
+- Power arithmetic re-derived: normal N 10.5/42/168/670 against the lane's 11/42/168/671.
+- Finding for the seat: the F13 PASS form (point estimate ≥ 50 bps) is not covered by the power
+  table (rejects μ ≤ 0 at μ = 50), so effective PASS power is about 50%. The seat should rule
+  (a) power against the PASS form or (b) relax the point-estimate leg. Never lower the floor.
+- Live lanes: b04a0 r2 only (1 of 2).
+
+## 2026-10-21 04:4xZ — b04a0 r2 consumed; both wave 2 lanes closed
+- `pro-intel-b04a0-20261021-r2` DONE rc=0 04:40Z on ubuntu3. Commit `31baf83179d1` (one commit on
+  `4623f0f7`), 25 files, +3502, owned paths only; no `.github/`, `app/prophet_lab.py` or
+  `intelligence_vector.py` change.
+- Reason map sha256 `8fe54266…79645` equals my independent extraction of amendment lines
+  163-303 (162 and 304 are fence markers). Re-run with `~/lanes/venv`: 390 passed. The bare
+  system python lacks `pyarrow` (environment, not code).
+- `test_ci_pack` stayed green (201 passed, 2 skipped): the expected unregistered-file red did not
+  fire because the manifest allows dark suites. The seat still owes the registration line
+  (job `prophet-anticipation-intake`, line 27234 at `4623f0f7`).
+- Declared readings recorded in §3 F2: the wrapper's own input checks, and the coverage-basis
+  over lane tie-break (unobservable on the all-null-lane table; rule it before B04-B).
+- The seat merged origin/main into the session branch (`bc3f5615`) while these files were open;
+  I waited for the merge to commit before writing. No git act from this seat.
+- Live intel lanes: 0. Monitors and waiters closed.
