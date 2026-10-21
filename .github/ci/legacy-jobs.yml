@@ -27231,7 +27231,7 @@ jobs:
       # Browser-free and a few seconds serial (it renders the dashboard template), and it
       # reuses the pip line above — no new dependency enters this job's import closure.
       - name: anticipation why-not receipts (headline specificity, fail-closed status, the shelf partial)
-        run: python -m pytest tests/test_prophet_whynot_receipts.py -q
+        run: python -m pytest tests/test_prophet_whynot_receipts.py tests/test_asia_close_collect_commit_path.py -q
       - name: Prophet leader-observation shelf (real publisher, tier split, plan-byte invariance, rendered consumer)
         run: python -m pytest tests/test_prophet_leader_observation_shelf.py -q
       - name: zone-basis copy (no raw enum/slug/internal state on the published entry_zone; EN+ZH)
