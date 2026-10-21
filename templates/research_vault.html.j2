@@ -271,6 +271,22 @@ html[data-theme="light"] .rv-more{ color:var(--rv); }
 .rv-more .rv-more-rem{ font-family:var(--num); font-weight:600; color:var(--muted); font-size:12px; }
 .rv-searching{ font-size:12px; color:var(--muted); font-family:var(--num); }
 
+/* ── SIC-I05R · research entry island — composed from the page's own neutral
+   idiom (hairline --line borders, --panel2 fill, no accent edge anywhere).
+   Readback rides the facet-grp rows; the composer mirrors .rv-search input. */
+#si-research-entry{ margin-top:18px; }
+#si-research-readback .facet-grp{ align-items:baseline; }
+.si-rb-val{ font-size:13px; color:var(--text); max-width:56ch; overflow-wrap:anywhere; }
+#si-research-entry textarea{
+  display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
+  border-radius:11px; border:1px solid var(--line); background:var(--panel2); color:var(--text);
+  font:inherit; font-size:14px; line-height:1.5; outline:none; resize:vertical; transition:border-color .18s, box-shadow .25s ease;
+}
+#si-research-entry textarea::placeholder{ color:var(--muted); }
+#si-research-entry textarea:hover{ border-color:color-mix(in srgb,var(--rv) 40%,var(--line)); }
+#si-research-entry textarea:focus{ border-color:var(--rv); box-shadow:0 0 0 3px var(--rv-dim); }
+.si-note{ font-size:12px; color:var(--muted); margin:10px 0 0; }
+
 .rv-browse-btn{ display:none; }
 .rv-scrim{ display:none; }
 
@@ -664,6 +680,213 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
       </p>
     </figure>
   </section>
+
+  <!-- ═══════════ SIC-I05R · RESEARCH ENTRY ISLAND ═══════════════════════════
+       Server-rendered receiver island for link-carried research context
+       (masterplan §8.2): reads six optional si_* query fields, paints them
+       back verbatim (textContent only — link values are never trusted as
+       HTML), and hosts a composer whose ONLY write path is an explicit Save
+       click through the existing FifSavedBriefcase stored-view writer
+       (templates/fif_saved_briefcase.js). Nothing is written on load, blur,
+       input or language change. Hidden entirely without a valid si_subject. -->
+  <section class="rv-filter glass" id="si-research-entry" hidden>
+    <div class="rv-picks-hd">
+      <h2>{{ t('Research entry', '研究入口') }}</h2>
+      <span class="why">{{ t('Carried in by link from the sector surfaces — read back verbatim, never re-typed.', '由板块页面链接携带 —— 原样回读，无需重输。') }}</span>
+    </div>
+    <div class="rv-facets" id="si-research-readback">
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Subject', '主体') }}</span><span class="si-rb-val" id="si-rb-subject"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Carried question', '携带问题') }}</span><span class="si-rb-val" id="si-rb-q"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Source snapshot', '来源快照') }}</span><span class="si-rb-val" id="si-rb-snap"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Observation date', '观察日期') }}</span><span class="si-rb-val" id="si-rb-obs"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Evidence mode', '证据模式') }}</span><span class="si-rb-val" id="si-rb-ev"></span></div>
+      <div class="facet-grp"><span class="facet-lbl">{{ t('Origin page', '来源页面') }}</span><span class="si-rb-val" id="si-rb-origin"></span></div>
+    </div>
+    <textarea id="si-research-q" rows="4" aria-label="{{ t('Research question', '研究问题') }}"
+      data-ph-en="Compose the research question for this subject…"
+      data-ph-zh="为此主体拟定研究问题…"
+      placeholder="Compose the research question for this subject…"></textarea>
+    <p class="si-note">{{ t('Nothing is written until you press Save note.', '按“保存笔记”前不会写入任何内容。') }}</p>
+    <div class="rep-acts" style="margin-top:12px">
+      <button class="btn primary" id="si-research-save" type="button">{{ t('Save note', '保存笔记') }}</button>
+      <a class="btn ghost" id="si-research-return" hidden>{{ t('Back to origin', '返回来源页') }}</a>
+    </div>
+    <p class="rv-searching" id="si-research-status" role="status" aria-live="polite"></p>
+  </section>
+
+<script>
+/* SIC-I05R · Research receiver entry island (masterplan §8.2). Six optional
+   link fields arrive by query string and are painted back verbatim; the
+   composer never auto-saves — the device briefcase is written ONLY inside
+   the Save click handler, through the existing stored-view writer
+   (templates/fif_saved_briefcase.js: instance save at :614, factory at
+   :432, exported as FifSavedBriefcase.create at :1186). The one new global
+   is window.SI_RESEARCH_ENTRY, a read-only snapshot of the parsed fields. */
+(function () {
+  'use strict';
+
+  var SUBJECT_RE = /^(sector|subsector|theme|stock):([A-Za-z0-9._-]{1,64})$/;
+  var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  /* si_ev vocabulary: the briefcase's own policy-selection enum
+     (templates/fif_saved_briefcase.js:44 SELECTIONS). The evidence-ref
+     normalizer at :296 carries ref entries, not modes — anything outside
+     this enum is ignored. */
+  var EVIDENCE_MODES = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+  /* si_origin allowlist, compared AFTER decodeURIComponent: same-origin
+     relative producers only — any "//" or ":" anywhere refuses the link.
+     sectors/<ETF>.html is pattern-admitted (SPDR ETF dossier pages). */
+  var ORIGIN_PAGES = ['sector_central.html', 'sector_cycles.html'];
+  var SECTOR_PAGE_RE = /^sectors\/[A-Za-z0-9]{1,8}\.html$/;
+  var FRAGMENT_RE = /^#[A-Za-z0-9_-]{1,64}$/;
+
+  function codePointPrefix(value, limit) {
+    var out = '';
+    var count = 0;
+    for (var index = 0; index < value.length && count < limit; ) {
+      var unit = value.charCodeAt(index);
+      var size = unit >= 0xd800 && unit <= 0xdbff &&
+        value.charCodeAt(index + 1) >= 0xdc00 && value.charCodeAt(index + 1) <= 0xdfff ? 2 : 1;
+      out += value.slice(index, index + size);
+      index += size;
+      count += 1;
+    }
+    return out;
+  }
+
+  var params = new URL(document.URL).searchParams;
+  function raw(name) {
+    var value = params.get(name);
+    return typeof value === 'string' ? value : '';
+  }
+
+  var subjectMatch = SUBJECT_RE.exec(raw('si_subject').trim());
+  var evRaw = raw('si_ev');
+  var origin = '';
+  try {
+    var decodedOrigin = decodeURIComponent(raw('si_origin'));
+    var hashAt = decodedOrigin.indexOf('#');
+    var originPath = hashAt >= 0 ? decodedOrigin.slice(0, hashAt) : decodedOrigin;
+    var originFrag = hashAt >= 0 ? decodedOrigin.slice(hashAt) : '';
+    if (decodedOrigin.indexOf('//') === -1 && decodedOrigin.indexOf(':') === -1 &&
+        (ORIGIN_PAGES.indexOf(originPath) >= 0 || SECTOR_PAGE_RE.test(originPath)) &&
+        (!originFrag || FRAGMENT_RE.test(originFrag))) {
+      origin = decodedOrigin;
+    }
+  } catch (error) { origin = ''; }
+
+  var fields = {
+    subject: subjectMatch ? subjectMatch[0] : '',
+    kind: subjectMatch ? subjectMatch[1] : '',
+    id: subjectMatch ? subjectMatch[2] : '',
+    q: codePointPrefix(raw('si_q'), 280).trim(),
+    snap: codePointPrefix(raw('si_snap').trim(), 128),
+    obs: DATE_RE.test(raw('si_obs')) ? raw('si_obs') : '',
+    ev: EVIDENCE_MODES.indexOf(evRaw) >= 0 ? evRaw : '',
+    origin: origin
+  };
+
+  /* the one new global: a read-only snapshot of the parsed six fields */
+  window.SI_RESEARCH_ENTRY = Object.freeze({
+    subject: fields.subject, q: fields.q, snap: fields.snap,
+    obs: fields.obs, ev: fields.ev, origin: fields.origin
+  });
+
+  var island = document.getElementById('si-research-entry');
+  if (!island || !fields.subject) return;
+
+  /* readback — textContent only, verbatim; absent optionals read as "—" */
+  function paint(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
+  }
+  paint('si-rb-subject', fields.subject);
+  paint('si-rb-q', fields.q);
+  paint('si-rb-snap', fields.snap);
+  paint('si-rb-obs', fields.obs);
+  paint('si-rb-ev', fields.ev);
+  paint('si-rb-origin', fields.origin);
+
+  /* composer — prefilled once from si_q; the value is never rewritten */
+  var qBox = document.getElementById('si-research-q');
+  function applyPlaceholder() {
+    if (!qBox) return;
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    qBox.placeholder = zh
+      ? (qBox.getAttribute('data-ph-zh') || qBox.getAttribute('data-ph-en') || '')
+      : (qBox.getAttribute('data-ph-en') || '');
+  }
+  if (qBox) qBox.value = fields.q;
+  applyPlaceholder();
+
+  /* return link — allowlisted si_origin or it stays hidden */
+  var returnLink = document.getElementById('si-research-return');
+  if (returnLink && fields.origin) {
+    returnLink.setAttribute('href', fields.origin);
+    returnLink.hidden = false;
+  }
+
+  /* status line (single-language textContent; repainted per language) */
+  var statusBox = document.getElementById('si-research-status');
+  var statusKey = null;
+  var STATUS = {
+    noSnap: ['Not saved — this link carries no source snapshot.', '未保存 —— 此链接未携带来源快照。'],
+    noStore: ['Not saved — the saved-research store is unavailable on this page.', '未保存 —— 本页无法使用已存研究存储。'],
+    saved: ['Saved to this device’s research briefcase.', '已保存到本设备的研究公文包。'],
+    refused: ['Not saved — the briefcase refused this note.', '未保存 —— 公文包拒绝了此笔记。']
+  };
+  function paintStatus(key, suffix) {
+    statusKey = key ? key + (suffix ? '|' + suffix : '') : null;
+    if (!statusBox || !key) return;
+    var entry = STATUS[key] || STATUS.refused;
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    statusBox.textContent = (zh ? entry[1] : entry[0]) + (suffix ? ' (' + suffix + ')' : '');
+  }
+
+  /* explicit save — the ONLY write path. The stored-view writer is the
+     contract authority: source_snapshot_at rides si_snap verbatim,
+     recorded_at is now; a link without si_snap refuses here and nothing
+     is written. */
+  var saveBtn = document.getElementById('si-research-save');
+  if (saveBtn) saveBtn.addEventListener('click', function () {
+    if (!fields.snap) { paintStatus('noSnap'); return; }
+    var api = window.FifSavedBriefcase;
+    if (!api || typeof api.create !== 'function') { paintStatus('noStore'); return; }
+    var now = new Date().toISOString();
+    var typed = qBox ? qBox.value.trim() : '';
+    var name = fields.subject + (typed ? ' — ' + typed : ' — research note');
+    var result = api.create().save({
+      name: name,
+      issuer: { entity_id: fields.subject, cik: '', ticker: fields.kind === 'stock' ? fields.id : '' },
+      request: {
+        schema: 'fundamental_forensics.financial_query_request/v1',
+        entity_id: fields.subject,
+        policy: {
+          selection: fields.ev || 'as_reported',
+          source_snapshot_at: fields.snap,
+          recorded_at: now
+        },
+        metric_ids: ['si_research_entry'],
+        periods: [{ kind: 'instant', start: null, end: fields.obs || now.slice(0, 10), label: 'si_observation' }]
+      },
+      pinned: false
+    });
+    if (result && result.ok) paintStatus('saved');
+    else paintStatus('refused', result && result.reason ? result.reason : 'unavailable');
+  });
+
+  /* in-page language switch: repaint labels only — the composer's unsaved
+     text and the six readback values are untouched (theme.js:661-680
+     dispatches langchange; the switch never reloads the page). */
+  document.addEventListener('langchange', function () {
+    applyPlaceholder();
+    if (!statusKey) return;
+    var parts = statusKey.split('|');
+    paintStatus(parts[0], parts.length > 1 ? parts[1] : undefined);
+  });
+
+  island.hidden = false;
+}());
+</script>
 
   <!-- ═══════════ 2 · LANE TABS ═══════════ -->
   <div class="rv-lanes" role="tablist" aria-label="Feed lanes">
