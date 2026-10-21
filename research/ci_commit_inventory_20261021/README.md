@@ -53,9 +53,10 @@ required. A short final page proves completion; contradictory/failed/budget-limi
 reads retain the original conservative truncation result. Both outcomes are cached.
 
 One shared100-read allowance bounds the entire sweep. The API reserve includes
-that allowance:220requests cover100pagination reads plus the existing120margin.
-At600remaining requests the existing budget formula admits15PR evaluations instead
-of20. This is API-accounting headroom; the hosted proof cap remains eight.
+that allowance in the original candidate:220requests covered100pagination reads
+plus the existing120margin.
+At600remaining requests that original budget formula admitted15PR evaluations
+instead of20. This is API-accounting headroom; the hosted proof cap remains eight.
 
 The corrected new fixtures failed on the old reader (15failed/3passed); the full
 owning controller suites pass474tests on the integrated source. These include
@@ -78,3 +79,27 @@ needed parent repairs for GitHub's nested commit.tree shape, repository fixture
 composition, duplicate/rename validation and read accounting. It is not recorded as
 an accepted unmodified worker result; acceptance applies to the reviewed and tested
 integrated source. No held8920 operation was retried or adopted.
+
+
+## Integration with accepted native authority binding (#9730)
+
+Main commit `e85400af64096228161e689f4b37265573c0c8e0` landed after the
+`8be04829` candidate passed275semantic units with zero infrastructure findings.
+Controller source merged cleanly; the test append conflict retains both complete
+regression blocks. The authority identity, clock, native-run binding and refusal
+predicates remain unchanged.
+
+The combined reader must fund the authority path's existing maximum of eight
+additional native-run GETs per evaluated PR. Its named lookup cap remains8;
+worst-case marginal accounting rises from19to27. The reserve becomes260:
+original120 + five evaluations times8 + shared pagination allowance100.
+The full-sweep floor rises600to700 to preserve the existing reference-budget
+invariant; the mark-only floor, proof cap8, eight update attempts, leases and
+rotation do not change. The budget formula admits23evaluations at1000remaining,
+12at700, and9at600 (the full-sweep preflight defers below700). These are
+conservative request ceilings, not measured throughput or a wider authority grant.
+
+A new composition regression fails before this accounting correction. The combined
+controller suite passes484tests; independent Sol integration review approves the
+resolved source and additive accounting. Fresh exact-head hosted proof is still
+required before release. The completed earlier proof does not authorize this integrated head.

@@ -6322,21 +6322,22 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    assert len(seen) == MOG.FALLBACK_PULL_CAP, (
-        f"expected at most {MOG.FALLBACK_PULL_CAP} pull requests per sweep, "
+    funded_cap = 23  # (1000 - 87 fixed - 8 attempts - 260 reserve) // 27
+    assert len(seen) == funded_cap, (
+        f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
     )
-    expected = MOG.sweep_order(armed, cap=MOG.FALLBACK_PULL_CAP)
-    assert seen == [pull["number"] for pull in expected[: MOG.FALLBACK_PULL_CAP]]
+    expected = MOG.sweep_order(armed, cap=funded_cap)
+    assert seen == [pull["number"] for pull in expected[:funded_cap]]
 
-    deferred = sorted(pull["number"] for pull in expected[MOG.FALLBACK_PULL_CAP :])
+    deferred = sorted(pull["number"] for pull in expected[funded_cap:])
     notices = [
         line
         for line in capsys.readouterr().out.splitlines()
         if line.startswith("::notice") and "Per-sweep cap" in line
     ]
     assert notices, "the cap must announce itself"
-    assert f"{MOG.FALLBACK_PULL_CAP} of {len(armed)}" in notices[0]
+    assert f"{funded_cap} of {len(armed)}" in notices[0]
     assert "observed core limit is 1000" in notices[0]
     for number in deferred[:3]:
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
@@ -6643,10 +6644,10 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 15
+    assert MOG.pull_cap_for_budget(600, 15_000) == 9
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 15 * MOG.MAX_REQUESTS_PER_PULL
+        + 9 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
@@ -9839,3 +9840,237 @@ def test_paging_late_row_missing_status_is_incomplete(monkeypatch):
     pages[-1][-1].pop("status")
     freshness, _ = _paging_commit(monkeypatch, pages)
     assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+@pytest.fixture
+def authority_supersession_pair(monkeypatch):
+    """The two native suites seen on PR 6789, with repository-local test identity."""
+    pull = _pull()
+    pull['head']['repo']['id'] = 1266869026
+    pull['base'].update({'repo': {'id': 1266869026, 'full_name': 'acme/widgets'}})
+    checks, native = [], {}
+    for check_id, run_id, suite, created, conclusion in [
+        (118014711933, 39238921499, 106325673146, '2026-10-19T10:38:42Z', 'cancelled'),
+        (118015268155, 39239089737, 106326124198, '2026-10-19T10:40:08Z', 'success'),
+    ]:
+        checks.append({
+            **_run('ci-authority', conclusion=conclusion), 'id': check_id,
+            'head_sha': 'a' * 40, 'app': {'id': 15368, 'slug': 'github-actions'},
+            'check_suite': {'id': suite},
+            'details_url': f'https://github.com/acme/widgets/actions/runs/{run_id}/job/{check_id}',
+        })
+        native[run_id] = {
+            'id': run_id, 'workflow_id': 335022837, 'check_suite_id': suite,
+            'path': '.github/workflows/ci-authority.yml', 'event': 'pull_request_target',
+            'head_sha': 'a' * 40, 'status': 'completed', 'conclusion': conclusion,
+            'created_at': created,
+            'repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'head_repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'pull_requests': [{
+                'number': pull['number'],
+                'url': f"https://api.github.com/repos/acme/widgets/pulls/{pull['number']}",
+                'head': {'sha': 'a' * 40, 'ref': 'claude/feature', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+                'base': {'sha': 'b303c4b32d4d16401050b25d41131b49501720e5',
+                         'ref': 'main', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+            }],
+        }
+    calls = []
+
+    def request(method, url, _token):
+        assert method == 'GET'
+        assert url.startswith('https://api.github.com/repos/acme/widgets/actions/runs/')
+        run_id = int(url.rsplit('/', 1)[1])
+        calls.append(run_id)
+        return 200, native[run_id]
+
+    monkeypatch.setattr(MOG, '_request', request)
+    return pull, checks, native, calls
+
+
+def test_authority_supersession_retained_pair_preserves_raw_and_binding_checks(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    checks += [_run('ci-authority/main', conclusion='success'), _run('ci-pack-0', conclusion='success')]
+    raw = copy.deepcopy(checks)
+    assert MOG.decide_verdict(checks)[0] == 'incomplete'
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert checks == raw
+    assert MOG.decide_verdict(effective)[0] == 'clean'
+    assert sorted(calls) == [39238921499, 39239089737]
+
+
+@pytest.mark.parametrize('field,value', [
+    ('workflow_id', 99), ('path', '.github/workflows/ci.yml'), ('event', 'push'),
+    ('head_sha', 'f' * 40), ('check_suite_id', 9), ('id', 9),
+    ('status', 'in_progress'), ('conclusion', 'failure'),
+    ('created_at', '2026-10-19T10:38:42Z'), ('created_at', '2026-10-19T10:38:41Z'),
+    ('created_at', None), ('created_at', 'not-a-clock'),
+    ('repository', {'id': 9, 'full_name': 'acme/widgets'}),
+    ('head_repository', {'id': 1266869026, 'full_name': 'other/widgets'}),
+    ('pull_requests', []), ('pull_requests', [None]), ('pull_requests', None),
+])
+def test_authority_supersession_invalid_native_identity_retains_cancellation(
+    authority_supersession_pair, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('side,field,value', [
+    ('base', 'sha', 'c' * 40), ('base', 'sha', ''), ('base', 'ref', 'pilot'),
+    ('head', 'sha', 'c' * 40), ('head', 'ref', 'other'),
+    ('head', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/other/widgets'}),
+    ('base', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/acme/widgets'}),
+])
+def test_authority_supersession_different_event_binding_retains_cancellation(
+    authority_supersession_pair, side, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][side][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [('number', 9), ('url', 'https://api.github.com/repos/other/widgets/pulls/4242')])
+def test_authority_supersession_different_pr_retains_cancellation(authority_supersession_pair, field, value):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [
+    ('app', {'id': 99, 'slug': 'github-actions'}), ('app', None),
+    ('head_sha', 'c' * 40), ('check_suite', None), ('check_suite', {'id': 99}),
+    ('details_url', 'https://evil.invalid/acme/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/other/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/acme/widgets/actions/runs/39239089737/job/99'),
+])
+def test_authority_supersession_invalid_check_keeps_all(authority_supersession_pair, field, value):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('old,new,status,verdict', [
+    ('failure', 'success', 'completed', 'blocked'),
+    ('cancelled', None, 'in_progress', 'pending'),
+    ('success', 'cancelled', 'completed', 'incomplete'),
+])
+def test_authority_supersession_never_hides_failure_or_newer_cancel_or_pending(
+    authority_supersession_pair, old, new, status, verdict
+):
+    pull, checks, native, _ = authority_supersession_pair
+    for check, conclusion in zip(checks, [old, new]):
+        check['conclusion'] = conclusion
+    checks[1]['status'] = status
+    native[39238921499]['conclusion'] = old
+    native[39239089737].update({'conclusion': new, 'status': status})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_keeps_later_cancellation(authority_supersession_pair):
+    import copy
+    pull, checks, native, _ = authority_supersession_pair
+    later = copy.deepcopy(checks[0])
+    later.update({'id': 118015999999, 'check_suite': {'id': 106326999999},
+                  'details_url': 'https://github.com/acme/widgets/actions/runs/39239099999/job/118015999999'})
+    checks.append(later)
+    native[39239099999] = copy.deepcopy(native[39238921499])
+    native[39239099999].update({'id': 39239099999, 'check_suite_id': 106326999999,
+                              'created_at': '2026-10-19T10:41:00Z'})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert MOG.decide_verdict(effective)[0] == 'incomplete'
+
+
+@pytest.mark.parametrize('name,conclusion,status,verdict', [
+    ('ci-authority/main', 'failure', 'completed', 'blocked'),
+    ('ci-authority/main', None, 'in_progress', 'pending'),
+    ('ci-pack-4', 'failure', 'completed', 'blocked'),
+])
+def test_authority_supersession_preserves_other_binding_verdicts(
+    authority_supersession_pair, name, conclusion, status, verdict
+):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append(_run(name, conclusion=conclusion, status=status))
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_same_run_is_not_newer_proof(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0]['details_url'] = 'https://github.com/acme/widgets/actions/runs/39239089737/job/118014711933'
+    checks[0]['check_suite'] = checks[1]['check_suite']
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('failure', ['missing', 'transport', 'malformed'])
+def test_authority_supersession_metadata_failure_keeps_raw(authority_supersession_pair, monkeypatch, failure):
+    pull, checks, _, _ = authority_supersession_pair
+    def request(*_args):
+        if failure == 'transport':
+            raise OSError('network unavailable')
+        return (404, {'message': 'Not found'}) if failure == 'missing' else (200, [])
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_is_bounded_and_does_not_read_without_pair(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks[1:], 'read') == checks[1:]
+    for i in range(7):
+        extra = copy.deepcopy(checks[0])
+        extra.update({'id': i + 1, 'details_url': f'https://github.com/acme/widgets/actions/runs/{i+1}/job/{i+1}'})
+        checks.append(extra)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert calls == []
+
+
+def test_authority_supersession_is_used_by_sweep(authority_supersession_pair, monkeypatch):
+    pull, checks, native, _ = authority_supersession_pair
+    checks.append(_run('ci-pack-1', conclusion='success'))
+    calls = _fake_api(monkeypatch, check_pages={1: {'total_count': len(checks), 'check_runs': checks}})
+    fake = MOG._request
+    def request(method, url, token, payload=None):
+        if '/actions/runs/' in url:
+            return 200, native[int(url.rsplit('/', 1)[1])]
+        return fake(method, url, token, payload)
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.sweep_pull('acme/widgets', pull, 'read', 'write', _freshness()) == 'merged'
+    assert len([call for call in calls if call[1].endswith('/merge')]) == 1
+
+
+@pytest.mark.parametrize('run_id', [39238921499, 39239089737])
+@pytest.mark.parametrize('clock', ['2026-10-19T10:40:08', '2026-10-19'])
+def test_authority_supersession_refuses_unzoned_or_date_only_clocks(authority_supersession_pair, run_id, clock):
+    pull, checks, native, _ = authority_supersession_pair
+    native[run_id]['created_at'] = clock
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_duplicate_id_does_not_remove_foreign_failure(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append({**_run('security-authority', conclusion='failure'),
+                   'id': checks[0]['id'], 'app': {'id': 999}})
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert MOG.decide_verdict(checks)[0] != 'clean'
+
+
+def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
+    # The existing per-PR ceiling covered nineteen calls before native authority
+    # supersession added up to eight GETs. Five evaluated PRs may separate polls.
+    assert MOG.MAX_REQUESTS_PER_PULL >= 19 + 8
+    assert MOG.RATE_LIMIT_RESERVE >= (
+        (19 + 8) * MOG.BUDGET_RECHECK_EVERY + MOG.COMMIT_FILE_PAGE_READ_CAP
+    )
+    admitted = MOG.pull_cap_for_budget(MOG.RATE_LIMIT_FLOOR, 15_000)
+    assert (MOG.FULL_SWEEP_FIXED_REQUESTS
+            + admitted * MOG.MAX_REQUESTS_PER_PULL
+            + MOG.MAX_REFRESHES_PER_SWEEP
+            + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR

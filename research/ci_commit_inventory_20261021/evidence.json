@@ -42,5 +42,28 @@
     "single observed run; no fleet p95/cost-neutrality estimate",
     "job-created timestamps absent from gh run view; no fleet runner headroom inference",
     "prior main definition changes remain valid invalidators"
-  ]
+  ],
+  "authority_binding_integration": {
+    "accepted_main_commit": "e85400af64096228161e689f4b37265573c0c8e0",
+    "original_candidate": "8be0482943ee16ea3b99eeb6145fb3f401e16807",
+    "original_candidate_ci": 39613162747,
+    "original_candidate_semantic_units_passed": 275,
+    "original_candidate_infrastructure_findings": 0,
+    "authority_lookup_cap": 8,
+    "marginal_requests_per_pr": 27,
+    "poll_interval_prs": 5,
+    "commit_file_shared_page_cap": 100,
+    "api_reserve": 260,
+    "full_sweep_floor": 700,
+    "full_sweep_cap_at_1000_remaining": 23,
+    "full_sweep_cap_at_700_remaining": 12,
+    "proof_cap": 8,
+    "update_attempt_cap": 8,
+    "authority_decision_predicates_changed": false,
+    "new_head_hosted_proof": "required",
+    "combined_controller_tests_passed": 484,
+    "combined_controller_test_seconds": 22.88,
+    "independent_review": "APPROVE_SOURCE",
+    "reviewed_controller_sha256": "b25e6b8b16b6c8089fcb30cf366afd3a10ca50e24553e04d386abb5e2755dd2a"
+  }
 }
