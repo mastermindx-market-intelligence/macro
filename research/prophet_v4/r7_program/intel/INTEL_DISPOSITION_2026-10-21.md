@@ -323,8 +323,14 @@ the main Stage 4 finding (§4).
   - Repair #7868 per B1 (report counted anchors; predeclare a dependence treatment or label the
     inference unestablished) and B2 (explicit required-row/support/censoring sets per H1–H3).
   - Re-review, then run once.
-  - #7868 is a claude/ branch idle since 2026-09-27. If one custody read finds no live writer,
-    the seat may adopt the repair as a seat lane; otherwise route it to the owner.
+  - #7868 is a claude/ branch idle since 2026-09-27.
+  - GitHub read on 2026-10-21 ~03:4xZ:
+    - #7868: last commit `3ad50f9d` at 2026-09-24, last update was the 09-27 review.
+    - #8004: last commit `f5898f9b` at 2026-09-25, no update since.
+    - #7871: last commit 2026-09-24; review 2026-10-03.
+  - GitHub idleness is not proof that no local writer exists. If the seat's own custody
+    check (Agent OS / live leases) finds no writer, the seat may adopt the #7868 repair as a
+    seat lane; otherwise route it to the owner.
   - #7871 is needed only if v3 keeps the full-vintage source.
 - **F4 — Numeric D06 fields for H1 (worthwhile gain / tail harm).**
   - D06 is FABLE_AUTHORIZED_TO_RESOLVE.

@@ -46,3 +46,21 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
   R6-PREREG-01 "No live B4 runtime" premise still holds in substance (its "Draft" wording is stale).
   #7856 (D07 register) MERGED 2026-09-27, so the Q06 manifest basis "D07_OPEN_PR_7856_UNMERGED"
   is stale. #8189 (earnings semantics code) MERGED 2026-10-05. #9821 OPEN (mastermindx-2).
+
+## 2026-10-21 03:4xZ — disposition drafted; B04-A0 packet written (not launched)
+
+- Wrote `INTEL_DISPOSITION_2026-10-21.md`: 14 units, a verdict for each, Decisions F1–F8, and
+  the lane/packet table. No unit is build-READY at BASE without a seat decision. B27 is the
+  only READY unit, as a research-only draft.
+- B04 = NEEDS-FABLE-DECISION. Ratified B04-A needs:
+  - the dossier route in `app/prophet_lab.py`, which collides with #7264;
+  - `IdentityBindingConflict` in `intelligence_vector.py`, which collides with #8004 (idle
+    draft) and #7426 (sol/ held).
+  - R6-B04-01a:5 does not commission B04-A over those effects.
+- Recommendation F2: split B04-A into A0 (a new module that touches neither file) and A1.
+  - Packet `pro-intel-b04a0-20261021` (scratchpad `pk/`) is WRITTEN, NOT LAUNCHED.
+  - It carries a frozen spec citing amendment lines, owned files, tests against
+    `test_intelligence_vector_units.py` / `test_prophet_lab*.py`, and lint (1 × the guard
+    word, 0 × hold token).
+- B27 (ubuntu0) and b08gates (ubuntu3) were still POLL_PENDING at 03:37Z. One monitor is
+  armed for their terminal lines.
