@@ -10,7 +10,10 @@ from datetime import datetime, timezone
 from html import unescape
 from urllib.parse import urlsplit
 
-from engine.news_common import low_value_reason, quality_score, source_tier, ticker_template_reason
+from engine.news_common import low_value_reason, quality_score, ticker_editorial_reason, ticker_template_reason
+from engine.qkernel import publisher_category, publisher_domain, publisher_tier
+
+EDITORIAL_POLICY_VERSION = "ticker_news.curated.v1"
 
 _RANK_CLOCK = datetime(2000, 1, 1, tzinfo=timezone.utc)
 
@@ -22,10 +25,11 @@ def display_text(value: object) -> str:
 
 def publisher_identity(source: str, url: str = "") -> str:
     # Transport-scoped grants remain distinct even when the publisher is the same.
+    source = source.strip().lower()
     if source == "benzinga":
         return "benzinga.com"
     if source.startswith("massive:"):
-        return source.partition(":")[2]
+        return publisher_domain(source.partition(":")[2])
     try:
         host = (urlsplit(url).hostname or "").lower()
     except ValueError:
@@ -36,11 +40,11 @@ def publisher_identity(source: str, url: str = "") -> str:
 def story_quality(*, title: str, url: str, source: str) -> tuple[int, str | None]:
     title = display_text(title)
     domain = publisher_identity(source, url)
-    # Unknown ticker-tagged publishers get the existing conservative wire tier.
     # Use a fixed, equal age so a later rewrite cannot win on arrival recency.
+    # A vendor or rights receipt cannot upgrade an unknown/blocked publisher.
     score = quality_score(
         title, domain, _RANK_CLOCK.isoformat(), now=_RANK_CLOCK,
-        tier=source_tier(domain) or 3,
+        tier=publisher_tier(domain),
     )
     return score, low_value_reason(title, domain) or ticker_template_reason(title, domain)
 
@@ -107,3 +111,21 @@ def representatives_in_display_order(rows, rights=None, *, comparison=None):
             reverse=True,
         )
     return sorted(rows, key=lambda row: representative_key(row, rights), reverse=True)
+
+def curated_source(source: str) -> bool:
+    """Only implemented publisher-preserving transports may enter this view."""
+    key = str(source or "").strip().lower()
+    if key != "benzinga" and not key.startswith("massive:"):
+        return False
+    return publisher_category(publisher_identity(key)) in {"reporting", "press_release"}
+
+
+def curated_report(source: str, title: str) -> bool:
+    return curated_source(source) and ticker_editorial_reason(
+        display_text(title), publisher_identity(source),
+    ) is None
+
+
+def register_curated_reader(connection) -> None:
+    """Pure SELECT predicate, evaluated before grouping and page limits."""
+    connection.create_function("qbus_news_is_curated", 2, curated_report, deterministic=True)

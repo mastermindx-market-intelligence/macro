@@ -7786,6 +7786,18 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
       - "config.yml"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "tests/test_intl_global_dollar_credit.py"
+      - "tests/test_intl_global_acceptance_matrix.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "engine/intl_global_observation.py"
+      - "lib/store.py"
+      - "lib/config.py"
+      - "engine/canon.py"
+      - "lib/__init__.py"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -7794,9 +7806,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install contract test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy pyarrow
       - name: International global universe contract
         run: python -m pytest tests/test_intl_global_universe.py -q
+      - name: International dollar credit transmission and IM16 acceptance matrix
+        run: python -m pytest tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q
 
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
@@ -8109,6 +8123,15 @@ jobs:
       - "lib/intl_global_observation_adapter.py"
       - "tests/test_intl_global_observation.py"
       - "tests/test_intl_global_observation_adapter.py"
+      - "engine/intl_global_dislocation.py"
+      - "tests/test_intl_global_dislocation.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8119,7 +8142,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -26240,6 +26263,9 @@ jobs:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/prophet_journey_lab_serve.py"
+      - "scripts/prophet_journey_latency_report.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -26318,6 +26344,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/prophet_journey_latency.yml"
       - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
@@ -27196,6 +27223,8 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
+      - "tests/test_prophet_journey_lab_serve.py"
+      - "tests/test_prophet_journey_latency_report.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
       - "engine/company_intelligence/defense_space_profiles.py"
@@ -27302,6 +27331,8 @@ jobs:
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
+      - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
+        run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
