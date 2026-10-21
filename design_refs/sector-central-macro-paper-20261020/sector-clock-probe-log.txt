@@ -1,0 +1,34 @@
+INFO OEU M-PRO options context: 0/101 buy cards flagged (0 wall rows, 0 IV histories)
+{
+  "scope": "Actual checked-out Sector and Prophet inputs through the real Sector attach and US card partial; other display enrichments isolated; not full build/browser acceptance",
+  "input_sha256": {
+    "sector": "47574f76c5795e46f982e3d48fe8a9fc0350f97a5bb986d6013ae96624ff3aad",
+    "prophet": "3806f8f7b7ca89f0dcc828fb7777f3f67a2d429212ef9fc4ec7427180abab703"
+  },
+  "inputs_unchanged": true,
+  "sector_snapshot_as_of": "2026-10-16",
+  "prophet_board_as_of": "2026-10-14",
+  "buy_rows": 101,
+  "matched_sector_rows": 101,
+  "caution_rows": 29,
+  "example": {
+    "ticker": "COR",
+    "signal_date": null,
+    "source": {
+      "schema": "sector_stance_source/v1",
+      "etf": "XLV",
+      "snapshot_as_of": "2026-10-16"
+    },
+    "rendered_en": "Sector snapshot date (XLV): 2026-10-16.",
+    "rendered_zh": "板块快照日期 (XLV)：2026-10-16。"
+  },
+  "non_sector_fields_and_order_unchanged": true,
+  "source_date_replaces_signal_or_board_date": false,
+  "freshness_policy_added": false,
+  "production_payload_written": false,
+  "browser_acceptance": false,
+  "source_sha256": {
+    "scripts/build_site.py": "1b1c042c9343be383ce97c8d6fe34972b82f01ae7e810d9f2ffb74f8fab4d720",
+    "templates/_us_board_cards.html.j2": "fea8a108e714c1f8ef881f3b208b6861c9ea0d1ec194328227f3784d8dc0173d"
+  }
+}

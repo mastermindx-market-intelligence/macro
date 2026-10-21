@@ -119,7 +119,7 @@
   .toolbar { display:flex; align-items:center; gap:10px; margin:10px 0 4px; }
   .toolbar .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
   .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:13px; }
-  .card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,#888); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
+  .card { background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 13px; cursor:pointer; transition:border-color .15s; }
   .card:hover { border-color:var(--muted); }
   .card .nm { font-weight:650; font-size:14px; }
   .card .meta { color:var(--muted); font-size:11.5px; margin:3px 0 6px; }
@@ -151,7 +151,7 @@
   .mctx b { font-weight:650; }
   .mctx .mc-k { color:var(--muted); }
   .desk { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:13px; }
-  .tcard { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--tc,#888);
+  .tcard { background:var(--panel); border:1px solid var(--line);
     border-radius:11px; padding:12px 13px 11px; scroll-margin-top:14px; transition:border-color .15s; }
   .tcard:hover { border-color:var(--muted); }
   .tcard .top { display:flex; align-items:center; gap:8px; }
@@ -313,7 +313,7 @@
   .pulse-bar a { color:var(--ink-link, var(--link)); text-decoration:none; }
   .pulse-bar a:hover { text-decoration:underline; }
   .pulse-grp { white-space:normal; }
-  .pulse-size { border:1px solid color-mix(in srgb, var(--warn) 45%, var(--line)); border-left:3px solid var(--warn);
+  .pulse-size { border:1px solid var(--line);
     border-radius:7px; padding:2px 8px; background:color-mix(in srgb, var(--warn) 8%, transparent); }
   /* ---- Leadership Health (contested label / flip-distance / term-structure) — parity with _baskets_desk.html.j2 ---- */
   .flipcap { font-size:10.5px; color:var(--ink-warn, var(--warn)); margin:3px 0 0; font-variant-numeric:tabular-nums; }
@@ -662,7 +662,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-row-na{grid-template-columns:minmax(0,1fr) auto}
 .mr-row:hover{background:var(--panel2)}
 .mr-row:focus-visible,.mr-segbtn:focus-visible,.mr-link:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
-.mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:inset 3px 0 0 var(--ink-info)}
+.mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:none}
 .mr-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mr-c{font-family:var(--font-mono);font-size:var(--fs-sm)}
 .mr-up{color:var(--ink-up)} .mr-down{color:var(--ink-down)} .mr-flat,.mr-na{color:var(--muted)}
@@ -686,7 +686,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-invalid{padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r-card,12px);color:var(--muted);font-size:var(--fs-sm)}
 .mr-obs{margin:0 0 8px;font-size:var(--fs-sm);color:var(--text)}
 .mr-link{display:inline-flex;align-items:center;min-height:40px;color:var(--ink-link);font-size:var(--fs-sm);text-decoration:none} .mr-link:hover{text-decoration:underline}
-.mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:var(--r-card,12px);background:var(--panel2)}
+.mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
 .mr-early-lab{font-size:var(--fs-label);color:var(--muted);margin:0 0 4px} .mr-early-clause{margin:0 0 4px;font-size:var(--fs-md);color:var(--text)} .mr-early-cov{margin:0;font-size:var(--fs-sm);color:var(--muted)}
 .mr-noforecast{margin:8px 0 0;font-size:var(--fs-label);color:var(--muted)}
 /* LIGHT TREATMENT — research workspace: white material, hairline, shadow instead of glow */
@@ -823,7 +823,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   #si-confluence .sc-colhead .pip.avoid { background:var(--down); box-shadow:0 0 8px color-mix(in srgb,var(--down) 60%,transparent); }
   #si-confluence .sc-colhead .n { font-size:11.5px; color:var(--muted); font-family:var(--sc-num); font-weight:700; }
   #si-confluence .gcards { display:flex; flex-direction:column; gap:9px; }
-  #si-confluence .gcard { display:block; position:relative; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:13px; padding:12px 14px; transition:border-color .15s, transform .12s, box-shadow .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
+  #si-confluence .gcard { display:block; position:relative; background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 14px; transition:border-color .15s, transform .12s, box-shadow .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
   #si-confluence .gcard:hover { transform:translateY(-2px); border-color:color-mix(in srgb,var(--isle-color,var(--info)) 55%,transparent); box-shadow:0 10px 26px -14px color-mix(in srgb,var(--isle-color,var(--info)) 70%,transparent); }
 @keyframes sc-rise { from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
   #si-confluence .gcard .g-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
@@ -876,7 +876,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   #si-confluence .lead-cols { grid-template-columns:1fr; }
 }
   #si-confluence .lcards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:9px; }
-  #si-confluence .lcard { border:1px solid var(--line); border-left:3px solid var(--line); border-radius:12px; padding:10px 12px; background:var(--panel); transition:transform .12s, border-color .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
+  #si-confluence .lcard { border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:10px 12px; background:var(--panel); transition:transform .12s, border-color .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
   #si-confluence .lcard:hover { transform:translateY(-1px); }
   #si-confluence .lcard .lc-top { display:flex; justify-content:space-between; align-items:center; gap:6px; }
   #si-confluence .lcard .lc-nm { font-weight:700; font-size:12.5px; line-height:1.2; }
@@ -933,8 +933,8 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   html[data-theme="light"] #si-confluence .sc-seg.neutral { background:#aeb6c4; color:#3c4457; }
   html[data-theme="light"] #si-confluence .sc-seg.neutral .sc-seg-n, html[data-theme="light"] #si-confluence .sc-seg.neutral .sc-seg-t { text-shadow:none; }
   html[data-theme="light"] #si-confluence .sc-ribbon-legend i { box-shadow:inset 0 0 0 1px rgba(23,32,55,.16); }
-  html[data-theme="light"] #si-confluence .sc-best { background:color-mix(in srgb,var(--sc-l-buy) 6%,#fff); border-color:color-mix(in srgb,var(--sc-l-buy) 25%,#dde2ea); border-left:3px solid var(--sc-l-buy); }
-  html[data-theme="light"] #si-confluence .sc-best.none { background:#f6f7fa; border-color:#dde2ea; border-left-color:#c4cbd7; }
+  html[data-theme="light"] #si-confluence .sc-best { background:var(--panel); border-color:var(--line); }
+  html[data-theme="light"] #si-confluence .sc-best.none { background:var(--panel2); border-color:var(--line); }
   html[data-theme="light"] #si-confluence .sc-board > .sc-col { padding:12px 12px 14px; border-radius:15px; border:1px solid #dde2ea; }
   html[data-theme="light"] #si-confluence .sc-board > .sc-col:first-child { background:color-mix(in srgb,var(--sc-l-buy) 3%,#fff); border-color:color-mix(in srgb,var(--sc-l-buy) 15%,#dde2ea); }
   html[data-theme="light"] #si-confluence .sc-board > .sc-col:last-child { background:color-mix(in srgb,var(--sc-l-sell) 3%,#fff); border-color:color-mix(in srgb,var(--sc-l-sell) 15%,#dde2ea); }
@@ -964,7 +964,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   /* plain "new here?" orientation strip */
   .scc-howto { margin: 12px 0 2px; padding: 11px 14px; font-size: 13px; line-height: 1.55; color: var(--muted);
     background: color-mix(in srgb, var(--link) 6%, var(--panel)); border: 1px solid color-mix(in srgb, var(--link) 22%, var(--line));
-    border-left: 3px solid var(--link); border-radius: 11px; max-width: 96ch; }
+     border-radius:var(--r-card,12px); max-width: 96ch; }
   .scc-howto b { color: var(--text); }
   /* plain-language headline row */
   .regime .rg-headline-row { display: flex; align-items: center; gap: 9px;
@@ -994,7 +994,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .scc-tab.on { color: var(--text); background: var(--panel); border-color: var(--muted); }
   /* board */
   .board { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 13px; }
-  .card { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--muted)); border-radius: 13px;
+  .card { border: 1px solid var(--line);  border-radius:var(--r-card,12px);
     padding: 13px 15px; background: var(--panel); }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .card-nm { font-size: 15.5px; font-weight: 720; } .card-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
@@ -1030,16 +1030,16 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   /* XSR-W1b: fast-tape rail — ordinal + plain-word state, co-equal with conviction */
   .ft-rail { display: flex; align-items: baseline; gap: 7px; margin: 7px 0 4px; padding: 6px 9px;
     background: color-mix(in srgb, var(--link) 6%, var(--panel)); border: 1px solid color-mix(in srgb, var(--link) 22%, var(--line));
-    border-left: 3px solid var(--link); border-radius: 8px; }
-  .ft-rail.ft-top { border-left-color: var(--up); background: color-mix(in srgb, var(--up) 6%, var(--panel)); border-color: color-mix(in srgb, var(--up) 22%, var(--line)); }
-  .ft-rail.ft-await { border-left-color: var(--muted); background: transparent; border-color: var(--line); }
+     border-radius:var(--r-card,12px); }
+  .ft-rail.ft-top { background:var(--panel2); border-color:var(--line); }
+  .ft-rail.ft-await {  background: transparent; border-color: var(--line); }
   .ft-rank { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ink-link, var(--link)); }
   .ft-rail.ft-top .ft-rank { color: var(--ink-up, var(--up)); }
   .ft-rail.ft-await .ft-rank { color: var(--muted); font-size: 11px; font-weight: 600; }
   .ft-sep { color: var(--muted); font-size: 10px; }
   .ft-state { font-size: 11px; color: var(--text); }
   .ft-rail.ft-await .ft-state { color: var(--muted); font-size: 11px; }
-  .xsr-split { font-size: 11px; color: var(--ink-warn, var(--warn)); border-left: 2px solid var(--warn); padding: 3px 7px; margin: 6px 0 0; line-height: 1.45; }
+  .xsr-split { font-size: 11px; color: var(--ink-warn, var(--warn));  padding: 3px 7px; margin: 6px 0 0; line-height: 1.45; }
   /* grader */
   .grader { margin-top: 26px; border: 1px solid var(--line); border-radius: 13px; padding: 14px 16px; background: var(--panel); }
   /* in-board variant: the accuracy footer of the conviction scoreboard — hugs the board, subtler frame */
@@ -1103,7 +1103,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .lead-regime .rg-cav { color: var(--muted); }
   .lead-drivers .chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 8px; }
   .lead-drivers .chip { border: 1px solid var(--line); border-left-width: 3px; border-radius: 9px; padding: 7px 10px; background: var(--bg); }
-  .lead-drivers .chip.up { border-left-color: var(--up); } .lead-drivers .chip.dn { border-left-color: var(--down); }
+  .lead-drivers .chip.up {  } .lead-drivers .chip.dn {  }
   .lead-drivers .chip .ct { font-weight: 700; font-size: 11.5px; }
   .lead-drivers .chip .cv { font-size: 11px; margin-top: 2px; line-height: 1.35; }
   .lead-drivers .chip .cm { color: var(--muted); font-size: 10.5px; margin-top: 3px; font-variant-numeric: tabular-nums; }
@@ -1120,7 +1120,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .rc-grid { display:flex; flex-wrap:wrap; gap:10px; }
   .rc-card { flex:1 1 300px; min-width:260px; border-radius:12px; border:1px solid var(--line);
     background:var(--panel); padding:12px 14px; }
-  .rc-card.rc-major { border-left:4px solid var(--warn); }
+  .rc-card.rc-major {  }
   .rc-hd { display:flex; align-items:baseline; gap:7px; margin-bottom:5px; flex-wrap:wrap; }
   .rc-title { font-weight:800; font-size:13.5px; }
   .rc-sev { font-size:9.5px; font-weight:700; text-transform:uppercase; padding:2px 7px; border-radius:6px;
@@ -1147,10 +1147,10 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .rcf-lane { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
     padding:10px 13px; border-radius:11px; border:1px solid var(--line);
     background:var(--panel2); margin-bottom:8px; position:relative; }
-  .rcf-lane.rcf-handoff    { border-left:4px solid var(--link); }
-  .rcf-lane.rcf-into_strength { border-left:4px solid var(--up); }
-  .rcf-lane.rcf-contagion_break { border-left:4px solid var(--warn); }
-  .rcf-lane.rcf-faltering  { border-left:4px solid var(--muted); }
+  .rcf-lane.rcf-handoff    {  }
+  .rcf-lane.rcf-into_strength {  }
+  .rcf-lane.rcf-contagion_break {  }
+  .rcf-lane.rcf-faltering  {  }
   .rcf-pill { font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:8px;
     background:color-mix(in srgb,var(--text) 8%,var(--panel)); border:1px solid var(--line);
     white-space:nowrap; }
@@ -1198,82 +1198,6 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   #si-map .cyc-stage{margin-top:14px}
   #si-movement .sr-scope{margin-top:8px}
 
-  /* ══════════════════════════════════════════════════════════════════════════
-     SI WORKSPACE V2 shell (§1/§1b) — persistent rail + five hash-routed views.
-     Var-native by law: not one literal colour in this block. Every tone comes
-     from a theme.css var or a color-mix over one, so light mode is designed
-     rather than inherited (gate 7).
-     ══════════════════════════════════════════════════════════════════════════ */
-  .si-shell { display:grid; grid-template-columns:var(--si-rail-w, 200px) minmax(0,1fr); align-items:start;
-    /* Cancels body's own 18px bottom padding (declared at the top of this file) so the
-       shell reaches the document bottom. The rail is sticky WITHIN the shell and is a
-       full 100vh tall, so any slack left below the shell is slack the rail gets pushed
-       up by at maximum scroll — which clips the top buttons off screen exactly when a
-       reader is deepest into a view and most likely to want to switch. */
-    margin-bottom:-18px; }
-  .si-side { position:sticky; top:0; align-self:start; height:100vh; box-sizing:border-box; z-index:30;
-    display:flex; flex-direction:column; gap:2px; padding:12px;
-    background:var(--panel); border-right:1px solid var(--line); }
-  .si-view-btn { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px;
-    border-left:3px solid transparent; text-decoration:none; line-height:1.25;
-    font-size:13px; font-weight:600; color:var(--muted); }
-  .si-vb-g { flex:none; font-size:18px; line-height:1; }
-  .si-view-btn:hover { color:var(--text); background:color-mix(in srgb, var(--link) 6%, transparent); }
-  .si-view-btn.on { color:var(--text); background:color-mix(in srgb, var(--link) 11%, var(--panel));
-    border-left-color:var(--link); }
-  .si-side-out { display:flex; align-items:center; gap:10px; margin-top:8px; padding:11px 10px 0;
-    border-top:1px solid var(--line); text-decoration:none;
-    font-size:12.5px; font-weight:600; color:var(--muted); }
-  .si-side-out:hover { color:var(--ink-link, var(--link)); }
-  /* provenance lives with the navigation — visible from every view (§1b rail footer) */
-  .si-side-foot { margin-top:auto; padding-top:10px; border-top:1px solid var(--line);
-    display:flex; flex-direction:column; gap:3px;
-    font-size:10.5px; line-height:1.45; color:var(--muted); }
-  .si-stage { min-width:0; padding-left:20px; }
-  .si-view { display:none; }
-  .si-view.on { display:block; }
-
-  /* One plain-word line per view, with a ? receipt naming its inputs (§1b). */
-  .si-view-read { display:flex; align-items:flex-start; gap:9px; margin:0 0 16px; padding:9px 13px;
-    font-size:13.5px; line-height:1.5; color:var(--text);
-    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--link);
-    border-radius:10px; }
-  .si-view-read[hidden] { display:none; }
-  .si-vr-g { flex:none; font-size:15px; line-height:1.4; }
-  .si-vr-t { flex:1 1 auto; min-width:0; }
-  .si-vr-q { flex:none; display:inline-flex; align-items:center; justify-content:center;
-    width:16px; height:16px; border:1px solid var(--line); border-radius:50%;
-    font-size:9.5px; font-weight:700; color:var(--muted); cursor:help; }
-
-  /* What-changed strip — overview only, ≤3 chips, existing tc-chip idiom. */
-  .si-changed { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin:18px 0 0; }
-  .si-changed-l { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--muted); }
-
-  /* ≤1100px — rail narrows to a 56px icon rail; labels become data-tip tooltips. */
-  @media (max-width:1100px) {
-    .si-shell { --si-rail-w:56px; }
-    .si-view-btn { justify-content:center; gap:0; padding:9px 0; }
-    .si-view-btn .si-vb-l, .si-side-out .si-vb-l { display:none; }
-    .si-side-out { justify-content:center; padding:11px 0 0; }
-    .si-side-foot { display:none; }
-    .si-stage { padding-left:12px; }
-  }
-  /* <768px — the rail becomes a sticky TOP segmented switcher: five equal tabs,
-     icon over a 10.5px label, accent on border-bottom. Never a hamburger. */
-  @media (max-width:767px) {
-    .si-shell { display:block; }
-    .si-side { position:sticky; top:0; height:auto; flex-direction:row; gap:0; padding:0;
-      margin:0 -18px 14px; overflow-x:auto;
-      border-right:0; border-bottom:1px solid var(--line); }
-    .si-view-btn { flex:0 0 auto;min-width:84px; min-width:0; flex-direction:column; gap:3px; justify-content:center;
-      padding:8px 2px; text-align:center; border-radius:0;
-      border-left:0; border-bottom:3px solid transparent; }
-    .si-view-btn .si-vb-l { display:block; font-size:10.5px; font-weight:600; }
-    .si-view-btn.on { border-left:0; border-bottom-color:var(--link); }
-    .si-side-out { display:none; }
-    .si-stage { padding-left:0; }
-  }
 </style>
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
@@ -1500,202 +1424,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     border-color: color-mix(in srgb, var(--warn) 52%, var(--line));
   }
 </style>
-<style>
-  /* ══════════════════════════════════════════════════════════════════════════
-     V2.1 — VISUAL LANGUAGE (Fable, operator redesign order 2026-08-03).
-     Reference = macro.html's panel system (operator-named): the estate's
-     hand-drawn icon family, panel tokens (--desk-tile/--desk-hair-strong/
-     --card-shadow/--desk-r-lg from macro-desk.css, already loaded here), and
-     the macro h2 rail-tick idiom. Three moves:
-       1. SURFACES — macro-idiom panels (tile bg + hair-strong border + card
-          shadow); light additionally gets a deeper canvas so the white cards
-          actually lift. Chips lose their boxes; ink carries state.
-       2. SIGNATURE — the handoff card: full names, losing→taking tinted wash.
-       3. RAIL — drawn icons (masked, currentColor), no wrap, no dead void.
-     Composition only: var()/color-mix, zero literal colours (shell pin). */
-
-  /* — drawn-glyph sizing (masked spans need an explicit box) — */
-  .si-vb-g { width:19px; height:19px; flex:none; }
-  .si-vr-g { width:16px; height:16px; flex:none; margin-top:1px; }
-  .si-view-btn .si-vb-g { color:var(--muted); }
-  .si-view-btn.on .si-vb-g, .si-view-btn:hover .si-vb-g { color:var(--ink-link, var(--link)); }
-  .si-vr-g { color:var(--ink-link, var(--link)); }
-  .si-side-out .si-vb-g { color:var(--muted); }
-
-  /* — rail: macro-desk composure — */
-  .si-side { padding:14px 11px; }
-  .si-view-btn { font-size:13px; padding:8.5px 11px; position:relative; }
-  /* The active accent is DRAWN, not a painted border-left. A left border on a
-     border-radius:9px box follows BOTH corner arcs, so on a 36px pill a 3px
-     accent spends 9px at each end tapering to a point: it reads as a bowed
-     crescent sliding off the pill rather than a rule (operator crop, dark mode
-     2026-08-03). Same rail tick the section heads already use
-     (.rvx-sec-h h2::before), pinned over the 3px border box every button still
-     reserves — so the tick sits flush on the pill's straight edge and nothing
-     shifts between the on and off states. */
-  .si-view-btn.on { border-left-width:3px; border-left-color:transparent; }
-  .si-view-btn.on::before { content:""; position:absolute; left:-3px; top:50%;
-    width:3px; height:18px; margin-top:-9px; border-radius:0 2px 2px 0;
-    background:linear-gradient(180deg, var(--link),
-      color-mix(in srgb, var(--link) 40%, transparent)); }
-  /* <768px the rail is a top tab strip and the accent is a bottom border — the
-     tick would hang off the tab's left edge. Declared here, after the tick, so
-     it wins on source order (the ≤767px block above this style element cannot). */
-  @media (max-width:767px) { .si-view-btn.on::before { display:none; } }
-  .si-side-out { white-space:nowrap; }
-  .si-side-out .si-vb-l { white-space:nowrap; }
-  /* rail: COMPLETELY open in BOTH themes — no fill, no border. The aurora/gradient
-     is the page's identity; any column fill (frosted dark or flat light) reads as a
-     hard seam cutting across it (operator crops 2026-08-03 light + 2026-08-05 dark).
-     The active pill and the content cards' shadows do all the structuring needed;
-     the rail is a grid column, so nothing scrolls under it. */
-  .si-side { background:transparent; border-right:0;
-    backdrop-filter:none; -webkit-backdrop-filter:none; }
-
-  /* — surfaces: the macro.html container recipe — drop shadow does the definition,
-       borders stay TRANSPARENT (layout-stable, invisible), and the stage itself stays
-       transparent so the aurora gradient runs unbroken beneath every panel. A flat
-       stage fill painted over the gradient is exactly the hard-seam defect the
-       operator flagged — never reintroduce one. — */
-  .si-stage { background:transparent; }
-  .rvx-hero, .rvx-lane, .rvx-hocard, .si-view-read {
-    background:var(--desk-tile, var(--panel));
-    border:1px solid transparent;
-    border-radius:var(--desk-r-lg, 14px);
-    box-shadow:var(--card-shadow,
-      0 1px 2px color-mix(in srgb, var(--text) 6%, transparent)); }
-  html[data-theme="light"] .rvx-hero,
-  html[data-theme="light"] .rvx-lane,
-  html[data-theme="light"] .si-view-read {
-    background:var(--panel);
-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
-               0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
-  /* the session tape floats as a container too — its old edge-to-edge flat band was
-     the worst of the gradient cutoffs */
-  .ftr-tape-strip.visible, .ftr-tape-full.open .ftr-tape-band {
-    border-radius:var(--desk-r-lg, 14px);
-    border:1px solid transparent;
-    background:var(--panel);
-    box-shadow:var(--card-shadow,
-      0 1px 2px color-mix(in srgb, var(--text) 6%, transparent)); }
-  html[data-theme="light"] .ftr-tape-strip.visible,
-  html[data-theme="light"] .ftr-tape-full.open .ftr-tape-band {
-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
-               0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
-  .ftr-tape-strip { margin-bottom:10px; }
-
-  /* — the macro h2 rail-tick on every workspace section head — */
-  .rvx-sec-h h2 { display:flex; align-items:center; gap:11px; }
-  .rvx-sec-h h2::before { content:""; flex:none; width:3px; height:18px; border-radius:2px;
-    background:linear-gradient(180deg, var(--link), color-mix(in srgb, var(--link) 35%, transparent)); }
-
-  /* — hero: committed verdict ink, chips demoted to a quiet context line — */
-  .rvx-vword { letter-spacing:-.028em; }
-  html[data-theme="light"] .rvx-hero .rvx-vword .ac {
-    background:linear-gradient(94deg, var(--si-ink-up, var(--up)),
-      color-mix(in srgb, var(--si-ink-up, var(--up)) 52%, var(--link)));
-    -webkit-background-clip:text; background-clip:text; }
-  html[data-theme="light"] .rvx-hero.strain .rvx-vword .ac {
-    background:linear-gradient(94deg, var(--si-ink-warn, var(--warn)), var(--si-ink-down, var(--down)));
-    -webkit-background-clip:text; background-clip:text; }
-  /* ONE family for the hero context row (.rvx-chips.ctx): quiet ink + a state dot,
-     no boxes — the row previously mixed FOUR treatments (plain text, green pill,
-     amber pill, warn pill; operator: "each of ur 4 children look nothing like you").
-     Covers the server chips (.rvx-chip), the seasonality tones (.fs-chip.*) and the
-     client-injected lever/sizing chips (.tc-chip): the lever's inline border-COLOR
-     cannot survive border:0, and each item's ink still carries its state. */
-  .rvx-chips { gap:5px 15px; margin-top:12px; }
-  .rvx-chips.ctx { gap:7px 20px; }
-  .rvx-chips.ctx :is(.rvx-chip, .fs-chip, .tc-chip, .pulse-size) {
-    border:0; background:transparent; padding:2px 0; font-size:12px; gap:7px;
-    display:inline-flex; align-items:center; }
-  .rvx-chips.ctx :is(.rvx-chip, .fs-chip, .tc-chip, .pulse-size)::before {
-    content:''; width:7px; height:7px; border-radius:50%;
-    background:currentColor; opacity:.5; flex:none; }
-  .rvx-chips.ctx > .rvx-chip:not(.fs-chip) { color:var(--muted); }
-  /* 红涨绿跌: with the boxes gone the INK is the only state carrier — flip it in ZH */
-  html[data-lang="zh"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--ink-down, var(--down)); }
-  html[data-theme="light"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--si-ink-up, var(--up)); }
-  html[data-theme="light"][data-lang="zh"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--si-ink-down, var(--down)); }
-  html[data-theme="light"] .rvx-chips.ctx .fs-chip.headwind { color:var(--si-ink-warn, var(--warn)); }
-  /* the action/receipt row: quiet text and links, no boxes, no dots */
-  .rvx-chips:not(.ctx) .rvx-chip { border:0; background:transparent; padding:2px 0;
-    color:var(--muted); gap:5px; }
-  .rvx-chip.sz { border:0; background:transparent; color:var(--ink-warn, var(--warn)); }
-  html[data-theme="light"] .rvx-chip.sz { color:var(--si-ink-warn, var(--warn)); }
-  a.rvx-chip { color:var(--ink-link, var(--link)); }
-  /* the stance banner joins the family: tint stays (it is the one instruction that
-     earns a surface), the border goes; days-in-state rides inside it quietly */
-  .rvx-stance { border:0; border-radius:11px; font-weight:600; }
-  .rvx-stance-days { opacity:.72; font-weight:500; }
-
-  /* the session tape's rank chips: same boxless family — state ink + mono figure,
-     no borders (the six outlined pills were their own mongrel row). 红涨绿跌 needs
-     NO rule here: theme.css already swaps --up/--down (and the light --si-ink-* pair
-     re-keys with them) on html[data-lang="zh"], so a chip painted from var(--up)
-     flips on its own. The four zh overrides this block used to carry re-swapped it a
-     SECOND time and handed Chinese readers 绿涨红跌 — gainers green, losers red — in
-     both themes (measured dark+light, 2026-08-03; the standing double-flip trap).
-
-     The two rank groups are their OWN flex rows. Their chips are siblings inside a
-     plain <span>, so the strip's own gap never reached them, and taking the boxes
-     off left `padding:1px 0` — zero horizontal separation — so the six movers ran
-     together as one word: "Mag7 +3.5%Data Center Power +2.3%" (operator crop,
-     2026-08-03). Each chip is also one flat 400-weight run; typography now follows
-     the sanctioned .dtp tape idiom (theme.css .dtp-mname/.dtp-mpct): name in text
-     ink at 500, figure in mono tabular at 700 carrying the state colour. Chips never
-     break internally — a wrapping strip drops whole movers to the next row. */
-  .ftr-tape-strip .ftr-strip-chip { border:0; background:transparent; padding:1px 0;
-    gap:6px; white-space:nowrap; }
-  .ftr-tape-strip { gap:6px 22px; }
-  .ftr-strip-grp { display:inline-flex; align-items:center; flex-wrap:wrap; gap:5px 14px;
-    min-width:0; }
-  .ftr-strip-nm { color:var(--text); font-weight:500; }
-  .ftr-strip-pct { font-family:var(--font-mono,monospace); font-variant-numeric:tabular-nums;
-    font-weight:700; letter-spacing:-.01em; }
-  /* light only: reach for the text-grade ink when the strip renders outside the
-     subtree where W3 rebinds --up/--down. Language-agnostic on purpose — see above. */
-  html[data-theme="light"] .ftr-strip-chip.up { color:var(--si-ink-up, var(--up)); }
-  html[data-theme="light"] .ftr-strip-chip.dn { color:var(--si-ink-down, var(--down)); }
-
-  /* typeface: SF first (Apple system faces), Inter everywhere else — operator
-     directive for the sector pages */
-  body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
-    Roboto, Helvetica, sans-serif; }
-
-  /* — the signature: this week's handoff — */
-  .rvx-hocol .nm { white-space:normal; overflow:visible; text-overflow:clip;
-    font-size:16px; line-height:1.28; letter-spacing:-.012em; }
-  .rvx-hocol { padding:13px 16px; }
-  .rvx-hocard .cap { letter-spacing:.09em; padding:10px 16px 0; }
-  .rvx-hoarrow { width:54px; } .rvx-hoarrow svg { width:54px; }
-  html[data-theme="light"] .rvx-hocard {
-    background:linear-gradient(100deg,
-      color-mix(in srgb, var(--si-ink-warn, var(--warn)) 6%, var(--panel)) 0%,
-      var(--panel) 46%,
-      color-mix(in srgb, var(--si-ink-up, var(--up)) 8%, var(--panel)) 100%);
-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
-               0 12px 32px -14px color-mix(in srgb, var(--text) 10%, transparent); }
-  html[data-theme="light"] .rvx-hocol.out .nm { color:var(--si-ink-warn, var(--warn)); }
-  html[data-theme="light"] .rvx-hocol.in .nm  { color:var(--si-ink-up, var(--up)); }
-
-  /* — lanes as decision cards — */
-  .rvx-lanes { align-items:start; }
-  .rvx-lane { padding:14px 15px 10px; }
-  .rvx-lane.buy   { border-left:3px solid color-mix(in srgb, var(--rvx-lead) 55%, transparent); }
-  .rvx-lane.wait  { border-left:3px solid color-mix(in srgb, var(--rvx-improve) 55%, transparent); }
-  .rvx-lane.trim  { border-left:3px solid color-mix(in srgb, var(--rvx-weak) 55%, transparent); }
-  .rvx-lane.avoid { border-left:3px solid color-mix(in srgb, var(--rvx-lag) 45%, transparent); }
-  .rvx-lane-desc { min-height:0; margin-bottom:8px; }
-  .rvx-trow .tnm .rsn { color:color-mix(in srgb, var(--muted) 80%, transparent); }
-  .rvx-trow .tick { display:none; }  /* the figure's colour already says it */
-  .rvx-trow .tnm .mlcchip { border-color:transparent; border-radius:6px; padding:1px 6px;
-    background:color-mix(in srgb, var(--warn) 13%, transparent); opacity:1; }
-  html[data-theme="light"] .rvx-trow .tnm .mlcchip { color:var(--si-ink-warn, var(--warn)); }
-
-  /* — overview: the hero IS the read; no echo line beneath it — */
-  .si-view[data-view="overview"] .si-view-read { display:none; }
-</style>
+{% include "_sector_central_paper.css.j2" %}
 </head>
 <body class="macro-desk page-baskets">
 <div class="rvx-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
@@ -1743,8 +1472,8 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 
 
   {# ══════════════════════════════════════════════════════════════════════════
-     SI WORKSPACE V2 (§1/§1b) — a workspace, not a page. The persistent rail below
-     drives five hash-routed same-page views; exactly one .si-view carries .on at a
+     MACRO PAPER R2 — horizontal workflow over the six existing hash routes.
+     The current router preserves the source-owned instruments; exactly one .si-view carries .on at a
      time, so switching is a display toggle with zero reloads and zero refetches.
      The V1 sticky anchor rail (#si-rail) is retired — the rail replaces it. Organs
      moved INSIDE the .si-view wrappers byte-intact (V1 render-mode law): every
@@ -1755,35 +1484,84 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   {# aria-label stays plain English, like every other nav on the estate: t() returns a
      dual <span class="l-en">/<span class="l-zh"> pair, so inside an attribute it closes
      the quote at its own class= and the remainder leaks into the page as visible text. #}
-  <nav class="si-side" aria-label="Sector Intelligence views">
-    {# View glyphs: the estate's hand-drawn icon family (product-nav-icons /
-       dashboard-icons masked spans, same set the nav mega-menus use) — never raw
-       emoji next to the wordmark. Masked with background:currentColor, so the
-       rail's .on tint flows into the drawing. #}
-    <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page"><span class="si-vb-g dash-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Overview</span><span class="l-zh">总览</span></span></a>
-    <a class="si-view-btn" data-view="map" href="#map"><span class="si-vb-g dash-icon dash-icon-compass" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">The Map</span><span class="l-zh">全景图谱</span></span></a>
-    <a class="si-view-btn" data-view="moving" href="#moving"><span class="si-vb-g dash-icon submenu-icon-rotation" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">What&#39;s Moving</span><span class="l-zh">正在轮动</span></span></a>
-    <a class="si-view-btn" data-view="money" href="#money"><span class="si-vb-g dash-icon submenu-icon-flow" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Money &amp; Breadth</span><span class="l-zh">资金与广度</span></span></a>
-    <a class="si-view-btn" data-view="explore" href="#explore"><span class="si-vb-g dash-icon dash-icon-search" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Explore</span><span class="l-zh">深入探索</span></span></a>
-    {# 6th rail view — US parity with the China desk's #confluence (#4637), which
-       deferred this deliberately ("the US page has no equivalent rail view yet").
-       Same .si-view-btn idiom as the five above; glyph is the estate's masked
-       confluence icon, and ZH reuses the estate's established 子行业汇聚 so the rail,
-       the view's own hero and both global-nav rows read identically. #}
-    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-g dash-icon submenu-icon-confluence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Confluence</span><span class="l-zh">子行业汇聚</span></span></a>
-    {# The .si-side-out "Stock entry funnel →" exit link stood here, and its own comment
-       read "a link, never a sixth view". It is a sixth view now, so the link became a
-       second rail entry to the SAME content — wearing the SAME confluence glyph, one row
-       below it, pointing off-page. Removed rather than retargeted: #confluence is already
-       the button directly above. This is the move #4637 made on the China desk, whose
-       test still pins it ("the old funnel exit LINK survived"). #}
-    <div class="si-side-foot">
-      <span id="si-side-asof"></span>
-      <span id="si-side-grade"></span>
+  <header class="si-page-header">
+    <div class="si-page-identity">
+      <h1 class="si-page-title">{{ t('Sector Intelligence', '板块情报') }}</h1>
+      <span class="si-page-region">{{ t('United States', '美国') }}</span>
     </div>
+    <div class="si-side-foot"><span id="si-side-asof"></span><span id="si-side-grade"></span></div>
+  </header>
+  <nav class="si-workflow" aria-label="Sector Intelligence workflow">
+    <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page">{{ t('Brief', '简报') }}</a>
+    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a>
+    <a class="si-workflow-link" data-si-workflow="research" href="#tm-mount">{{ t('Research', '研究') }}</a>
+    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a>
+    <span class="si-workflow-note">{{ t('Sectors, themes and industries, connected.', '串联板块、主题与行业。') }}</span>
+  </nav>
+  <nav class="si-side" aria-label="Sector Intelligence views" hidden>
+    <a class="si-view-btn" data-view="map" href="#map"><span class="si-vb-l">{{ t('Market map', '市场图谱') }}</span></a>
+    <a class="si-view-btn" data-view="moving" href="#moving"><span class="si-vb-l">{{ t('Rotation', '轮动') }}</span></a>
+    <a class="si-view-btn" data-view="money" href="#money"><span class="si-vb-l">{{ t('Breadth & money', '广度与资金') }}</span></a>
+    <a class="si-view-btn" data-view="explore" href="#explore"><span class="si-vb-l">{{ t('Themes & compare', '主题与比较') }}</span></a>
+    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-l">{{ t('Entry evidence', '入场证据') }}</span></a>
   </nav>
   <div class="si-stage">
   <section class="si-view on" data-view="overview">
+  {% set _tc_lead = theme_context.leadership if theme_context is defined and theme_context else none %}
+  {% set _tc_st = _tc_lead.state if _tc_lead else none %}
+  <section class="rvx-hero rvx-reveal"
+           data-si-as-of="{{ source_as_of | default('', true) }}"
+           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
+           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
+    <div class="rvx-eyebrow">
+      <span>{{ t('THE SECTOR BRIEF', '板块简报') }}</span>
+      <span class="rvx-mut" id="hero-count"></span>
+      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+    </div>
+    <div class="rvx-hgrid">
+      <div>
+        <div class="rvx-vword">
+          {% if _tc_st == 'rotating' %}{{ t('Leadership is rotating.', '领涨正在轮动。') }}
+          {% elif _tc_st == 'strain' %}{{ t('Leadership under pressure.', '领涨开始承压。') }}
+          {% elif _tc_st == 'steady' %}{{ t('Leadership is holding.', '领涨格局延续。') }}
+          {% else %}{{ t('Leadership not measured.', '领涨状态暂无实测。') }}{% endif %}
+        </div>
+        <p class="rvx-vsub">{{ t('Follow leadership, check participation, then assess each stock’s entry.', '先看领涨，再查参与度，最后判断个股入场。') }}</p>
+        {% if _tc_lead and _tc_lead.stance_en %}
+        <span class="rvx-stance">{{ t(_tc_lead.stance_en, _tc_lead.stance_zh) }}{% if _tc_lead.days_in_state %}<span class="rvx-stance-days"> · {{ t(_tc_lead.days_in_state|string + ' days in', '已持续' + _tc_lead.days_in_state|string + '天') }}</span>{% endif %}</span>
+        {% endif %}
+        <div class="si-paper-actions">
+          <a class="si-paper-action" href="#map">{{ t('Inspect the leaders →', '查看领涨方向 →') }}</a>
+          <a class="si-paper-text-link" href="#moving">{{ t('What changed?', '发生了什么变化？') }}</a>
+        </div>
+        <div class="rvx-chips ctx"><span id="ftr-lever-chip"></span><span id="hero-sizing"></span></div>
+      </div>
+      <aside class="si-entry-read" aria-labelledby="si-entry-title">
+        <p class="cap">{{ t('The important distinction', '关键区别') }}</p>
+        <h2 id="si-entry-title">{{ t('Group strength.', '板块强势。') }}<br>{{ t('A separate stock decision.', '个股仍需独立判断。') }}</h2>
+        <dl>
+          <div><dt>{{ t('Current leadership', '当前领涨') }}</dt><dd>{% if _tc_lead and _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh or _tc_lead.strength[0].name) }}{% else %}{{ t('Not measured', '暂无实测') }}{% endif %}</dd></div>
+          <div><dt>{{ t('Stock entry', '个股入场') }}</dt><dd><a href="us_stocks.html" class="si-paper-text-link">{{ t('Open Prophet →', '打开 Prophet →') }}</a></dd></div>
+        </dl>
+        <p>{{ t('Strength tells you where to look. Entry conditions qualify the individual stock.', '强势提示研究方向，入场条件决定个股是否符合要求。') }}</p>
+      </aside>
+    </div>
+    <div class="rvx-chips">
+      {% if _tc_lead and _tc_lead.trailing_leader %}
+      <span class="rvx-chip rcpt" data-tip-en="Leadership comes from the existing nightly theme context. Group strength does not establish an individual stock entry." data-tip-zh="领涨判断沿用每晚生成的主题背景；板块强势并不等于个股符合入场条件。">ⓘ {{ t('How this works', '原理说明') }}</span>
+      {% endif %}
+      {% if factor_season is defined and factor_season %}
+      {% set _fs_tone = factor_season.tone if factor_season.tone in ('headwind','tailwind') else '' %}
+      <span id="factor-season" class="rvx-chip fs-chip {{ _fs_tone }}" data-tip-en="{{ factor_season.tip_en | e }}" data-tip-zh="{{ factor_season.tip_zh | e }}">{{ t(factor_season.chip_en, factor_season.chip_zh) }}</span>
+      {% endif %}
+      {% if theme_context is defined and theme_context and theme_context.alignment is defined and theme_context.alignment.sector_rotation_agrees %}
+      <span class="rvx-chip" data-tip-en="{{ theme_context.alignment.note_en | e }}" data-tip-zh="{{ theme_context.alignment.note_zh | e }}">✓ {{ t('sector rotation agrees', '板块轮动一致') }}</span>
+      {% endif %}
+      <a class="rvx-chip" href="allocation.html">{{ t('Open the playbook →', '打开操盘手册 →') }}</a>
+    </div>
+  </section>
+  {% include "_sector_central_brief.html.j2" %}
+
   <!-- ══════════════════════════════════════════════════════════════════════
        FTR W3+W5: Basket tape band v3 — two-column ranked idiom (ported from
        the #2227 us_stocks dash-tape-band, the operator-ratified redo of the
@@ -2287,78 +2065,6 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 
   {# ── Verdict Hero (revamp) — server-rendered from theme_context.v1 ── #}
   {# When theme_context is absent (off-lane / first run): simple fallback hero. #}
-  {% if theme_context is defined and theme_context is not none %}
-  {% set _tc_lead = theme_context.leadership %}
-  {% set _tc_tl   = _tc_lead.trailing_leader %}
-  {% set _tc_st   = _tc_lead.state %}
-  {% set _hero_cls = 'strain' if _tc_st == 'strain' else ('steady' if _tc_st == 'steady' else '') %}
-  <section class="rvx-hero rvx-reveal {{ _hero_cls }}"
-           data-si-as-of="{{ source_as_of | default('', true) }}"
-           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
-           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
-    <div class="rvx-eyebrow">
-      <span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span>
-      <span class="rvx-mut" id="hero-count"></span>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
-    </div>
-    <div class="rvx-hgrid">
-      <div>
-        <div class="rvx-vword">
-          {% if _tc_st == 'rotating' %}{{ t('Money is', '资金正在') }} <span class="ac">{{ t('rotating', '轮动') }}</span>
-          {% elif _tc_st == 'strain' %}{{ t('Leadership under', '领涨') }} <span class="ac">{{ t('strain', '承压') }}</span>
-          {% else %}{{ t('Leadership', '领涨格局') }} <span class="ac">{{ t('steady', '稳定') }}</span>{% endif %}
-        </div>
-        <p class="rvx-vsub">{% if theme_context.migration is defined and theme_context.migration.note_en %}{{ t(theme_context.migration.note_en, theme_context.migration.note_zh) }} {% endif %}{{ t("Favour the fresh leaders — not last month's winners.", '顺势买入新领涨，而非上月的赢家。') }}</p>
-        <span class="rvx-stance">⚑ {{ t(_tc_lead.stance_en, _tc_lead.stance_zh) }}{% if _tc_lead.days_in_state is not none and _tc_lead.days_in_state %}<span class="rvx-stance-days"> · {{ t(_tc_lead.days_in_state|string + " days in", _tc_lead.days_in_state|string + " 天") }}</span>{% endif %}</span>
-        <div class="rvx-chips ctx">
-          <span id="ftr-lever-chip"></span>
-          <span id="hero-sizing"></span>
-        </div>
-      </div>
-      <div class="rvx-hocard">
-        <div class="cap">{{ t("THIS WEEK'S HANDOFF", '本周交棒') }}</div>
-        <div class="rvx-handoff">
-          <div class="rvx-hocol out">
-            <div class="lbl">{{ t('Losing the lead', '失去领先') }}</div>
-            <div class="nm">{{ t(_tc_tl.name, _tc_tl.name_zh) }}</div>
-            <div class="meta" id="hero-out-meta" data-id="{{ _tc_tl.id }}">{{ t('was #1', '原第一') }}</div>
-          </div>
-          <div class="rvx-hoarrow"><svg viewBox="0 0 46 28"><defs><linearGradient id="rvxHo" x1="0" x2="1"><stop offset="0" stop-color="var(--rvx-weak)"/><stop offset="1" stop-color="var(--rvx-lead)"/></linearGradient></defs><path class="ln" d="M3 14 H37"/><path class="hd" d="M33 8 L43 14 L33 20 Z"/></svg></div>
-          <div class="rvx-hocol in">
-            <div class="lbl">{{ t('Taking the lead', '接过领先') }}</div>
-            <div class="nm">{% if _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh) }}{% if _tc_lead.strength|length > 1 %} · {{ t(_tc_lead.strength[1].name, _tc_lead.strength[1].name_zh) }}{% endif %}{% else %}—{% endif %}</div>
-            <div class="meta" id="hero-in-meta"{% if _tc_lead.strength %} data-id="{{ _tc_lead.strength[0].id }}"{% endif %}></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="rvx-chips" style="margin-top:14px">
-      <span class="rvx-chip rcpt" data-tip-en="Trailing-momentum rank names {{ _tc_tl.name }} first; skips the most recent ~3 weeks by construction; suggested weights unchanged. Shape read only — not a forecast." data-tip-zh="趋势动量排名以{{ _tc_tl.name_zh }}居首；设计上跳过最近约3周数据；建议权重不变。仅为形态读数，非预测。">ⓘ {{ t('How this works', '原理说明') }}</span>
-      {% if factor_season is defined and factor_season is not none %}
-      {% set _fs_tone = factor_season.tone if factor_season.tone in ('headwind','tailwind') else '' %}
-      <span id="factor-season" class="rvx-chip fs-chip {{ _fs_tone }}" data-tip-en="{{ factor_season.tip_en | e }}" data-tip-zh="{{ factor_season.tip_zh | e }}">{{ t(factor_season.chip_en, factor_season.chip_zh) }}</span>
-      {% endif %}
-      {% if theme_context.alignment is defined and theme_context.alignment.sector_rotation_agrees %}
-      <span class="rvx-chip" style="color:var(--ink-up, var(--up))" data-tip-en="{{ theme_context.alignment.note_en | e }}" data-tip-zh="{{ theme_context.alignment.note_zh | e }}">✓ {{ t('sector rotation agrees', '板块轮动一致') }}</span>
-      {% endif %}
-      <a class="rvx-chip" href="allocation.html" style="color:var(--ink-link, var(--link))">{{ t('Open the playbook →', '打开操盘手册 →') }}</a>
-    </div>
-  </section>
-  {% else %}
-  {# ── Fallback hero when theme_context absent ── #}
-  <section class="rvx-hero rvx-reveal"
-           data-si-as-of="{{ source_as_of | default('', true) }}"
-           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
-           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
-    <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span></div>
-    <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
-    <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>
-    <div class="rvx-chips ctx" style="margin-top:12px">
-      <span id="ftr-lever-chip"></span><span id="hero-sizing"></span>
-    </div>
-  </section>
-  {% endif %}
-
   <div id="regime" class="regime"></div>
 
   {# Theme Rotation Desk add-ons (display-only): ETF Pulse (style/risk/sector rotation),
@@ -2610,7 +2316,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     <div class="rvx-sec-h"><h2>{{ t('Under the hood', '市场内部') }}</h2><span class="q">{{ t('— is the whole market participating?', '— 整个市场都在参与吗？') }}</span></div>
     <p class="rvx-sec-sub" id="internals-sub">{{ t('Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.', '广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。') }}</p>
     <div class="rvx-internals">
-      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">—</div><div class="gm" id="mkt-breadth-sub"></div></div>
+      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">{{ t("Not measured", "暂无实测") }}</div><div class="gm" id="mkt-breadth-sub"></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div><div class="gv" id="mkt-ad">—</div><div class="gm" id="mkt-ad-sub"></div><div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('52-wk highs / lows', '52周新高 / 新低') }}</div><div class="gv" id="mkt-hilo">—</div><div class="gm" id="mkt-hilo-sub"></div><div class="rvx-minibar"><i id="mkt-hilo-bar"></i></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Above 200-day', '站上200日线') }}</div><div class="gv" id="mkt-above">—</div><div class="gm" id="mkt-above-sub"></div><div class="rvx-minibar"><i id="mkt-above-bar"></i></div></div>
@@ -3139,6 +2845,8 @@ function renderRegimeSizing(){
   return `<span class="pulse-size" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}"${rcAttr}>${L('positions sized to '+pct+'%','仓位缩至 '+pct+'%')}</span>`;
 }
 
+{% include "_sector_central_brief.js.j2" %}
+
 // ── Verdict hero enrichment (server renders the shell; JS fills counts + handoff perf) ──
 function renderVerdictHero(){
   const zh=isZh();
@@ -3257,9 +2965,10 @@ function rvxBar(id,pct,col){const e=document.getElementById(id);if(e){e.style.wi
 function renderInternals(){
   const mc=(THEME&&THEME.market_concentration)||{}; const zh=isZh();
   const vmap={narrow:[zh?'狭窄':'Narrow','var(--down)'],broad:[zh?'广泛':'Broad','var(--up)'],mixed:[zh?'中性':'Mixed','var(--warn)']};
-  const vv=vmap[mc.verdict]||vmap.mixed;
+  const measured=Object.prototype.hasOwnProperty.call(vmap,mc.verdict);
+  const vv=measured?vmap[mc.verdict]:[zh?'暂无实测':'Not measured','var(--muted)'];
   const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv[0]; be.style.color=vv[1];}
-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
+  rvxSet('mkt-breadth-sub', !measured?(zh?'暂无广度判断，请查看可用数据。':'Breadth verdict unavailable. Review the available measures.'):mc.verdict==='broad'?(zh?'参与面广泛。':'Participation is broad.'):mc.verdict==='narrow'?(zh?'少数个股主导。':'A few names carry the move.'):(zh?'参与度表现不一。':'Participation is mixed.'));
   if(mc.adv!=null&&mc.dec!=null){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
     rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):'—'));
     rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, (mc.ad_ratio||0)>=1?'var(--up)':'var(--warn)'); }
@@ -3273,7 +2982,7 @@ function renderInternals(){
 
 function boot(){
   const ao=document.getElementById('asof'); if(ao) ao.textContent=BASKETS.as_of||'—';
-  try{ renderVerdictHero(); }catch(e){ console.warn('rvx hero',e); }
+  try{ renderVerdictHero(); renderBriefEvidence(); }catch(e){ console.warn('rvx hero',e); }
   try{ renderRotationMap(); renderRotBoard(); wireRotFilters(); }catch(e){ console.warn('rvx map',e); }
   try{ renderInternals(); }catch(e){ console.warn('rvx internals',e); }
   renderTabs(document.getElementById('btbl-mode'), TBL_MODES, btblMode, v=>{ btblMode=v; localStorage.setItem('fw-btbl-mode',v); renderBTableCats(); renderBTable(); });
@@ -3287,7 +2996,7 @@ function boot(){
   renderBTable(); renderChart();
   try{ renderGroupPulseCol(); }catch(e){}   // GR1 — additive; a missing artifact is normal
   if(location.hash.startsWith('#theme-')) resolveThemeHash();
-  const rvxRerender=()=>{ try{ renderVerdictHero(); renderRotationMap(); renderRotBoard(); renderInternals(); }catch(e){} };
+  const rvxRerender=()=>{ try{ renderVerdictHero(); renderBriefEvidence(); renderRotationMap(); renderRotBoard(); renderInternals(); }catch(e){} };
   document.addEventListener('langchange',()=>{ rvxRerender(); if(chart){chart.applyOptions(chartOpts());} renderChart(); });
   document.addEventListener('themechange',()=>{ renderRotationMap(); renderRotBoard(); if(chart){chart.applyOptions(chartOpts());} renderChart(); });
   /* The overlay chart could not be built while Explore was hidden (see renderChart);
@@ -3352,6 +3061,10 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
    page while the payload itself was present and complete, because the two ran in the
    wrong order. Pinned by tests/test_sector_central_data_is_sync.py. #}
 <script data-sync src="sector_central_data.js"></script>
+<script>
+{% include "_sector_central_coverage.js.j2" %}
+{% include "_sector_prophet_context.js.j2" %}
+</script>
 <script>
 (function(){
   "use strict";
@@ -3980,6 +3693,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
               '选择一个板块，查看数据、历史和已记录事件。')) + '</p>';
       return;
     }
+    var prophetHref = sectorProphetHref(g);
     var c = g.current || {};
     var measured = c.status === 'measured';
     var why = '<span class="mr-na">' + esc(reasonT(c.reason)) + '</span>';
@@ -3996,6 +3710,8 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       '<div><dt>' + esc(L('Measured order', '实测排序')) + '</dt><dd>' + d3 + '</dd></div>' +
       '<div><dt>' + esc(L('Evidence date', '证据日期')) + '</dt><dd>' + esc(fmtDate(GEN.session_end)) + '</dd></div>' +
       '</dl>' +
+      (prophetHref ? '<p class="mr-hint"><a href="' + esc(prophetHref) + '">' +
+        esc(L('Compare in Prophet →', '前往 Prophet 对照 →')) + '</a></p>' : '') +
       '<div class="mr-seg" role="group" aria-labelledby="mr-seg-l"><span class="mr-seg-l" id="mr-seg-l">' +
       esc(L('History', '历史')) + '</span>' +
       '<button type="button" class="mr-segbtn" data-h="recon" aria-pressed="' + (MODE === 'recon' ? 'true' : 'false') + '">' +

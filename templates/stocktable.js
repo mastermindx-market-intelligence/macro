@@ -18,7 +18,12 @@
  *   searchTicker: false,              // opt in to symbol matching as well as name/theme
  *   searchPlaceholder: ['Search…','搜索…'], // override search input placeholder
  *   optionLabels: { filterName: { VALUE: [en, zh] } }, // display labels for filter values
+ *   sectorOptions: [...],            // optional registered raw sector names, including zero-count choices
+ *   emptyMessage: [en, zh],           // optional message when the loaded table has no matching rows
  * }
+ * Successful init returns {getSectorFilter, setSectorFilter}. The setter accepts
+ * an exact native option or 'all', returns a boolean, and never moves focus.
+ * Keep the latest handle when reinitializing a table after rows are loaded.
  *
  * Column schema entry: { key, labelEn, labelZh, default, sortable, right, fmt, tip }
  *   key:     field key on row object (dot-notation not supported)
@@ -700,6 +705,17 @@
         frag.appendChild(tr);
       });
 
+      if (view.length === 0 && Array.isArray(cfg.emptyMessage)) {
+        var emptyRow = document.createElement('tr');
+        var emptyCell = document.createElement('td');
+        emptyCell.colSpan = Math.max(1, cols.length);
+        emptyCell.className = 'st-muted';
+        emptyCell.style.whiteSpace = 'normal';
+        emptyCell.innerHTML = bi(esc(cfg.emptyMessage[0] || ''), esc(cfg.emptyMessage[1] || cfg.emptyMessage[0] || ''));
+        emptyRow.appendChild(emptyCell);
+        frag.appendChild(emptyRow);
+      }
+
       tbody.innerHTML = '';
       tbody.appendChild(frag);
 
@@ -780,6 +796,14 @@
       var zones    = _uniq(rows.map(function(r){ return r.zone || ''; }).filter(Boolean));
       var tiers    = _uniq(rows.map(function(r){ return r.tier || ''; }).filter(Boolean));
       var sectors  = _uniq(rows.map(function(r){ return r.sector || ''; }).filter(Boolean)).sort();
+      // Optional registered identities let a partial board retain zero-count
+      // sector choices. Counts still come only from the rows actually loaded.
+      if (Array.isArray(cfg.sectorOptions)) {
+        cfg.sectorOptions.forEach(function(value) {
+          if (typeof value === 'string' && value && value !== 'all' && sectors.indexOf(value) === -1) sectors.push(value);
+        });
+        sectors.sort();
+      }
       var capBkts  = ['large','mid','small'].filter(function(cb){
         return rows.some(function(r){ return (r.cap_bucket||'') === cb; }); });
       var lanes    = _uniq(rows.map(function(r){ return r.lane || ''; }).filter(Boolean));
@@ -985,7 +1009,7 @@
     }
 
     // Select a value in a dropdown.
-    function _selectDDValue(name, value) {
+    function _selectDDValue(name, value, focus) {
       var n = _ddNodes[name];
       if (!n) return;
       filters[name] = value;
@@ -1004,9 +1028,23 @@
         n.dd.classList.add('stf-active');
       }
       _closeDD(name);
-      n.btn.focus();
+      if (focus !== false) n.btn.focus();
       _syncClearBtn();
       renderRows();
+    }
+
+    // A per-instance entry point: validate the native option before changing
+    // filters, labels, counts or rows. Hydration must not move keyboard focus.
+    function setSectorFilter(value) {
+      if (typeof value !== 'string') return false;
+      var n = _ddNodes.sector;
+      if (!n) return value === 'all' && filters.sector === 'all';
+      var valid = Array.from(n.menu.querySelectorAll('.stf-opt')).some(function(opt) {
+        return opt.getAttribute('data-value') === value;
+      });
+      if (!valid) return false;
+      _selectDDValue('sector', value, false);
+      return true;
     }
 
     // Keyboard navigation inside a menu.
@@ -1319,6 +1357,11 @@
       var seen = {};
       return arr.filter(function(v){ if (seen[v]) return false; seen[v] = true; return true; });
     }
+
+    return {
+      getSectorFilter: function() { return filters.sector; },
+      setSectorFilter: setSectorFilter
+    };
   }
 
   /* ── exports ─────────────────────────────────────────────────────────── */

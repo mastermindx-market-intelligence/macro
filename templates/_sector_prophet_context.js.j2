@@ -1,0 +1,84 @@
+/* Sector Central -> Prophet identity contract. Canonical sector ETF identities
+   follow engine.spotlight.GICS_TO_ETF. URL context supplies identity only;
+   the native Screener owner applies its filter after an explicit click. */
+function sectorProphetIdentity(id) {
+  var sectors = {
+    XLB:['Materials','原材料'], XLC:['Communication Services','通信服务'],
+    XLE:['Energy','能源'], XLF:['Financials','金融'], XLI:['Industrials','工业'],
+    XLK:['Information Technology','信息技术'], XLP:['Consumer Staples','必需消费'],
+    XLRE:['Real Estate','房地产'], XLU:['Utilities','公用事业'],
+    XLV:['Health Care','医疗保健'], XLY:['Consumer Discretionary','可选消费']
+  };
+  if (typeof id !== 'string' || !Object.prototype.hasOwnProperty.call(sectors, id)) return null;
+  return {id:id, name_en:sectors[id][0], name_zh:sectors[id][1]};
+}
+function sectorProphetHref(group) {
+  if (!group || group.group_kind !== 'sector') return null;
+  var sector = sectorProphetIdentity(group.group_id);
+  return sector ? 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id) + '#sector-prophet-context' : null;
+}
+function sectorProphetSelection(search) {
+  var params = new URLSearchParams(search);
+  var values = params.getAll('si_sector');
+  if (!values.length) return {status:'absent'};
+  var sector = values.length === 1 ? sectorProphetIdentity(values[0]) : null;
+  if (!sector) return {status:'invalid'};
+  return {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
+    return_href:'sector_central.html?g=' + encodeURIComponent(sector.id) + '#map'};
+}
+(function () {
+  'use strict';
+  var root = document.getElementById('sector-prophet-context');
+  if (!root) return;
+  var subject = document.getElementById('si-prophet-subject');
+  var note = document.getElementById('si-prophet-note');
+  var back = document.getElementById('si-prophet-return');
+  var clear = document.getElementById('si-prophet-clear');
+  var screener = document.getElementById('si-prophet-screener');
+  if (!subject || !note || !back || !clear || !screener) return;
+  function screenerReady() {
+    return window.USStockTable && typeof window.USStockTable._selectSector === 'function' &&
+      window.USProphetSource && typeof window.USProphetSource.set === 'function';
+  }
+  function render() {
+    var read = sectorProphetSelection(window.location.search);
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    root.hidden = read.status === 'absent';
+    root.setAttribute('data-status', read.status);
+    screener.hidden = read.status !== 'selected';
+    screener.disabled = read.status !== 'selected' || !screenerReady();
+    if (read.status === 'absent') return;
+    var rest = new URLSearchParams(window.location.search);
+    rest.delete('si_sector');
+    var qs = rest.toString();
+    var hash = window.location.hash === '#sector-prophet-context' ? '#us-standouts' : window.location.hash;
+    clear.setAttribute('href', 'us_stocks.html' + (qs ? '?' + qs : '') + hash);
+    if (read.status === 'invalid') {
+      subject.textContent = zh ? '无法识别所选板块' : 'Selected sector unavailable';
+      note.textContent = zh ? '请返回板块证据，选择一个板块。Prophet 选股仍可查看。'
+        : 'Return to sector evidence to choose a sector. Prophet Stock Signals remains available.';
+      back.setAttribute('href', 'sector_central.html#map');
+      return;
+    }
+    subject.textContent = (zh ? read.name_zh : read.name_en) + ' · ' + read.id;
+    screener.textContent = zh ? '在筛选器中查看该板块 →' : 'View sector in Screener →';
+    screener.setAttribute('aria-label', zh ? '在筛选器中查看' + read.name_zh : 'View ' + read.name_en + ' in Screener');
+    note.textContent = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
+      : 'View this sector among the stocks loaded on this page; other filters still apply. Review each stock’s setup and entry conditions, and return to sector evidence for its dated readings.';
+    back.setAttribute('href', read.return_href);
+  }
+  screener.addEventListener('click', function () {
+    var read = sectorProphetSelection(window.location.search);
+    if (read.status !== 'selected') return;
+    if (!screenerReady() || !window.USStockTable._selectSector(read.name_en)) {
+      var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+      note.textContent = zh ? '本页筛选器暂不可用。您仍可返回所选板块的证据。'
+        : 'The Screener is unavailable on this page. You can still return to the selected sector’s evidence.';
+    }
+  });
+  document.addEventListener('langchange', render);
+  window.addEventListener('popstate', render);
+  window.addEventListener('mmx:shell-location', render);
+  window.addEventListener('us-screener:availability', render);
+  render();
+})();

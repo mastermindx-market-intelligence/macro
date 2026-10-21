@@ -1,0 +1,55 @@
+/* Paper Brief: source-aligned 20-session relative wealth, no forecast or rank. */
+function buildSectorBriefSeries(subjectId, chart){
+  if(!subjectId || !chart || !Array.isArray(chart.dates) ||
+     !Array.isArray(chart.bench) || !chart.baskets ||
+     !Array.isArray(chart.baskets[subjectId])) return null;
+  const dates=chart.dates, values=chart.baskets[subjectId], benchmark=chart.bench;
+  if(dates.length<21 || values.length!==dates.length || benchmark.length!==dates.length) return null;
+  const start=dates.length-21, windowDates=dates.slice(start);
+  const positive=n=>typeof n==='number' && Number.isFinite(n) && n>0;
+  for(let i=start;i<dates.length;i++){
+    if(typeof dates[i]!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(dates[i]) ||
+       !Number.isFinite(Date.parse(dates[i]+'T00:00:00Z')) ||
+       new Date(dates[i]+'T00:00:00Z').toISOString().slice(0,10)!==dates[i] ||
+       (i>start && dates[i]<=dates[i-1]) || !positive(values[i]) || !positive(benchmark[i])) return null;
+  }
+  const groupStart=values[start], benchmarkStart=benchmark[start];
+  const points=windowDates.map((date,k)=>({
+    date, value:((values[start+k]/groupStart)/(benchmark[start+k]/benchmarkStart)-1)*100
+  }));
+  if(points.some(p=>!Number.isFinite(p.value))) return null;
+  return {points,start:windowDates[0],end:windowDates[20],sessions:20,value:points[20].value};
+}
+
+function renderBriefEvidence(){
+  const root=document.getElementById('si-brief-series'); if(!root) return;
+  const zh=isZh(), subject=root.getAttribute('data-id');
+  const read=buildSectorBriefSeries(subject,CHART);
+  if(!read){
+    root.innerHTML='<p class="si-brief-status">'+(zh?
+      '暂无完整的同日期比较数据。请在市场图谱中查看可用证据。':
+      'Matching closes are not available for the full window. Review the available evidence in Market map.')+'</p>';
+    return;
+  }
+  const name=root.getAttribute(zh?'data-name-zh':'data-name-en')||subject;
+  const sign=v=>(v>0?'+':'')+v.toFixed(2)+'%';
+  const values=read.points.map(p=>p.value);
+  let low=Math.min(0,...values),high=Math.max(0,...values);
+  if(high-low<.5){low-=.25;high+=.25;}
+  const pad=(high-low)*.12; low-=pad;high+=pad;
+  const x=i=>48+i/20*596,y=v=>220-(v-low)/(high-low)*184;
+  const path=read.points.map((p,i)=>(i?'L':'M')+x(i).toFixed(2)+' '+y(p.value).toFixed(2)).join(' ');
+  const labels=[low+(high-low)*.1,0,low+(high-low)*.9]
+    .filter((v,i,a)=>a.findIndex(n=>Math.abs(n-v)<.01)===i).sort((a,b)=>a-b);
+  const ticks=labels.map(v=>'<line class="si-chart-grid" x1="48" x2="644" y1="'+y(v).toFixed(2)+'" y2="'+y(v).toFixed(2)+'"/><text x="0" y="'+(y(v)+4).toFixed(2)+'">'+(v>0?'+':'')+v.toFixed(1)+'%</text>').join('');
+  const title=(zh?'相对标普500的20个交易日财富变化':'20-session relative wealth versus the S&P 500')+
+    ': '+name+', '+read.start+' — '+read.end+', '+sign(read.value);
+  root.innerHTML='<svg class="si-brief-chart" viewBox="0 0 744 258" role="img" aria-label="'+esc(title)+'">'+
+    '<title>'+esc(title)+'</title>'+ticks+
+    '<path class="si-chart-series" d="'+path+'"/>'+
+    '<circle cx="644" cy="'+y(read.value).toFixed(2)+'" r="3.5" fill="var(--link)"/>'+
+    '<text class="si-chart-last" x="658" y="'+(y(read.value)+4).toFixed(2)+'">'+sign(read.value)+'</text>'+
+    '<text x="48" y="250">'+read.start+'</text><text x="644" y="250" text-anchor="end">'+read.end+'</text></svg>'+
+    '<p class="si-brief-status">'+esc(name)+' · '+read.start+' — '+read.end+' · '+sign(read.value)+
+    (zh?'。按相同收盘日计算相对财富变化；不代表个股入场信号。':'. Same closes; relative wealth, not an individual stock entry signal.')+'</p>';
+}

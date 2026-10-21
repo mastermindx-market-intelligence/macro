@@ -5157,8 +5157,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_795),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_828),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_801),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6095,6 +6095,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+
+    Sector Intelligence candidate 4fd82658 merged onto main e5dd30c6
+    (2026-10-21): the three public-render-fastlane sector suites it registers
+    add six estimator units. The local probe on the merged tree measures
+    index.html 135 jobs / 5,828 (ceiling 5,822) and build_free_content 135
+    jobs / 5,801 (ceiling 5,795); plan_book unchanged. No new entrant, ten
+    packs. Fund only the two measured six-unit excesses: 5,822 -> 5,828 and
+    5,795 -> 5,801. Job ceilings, selectors and the pack bound stay unchanged.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
