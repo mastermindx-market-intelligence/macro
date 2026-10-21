@@ -87,9 +87,10 @@ def outcomes(raw, adj, h, fee, stop_basis='adjusted'):
     # Most recent tied low, using only the 63 sessions through signal close.
     age=np.full(k,np.nan)
     for t in range(62,k): age[t]=62-np.flatnonzero(lo[t-62:t+1]==ref[t])[-1]
-    intact=np.zeros(k,bool);both=np.zeros(k,bool)
+    intact=np.zeros(k,bool);both=np.zeros(k,bool);undercut=np.zeros(k,bool)
     for t in np.flatnonzero(stopped):
         intact[t]=bool(lo[t+1:j[t]+1].min()>ref[t])
+        undercut[t]=bool(lo[t+1:j[t]+1].min()<ref[t])
         both[t]=bool(lo[j[t]]<=ref[t] and (j[t]==t+1 or lo[t+1:j[t]].min()>ref[t]))
     out=pd.DataFrame({'date':d.index[:k],'t':ix,'entry_date':d.index[ix+1],'exit_date':d.index[ix+h],
         'net':ratio*(1-fee)/(1+fee)-1,'net50':ratio*(1-.0025)/(1+.0025)-1,
@@ -98,9 +99,13 @@ def outcomes(raw, adj, h, fee, stop_basis='adjusted'):
         'stop_t':np.where(stopped,j,-1),'mae':np.minimum(awin.min(axis=1)/entry-1,0),
         'reference_low':ref,'reference_age':age,'entry_distance_atr':(o[ix+1]-ref)/atr[:k],
         'stop_above_reference':stop>ref,'reference_intact_at_stop':intact,
-        'both_levels_touched_on_stop_day':both,'reference_break_horizon':windows.min(axis=1)<ref-.25*atr[:k],
+        'reference_undercut_at_stop':undercut,
+        'both_levels_touched_on_stop_day':both,'reference_break_horizon':windows.min(axis=1)<ref,
+        'reference_touch_horizon':windows.min(axis=1)<=ref,
+        'tolerant_reference_break_horizon':windows.min(axis=1)<ref-.25*atr[:k],
         'horizon':h,
         'stop_price':stop,'entry_price':o[ix+1],'atr':atr[:k]},index=d.index[:k])
+    out['winner_stopped_reference_untouched']=(out.net>0)&(out.stop_net<=0)&out.reference_intact_at_stop
     return out
 
 def block_weights(start,end,B=2000):
@@ -116,21 +121,41 @@ def boot_mean(g,col,grid,weights):
     denom=weights@z['count'].to_numpy();num=weights@z['sum'].to_numpy()
     vals=np.divide(num,denom,out=np.full(len(denom),np.nan),where=denom>0)
     good=vals[np.isfinite(vals)]
-    ci=np.quantile(good,[.025,.975]) if len(good) else [np.nan,np.nan]
-    return vals,float(ci[0]),float(ci[1]),len(good)/len(vals)
+    support=int((z['count']>0).sum());valid=len(good)/len(vals)
+    eligible=support>=4 and valid>=.95
+    ci=np.quantile(good,[.025,.975]) if eligible else [np.nan,np.nan]
+    return vals,float(ci[0]),float(ci[1]),valid,support,eligible
+
+def boot_contrast(a,b,col,grid,weights):
+    av,_,_,_,sa,ea=boot_mean(a,col,grid,weights)
+    bv,_,_,_,sb,eb=boot_mean(b,col,grid,weights)
+    diff=av-bv;good=diff[np.isfinite(diff)];valid=len(good)/len(diff)
+    eligible=ea and eb and valid>=.95
+    ci=np.quantile(good,[.025,.975]) if eligible else [np.nan,np.nan]
+    return {'point':float(a[col].mean()-b[col].mean()),'lo':float(ci[0]),'hi':float(ci[1]),
+            'arm_a_populated_halfyears':sa,'arm_b_populated_halfyears':sb,
+            'joint_valid_draw_fraction':valid,'interval_available':eligible}
 
 def summarize(g,grid=None,weights=None):
     if not len(g): return {'n':0}
+    converted=(g.net>0)&(g.stop_net<=0)
     x={'n':len(g),'assets':g.symbol.nunique(),'dates':g.date.nunique(),'halfyears':g.halfyear.nunique(),
        'positive':float((g.net>0).mean()),'mean':float(g.net.mean()),'median':float(g.net.median()),
        'p05':float(g.net.quantile(.05)),'worst':float(g.net.min()),'mae_mean':float(g.mae.mean()),
        'mae_worst':float(g.mae.min()),'stop_positive':float((g.stop_net>0).mean()),
        'stop_mean':float(g.stop_net.mean()),'stop_hit':float(g.stop_hit.mean()),
-       'positive_to_stopped_loss':float(((g.net>0)&(g.stop_net<=0)).mean()),
+       'positive_to_stopped_loss':float(converted.mean()),'positive_to_stopped_loss_n':int(converted.sum()),
+       'winner_stopped_reference_untouched_n':int(g.winner_stopped_reference_untouched.sum()),
+       'winner_stopped_reference_untouched':float(g.winner_stopped_reference_untouched.mean()),
+       'reference_untouched_given_converted_winner':float(g.loc[converted,'reference_intact_at_stop'].mean()),
        'stop_above_reference':float(g.stop_above_reference.mean()),
        'intact_reference_stops_all':float(g.reference_intact_at_stop.mean()),
        'intact_reference_given_stop':float(g.loc[g.stop_hit,'reference_intact_at_stop'].mean()),
-       'reference_break':float(g.reference_break_horizon.mean()),'mean_distance_atr':float(g.entry_distance_atr.mean()),
+       'undercut_reference_given_stop':float(g.loc[g.stop_hit,'reference_undercut_at_stop'].mean()),
+       'reference_touch':float(g.reference_touch_horizon.mean()),
+       'reference_break':float(g.reference_break_horizon.mean()),
+       'tolerant_reference_break':float(g.tolerant_reference_break_horizon.mean()),
+       'mean_distance_atr':float(g.entry_distance_atr.mean()),
        'price_positive':float((g.price_net>0).mean()),'price_mean':float(g.price_net.mean()),
        'positive_cost50':float((g.net50>0).mean()),'mean_cost50':float(g.net50.mean()),
        'equal_date_mean':float(g.groupby('date').net.mean().mean()),
@@ -140,12 +165,16 @@ def summarize(g,grid=None,weights=None):
         z=g[g[c].notna()];x[c+'_n']=len(z);x[c+'_coverage']=len(z)/len(g)
         x[c+'_mean']=float(z[c].mean());x[c+'_delta']=float((z.net-z[c]).mean());x[c+'_excess_positive']=float((z.net>z[c]).mean())
         if grid is not None:
-            gg=z.assign(delta=z.net-z[c]);_,lo,hi,valid=boot_mean(gg,'delta',grid,weights)
+            gg=z.assign(delta=z.net-z[c]);_,lo,hi,valid,support,eligible=boot_mean(gg,'delta',grid,weights)
             x[c+'_delta_lo']=lo;x[c+'_delta_hi']=hi;x[c+'_bootstrap_valid']=valid
+            x[c+'_populated_halfyears']=support;x[c+'_interval_available']=eligible
     if 'ordinary_win' in g: x['ordinary_positive']=float(g.ordinary_win.mean())
     if 'ordinary_stopwin' in g:x['ordinary_stop_positive']=float(g.ordinary_stopwin.mean())
     if 'ordinary_conversion' in g:x['ordinary_positive_to_stopped_loss']=float(g.ordinary_conversion.mean())
     if 'ordinary_intact' in g:x['ordinary_intact_stops_all']=float(g.ordinary_intact.mean())
+    if 'ordinary_winnerintact' in g:x['ordinary_winner_stopped_reference_untouched']=float(g.ordinary_winnerintact.mean())
+    if 'ordinary_refbreak' in g:x['ordinary_reference_break']=float(g.ordinary_refbreak.mean())
+    if 'ordinary_stopabove' in g:x['ordinary_stop_above_reference']=float(g.ordinary_stopabove.mean())
     return x
 
 def ordinary_matches(panel,events,start,end):
@@ -153,7 +182,9 @@ def ordinary_matches(panel,events,start,end):
     p['win']=(p.net>0).astype(float);p['stopwin']=(p.stop_net>0).astype(float)
     p['conversion']=((p.net>0)&(p.stop_net<=0)).astype(float)
     p['intact']=p.reference_intact_at_stop.astype(float)
-    cols=['net','win','stopwin','conversion','intact'];keys=['symbol','halfyear','own_above200','market_above200']
+    p['winnerintact']=p.winner_stopped_reference_untouched.astype(float)
+    p['refbreak']=p.reference_break_horizon.astype(float);p['stopabove']=p.stop_above_reference.astype(float)
+    cols=['net','win','stopwin','conversion','intact','winnerintact','refbreak','stopabove'];keys=['symbol','halfyear','own_above200','market_above200']
     ag=p.groupby(keys)[cols].agg(['sum','count'])
     e=events[(events.date>=start)&(events.exit_date<=end)].copy()
     lookup=p.set_index(['symbol','date'])
@@ -304,16 +335,13 @@ def main():
     contrasts=[]
     for pop in ['CORE5','PEERS13']:
         g=e[e.panel.eq(pop)];a=g[g.cell.eq('JOINT')];b=g[g.cell.eq('NEITHER')]
-        da,*_=boot_mean(a,'net',grid,w);db,*_=boot_mean(b,'net',grid,w);diff=da-db
-        contrasts.append({'contrast':pop+'_joint_minus_neither','point':a.net.mean()-b.net.mean(),
-                          'lo':np.nanquantile(diff,.025),'hi':np.nanquantile(diff,.975)})
+        contrasts.append({'contrast':pop+'_joint_minus_neither',**boot_contrast(a,b,'net',grid,w)})
     deltas={}
     for pop in ['CORE5','PEERS13']:
         z=e[e.panel.eq(pop)&e.cell.eq('JOINT')].assign(delta=lambda q:q.net-q.ordinary_net)
-        vals,*_=boot_mean(z,'delta',grid,w);deltas[pop]=(z.delta.mean(),vals)
-    dv=deltas['CORE5'][1]-deltas['PEERS13'][1]
-    contrasts.append({'contrast':'core_minus_peer_ordinary_increment','point':deltas['CORE5'][0]-deltas['PEERS13'][0],
-                      'lo':np.nanquantile(dv,.025),'hi':np.nanquantile(dv,.975)})
+        deltas[pop]=z
+    contrasts.append({'contrast':'core_minus_peer_ordinary_increment',
+                      **boot_contrast(deltas['CORE5'],deltas['PEERS13'],'delta',grid,w)})
     pd.DataFrame(contrasts).to_csv(out/'defensive_contrasts.csv',index=False)
     archived=pd.read_csv(root/'data/archive/signal_state_events.csv');archived=archived[archived.frame.eq('1D')].copy()
     archived['date']=pd.to_datetime(archived.signal_date);archived=archived.rename(columns={'symbol':'symbol','cell':'old_cell','net':'old_net'})
