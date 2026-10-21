@@ -26,7 +26,7 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/og/stocks/ENSG.png">
 <link rel="dns-prefetch" href="https://app.mastermind-x.com">
 <link rel="preconnect" href="https://app.mastermind-x.com" crossorigin>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfilePage", "@id": "https://www.mastermind-x.com/stocks/ENSG.html#profile", "name": "ENSG — Ensign Group company dossier", "datePublished": "2026-10-20", "dateModified": "2026-10-20", "publisher": {"@type": "Organization", "name": "MastermindX"}, "mainEntity": {"@type": "Corporation", "@id": "https://www.mastermind-x.com/stocks/ENSG.html#company", "name": "Ensign Group", "tickerSymbol": "ENSG", "url": "https://www.mastermind-x.com/stocks/ENSG.html", "industry": "Health Care"}, "url": "https://www.mastermind-x.com/stocks/ENSG.html"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfilePage", "@id": "https://www.mastermind-x.com/stocks/ENSG.html#profile", "name": "ENSG — Ensign Group company dossier", "datePublished": "2026-10-21", "dateModified": "2026-10-21", "publisher": {"@type": "Organization", "name": "MastermindX"}, "mainEntity": {"@type": "Corporation", "@id": "https://www.mastermind-x.com/stocks/ENSG.html#company", "name": "Ensign Group", "tickerSymbol": "ENSG", "url": "https://www.mastermind-x.com/stocks/ENSG.html", "industry": "Health Care"}, "url": "https://www.mastermind-x.com/stocks/ENSG.html"}</script>
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
   var B = window.DATA_BASE;
@@ -56,6 +56,8 @@
 })();</script>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css?v=2e861147">
+<link rel="stylesheet" href="../ticker_news.css?v=0183d5f2">
+<script defer src="../ticker_news.js?v=fe8322cd"></script>
 <script defer src="../theme.js?v=1c9d7ad5"></script>
 <script defer src="../assets/js/company-intelligence-dossier.js?v=a3f07e08"></script>
 <script defer src="../assets/js/dossier-live-quote.js?v=20260827a"></script>
@@ -392,10 +394,40 @@
     <span class="stance-line"><span class="l-en">The bottoming setup is not yet confirmed (price still below the 10-day average) and the 3-day/weekly momentum is rolling over — momentum is fading before the…</span><span class="l-zh">筑底形态尚未确认（价格仍位于 10 日均线下方），且3 日/周线动量已开始掉头向下——动量在形态完成前已开始衰竭。等待价格收复 10 日均线且动量趋于稳定后再考虑建仓。</span></span>
     
     
-    <span class="livestamp dq-stamp" data-dq-stamp data-dq-state="baked"><span class="live-dot"></span><span class="l-en">As of 2026-10-20</span><span class="l-zh">截至 2026-10-20</span></span>
+    <span class="livestamp dq-stamp" data-dq-stamp data-dq-state="baked"><span class="live-dot"></span><span class="l-en">As of 2026-10-21</span><span class="l-zh">截至 2026-10-21</span></span>
   </div>
   
 </header>
+
+<section class="tn-panel" data-ticker-news data-ticker="ENSG" aria-labelledby="tn-heading">
+  <header class="tn-heading">
+    <div>
+      <p class="tn-eyebrow"><span class="l-en">Company news</span><span class="l-zh">公司新闻</span></p>
+      <h2 id="tn-heading"><span class="l-en">The latest reporting</span><span class="l-zh">最新报道</span> <span data-tn-symbol></span></h2>
+      <p class="tn-intro"><span class="l-en">One story, with the reporting behind it.</span><span class="l-zh">将同一事件汇总，保留各来源报道。</span></p>
+    </div>
+    <a class="tn-terminal" data-tn-terminal href="https://app.mastermind-x.com/terminal"><span class="l-en">Open in Terminal</span><span class="l-zh">在终端打开</span> <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="tn-toolbar">
+    <div class="tn-filters" role="group" aria-label="News coverage">
+      <button type="button" data-tn-filter="signal" aria-pressed="true"><span class="l-en">High signal</span><span class="l-zh">重点新闻</span></button>
+      <button type="button" data-tn-filter="all" aria-pressed="false"><span class="l-en">All reporting</span><span class="l-zh">全部报道</span> <span data-tn-count></span></button>
+    </div>
+    <span class="tn-status" data-tn-status role="status"><span class="l-en">Checking access…</span><span class="l-zh">正在检查访问权限…</span></span>
+  </div>
+  <p class="tn-coverage" data-tn-coverage hidden></p>
+  <div class="tn-message" data-tn-message hidden></div>
+  <button class="tn-updates" data-tn-updates type="button" hidden></button>
+  <div class="tn-rows" data-tn-rows></div>
+  <footer class="tn-footer">
+    <button type="button" data-tn-retry hidden><span class="l-en">Retry</span><span class="l-zh">重试</span></button>
+    <a data-tn-signin href="../index.html?signin=1" hidden><span class="l-en">Sign in</span><span class="l-zh">登录</span></a>
+    <button type="button" data-tn-more hidden><span class="l-en">Earlier reporting</span><span class="l-zh">更早报道</span> <span aria-hidden="true">↓</span></button>
+    <button type="button" data-tn-latest hidden><span class="l-en">Back to latest</span><span class="l-zh">返回最新</span></button>
+    <a href="../news.html"><span class="l-en">News Intelligence</span><span class="l-zh">新闻情报</span> <span aria-hidden="true">↗</span></a>
+  </footer>
+  <noscript><p><span class="l-en">Enable JavaScript and sign in to view current company reporting.</span><span class="l-zh">请启用 JavaScript 并登录以查看当前公司报道。</span></p></noscript>
+</section>
 
 <!-- ═ COMPANY INTELLIGENCE — verified dynamic context, context-only authority ═ -->
 <section class="mod ci-mod rv" id="company-update" data-company-intelligence data-ticker="ENSG" aria-labelledby="ci-title">
@@ -500,7 +532,7 @@
 
   
   <section class="mod rv" id="technicals">
-    <div class="mod-hd"><h2><span class="l-en">Technicals</span><span class="l-zh">技术面</span></h2><span class="hint"><span class="l-en">daily bars</span><span class="l-zh">日线数据</span> · 2026-10-20 <button class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-technicals')"><span class="l-en">Full detail</span><span class="l-zh">完整数据</span></button></span></div>
+    <div class="mod-hd"><h2><span class="l-en">Technicals</span><span class="l-zh">技术面</span></h2><span class="hint"><span class="l-en">daily bars</span><span class="l-zh">日线数据</span> · 2026-10-21 <button class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-technicals')"><span class="l-en">Full detail</span><span class="l-zh">完整数据</span></button></span></div>
     
     <div class="trow">
       <span class="tk"><span class="l-en">Momentum (RSI 14)</span><span class="l-zh">动量（RSI 14）</span></span>
@@ -541,7 +573,7 @@
       <span class="hint"><span class="l-en">next report</span><span class="l-zh">下次财报</span> 2026-11-02 <button class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-earnings')"><span class="l-en">Full detail</span><span class="l-zh">完整数据</span></button></span></div>
     <div class="earn-top">
       <div class="cring-wrap">
-        <div class="cring" style="--p:71;"><div class="cd"><b class="num">13</b></div></div>
+        <div class="cring" style="--p:73;"><div class="cd"><b class="num">12</b></div></div>
         <span class="cring-lbl"><span class="l-en">days to go</span><span class="l-zh">天后公布</span></span>
       </div>
       
@@ -878,7 +910,7 @@
     <div class="wr wr-on">
       <div class="wd"></div>
       <span class="wc"><span class="l-en">News</span><span class="l-zh">新闻</span></span>
-      <span class="wl"><span class="l-en">3 recent stories — mixed</span><span class="l-zh">3 篇最新报道，多空参半</span></span>
+      <span class="wl"><span class="l-en">2 recent stories — mixed</span><span class="l-zh">2 篇最新报道，多空参半</span></span>
     </div>
     
     <div class="wr wr-on">
@@ -982,7 +1014,7 @@
       
     </div>
     
-    <div class="mod-ft"><span class="l-en">Showing the last 15 of</span><span class="l-zh">显示最近15条，共</span> 263 <span class="l-en">signals</span><span class="l-zh">条信号</span></div>
+    <div class="mod-ft"><span class="l-en">Showing the last 15 of</span><span class="l-zh">显示最近15条，共</span> 261 <span class="l-en">signals</span><span class="l-zh">条信号</span></div>
     
     
   </section>
@@ -1064,11 +1096,6 @@
       <span class="nm">GlobeNewswire Inc. · 2026-10-19</span>
     </div>
     
-    <div class="nrow">
-      <a href="https://www.globenewswire.com/news-release/2026/10/17/3382875/673/en/rosen-the-first-filing-firm-encourages-the-ensign-group-inc-investors-to-secure-counsel-before-important-deadline-in-securities-class-action-first-filed-by-the-firm-ensg.html" rel="noopener noreferrer" target="_blank">ROSEN, THE FIRST FILING FIRM, Encourages The Ensign Group, Inc. Investors to Secure Counsel Before Important Deadline in Securities Class Action First Filed by the Firm - ENSG</a>
-      <span class="nm">GlobeNewswire Inc. · 2026-10-17</span>
-    </div>
-    
   </section>
   
   </div>
@@ -1128,7 +1155,7 @@
     <div class="r6"><span class="k6"><span class="l-en">Short interest</span><span class="l-zh">空头占比</span></span><span class="v6 num">2.5% of float</span></div>
     <div class="r6"><span class="k6"><span class="l-en">Volume</span><span class="l-zh">成交量</span></span><span class="v6 num"><span class="l-en">Normal volume</span><span class="l-zh">正常成交量</span></span></div>
     <div class="r6"><span class="k6"><span class="l-en">Volatility rank</span><span class="l-zh">波动率分位</span></span><span class="v6 num"><span class="l-en">34th pctile</span><span class="l-zh">第34百分位</span></span></div>
-    <div class="r6"><span class="k6"><span class="l-en">Next earnings</span><span class="l-zh">下次财报</span></span><span class="v6 num">2026-11-02 (13d)</span></div>
+    <div class="r6"><span class="k6"><span class="l-en">Next earnings</span><span class="l-zh">下次财报</span></span><span class="v6 num">2026-11-02 (12d)</span></div>
     <div class="r6"><span class="k6"><span class="l-en">52-week range</span><span class="l-zh">52周区间</span></span><span class="v6"><span class="l-en">19.8% below 52-week high</span><span class="l-zh">低于52周高点 19.8%</span></span></div>
   </section>
   
@@ -1180,8 +1207,8 @@
         <span>Aug</span>
       </div>
       <div class="sc "
-           style="background:var(--panel2);">
-        <span class="num" style="font-size:11px;color:var(--text);font-weight:700;">50%</span>
+           style="background:color-mix(in srgb,var(--down) 50%,var(--panel2));">
+        <span class="num" style="font-size:11px;color:var(--text);font-weight:700;">25%</span>
         <span>Sep</span>
       </div>
       <div class="sc cur"
@@ -1275,7 +1302,7 @@
 
 <footer class="site-footer6">
   <p><span class="l-en">Research context only — not investment advice. Past patterns do not guarantee future results.</span><span class="l-zh">仅供研究参考，不构成投资建议。历史规律不代表未来表现。</span></p>
-  <p><span class="l-en">Data through</span><span class="l-zh">数据截至</span> 2026-10-20 · <span class="l-en">regenerated nightly</span><span class="l-zh">每晚更新</span> · <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-20 18:02 UTC · <a href="index.html"><span class="l-en">All coverage</span><span class="l-zh">所有股票</span></a> · <a href="../stock.html"><span class="l-en">Analyzer</span><span class="l-zh">分析器</span></a></p>
+  <p><span class="l-en">Data through</span><span class="l-zh">数据截至</span> 2026-10-21 · <span class="l-en">regenerated nightly</span><span class="l-zh">每晚更新</span> · <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-21 14:18 UTC · <a href="index.html"><span class="l-en">All coverage</span><span class="l-zh">所有股票</span></a> · <a href="../stock.html"><span class="l-en">Analyzer</span><span class="l-zh">分析器</span></a></p>
 </footer>
 
 </div><!-- /page-wrap -->
@@ -1700,7 +1727,7 @@
           
           <div class="dcard"><div class="dk"><span class="l-en">Strongest month</span><span class="l-zh">最强月份</span></div><div class="dv num pos">Oct · 100%</div></div>
           
-          <div class="dcard"><div class="dk"><span class="l-en">Weakest month</span><span class="l-zh">最弱月份</span></div><div class="dv num neg">Mar · 33%</div></div>
+          <div class="dcard"><div class="dk"><span class="l-en">Weakest month</span><span class="l-zh">最弱月份</span></div><div class="dv num neg">Sep · 25%</div></div>
           
         </div>
         
@@ -1730,7 +1757,7 @@
           
           <tr><td><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td>67%</td><td>+7.4%</td><td>3</td></tr>
           
-          <tr><td><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td>50%</td><td>+0.1%</td><td>4</td></tr>
+          <tr><td><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td>25%</td><td>-0.0%</td><td>4</td></tr>
           
           <tr><td><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td>100%</td><td>+4.2%</td><td>4</td></tr>
           

@@ -1440,6 +1440,7 @@ jobs:
             # site/templates. Keep the metadata shortcut inside that exact contract:
             # a newer site/template delta needs the guarded porcelain path below,
             # because an asset deletion can invalidate a page without a path conflict.
+            COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
             if git diff --quiet "$RENDER_PARENT" origin/main -- site/ templates/ "${GOVREV_PROJECTION_INPUTS[@]}" && \
               PUBLISH_COMMIT=$(push_metadata_replay_commit \
                 "$RENDER_PARENT" origin/main "$RENDER_COMMIT" \
@@ -1449,6 +1450,11 @@ jobs:
               # promised objects already present on origin. Pushing an anonymous object
               # ID makes Git hydrate those unchanged blobs before packing.
               git update-ref "$PUBLISH_REF" "$PUBLISH_COMMIT"
+              # Metadata replay uses a private index; inspect that exact commit, not the worktree.
+              if ! python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$PUBLISH_COMMIT"; then
+                git update-ref -d "$PUBLISH_REF"
+                exit 1
+              fi
               python -m scripts.check_government_revenue_projection
               if push_do origin "$PUBLISH_REF:refs/heads/main"; then
                 git update-ref HEAD "$PUBLISH_COMMIT"
@@ -1472,6 +1478,8 @@ jobs:
             # both sides' hashed files (next externalize_css prunes the orphan) and
             # finishes the rebase; anything else is left for the abort+retry below.
             if { git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+              # Restore only the qualified accepted page when a stale render replays over R3.
+              python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
               # Prove the rebased render commit itself before any optional heal. If a
               # later follow-up commit is skipped, this is the exact HEAD we still push.
               python3 scripts/check_site_asset_refs.py site
@@ -1559,6 +1567,8 @@ jobs:
                 exit 1
               fi
               python -m scripts.check_government_revenue_projection
+              # Worktree healing cannot certify an older committed candidate.
+              python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref HEAD || exit 1
               if push_do; then echo "pushed rendered site on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
               if [ "${PUSH_FAIL_CLASS:-}" = "push-error" ]; then
                 echo "::error title=rendered site publisher denied::non-contention push rejection (typically GH013 repository rules); not retrying"
