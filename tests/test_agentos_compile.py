@@ -1585,3 +1585,102 @@ def test_continuity_helper_cases_have_canonical_collection():
                      if name.startswith("test_") and callable(value)
                      and globals().get(name) is not value)
     assert not missing, f"Continuity cases absent from canonical collection: {missing}"
+
+
+# Harness2 consumer: optional structured discovery metadata in the EXISTING
+# compiler, never another memory store or a runtime/promotion authority.
+def _harness_experience_meta() -> dict[str, Any]:
+    return {
+        "domain": "accounting",
+        "harness_artifact": {"artifact_ref": "artifact:fixture/adopted-harness",
+                             "digest": "sha256:" + "a" * 64},
+        "source_run_ids": ["run:00000000-0000-4000-8000-000000000001",
+                           "run:00000000-0000-4000-8000-000000000002"],
+        "method_source_ref": "git:mastermindx-market-intelligence/Mastermind@" + "b" * 40,
+    }
+
+
+def test_harness_experience_opt_in_projects_complete_fields(simple: Path) -> None:
+    full_claim = "Keep signed values. " * 70
+    _discovery(simple, "KEEP", claim=full_claim, harness_experience=_harness_experience_meta())
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "12000", "--harness-experience")
+    assert result.returncode == 0, result.stderr
+    bundle = _bundle(result)
+    item = next(i for i in _items(bundle) if i["key"] == "DSC:KEEP")
+    experience = item["harness_experience"]
+    assert experience["schema"] == "agentos.harness_experience.v1"
+    assert experience["claim"] == full_claim  # not reconstructed from the 700-character excerpt
+    assert len(item["excerpt"]) < len(full_claim)
+    assert experience["harness_artifact"] == _harness_experience_meta()["harness_artifact"]
+    assert experience["falsifier"] and experience["so_what"] and experience["verified_by"]
+    assert experience["confidence"] == "verified"
+    assert item["authority_class"] == "A3"
+    assert "promotion" not in experience and "runtime_authority" not in experience
+    _budget_is_honest(bundle, "harness experience full payload")
+
+
+def test_harness_experience_default_view_remains_unchanged(simple: Path) -> None:
+    _discovery(simple, "KEEP", harness_experience=_harness_experience_meta())
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN)
+    assert result.returncode == 0, result.stderr
+    assert all("harness_experience" not in i for i in _items(_bundle(result)))
+
+
+def test_harness_experience_never_resurrects_excluded_memory(simple: Path) -> None:
+    _discovery(simple, "KEEP", harness_experience=_harness_experience_meta(),
+               verified_at="2020-01-01", expires="2020-04-01")
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--harness-experience")
+    assert result.returncode == 0, result.stderr
+    bundle = _bundle(result)
+    assert not any(i.get("harness_experience") for i in _items(bundle))
+    assert any(i["key"] == "DSC:KEEP" and "expired" in i["reason"].lower() for i in bundle["excluded"])
+
+
+def test_harness_experience_budget_omission_is_explicit(simple: Path) -> None:
+    _discovery(simple, "KEEP", claim="Signed amount validation. " * 250,
+               harness_experience=_harness_experience_meta())
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "1000", "--harness-experience")
+    assert result.returncode == 0, result.stderr
+    bundle = _bundle(result)
+    assert not any(i.get("harness_experience") for i in _items(bundle))
+    assert any(i["key"] == "DSC:KEEP" for i in bundle["omitted_due_to_budget"])
+    _budget_is_honest(bundle, "harness experience omission")
+
+
+@pytest.mark.parametrize("change", [
+    lambda d: d.update(extra=True),
+    lambda d: d.update(domain=""),
+    lambda d: d["harness_artifact"].update(digest="not-a-digest"),
+    lambda d: d["harness_artifact"].update(extra=True),
+    lambda d: d.update(source_run_ids=["fabricated", "also-fabricated"]),
+    lambda d: d.update(source_run_ids=[d["source_run_ids"][0]] * 2),
+    lambda d: d.update(method_source_ref="moving:main"),
+])
+def test_malformed_harness_experience_remains_named_exclusion(simple: Path, change: Any) -> None:
+    metadata = _harness_experience_meta()
+    change(metadata)
+    _discovery(simple, "KEEP", harness_experience=metadata)
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--harness-experience")
+    assert result.returncode == 0, result.stderr  # malformed sibling cannot turn memory into a global work gate
+    bundle = _bundle(result)
+    assert not any(i.get("harness_experience") for i in _items(bundle))
+    assert any(i["key"] == "DSC:KEEP" for i in bundle["excluded"])
+    assert "bad-harness-experience" in json.dumps(bundle["degraded"])
+
+
+def test_draft_discovery_retains_harness_artifact_binding() -> None:
+    module = _load_cli()
+    payload = {"key": "HARNESS-FIXTURE", "claim": "The fixture includes signed credits.",
+               "falsifier": "pytest tests/test_agentos_compile.py should reject loss of signed amounts.",
+               "so_what": "Preserve signed terms in the next bounded experiment.",
+               "kind": "architecture", "verified_at": "2026-08-10",
+               "verified_by": "pytest tests/test_agentos_compile.py",
+               "scope": ["WS:TARGET"], "confidence": "verified",
+               "harness_experience": _harness_experience_meta()}
+    rendered = module.draft_discovery(payload)
+    record = yaml.safe_load(rendered.split("---", 2)[1])
+    assert record["harness_experience"] == payload["harness_experience"]

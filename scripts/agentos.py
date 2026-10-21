@@ -1174,6 +1174,48 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     return out
 
 
+def _harness_experience_problem(rec: dict[str, Any]) -> str | None:
+    """Optional evidence association on a DSC, never efficacy or runtime admission.
+
+    Legacy discoveries are unchanged. A present extension is a closed bounded
+    object. Its artifacts remain opaque references; this validator fetches none.
+    """
+    if "harness_experience" not in rec:
+        return None
+    value = rec["harness_experience"]
+    fields = {"domain", "harness_artifact", "source_run_ids", "method_source_ref"}
+    if type(value) is not dict or set(value) != fields:
+        return "harness_experience must contain exactly domain, harness_artifact, source_run_ids, method_source_ref"
+
+    def bounded(text: Any, maximum: int) -> bool:
+        return (type(text) is str and bool(text.strip()) and len(text) <= maximum
+                and not any(ord(c) < 32 or ord(c) == 127 for c in text))
+
+    if not bounded(value["domain"], 128):
+        return "harness_experience.domain is not bounded nonempty text"
+    pair = value["harness_artifact"]
+    if (type(pair) is not dict or set(pair) != {"artifact_ref", "digest"}
+            or not bounded(pair.get("artifact_ref"), 2048)
+            or type(pair.get("digest")) is not str
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", pair["digest"]) is None):
+        return "harness_experience.harness_artifact needs an opaque reference and SHA256 digest"
+    run_ids = value["source_run_ids"]
+    run_pattern = r"run:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+    if (type(run_ids) is not list or not 2 <= len(run_ids) <= 128
+            or not all(type(run_id) is str and re.fullmatch(run_pattern, run_id) for run_id in run_ids)
+            or len(set(run_ids)) != len(run_ids)):
+        return "harness_experience.source_run_ids must be two to 128 unique native run UUID4 references"
+    source = value["method_source_ref"]
+    if (not bounded(source, 256)
+            or re.fullmatch(r"git:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{40}", source) is None):
+        return "harness_experience.method_source_ref must pin an exact Git repository and SHA"
+    for field in ("claim", "falsifier", "so_what", "verified_by"):
+        text = rec.get(field)
+        if type(text) is not str or not text.strip() or len(text) > 8192 or "\x00" in text:
+            return f"harness experience {field} must be complete bounded text"
+    return None
+
+
 def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "claim", "falsifier", "so_what", "kind",
@@ -1193,6 +1235,9 @@ def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     _date(rec, "verified_at", path, out)
     _date(rec, "expires", path, out)
     _check_supersession(rec, "DSC", path, out)
+    harness_problem = _harness_experience_problem(rec)
+    if harness_problem is not None:
+        out.append(Problem(path, "bad-harness-experience", harness_problem, hard=True))
 
     # The two admission gates, made STRUCTURAL rather than merely non-empty.  A
     # `_require` check passes on `falsifier: "no"` and `verified_by: vibes`, which is
@@ -2027,6 +2072,11 @@ def draft_discovery(payload: dict[str, Any]) -> str:
         "key", "claim", "falsifier", "so_what", "kind", "verified_at",
         "verified_by", "scope", "confidence",
     )}
+    harness_problem = _harness_experience_problem(payload)
+    if harness_problem is not None:
+        _die(harness_problem)
+    if "harness_experience" in payload:
+        rec["harness_experience"] = payload["harness_experience"]
     path = f"agentos/discoveries/DSC-{key}.md"
     return (
         _yaml_frontmatter(rec)
@@ -5167,6 +5217,7 @@ def compile_bundle(
     builds: dict[str, Any] | None = None,
     degraded: Degraded | None = None,
     search_fn: Callable[[str], dict[str, Any] | None] | None = None,
+    include_harness_experience: bool = False,
 ) -> dict[str, Any]:
     """Compile ``context_bundle.v1``.  Pure read; never writes, never gates.
 
@@ -5443,6 +5494,10 @@ def compile_bundle(
             continue
         dsc_path = source(f"DSC/{dsc_key}")
         if malformed("discovery", f"DSC:{dsc_key}", dsc_path):
+            if include_harness_experience:
+                harness_problem = _harness_experience_problem(dsc_rec)
+                if harness_problem is not None:
+                    degraded.add(f"DSC:{dsc_key} [bad-harness-experience]: {harness_problem}")
             continue
         replacement, raw = _supersession(dsc_rec, "DSC", dsc_all)
         if replacement is not None:
@@ -5492,6 +5547,21 @@ def compile_bundle(
                 why="; ".join(dsc_reasons[dsc_key]),
             ),
         })
+        if include_harness_experience and "harness_experience" in dsc_rec:
+            # Selection, malformed/stale/superseded exclusions above remain
+            # authoritative. The existing packer prices the ENTIRE item below.
+            metadata = dsc_rec["harness_experience"]
+            rows[-1]["item"]["harness_experience"] = {
+                "schema": "agentos.harness_experience.v1",
+                "domain": metadata["domain"],
+                "harness_artifact": dict(metadata["harness_artifact"]),
+                "source_run_ids": list(metadata["source_run_ids"]),
+                "method_source_ref": metadata["method_source_ref"],
+                "claim": dsc_rec["claim"], "falsifier": dsc_rec["falsifier"],
+                "so_what": dsc_rec["so_what"], "verified_by": dsc_rec["verified_by"],
+                "verified_at": str(dsc_rec["verified_at"]),
+                "confidence": dsc_rec["confidence"],
+            }
     rows.sort(key=lambda row: row["item"]["key"])
     rows.sort(key=lambda row: row["_date"], reverse=True)
     for row in rows:
@@ -5848,6 +5918,7 @@ def cmd_compile_context(args: argparse.Namespace) -> int:
         budget=args.budget,
         builds=builds,
         degraded=degraded,
+        include_harness_experience=getattr(args, "harness_experience", False),
     )
     # Mirrors context_index_query.py exactly: machines get the default, humans opt in, and
     # `--json --text` together resolves to JSON in BOTH tools rather than one each way.
@@ -5937,6 +6008,8 @@ def main(argv: list[str] | None = None) -> int:
     p_ctx.add_argument("--root", help="store root (default: <repo>/agentos)")
     p_ctx.add_argument("--active-builds", help="active_builds.v1 path override")
     p_ctx.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
+    p_ctx.add_argument("--harness-experience", action="store_true",
+                       help="include complete bounded harness lesson fields on already-selected discoveries; read-only, no promotion")
     # The subparser is carried on the namespace so the command can raise a real usage
     # error for "both or neither", which argparse cannot express between a positional
     # and an option.
