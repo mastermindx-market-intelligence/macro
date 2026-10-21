@@ -4,6 +4,50 @@ This is the current source checkpoint for the October 21 implementation commissi
 It records evidence and next actions, not a new runtime, admission, or route registry.
 The product is **NOT_ACCEPTED** and the mission remains incomplete.
 
+## Current frontier — October 21 continuation
+
+This section supersedes older in-progress descriptions below. Existing native
+owners resumed through supported collaboration after interruption; no replacement
+chat, worker or effect carrier was created. Direct app-server input reports that
+V2 sub-agents are unsupported; their native followup path succeeds.
+
+- Terminal remote1063 remains3187. Run39621638381 and observer12795 are consumed/
+  closed: all11 responsive shards and service checks passed;13 unit failures were
+  repaired, with all12 formerly failing files80/80PASS. Local master mergeb1a6
+  preserves protectedc6e62 and b02 auth. Accepted final24 captures5ebc were adopted
+  as3b8465186, with19 evidence guards passing and true fbc/42d identities retained.
+  Semantic6/6 and actual no-target URL/focus checks passed. Native locale53ec/48bf
+  passed real local queries; final3 bindings1ec695b84 reuse Futures.navTitle,
+  LEX.setTerminal and shellSection_learn. After the owner restored its ended3116
+  fixture server, all three labels and six EN/ZH selections passed. Root inspected
+  the final screenshot showing all13 native labels in Chinese. Earlier10 query
+  proofs are reused; no normal-account/public or destination-body claim follows.
+- Macro remote7949 remains9fcef. Run39620460168 and observer99279 are consumed/
+  closed,10/12 packsPASS. Overlay repair239PASS and init declaration repair137f
+  restore census344 without changed ceilings/suites. Protectedmainafc303 was merged
+  as390904. Canonical footer/ec32d and explicit bilingual heading/73852 source
+  repair qualify existing labels without a new catalog or blanket translation.
+  Exact generated projection is still owned by compatibility; product imports it
+  verbatim before one coherent corrective push. Each owner retains one new exact
+  CI observer only after the actual push, then normal protected landing.
+- Root consumed and accepted `acceptance/BETA_SOURCE_ROLLBACK_RULING.md` in the
+  extracted handoff: existing guarded beta owner can prove source-version rollback
+  A1→B1→A2 through two real qualified protected revisions. A2 retains its actual
+  new build/attempt/receipt and immutable chain A2→B1→A1. This is not restoration
+  of A1's original compiled artifact or dirty-abort recovery. No induced dirty
+  failure, receipt editing or lock stealing. Return normally to finalB afterward.
+  Actual runtime evidence, clean stop/hostname withdrawal and production3000
+  invariance remain owed. Normal143 source review is reused, not runtime proof.
+- The normal Chrome1 extension-UI gate is still unanswered. Ambient local3116
+  browser context is not clearance. No same-operation retry, replacement tab,
+  alternate browser/account or public browser fallback. Continue source/CI,
+  publication and permitted host work while the human browser action is pending.
+
+Current owner records remain compatibility-release/CURRENT.md,
+shared-shell-handoff/product-integration-checkpoint.md and family-acceptance/CURRENT.md
+under `/Volumes/Mastermind/agent-workspaces/codex/6e18/`. Their exact fresh identities
+govern subsequent pushes; older progress paragraphs below retain historical evidence.
+
 ## Assignment and acceptance
 
 Chris directly assigned native root `01a15e6c-42f8-7941-ac2b-296021932fbb` to
