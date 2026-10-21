@@ -54,8 +54,8 @@ changed:
 - path: 'PR #9944 (IM16 dollar/EM credit transmission + acceptance matrix, fabric lane INTL-GS-W3B + review + fix + REREVIEW PASS)'
   what: >
     IM16 engine side: engine/intl_global_dollar_credit.py, engine/intl_global_acceptance_matrix.py (counts-only), two suites,
-    CI job international-global-universe extended (pandas/numpy/pyarrow in its single install step). At CI under one watcher;
-    seat merges at the exact head. Gaps by fact: cds_5y ×63 no source; FRED/ICE series no rights row; im16_complete=False.
+    CI job international-global-universe extended (pandas/numpy/pyarrow in its single install step). MERGED by seat at exact
+    head 37c10fc6 → main 2d50943eb154430efda02ffc117bb37b5addc242 (GitHub mergeCommit read, 08:42:08Z). Gaps by fact: cds_5y ×63 no source; FRED/ICE series no rights row; im16_complete=False.
 - path: agentos/decisions/DEC-INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS.md
   what: >
     PROPOSED (not decided) rights rows for FRED-hosted US-government series DTWEXBGS/DFII10; ICE BofA series stay without a
@@ -88,10 +88,7 @@ verified:
 - claim: R14 freeze record validates under Agent OS; frozen rulings carry confidence/reversibility/review_by.
   command: 'python3 scripts/agentos.py validate --paths agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md  # 0 errors'
 unverified:
-- 'PR #9944 CI rollup at head 37c10fc6 (one watcher, observation only); merge at the exact head follows a clean rollup.
-
-  '
-- 'Main baseline for 63f3bc83 (IM15 landing): prove by ancestry of the newest green main run, never by a per-sha watcher.
+- 'Main baselines for 63f3bc83 (IM15) and 2d50943e (IM16): prove by ancestry of the newest green main run, never by a per-sha watcher.
 
   '
 - 'Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
@@ -112,8 +109,8 @@ unresolved:
 
   '
 next_actions:
-- 'Merge #9944 at exact head 37c10fc6 (--match-head-commit) when its watcher reports a clean rollup; read mergeCommit;
-  then message ORCH-4 "W3 ON MAIN <sha>" and set WS IM16 done.
+- 'ORCH-4 messaged "W3 ON MAIN 2d50943e" (08:4xZ); prove the 63f3bc83/2d50943e main baselines by ancestry of the newest
+  green main run at the next boundary.
 
   '
 - 'Consume ORCH-2 FOUNDATION_READY → seat verifies the foundation PR (open the evidence crops under
@@ -142,7 +139,7 @@ do_not_redo:
 - 'R14 design freeze (DEC:INTL-GS-R14-DESIGN-FREEZE, spec, 14 boards) — frozen; re-open only on a material invalidator.
 
   '
-- 'Wave 3 IM15 (#9943 → 63f3bc83) — merged and seat-verified; IM16 PR #9944 reviewed PASS at 37c10fc6 — do not re-review.
+- 'Wave 3 IM15 (#9943 → 63f3bc83) — merged and seat-verified; IM16 (#9944 → 2d50943e) — merged and seat-verified.
 
   '
 - 'Do not re-spawn ORCH-1, ORCH-D, ORCH-2, ORCH-3 or ORCH-4; message them by id. Never relaunch a used fabric lane run-id.
@@ -175,6 +172,6 @@ Program state lives in research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_20
 read its newest checkpoint first. This record is the Agent OS pointer, not a second ledger.
 
 Proven rungs at this write (08:3xZ): #9920 PRODUCTION_PROOF; #9923, #9924, #9937, #9939 and #9943 MERGED (GitHub
-mergeCommit reads: 0062e28f, 5d454fbe, 556d3333, 5f82b33a, 63f3bc83); #9944 at CI under one watcher;
+mergeCommit reads: 0062e28f, 5d454fbe, 556d3333, 5f82b33a, 63f3bc83); #9944 MERGED → 2d50943e;
 Wave 1 + R14 main baselines green by ancestry (run 39559296162); ORCH-2 and ORCH-4 RUNNING on fabric, ORCH-3 COMPLETED.
 Seat branch rotated to claude/ssd-intl-gs-seat-r4-8e4e57e69f466313 from main 63f3bc83 in the same SSD tree.

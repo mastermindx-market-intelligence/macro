@@ -68,12 +68,12 @@ waves:
     Board 11 (dislocation view) UI rides a later UI wave on the W2 foundation.
 - id: IM16
   title: EM credit and dollar context
-  status: in_progress
+  status: done
   depends_on:
   - IM13
   next_action: >
-    PR 9944 (lane/intl-gs-w3b-r1 @37c10fc6, fabric review PASS r2) at CI; seat merges at the exact head.
-    Engine-side only: engine/intl_global_dollar_credit.py + engine/intl_global_acceptance_matrix.py
+    MERGED (engine side). PR 9944 (lane/intl-gs-w3b-r1 @37c10fc6, fabric review PASS r2) → main
+    2d50943eb154430efda02ffc117bb37b5addc242 (GitHub mergeCommit read 08:42:08Z). Board 12 UI rides a later UI wave. Engine-side only: engine/intl_global_dollar_credit.py + engine/intl_global_acceptance_matrix.py
     (counts-only matrix). Honest gaps (no invented coverage): cds_5y no_admitted_source for all 63;
     DTWEXBGS/DFII10/ICE-BofA series have no rights-matrix row → rights_unconfirmed
     (DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS proposed); dollar_funding_external and
@@ -97,8 +97,8 @@ waves:
   - IM17
   next_action: Commission after Wave 4.
 next_action: >
-  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → 556d3333); IM15 MERGED (#9943 → 63f3bc83).
-  Merge IM16 #9944 at exact head 37c10fc6 when its watcher reports; consume ORCH-2 (foundation #9949 → IM13/IM14) and
+  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → 556d3333); Wave 3 engines MERGED (#9943 → 63f3bc83, #9944 → 2d50943e).
+  Consume ORCH-2 (foundation #9949 → IM13/IM14) and
   ORCH-4 (IM17) returns; seat verifies crops/tests and merges; then Wave 3 UI (boards 11/12), Wave 5 IM18 and the §14 hard
   acceptance tests on mastermind-x.com/intl.html.
 artifacts:
@@ -131,6 +131,6 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 | W0 #9596 diagnosis | read-only lane intl-gs-w0b-r1 | DIAGNOSED 5 | packs 2/3 base-stale, pack 9 PR_CAUSED (theme.css receipt), pack 0 unknown, gate downstream |
 | W1 IM11/IM12 | Opus orchestrator ORCH-1 → fabric lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
 | W2 IM13/IM14 UI | Opus orchestrator ORCH-2 → fabric lanes W2F/W2A/W2B | running; foundation PR 9949 @b2eae89c open (draft, its review lane running), not yet returned to the seat | frozen spec R14; evidence under `mockups/evidence/intl-gs-w2f/{shell,states}/` |
-| W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B (+ W3A-CONFIRM, W3B-REREVIEW) | RETURNED; #9943 MERGED → 63f3bc83; #9944 @37c10fc6 at CI (watcher armed) | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`; IM16 gaps recorded above |
+| W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B (+ W3A-CONFIRM, W3B-REREVIEW) | RETURNED + LANDED; #9943 → 63f3bc83; #9944 → 2d50943e | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`; IM16 gaps recorded above |
 | W4 IM17 engine+UI | Opus orchestrator ORCH-4 → fabric lanes W4A/W4B | running (spawned 08:3xZ); W4B gated on the W2 foundation landing | NEW exclusive CI job; frozen models read-only |
 | Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (DEC:INTL-GS-R14-DESIGN-FREEZE, PR 9937) | design spec path above |
