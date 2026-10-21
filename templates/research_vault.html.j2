@@ -735,6 +735,24 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
 
   var SUBJECT_RE = /^(sector|subsector|theme|stock):([A-Za-z0-9._-]{1,64})$/;
   var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  /* RI05 MINOR: DATE_RE is only a shape gate. si_obs must also survive a Date
+     round-trip (2026-02-30 rolls over to March and is refused) and land no
+     later than today+1 — a carried snapshot may cross a timezone date line,
+     but never arrive from further ahead than that. */
+  function validObservationDate(value) {
+    if (!DATE_RE.test(value)) return false;
+    var parts = value.split('-');
+    var year = Number(parts[0]);
+    var month = Number(parts[1]);
+    var day = Number(parts[2]);
+    var calendar = new Date(year, month - 1, day);
+    if (calendar.getFullYear() !== year || calendar.getMonth() !== month - 1 ||
+        calendar.getDate() !== day) return false;
+    var dayAfterTomorrow = new Date();
+    dayAfterTomorrow.setHours(0, 0, 0, 0);
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+    return calendar.getTime() < dayAfterTomorrow.getTime();
+  }
   /* si_ev vocabulary: the briefcase's own policy-selection enum
      (templates/fif_saved_briefcase.js:44 SELECTIONS). The evidence-ref
      normalizer at :296 carries ref entries, not modes — anything outside
@@ -761,6 +779,13 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     return out;
   }
 
+  /* RI05 MINOR: a clipped carried field is never silently shortened — clip()
+     reports it and the readback appends the visible mark below. */
+  function clip(value, limit) {
+    var text = codePointPrefix(value, limit);
+    return { text: text, shortened: text !== value };
+  }
+
   var params = new URL(document.URL).searchParams;
   function raw(name) {
     var value = params.get(name);
@@ -782,13 +807,15 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     }
   } catch (error) { origin = ''; }
 
+  var qCarried = clip(raw('si_q'), 280);
+  var snapCarried = clip(raw('si_snap').trim(), 128);
   var fields = {
     subject: subjectMatch ? subjectMatch[0] : '',
     kind: subjectMatch ? subjectMatch[1] : '',
     id: subjectMatch ? subjectMatch[2] : '',
-    q: codePointPrefix(raw('si_q'), 280).trim(),
-    snap: codePointPrefix(raw('si_snap').trim(), 128),
-    obs: DATE_RE.test(raw('si_obs')) ? raw('si_obs') : '',
+    q: qCarried.text.trim(),
+    snap: snapCarried.text,
+    obs: validObservationDate(raw('si_obs')) ? raw('si_obs') : '',
     ev: EVIDENCE_MODES.indexOf(evRaw) >= 0 ? evRaw : '',
     origin: origin
   };
@@ -802,14 +829,19 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
   var island = document.getElementById('si-research-entry');
   if (!island || !fields.subject) return;
 
-  /* readback — textContent only, verbatim; absent optionals read as "—" */
+  /* readback — textContent only, verbatim; absent optionals read as "—".
+     RI05 MINOR: a carried field that was clipped on arrival says so inline —
+     the mark rides the painted text once, in the page's language at load (the
+     six values themselves are never rewritten, language switch included). */
+  var shortenedMark = (document.documentElement.getAttribute('data-lang') === 'zh'
+    ? '（已缩短）' : ' (shortened)');
   function paint(id, value) {
     var el = document.getElementById(id);
     if (el) el.textContent = value || '—';
   }
   paint('si-rb-subject', fields.subject);
-  paint('si-rb-q', fields.q);
-  paint('si-rb-snap', fields.snap);
+  paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''));
+  paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''));
   paint('si-rb-obs', fields.obs);
   paint('si-rb-ev', fields.ev);
   paint('si-rb-origin', fields.origin);
@@ -840,6 +872,7 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     noSnap: ['Not saved — this link carries no source snapshot.', '未保存 —— 此链接未携带来源快照。'],
     noStore: ['Not saved — the saved-research store is unavailable on this page.', '未保存 —— 本页无法使用已存研究存储。'],
     saved: ['Saved to this device’s research briefcase.', '已保存到本设备的研究公文包。'],
+    savedShortened: ['Saved to this device’s research briefcase — the note’s name was shortened to fit.', '已保存到本设备的研究公文包 —— 笔记名称已缩短以符合上限。'],
     refused: ['Not saved — the briefcase refused this note.', '未保存 —— 公文包拒绝了此笔记。']
   };
   function paintStatus(key, suffix) {
@@ -878,7 +911,12 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
       },
       pinned: false
     });
-    if (result && result.ok) paintStatus('saved');
+    if (result && result.ok) {
+      /* RI05 MINOR: the store cuts names at MAX_NAME_LENGTH (120,
+         templates/fif_saved_briefcase.js:34) — the island says so when the
+         stored name is not the name that was composed. */
+      paintStatus(result.view && result.view.name !== name ? 'savedShortened' : 'saved');
+    }
     else paintStatus('refused', result && result.reason ? result.reason : 'unavailable');
   });
 

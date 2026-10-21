@@ -150,6 +150,52 @@ def test_save_policy_rides_si_snap_verbatim_and_records_now():
     assert "FifSavedBriefcase" in script and "typeof api.create" in script
 
 
+# ── si_obs: shape + real calendar + not from the future (RI05 MINOR) ────────
+
+def test_observation_date_is_calendar_checked_and_capped_at_today_plus_one():
+    script = _island_script(_html())
+    assert "validObservationDate(raw('si_obs'))" in script, (
+        "si_obs must pass the calendar validator, not just DATE_RE"
+    )
+    # a real Date round-trip: 2026-02-30 rolls over to March and is refused
+    assert "new Date(year, month - 1, day)" in script
+    assert "calendar.getFullYear() !== year" in script
+    assert "calendar.getMonth() !== month - 1" in script
+    assert "calendar.getDate() !== day" in script
+    # no later than today+1: local midnight of today+2 is the exclusive ceiling
+    assert "setDate(dayAfterTomorrow.getDate() + 2)" in script
+    assert "calendar.getTime() < dayAfterTomorrow.getTime()" in script
+    # DATE_RE stays the shape gate, inside the validator
+    assert "DATE_RE.test(value)" in script
+    assert "DATE_RE.test(raw('si_obs'))" not in script
+
+
+# ── clipping is visible, never silent (RI05 MINOR) ──────────────────────────
+
+def test_clipped_carried_fields_are_marked_shortened_in_the_readback():
+    script = _island_script(_html())
+    # both clip sites report (RI05 pins the island's own 280/128 caps)
+    assert "clip(raw('si_q'), 280)" in script
+    assert "clip(raw('si_snap').trim(), 128)" in script
+    assert "shortened: text !== value" in script
+    # the readback carries the visible EN/ZH mark on a clipped field
+    assert "' (shortened)'" in script and "'（已缩短）'" in script
+    assert "fields.q + (qCarried.shortened ? shortenedMark : '')" in script
+    assert "fields.snap + (snapCarried.shortened ? shortenedMark : '')" in script
+    # the frozen snapshot stays pure — the mark never enters SI_RESEARCH_ENTRY
+    snapshot = script[script.index("window.SI_RESEARCH_ENTRY"):script.index("window.SI_RESEARCH_ENTRY") + 400]
+    assert "shortenedMark" not in snapshot
+
+
+def test_saved_name_shortened_by_the_store_is_said_so():
+    script = _island_script(_html())
+    # the store cuts names at MAX_NAME_LENGTH=120 (fif_saved_briefcase.js:34);
+    # the island compares the stored name and says so through the EN/ZH
+    # status mechanism instead of failing silently
+    assert "savedShortened" in script
+    assert "result.view.name !== name" in script
+
+
 # ── the store ships on the vault page (RI05 MAJOR-1) ────────────────────────
 
 def test_vault_page_loads_the_briefcase_store():
