@@ -150,15 +150,25 @@ def _origin_main_bytes(path: str) -> bytes | None:
 
 
 @pytest.mark.parametrize("path", ["templates/_site_nav.html.j2"])
-def test_shared_chrome_files_are_byte_unchanged_vs_origin_main(path: str) -> None:
-    """G7 pins shared chrome. `templates/theme.css` is the legal home for
-    P5 `--mc-*` mix tints (enforce-added), so it is no longer byte-frozen
-    against origin/main."""
+def test_shared_chrome_files_only_add_the_reviewed_default_off_host(path: str) -> None:
+    """G7 keeps Macro Command out of shared chrome while allowing the reviewed
+    default-off All tools host to join the existing shared nav exactly once.
+
+    Removing that one additive include must recover current ``origin/main``
+    byte-for-byte; any other shared-chrome mutation still fails this guard.
+    """
     upstream = _origin_main_bytes(path)
     if upstream is None:
         pytest.skip("git show origin/main could not be resolved in this environment")
     local = (ROOT / path).read_bytes()
-    assert local == upstream, f"{path} must be byte-unchanged (G7)"
+    reviewed_host = (
+        b'{% if all_tools_enabled is defined and all_tools_enabled is sameas true %}'
+        b'{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\\n" }}{% endif %}\n'
+    )
+    assert local.count(reviewed_host) == 1, "reviewed All tools host must appear exactly once"
+    assert local.replace(reviewed_host, b"", 1) == upstream, (
+        f"{path} changed outside the reviewed default-off host (G7)"
+    )
 
 
 # --------------------------------------------------------------------------

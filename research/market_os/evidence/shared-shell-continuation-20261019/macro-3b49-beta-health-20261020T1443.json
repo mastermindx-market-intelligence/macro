@@ -1,0 +1,99 @@
+{
+  "started_at": "2026-10-20T14:42:37.005174+00:00",
+  "remote_source_path": "/tmp/shared-shell-css-visual-20261019T1107/macro-beta-before-e2d-publication-20261020T0536-remote.py",
+  "remote_source_sha256": "c53b62c77cc27142fc31f20e771a50428be6311af72249eec6140e5a068e78c0",
+  "host_mutation": false,
+  "owner_invoked": false,
+  "queries": [
+    {
+      "argv": [
+        "dig",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "--disable",
+        "--noproxy",
+        "*",
+        "--proto",
+        "=https",
+        "--head",
+        "--max-time",
+        "20",
+        "--silent",
+        "--show-error",
+        "https://beta.mastermind-x.com/api/shared-shell/status"
+      ],
+      "exit": 60,
+      "stdout": "",
+      "stderr": "curl: (60) SSL: no alternative certificate subject name matches target host name 'beta.mastermind-x.com'\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.\n"
+    }
+  ],
+  "ssh_finished_at": "2026-10-20T14:42:39.181974+00:00",
+  "ssh_exit": 0,
+  "stdout_sha256": "c9fdc4500a150d6bd44c1b414d24a6ad2009657b9c477899e661905f5532dc69",
+  "stdout_bytes": 11833,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "beta_identity_checks": {
+    "source_A": true,
+    "runtime_receipt": true,
+    "source_receipt": true,
+    "status_200": true,
+    "service_stable": true,
+    "no_pending": true,
+    "no_stages": true
+  },
+  "summary": {
+    "observed_at": "2026-10-20T14:42:38.136969+00:00",
+    "beta_service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal-beta.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "stdout": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "production_service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "stdout": "MainPID=2975859\nExecMainStartTimestampMonotonic=7600473092356\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "root_free": 35345817600,
+    "terminal_mount_free": 16140898304,
+    "production_owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+    "caddy_sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+    "macro_head_before": "4b6e6ea52676308d0f239bb8e9c74af230e61039",
+    "macro_head_after": "4b6e6ea52676308d0f239bb8e9c74af230e61039"
+  },
+  "finished_at": "2026-10-20T14:42:40.138022+00:00"
+}
