@@ -1,7 +1,25 @@
 {
-  "ts": "2026-10-20T22:03:45+00:00",
-  "main_sha": "747a4b1a3315f9a860cbd224b18af3ff17910c7a",
+  "ts": "2026-10-21T00:59:22+00:00",
+  "main_sha": "ed26349138d8c0a64287ed19416abad548f11451",
   "red_required": [
+    {
+      "name": "research-vault-source-url",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39524178593/job/118974855959"
+    },
+    {
+      "name": "health",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39524178593/job/118974855209"
+    },
+    {
+      "name": "publish",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39523584234/job/118972951640"
+    },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
@@ -34,9 +52,9 @@
     }
   ],
   "green": false,
-  "consecutive_failures": 235,
+  "consecutive_failures": 236,
   "sensed_shas": [
-    "747a4b1a3315f9a860cbd224b18af3ff17910c7a",
+    "ed26349138d8c0a64287ed19416abad548f11451",
     "ec425df59e5141ee78cb6cedab0b6d5a6306f3ee"
   ],
   "heartbeat_degraded": false
