@@ -17618,6 +17618,7 @@ jobs:
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_evidence_modes.py"
       - "tests/test_sector_cycles.py"
+      - "tests/test_cycle_forward_log_fence.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -17633,6 +17634,12 @@ jobs:
         run: pip install pytest pandas numpy scipy pyyaml pyarrow jinja2
       - name: LR-T06 rotation evidence-mode fences
         run: python -m pytest tests/test_rotation_evidence_modes.py -q
+      # SIC-D-B1011 (B11): the shared cycle forward-log writer refuses lane-off
+      # (sector_cycles), future-dated and replay appends; prior rows stay
+      # byte-identical after every refusal. Temp data dir only — pandas+pyarrow
+      # already on this job's venv line.
+      - name: cycle forward-log B11 fences — lane, future, replay refusals
+        run: python -m pytest tests/test_cycle_forward_log_fence.py -q
 
   rc-r14-china-rotation-events:
     if: ${{ false }}
@@ -29775,6 +29782,12 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
+      # SIC-D-B1011 (B10): the free data JS/JSON carry a publication record with a
+      # typed status per secondary source (absent/malformed/read_error/ok) and no
+      # withheld act-now row ever lands in the free artifacts. Stubs the engine,
+      # grader and Jinja env; needs only this venv's existing deps.
+      - name: sector_central publication record — B10 secondary-source statuses, no locked rows in free artifacts
+        run: python -m pytest tests/test_sector_central_publication.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
