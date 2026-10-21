@@ -180,7 +180,12 @@ def test_no_accent_stripe_l1():
                 assert decl.endswith("1px solid var(--line)") or decl.endswith(":none"), (selector, decl)
                 assert re.search(r"row|cell|table|head", selector), (selector, decl)
         assert "inset" not in body, selector
-        assert "::before" not in selector and "::after" not in selector, selector
+        if "::before" in selector or "::after" in selector:
+            # The only permitted pseudo-element rule is one that neutralises a
+            # page-wide accent bar inside the scope (VF15) — it may draw nothing.
+            assert re.fullmatch(r"content:\s*none;?", body.strip()), (selector, body)
+        else:
+            assert "::before" not in selector and "::after" not in selector, selector
 
 
 # ---------------------------------------------------------------- 2.3 L2 focus/ring
@@ -677,3 +682,768 @@ def test_workspace_js_panelvalid_allowlist_appended_in_order():
         assert views == list(ALL_VIEWS) or views == list(LEGACY_VIEWS[:-1]), views
     assert any(list(v.strip().strip("'\"") for v in body.split(",")) == list(ALL_VIEWS) for body in lists), \
         "panelValid allowlist must accept the seven surveillance views"
+
+
+# ================================================================ W2F-X X1..X7
+
+GS_LIB_DIR = REPO / "lib"
+
+
+def _gs_module(name):
+    spec = importlib.util.spec_from_file_location(
+        name, GS_LIB_DIR / (name.split(".")[-1] + ".py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _macro_state_keys():
+    text = _require(MACROS_PATH)
+    block = re.search(r"\{'complete': \('Complete'.*?\}\.get\(state", text, re.DOTALL).group(0)
+    return set(re.findall(r"'([a-z_]+)': \(", block))
+
+
+# ---------------------------------------------------------------- X1 display
+
+
+def test_x1_names_zh_covers_universe_and_aggregate():
+    from engine.intl_global_universe import load_universe
+    display = _gs_module("lib.intl_gs_display")
+    universe = load_universe()
+    expected = set(universe["jurisdictions"]) | set(universe.get("aggregates") or {})
+    assert set(display.NAMES_ZH) == expected, sorted(set(display.NAMES_ZH) ^ expected)
+    values = list(display.NAMES_ZH.values())
+    assert len(set(values)) == len(values), "duplicate ZH name"
+    for key, name in display.NAMES_ZH.items():
+        assert re.search(r"[一-鿿]", name), key
+    assert display.NAMES_ZH["BR"] == "巴西"
+    assert display.NAMES_ZH["EZ"] == "欧元区"
+    assert display.NAMES_ZH["TW"] == "台湾"
+    assert display.NAMES_ZH["IR"] == "伊朗" and display.NAMES_ZH["VE"] == "委内瑞拉"
+
+
+def test_x1_region_groups_partition_the_63_jurisdictions():
+    from engine.intl_global_universe import load_universe
+    display = _gs_module("lib.intl_gs_display")
+    universe = load_universe()
+    seen = {}
+    for group_key, regions, _en, _zh in display.REGION_GROUPS:
+        assert len(regions) >= 1
+        for region in regions:
+            assert region not in seen, f"region {region} in two groups"
+            seen[region] = group_key
+    total = 0
+    for jid, jur in universe["jurisdictions"].items():
+        assert jur["region"] in seen, f"{jid} region {jur['region']} in no group"
+        total += 1
+    assert total == 63
+    assert [g[0] for g in display.REGION_GROUPS] == ["asia", "emea", "americas"]
+    assert display.REGION_GROUPS[0][2:] == ("Asia", "亚太")
+    assert display.REGION_GROUPS[1][2:] == ("EMEA", "欧洲、中东及非洲")
+    assert display.REGION_GROUPS[2][2:] == ("Americas", "美洲")
+
+
+def test_x1_capability_labels_keys_exactly_capabilities():
+    from engine.intl_global_universe import CAPABILITIES
+    display = _gs_module("lib.intl_gs_display")
+    assert set(display.CAPABILITY_LABELS) == set(CAPABILITIES)
+    for pair in display.CAPABILITY_LABELS.values():
+        assert len(pair) == 2 and pair[0] and re.search(r"[一-鿿]", pair[1])
+    assert display.CAPABILITY_LABELS["equity_index_fx"] == ("Equity index + FX", "股指与汇率")
+    assert display.CAPABILITY_LABELS["history_pit_rights"] == ("History + point-in-time rights", "历史与时点权利")
+
+
+def test_x1_capability_display_maps_states_to_macro_keys():
+    from engine.intl_global_universe import CAPABILITY_STATES
+    display = _gs_module("lib.intl_gs_display")
+    assert set(display.CAPABILITY_DISPLAY) == set(CAPABILITY_STATES)
+    assert set(display.CAPABILITY_DISPLAY.values()) <= _macro_state_keys()
+    assert display.CAPABILITY_DISPLAY["qualified"] == "complete"
+    assert display.CAPABILITY_DISPLAY["delayed"] == "qualified"
+    assert display.CAPABILITY_DISPLAY["retained_stale"] == "stale"
+    assert display.CAPABILITY_DISPLAY["market_closed"] == "closed"
+    assert display.CAPABILITY_DISPLAY["unavailable"] == "empty"
+    assert display.CAPABILITY_DISPLAY["denied"] == "restricted"
+    assert display.CAPABILITY_DISPLAY["not_applicable"] == "empty"
+
+
+def test_x1_reason_copy_covers_abstain_and_capability_tokens():
+    from engine.intl_global_observation import ABSTAIN_REASONS
+    from engine.intl_global_universe import load_universe
+    display = _gs_module("lib.intl_gs_display")
+    universe = load_universe()
+    tokens = set()
+    for doc in (universe["jurisdictions"].values(), (universe.get("aggregates") or {}).values()):
+        for entry_container in doc:
+            for entry in entry_container["capabilities"].values():
+                if entry.get("reason"):
+                    tokens.add(entry["reason"])
+    assert tokens, "the universe must carry capability reason tokens"
+    missing = (set(ABSTAIN_REASONS) | tokens) - set(display.REASON_COPY)
+    assert not missing, sorted(missing)
+    for key, pair in display.REASON_COPY.items():
+        assert len(pair) == 2 and pair[0], key
+
+
+def test_x1_coverage_fields_binding():
+    from engine.intl_global_universe import CAPABILITIES
+    display = _gs_module("lib.intl_gs_display")
+    fields = display.COVERAGE_FIELDS
+    assert [f[0] for f in fields] == ["index_close", "fx_fix", "y10", "cds5y", "usd_funding", "us_proxy"]
+    assert [f[1] for f in fields] == ["INDEX CLOSE", "FX FIX", "10Y YIELD", "CDS 5Y", "USD FUNDING", "US PROXY"]
+    assert [f[2] for f in fields] == ["指数收盘", "汇率定盘", "10年期收益率", "5年期CDS", "美元融资", "美国代理"]
+    for field in fields:
+        assert field[3] in CAPABILITIES, field
+
+
+def test_x1_jurisdiction_rows_shape():
+    from engine.intl_global_universe import load_universe
+    display = _gs_module("lib.intl_gs_display")
+    universe = load_universe()
+    rows = display.jurisdiction_rows(universe)
+    assert len(rows) == 64
+    assert [r["id"] for r in rows[:63]] == list(universe["jurisdictions"])
+    assert rows[-1]["id"] == "EZ" and rows[-1]["kind"] == "aggregate"
+    assert all(r["kind"] == "jurisdiction" for r in rows[:63])
+    japan = rows[[r["id"] for r in rows].index("JP")]
+    assert japan["name_en"] == "Japan" and japan["name_zh"] == "日本"
+    assert japan["region"] == "asia_pacific" and japan["region_group"] == "asia"
+    assert japan["cohort"] == "msci_dm" and japan["currency"] == "JPY"
+    assert japan["timezone"] == "Asia/Tokyo"
+    verbatim = {key: entry["state"] for key, entry in
+                universe["jurisdictions"]["JP"]["capabilities"].items()}
+    verbatim_reasons = {key: entry["reason"] for key, entry in
+                        universe["jurisdictions"]["JP"]["capabilities"].items()}
+    assert {key: entry["state"] for key, entry in japan["capabilities"].items()} == verbatim
+    assert {key: entry["reason"] for key, entry in japan["capabilities"].items()} == verbatim_reasons
+    for row in rows[:63]:
+        entry = row["capabilities"]["equity_index_fx"]
+        assert {"state", "display", "reason"} <= set(entry)
+    assert rows[-1]["region_group"] is None
+    group_sizes = {}
+    for row in rows[:63]:
+        group_sizes[row["region_group"]] = group_sizes.get(row["region_group"], 0) + 1
+    assert group_sizes == {"asia": 18, "emea": 36, "americas": 9}, group_sizes
+    assert sum(group_sizes.values()) == 63
+
+
+# ---------------------------------------------------------------- X1 addendum
+
+
+def test_x1_rights_class_labels_match_matrix():
+    from engine.intl_global_universe import load_rights_matrix
+    display = _gs_module("lib.intl_gs_display")
+    classes = {row["rights_class"] for row in load_rights_matrix()["rows"]}
+    assert set(display.RIGHTS_CLASS_LABELS) == classes, sorted(classes)
+    for pair in display.RIGHTS_CLASS_LABELS.values():
+        assert pair[0] and re.search(r"[一-鿿]", pair[1])
+
+
+def test_x1_rights_view_projection():
+    from engine.intl_global_universe import (
+        ROW_LEGACY_SERIES, load_rights_matrix, load_universe)
+    display = _gs_module("lib.intl_gs_display")
+    universe, matrix = load_universe(), load_rights_matrix()
+    row = display.rights_view(universe, matrix, "JP", "equity_index_fx")
+    assert row["rights_ref"] == ROW_LEGACY_SERIES
+    assert row["rights_class"] == "direct_display_ok"
+    source = next(r for r in matrix["rows"] if r["id"] == ROW_LEGACY_SERIES)
+    assert row["delay"] == source.get("delay")
+    assert row["decision_ref"] == source.get("decision_ref")
+    assert row["review_status"] == (source.get("review") or {}).get("status")
+    assert row["label_en"] == "Display permitted" and row["label_zh"] == "允许展示"
+    assert display.rights_view(universe, matrix, "BR", "equity_index_fx") is None
+    assert display.rights_view(universe, matrix, "EZ", "equity_index_fx") is not None
+
+
+def test_x1_rights_view_missing_row_never_guesses():
+    from engine.intl_global_universe import load_rights_matrix, load_universe
+    display = _gs_module("lib.intl_gs_display")
+    japan = dict(load_universe()["jurisdictions"]["JP"])
+    japan["capabilities"] = {
+        **japan["capabilities"],
+        "equity_index_fx": {"state": "delayed", "reason": "x", "evidence_ref": "e",
+                            "rights_ref": "no.such.row"}}
+    broken = {"jurisdictions": {"JP": japan}, "aggregates": {}}
+    row = display.rights_view(broken, load_rights_matrix(), "JP", "equity_index_fx")
+    assert row["rights_ref"] == "no.such.row"
+    assert row["rights_class"] is None
+    assert row["label_en"] == "Rights row missing"
+    assert row["label_zh"] == "权利记录缺失"
+    assert row["delay"] is None and row["decision_ref"] is None and row["review_status"] is None
+
+
+def test_x1_evidence_tier_source_is_none_and_view_tokens():
+    from engine.intl_global_observation import ABSTAIN_REASONS
+    from engine.intl_global_universe import load_universe
+    display = _gs_module("lib.intl_gs_display")
+    assert display.EVIDENCE_TIER_SOURCE is None
+    tokens = display.VIEW_ABSTAIN_TOKENS
+    assert isinstance(tokens, tuple)
+    expected = ("common_factor_unadmitted", "divergence_unadmitted", "series_unadmitted",
+                "stance_unadmitted", "attention_unadmitted", "credit_funding_unadmitted",
+                "transmission_unadmitted", "us_corroboration_unadmitted", "thesis_unadmitted",
+                "session_calendar_unadmitted", "corrections_none")
+    assert tokens == expected
+    assert set(tokens) <= set(display.REASON_COPY)
+    for token in tokens:
+        en, zh = display.REASON_COPY[token]
+        assert en, token
+        assert re.search(r"[一-鿿]", zh), token
+    assert not (set(tokens) & set(ABSTAIN_REASONS))
+    data_tokens = set()
+    universe = load_universe()
+    for doc in (universe["jurisdictions"].values(), (universe.get("aggregates") or {}).values()):
+        for entry_container in doc:
+            for entry in entry_container["capabilities"].values():
+                if entry.get("reason"):
+                    data_tokens.add(entry["reason"])
+    assert not (set(tokens) & data_tokens)
+    assert display.REASON_COPY["evidence_tier_undefined"] == (
+        "Evidence tier not yet defined", "证据层级尚未定义")
+
+
+# ---------------------------------------------------------------- X2 observations
+
+W2FX_EVALUATED = "2026-10-09T20:30:00+00:00"
+W2FX_GRANT = {
+    "status": "confirmed",
+    "scope": "intl-index-fx-eod-user-facing-v1",
+    "decision_ref": "chairman:2026-10-09:user-facing-redistribution-confirmed",
+}
+
+
+def _w2fx_setup(tmp_path):
+    import pandas as pd
+    from engine import intl_inputs
+    dates = pd.bdate_range(end="2026-10-07", periods=280)
+    series = []
+    for cc, market in intl_inputs.countries().items():
+        for symbol in (market["index"], market["fx"]):
+            if symbol not in series:
+                series.append(symbol)
+    cols = {}
+    for slot, symbol in enumerate(series):
+        value = [float(100 + slot * 4 + 0.125 * i) for i in range(len(dates))]
+        cols[symbol] = pd.Series(value, index=dates)
+        path = tmp_path / "intl" / (
+            symbol.replace("^", "_").replace("=", "_").replace("/", "_") + ".parquet")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame({"close": value}, index=dates).to_parquet(path)
+    return pd.DataFrame(cols).sort_index(), series
+
+
+def _w2fx_status(tmp_path):
+    import json as _json
+    (tmp_path / "run_status.json").write_text(_json.dumps({"sources": {"intl_prices": {
+        "source": "intl_prices", "status": "ok", "checked_at": "2026-10-09T15:00:00+00:00",
+        "last_date": "2026-10-07"}}}), encoding="utf-8")
+
+
+def _w2fx_admitted(tmp_path):
+    from lib.intl_eod_publication import build_eod_inputs
+    frame, _series = _w2fx_setup(tmp_path)
+    _w2fx_status(tmp_path)
+    return build_eod_inputs(frame, data_root=tmp_path, evaluated_at=W2FX_EVALUATED,
+                            rights=W2FX_GRANT)
+
+
+def test_x2_admitted_chain_matches_the_direct_adapter_output(tmp_path):
+    import json
+    from engine import intl_inputs
+    from engine.intl_performance_records import build_return_records
+    from lib.intl_global_observation_adapter import observations_from_qualification
+    observations_module = _gs_module("lib.intl_gs_observations")
+    selected, inputs = _w2fx_admitted(tmp_path)
+    assert selected is not None
+    result = observations_module.build_observation_set(
+        selected, publication_inputs=inputs, evaluated_at=W2FX_EVALUATED,
+        data_root=tmp_path, rights=W2FX_GRANT)
+    assert result["status"] == "admitted"
+    assert result["contract_version"] == "intl-global-observation-v1"
+    assert result["source_reference"].startswith("intl-supplied-close:sha256:")
+    pending = intl_inputs.source_snapshot(
+        selected, source_reference="intl-supplied-close:pending",
+        adjustment_bases=inputs["adjustment_bases"])
+    reference = "intl-supplied-close:sha256:" + pending["content_sha256"]
+    snapshot = intl_inputs.source_snapshot(
+        selected, source_reference=reference, adjustment_bases=inputs["adjustment_bases"])
+    records = build_return_records(selected, market_ids=list(intl_inputs.countries()),
+                                   source_reference=reference)
+    for basis in ("local", "usd_unhedged"):
+        qualification = intl_inputs.qualify_return_records(
+            records, snapshot=snapshot, source_evidence=inputs["source_evidence"],
+            disclosure_decisions=inputs["disclosure_decisions"],
+            policy_id=inputs["policy_id"], currency_basis=basis)
+        direct = observations_from_qualification(
+            records, qualification, closes=selected,
+            source_evidence=inputs["source_evidence"],
+            run_status_source={"checked_at": "2026-10-09T15:00:00+00:00"},
+            evaluated_at=W2FX_EVALUATED, rights=W2FX_GRANT, currency_basis=basis)
+        assert json.dumps(result["bases"][basis], sort_keys=True) == json.dumps(direct, sort_keys=True)
+        for observation, record in zip(result["bases"][basis], records["records"]):
+            if observation["state"] == "qualified":
+                leg = "local" if basis == "local" else "usd"
+                assert observation["value"]["pct"] == record[leg]["value"]
+
+
+def test_x2_hedged_abstains_basis_unsupported(tmp_path):
+    observations_module = _gs_module("lib.intl_gs_observations")
+    selected, inputs = _w2fx_admitted(tmp_path)
+    result = observations_module.build_observation_set(
+        selected, publication_inputs=inputs, evaluated_at=W2FX_EVALUATED,
+        data_root=tmp_path, rights=W2FX_GRANT)
+    assert result["bases"]["usd_hedged"]
+    for observation in result["bases"]["usd_hedged"]:
+        assert observation["state"] == "abstain"
+        assert "basis_unsupported" in observation["abstain_reasons"]
+        assert observation["value"] is None
+
+
+def test_x2_publication_inputs_none_withholds_everything(tmp_path):
+    observations_module = _gs_module("lib.intl_gs_observations")
+    frame, _series = _w2fx_setup(tmp_path)
+    _w2fx_status(tmp_path)
+    result = observations_module.build_observation_set(
+        frame, publication_inputs=None, evaluated_at=W2FX_EVALUATED,
+        data_root=tmp_path, rights=W2FX_GRANT)
+    assert result["status"] == "withheld"
+    assert result["source_reference"] is None
+    for basis in ("local", "usd_unhedged", "usd_hedged"):
+        assert result["bases"][basis]
+        assert all(obs["state"] == "abstain" for obs in result["bases"][basis])
+        assert all(obs["abstain_reasons"] for obs in result["bases"][basis])
+
+
+def test_x2_run_status_absent_abstains_clock_missing(tmp_path):
+    observations_module = _gs_module("lib.intl_gs_observations")
+    selected, inputs = _w2fx_admitted(tmp_path)
+    (tmp_path / "run_status.json").unlink()
+    result = observations_module.build_observation_set(
+        selected, publication_inputs=inputs, evaluated_at=W2FX_EVALUATED,
+        data_root=tmp_path, rights=W2FX_GRANT)
+    for basis in ("local", "usd_unhedged"):
+        assert result["bases"][basis]
+        for observation in result["bases"][basis]:
+            assert "clock_missing" in observation["abstain_reasons"]
+
+
+def test_x2_each_basis_list_is_single_basis(tmp_path):
+    from engine.intl_global_observation import assert_single_basis
+    observations_module = _gs_module("lib.intl_gs_observations")
+    selected, inputs = _w2fx_admitted(tmp_path)
+    result = observations_module.build_observation_set(
+        selected, publication_inputs=inputs, evaluated_at=W2FX_EVALUATED,
+        data_root=tmp_path, rights=W2FX_GRANT)
+    for basis in ("local", "usd_unhedged", "usd_hedged"):
+        assert_single_basis(result["bases"][basis])
+
+
+# ---------------------------------------------------------------- X3 mount seam
+
+
+def _sample_observations():
+    return {
+        "contract_version": "intl-global-observation-v1",
+        "status": "admitted",
+        "source_reference": "intl-supplied-close:sha256:abc",
+        "bases": {
+            "local": [{"state": "qualified", "abstain_reasons": [], "clocks": {
+                "observation": {"at": "2026-10-07", "precision": "session_date"},
+                "source_publication": {"at": "2026-10-09T15:00:00+00:00", "precision": "upper_bound"},
+                "ingestion": {"at": "2026-10-09T15:00:00+00:00", "precision": "exact"},
+                "computation": {"at": "2026-10-09T20:30:00+00:00", "precision": "exact"}}}],
+            "usd_unhedged": [],
+            "usd_hedged": [],
+        },
+    }
+
+
+def test_x3_observations_reach_builders_as_deep_copies(monkeypatch):
+    from copy import deepcopy
+    mount = _load_mount()
+    captured = {}
+
+    def build_view(*, universe, rights, contexts, workspace, observations=None):
+        captured["observations"] = deepcopy(observations)
+        if observations is not None:
+            observations["bases"]["probe"] = ["mutation"]
+        return []
+
+    _install_builder(monkeypatch, "scanner", build_view)
+    payload = _sample_observations()
+    before = _sample_observations()
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {}, observations=payload)
+    assert captured["observations"] == before, "builder must receive the payload unchanged"
+    assert captured["observations"] is not payload, "builder must receive a deep copy"
+    assert payload == before, "caller dict must not be mutated"
+    block = result["surveillance"]["observations"]
+    assert block["status"] == "admitted"
+    assert block["source_reference"] == "intl-supplied-close:sha256:abc"
+    assert set(block["counts"]) == {"local", "usd_unhedged", "usd_hedged"}
+
+
+def test_x3_none_observations_reach_builders_as_none(monkeypatch):
+    mount = _load_mount()
+    captured = {}
+
+    def build_view(*, universe, rights, contexts, workspace, observations=None):
+        captured["observations"] = observations
+        return []
+
+    _install_builder(monkeypatch, "scanner", build_view)
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {})
+    assert captured["observations"] is None
+    block = result["surveillance"]["observations"]
+    assert block["counts"]["local"] == {"total": 0, "qualified": 0, "abstain": 0}
+
+
+def _count_numbers(node):
+    numbers = []
+    if isinstance(node, (int, float)) and not isinstance(node, bool):
+        numbers.append(node)
+    elif isinstance(node, dict):
+        for value in node.values():
+            numbers.extend(_count_numbers(value))
+    elif isinstance(node, (list, tuple)):
+        for value in node:
+            numbers.extend(_count_numbers(value))
+    return numbers
+
+
+def test_x3_counts_block_holds_no_other_numbers(monkeypatch):
+    mount = _load_mount()
+    _install_builder(monkeypatch, "scanner", lambda **_kwargs: [])
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {}, observations=_sample_observations())
+    outside = dict(result["surveillance"]["observations"])
+    counts = outside.pop("counts")
+    assert not _count_numbers(outside), "numbers outside counts"
+    for basis, entry in counts.items():
+        assert set(entry) == {"total", "qualified", "abstain"}, (basis, entry)
+
+
+def test_x3_snapshot_block_latest_qualified_clocks(monkeypatch):
+    from engine.intl_global_observation import REQUIRED_CLOCKS
+    mount = _load_mount()
+    _install_builder(monkeypatch, "scanner", lambda **_kwargs: [])
+    payload = _sample_observations()
+    payload["bases"]["local"].append({"state": "abstain", "abstain_reasons": ["clock_missing"], "clocks": {
+        "observation": {"at": "2026-10-09", "precision": "session_date"},
+        "source_publication": {"at": "2026-10-10T15:00:00+00:00", "precision": "upper_bound"},
+        "ingestion": {"at": "2026-10-10T15:00:00+00:00", "precision": "exact"},
+        "computation": {"at": "2026-10-10T20:30:00+00:00", "precision": "exact"}}})
+    result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {},
+                                       rights_loader=lambda: {}, observations=payload)
+    snapshot = result["surveillance"]["snapshot"]
+    assert set(snapshot) == {"local", "usd_unhedged", "usd_hedged"}
+    for basis in snapshot:
+        assert set(snapshot[basis]) == {"clocks", "qualified", "total"}
+        assert set(snapshot[basis]["clocks"]) == set(REQUIRED_CLOCKS)
+    assert snapshot["local"]["qualified"] == 1 and snapshot["local"]["total"] == 2
+    assert snapshot["local"]["clocks"]["computation"] == "2026-10-09T20:30:00+00:00"
+    assert snapshot["local"]["clocks"]["source_publication"] == "2026-10-09T15:00:00+00:00"
+    assert snapshot["usd_hedged"]["qualified"] == 0
+    assert all(value is None for value in snapshot["usd_hedged"]["clocks"].values())
+
+
+# ---------------------------------------------------------------- X4 build wiring
+
+
+def test_x4_observation_call_is_own_try_except():
+    tree = ast.parse(BUILD_INTL_PATH.read_text(encoding="utf-8"))
+    function = next(node for node in ast.walk(tree)
+                    if isinstance(node, ast.FunctionDef) and node.name == "_publication_workspace")
+    assigns = [node for node in ast.walk(function)
+               if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)
+               and getattr(node.value.func, "id", None) == "build_observation_set"]
+    assert assigns, "observation_set = build_observation_set(...) not found"
+    for assign in assigns:
+        guards = [parent for parent in ast.walk(function)
+                  if isinstance(parent, ast.Try) and assign in ast.walk(parent)]
+        assert guards, "build_observation_set call is not inside a try"
+        handler = guards[0].handlers[0]
+        reset = [n for n in ast.walk(handler) if isinstance(n, ast.Assign)
+                 and any(getattr(t, "id", None) == "observation_set" for t in n.targets)]
+        assert reset, "handler must reset observation_set"
+        logged = [n for n in ast.walk(handler) if isinstance(n, ast.Call)
+                  and getattr(n.func, "attr", None) == "error"]
+        assert logged, "handler must log"
+        assert ast.literal_eval(logged[0].args[0]) == \
+            "International Surveillance observations unavailable (%s)"
+
+
+def test_x4_same_rights_object_reaches_both_calls_and_none_propagates(tmp_path):
+    module = _load_build_intl()
+    seen = {}
+    captured = {}
+
+    def fake_build_eod_inputs(closes, *, data_root, evaluated_at, rights):
+        seen["eod_rights"] = rights
+        return None
+
+    def fake_build_observation_set(closes, *, publication_inputs, evaluated_at, data_root, rights):
+        seen["observation_rights"] = rights
+        seen["publication_inputs"] = publication_inputs
+        raise RuntimeError("boom")
+
+    def fake_attach(workspace, **kwargs):
+        captured.update(kwargs)
+        return workspace
+
+    import lib.intl_eod_publication as eod_module
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(eod_module, "build_eod_inputs", fake_build_eod_inputs)
+    monkeypatch.setattr(module, "build_observation_set", fake_build_observation_set)
+    monkeypatch.setattr(module, "attach_surveillance", fake_attach)
+    try:
+        workspace = module._publication_workspace(
+            None, data_root=tmp_path, evaluated_at="2026-10-09T20:30:00+00:00")
+    finally:
+        monkeypatch.undo()
+    assert workspace is not None, "a raising observation build must not kill the page"
+    assert captured.get("observations") is None, "attach must receive None on failure"
+    assert seen.get("publication_inputs") is None
+    assert "eod_rights" in seen and "observation_rights" in seen
+    assert seen["eod_rights"] is seen["observation_rights"], "rights must be one shared object"
+
+
+# ---------------------------------------------------------------- X5 chrome macros
+
+
+def test_x5_gs_page_header_renders_specimen_and_plain():
+    plain = _macro_render("{{ gs.gs_page_header('eyebrow', 'title', 'lede') }}")
+    assert "intl-gs__pagehead" in plain and "title" in plain and "lede" in plain
+    assert "intl-gs__chip--specimen" not in plain
+    specimen = _macro_render("{{ gs.gs_page_header('eyebrow', 'title', 'lede', specimen=true) }}")
+    assert "intl-gs__chip--specimen" in specimen
+    assert "Specimen values · not live" in specimen and "示例数值 · 非实时" in specimen
+
+
+def test_x5_gs_questions_strip_six_bilingual_questions():
+    out = _macro_render("{{ gs.gs_questions() }}")
+    for n in range(1, 7):
+        assert 'class="intl-gs__qcard__n intl-gs__num">%d</span>' % n in out, n
+    for en, zh in (("What changed globally?", "全球发生了什么变化？"),
+                   ("Local, FX, common or divergent?", "本地、汇率、共同还是背离？"),
+                   ("Credit, funding, liquidity?", "信用、融资、流动性？"),
+                   ("Transmission into the US?", "如何传导至美国？"),
+                   ("Eligible US corroboration?", "合格的美国佐证？"),
+                   ("What resolves the thesis?", "什么能验证或推翻论点？")):
+        assert en in out and zh in out, en
+    active = _macro_render("{{ gs.gs_questions(active=3) }}")
+    assert active.count("is-active") == 1
+
+
+def test_x5_gs_snapshot_populated_and_all_none():
+    populated = {"local": {"clocks": {
+        "observation": "2026-10-07", "source_publication": "2026-10-09T15:00:00+00:00",
+        "ingestion": "2026-10-09T15:00:00+00:00", "computation": "2026-10-09T20:30:00+00:00"},
+        "qualified": 35, "total": 35}}
+    empty = {"local": {"clocks": {name: None for name in (
+        "observation", "source_publication", "ingestion", "computation")},
+        "qualified": 0, "total": 0}}
+    out = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', '1m') }}", snapshot=populated)
+    assert "2026-10-09T20:30:00+00:00" in out and "2026-10-07" in out
+    assert "No qualified observation" not in out
+    blank = _macro_render("{{ gs.gs_snapshot(snapshot, 'local', '1m') }}", snapshot=empty)
+    assert blank.count("No qualified observation") >= 1 and "无合格观测" in blank
+    hedged = _macro_render("{{ gs.gs_snapshot(snapshot, 'usd_hedged', '1m') }}", snapshot=empty)
+    assert "Hedged basis not supported" in hedged and "不支持对冲口径" in hedged
+    assert "Local" in out and "本币" in out
+    assert "USD · Hedged" in hedged and "美元 · 已对冲" in hedged
+
+
+def test_x5_fixture_carries_both_snapshot_variants():
+    html = _render_fixture()
+    assert html.count('class="intl-gs__snapshot"') >= 2
+    assert "No qualified observation" in html and "无合格观测" in html
+
+
+# ---------------------------------------------------------------- X7 anchors
+
+
+def test_x7_css_and_yaml_merge_anchors():
+    css = _css()
+    assert css.rstrip().endswith("/* ==== end W2B region ==== */"), \
+        "CSS must end with the W2B end anchor"
+    w2a = css.index("/* ==== W2A region")
+    w2a_end = css.index("/* ==== end W2A region ==== */")
+    spacer1 = css.index("/* spacer 1: keep unchanged; separates the two lane regions */")
+    w2b = css.index("/* ==== W2B region")
+    w2b_end = css.index("/* ==== end W2B region ==== */")
+    assert w2a < w2a_end < spacer1 < w2b < w2b_end
+    between = css[w2a_end + len("/* ==== end W2A region ==== */"):w2b].strip().splitlines()
+    assert len(between) >= 3 and all("spacer" in line for line in between), \
+        "at least two unchanged spacer lines must separate the regions"
+    yaml_text = _require(REPO / ".github/ci/legacy-jobs.yml")
+    start = yaml_text.index("  international-workspace-browser:")
+    nxt = re.search(r"\n  [a-zA-Z][a-zA-Z0-9_-]*:", yaml_text[start + 10:])
+    job = yaml_text[start:start + 10 + (nxt.start() if nxt else len(yaml_text))]
+    paths_anchor = job.index("# W2A (IM13) paths: insert below this line")
+    steps_anchor = job.index("# W2A (IM13) test steps: insert below this line")
+    assert job.index("# W2B (IM14) paths: insert below this line") > \
+        job.index("# spacer: keep unchanged", paths_anchor) > paths_anchor
+    assert job.index("# W2B (IM14) test steps: insert below this line") > \
+        job.index("# spacer: keep unchanged", steps_anchor) > steps_anchor
+
+
+# ---------------------------------------------------------------- visual fixes
+
+
+def test_vf2_state_cell_anatomy_three_rows():
+    from html.parser import HTMLParser
+    out = _macro_render(
+        "{{ gs.gs_state_cell('complete', 'Brazil', 1.24, '%', 'USD · Unhedged', '21 Oct 08:00 UTC', dir='up') }}")
+
+    class Rows(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.depth = 0
+            self.rows = 0
+            self.started = False
+
+        def handle_starttag(self, tag, attrs):
+            classes = (dict(attrs).get("class") or "").split()
+            if not self.started and "intl-gs__statecell" in classes and tag == "div":
+                self.started = True
+                self.depth = 0
+            elif self.started and self.depth == 1 and tag == "div":
+                self.rows += 1
+            self.depth += 1
+
+        def handle_endtag(self, tag):
+            self.depth -= 1
+
+    parser = Rows()
+    parser.feed(out)
+    assert parser.rows == 3, f"state cell must render exactly three rows, saw {parser.rows}"
+    assert "intl-gs__statecell__mainrow" in out
+    assert "intl-gs__statecell__basis" in out.split("intl-gs__statecell__mainrow")[1].split("</div>")[0], \
+        "basis must sit inline on the value row"
+
+
+def test_vf3_partial_and_stale_chip_copy():
+    html = _render_fixture()
+    assert "3 of 5" in html and "5个中3个" in html
+    assert "3/5" not in html
+    assert " · 2d" in html and " · 2天" in html
+
+
+def test_vf4_no_english_state_word_outside_bilingual_twin():
+    from html.parser import HTMLParser
+
+    class Leaks(HTMLParser):
+        WORDS = ("Qualified", "Abstain", "Partial", "Stale", "Closed", "Suspended",
+                 "Restricted", "Corrected", "Restored", "Proxy", "Loading", "No data",
+                 "Complete")
+
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+            self.leaks = []
+
+        def handle_starttag(self, tag, attrs):
+            classes = (dict(attrs).get("class") or "").split()
+            self.stack.append("l-en" in classes)
+
+        def handle_endtag(self, tag):
+            if self.stack:
+                self.stack.pop()
+
+        def handle_data(self, data):
+            if any(self.stack):
+                return
+            for word in self.WORDS:
+                if word in data:
+                    self.leaks.append((word, data.strip()[:40]))
+
+    parser = Leaks()
+    parser.feed(_render_fixture())
+    assert not parser.leaks, f"unwrapped English state words: {parser.leaks}"
+
+
+def test_vf5_muted_states_never_carry_direction_ink():
+    for state in ("stale", "closed", "suspended"):
+        out = _macro_render(
+            "{{ gs.gs_state_cell(state, 'Market', 0.55, '%', 'basis', 'clock', dir='up') }}",
+            state=state)
+        assert "intl-gs__num--up" not in out, state
+        assert "intl-gs__num--down" not in out, state
+        assert "intl-gs__num--muted" in out, state
+
+
+def test_vf6_corrected_cell_shows_same_metric_old_and_new():
+    html = _render_fixture()
+    corrected = html.split('data-state="corrected"', 1)[1].split('data-state="recovered"', 1)[0]
+    assert "+2.9%" in corrected and "2.60%" in corrected, "old and new must be the same metric"
+    assert "5.712" not in corrected
+    assert 'intl-gs__old' in corrected
+
+
+def test_vf8_legend_and_figure_sizes_use_tokens():
+    css = _css()
+    edge_rule = css.split(".intl-gs__edgelabel", 1)[1].split("}", 1)[0] if ".intl-gs__edgelabel" in css else ""
+    assert "var(--fs-label)" in edge_rule and "var(--muted)" in edge_rule
+    assert ".intl-gs__num--fig" in css
+    html = _render_fixture()
+    assert "intl-gs__edgelabel" in html and "intl-gs__num--fig" in html
+
+
+def test_vf10_kpi_counts_are_unsigned_integers():
+    html = _render_fixture()
+    kpi_block = html.split("intl-gs__kpirow", 1)[1]
+    assert "+31.00" not in kpi_block and "+3.00" not in kpi_block
+    assert ">31<" in kpi_block
+    assert "intl-gs__num--up" in kpi_block and "intl-gs__num--down" in kpi_block
+
+
+def test_vf13_vf14_fixture_reserves_copilot_and_header_space():
+    css = _css()
+    assert ".intl-gs--fixture" in css
+    fixture_rule = css.split(".intl-gs--fixture", 1)[1].split("}", 1)[0]
+    assert "padding-bottom" in fixture_rule
+    states = _fixture_site().render_states_page()
+    assert "intl-gs--fixture" in states
+    assert "intl-gs__specimen-head" in states
+
+
+def test_vf15_h2_bar_neutralised_inside_scope():
+    css = _strip_comments(_css())
+    assert re.search(r"\.intl-gs h2::before\{content:none\}", css) or \
+        re.search(r"\.intl-gs h2::before\s*\{[^}]*content:\s*none", css), \
+        "the page-wide h2::before gradient bar must be neutralised inside .intl-gs"
+
+
+def test_vf16_fixture_site_serves_fonts_and_live_config(tmp_path):
+    module = _fixture_site()
+    out = tmp_path / "site"
+    module.write_site(out)
+    for name in ("Inter-400.woff2", "Inter-600.woff2", "Inter-700.woff2"):
+        assert (out / "fonts" / name).is_file(), name
+    assert (out / "live_config.js").is_file()
+
+
+def test_vf18_loading_skeleton_unchanged():
+    css = _css()
+    assert ".intl-gs__skel{display:block;height:10px;" in css
+    assert ".intl-gs__skel--sm{height:8px;" in css
+    assert "prefers-reduced-motion" in css
+
+
+def test_vf9_selected_row_ring_declared_inside_the_clip():
+    css = _strip_comments(_css())
+    rule = re.search(r"\.intl-gs__table tbody tr\.is-selected\{([^}]*)\}", css)
+    assert rule, "selected row ring rule missing"
+    body = rule.group(1)
+    assert "outline:1.5px solid var(--info)" in body
+    assert "outline-offset:-1.5px" in body
+
+
+def test_vf7_glyph_clocks_are_micro_muted():
+    css = _css()
+    assert ".intl-gs__glyphwrap .intl-gs__num{font-size:var(--fs-micro);color:var(--muted);}" in css
+    html = _render_fixture()
+    assert "intl-gs__glyphwrap" in html
