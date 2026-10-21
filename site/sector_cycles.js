@@ -2012,6 +2012,21 @@
     document.head.appendChild(s);
   }
 
+  /* ---- focus deep link (J-restore, masterplan §8/§10) ----------------------
+     The ONE reader for `#<entity-id>` focus hashes, shared by boot()'s delayed first
+     paint and the popstate/hashchange listeners below. Parse rules unchanged from the
+     pre-extraction boot block: strip '#', apply only when byId knows the id, switch
+     family first when the id belongs to a basket-like record. Returns whether a focus
+     was applied, so the listeners can clear focus when the hash no longer names one. */
+  function applyFocusHash() {
+    var h = (location.hash || "").replace("#", "");
+    if (!(h && byId[h])) return false;
+    var hs = byId[h];
+    if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
+    setFocus(h);
+    return true;
+  }
+
   /* ---- boot -------------------------------------------------------------- */
   function boot() {
     // Basket-like families: chart only the STRONGEST few to start — overlaid lines are an
@@ -2031,12 +2046,20 @@
       if (e.key === "Escape") { var w = document.querySelector(".sc-chartwrap.sc-fs"); if (w) toggleChartFs(false); }
     });
     var h = (location.hash || "").replace("#", "");
-    if (h && byId[h]) setTimeout(function () {
-      var hs = byId[h];
-      if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
-      setFocus(h);
-    }, 350);
+    if (h && byId[h]) setTimeout(applyFocusHash, 350);
     else { guideEntry(); showFirstHint(); }   // novice entry: highlight one line + a tap hint
+    // J-restore (§8/§10): Back/Forward (popstate) or a same-page hash edit (hashchange)
+    // re-applies the focus deep link through the shared reader without a reload; a hash
+    // that no longer names an entity clears focus back to the default panel. Standalone
+    // page only (US + China) — inside the Sector Central shell (SC_LAZY_EXTRAS, set by
+    // si_workspace.js loadCycles before injecting this file) the hash belongs to the
+    // shell's own view router, and a setFocus from here would replaceState-clobber the
+    // shell's #view entry. The in-shell Cycles contract is SIC-I03/I09B's to build.
+    if (!window.SC_LAZY_EXTRAS) {
+      var syncFocusHash = function () { if (!applyFocusHash()) setFocus(null); };
+      window.addEventListener("popstate", syncFocusHash);
+      window.addEventListener("hashchange", syncFocusHash);
+    }
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)
     loadRotation();
