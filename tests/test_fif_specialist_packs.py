@@ -2802,26 +2802,146 @@ def test_pk09_negated_material_weakness_is_false() -> None:
     assert contract.validate_pack_result(result) == []
 
 
-def test_pk09_identified_material_weakness_is_true() -> None:
+# Review F1-a/F1-b/F2-a (B.3 pattern revision v3): a stated ICFR conclusion
+# governs over a material-weakness mention in the same sentence, a negated or
+# remediated mention never mints the material_weakness literal, and a negated
+# identification is a valued absence. The reviewer's sentences are carried
+# byte-for-byte.
+
+
+def test_pk09_remediated_then_effective_is_effective() -> None:
+    # F1-a-1: the remediated mention is refused and the second sentence's
+    # stated effective conclusion resolves the field.
     body = (
         "<div>Item 9A. Controls and Procedures</div>"
-        "<div>Management identified a material weakness in the "
-        "Company&#8217;s revenue recognition process as of June 30, 2026."
+        "<div>Management concluded that the material weakness related to "
+        "revenue recognition has been remediated as of June 30, 2026. "
+        "Management concluded that our internal control over financial "
+        "reporting was effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_no_deficiency_constituted_weakness_is_not_material_weakness() -> None:
+    # F1-a-2: the v2 guard's 60-char dead zone let "no ... constituted a
+    # material weakness" through; the negation now scans the whole window.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that no significant deficiencies or "
+        "control deficiencies constituted a material weakness in our "
+        "internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_weakness_does_not_exist_is_not_material_weakness() -> None:
+    # F1-a-3: the negator follows the noun.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness does not exist."
         "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_effective_governs_same_sentence_weakness_mention() -> None:
+    # F1-a-4: a stated effective conclusion governs over a material-weakness
+    # mention in the same sentence, on either side of it.
+    remediated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that our internal control over financial "
+        "reporting was effective; the material weakness noted above was "
+        "remediated.</div>",
+    )
+    conclusion = _row(remediated, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    # The mention passes the pattern guards; the sentence-bounded resolver
+    # still lets the stated conclusion govern (the precedence rule itself).
+    existed = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness existed during "
+        "the fourth quarter of fiscal 2025; our internal control over "
+        "financial reporting was effective as of June 30, 2026.</div>",
+    )
+    conclusion = _row(existed, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(existed, "material_weakness_present")["text_value"] == "true"
+    assert contract.validate_pack_result(existed) == []
+
+
+def test_pk09_never_identified_material_weakness_is_false() -> None:
+    # F1-b: "never" before the identifying verb is a negation.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>We never identified a material weakness in our internal "
+        "control over financial reporting as of June 30, 2026.</div>"
     )
     result = _pk09_synthetic("10-K", body)
     weakness = _row(result, "material_weakness_present")
     assert weakness["quality_state"] == "valued"
-    assert weakness["text_value"] == "true"
+    assert weakness["text_value"] == "false"
+    # The negated identification does not mint a conclusion either.
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
     assert contract.validate_pack_result(result) == []
 
 
+def test_pk09_identified_material_weakness_is_true() -> None:
+    # F2-a: the affirmative identification still fires true, and the negated
+    # verb-first identification is a valued absence — the main producer's
+    # bare phrase resolved both mentions to true.
+    affirmative = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of June 30, 2026."
+        "</div>",
+    )
+    weakness = _row(affirmative, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(affirmative) == []
+    negated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>The Company did not identify any material weakness in its "
+        "internal control over financial reporting as of June 30, 2026.</div>",
+    )
+    weakness = _row(negated, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(negated) == []
+
+
 def test_pk09_adverse_conclusion_is_ineffective() -> None:
+    # F2-a: the stated "not effective" conclusion governs over the earlier
+    # material-weakness mention in the same sentence — the main producer's
+    # bare phrase resolved this Item 9A to material_weakness.
     body = (
         "<div>Item 9A. Controls and Procedures</div>"
-        "<div>Management concluded that the Company&#8217;s internal control "
-        "over financial reporting was not effective as of December 31, 2025 "
-        "because of the material weakness described below.</div>"
+        "<div>Management concluded that, because of the material weakness "
+        "described below, the Company&#8217;s internal control over "
+        "financial reporting was not effective as of December 31, 2025.</div>"
         "<div>Management identified a material weakness in the "
         "Company&#8217;s revenue recognition process as of December 31, 2025."
         "</div>"
@@ -3805,7 +3925,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "59ced552ff92b937cdebdb74a20c00a8cd3a8e412bd860105553999a93de3e89",
+    "PK09": "cc74da2c315eb27f740718d01086ea74d13c4bd1ac0c9c64ef0f5449f9efba76",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -4154,7 +4274,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "d2f0c5b985dc46bace15bf64f7a4c1ab04d41f272aba6ae33b918111ef29dc29"
+        "88c2956ae74a4fa3a7ac3233e1c7188adb7577ddbe74601c5ae7a234556b1610"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -5101,7 +5221,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "ab17b34bed844a191637947b01d9daacb04a78d7638402e1b44128ce51a17638",
+    "PK09": "fb02e9f1c13f65c49c503d73293e5b9dcff4caa62b376ecd6e8f62bb9ef84bf2",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -6748,7 +6868,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "b3a8bdd61286f6b8f938ffc4e48486caec988f7fbbb06ddd9c8a2be43b016d54",
+    "PK09": "f15a5b8cb1e08f43cd903c127a37afd07b7a2ea5243e3390e3314023a489c4fb",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -7404,7 +7524,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "86bdf850784d3ed0493be2670fe54fc404f48b1f23bd5a406eb403c7d83814d0",
+    "PK09": "d4306f3d95cd865d7028897c0f823ce20fee9f43bc8d3d0a430565207a3633f8",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",

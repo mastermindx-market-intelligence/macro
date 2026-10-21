@@ -10,6 +10,7 @@ switches from the Item 9A section to the Item 4 section on quarterly forms.
 from __future__ import annotations
 
 from hashlib import sha256
+import re
 from typing import Any, Mapping
 
 from . import narrative
@@ -60,14 +61,27 @@ ICFR_REPORT = narrative.SectionSpec(
 # to its management-conclusion phrase, so a remediated-acquisition "not
 # effective" earlier in the section can no longer win by leftmost hit; the
 # material-weakness arm is tied to a nearby unnegated management conclusion.
+# B.3 pattern revision v3 (review F1-a, 2026-10-20): the material-weakness
+# arm resolves inside ONE "."-bounded sentence: it fires only when the window
+# from the anchor verb to the noun carries no negation token (the v2 60-char
+# sub-window left a dead zone inside the 80-char arm window), when no
+# negating or remediating predicate follows the noun within 60 characters,
+# and when no negator sits immediately before the anchor verb. A stated
+# effective/ineffective conclusion anywhere in the same sentence governs
+# over the mention; that precedence is resolved by _icfr_conclusion_value.
 ICFR_CONCLUSION = (
     r"internal control over financial reporting (?:was|is|were) "
     r"(?P<effective>effective)"
     r"|internal control over financial reporting (?:was|is|were) "
     r"(?P<ineffective>not effective|ineffective)"
-    r"|(?P<material_weakness>concluded"
-    r"(?![^.]{0,80}?(?:no|not|without)\b[^.]{0,60}?material weakness)"
+    r"|(?P<material_weakness>(?<!not )(?<!not yet )(?<!never )(?<!no )"
+    r"(?<!did not )(?<!have not )(?<!has not )(?<!without )"
+    r"(?:concluded|conclude|determined|identified)"
+    r"(?![^.]{0,80}?\b(?:no|not|never|without|absence of|free of)\b"
     r"[^.]{0,80}?material weakness)"
+    r"[^.]{0,80}?material weakness"
+    r"(?![^.]{0,60}?\b(?:does not exist|did not exist|has been remediated|"
+    r"was remediated|were remediated|were not|was not|is not)\b))"
 )
 # B.3 pattern revision v2 (review F1/F2, 2026-10-20): the ineffective arm
 # carries the same disclosure-controls anchor as the effective arm.
@@ -81,8 +95,16 @@ DISCLOSURE_CONTROLS = (
 # on an affirmative identification or existence; negated mentions ("no
 # material weakness", "did not identify any material weakness", "without a
 # material weakness") and bare remediation prose no longer flip it to true.
+# B.3 pattern revision v3 (review F1-b, 2026-10-20): the lookbehind guard in
+# front of the identifying verb also refuses "never", "no", "did not",
+# "have not", "has not" and "without" immediately before it (v2 guarded
+# only "not"/"not yet", so "We never identified a material weakness"
+# resolved true); _material_weakness_value extends the guard to a negator
+# anywhere earlier in the same "."-bounded sentence.
 MATERIAL_WEAKNESS_IDENTIFIED = (
-    r"(?<!not )(?<!not yet )identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
+    r"(?<!not )(?<!not yet )(?<!never )(?<!no )(?<!did not )"
+    r"(?<!have not )(?<!has not )(?<!without )"
+    r"identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
     r"[^.]{0,40}?material weakness"
     r"|(?<![Nn]o )material weakness(?:es)?(?![^.]{0,80}?(?:no|not|without)\b)"
     r"[^.]{0,80}?exists?"
@@ -146,7 +168,7 @@ _FIELD_MAPPINGS = {
     ),
     "material_weakness_present": TextSpanMapping(
         # ITEM9A ONLY: the auditor's report carries the phrase as boilerplate.
-        # B.3 pattern revision v2 (review F1/F2, 2026-10-20).
+        # B.3 pattern revision v3 (review F1-b, 2026-10-20).
         section=ITEM9A,
         pattern=MATERIAL_WEAKNESS_IDENTIFIED,
         kind="boolean",
@@ -225,6 +247,78 @@ def _cam_value(
     if cut >= 0:
         window = window[: cut + 1]
     return window, (match.end(), match.end() + len(window))
+
+
+# B.3 v3 (review F1-a): the stated-conclusion clause shared by the mapping
+# pattern's first two arms; the resolver below searches it inside one
+# "."-bounded sentence so either side of a material-weakness mention counts.
+_ICFR_STATED_CONCLUSION = re.compile(
+    r"internal control over financial reporting (?:was|is|were) "
+    r"(?P<effective>effective)"
+    r"|internal control over financial reporting (?:was|is|were) "
+    r"(?P<ineffective>not effective|ineffective)"
+)
+# B.3 v3 (review F1-b): the identifying verb whose lead the presence
+# resolver scans for a negation token.
+_MW_IDENTIFYING_VERB = re.compile(r"identif(?:y|ied)|exists?|existed")
+_MW_NEGATION_BEFORE = re.compile(
+    r"\b(?:never|no|not|did not|have not|has not|without)\b"
+)
+
+
+def _sentence_bounds(text: str, start: int, end: int) -> tuple[int, int]:
+    """Char range of the "."-bounded sentence containing [start, end)."""
+    lo = text.rfind(".", 0, start) + 1
+    dot = text.find(".", end)
+    hi = len(text) if dot == -1 else dot
+    return lo, hi
+
+
+def _icfr_conclusion_value(
+    nt: Any, section_span: tuple[int, int], match: Any
+) -> tuple[str, tuple[int, int]]:
+    """B.3 v3 sentence-bounded resolution (review F1-a).
+
+    Rule: within the "."-bounded sentence that produced the mapping match,
+    a stated conclusion clause — "internal control over financial reporting
+    was/is/were effective / not effective / ineffective" — governs over a
+    material-weakness mention on either side of it. One sentence-bounded
+    search collects the stated-conclusion arms together with the mapping
+    match (the material-weakness arm, already guarded by the pattern) and
+    resolves effective/ineffective before material_weakness: only a
+    sentence carrying no stated conclusion may hold the material_weakness
+    literal.
+    """
+    text = nt.text
+    lo, hi = _sentence_bounds(text, match.start(), match.end())
+    stated = _ICFR_STATED_CONCLUSION.search(text, lo, hi)
+    if stated is not None:
+        literal = (
+            "effective" if stated.group("effective") is not None else "ineffective"
+        )
+        return literal, (stated.start(), stated.end())
+    return "material_weakness", (match.start(), match.end())
+
+
+def _material_weakness_value(
+    nt: Any, section_span: tuple[int, int], match: Any
+) -> tuple[str, tuple[int, int]]:
+    """B.3 v3 sentence-bounded resolution (review F1-b).
+
+    Rule: the boolean is true only for an affirmative identification or
+    existence. The mapping pattern already refuses a negator immediately
+    before the identifying verb; this resolver extends the guard to the
+    whole sentence, so "never", "no", "not", "did not", "have not",
+    "has not" or "without" anywhere before the verb turns the mention into
+    a valued absence ("false") evidenced by the negated span itself.
+    """
+    text = nt.text
+    verb = _MW_IDENTIFYING_VERB.search(text, match.start(), match.end())
+    if verb is not None:
+        lo, _ = _sentence_bounds(text, match.start(), match.end())
+        if _MW_NEGATION_BEFORE.search(text, lo, verb.start()):
+            return "false", (match.start(), match.end())
+    return "true", (match.start(), match.end())
 
 
 # --- conditional-field guards (B.3) ------------------------------------------
@@ -401,6 +495,8 @@ HOOKS = NarrativeHooks(
     text_value_overrides={
         "auditor_firm": _auditor_firm_value,
         "critical_audit_matters": _cam_value,
+        "icfr_management_conclusion": _icfr_conclusion_value,
+        "material_weakness_present": _material_weakness_value,
     },
     check_evaluator=_evaluate_check,
     extra_receipts=_extra_receipts,
