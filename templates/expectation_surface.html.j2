@@ -1,0 +1,308 @@
+{# Expectation Surface — Information→Price wave 1 descriptive consensus page.
+   SEMANTIC SKELETON ONLY: this lane adds no styling; the UI lane restyles it
+   from a frozen design spec. Same head/header/footer family as
+   intelligence_hub.html.j2 (t macro, _seo_head, theme bootstrap, theme.css,
+   _site_nav, theme.js). No style block, no style attributes, no color
+   values, no new asset files. All copy goes through t('EN','中文'). #}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expectation Surface</title>
+{% set seo_title = "Expectation Surface — Mastermind" %}{% set seo_desc = "A descriptive consensus layer of the Information→Price programme: how analyst expectation disclosures for US equities changed between collection sessions — levels, breadth and latest-session movers, described only." %}{% set seo_path = "expectation_surface.html" %}
+{% include "_seo_head.html.j2" %}
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+{% include "_site_nav.html.j2" %}
+
+<main class="es-page">
+
+  {# ── hero: one-line promise + status chips ── #}
+  <section id="es-hero">
+    <h1>{{ t('Expectation Surface','预期面') }}</h1>
+    <p class="es-promise">{{ t('A descriptive consensus layer of Information→Price: how analyst expectation disclosures changed, when, and by how much — described, never acted on.','信息→价格的描述性共识披露层：分析师预期披露何时、以多大幅度发生变化——仅作描述，不构成任何操作依据。') }}</p>
+    <ul class="es-chips">
+      <li class="es-chip">{{ t('Descriptive · not a signal','仅描述 · 非信号') }}</li>
+      <li class="es-chip">{{ t('Identity ' ~ summary.identity.state, '身份 ' ~ summary.identity.state) }}</li>
+      <li class="es-chip">{{ t('Source snapshot ' ~ (summary.source.latest_session.at if summary.source.latest_session else '—'), '来源快照 ' ~ (summary.source.latest_session.at if summary.source.latest_session else '—')) }}</li>
+      <li class="es-chip">{{ t('Rendered ' ~ summary.rendered_at, '渲染于 ' ~ summary.rendered_at) }}</li>
+    </ul>
+    {% if summary.state != 'LIVE' %}
+    <div class="es-offline" role="status">
+      <p>{{ t('Data unavailable — the honest offline state is shown below.','数据不可用——以下如实显示离线状态。') }}</p>
+      <ul class="es-offline-reasons">
+        {% for r in summary.reasons %}<li>{{ r }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </section>
+
+  {# ── census: the ledger, at a glance ── #}
+  <section id="es-census">
+    <h2>{{ t('Census','总览') }}</h2>
+    <dl class="es-census-list">
+      <dt>{{ t('Observations','观测数') }}</dt>
+      <dd>{{ summary.census.observations }}</dd>
+      <dt>{{ t('Securities','证券数') }}</dt>
+      <dd>{{ summary.census.securities }}</dd>
+      <dt>{{ t('Metrics','指标') }}</dt>
+      <dd>{{ summary.census.metrics | join(', ') if summary.census.metrics else '—' }}</dd>
+      <dt>{{ t('Horizons','期限') }}</dt>
+      <dd>{{ summary.census.horizons | join(', ') if summary.census.horizons else '—' }}</dd>
+      <dt>{{ t('Sessions','采集场次') }}</dt>
+      <dd>{{ summary.census.sessions }}</dd>
+      <dt>{{ t('Session span','场次跨度') }}</dt>
+      <dd>{{ summary.census.span.first if summary.census.span.first else '—' }} — {{ summary.census.span.last if summary.census.span.last else '—' }}</dd>
+      <dt>{{ t('Median covering analysts (latest per key)','覆盖分析师数中位（各键最新）') }}</dt>
+      <dd>{{ summary.census.analysts_median if summary.census.analysts_median is not none else '—' }}</dd>
+      <dt>{{ t('Identity resolved','身份已解析') }}</dt>
+      <dd>{{ summary.identity.resolved if summary.identity.resolved is not none else '—' }}</dd>
+      <dt>{{ t('Identity unresolved','身份未解析') }}</dt>
+      <dd>{{ summary.identity.unresolved if summary.identity.unresolved is not none else '—' }}</dd>
+      <dt>{{ t('Identity undated aliases','身份缺生效日期') }}</dt>
+      <dd>{{ summary.identity.undated_aliases if summary.identity.undated_aliases is not none else '—' }}</dd>
+    </dl>
+  </section>
+
+  {# ── breadth: session x metric up/down/flat (chart belongs to the UI lane) ── #}
+  <section id="es-breadth">
+    <h2>{{ t('Session breadth','场次宽度') }}</h2>
+    <table class="es-breadth-table">
+      <caption>{{ t('Comparable average-to-average expectation changes per session and metric','每场次、每指标可比的预期均值变化数') }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('Session','场次') }}</th>
+          <th scope="col">{{ t('At','时间') }}</th>
+          <th scope="col">{{ t('Metric','指标') }}</th>
+          <th scope="col">{{ t('Up','上升') }}</th>
+          <th scope="col">{{ t('Down','下降') }}</th>
+          <th scope="col">{{ t('Flat','持平') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in summary.breadth %}
+        <tr>
+          <td>{{ row.session_id }}</td>
+          <td>{{ row.at }}</td>
+          <td>{{ row.metric }}</td>
+          <td>{{ row.up }}</td>
+          <td>{{ row.down }}</td>
+          <td>{{ row.flat }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">{{ t('No comparable pairs yet.','暂无可比数据对。') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  {# ── movers: latest session vs prior, per metric, up and down ── #}
+  <section id="es-movers">
+    <h2>{{ t('Latest-session movers','最新场次变动') }}</h2>
+    {% for metric, mv in summary.movers.items() %}
+    <h3>{{ metric }}</h3>
+    <table class="es-movers-table">
+      <caption>{{ t('Sorted by magnitude · descriptive','按幅度排序 · 仅描述') }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('Ticker','代码') }}</th>
+          <th scope="col">{{ t('Horizon','期限') }}</th>
+          <th scope="col">{{ t('Period end','期末') }}</th>
+          <th scope="col">{{ t('Prior','前期') }}</th>
+          <th scope="col">{{ t('Latest','最新') }}</th>
+          <th scope="col">{{ t('Change','变化') }}</th>
+          <th scope="col">{{ t('Analysts','分析师') }}</th>
+          <th scope="col">{{ t('Prior at','前期时间') }}</th>
+          <th scope="col">{{ t('Latest at','最新时间') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in mv.up %}
+        <tr>
+          <td>{{ i.ticker }}</td><td>{{ i.horizon }}</td><td>{{ i.period_end if i.period_end else '—' }}</td>
+          <td>{{ i.prior }}</td><td>{{ i.latest }}</td><td>{{ i.pct_change }}</td>
+          <td>{{ i.analysts if i.analysts is not none else '—' }}</td>
+          <td>{{ i.prior_at }}</td><td>{{ i.latest_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9">{{ t('No upward movers in this session.','本场次无上行变动。') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <table class="es-movers-table">
+      <caption>{{ t('Sorted by magnitude · descriptive','按幅度排序 · 仅描述') }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('Ticker','代码') }}</th>
+          <th scope="col">{{ t('Horizon','期限') }}</th>
+          <th scope="col">{{ t('Period end','期末') }}</th>
+          <th scope="col">{{ t('Prior','前期') }}</th>
+          <th scope="col">{{ t('Latest','最新') }}</th>
+          <th scope="col">{{ t('Change','变化') }}</th>
+          <th scope="col">{{ t('Analysts','分析师') }}</th>
+          <th scope="col">{{ t('Prior at','前期时间') }}</th>
+          <th scope="col">{{ t('Latest at','最新时间') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in mv.down %}
+        <tr>
+          <td>{{ i.ticker }}</td><td>{{ i.horizon }}</td><td>{{ i.period_end if i.period_end else '—' }}</td>
+          <td>{{ i.prior }}</td><td>{{ i.latest }}</td><td>{{ i.pct_change }}</td>
+          <td>{{ i.analysts if i.analysts is not none else '—' }}</td>
+          <td>{{ i.prior_at }}</td><td>{{ i.latest_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9">{{ t('No downward movers in this session.','本场次无下行变动。') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  </section>
+
+  {# ── explorer: client-side ticker lookup over the static JSON files ── #}
+  <section id="es-explorer">
+    <h2>{{ t('Ticker explorer','个股检索') }}</h2>
+    <label for="es-search">{{ t('Search a ticker','检索代码') }}</label>
+    <input type="search" id="es-search" autocomplete="off">
+    <ul id="es-results"></ul>
+    <div id="es-ticker-panel" hidden></div>
+    <script>
+    (function () {
+      'use strict';
+      var input = document.getElementById('es-search');
+      var list = document.getElementById('es-results');
+      var panel = document.getElementById('es-ticker-panel');
+      if (!input || !list || !panel || typeof fetch !== 'function') return;
+      var ZH = document.documentElement.getAttribute('data-lang') === 'zh';
+      var UNAVAILABLE = ZH ? '数据不可用' : 'Data unavailable';
+      var FIELDS = ['at', 'period_end', 'average', 'median', 'high', 'low', 'analysts'];
+      var index = null;
+
+      function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+      function text(node, s) { clear(node); node.appendChild(document.createTextNode(s)); }
+      function headCell(s) {
+        var el = document.createElement('th');
+        el.appendChild(document.createTextNode(s));
+        return el;
+      }
+
+      function showUnavailable() {
+        panel.hidden = false;
+        text(panel, UNAVAILABLE);
+      }
+
+      function renderTicker(d) {
+        clear(panel);
+        var h = document.createElement('h3');
+        h.appendChild(document.createTextNode((d.ticker || '') + ' · ' + (d.identity_status || '')));
+        panel.appendChild(h);
+        var series = d.series || {};
+        Object.keys(series).sort().forEach(function (metric) {
+          var horizons = series[metric] || {};
+          Object.keys(horizons).sort().forEach(function (hz) {
+            var title = document.createElement('h4');
+            title.appendChild(document.createTextNode(metric + ' ' + hz));
+            panel.appendChild(title);
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var trh = document.createElement('tr');
+            FIELDS.forEach(function (name) { trh.appendChild(headCell(name)); });
+            thead.appendChild(trh);
+            table.appendChild(thead);
+            var tbody = document.createElement('tbody');
+            (horizons[hz] || []).forEach(function (p) {
+              var tr = document.createElement('tr');
+              FIELDS.forEach(function (name) {
+                var td = document.createElement('td');
+                var v = p[name];
+                td.appendChild(document.createTextNode(
+                  v === null || v === undefined ? '—' : String(v)));
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            panel.appendChild(table);
+          });
+        });
+        panel.hidden = false;
+      }
+
+      function loadTicker(ticker) {
+        fetch('expectation_surface/tickers/' + encodeURIComponent(ticker) + '.json')
+          .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+          .then(renderTicker)
+          .catch(showUnavailable);
+      }
+
+      function renderMatches(q) {
+        clear(list);
+        if (!index || !q) return;
+        index.filter(function (e) { return e.ticker.indexOf(q) !== -1; })
+          .slice(0, 30)
+          .forEach(function (e) {
+            var li = document.createElement('li');
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.appendChild(document.createTextNode(e.ticker + ' · ' + (e.identity_status || '')));
+            btn.addEventListener('click', function () { loadTicker(e.ticker); });
+            li.appendChild(btn);
+            list.appendChild(li);
+          });
+      }
+
+      fetch('expectation_surface/tickers/index.json')
+        .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+        .then(function (d) { index = Array.isArray(d) ? d : []; })
+        .catch(function () { index = []; });
+      input.addEventListener('input', function () {
+        renderMatches(input.value.trim().toUpperCase());
+      });
+    })();
+    </script>
+  </section>
+
+  {# ── method: schema, provenance, reserved controls, exclusions ── #}
+  <section id="es-method">
+    <h2>{{ t('Method and provenance','方法与来源') }}</h2>
+    <dl class="es-method-list">
+      <dt>{{ t('Schema','模式') }}</dt>
+      <dd>expectation_surface.page.v1</dd>
+      <dt>{{ t('Source path','来源路径') }}</dt>
+      <dd>{{ summary.source.observations_path }}</dd>
+      <dt>{{ t('Source blob','来源对象') }}</dt>
+      <dd>{{ summary.source.observations_blob_sha1 or '—' }}</dd>
+      <dt>{{ t('Source revision','来源版本') }}</dt>
+      <dd>{{ summary.source.source_revision or '—' }}</dd>
+    </dl>
+    <p class="es-dec">DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07 · DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07</p>
+    <h3>{{ t('What this is not','这不是什么') }}</h3>
+    <ul class="es-not-list">
+      <li>{{ t('No rank — this page does not order securities.','不排序——本页不对证券排序。') }}</li>
+      <li>{{ t('No gate — this page gates no decision.','不设门槛——本页不作为任何决策门槛。') }}</li>
+      <li>{{ t('No position size — this page sizes nothing.','不定量——本页不给出任何仓位大小。') }}</li>
+      <li>{{ t('No trade — this page is not a trade or a trade instruction.','非交易——本页不构成交易或交易指令。') }}</li>
+      <li>{{ t('No capital authority — this page moves and allocates no capital.','无资本权限——本页不支配、不分配任何资本。') }}</li>
+      <li>{{ t('Not a signal — descriptive consensus disclosure only.','非信号——仅为描述性共识披露。') }}</li>
+    </ul>
+    <h3>{{ t('Exclusions','剔除计数') }}</h3>
+    <ul class="es-exclusions">
+      <li>{{ t('Rollover pairs excluded (period_end changed or null)','期末变更或缺失而剔除的数据对') }}: {{ summary.exclusions.rollover }}</li>
+      <li>{{ t('Average rows excluded for missingness','因缺失而剔除的均值行') }}: {{ summary.exclusions.missingness }}</li>
+      <li>{{ t('Zero-prior rows excluded from movers','因零前期而剔除的变动行') }}: {{ summary.exclusions.zero_prior }}</li>
+    </ul>
+    <p class="es-contract">{{ t('Contract: research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_SURFACE_PAGE_CONTRACT_2026-10-21.md','契约：research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_SURFACE_PAGE_CONTRACT_2026-10-21.md') }}</p>
+  </section>
+
+</main>
+
+<script src="theme.js"></script>
+</body>
+</html>
