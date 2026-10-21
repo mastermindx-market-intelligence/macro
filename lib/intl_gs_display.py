@@ -13,8 +13,12 @@ never upgraded to a guessed class.
 """
 from __future__ import annotations
 
+import re
+
 from engine.intl_global_observation import ABSTAIN_REASONS
 from engine.intl_global_universe import CAPABILITIES, CAPABILITY_STATES
+
+from datetime import date as _date, datetime as _datetime, timezone as _timezone
 
 #: Simplified Chinese names for EXACTLY the 63 jurisdiction ids of
 #: load_universe()["jurisdictions"] plus the "EZ" aggregate. The EN names are
@@ -261,6 +265,93 @@ def rights_view(universe: dict, rights_matrix: dict, jurisdiction_id: str,
 def reason_copy(token: str) -> tuple[str, str]:
     """(EN, ZH) for a token; an unknown token renders the raw token twice."""
     return REASON_COPY.get(token, (token, token))
+
+
+#: Three-letter English month abbreviations (spec §13.3 Dates row).
+_MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+_DATE_ONLY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def format_clock(value):
+    """One clock instant -> the §13.3 display vocabulary (FX1).
+
+    Accepts an ISO-8601 date or datetime string, or a date/datetime object.
+    A datetime converts to UTC first ("Z", "+00:00" and naive = already UTC;
+    "2026-10-09T23:30:00+08:00" -> 15:30 UTC) and returns
+    ``{"datetime": <original ISO string>, "en": "9 Oct 15:00 UTC",
+    "zh": "10月9日 15:00 UTC"}`` (day without leading zero, three-letter
+    English month, 24h HH:MM, literal "UTC"). A date-only value returns the
+    date form ``{"datetime": "2026-10-07", "en": "7 Oct 2026",
+    "zh": "2026年10月7日"}`` — the spec has no date-only format, so this is the
+    PROPOSAL recorded under Gaps for a seat ruling. None or "" returns None;
+    an unparseable value raises ValueError — it is never echoed into markup.
+    """
+    if value is None or value == "":
+        return None
+    if isinstance(value, bool):
+        raise ValueError("clock value is not a date or datetime")
+    if isinstance(value, _datetime):
+        moment = value if value.tzinfo is None else value.astimezone(_timezone.utc)
+        return {"datetime": value.isoformat(),
+                "en": "%d %s %02d:%02d UTC" % (moment.day, _MONTHS_EN[moment.month - 1],
+                                               moment.hour, moment.minute),
+                "zh": "%d月%d日 %02d:%02d UTC" % (moment.month, moment.day,
+                                                  moment.hour, moment.minute)}
+    if isinstance(value, _date):
+        return {"datetime": value.isoformat(),
+                "en": "%d %s %d" % (value.day, _MONTHS_EN[value.month - 1], value.year),
+                "zh": "%d年%d月%d日" % (value.year, value.month, value.day)}
+    if not isinstance(value, str):
+        raise ValueError("clock value is not a date or datetime")
+    text = value
+    if _DATE_ONLY.match(text):
+        parsed = _date.fromisoformat(text)
+        return {"datetime": text,
+                "en": "%d %s %d" % (parsed.day, _MONTHS_EN[parsed.month - 1], parsed.year),
+                "zh": "%d年%d月%d日" % (parsed.year, parsed.month, parsed.day)}
+    try:
+        parsed = _datetime.fromisoformat(text.replace("Z", "+00:00", 1)
+                                         if text.endswith("Z") else text)
+    except ValueError:
+        raise ValueError("clock value is not an ISO-8601 date or datetime") from None
+    moment = parsed if parsed.tzinfo is None else parsed.astimezone(_timezone.utc)
+    return {"datetime": text,
+            "en": "%d %s %02d:%02d UTC" % (moment.day, _MONTHS_EN[moment.month - 1],
+                                           moment.hour, moment.minute),
+            "zh": "%d月%d日 %02d:%02d UTC" % (moment.month, moment.day,
+                                              moment.hour, moment.minute)}
+
+
+def snapshot_display(snapshot):
+    """Add the FX1 clock display to one mount snapshot block (per basis).
+
+    ``snapshot`` is the ``_snapshot_clocks`` shape ``{basis: {clocks, …}}``.
+    Returns one dict per basis with the existing raw ``clocks`` UNCHANGED
+    (machine contract) plus ``clock_display`` mapping every clock key to
+    ``format_clock(raw)`` or None. The single composition path for the mount,
+    the fixture site and the snapshot macro — no caller formats a clock itself.
+    """
+    displayed = {}
+    for basis, entry in (snapshot or {}).items():
+        clocks = (entry or {}).get("clocks") or {}
+        displayed[basis] = dict(entry or {}, clock_display={
+            clock: (format_clock(raw) if raw else None) for clock, raw in clocks.items()})
+    return displayed
+
+
+#: FX5 horizon vocabulary. EN uppercase follows the spec's "USD 20D"; the ZH
+#: forms follow the estate convention (templates/heatmap.js,
+#: templates/market_structure.html.j2). The spec carries no ZH horizon copy —
+#: recorded under Gaps as a PROPOSAL for a seat ruling. Unknown ids pass
+#: through verbatim (never dropped, never upgraded).
+_HORIZON_LABELS = {"1m": ("1M", "1月"), "3m": ("3M", "3月"), "20d": ("20D", "20日")}
+
+
+def horizon_label(horizon):
+    """(EN, ZH) for one horizon id; any other id renders the raw id twice."""
+    return _HORIZON_LABELS.get(horizon, (horizon, horizon))
 
 
 assert set(CAPABILITY_LABELS) == set(CAPABILITIES)

@@ -26,7 +26,7 @@
     {{ gs.gs_state_cell('closed', t('Japan', '日本'), 0.12, '%', t('Last close', '上次收盘'), t('Opens 00:00 UTC', '00:00 UTC 开盘')) }}
     {{ gs.gs_state_cell('suspended', t('Peru', '秘鲁'), -0.3, '%', t('Last print', '最后成交'), t('Halted 09:32 UTC', '09:32 UTC 起停牌')) }}
     {{ gs.gs_state_cell('restricted', t('Chile', '智利'), reason=t('Licensed feed · not redistributable', '授权数据源 · 不可再分发')) }}
-    {{ gs.gs_state_cell('corrected', t('Brazil', '巴西'), 2.6, '%', t('USD % · close-to-close', '美元 % · 收盘对收盘'), t('Corrected 21 Oct 08:00 UTC', '已于 10月21日 08:00 UTC 更正'), old='+2.9%', note='') }}
+    {{ gs.gs_state_cell('corrected', t('Brazil', '巴西'), 2.6, '%', t('USD % · close-to-close', '美元 % · 收盘对收盘'), t('Corrected 21 Oct 08:00 UTC', '已于 10月21日 08:00 UTC 更正'), old=2.9, note='') }}
     {{ gs.gs_state_cell('recovered', t('Turkey', '土耳其'), 1.9, '%', t('USD · Unhedged', '美元 · 未对冲'), t('Gap marked on series', '序列上已标记缺口'), dir='up') }}
   </div>
 
@@ -35,16 +35,19 @@
 
     {{ gs.gs_questions(active=2) }}
 
-    {# W2F-X X5: both §10.0 snapshot variants — a populated specimen-chipped
-       bar and an all-None withheld bar. #}
-    {{ gs.gs_snapshot({'local': {'clocks': {'observation': '2026-10-07', 'source_publication': '2026-10-09T15:00:00+00:00', 'ingestion': '2026-10-09T15:00:00+00:00', 'computation': '2026-10-09T20:30:00+00:00'}, 'qualified': 35, 'total': 35}, 'usd_unhedged': {'clocks': {'observation': '2026-10-07', 'source_publication': '2026-10-09T15:00:00+00:00', 'ingestion': '2026-10-09T15:00:00+00:00', 'computation': '2026-10-09T20:30:00+00:00'}, 'qualified': 35, 'total': 35}, 'usd_hedged': {'clocks': {'observation': none, 'source_publication': none, 'ingestion': none, 'computation': none}, 'qualified': 0, 'total': 35}}, 'local', '1m') }}
-    {{ gs.gs_snapshot({'local': {'clocks': {'observation': none, 'source_publication': none, 'ingestion': none, 'computation': none}, 'qualified': 0, 'total': 0}, 'usd_unhedged': {'clocks': {'observation': none, 'source_publication': none, 'ingestion': none, 'computation': none}, 'qualified': 0, 'total': 0}, 'usd_hedged': {'clocks': {'observation': none, 'source_publication': none, 'ingestion': none, 'computation': none}, 'qualified': 0, 'total': 0}}, 'usd_hedged', '1m') }}
+    {# W2F-X X5 + FX1/FX5: both §10.0 snapshot variants — a populated
+       specimen-chipped bar and an all-None withheld bar. The context values
+       are composed by tests/intl_gs_fixture_site.py through the SAME
+       snapshot_display/horizon_label path the mount uses; no hand-typed
+       clock display string lives in this template. #}
+    {{ gs.gs_snapshot(snapshot_populated, 'local', horizon) }}
+    {{ gs.gs_snapshot(snapshot_withheld, 'usd_hedged', horizon) }}
 
     <div class="intl-gs__demorow">
       {{ gs.gs_btn(t('Saved investigations', '已保存的调查'), 'secondary') }}
       {{ gs.gs_btn(t('Watch conditions', '观察条件'), 'primary') }}
       {{ gs.gs_btn(t('Unavailable', '不可用'), 'secondary', disabled=true) }}
-      {{ gs.gs_segmented([{'value': '1m', 'label': t('1m', '1月')}, {'value': '3m', 'label': t('3m', '3月')}, {'value': '20d', 'label': t('20d', '20日')}], active='1m') }}
+      {{ gs.gs_segmented(horizon_options, active='1m') }}
     </div>
 
     <div class="intl-gs__demorow">
@@ -105,6 +108,6 @@
       {{ gs.gs_correction_note('+2.9%', '+2.6%', t('21 Oct 08:00 UTC', '10月21日 08:00 UTC')) }}
     </div>
 
-    {{ gs.gs_footnote(t('Fixture only: specimen values are fabricated for layout and never shipped. Sources, rights and clocks follow the masterplan contracts.', '仅测试 fixture：示例数值仅为排版而造，永不投产。数据源、权限与时钟遵循总纲合同。')) }}
+    {{ gs.gs_footnote(t('Fixture only: specimen values are fabricated for layout and never shipped. Sources, rights and clocks follow the masterplan contracts.', '仅限测试页面：示例数值仅用于排版，永不投产。数据源、权限与时钟遵循总纲合同。')) }}
   </section>
 </section>

@@ -7806,8 +7806,10 @@ jobs:
     scope: exclusive
     paths:
       - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "engine/intl_global_universe.py"
       - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_sources.yml"
@@ -8139,6 +8141,7 @@ jobs:
       - "config/theme_sources.yml"
       - "engine/intl_global_observation.py"
       - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
       - "lib/intl_global_observation_adapter.py"
       - "research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md"
       - "templates/intl_workspace/_gs_macros.html.j2"
@@ -8218,6 +8221,7 @@ jobs:
       - "config/intl_source_rights_matrix_v1.json"
       - "config/site_access.yml"
       - "app/deploy/Caddyfile"
+      - "app/__init__.py"
       - "lib/intl_eod_publication.py"
       - "tests/test_intl_eod_publication.py"
       - "tests/test_intl_eod_publisher_integration.py"
@@ -11227,6 +11231,7 @@ jobs:
     scope: exclusive
     paths:
       - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -16202,8 +16207,10 @@ jobs:
     scope: exclusive
     paths:
       - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "engine/intl_global_universe.py"
       - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_sources.yml"
@@ -16531,6 +16538,7 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "engine/intl_global_universe.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
@@ -26250,6 +26258,7 @@ jobs:
     scope: exclusive
     paths:
       - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "engine/intl_global_universe.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"

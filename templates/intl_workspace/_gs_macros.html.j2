@@ -7,8 +7,8 @@
    attributes, so the stylesheet stays the single colour authority. #}
 
 {# ---- numerals (§3.1/§6.8): typed sign, U+2212 minus, caller picks ink class ---- #}
-{% macro gs_signed(value, dp=2, unit='') -%}
-{%- if value is none -%}<span class="intl-gs__num intl-gs__num--muted">—</span>{%- else -%}<span class="intl-gs__num">{{ '+' if value > 0 else ('−' if value < 0 else '') }}{{ ('%.' ~ dp ~ 'f')|format(value|abs) }}{{ unit }}</span>{%- endif -%}
+{% macro gs_signed(value, dp=2, unit='', ink='') -%}
+{%- if value is none -%}<span class="intl-gs__num intl-gs__num--muted">—</span>{%- else -%}<span class="intl-gs__num{% if ink %} intl-gs__num--{{ ink }}{% endif %}">{{ '+' if value > 0 else ('−' if value < 0 else '') }}{{ ('%.' ~ dp ~ 'f')|format(value|abs) }}{{ unit }}</span>{%- endif -%}
 {%- endmacro %}
 
 {# ---- chips (§7/§8) ---- #}
@@ -46,14 +46,16 @@
 {%- if missing -%}
 <span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="missing_{{ missing[0] }}">{{ t('Abstain', '弃权') }}</span> <span class="intl-gs__statecell__reason">missing_{{ missing[0] }}</span>
 {%- else -%}
-<span class="intl-gs__num{% if parts.ink %} intl-gs__num--{{ parts.ink }}{% endif %}">{{ gs_signed(value, parts.dp|default(2, true), parts.unit) }}</span>
+{#- F3: exactly ONE .intl-gs__num element — the ink modifier rides gs_signed,
+    so a full five-part value never nests a second num span. -#}
+{{ gs_signed(value, parts.dp|default(2, true), parts.unit, parts.ink|default('', true)) }}
 {%- endif -%}
 {%- endmacro %}
 
 {# ---- §7 state grammar ---- #}
 {% macro gs_state_chip(state, note='') -%}
 {%- set pair = {'complete': ('Complete', '完整'), 'loading': ('Loading', '加载中'), 'qualified': ('Qualified', '有条件'), 'abstain': ('Abstain', '弃权'), 'empty': ('No data', '无数据'), 'partial': ('Partial', '部分'), 'stale': ('Stale', '过期'), 'closed': ('Closed', '休市'), 'suspended': ('Suspended', '停牌'), 'restricted': ('Restricted', '受限'), 'corrected': ('Corrected', '已更正'), 'recovered': ('Recovered', '已恢复')}.get(state, ('No data', '无数据')) -%}
-{%- set kind = {'complete': 'ok', 'loading': '', 'qualified': 'warn-dashed', 'abstain': 'muted-dashed', 'empty': '', 'partial': 'warn', 'stale': 'warn', 'closed': '', 'suspended': 'warn', 'restricted': 'warn-dashed', 'corrected': 'info', 'recovered': 'ok'}.get(state, '') -%}
+{%- set kind = {'complete': 'ok', 'loading': 'loading', 'qualified': 'warn-dashed', 'abstain': 'muted-dashed', 'empty': 'empty', 'partial': 'warn', 'stale': 'warn', 'closed': '', 'suspended': 'warn', 'restricted': 'warn-dashed', 'corrected': 'info', 'recovered': 'ok'}.get(state, '') -%}
 {{ gs_chip(t(pair[0], pair[1]) ~ note if note else t(pair[0], pair[1]), kind) }}
 {%- endmacro %}
 
@@ -94,7 +96,12 @@
     <span class="intl-gs__skel" aria-hidden="true"></span>
     <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
   {%- elif state == 'corrected' %}
-    <span class="intl-gs__old intl-gs__num">{{ old }}</span><span class="intl-gs__statecell__value intl-gs__num">{{ gs_signed(value, 2, unit) }}</span>
+    {#- FX7: a numeric `old` formats through gs_signed with the SAME decimals
+        and unit as the new value (spec §8 "5.712 → 5.698": old and new share
+        precision). A pre-formatted string is no longer accepted: gs_signed's
+        numeric comparison raises instead of echoing it into markup. An absent
+        old (none/'') renders no struck numeral. -#}
+    {%- if old is not none and old != '' %}<span class="intl-gs__old">{{ gs_signed(old, 2, unit) }}</span>{% endif %}<span class="intl-gs__statecell__value intl-gs__num">{{ gs_signed(value, 2, unit) }}</span>
   {%- elif state in ['abstain', 'empty'] %}
     <span class="intl-gs__statecell__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__statecell__basis">{{ reason }}</span>
   {%- else %}
@@ -156,10 +163,15 @@
    qualified-observation copy), the Mode | Basis | Horizon read-out as
    segmented read-only labels, and the alignment note. The usd_hedged basis
    shows the Abstain state instead of a basis label. snapshot is the mount's
-   workspace['surveillance']['snapshot'][basis] block. #}
+   workspace['surveillance']['snapshot'][basis] block, composed through
+   lib.intl_gs_display.snapshot_display: only the clock_display entries are
+   printed (FX1 — the machine instant lives in <time datetime>, the visible
+   value is the §13.3 form; a raw `clocks` value is never printed). horizon
+   is {"id","en","zh"} built by horizon_label (FX5 — one vocabulary shared
+   with the fixture segmented control and IM13). #}
 {% macro gs_snapshot(snapshot, basis, horizon) -%}
 {%- set entry = (snapshot or {}).get(basis, {}) -%}
-{%- set clocks = entry.get('clocks') or {} -%}
+{%- set display_clocks = entry.get('clock_display') or {} -%}
 {%- set clock_labels = [('observation', ('Reference period', '参考区间')),
                         ('source_publication', ('Source available', '来源可得')),
                         ('ingestion', ('Acquired + qualified', '采集并合格')),
@@ -169,26 +181,30 @@
                       'usd_hedged': ('USD · Hedged', '美元 · 已对冲')}.get(basis, (basis, basis)) -%}
 <div class="intl-gs__snapshot">
   {%- for key, pair in clock_labels %}
+  {%- set shown = display_clocks.get(key) %}
   <span class="intl-gs__snapclock">
     <span class="intl-gs__snapclock__label">{{ t(pair[0], pair[1]) }}</span>
-    {%- if clocks.get(key) %}<span class="intl-gs__snapclock__value intl-gs__num">{{ clocks.get(key) }}</span>
+    {%- if shown %}<time class="intl-gs__snapclock__value intl-gs__num" datetime="{{ shown.datetime }}">{{ t(shown.en, shown.zh) }}</time>
     {%- else %}<span class="intl-gs__snapclock__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__snapclock__empty">{{ t('No qualified observation', '无合格观测') }}</span>{% endif %}
   </span>
   {% endfor -%}
   <span class="intl-gs__snapcontrols">
     <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Mode', '模式') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t('Price', '价格') }}</span></span></span>
     <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Basis', '口径') }}</span>{% if basis == 'usd_hedged' %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt">{{ t(basis_copy[0], basis_copy[1]) }}</span></span> {{ gs_chip(t('Hedged basis not supported', '不支持对冲口径'), 'muted-dashed') }}{% else %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t(basis_copy[0], basis_copy[1]) }}</span></span>{% endif %}</span>
-    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Horizon', '区间') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active intl-gs__num">{{ horizon }}</span></span></span>
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Horizon', '区间') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active intl-gs__num">{{ t(horizon.en, horizon.zh) }}</span></span></span>
   </span>
   <span class="intl-gs__snapshot__note">{{ t('Clocks follow the four-clock observation contract; each cell is the latest qualified observation of this basis.', '时钟遵循四时钟观测合同；每个单元格均为该口径最近一次合格观测。') }}</span>
 </div>
 {%- endmacro %}
 
-{# ---- band head / featured ring / panel ---- #}
-{% macro gs_bandhead(title, qnum='', sub='', clock='') -%}
+{# ---- band head / featured ring / panel ----
+   id='' (FX2) sets the h2 id so a wrapping container can point
+   aria-labelledby at the VISIBLE title — an accessible name may never be
+   built from t() markup (engine.i18n.t emits language spans). ---- #}
+{% macro gs_bandhead(title, qnum='', sub='', clock='', id='') -%}
 <div class="intl-gs__bandhead">
   {%- if qnum %}<span class="intl-gs__eyebrow">{{ qnum }}</span>{% endif %}
-  <h2 class="intl-gs__bandhead__title">{{ title }}</h2>
+  <h2 class="intl-gs__bandhead__title"{% if id %} id="{{ id }}"{% endif %}>{{ title }}</h2>
   {%- if sub %}<span class="intl-gs__bandhead__sub">{{ sub }}</span>{% endif %}
   {%- if clock %}<span class="intl-gs__bandhead__clock intl-gs__num">{{ clock }}</span>{% endif %}
 </div>

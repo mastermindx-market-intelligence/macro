@@ -450,11 +450,13 @@ test('FX3: specimen chip keeps intrinsic width in flex-column panels', async () 
       assert.ok(measure.width < measure.panel / 2,
         `chip must stay under half the panel at ${width}: ${measure.width} of ${measure.panel}`);
     }
-  }, {page: 'intl', stub: true});
+  }, {page: 'intl', stub: true, query: '?view=coverage&market=JP'});
 });
 
-// FX4: at 390 the snapshot labels and read-only pills stay one line tall in
-// every theme × language, and nothing horizontally scrolls.
+// FX4: at 390 the snapshot labels and read-only pills stay one LINE tall in
+// every theme × language (the h40 pill box is design height — the defect is
+// the TEXT wrapping, measured as the number of distinct line tops under the
+// element's own range), and nothing horizontally scrolls.
 test('FX4: snapshot controls never break per character at 390', async () => {
   await withRoutedPage(async page => {
     for (const theme of ['dark', 'light']) {
@@ -465,26 +467,31 @@ test('FX4: snapshot controls never break per character at 390', async () => {
         }, {theme, lang});
         await page.setViewportSize({width: 390, height: 844});
         const result = await page.evaluate(() => {
-          const lineHeightOf = node => {
-            const style = getComputedStyle(node);
-            if (style.lineHeight !== 'normal') return parseFloat(style.lineHeight);
-            return 1.5 * parseFloat(style.fontSize);
-          };
-          const tall = [];
+          const multiLine = [];
           const nodes = [
             ...document.querySelectorAll('.intl-gs__snapctl__label'),
             ...document.querySelectorAll('.intl-gs__snapshot .intl-gs__seg__opt'),
           ];
           for (const node of nodes) {
-            const height = node.getBoundingClientRect().height;
-            if (height > 1.3 * lineHeightOf(node) + 0.5) {
-              tall.push(`${node.className}: ${height}px`);
+            const style = getComputedStyle(node);
+            const lineHeight = style.lineHeight !== 'normal'
+              ? parseFloat(style.lineHeight) : 1.5 * parseFloat(style.fontSize);
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const rects = Array.from(range.getClientRects())
+              .filter(rect => rect.width > 0 && rect.height > 0);
+            // A one-line label keeps every text rect within half a line of the
+            // topmost; per-character wrapping sits a full line lower.
+            const spread = Math.max(...rects.map(rect => rect.top))
+              - Math.min(...rects.map(rect => rect.top));
+            if (rects.length && spread > lineHeight / 2) {
+              multiLine.push(`${node.className}: spread ${spread.toFixed(1)}px of ${lineHeight}px`);
             }
           }
-          return {tall, scrollWidth: document.scrollingElement.scrollWidth};
+          return {multiLine, scrollWidth: document.scrollingElement.scrollWidth};
         });
-        assert.deepEqual(result.tall, [],
-          `one-line labels required at 390 ${theme}/${lang}: ${result.tall}`);
+        assert.deepEqual(result.multiLine, [],
+          `one-line labels required at 390 ${theme}/${lang}: ${result.multiLine}`);
         assert.ok(result.scrollWidth <= 390,
           `no horizontal scroll at 390 ${theme}/${lang}: ${result.scrollWidth}`);
       }
@@ -507,9 +514,27 @@ test('F6: pagehead title computes to 22px at 390 through the token', async () =>
       return size;
     });
     assert.equal(fontSize, '22px', 'the ≤900 override must resolve to the 22px token');
-    const declared = await declaredRule(page, 'intl-gs__pagehead__title');
-    assert.match(declared || '', /font-size:\s*var\(--fs-num-lg\)/,
-      'the override must use the existing token, never a px literal');
+    // The override must be declared inside the ≤900 media block with the
+    // existing token — never a px literal, never outside the breakpoint.
+    const declared = await page.evaluate(() => {
+      const found = [];
+      for (const sheet of document.styleSheets) {
+        for (const rule of sheet.cssRules) {
+          // CSSMediaRule only (@import also carries .media but no cssRules).
+          if (rule.conditionText && rule.cssRules) {
+            for (const inner of rule.cssRules) {
+              if (inner.selectorText === '.intl-gs__pagehead__title') {
+                found.push(`${rule.conditionText} ${inner.style.fontSize}`);
+              }
+            }
+          }
+        }
+      }
+      return found;
+    });
+    assert.ok(declared.some(entry => /max-width:\s*900px/.test(entry)
+      && entry.includes('var(--fs-num-lg)')),
+    `expected a ≤900 var(--fs-num-lg) override, saw ${declared}`);
   }, {page: 'states'});
 });
 

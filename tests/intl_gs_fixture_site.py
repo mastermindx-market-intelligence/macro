@@ -27,6 +27,7 @@ from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader  # no
 
 from engine import i18n  # noqa: E402
 from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
+from lib.intl_gs_display import horizon_label, snapshot_display  # noqa: E402
 from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
 
@@ -44,8 +45,8 @@ STUB_COVERAGE_HTML = """{% import "intl_workspace/_gs_macros.html.j2" as gs %}
 {{ gs.gs_specimen_chip() }}
 <p class="intl-gs__footnote">{{ t('Stub panel: no production view is shipped by this packet. IM13 lands the real coverage board.', '占位面板：本包不投产任何视图。真实覆盖面板由 IM13 落地。') }}</p>
 {% endcall %}
-<section class="intl-gs__panel" aria-label="{{ t('Market selection stub', '市场选择占位') }}">
-  {{ gs.gs_bandhead(t('Market selection', '市场选择'), sub=t('Foundation seam: select a market, the scope follows.', '基础接缝：选择市场后范围随之切换。')) }}
+<section class="intl-gs__panel" aria-labelledby="intl-gs-market-selection">
+  {{ gs.gs_bandhead(t('Market selection', '市场选择'), sub=t('Foundation seam: select a market, the scope follows.', '基础接缝：选择市场后范围随之切换。'), id='intl-gs-market-selection') }}
   <div class="intl-gs__demorow">
     <div data-gs-market-row="JP">{{ gs.gs_state_cell('qualified', t('Japan', '日本'), 0.42, '%', t('Proxy basis', '代理口径'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), reason=t('Thin session', '成交清淡'), dir='up') }} <a class="intl-gs__chip intl-gs__chip--link" href="?view=coverage&amp;market=JP" data-gs-select-market="JP" data-gs-open="coverage">{{ t('Select Japan', '选择日本') }}</a></div>
     <div data-gs-market-row="KR">{{ gs.gs_state_cell('complete', t('Korea', '韩国'), -0.86, '%', t('USD · Unhedged', '美元 · 未对冲'), t('21 Oct 08:00 UTC', '10月21日 08:00 UTC'), dir='down') }} <a class="intl-gs__chip intl-gs__chip--link" href="?view=coverage&amp;market=KR" data-gs-select-market="KR" data-gs-open="coverage">{{ t('Select Korea', '选择韩国') }}</a></div>
@@ -109,6 +110,39 @@ def render_intl_page(*, include_surveillance=True, stub_coverage=False):
             sys.modules.pop(STUB_MODULE, None)
 
 
+def _fixture_snapshot_context():
+    """FX1/FX5: the fixture's two snapshot variants + the horizon vocabulary,
+    composed through the SAME lib.intl_gs_display path the mount uses
+    (snapshot_display over the raw clock literals; horizon_label over the
+    workspace config horizons). The fixture template holds no hand-typed
+    clock display string."""
+    raw_populated = {
+        basis: {"clocks": {
+            "observation": "2026-10-07",
+            "source_publication": "2026-10-09T15:00:00+00:00",
+            "ingestion": "2026-10-09T15:00:00+00:00",
+            "computation": "2026-10-09T20:30:00+00:00"},
+            "qualified": 35, "total": 35}
+        for basis in ("local", "usd_unhedged")}
+    raw_populated["usd_hedged"] = {"clocks": {
+        "observation": None, "source_publication": None,
+        "ingestion": None, "computation": None}, "qualified": 0, "total": 35}
+    no_clocks = {"clocks": {
+        "observation": None, "source_publication": None,
+        "ingestion": None, "computation": None}, "qualified": 0, "total": 0}
+    raw_withheld = {basis: dict(no_clocks) for basis in ("local", "usd_unhedged", "usd_hedged")}
+    horizons = _workspace_overviews(None)["config"]["horizons"]
+    en, zh = horizon_label("1m")
+    return {
+        "snapshot_populated": snapshot_display(raw_populated),
+        "snapshot_withheld": snapshot_display(raw_withheld),
+        "horizon": {"id": "1m", "en": en, "zh": zh},
+        "horizon_options": [
+            {"value": horizon, "label": i18n.t(*horizon_label(horizon))}
+            for horizon in horizons],
+    }
+
+
 def render_states_page():
     """Minimal fixture document: html[data-theme][data-lang] + theme.css +
     intl_workspace.css + intl_workspace_surveillance.css + theme.js, no site
@@ -139,7 +173,7 @@ def render_states_page():
         '</div>\n'
         '</body>\n'
         '</html>\n')
-    return template.render()
+    return template.render(**_fixture_snapshot_context())
 
 
 def write_site(out_dir, *, stub_coverage=False):

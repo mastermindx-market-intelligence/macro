@@ -7,7 +7,10 @@ transmission, dossier, scenario, replay, coverage), loads the Wave 1 universe
 and rights documents once, and hands each view to its builder module.
 
 Builder contract (W2A = IM13 scanner/coverage, W2B = IM14 dossier):
-    build_view(*, universe, rights, contexts, workspace) -> list[dict]
+    build_view(*, universe, rights, contexts, workspace, observations=None) -> list[dict]
+  ``observations`` is the caller's X2 observation set (or None) exactly as the
+  ``attach_surveillance(observations=...)`` kwarg received it (each builder
+  gets its own deep copy).
 Each returned panel dict is {view, context_id, context, generation, payload}:
   - ``view`` is checked against the invoking view key;
   - ``context_id`` anchors the panel root id (default ``im-gs-<view>``);
@@ -32,6 +35,7 @@ import logging
 
 from engine import intl_global_universe as _universe
 from engine.intl_global_observation import REQUIRED_CLOCKS
+from lib.intl_gs_display import horizon_label, snapshot_display
 from lib.intl_macro_mount import _bound, _contexts, _validate_config
 from lib.intl_workspace_binding import binding_version
 
@@ -171,8 +175,18 @@ def attach_surveillance(workspace, *, universe_loader=None, rights_loader=None,
                                      else observations.get("source_reference")),
                 "counts": _observation_counts(observations),
             },
-            # X5: snapshot clock instants per basis (no values).
-            "snapshot": _snapshot_clocks(observations),
+            # X5: snapshot clock instants per basis (no values), each with the
+            # FX1 §13.3 display added through the single composition path
+            # (lib.intl_gs_display.snapshot_display) — raw clocks unchanged.
+            "snapshot": snapshot_display(_snapshot_clocks(observations)),
+            # FX5: one horizon vocabulary for every config horizon (IM13's
+            # segmented controls and read-outs bind the same labels).
+            "horizon_labels": {
+                horizon: {"en": en, "zh": zh}
+                for horizon, (en, zh) in (
+                    (horizon, horizon_label(horizon))
+                    for horizon in workspace["config"]["horizons"])
+            },
         }
         result["surveillance_panels"] = panels
         return result

@@ -565,7 +565,11 @@ def test_winning_state_precedence_all_pairs():
 
 def _render_fixture():
     env = _render_env()
-    return env.get_template("intl_workspace/_gs_state_fixture.html.j2").render()
+    # FX1/FX5: the fixture template consumes the snapshot/horizon context the
+    # fixture site composes through the same lib.intl_gs_display path as the
+    # mount — never hand-typed literals.
+    return env.get_template("intl_workspace/_gs_state_fixture.html.j2").render(
+        **_fixture_site()._fixture_snapshot_context())
 
 
 def test_fixture_renders_thirteen_cells_both_languages():
@@ -1510,17 +1514,17 @@ def _display_module():
 
 
 class _PageScan(HTMLParser):
-    """Collects visible text nodes and every attribute value of a page."""
+    """Collects visible text nodes and every attribute pair of a page."""
 
     def __init__(self):
         super().__init__()
         self.text = []
-        self.attr_values = []
+        self.attrs = []
 
     def handle_starttag(self, tag, attrs):
-        for _name, value in attrs:
+        for name, value in attrs:
             if value is not None:
-                self.attr_values.append(value)
+                self.attrs.append((name, value))
 
     def handle_data(self, data):
         self.text.append(data)
@@ -1631,8 +1635,13 @@ def test_fx2_no_markup_inside_any_html_attribute():
     }
     for name, html in pages.items():
         scan = _scan(html)
-        bad = [value for value in scan.attr_values
-               if "<" in value or "l-en" in value or "l-zh" in value]
+        bad = []
+        for attr, value in scan.attrs:
+            # Markup never enters an attribute. The class="l-en"/"l-zh" tokens
+            # themselves are legitimate ONLY as class values — anywhere else
+            # they are leaked language-span markup.
+            if "<" in value or (attr != "class" and ("l-en" in value or "l-zh" in value)):
+                bad.append((attr, value))
         assert not bad, f"{name} carries markup inside an attribute: {bad[:3]}"
     # And the source templates never place t() markup in an attribute slot.
     for path in (MACROS_PATH, FIXTURE_PATH, REPO / "tests/intl_gs_fixture_site.py"):
@@ -1665,17 +1674,61 @@ def test_fx5_snapshot_readout_and_control_share_one_vocabulary():
     states = site.render_states_page()
     # The read-out prints the label pair, never the raw id.
     assert ">1m<" not in states and "1M" in states and "1月" in states
-    readout = re.search(
-        r'<span class="intl-gs__seg__opt is-active intl-gs__num">(.*?)</span>', states)
-    assert readout, "the horizon read-out option is missing"
-    assert "1M" in readout.group(1) and "1月" in readout.group(1)
-    # The fixture segmented control binds the same label pair per horizon id.
-    control = re.search(
-        r'<button type="button" class="intl-gs__seg__opt[^"]*" aria-pressed="true" data-value="1m">(.*?)</button>',
-        states)
-    assert control, "the fixture horizon control is missing"
-    assert "1M" in control.group(1) and "1月" in control.group(1)
-    assert control.group(1) == readout.group(1), \
+
+    class SegOptions(HTMLParser):
+        """Every .intl-gs__seg__opt element: (classes, data-value, inner html)."""
+
+        def __init__(self):
+            super().__init__()
+            self.options = []
+            self._current = None
+            self._depth = 0
+            self._chunks = []
+
+        def handle_starttag(self, tag, attrs):
+            pairs = dict(attrs)
+            classes = (pairs.get("class") or "").split()
+            if self._current is None:
+                if "intl-gs__seg__opt" in classes:
+                    self._current = {"classes": classes,
+                                     "value": pairs.get("data-value")}
+                    self._chunks = []
+                    self._depth = 1
+                    return
+            elif self._current is not None:
+                self._depth += 1
+                self._chunks.append(self.get_starttag_text())
+
+        def handle_endtag(self, tag):
+            if self._current is not None:
+                self._depth -= 1
+                if self._depth == 0:
+                    self.options.append((self._current, "".join(self._chunks)))
+                    self._current = None
+                    self._chunks = []
+                else:
+                    self._chunks.append("</%s>" % tag)
+
+        def handle_data(self, data):
+            if self._current is not None:
+                self._chunks.append(data)
+
+    parser = SegOptions()
+    parser.feed(states)
+    # The read-out is the is-active option of the READ-ONLY control inside the
+    # snapshot bar (its span carries intl-gs__num); the interactive fixture
+    # control is the button with data-value.
+    readouts = [inner for entry, inner in parser.options
+                if "is-active" in entry["classes"] and "intl-gs__num" in entry["classes"]]
+    controls = [(entry["value"], inner) for entry, inner in parser.options
+                if entry["value"] is not None]
+    assert readouts, "the horizon read-out option is missing"
+    readout = readouts[0]
+    assert "1M" in readout and "1月" in readout, readout
+    control = dict(controls).get("1m")
+    assert control, "the fixture horizon control is missing a 1m option"
+    assert "1M" in control and "1月" in control, control
+    assert control == readout, \
         "the segmented control and the read-out must share one vocabulary"
 
 
@@ -1736,9 +1789,11 @@ def test_fx7_corrected_old_and_new_share_precision():
     old_digits = strip(old.group(1)).strip()
     new_digits = strip(new.group(1)).strip()
     assert old_digits == "+2.90%" and new_digits == "+2.60%", (old_digits, new_digits)
-    old_dp = len(old_digits.split(".")[1]) if "." in old_digits else 0
-    new_dp = len(new_digits.split(".")[1]) if "." in new_digits else 0
-    assert old_dp == new_dp == 2, (old_digits, new_digits)
+
+    def decimals(numeral):
+        return len(numeral.rstrip("%").split(".")[1]) if "." in numeral else 0
+
+    assert decimals(old_digits) == decimals(new_digits) == 2, (old_digits, new_digits)
 
 
 def test_fx7_string_old_is_no_longer_accepted():

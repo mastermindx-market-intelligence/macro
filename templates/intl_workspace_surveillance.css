@@ -80,7 +80,14 @@ html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spaci
 .intl-gs__chip--get-ready{border-color:var(--warn);color:var(--ink-warn);}
 .intl-gs__chip--watch{border-color:var(--info);color:var(--ink-link);}
 .intl-gs__chip--stand-aside{border-color:var(--muted);color:var(--muted);}
+/* F7a (spec §7 chip table): Loading and Empty chips carry the --muted border
+   (the --muted text comes from the base chip rule). */
+.intl-gs__chip--loading,.intl-gs__chip--empty{border-color:var(--muted);}
 .intl-gs__chip--link{cursor:pointer;}
+/* FX3: a chip that is a direct child of the flex-column panel keeps its
+   content width — the specimen chip must never stretch to the panel width
+   (IM13/IM14 panels inherit this). */
+.intl-gs__panel > .intl-gs__chip{align-self:flex-start;}
 
 /* ---- buttons (h40, no filled primary) ---- */
 .intl-gs__btn,.intl-gs__seg__opt{font-family:var(--font-ui);}
@@ -128,10 +135,15 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapclock__label{text-transform:none;let
 .intl-gs__snapclock__empty{font-size:var(--fs-micro);color:var(--muted);}
 .intl-gs__snapshot__note{font-size:var(--fs-sm);color:var(--muted);flex-basis:100%;}
 .intl-gs__snapcontrols{display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
-.intl-gs__snapctl{display:inline-flex;align-items:center;gap:6px;}
-.intl-gs__snapctl__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+/* FX4: the control itself wraps (row gap 6px) so a long chip — e.g. the
+   hedged-basis abstain — moves to its own line instead of squeezing the
+   label or the pill; labels and read-only pills never break internally
+   (per-character wrapping of 模式/口径/区间 at 390 was the defect). */
+.intl-gs__snapctl{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;row-gap:6px;}
+.intl-gs__snapctl__label{font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0;}
 html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;letter-spacing:0.02em;}
 .intl-gs__seg--readonly .intl-gs__seg__opt{cursor:default;}
+.intl-gs__snapshot .intl-gs__seg--readonly .intl-gs__seg__opt{white-space:nowrap;}
 
 /* ---- KPI card ---- */
 .intl-gs__kpirow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
@@ -260,6 +272,9 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
   /* VF12 (§11): the six-question strip is a 2×3 grid at ≤900 so no EN or ZH
      label clips or ellipsises at 390. */
   .intl-gs__qstrip{grid-template-columns:repeat(2,minmax(0,1fr));}
+  /* F6 (spec §10.2 mobile page header H1 22/700): the existing 22px type
+     token (--fs-num-lg) — no px literal, no new token. */
+  .intl-gs__pagehead__title{font-size:var(--fs-num-lg);}
   .intl-gs__snapshot{flex-direction:column;align-items:stretch;}
   .intl-gs__seg{height:40px;width:100%;}
   .intl-gs__seg__opt{flex:1;justify-content:center;min-height:40px;}
