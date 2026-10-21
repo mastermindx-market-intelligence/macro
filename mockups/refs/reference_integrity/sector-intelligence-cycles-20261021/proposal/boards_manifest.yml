@@ -2,6 +2,8 @@
 # Every PNG was produced by the Paper export tool at 1x (no screenshot substitution).
 # Node ids are real, returned by Paper after admitted edits (ORCH-PAPER return 2026-10-21 ~06:1xZ);
 # png_path rewritten from the scratchpad export location to this committed path by the seat.
+# Board 22 (node 6W1R-0, the 23rd board on p-24-0; node id from ORCH-PAPER's ledger, never typed by the seat)
+# was exported by the seat 2026-10-21 ~09:0xZ with the same Paper export tool at 1x; png_px read from the PNG header.
 boards:
 - board_no: 0
   title: R3 · 00 · Shared components · Dark + Light
@@ -577,3 +579,26 @@ boards:
   png_px:
   - 1440
   - 1577
+- board_no: 22
+  title: R3 · Brief · Desktop · Dark · EN
+  node_id: 6W1R-0
+  page_id: p-24-0
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - fresh
+  - Watch/Watching toggle
+  - partial breadth 9 of 11
+  - overdue leg-end readout
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+  capture: export
+  png_px:
+  - 1440
+  - 1169
