@@ -205,3 +205,99 @@ class TestApplyHkConfirmBypass:
             raise AssertionError(
                 f"ladder_state() does not accept confirm= kwarg — signature drift: {e}"
             ) from e
+
+
+def test_lookup_current_intent_recovery():
+    """Execute the complete HK controller with no browser/npm dependencies.
+
+    Request ownership, clearing and retry semantics are the seam under test;
+    the minimal DOM fixture does not claim browser/layout acceptance.
+    """
+    import json
+    import shutil
+    import subprocess
+
+    root = Path(__file__).resolve().parent.parent
+    node = shutil.which("node")
+    assert node, "Node is required for HK lookup request-ownership regressions"
+    script = r"""/* Dependency-free controller regressions, invoked by test_hk_library_limited.py.
+ * Executes the complete current template controller and shared view renderers.
+ * This minimal DOM seam tests request ownership/state, not browser layout. */
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const root = path.resolve(process.argv[1]);
+const html = fs.readFileSync(path.join(root, 'templates/hk_lookup.html.j2'), 'utf8');
+const source = Array.from(html.matchAll(/<script>([\s\S]*?)<\/script>/g))
+  .map(m => m[1]).find(s => s.includes('var idx = [], cal = null'));
+assert.ok(source, 'complete HK controller must remain in the owning template');
+const controller = source.replace('{{ state_display_json | safe }}', '{}');
+assert.ok(!controller.includes('{{'), 'unrendered template value needs an explicit fixture');
+const tick = async () => { for (let i=0;i<10;i++) await Promise.resolve(); };
+class Element {
+  constructor() { this.style={display:''}; this.hidden=false; this.className=''; this.attrs={}; this.listeners={}; this.value=''; this._html=''; }
+  set innerHTML(v) { this._html=String(v); }
+  get innerHTML() { return this._html; }
+  set textContent(v) { this._html=String(v); }
+  get textContent() { return this._html.replace(/<[^>]*>/g,''); }
+  setAttribute(k,v) { this.attrs[k]=String(v); }
+  getAttribute(k) { return this.attrs[k] ?? null; }
+  addEventListener(k,f) { this.listeners[k]=f; }
+  querySelectorAll() { return []; }
+  click() { if (this.onclick) this.onclick(); }
+}
+function record(ticker, name) {
+  return {ticker,name,asof:'2026-01-02',ladder:{state:'WATCH',points:[name+' point'],cycle_plain:{daily_line:name+' daily'},entry:{tag:name+' entry'},why:name+' why'},cycle:{},mtf:{},chart:{t:['2026-01-01'],c:[10]},fundamentals:{profile:{description:name+' fundamentals'}},view:{decision:{headline:name+' decision'},country_slot:{cards:[{kind:'test',title:name+' country',rows:[]}]}}};
+}
+async function boot(lang) {
+  const elements={};
+  for (const m of html.matchAll(/\bid="([^"]+)"/g)) elements[m[1]]=new Element();
+  const events={},windowEvents={},requests=[],destroyed=[];
+  const document={readyState:'complete',getElementById:id=>elements[id]||null,querySelectorAll:()=>[],documentElement:{getAttribute:k=>k==='data-lang'?lang:null},addEventListener:(k,f)=>{events[k]=f;}};
+  const context={document,location:{hash:''},console,getComputedStyle:()=>({getPropertyValue:()=>''}),
+    addEventListener:(k,f)=>{windowEvents[k]=f;},fetch:url=>{
+      if (url.endsWith('index.json')) return Promise.resolve({ok:true,json:()=>Promise.resolve(url==='hkstockdata/index.json'?[{t:'0001.HK',n:'ALPHA',s:'TEST'},{t:'0002.HK',n:'BETA',s:'TEST'},{t:'^HSI',n:'INDEX',s:'TEST'}]:[])});
+      if (url.endsWith('calibration.json')) return Promise.resolve({ok:true,json:()=>Promise.resolve(null)});
+      let resolve,reject;const p=new Promise((r,j)=>{resolve=r;reject=j;});
+      requests.push({url,resolve,reject,success:d=>resolve({ok:true,json:()=>Promise.resolve(d)}),failure:status=>resolve({ok:false,status:status||503})});return p;
+    },StockChart:{_cur:null,mount(box,ticker){box.textContent='CHART '+ticker;this._cur={host:box,destroy(){destroyed.push(ticker);}};}}};
+  context.window=context;vm.createContext(context);
+  for (const f of ['stockview.js','mtf.js']) vm.runInContext(fs.readFileSync(path.join(root,'templates',f),'utf8'),context,{filename:f});
+  vm.runInContext(controller,context,{filename:'hk_lookup.html.j2'});await tick();
+  const navigate=async t=>{context.location.hash=t?'#'+encodeURIComponent(t):'';windowEvents.hashchange();await tick();return requests.at(-1);};
+  return {elements,events,windowEvents,requests,destroyed,context,navigate};
+}
+const cases=[
+ ['failure clears all former company fields',async h=>{(await h.navigate('0001.HK')).success(record('0001.HK','ALPHA'));await tick();(await h.navigate('0002.HK')).failure();await tick();assert.equal(h.elements.r_name.textContent,'0002.HK');for(const id of ['sv-decision','sv-country','r_fund','r_why','tvbox','r_asof'])assert.doesNotMatch(h.elements[id].textContent,/ALPHA|0001|2026/);assert.equal(h.elements.r_retry.hidden,false);} ],
+ ['slow success cannot overwrite current issuer',async h=>{const a=await h.navigate('0001.HK');(await h.navigate('0002.HK')).success(record('0002.HK','BETA'));await tick();a.success(record('0001.HK','ALPHA'));await tick();assert.match(h.elements.r_name.textContent,/BETA/);} ],
+ ['late failure cannot erase current issuer',async h=>{const a=await h.navigate('0001.HK');(await h.navigate('0002.HK')).success(record('0002.HK','BETA'));await tick();a.failure();await tick();assert.match(h.elements.r_name.textContent,/BETA/);} ],
+ ['delayed JSON is also request-fenced',async h=>{const a=await h.navigate('0001.HK');let json;a.resolve({ok:true,json:()=>new Promise(r=>{json=r;})});await tick();(await h.navigate('0002.HK')).success(record('0002.HK','BETA'));await tick();json(record('0001.HK','ALPHA'));await tick();assert.match(h.elements.r_name.textContent,/BETA/);} ],
+ ['empty new intent cancels pending result',async h=>{const a=await h.navigate('0001.HK');await h.navigate('');a.success(record('0001.HK','ALPHA'));await tick();assert.equal(h.elements.result.style.display,'none');assert.equal(h.elements.r_name.textContent,'');} ],
+ ['invalid new intent cannot revive prior issuer',async h=>{const a=await h.navigate('0001.HK');await h.navigate('../bad');a.success(record('0001.HK','ALPHA'));await tick();assert.equal(h.requests.length,1);assert.match(h.elements.r_state.textContent,/INVALID|无效/);} ],
+ ['same ticker Retry fetches and recovers',async h=>{(await h.navigate('0001.HK')).failure();await tick();h.elements.r_retry.click();await tick();assert.equal(h.requests.length,2);h.requests.at(-1).success(record('0001.HK','ALPHA'));await tick();assert.match(h.elements.r_name.textContent,/ALPHA/);assert.equal(h.elements.r_notice.hidden,true);} ],
+ ['503 does not claim missing coverage',async h=>{(await h.navigate('0001.HK')).failure(503);await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);} ],
+ ['known 404 does not claim missing coverage',async h=>{(await h.navigate('0001.HK')).failure(404);await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);} ],
+ ['unknown 404 retains missing-library state',async h=>{(await h.navigate('9999.HK')).failure(404);await tick();assert.match(h.elements.r_state.textContent,/NOT IN LIBRARY|不在库中/);} ],
+ ['network failure has Retry',async h=>{(await h.navigate('0001.HK')).reject(new TypeError('offline'));await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);assert.equal(h.elements.r_retry.hidden,false);} ],
+ ['new loading clears former company and owns busy state',async h=>{(await h.navigate('0001.HK')).success(record('0001.HK','ALPHA'));await tick();await h.navigate('0002.HK');assert.equal(h.elements.r_name.textContent,'0002.HK');assert.equal(h.elements.result.getAttribute('aria-busy'),'true');assert.equal(h.elements['sv-decision'].textContent,'');} ],
+ ['locale reload fences former generation',async h=>{const a=await h.navigate('0001.HK');h.events.langchange();await tick();h.requests.at(-1).success(record('0001.HK','FRESH'));await tick();a.success(record('0001.HK','OLD'));await tick();assert.match(h.elements.r_name.textContent,/FRESH/);} ],
+ ['wrong-company body is rejected',async h=>{(await h.navigate('0001.HK')).success(record('0002.HK','BETA'));await tick();assert.equal(h.elements.r_name.textContent,'0001.HK');assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);} ],
+ ['producer-safe index alias remains supported',async h=>{(await h.navigate('_HSI')).success(record('^HSI','INDEX'));await tick();assert.match(h.elements.r_name.textContent,/INDEX/);} ],
+ ['producer-safe currency alias remains supported',async h=>{(await h.navigate('HKD_X')).success(record('HKD=X','FX'));await tick();assert.match(h.elements.r_name.textContent,/FX/);} ],
+ ['padded canonical symbol remains supported',async h=>{(await h.navigate('0700.HK')).success(record('0700.HK','HK'));await tick();assert.match(h.elements.r_name.textContent,/HK \(0700.HK\)/);} ],
+ ['legitimate LIMITED and full analyses both survive',async h=>{const thin={ticker:'0001.HK',name:'THIN',asof:'2026-01-02',limited:true,listed:'2026-01-01',history_days:2,chart:{t:['2026-01-01'],c:[10]}};(await h.navigate('0001.HK')).success(thin);await tick();assert.match(h.elements.r_state.textContent,/LIMITED|历史不足/);(await h.navigate('0002.HK')).success(record('0002.HK','BETA'));await tick();assert.match(h.elements['sv-decision'].textContent,/BETA/);assert.notEqual(h.elements.panel_deep.style.display,'none');assert.match(h.elements.r_fund.textContent,/BETA/);} ],
+ ['malformed LIMITED is unavailable instead of undefined facts',async h=>{(await h.navigate('0001.HK')).success({ticker:'0001.HK',limited:true});await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);assert.equal(h.elements.r_name.textContent,'0001.HK');} ],
+ ['render exception cleans semantic state class',async h=>{const d=record('0001.HK','ALPHA');delete d.cycle;(await h.navigate('0001.HK')).success(d);await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);assert.equal(h.elements.r_state.className,'state');} ],
+ ['only this page chart is released',async h=>{(await h.navigate('0001.HK')).success(record('0001.HK','ALPHA'));await tick();await h.navigate('0002.HK');assert.deepEqual(h.destroyed,['0001.HK']);} ],
+ ['known index alias 404 is unavailable',async h=>{(await h.navigate('_HSI')).failure(404);await tick();assert.match(h.elements.r_state.textContent,/UNAVAILABLE|不可用/);} ],
+];
+(async()=>{const failures=[];let passed=0;for(const lang of ['en','zh'])for(const [name,test] of cases){try{await test(await boot(lang));passed++;}catch(e){failures.push({name,lang,error:e.message});}}console.log(JSON.stringify({passed,failed:failures.length,failures}));process.exitCode=failures.length?1:0;})();
+"""
+    result = subprocess.run(
+        [node, "-e", script, str(root)],
+        capture_output=True, text=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    summary = json.loads(result.stdout)
+    assert summary["passed"] == 44 and summary["failed"] == 0, summary
