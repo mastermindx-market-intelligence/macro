@@ -24,11 +24,11 @@ exists only on those heads is unread.
 |---|---|---|---|
 | B04 | Episode evidence dossier | NEEDS-FABLE-DECISION (B04-A custody collision); B04-D BLOCKED-DATA | Ratify the B04-A0/A1 split (F2). Then build lane `pro-intel-b04a0-20261021` (packet written, not launched) |
 | B06 | Policy capture, decision-clean labels | BLOCKED-CUSTODY + BLOCKED-DATA | Route to the #8091/#8192 owner: freeze the numeric D06 fields (F4). A source-blind D06 proposal lane is possible after F4 |
-| B08 | Comparable event and expectation sources | NEEDS-FABLE-DECISION (Q06 Gate S v0.2 acceptance) | `pro-intel-b08gates-20261021-r1` (launched): acceptance-readiness record |
+| B08 | Comparable event and expectation sources | NEEDS-FABLE-DECISION (records hygiene for an acceptance Sol already recorded); production admission BLOCKED-DATA | Seat records PR, manifest only (F1); readiness record DELIVERED by `pro-intel-b08gates-20261021-r1` |
 | B09 | Group history and peer evidence | BLOCKED-DATA + BLOCKED-CUSTODY; depends on B04 | None now. Dated theme history accrues forward-only |
 | B10 | Early Leadership research comparisons | BLOCKED-DATA (D07 S3); depends on B06/B09 | Route the write-time `recorded_at` episode writer to the B1 owner (F5) |
 | B12 | Genuinely earlier entry | BLOCKED-DATA (no live B4 capture; D02 gated) | Route the B4 runtime wiring to its owner (F5). No study |
-| B14 | Earnings research journey | BLOCKED-CUSTODY (#7264) + BLOCKED-DATA (B1 natural clock, Q06 release) | After F1: the incumbent D5 owner wires the comparable field; #7264 owner owns the Lab view |
+| B14 | Earnings research journey | BLOCKED-CUSTODY (#7264) + BLOCKED-DATA (B1 natural clock; thesis DDL human gate) | D5 consumer already built (BUILT_NOT_PROVEN); #7264 owner owns the Lab view; production proof waits on B1 |
 | B15 | Earnings models, entry, holding | BLOCKED-DATA (no registration; H42 price basis blocked) | None. A prereg draft waits on the corporate-action factor owner |
 | B16 | Cycle source-readiness pilot | CLOSED NOT PILOT-READY (R6-B16-01, DO_NOT_REDO); diagnostic BLOCKED-CUSTODY | Repair #7868 per its B1/B2 review (F3). Packet `pro-intel-b16diag-20261021` withheld |
 | B17 | Funding and per-share Cycle dossiers | BLOCKED-CUSTODY (#8308, Sol hold) + BLOCKED-DATA | Route to #8308 / Sol (F6) |
@@ -111,9 +111,19 @@ the main Stage 4 finding (§4).
 - **Evidence.**
   - `engine/sue.py` has `numeric-sue-compat-v1.1` (`:102`) and `reported_change` (`:339`)
     through `cash_flow_reconciliation` (`:1670`). Code carrier #8189 is MERGED (2026-10-05).
-  - The Q06 contract v0.2 (#8069, merged 2026-10-05) records
-    `.state = "GATE_S_REPAIRED_PENDING_PARENT_ACCEPTANCE"`, with next action "Parent reviews Gate
+  - The Q06 contract v0.2 (#8069, merged 2026-10-05) still records
+    `.state = "GATE_S_REPAIRED_PENDING_PARENT_ACCEPTANCE"` and
+    `.gate_s.state = "REPAIRED_PENDING_PARENT_ACCEPTANCE"`, with next action "Parent reviews Gate
     S v0.2".
+  - **But the acceptance is already recorded at BASE.** `earnings_semantics_v1/README.md:81-84`:
+    parent Sol independently reproduced the repaired Gate S contract on #8069 head `ae9409bc`
+    and accepted the factual source field only, in #8069 comment `5894923827`. I re-hashed the
+    contract at BASE: sha256 `a0790967…a177d`, which is byte-identical to the SHA that the D5
+    consumer pins (`D5_CONSUMER_2026-09-30.md`). The test fixture copy carries the same hash.
+  - The verifier asserts `gate_s.state == "REPAIRED_PENDING_PARENT_ACCEPTANCE"`
+    (`verify_q06_…py:100`), and the D5 consumer pins the contract SHA-256. A byte edit to the
+    contract would therefore break both. Its state field is stale by design-constraint, not
+    by an open acceptance.
   - `earnings_semantics_v1/EVIDENCE_BRIEF_AND_PROFITABILITY_2026-09-30.md:157`: "Q06#8069's
     source method remains separately accepted in substance, but its source CI/release is
     unfinished."
@@ -131,8 +141,19 @@ the main Stage 4 finding (§4).
     (`wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:121`).
   - B1 natural clock: no real B1 episode generation is reachable (`:120`).
   - Nasdaq and Yahoo expectations are "not a source" for model use.
-- **Verdict.** NEEDS-FABLE-DECISION on the Gate S acceptance (F1). Production admission stays
-  BLOCKED-DATA. Lane `pro-intel-b08gates-20261021-r1` prepares the acceptance-readiness record.
+- **Lane result.** `pro-intel-b08gates-20261021-r1` (ubuntu3, DONE rc=0, `42547cfd885a`, +190).
+  - Verifier exit 0; `feature_value_pct` 16.356501765281383 = (109417/94036 - 1) x 100.
+  - Six review findings (M1-M3, m1-m3) are repaired; blockers `[]`.
+  - The rights blob `a9ee6f28…` equals the pin. The register has a single commit (#7843). SEC
+    EDGAR is user-facing, with citation limits.
+  - D07: PUBLIC_INFO_REPLAY is PROPOSED, not registered. The register has no AAPL/Q06 row.
+  - It lists ten stale companion records (A-J), including the manifest basis/next_action, the
+    contract state fields, `d5_adapter_edit_authorized:false`, and the v0.1 terminology.
+  - Offline gaps: comment `5894923827` and live PR state cannot be verified from the lane host.
+- **Verdict.** NEEDS-FABLE-DECISION, now narrowed to F1: ratify the recorded acceptance and
+  approve a manifest-only records PR. No fresh acceptance is needed. Production admission stays
+  BLOCKED-DATA (consensus absent; one issuer in the D5 allowlist ∩ events; no B1 natural
+  clock).
 
 ### B09 — group history and peer evidence
 
@@ -196,6 +217,9 @@ the main Stage 4 finding (§4).
 - **Evidence.**
   - `GET /api/prophet/lab/v1/episodes/{episode_id}/earnings` exists (`app/prophet_lab.py:326`),
     projecting `engine/prophet_lab/earnings_dossier.py`.
+  - The source-qualified D5 consumer is already built: `D5_CONSUMER_2026-09-30.md` is
+    "BUILT_NOT_PROVEN". It reads the canonical #8069 contract path and pins its SHA-256 and
+    rights blob. Its carrier #8189 is MERGED.
   - The explanation layer is included (EVIDENCE_BRIEF…:16-18).
   - The handoff `…2026-09-30-earnings-d5-consumer.md` ended blocked.
 - **Custody.** #7264 (claude/, mastermindx-2, draft, 2026-10-06) owns the Lab earnings view
@@ -204,9 +228,13 @@ the main Stage 4 finding (§4).
   live episode.
 - **Blocking facts.**
   - B1 natural nightly clock (C-census:120).
-  - #8069 source release and CI (D5_CONSUMER:54-57).
+  - D5_CONSUMER:54-57 names #8069's suite registration/CI and source release as prerequisites.
+    #8069 is MERGED (2026-10-05), so that blocker is stale at BASE. Release to production is
+    still unproven.
   - Thesis capture DDL is an EXACT_HUMAN_GATE (SEAT_RULING_R6-D05-01:16).
-- **Verdict.** BLOCKED-CUSTODY + BLOCKED-DATA. After F1, the D5 owner wires the comparable field.
+- **Verdict.** BLOCKED-CUSTODY + BLOCKED-DATA. The comparable-field consumer exists. The
+  remaining gaps are production proof on a real B1 episode, the B1 natural clock, the DDL human
+  gate, and the #7264 Lab view (incumbent custody).
 
 ### B15 — Earnings models, entry, holding
 
@@ -317,16 +345,22 @@ the main Stage 4 finding (§4).
 
 ## 3. Decisions for Fable (recommendation first)
 
-- **F1 — Accept Q06 Gate S v0.2 (unblocks the B08 factual field and B14 wiring).**
-  - Recommend ACCEPT if the readiness lane reports verifier exit 0, an unchanged rights blob
-    pin, and every prior finding answered.
-  - Then open one seat records PR:
-    - set the contract state to accepted;
-    - replace the manifest's stale D07 basis with the class under the merged #7856 register;
-    - correct the "Draft" wording in R6-PREREG-01.
-  - Route the factual comparable-revenue field to the incumbent Earnings/D5 owner, coordinating
-    with #9821.
-  - Gate E stays with Evaluation.
+- **F1 — Ratify Sol's recorded Gate S acceptance; approve a manifest-only records PR.**
+  - The acceptance already exists: README:81-84, Sol, #8069 comment `5894923827`. The BASE
+    contract bytes equal the accepted head. Do not re-accept.
+  - Before the PR, the seat makes one GitHub read to confirm that comment `5894923827` exists
+    on #8069. The lane could not verify it offline.
+  - Records PR (seat-owned; never on a `sol/` branch):
+    - manifest `.evidence_class.basis` → `D07_REGISTER_V1_ADOPTED_R6-D07-01_2026-09-27_509ffb5a6a5c`;
+    - manifest `.next_action` and `.feature` → the accepted factual field, citing README:81-84;
+    - R6-PREREG-01 "#7581/#7738 Draft" → merged-but-uncalled.
+  - **Never byte-edit the contract.** The D5 consumer pins its SHA-256, and the verifier asserts
+    the pending `gate_s.state`. Record the acceptance in a companion record instead.
+  - Optional and separate: a D07 exemplar register row PUBLIC_INFO_REPLAY for Q06/AAPL, in a PR
+    citing R6-D07-01. Recommend deferring it until the register owner confirms the class
+    criteria; nothing downstream needs it now.
+  - Gate E stays with Evaluation. #9821 (sol/, mastermindx-2) touches the same evidence family;
+    coordinate, never edit.
 - **F2 — Split B04-A.**
   - Recommend ratifying:
     - **B04-A0:** new-module dossier wrapper, A9 reason map, A12 closed shape, A7 clock split, A8
@@ -373,8 +407,12 @@ the main Stage 4 finding (§4).
 
 1. Every Stage 4 unit is gated by a held incumbent, a missing source clock, or an open seat
    decision. The cheapest unlocks are two seat decisions (F1 and F2), not new research.
-2. Two recorded premises are stale at BASE:
+2. Several recorded premises are stale at BASE:
    - The Q06 D07 basis ("#7856 unmerged"; it is merged).
+   - The Q06 contract and manifest state "pending parent acceptance", although README:81-84
+     records Sol's acceptance. The contract cannot be byte-edited without breaking the D5 SHA pin
+     and the verifier, so the fix belongs in companion records.
+   - The D5 consumer's "#8069 release/CI outstanding" (#8069 is merged).
    - The R6-PREREG-01 "#7581/#7738 are Draft" (they are merged). Its substance still holds,
      because the merged code has no nightly caller.
 3. The Cycle macro diagnostic is admitted by ruling but blocked by review. The review's B1
@@ -391,7 +429,7 @@ the main Stage 4 finding (§4).
 | pro-intel-censusA-20261021-r1 | census | ubuntu2 | DONE rc=0, `1b5114fb32b` | intel/CENSUS_A_EARLY_LEADERSHIP_B4_2026-10-21.md |
 | pro-intel-censusB-20261021-r1 | census | ubuntu2 | DONE rc=0, `d166114c595` | intel/CENSUS_B_EARNINGS_CYCLE_LATER_2026-10-21.md |
 | pro-intel-b27-20261021-r1 | research | ubuntu0 | DONE rc=0, `be515d3c0df`, consumed + spot-checked | intel/B27_RETAINED_SLEEVES_DISPOSITION_DRAFT_2026-10-21.md |
-| pro-intel-b08gates-20261021-r1 | research | ubuntu3 | RUNNING | intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md |
+| pro-intel-b08gates-20261021-r1 | research | ubuntu3 | DONE rc=0, `42547cfd885a`, consumed; acceptance hash + verifier assert re-checked at BASE | intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md |
 
 Written, not launched. The packets are in the orchestrator scratchpad `pk/` directory and are
 listed here by name:

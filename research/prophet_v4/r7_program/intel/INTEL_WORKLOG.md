@@ -85,3 +85,21 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
   - B4 runtime wiring may sit in the Source orchestrator's Stage 2/3 scope, so a lane here
     risks duplication.
   - The B04-A0 build waits on F2.
+
+## 2026-10-21 03:5xZ — b08gates consumed; first wave closed
+
+- `pro-intel-b08gates-20261021-r1`: ubuntu3, DONE rc=0 at 03:45Z, commit `42547cfd885a` (+190).
+  The report is on the lane branch at
+  `research/prophet_v4/r7_program/intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md`.
+  I read it in full on the lane host and did not copy it locally.
+- Material finding: the Gate S acceptance already exists at BASE (`earnings_semantics_v1/README.md:81-84`,
+  Sol, #8069 comment `5894923827`). I re-checked it here at BASE `e5dd30c6`:
+  - the contract sha256 is `a0790967…a177d`, which equals the D5 consumer pin and the fixture copy;
+  - `verify_q06_…py:100` asserts the pending `gate_s.state`.
+- Disposition updated:
+  - B08 is now NEEDS-FABLE-DECISION, narrowed to "ratify + manifest-only records PR".
+  - F1 is rewritten: never byte-edit the contract; the D07 exemplar row is optional and deferred.
+  - B14 is corrected: the D5 consumer is BUILT_NOT_PROVEN and #8069 is merged.
+  - Finding 2 now lists the extra stale premises.
+- Wave 1 closed: all four lanes (censusA, censusB, b27, b08gates) are consumed and no lane of
+  mine is live. The b04a0 packet awaits F2, and b16diag is withheld under F3. Returning to the seat.
