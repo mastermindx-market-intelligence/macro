@@ -20026,9 +20026,11 @@ jobs:
         # proves the real stamp path as well). pyyaml closes the Brain gateway's
         # Fundamental Forensics package import in this isolated environment.
         # requests closes app.main's eager app.market_memory import.
-        run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
+        run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests jinja2 jsonschema==4.26.0
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_api.py -q
+        run: python -m pytest tests/test_research_api.py tests/test_research_revision_read.py -q
+      - name: Macro Command registered-user serving API
+        run: python -m pytest tests/test_macro_command_api.py -q
       - name: source-bound report evidence — corpus selector
         run: python -m pytest tests/test_research_evidence_passages.py -q
 
