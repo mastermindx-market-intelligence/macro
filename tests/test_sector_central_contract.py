@@ -128,9 +128,16 @@ def test_contract_records_observed_route_set_and_verdict():
 
 
 def test_legacy_jobs_gate_line_lists_contract_suite():
-    """The one CI line this packet edits must keep the gate suite and add this file."""
+    """The one CI line this packet edits must keep the gate suite and add this file.
+
+    SIC-RCV appended tests/test_sector_receiver_contracts.py to the same run line;
+    the pin tracks the line as registered (update together with the yml edit).
+    """
     yml = _read(LEGACY_JOBS)
-    line = "run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py -q"
+    line = (
+        "run: python -m pytest tests/test_sector_central_gate.py "
+        "tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py -q"
+    )
     assert line in yml, "tier-gate run line no longer registers test_sector_central_contract.py"
     # the neighbouring suite's registration is untouched
     assert "run: python -m pytest tests/test_sector_central.py -q" in yml
