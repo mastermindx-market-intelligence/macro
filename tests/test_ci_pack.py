@@ -5157,9 +5157,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_867),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_830),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_606),
+    ("templates/index.html", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_840),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_616),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5167,6 +5167,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 SIC integration funding (seat, PR #9917 head 67ccd15e51d5 +
+    the RI07b MINOR 6 fix fdc3e02b29e3): the four I-wave lanes landed on the
+    B13-funded base cbf9e095ebd5 (ceilings 5,867 / 5,830 / 5,606 measured AT
+    closure there) as I09A2 (tests/test_sector_central_history.py appended to
+    the pinned sector_central line), I05R2 (tests/test_research_receiver_entry.py
+    appended to that line before the trailing -q, both byte-pins updated),
+    I06R (own tier-gate step) and I07R2 (own tier-gate step). Each lane
+    paragraph below claimed its own +2/+3 against the shared f4a1747e5e base,
+    but the ceilings are funded only by the integrated measurement: the local
+    probe on 67ccd15e51d5 measures all three probes at 5,877 / 5,840 / 5,616,
+    exactly ten estimator units over the B13 ceilings (two line appends at two
+    each + two own steps at three each = ten, uniform across the three probes
+    because every registration lands in the tier-gate job all three select).
+    Fund exactly that measured ten. No job-count, selector, pack or entrant
+    change; the ten-pack bound is untouched.
 
     2026-10-21 SIC-I07R registers
     tests/test_watchstore_sector_investigations_js.py as its own step in the
