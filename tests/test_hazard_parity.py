@@ -13,7 +13,8 @@ import pytest
 
 from engine import hazard_parity as hp
 from engine.cycle_rhythm import estimate_kinds
-from engine.hazard_score import _build_feature_vector, score as hz_score
+from engine.hazard_score import (_MODEL_PATH, _build_feature_vector,
+                                 score as hz_score)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Shared fixtures
@@ -98,8 +99,16 @@ def test_stamp_hazard_identical_before_after_extraction(one_record, tape):
     extracted = sc._live_hazard_inputs(rec, "sector")
     assert extracted == legacy
 
+    # B12r2 (RB12 repair): without the admitted model artifact the stamp is a
+    # no-op, so the two equality asserts below would compare nothing — skip with
+    # a reason instead of passing vacuously (or key-erroring in a sparse tree).
+    if not _MODEL_PATH.exists():
+        pytest.skip(f"admitted model artifact absent ({_MODEL_PATH.name}) — "
+                    "now.hazard stamp assertions need it")
+
     sc._stamp_hazard(rec, family="sector")
     hf, direction, quad, liq = sc._live_hazard_inputs(rec, family="sector")
+    assert rec["now"]["hazard"] is not None          # never a vacuous None==None
     assert rec["now"]["hazard"] == hz_score(hf, direction, "sector", quad, liq)
 
     rec2 = hp.live_record(tape, tape["index"][-1])
@@ -162,8 +171,22 @@ def test_equal_vectors_match_and_parity_holds():
     verdict, failing = hp.verdict_from(
         {f: c["match"] for f, c in cmp_.items()},
         {"n": 2, "agree": 2, "disagree": 0},
-        {"live_epoch_matches_artifact": True, "detector_version_agrees": True})
+        {"live_epoch_matches_artifact": True, "detector_version_agrees": True,
+         "training_epoch_matches_artifact": True})
     assert (verdict, failing) == ("PARITY_HOLDS", [])
+
+
+def test_verdict_from_fails_when_training_epoch_mismatches():
+    """B12r2 (RB12 repair): training_epoch_matches_artifact is now PART of the
+    basis_epoch gate — a synthetic report failing only that check must return
+    PARITY_FAILS naming basis_epoch."""
+    verdict, failing = hp.verdict_from(
+        {f: True for f in hp.STATIC_CLASSES},
+        {"n": 2, "agree": 2, "disagree": 0},
+        {"live_epoch_matches_artifact": True, "detector_version_agrees": True,
+         "training_epoch_matches_artifact": False})
+    assert verdict == "PARITY_FAILS"
+    assert failing == ["basis_epoch"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -207,6 +230,18 @@ def test_recorded_verdict_matches_harness(full_report):
     assert list(const["failing"]) == list(full_report["failing"])
     assert const["measured_on"] == hp.BASE_SHA
     assert full_report["input"]["kind"].startswith("seeded_synthetic")
+    # B12r2: the drift check is not verdict/failing-only — the direction counts
+    # and every per-feature worst diff must reproduce the frozen report too (so
+    # the widened basis_epoch gate provably leaves the verdict what it is today).
+    assert const["report"]["direction"] == full_report["direction"]
+    frozen_feats = {r["feature"]: r for r in const["report"]["features"]}
+    fresh_feats = {r["feature"]: r for r in full_report["features"]}
+    assert set(frozen_feats) == set(fresh_feats)
+    for feat, fresh in fresh_feats.items():
+        frozen = frozen_feats[feat]
+        assert frozen["match"] == fresh["match"], feat
+        assert frozen["worst_abs_diff_sd"] == fresh["worst_abs_diff_sd"], feat
+        assert frozen["worst_abs_diff"] == fresh["worst_abs_diff"], feat
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -231,7 +266,10 @@ def test_estimate_kinds_claim_follows_constant(monkeypatch):
             "parity_holds" if frozen["verdict"] == "PARITY_HOLDS" else "parity_failed")
         assert ek["live_feature_parity"]["verdict"] == frozen["verdict"]
         assert ek["live_feature_parity"]["failing"] == frozen["failing"]
-        assert ek["live_feature_parity"]["report"]["schema"] == hp.PARITY_SCHEMA
+        # B12r2 (RB12 repair): the record carries a pointer, never the report —
+        # the full report is published once in compute()'s meta.
+        assert "report" not in ek["live_feature_parity"]
+        assert ek["live_feature_parity"]["report_ref"] == "meta.live_hazard_parity"
 
         monkeypatch.setitem(hp.LIVE_HAZARD_PARITY, "verdict", "PARITY_HOLDS")
         ek2 = estimate_kinds(copy.deepcopy(_NOW_WITH_MODEL_CELL), None)

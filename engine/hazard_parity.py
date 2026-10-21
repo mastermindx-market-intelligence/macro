@@ -413,7 +413,8 @@ def verdict_from(features_match: dict[str, bool], direction: dict,
     if direction.get("disagree"):
         failing.append("direction")
     if not (basis_epoch.get("live_epoch_matches_artifact")
-            and basis_epoch.get("detector_version_agrees")):
+            and basis_epoch.get("detector_version_agrees")
+            and basis_epoch.get("training_epoch_matches_artifact")):
         failing.append("basis_epoch")
     return ("PARITY_HOLDS" if not failing else "PARITY_FAILS", failing)
 
