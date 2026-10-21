@@ -8915,6 +8915,7 @@ jobs:
           tests/test_prophet_live_journal_recovery.py
           tests/test_cn_live_clock.py
           tests/test_cn_live_pack.py
+          tests/test_cn_live_pack_archive.py
           tests/test_cn_live_evaluator.py
           tests/test_cn_live_vps_lane.py
           tests/test_cn_live_pack_frozen.py
