@@ -73,8 +73,9 @@ def _stamp_rotation_context(payload: dict, *, site_root=None, today=None) -> Non
 
     Adds top-level ``rotation_context`` (schema sector_cycles.rotation_context.v1) and
     ``rotation_alignment_version``; every other payload byte is untouched.  The page
-    receiver (templates/sector_cycles.js loadRotation) can then consume this block
-    instead of trusting raw marketdata files.
+    receiver (templates/sector_cycles.js loadRotation) can consume this block; its
+    raw marketdata read path is unchanged until the receiver is switched over, so
+    the stamp is additive, not a replacement (RB02 #3).
 
     Events (site/marketdata/rotation_events.json): schema must be rotation_events.v1
     and ok is True, else invalid_payload; alignment compares the payload's top-level
@@ -195,7 +196,8 @@ def main() -> int:
         log.warning("sector_cycles: TTL enrichment skipped: %s", e)
 
     # SIC-D-B02: backend-stamped, guarded rotation context — added before the
-    # split so it rides the CORE payload; receiver-side raw-file trust retires.
+    # split so it rides the CORE payload; receiver-side raw-file trust can be
+    # retired only once the receiver reads this block (RB02 #3).
     _stamp_rotation_context(data)
 
     # data JS split for lazy loading:

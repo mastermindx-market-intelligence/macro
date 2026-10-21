@@ -720,7 +720,14 @@ def _load_rotation_artifact() -> dict:
         if not p.exists():
             log.debug("sector_central: rotation artifact absent — conviction sort retained")
             return {}
-        return json.loads(p.read_text(encoding="utf-8"))
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            # RB02 #2: well-formed but non-object JSON (null / list / scalar) must
+            # degrade exactly like an absent artifact — never reach .get() in compute().
+            log.warning("sector_central: rotation artifact is not a JSON object (%s) — conviction sort retained",
+                        type(raw).__name__)
+            return {}
+        return raw
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: rotation artifact load failed (%s) — conviction sort retained", e)
         return {}

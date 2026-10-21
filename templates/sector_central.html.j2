@@ -3334,7 +3334,20 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     el.innerHTML='<h2>'+L('Self-grader — measured accuracy','自评分器 — 已衡量准确度')+'</h2>'+
       '<div class="muted sm">'+L('Realized directional hit-rate, cross-sectional rank-IC and excess-vs-SPY of the conviction calls, by horizon. Sparse until it accrues; never fed back into the live score.',
         '按时间跨度衡量信念判断的已实现方向命中率、横截面秩相关与超越SPY的超额收益。数据累积前较稀疏；绝不回灌入实时评分。')+'</div>'+
-      '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>';
+      '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>'+
+      graderVersionFrame();
+  }
+  /* RB13 F1: once score version 2 is active the top-level scorecard is the
+     version-1 cohort — say so with its as-of, and mark version 2 as accruing. */
+  function graderVersionFrame(){
+    var seg=(GR&&GR.score_version_segments)||{}, s1=seg['1']||null;
+    var v2=((GR&&GR.by_score_version)||{})['2']||null;
+    if(!s1||!s1.last_date) return '';
+    var out='<div class="muted sm"><span class="rg-k">'+
+      L('Scorecard above: score version 1 calls through '+esc(s1.last_date)+' (n='+(s1.n_calls||0)+')',
+        '上方记分卡：评分版本 1 的判断截至 '+esc(s1.last_date)+'（n='+(s1.n_calls||0)+'）')+'</span>';
+    if(v2) out+=' · <span class="rg-k">'+L('version 2 accruing (n='+(v2.n_calls||0)+')','版本 2 累积中（n='+(v2.n_calls||0)+'）')+'</span>';
+    return out+'</div>';
   }
 
   function focusDelegate(e){

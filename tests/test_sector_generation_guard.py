@@ -49,6 +49,30 @@ def test_future_session_rejected():
     assert (out["status"], out["reason"]) == ("incompatible_generation", "future_session")
 
 
+def test_datetime_today_is_reduced_to_a_date():
+    """RB02 #1: a datetime `today` (as builders pass) must not raise on the
+    date comparison — it is reduced to its date first."""
+    out = sgg.session_alignment("2026-10-22", "2026-10-19",
+                                today=dt.datetime(2026, 10, 20, 15, 30))
+    assert (out["status"], out["reason"]) == ("incompatible_generation", "future_session")
+    out = sgg.session_alignment("2026-10-19", "2026-10-19",
+                                today=dt.datetime(2026, 10, 20, 0, 1))
+    assert (out["status"], out["reason"]) == ("aligned", "aligned")
+
+
+def test_non_object_rotation_artifact_degrades_like_absent(tmp_path, monkeypatch):
+    """RB02 #2: a well-formed but non-object latest.json (null / list / scalar)
+    loads as {} — compute() must never reach .get() on it."""
+    monkeypatch.setattr(scg.config, "data_dir", lambda: tmp_path)
+    p = tmp_path / "us_sector_rotation" / "latest.json"
+    p.parent.mkdir(parents=True)
+    for body in ("null", "[]", "[1, 2]", "\"x\"", "3"):
+        p.write_text(body, encoding="utf-8")
+        assert scg._load_rotation_artifact() == {}, body
+    p.write_text(json.dumps({"asof": "2026-10-19", "session": "2026-10-19"}), encoding="utf-8")
+    assert scg._load_rotation_artifact()["session"] == "2026-10-19"
+
+
 def test_missing_session_values():
     for art in (None, "", "   "):
         out = sgg.session_alignment(art, "2026-10-19")

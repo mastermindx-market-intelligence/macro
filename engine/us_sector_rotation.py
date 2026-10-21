@@ -524,8 +524,15 @@ def score_and_rank(
     if not records:
         return records
 
+    asof_clock = "settled_daily_session"
     if asof is None:
-        asof = str(bench_series.dropna().index[-1].date()) if bench_series is not None and not bench_series.dropna().empty else str(date.today())
+        if bench_series is not None and not bench_series.dropna().empty:
+            asof = str(bench_series.dropna().index[-1].date())
+        else:
+            # RB02 #4: no settled bar to anchor on — the stamp is wall-clock and the
+            # writer must NOT publish it as a settled session (consumers gate on it).
+            asof = str(date.today())
+            asof_clock = "wall_clock"
 
     idx = etf_closes.index if stock_closes is None else stock_closes.index
     if not isinstance(idx, pd.DatetimeIndex):
@@ -672,6 +679,8 @@ def score_and_rank(
             "stale_flags":      stale_flags,
             "asof":             asof,
         })
+        if asof_clock == "wall_clock":
+            new_rec["asof_clock"] = "wall_clock"
         scored.append(new_rec)
 
     if coverage_log:
@@ -887,8 +896,11 @@ def write_latest(scored: list[dict], root: Optional[Path] = None) -> Path:
         "asof":      scored[0]["asof"] if scored else None,
         # SIC-D-B02: explicit settled-session stamp — consumers gate on this
         # (session_alignment), never on the wall-clock ts below.
-        "session":   scored[0]["asof"] if scored else None,
-        "clock":     "settled_daily_session",
+        # RB02 #4: a wall-clock fallback as-of is NOT a settled session — stamp
+        # session=None and clock="wall_clock" so session_alignment() refuses it.
+        "session":   (scored[0]["asof"] if scored and scored[0].get("asof_clock") != "wall_clock" else None),
+        "clock":     ("wall_clock" if scored and scored[0].get("asof_clock") == "wall_clock"
+                      else "settled_daily_session"),
         "ts":        datetime.now(timezone.utc).isoformat(),
         "authority": "DISPLAY-ONLY — re-orders display surfaces; feeds no gate, size, score, or calibrated key.",
         "instruments": scored,

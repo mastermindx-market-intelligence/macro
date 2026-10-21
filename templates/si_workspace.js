@@ -262,10 +262,19 @@ function paintFoot(){
     return;
   }
   var bh=GR.by_horizon||{}, h=bh['21d']||bh['63d']||bh['126d']||null;
-  g.innerHTML=(h&&h.dir_hit_rate!=null)
+  g.innerHTML=((h&&h.dir_hit_rate!=null)
     ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0),
         '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0))
-    : L('Self-grader: accruing','自评分器：累积中');
+    : L('Self-grader: accruing','自评分器：累积中'))+graderVersionFrame(GR);
+}
+/* RB13 F1: the rail summary is the version-1 cohort once version 2 is active — frame it. */
+function graderVersionFrame(GR){
+  var seg=GR.score_version_segments||{}, s1=seg['1']||null;
+  var v2=(GR.by_score_version||{})['2']||null;
+  if(!s1||!s1.last_date) return '';
+  var out=L(' · v1 calls through '+esc(s1.last_date),' · 版本1判断截至 '+esc(s1.last_date));
+  if(v2) out+=L(' · v2 accruing n='+(v2.n_calls||0),' · 版本2累积中 n='+(v2.n_calls||0));
+  return out;
 }
 function reads(){
   var o=document.getElementById('si-read-overview');

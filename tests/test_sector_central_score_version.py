@@ -26,6 +26,7 @@ Run: python3 -m pytest -q -p no:cacheprovider tests/test_sector_central_score_ve
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -468,7 +469,42 @@ def test_publication_crowding_input_grader_failure_never_raises(tmp_path, monkey
         "status": "resolved", "score_version": 2,
         "first_active_session": None,
         "n_baskets": 2, "n_baskets_resolved": 2,
-        "first_active_note": "grader unavailable"}
+        # RB13 F2: the builder's own except-path scorecard says why — propagated as-is
+        "first_active_note": "grader error"}
+
+
+def test_publication_crowding_input_unavailable_grader_carries_its_note(tmp_path, monkeypatch):
+    """RB13 F2: a scorecard that says available=False carries its own reason
+    ("no calls logged yet" / "unreadable: ..." / "empty") — propagate it instead
+    of the generic "grader unavailable", which is reserved for a missing/raising grader."""
+    pub = _run_main(monkeypatch, tmp_path, grader={"available": False, "note": "no calls logged yet"},
+                    meta={"n_baskets": 2, "conviction_score_version": 2,
+                          "membership_coverage": {"n_crowding_unresolved": 0}})
+    assert pub["crowding_input"]["first_active_session"] is None
+    assert pub["crowding_input"]["first_active_note"] == "no calls logged yet"
+    pub = _run_main(monkeypatch, tmp_path, grader={"available": False},
+                    meta={"n_baskets": 2, "conviction_score_version": 2,
+                          "membership_coverage": {"n_crowding_unresolved": 0}})
+    assert pub["crowding_input"]["first_active_note"] == "grader unavailable"
+
+
+def test_grader_surfaces_frame_the_version_one_scorecard():
+    """RB13 F1: after v2 activation the legacy top-level scorecard is the
+    version-1 cohort; both the page grader and the rail footer must say so from
+    score_version_segments['1'].last_date and mark v2 accruing from by_score_version['2']."""
+    root = Path(__file__).resolve().parents[1]
+    page = (root / "templates" / "sector_central.html.j2").read_text(encoding="utf-8")
+    rail = (root / "templates" / "si_workspace.js").read_text(encoding="utf-8")
+    for src in (page, rail):
+        assert "score_version_segments" in src and "by_score_version" in src
+        assert "graderVersionFrame(" in src
+    assert "Scorecard above: score version 1 calls through " in page
+    assert "version 2 accruing (n=" in page
+    assert "v1 calls through " in rail and "v2 accruing n=" in rail
+    # the framing uses the existing rg-k span, never an undefined chip class
+    frame = page[page.index("function graderVersionFrame"):]
+    frame = frame[:frame.index("return out+'</div>';")]
+    assert 'class="rg-k"' in frame and "chip" not in frame
 
 
 if __name__ == "__main__":

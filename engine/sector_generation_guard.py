@@ -83,6 +83,9 @@ def session_alignment(artifact_session, consumer_session, *, today=None) -> dict
     #    is from the future — never combinable regardless of the consumer.
     if today is not None:
         t = today if isinstance(today, _dt.date) else parse_session(today)
+        if isinstance(t, _dt.datetime):
+            # RB02 #1: datetime is a date subclass; `date > datetime` raises TypeError.
+            t = t.date()
         if t is not None and art > t:
             return {**out, "status": "incompatible_generation", "reason": "future_session",
                     "artifact_session": _fmt(art), "consumer_session": _fmt(parse_session(consumer_session))}

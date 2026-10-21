@@ -630,11 +630,19 @@ def main(*, strict: bool = False) -> int:
     }
     if _first_active is None:
         # an off-lane render never logs (COLLECT_LANE gate), so "not yet" is the
-        # normal state on every non-nightly build; a scorecard without segments at
-        # all means the grader itself failed above.
-        _crowding_input["first_active_note"] = (
-            "grader unavailable" if "score_version_segments" not in _grader_out
-            else "no version-2 call logged yet")
+        # normal state on every non-nightly build. RB13 F2: a scorecard that says
+        # available=False carries its own reason ("no calls logged yet", "empty",
+        # "unreadable: ...") and that reason is propagated verbatim; "grader
+        # unavailable" is reserved for the exception shape (no scorecard at all
+        # because grade() raised above).
+        if _grader_out.get("available") is False:
+            _note = _grader_out.get("note")
+            _crowding_input["first_active_note"] = (
+                str(_note) if _note else "grader unavailable")
+        elif "available" not in _grader_out:
+            _crowding_input["first_active_note"] = "grader unavailable"
+        else:
+            _crowding_input["first_active_note"] = "no version-2 call logged yet"
 
     # ── PUBLICATION RECORD (B10, masterplan §6.1) ────────────────────────────
     # The free artifacts are written HERE — after the secondary reads and the tier
