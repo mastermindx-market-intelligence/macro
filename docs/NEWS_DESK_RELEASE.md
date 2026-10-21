@@ -375,3 +375,73 @@ integration must preserve that exact payload alongside the News
 `collector-registry` additions. This bounded source census does not replace
 the frozen-head measurement, required independent News review, protected
 release, or actual signed-in production acceptance.
+
+
+## Current protected-main composition and Company News compatibility — 2026-10-21
+
+The next protected base is `c26f3bde79d2a84fe79df80c14af07679326d1d8`.
+The completed c694 composition was first captured by the managed publisher as
+`8b279b4bffb39f35cf1091f703118d49a88cefd8`, tree
+`e214305ecbac778ace8f2c9098826fbfd96ba859`. Its published tree was preserved
+exactly in ancestry commit `e8e96cc4ca6b1c0792b7f2b78f3c6737be2bf2ff`,
+with parents 8b279 and c694. This uses the existing same-published-tree ancestry
+procedure. The original workspace and branch remain the sole source carrier.
+
+An initial c26 merge before that ancestry completion produced 3,687 conflicts
+against an artificially old merge base. Only that owned, uncommitted merge was
+aborted; the clean authored 8b279 checkpoint was verified and preserved.
+The actual merge from e8e96 uses c694 as its merge base and has one textual
+conflict, `site/news.html`. Its resolution retains the verified redesigned
+artifact (Git blob `3d4a4663d7d2ef50fbc8f62aff8f89c00bd05db5`,
+SHA256 `0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`).
+The ordinary covering render still establishes the eventual production artifact.
+
+The independent immutable 566-to-c26 census found 4,130 changed files:
+4,074 generated site outputs, 41 research-package files, two marketing data
+files, and 13 source/test/documentation/CI files. The material source change
+is #9990's optional versioned ticker editorial views. All upstream changes are
+retained. Its CI registry change adds the editorial module to 12 existing
+job scopes; commands, dependencies, timeouts and budgets are unchanged in
+that interval. The earlier 566 flow-surface payload must also remain intact.
+
+Two independent C3 compatibility readings agree that News Company requests
+must retain their incumbent no-view contract. The visible Company news label
+does not opt the API into `view=company`. Snapshot pagination, unscoped story
+detail and nonzero-sequence stream resume remain valid without `view` or
+`view_revision`. Explicit editorial selection would require a separate
+revision/reset client protocol and remains outside this integration.
+
+Focused composition qualification:
+
+- Added a real-store API regression covering the News no-view snapshot,
+  integer cursor, story detail and bounded nonzero-sequence SSE resume.
+- Added mounted-request assertions preserving the no-view contract.
+- Added quiet live-stream renewal controls at 45 seconds, maintained by
+  heartbeats, for renewed access 200, 401 and 403. The old channel aborts;
+  successful renewal reconnects, and access denial purges reporting/activity
+  without an automatic revival.
+- The four current ticker API/store/shared-projection suites pass:
+  **204 passed** (6.88 seconds pytest; 9.7 seconds process).
+- The existing mounted Company News suite with those additions passes:
+  **17 passed**, zero failures/skips (1.564 seconds process).
+- Twenty backend-run warnings concern duplicate OpenAPI operation IDs and
+  pre-existing pytest temporary-browser cleanup. No related cleanup,
+  authentication guard or timeout was changed.
+
+Evidence remains in
+`/tmp/news-9612-c26-ticker-compatibility-20261021.{json,log}`,
+`/tmp/news-9612-c26-company-mounted-20261021.{json,log}`,
+`/tmp/news-9612-c694-ancestry-proof-20261021.json`, and
+`/tmp/news-9612-c26-source-integration-20261021.json`.
+These are composition tests; exact committed-head CI, ordinary independent
+source review, protected release and signed-in production acceptance remain
+separate gates. No production rights or entitlements were changed.
+
+The earlier managed-commit refusal was `NOT_APPLIED`. The old-checkout
+read-tree diagnostic did not identify its cause: the active installed
+publisher already matched protected blob
+`898f682a67b638bd57dac1b30d971f97fe796515` and preserves the real sparse index.
+Its correct copied-index preparation passed under the unchanged 15-second
+per-command limit. Ordinary staging/cache preparation followed by one
+exact-head managed attempt succeeded. No publisher source, runtime,
+permissions, timeout or alternate new-tree publication path was changed.

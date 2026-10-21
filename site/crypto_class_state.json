@@ -174,7 +174,7 @@
       "eligible": 3,
       "required": 10,
       "excluded": 47,
-      "positive": 1,
+      "positive": 0,
       "denominator": 3,
       "basis": "reported_30d_return_positive",
       "available": false,
@@ -462,7 +462,7 @@
         "to_label_zh": "直接总量",
         "support_before": 4,
         "support_after": 2,
-        "level_ratio": 0.990949571633287,
+        "level_ratio": 0.9792013096092357,
         "regime_treatment": "continuity_adjusted"
       }
     ]

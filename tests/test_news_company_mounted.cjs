@@ -29,11 +29,19 @@ function harness(t){
   advance:async ms=>{now+=ms;for(let pass=0;pass<5;pass++){for(const[id,task]of Array.from(timers))if(task.at<=now){timers.delete(id);task.fn();}await settle();}},
   click:id=>{const n=doc.getElementById(id);n.focus();n.click();}};
 }
+function assertLegacyRequests(calls){
+ for(const call of calls){
+  const url=new URL(call.url,"https://example.com");
+  assert.equal(url.searchParams.has("view"),false,call.url);
+  assert.equal(url.searchParams.has("view_revision"),false,call.url);
+ }
+}
 test("company requests use bearer auth and never persist licensed rows",async t=>{
  const h=harness(t);h.app.open("NVDA");await settle();h.heartbeat();await settle();
  assert.equal(h.app.getState().mode,"connected");assert.equal(h.calls[0].options.headers.Authorization,"Bearer fixture-session-token");
  assert.equal(h.calls[0].options.cache,"no-store");assert.equal(h.win.localStorage.length,0);
  assert.match(h.calls[1].url,/after_sequence=8$/);assert.match(h.doc.getElementById("ndCompanyRows").textContent,/Licensed example a/);
+ assertLegacyRequests(h.calls);
 });
 test("stream changes trigger authoritative snapshots, buffer new groups, and apply corrections",async t=>{
  const h=harness(t);h.app.open("NVDA");await settle();
@@ -60,7 +68,7 @@ test("earlier pages pause the change stream and recheck authorization",async t=>
  const h=harness(t);h.setPayload(snapshot([row()],{has_more:true,next_cursor:8}));h.app.open("NVDA");await settle();
  h.setPayload(snapshot([row("old",4)]));h.click("ndCompanyMore");await settle();
  assert.equal(h.app.getState().mode,"paused");assert.equal(h.app.getState().cursor,8);assert.equal(h.channels.length,1);
- assert.ok(h.calls.some(c=>c.url.includes("cursor=8")));h.setStatus(403);await h.advance(45000);
+ assert.ok(h.calls.some(c=>c.url.includes("cursor=8")));assertLegacyRequests(h.calls);h.setStatus(403);await h.advance(45000);
  assert.equal(h.app.getState().mode,"restricted");assert.deepEqual(h.app.getState().ids,[]);
 });
 test("unchanged snapshots keep the focused headline and source group DOM",async t=>{
@@ -93,6 +101,7 @@ test("an expanded source group stays open through correction and superseded requ
  h.setMembers({schema:"ticker_news.story.v1",story_id:"a",members:[row("a",9,{title:"New source revision"})]});
  h.app.accept(snapshot([row("a",9,{item_count:2,title:"Current revision"})]),false);await settle();
  assert.equal(h.doc.querySelector(".nd-company-group").open,true);assert.match(h.doc.getElementById("ndCompanyRows").textContent,/New source revision/);
+ assert.ok(h.calls.some(c=>c.url.includes("/stories/")));assertLegacyRequests(h.calls);
  reject(new Error("superseded request timed out"));await settle();assert.deepEqual(h.app.getState().ids,["a"]);
  assert.match(h.doc.getElementById("ndCompanyRows").textContent,/Current revision/);
 });
@@ -128,4 +137,27 @@ test("automatic 429 retry preserves its deadline after BFCache restoration",asyn
 test("a missing stream endpoint does not enter a terminal-error retry loop",async t=>{
  const h=harness(t);h.setStreamStatus(404);h.app.open("NVDA");await settle();const n=h.calls.length;
  await h.advance(120000);assert.equal(h.calls.length,n);
+});
+
+for(const renewalStatus of [200,401,403])test("quiet company stream renews authorization after45s: "+renewalStatus,async t=>{
+ const h=harness(t);h.app.open("NVDA");await settle();
+ const originalStream=h.calls.find(c=>c.url.includes("/stream"));
+ assert.ok(originalStream);h.heartbeat();await settle();
+ for(let i=0;i<4;i++){await h.advance(10000);h.heartbeat();await settle();}
+ const before=h.calls.length;h.setStatus(renewalStatus);
+ await h.advance(4999);assert.equal(h.calls.length,before);
+ await h.advance(1);
+ assert.equal(originalStream.options.signal.aborted,true);
+ const renewed=h.calls.slice(before);
+ assert.equal(renewed[0].url,"/api/ticker-news/NVDA?limit=60");
+ assert.equal(renewed[0].options.headers.Authorization,"Bearer fixture-session-token");
+ assert.equal(renewed[0].options.cache,"no-store");assertLegacyRequests(h.calls);
+ if(renewalStatus===200){
+  assert.equal(h.channels.length,2);h.heartbeat();await settle();
+  assert.equal(h.app.getState().mode,"connected");assert.deepEqual(h.app.getState().ids,["a"]);
+ }else{
+  assert.equal(h.channels.length,1);assert.equal(h.app.getState().mode,"restricted");assert.deepEqual(h.app.getState().ids,[]);
+  assert.equal(h.doc.getElementById("ndCompanyRows").textContent,"");assert.equal(h.doc.getElementById("ndCompanyFlow").textContent,"");
+  const deniedCount=h.calls.length;await h.advance(60000);assert.equal(h.calls.length,deniedCount);assert.deepEqual(h.app.getState().ids,[]);
+ }
 });
