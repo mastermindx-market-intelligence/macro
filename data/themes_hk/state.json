@@ -1,12 +1,33 @@
 {
   "_debounce": {
-    "label": {},
+    "label": {
+      "hk_conglo": {
+        "bucket": "2026-10-21",
+        "count": 1,
+        "from": "neutral"
+      },
+      "hk_platform_tech": {
+        "bucket": "2026-10-21",
+        "count": 1,
+        "from": "neutral"
+      },
+      "hk_property": {
+        "bucket": "2026-10-21",
+        "count": 1,
+        "from": "neutral"
+      },
+      "hk_telco_util": {
+        "bucket": "2026-10-21",
+        "count": 1,
+        "from": "neutral"
+      }
+    },
     "lead": {
       "displayed": "hk_energy",
       "pending": {
-        "bucket": "2026-10-16",
+        "bucket": "2026-10-21",
         "count": 1,
-        "tid": "hk_consumer"
+        "tid": "hk_banks"
       }
     },
     "reco": {}
@@ -15,9 +36,9 @@
     "label": "neutral",
     "name": "Banks (H + HK)",
     "name_zh": "\u94f6\u884c",
-    "rank": 2,
+    "rank": 1,
     "reco": "hold",
-    "score": 62
+    "score": 64
   },
   "hk_biotech": {
     "label": "neutral",
@@ -25,7 +46,7 @@
     "name_zh": "\u751f\u7269\u533b\u836f\u4e0eCXO",
     "rank": 6,
     "reco": "hold",
-    "score": 50
+    "score": 49
   },
   "hk_china_tech": {
     "label": "deteriorating",
@@ -33,31 +54,31 @@
     "name_zh": "\u4e2d\u8d44\u79d1\u6280\u4e0e\u4e92\u8054\u7f51",
     "rank": 13,
     "reco": "avoid",
-    "score": 32
+    "score": 30
   },
   "hk_conglo": {
-    "label": "neutral",
+    "label": "emerging",
     "name": "Conglomerates & Exchange",
     "name_zh": "\u7efc\u5408\u4f01\u4e1a\u4e0e\u4ea4\u6613\u6240",
     "rank": 5,
-    "reco": "hold",
-    "score": 53
+    "reco": "enter",
+    "score": 52
   },
   "hk_consumer": {
     "label": "emerging",
     "name": "China Consumer Brands",
     "name_zh": "\u4e2d\u8d44\u6d88\u8d39\u54c1\u724c",
-    "rank": 1,
+    "rank": 2,
     "reco": "hold",
-    "score": 66
+    "score": 57
   },
   "hk_dividend": {
     "label": "neutral",
     "name": "High-Dividend Blue Chips",
     "name_zh": "\u9ad8\u80a1\u606f\u84dd\u7b79",
-    "rank": 7,
+    "rank": 9,
     "reco": "hold",
-    "score": 46
+    "score": 37
   },
   "hk_energy": {
     "label": "neutral",
@@ -65,7 +86,7 @@
     "name_zh": "\u80fd\u6e90",
     "rank": 4,
     "reco": "hold",
-    "score": 61
+    "score": 55
   },
   "hk_ev": {
     "label": "deteriorating",
@@ -73,7 +94,7 @@
     "name_zh": "\u4e2d\u8d44\u7535\u52a8\u8f66",
     "rank": 11,
     "reco": "avoid",
-    "score": 38
+    "score": 33
   },
   "hk_gaming": {
     "label": "deteriorating",
@@ -81,15 +102,15 @@
     "name_zh": "\u6fb3\u95e8\u535a\u5f69",
     "rank": 12,
     "reco": "avoid",
-    "score": 33
+    "score": 31
   },
   "hk_industrials": {
     "label": "neutral",
     "name": "Industrials & Infrastructure",
     "name_zh": "\u5de5\u4e1a\u4e0e\u57fa\u5efa",
-    "rank": 9,
+    "rank": 8,
     "reco": "hold",
-    "score": 42
+    "score": 38
   },
   "hk_insurers": {
     "label": "deteriorating",
@@ -97,7 +118,7 @@
     "name_zh": "\u4fdd\u9669",
     "rank": 16,
     "reco": "avoid",
-    "score": 21
+    "score": 22
   },
   "hk_materials": {
     "label": "deteriorating",
@@ -105,7 +126,7 @@
     "name_zh": "\u6709\u8272\u91d1\u5c5e",
     "rank": 14,
     "reco": "avoid",
-    "score": 25
+    "score": 24
   },
   "hk_miners": {
     "label": "deteriorating",
@@ -113,23 +134,23 @@
     "name_zh": "\u591a\u5143\u5316\u77ff\u4e1a\u9f99\u5934",
     "rank": 15,
     "reco": "avoid",
-    "score": 24
+    "score": 23
   },
   "hk_platform_tech": {
-    "label": "neutral",
+    "label": "emerging",
     "name": "China Platform Megacaps",
     "name_zh": "\u4e2d\u8d44\u5e73\u53f0\u79d1\u6280\u9f99\u5934",
     "rank": 10,
     "reco": "hold",
-    "score": 40
+    "score": 35
   },
   "hk_property": {
-    "label": "neutral",
+    "label": "emerging",
     "name": "Property & REITs",
     "name_zh": "\u5730\u4ea7\u4e0eREITs",
-    "rank": 8,
+    "rank": 7,
     "reco": "hold",
-    "score": 44
+    "score": 45
   },
   "hk_tech_hardware": {
     "label": "deteriorating",
@@ -140,11 +161,11 @@
     "score": 20
   },
   "hk_telco_util": {
-    "label": "neutral",
+    "label": "emerging",
     "name": "Telecom & Utilities",
     "name_zh": "\u7535\u4fe1\u4e0e\u516c\u7528\u4e8b\u4e1a",
     "rank": 3,
     "reco": "hold",
-    "score": 62
+    "score": 56
   }
 }
