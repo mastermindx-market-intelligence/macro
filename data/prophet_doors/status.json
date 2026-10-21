@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-10-14",
+  "asof": "2026-10-20",
   "candidates": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 1,
+    "T": 22,
+    "W": 23
   },
   "deduped": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 1,
+    "T": 22,
+    "W": 23
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-19 08:10:22",
-  "runtime_s": 228.1,
+  "run_utc": "2026-10-21 09:55:22",
+  "runtime_s": 111.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-10-14",
-    "n_members": 115,
+    "asof": "2026-10-20",
+    "n_members": 134,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.343,
+        "emerging_score": 3.096,
         "rank": 1,
-        "theme": "Social Media"
-      },
-      {
-        "emerging_score": 2.761,
-        "rank": 2,
         "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 2.358,
-        "rank": 3,
-        "theme": "Consumer Goods"
+        "emerging_score": 2.672,
+        "rank": 2,
+        "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.18,
-        "rank": 4,
+        "emerging_score": 2.574,
+        "rank": 3,
         "theme": "E-commerce"
       },
       {
-        "emerging_score": 2.107,
+        "emerging_score": 2.43,
+        "rank": 4,
+        "theme": "Aging Population & Longevity"
+      },
+      {
+        "emerging_score": 2.214,
         "rank": 5,
-        "theme": "Biometrics"
+        "theme": "Consumer Goods"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 9,
-    "asof_max": "2026-10-14",
+    "aligned": 23,
+    "asof_max": "2026-10-20",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-14",
+    "asof_run": "2026-10-20",
     "evaluated": 712,
-    "fresh": 10,
+    "fresh": 26,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 42.3,
+    "runtime_s": 21.2,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 60,
+    "state_turn": 66,
     "universe_n": 717
   }
 }

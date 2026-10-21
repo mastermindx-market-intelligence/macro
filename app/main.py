@@ -2568,6 +2568,10 @@ app.include_router(institutional_research_router)
 from app.biocatalyst import router as biocatalyst_router  # noqa: E402
 app.include_router(biocatalyst_router)
 
+# Device-native MedTech product data; source acquisition remains worker-only.
+from app.medtech import router as medtech_router  # noqa: E402
+app.include_router(medtech_router)
+
 # Prophet Operator Lab (LAB-0 / V4-B5A): authenticated, read-only projection of
 # canonical Radar live output + Prophet plan data into six frozen Lab boards.
 # Zero ranking/gating/sizing/plan-origination/signal-origination/Prophet-

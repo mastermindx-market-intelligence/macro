@@ -1,9 +1,9 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-10-16",
-  "generated_at": "2026-10-18T05:38:10.769034+00:00",
+  "generated_at": "2026-10-21T06:55:38.938070+00:00",
   "is_context_only": true,
-  "n_snapshots": 1311,
+  "n_snapshots": 1313,
   "n_days": 44,
   "horizons": {
     "5": {
@@ -16,7 +16,7 @@
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0013,
+          "mean_fwd_rel": -0.0011,
           "hit_rate": 0.472
         },
         "coiling_primed": {
@@ -25,56 +25,56 @@
           "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0252,
-      "running_ic_t_hac": -0.364,
+      "running_ic": -0.0238,
+      "running_ic_t_hac": -0.346,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 1148,
+      "n_matured": 1150,
       "by_stage": {
         "running": {
-          "n": 1073,
-          "mean_fwd_rel": -0.0131,
-          "hit_rate": 0.362
+          "n": 1075,
+          "mean_fwd_rel": -0.0132,
+          "hit_rate": 0.363
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0068,
+          "mean_fwd_rel": -0.0064,
           "hit_rate": 0.417
         },
         "coiling_primed": {
           "n": 39,
-          "mean_fwd_rel": 0.0158,
+          "mean_fwd_rel": 0.0156,
           "hit_rate": 0.487
         }
       },
-      "running_ic": -0.0703,
-      "running_ic_t_hac": -1.063,
+      "running_ic": -0.0642,
+      "running_ic_t_hac": -1.004,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 974,
+      "n_matured": 976,
       "by_stage": {
         "running": {
-          "n": 900,
-          "mean_fwd_rel": -0.0293,
-          "hit_rate": 0.297
+          "n": 902,
+          "mean_fwd_rel": -0.0298,
+          "hit_rate": 0.295
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0184,
-          "hit_rate": 0.306
+          "mean_fwd_rel": -0.0189,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0195,
+          "mean_fwd_rel": 0.0198,
           "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0224,
-      "running_ic_t_hac": -0.505,
+      "running_ic": -0.0221,
+      "running_ic_t_hac": -0.493,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,22 +83,22 @@
       "by_stage": {
         "running": {
           "n": 241,
-          "mean_fwd_rel": -0.0479,
+          "mean_fwd_rel": -0.0485,
           "hit_rate": 0.295
         },
         "coiling": {
           "n": 13,
-          "mean_fwd_rel": -0.0696,
+          "mean_fwd_rel": -0.0683,
           "hit_rate": 0.154
         },
         "coiling_primed": {
           "n": 16,
-          "mean_fwd_rel": 0.0447,
+          "mean_fwd_rel": 0.037,
           "hit_rate": 0.688
         }
       },
-      "running_ic": 0.0106,
-      "running_ic_t_hac": 0.349,
+      "running_ic": 0.0126,
+      "running_ic_t_hac": 0.433,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -120,7 +120,15 @@
       "id": "russell:semiconductor-equipment-materials",
       "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.1842,
+      "fwd_rel": -0.2251,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-25",
+      "id": "russell:capital-markets",
+      "name": "Capital Markets",
+      "stage": "running",
+      "fwd_rel": -0.1686,
       "horizon_d": 21
     },
     {
@@ -133,26 +141,26 @@
     },
     {
       "date": "2026-09-25",
-      "id": "russell:capital-markets",
-      "name": "Capital Markets",
-      "stage": "running",
-      "fwd_rel": -0.1536,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-25",
       "id": "subsectors:electronic-components",
       "name": "Electronic Components",
       "stage": "running",
-      "fwd_rel": -0.1124,
+      "fwd_rel": -0.1206,
       "horizon_d": 21
     },
     {
       "date": "2026-09-25",
-      "id": "nasdaq:biotechnology",
-      "name": "Biotechnology",
+      "id": "subsectors:airlines",
+      "name": "Airlines",
       "stage": "running",
-      "fwd_rel": -0.0861,
+      "fwd_rel": -0.1034,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-25",
+      "id": "russell:electronic-components",
+      "name": "Electronic Components",
+      "stage": "running",
+      "fwd_rel": -0.0897,
       "horizon_d": 21
     },
     {
@@ -160,23 +168,15 @@
       "id": "russell:oil-gas-equipment-services",
       "name": "Oil & Gas Equipment & Services",
       "stage": "running",
-      "fwd_rel": -0.0685,
+      "fwd_rel": -0.0743,
       "horizon_d": 21
     },
     {
       "date": "2026-09-25",
-      "id": "subsectors:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
+      "id": "nasdaq:biotechnology",
+      "name": "Biotechnology",
       "stage": "running",
-      "fwd_rel": -0.0573,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-25",
-      "id": "baskets:non-ai-tech",
-      "name": "Non-AI Tech & Hardware",
-      "stage": "running",
-      "fwd_rel": -0.0551,
+      "fwd_rel": -0.0705,
       "horizon_d": 21
     }
   ],

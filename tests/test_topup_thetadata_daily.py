@@ -1837,3 +1837,28 @@ def test_hardening_backfill_oserror_opening_lock_is_failed_not_traceback(tmp_pat
     monkeypatch.setattr(topup, "open", _boom, raising=False)
     rc = bf.main()
     assert rc == 1
+
+
+@pytest.mark.parametrize('setting,root,expected',[
+ ('','SPY',{}),('SPY','SPY',{'version':'1'}),('SPY','QQQ',{}),
+ ('SPY, QQQ','QQQ',{'version':'1'}),('SPY,QQQ','AAPL',{})])
+def test_dated_version_opt_in_keeps_other_roots_and_default_unchanged(monkeypatch,setting,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS',setting)
+ assert topup._dated_greek_request_options(root)==expected
+
+
+def test_invalid_dated_version_root_config_stops_before_source_work(monkeypatch):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,AAPL')
+ monkeypatch.setattr(topup,'_daily_main',lambda **kw:pytest.fail('Invalid config reached acquisition'))
+ with pytest.raises(SystemExit):topup.main(['--daily'])
+
+
+@pytest.mark.parametrize('root,expected',[('SPY',{'version':'1'}),('QQQ',{'version':'1'}),('AAPL',{})])
+def test_daily_owner_forwards_version_only_for_explicit_opt_in(store,monkeypatch,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,QQQ')
+ fake=FakeTd();calls=[]
+ def greeks(r,exp,start,end,order=3,**kwargs):
+  calls.append(kwargs);return fake._get('greeks',r,start)
+ fake.bulk_greeks=greeks
+ result=topup._ensure_daily_root(store,root,S_MID,D_MID,fake)
+ assert result.state=='complete' and calls==[expected]
