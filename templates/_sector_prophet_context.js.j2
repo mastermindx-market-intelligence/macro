@@ -12,10 +12,53 @@ function sectorProphetIdentity(id) {
   if (typeof id !== 'string' || !Object.prototype.hasOwnProperty.call(sectors, id)) return null;
   return {id:id, name_en:sectors[id][0], name_zh:sectors[id][1]};
 }
-function sectorProphetHref(group) {
+function sectorProphetHref(group, context) {
   if (!group || group.group_kind !== 'sector') return null;
   var sector = sectorProphetIdentity(group.group_id);
-  return sector ? 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id) + '#sector-prophet-context' : null;
+  if (!sector) return null;
+  var href = 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id);
+  /* SIC-I06R: dated context rides as explicit params only. The ladder
+     filter's own query param is never emitted here — arrival must not
+     filter (masterplan §8.3). */
+  if (context) {
+    if (context.asof) href += '&si_asof=' + encodeURIComponent(context.asof);
+    if (context.gen) href += '&si_gen=' + encodeURIComponent(context.gen);
+    if (context.origin) href += '&si_origin=' + encodeURIComponent(context.origin);
+  }
+  return href + '#sector-prophet-context';
+}
+/* SIC-I06R optional context readers. Same parse style as si_sector
+   (params.getAll), but these are display context, not identity: exactly one
+   strictly-shaped value is read, and anything missing, duplicated or
+   malformed is omitted — never invented. */
+function sectorProphetAsof(params) {
+  var values = params.getAll('si_asof');
+  if (values.length !== 1) return null;
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(values[0]);
+  if (!m) return null;
+  /* Strict calendar round-trip (engine-stable): a fabricated date such as
+     2026-02-30 rolls over and fails the component comparison. */
+  var dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return dt.getFullYear() === Number(m[1]) && dt.getMonth() === Number(m[2]) - 1 &&
+    dt.getDate() === Number(m[3]) ? values[0] : null;
+}
+function sectorProphetGen(params) {
+  var values = params.getAll('si_gen');
+  if (values.length !== 1 || !/^[\x20-\x7E]{1,64}$/.test(values[0])) return null;
+  return values[0];
+}
+/* Return destinations are an allowlist of relative Sector Intelligence pages
+   (Sector Central, Sector Cycles, per-ETF Dossier) with an optional fragment.
+   Everything else — absolute URLs, other pages, query strings — is dropped
+   and the fixed fallback return applies. */
+function sectorProphetOrigin(params) {
+  var values = params.getAll('si_origin');
+  if (values.length !== 1) return null;
+  var v = values[0];
+  if (!/^(sector_central\.html|sector_cycles\.html|sectors\/[A-Z]+\.html)(#[A-Za-z0-9_-]*)?$/.test(v)) return null;
+  var etf = /^sectors\/([A-Z]+)\.html/.exec(v);
+  if (etf && !sectorProphetIdentity(etf[1])) return null;
+  return v;
 }
 function sectorProphetSelection(search) {
   var params = new URLSearchParams(search);
@@ -23,8 +66,15 @@ function sectorProphetSelection(search) {
   if (!values.length) return {status:'absent'};
   var sector = values.length === 1 ? sectorProphetIdentity(values[0]) : null;
   if (!sector) return {status:'invalid'};
-  return {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
+  var read = {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
     return_href:'sector_central.html?g=' + encodeURIComponent(sector.id) + '#map'};
+  var asof = sectorProphetAsof(params);
+  if (asof) read.asof = asof;
+  var gen = sectorProphetGen(params);
+  if (gen) read.gen = gen;
+  var origin = sectorProphetOrigin(params);
+  if (origin) read.origin = origin;
+  return read;
 }
 (function () {
   'use strict';
@@ -36,6 +86,30 @@ function sectorProphetSelection(search) {
   var clear = document.getElementById('si-prophet-clear');
   var screener = document.getElementById('si-prophet-screener');
   if (!subject || !note || !back || !clear || !screener) return;
+  /* Readback legs authored in the partial (t() carriers, hidden). Falls
+     back to '' when a carrier is absent, so that segment is simply omitted. */
+  function legText(id, zh) {
+    var el = document.getElementById(id);
+    if (!el) return '';
+    var leg = el.querySelector ? el.querySelector(zh ? '.l-zh' : '.l-en') : null;
+    var text = leg ? leg.textContent : el.textContent;
+    return (text || '').trim();
+  }
+  /* Honest population: count the rows the stocks table ACTUALLY carries for
+     the selected sector. The page has no sector membership roster, so this is
+     a loaded-count, not a coverage claim. Null when the table has not loaded
+     (or is unparseable) — then no count is shown at all. */
+  function membersLoaded(nameEn) {
+    var el = document.getElementById('us-stocktable-data');
+    if (!el || typeof nameEn !== 'string') return null;
+    try {
+      var data = JSON.parse(el.textContent || el.innerText || '{}');
+      var rows = data && Array.isArray(data.rows) ? data.rows : [];
+      var n = 0;
+      for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].sector === nameEn) n += 1;
+      return n;
+    } catch (err) { return null; }
+  }
   function screenerReady() {
     return window.USStockTable && typeof window.USStockTable._selectSector === 'function' &&
       window.USProphetSource && typeof window.USProphetSource.set === 'function';
@@ -63,9 +137,21 @@ function sectorProphetSelection(search) {
     subject.textContent = (zh ? read.name_zh : read.name_en) + ' · ' + read.id;
     screener.textContent = zh ? '在筛选器中查看该板块 →' : 'View sector in Screener →';
     screener.setAttribute('aria-label', zh ? '在筛选器中查看' + read.name_zh : 'View ' + read.name_en + ' in Screener');
-    note.textContent = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
+    /* Dated readback: "<sector> · members as observed <si_asof> · generation
+       <si_gen>", missing fields omitted; then the honest loaded count. */
+    var parts = [zh ? read.name_zh : read.name_en];
+    var asofLabel = legText('si-prophet-t-asof', zh);
+    if (read.asof && asofLabel) parts.push(asofLabel + ' ' + read.asof);
+    var genLabel = legText('si-prophet-t-gen', zh);
+    if (read.gen && genLabel) parts.push(genLabel + ' ' + read.gen);
+    var guidance = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
       : 'View this sector among the stocks loaded on this page; other filters still apply. Review each stock’s setup and entry conditions, and return to sector evidence for its dated readings.';
-    back.setAttribute('href', read.return_href);
+    var loaded = membersLoaded(read.name_en);
+    var membersLabel = legText('si-prophet-t-members', zh);
+    var loadedText = loaded !== null && membersLabel ? membersLabel.replace('{n}', String(loaded)) : '';
+    var prefix = [parts.join(' · '), loadedText].filter(Boolean).join(' · ');
+    note.textContent = prefix ? prefix + (zh ? '。' : '.') + ' ' + guidance : guidance;
+    back.setAttribute('href', read.origin || read.return_href);
   }
   screener.addEventListener('click', function () {
     var read = sectorProphetSelection(window.location.search);
