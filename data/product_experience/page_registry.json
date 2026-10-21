@@ -1,12 +1,12 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-10-21T15:32:22Z",
+  "generated_at": "2026-10-21T16:34:10Z",
   "sources": {
     "macro": {
       "available": true,
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-compatibility-c245-3a3aec382182fb78",
       "ref": "HEAD",
-      "sha": "8100c5ac97f0b569f22fa6fdf4f53d6a70278a3e",
+      "sha": "73852e221d9ce087abe30b4703de3627773f3351",
       "page_inventory": "git ls-files site/*.html",
       "tracked_html_pages": 13048,
       "write_page_sites": 159,
