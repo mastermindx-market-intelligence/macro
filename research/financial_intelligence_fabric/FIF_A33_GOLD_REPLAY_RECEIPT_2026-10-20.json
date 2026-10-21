@@ -1,0 +1,183 @@
+{
+  "base_commit": "bdc18a4b3f7912661b9c521ba31c05a9747fda85",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-m",
+    "data_gate",
+    "-rA",
+    "tests/test_fif_g_pack_kernel.py",
+    "tests/test_fif_g_pack_gold.py"
+  ],
+  "counts": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 11,
+    "skipped": 0,
+    "xfailed": 10,
+    "xpassed": 0
+  },
+  "executed": [
+    {
+      "node_id": "tests/test_fif_g_pack_gold.py::test_staged_bytes_match_gold_cells_and_pins",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-25-000008]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-26-000008]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-25-000052]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000008]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000030]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000037]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-25-000014]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000018]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000048]",
+      "outcome": "PASSED"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000071]",
+      "outcome": "PASSED"
+    }
+  ],
+  "host": "fabric lane host (Linux, ubuntu0)",
+  "matrix_row": "A33",
+  "packs": [
+    {
+      "admitted_accessions": [
+        "0000018230-26-000046",
+        "0000018230-26-000021",
+        "0000018230-26-000008",
+        "0000018230-25-000008"
+      ],
+      "cik10": "0000018230",
+      "defects": 104,
+      "kernel_node_ids": [
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-25-000008]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-26-000008]"
+      ]
+    },
+    {
+      "admitted_accessions": [
+        "0000070858-26-000394",
+        "0000070858-26-000249",
+        "0000070858-26-000157",
+        "0000070858-25-000139"
+      ],
+      "cik10": "0000070858",
+      "defects": 63,
+      "kernel_node_ids": []
+    },
+    {
+      "admitted_accessions": [
+        "0001640147-26-000037",
+        "0001640147-26-000030",
+        "0001640147-26-000008",
+        "0001640147-25-000052"
+      ],
+      "cik10": "0001640147",
+      "defects": 87,
+      "kernel_node_ids": [
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-25-000052]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000008]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000030]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-as_filed-0001640147-26-000037]"
+      ]
+    },
+    {
+      "admitted_accessions": [
+        "0001652044-26-000071",
+        "0001652044-26-000048",
+        "0001652044-26-000018",
+        "0001652044-25-000014"
+      ],
+      "cik10": "0001652044",
+      "defects": 89,
+      "kernel_node_ids": [
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-25-000014]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000018]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000048]",
+        "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-as_filed-0001652044-26-000071]"
+      ]
+    }
+  ],
+  "pytest_output_sha256": "fd0ebf59689e75e7af3642d35553f39d5aaa7f1b2473980244b1936951c17b3e",
+  "python": "3.12.3",
+  "recorded_at": "2026-10-21T00:25:22Z",
+  "schema": "fif.a33_gold_replay_receipt.v1",
+  "stage": {
+    "env": "FIF_GSRC_STAGE_ROOT",
+    "location": "lane-local stage root (outside git)",
+    "network": false
+  },
+  "summary_line": "11 passed, 41 deselected, 10 xfailed in 121.45s (0:02:01)",
+  "xfailed": [
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-26-000021]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-as_filed-0000018230-26-000046]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000018230-latest_known_as_of-union]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000070858-as_filed-0000070858-25-000139]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000070858-as_filed-0000070858-26-000157]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000070858-as_filed-0000070858-26-000249]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000070858-as_filed-0000070858-26-000394]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0000070858-latest_known_as_of-union]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+      "outcome": "XFAIL"
+    },
+    {
+      "node_id": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
+      "outcome": "XFAIL"
+    }
+  ]
+}
