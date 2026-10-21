@@ -1,0 +1,982 @@
+# GMI micro-theme expansion — lane C1 PROPOSED rows (2026-10-21)
+# PROPOSE only — the GMI COMPLETION seat ratifies. Display-tier taxonomy rows, no constituents, no weights.
+# Base commit: ca7edbcf50df21bd321bffa3433e5f105d3335da. Format mirrors config/theme_crosswalk.yml hierarchy rows.
+# Totals: 19 sub_themes, 92 micro_themes, 194 parents. Research record: research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md
+hierarchy:
+  sub_themes:
+    - id: "theme:ai_manufacturing_chain"
+      name_en: "AI Chip Manufacturing Chain"
+      name_zh: "AI 芯片制造链"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The merchant make step - foundry manufacturing, package substrates, system-level test - distinct from the compute-silicon product sub_theme."
+      value_chain_position: "midstream"
+    - id: "theme:ai_network_fabric"
+      name_en: "AI Network Fabric"
+      name_zh: "AI 网络互连"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Data-movement layer around the accelerator - optics, co-packaged photonics, offload processors, PCIe fabric - distinct from electrical switch silicon."
+      value_chain_position: "midstream"
+    - id: "theme:ai_design_enablement"
+      name_en: "AI Chip Design Enablement"
+      name_zh: "AI 芯片设计赋能"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The design toolchain - EDA flows, IP licensing, chiplet engineering - the enabler tier of the AI chip value chain."
+      value_chain_position: "enabler"
+    - id: "theme:memory_product_stack"
+      name_en: "Memory Product Stack"
+      name_zh: "存储产品矩阵"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Product classes by media and deployment - LPDDR, niche DRAM, UFS/eMMC, automotive, HDD, tape, PIM, CXL - distinct from the HBM packaging slice."
+      value_chain_position: "midstream"
+    - id: "theme:storage_stack_integration"
+      name_en: "Storage Stack Integration"
+      name_zh: "存储栈集成"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Component and system integration layers - controllers, module assembly, interface chipsets, software-defined platforms - downstream of wafer fabrication."
+      value_chain_position: "downstream"
+    - id: "theme:advanced_packaging_test_equipment"
+      name_en: "Advanced Packaging & Test Equipment"
+      name_zh: "先进封装与测试设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Back-end capital - packaging assembly tools, ATE, probe cards - distinct from the front-end wfe_process_tools sub_theme."
+      value_chain_position: "midstream"
+    - id: "theme:equipment_component_periphery"
+      name_en: "Equipment Components & Periphery"
+      name_zh: "设备零部件与配套"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Component/periphery supply behind toolmakers - vacuum and RF subsystems, photomasks, refurb/remarket - the domestic-parts substitution layer."
+      value_chain_position: "upstream"
+    - id: "theme:fab_automation_facility_systems"
+      name_en: "Fab Automation & Facility Systems"
+      name_zh: "厂务自动化与设施系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Factory logistics automation and facility delivery systems (AMHS, bulk gas/chemical) - the enabler tier of the equipment chain."
+      value_chain_position: "enabler"
+    - id: "theme:datacenter_backup_generation"
+      name_en: "Backup & On-site Generation"
+      name_zh: "备电与自备电源"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The energy-supply tier - gensets, fuel cells, gas turbines, battery ESS - upstream of conversion and distribution."
+      value_chain_position: "upstream"
+    - id: "theme:datacenter_thermal_chain"
+      name_en: "Data Center Thermal Chain"
+      name_zh: "散热与热管理链"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The thermal product chain - interface materials, coolant fluids, precision air handling, heat reuse - beside the existing liquid-cooling row."
+      value_chain_position: "midstream"
+    - id: "theme:datacenter_distribution_architecture"
+      name_en: "Data Center Distribution Architecture"
+      name_zh: "数据中心配电架构"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "New power-architecture product forms - MVDC architecture, busway, prefab power modules - downstream of energy supply."
+      value_chain_position: "midstream"
+    - id: "theme:advanced_nuclear_fuel_chain"
+      name_en: "Advanced Nuclear Fuel Chain"
+      name_zh: "先进核燃料链"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "HALEU supply, TRISO fuel forms and fuel-assembly fabrication - fabrication/supply tiers beyond the legacy fuel_cycle row's mining-through-enrichment scope."
+      value_chain_position: "upstream"
+    - id: "theme:nuclear_plant_supply_chain"
+      name_en: "Nuclear Plant Supply Chain"
+      name_zh: "核电设备与建造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "EPC construction, heavy forgings, digital I&C and conventional-island equipment - the build-the-plant tier."
+      value_chain_position: "midstream"
+    - id: "theme:nuclear_back_end_lifecycle"
+      name_en: "Nuclear Back-End Lifecycle"
+      name_zh: "核设施后端与退役"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Decommissioning/waste and spent-fuel management - the back-end-of-life tier."
+      value_chain_position: "downstream"
+    - id: "theme:grid_equipment_supply"
+      name_en: "Grid Equipment Supply"
+      name_zh: "电网设备供应"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Materials and primary/secondary equipment supply - electrical steel, protection systems, compensation, HVDC/UHV hardware, conductors, line EPC."
+      value_chain_position: "upstream"
+    - id: "theme:grid_software_flexibility"
+      name_en: "Grid Software & Flexibility"
+      name_zh: "电网软件与灵活性"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The software/flexibility tier - grid operating software, AMI, VPP, grid batteries, grid-forming technology, line sensing, microgrids."
+      value_chain_position: "enabler"
+    - id: "theme:pv_upstream_supply"
+      name_en: "PV Upstream Supply"
+      name_zh: "光伏上游供给"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Material steps between feedstock and cells - ingot/wafer, crucibles, glass/encapsulants, metalization pastes - inside the existing manufacturing-chain framing."
+      value_chain_position: "upstream"
+    - id: "theme:pv_technology_frontiers"
+      name_en: "PV Technology Frontiers"
+      name_zh: "光伏技术前沿"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Device-system transitions outside incumbent c-Si production - perovskite/tandem and thin-film - distinct from the existing cell/module manufacturing row."
+      value_chain_position: "midstream"
+    - id: "theme:pv_downstream_deployment"
+      name_en: "PV Downstream Deployment"
+      name_zh: "光伏下游部署"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The project tier - BIPV, agrivoltaics, floating PV, O&M, development/EPC, recycling - downstream of manufacturing."
+      value_chain_position: "downstream"
+  micro_themes:
+    - id: "theme:leading_edge_foundry_manufacturing"
+      name_en: "Leading-edge foundry manufacturing"
+      name_zh: "先进制程晶圆代工"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Merchant advanced-node wafer manufacturing; distinct from gpu/custom_asic silicon product rows (design) and from semicap rows (equipment sellers vs manufacturers)."
+      value_chain_position: "midstream"
+    - id: "theme:abf_package_substrate_supply"
+      name_en: "Package substrate (ABF) supply"
+      name_zh: "封装基板（载板）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The passive interconnect component into packaging; distinct from hbm_packaging (stacking services) and from wafer_fab_subsystems (fab tool parts)."
+      value_chain_position: "upstream"
+    - id: "theme:system_level_test_services"
+      name_en: "System-level test (SLT) services"
+      name_zh: "系统级测试服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Post-assembly device test as a service; distinct from process_metrology_inspection (in-fab wafer control) and from test_ate_equipment (testers for sale)."
+      value_chain_position: "midstream"
+    - id: "theme:chiplet_multidie_compute"
+      name_en: "Chiplet & multi-die compute systems"
+      name_zh: "芯粒（Chiplet）多裸片计算"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Multi-die partitioning with die-to-die interconnect; distinct from custom_asic_silicon (monolithic programs) and hbm_packaging (memory stacking)."
+      value_chain_position: "midstream"
+    - id: "theme:optical_transceiver_modules"
+      name_en: "Optical transceiver modules"
+      name_zh: "光模块"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Pluggable photonic-electronic conversion modules; distinct from ai_interconnect_silicon (electrical switch/SerDes silicon)."
+      value_chain_position: "midstream"
+    - id: "theme:co_packaged_optics"
+      name_en: "Co-packaged optics (CPO)"
+      name_zh: "共封装光学（CPO）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Photonics integrated onto the switch package; distinct from optical_transceiver_modules (front-panel pluggables) and from switch silicon."
+      value_chain_position: "midstream"
+    - id: "theme:network_offload_processors"
+      name_en: "Network offload processors (DPU/SmartNIC)"
+      name_zh: "智能网卡与 DPU"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Programmable host-I/O offload processors; distinct from pcie_fabric_silicon (fixed fabric) and ai_interconnect_silicon (switch fabric)."
+      value_chain_position: "midstream"
+    - id: "theme:pcie_fabric_silicon"
+      name_en: "PCIe switch & fabric silicon"
+      name_zh: "PCIe 交换与连接芯片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Intra-host PCIe/CXL fabric silicon; distinct from ai_interconnect_silicon (cluster-scale network silicon)."
+      value_chain_position: "midstream"
+    - id: "theme:eda_design_automation"
+      name_en: "EDA design automation software"
+      name_zh: "EDA 设计自动化软件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Design toolchain enabler; distinct from ai_compute_silicon (the silicon products the tools help design)."
+      value_chain_position: "enabler"
+    - id: "theme:semiconductor_ip_licensing"
+      name_en: "Semiconductor IP licensing"
+      name_zh: "半导体 IP 授权"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Reusable design blocks under license; distinct from eda_design_automation (tools) and custom_asic_silicon (shipped silicon)."
+      value_chain_position: "enabler"
+    - id: "theme:edge_inference_processors"
+      name_en: "Edge inference processors (NPUs)"
+      name_zh: "端侧 AI 推理芯片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Device-scale neural processors; distinct from gpu_merchant_accelerators (datacenter rack-scale accelerators)."
+      value_chain_position: "downstream"
+    - id: "theme:ai_power_delivery_silicon"
+      name_en: "AI power-delivery silicon"
+      name_zh: "AI 供电电源芯片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Package/board-level power silicon (multiphase, IVR); distinct from ups_power_conversion and hv_transformers_switchgear (facility power hardware)."
+      value_chain_position: "enabler"
+    - id: "theme:ai_server_board_integration"
+      name_en: "AI server board & system integration"
+      name_zh: "AI 服务器板卡与整机"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Accelerator carrier boards and server SKUs; distinct from gpu_merchant_accelerators (the chip) and from data_center_power power hardware."
+      value_chain_position: "downstream"
+    - id: "theme:lpdram_low_power_memory"
+      name_en: "Low-power mobile memory (LPDDR)"
+      name_zh: "低功耗移动内存（LPDDR）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Low-power mobile/packaged DRAM class; distinct from conventional_dram (server/PC DDR DIMM path)."
+      value_chain_position: "midstream"
+    - id: "theme:niche_specialty_dram"
+      name_en: "Niche & specialty DRAM"
+      name_zh: "利基型存储器"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Trailing-edge specialty/consumer DRAM with long lifecycles; distinct from conventional_dram (mainstream commodity DDR4/5)."
+      value_chain_position: "midstream"
+    - id: "theme:embedded_flash_storage_ufs"
+      name_en: "Embedded flash storage (UFS/eMMC)"
+      name_zh: "嵌入式闪存（UFS/eMMC）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Soldered device storage in JEDEC UFS/eMMC form factors; distinct from nand_enterprise_storage (enterprise SSD systems/datacenter NAND)."
+      value_chain_position: "midstream"
+    - id: "theme:automotive_grade_memory"
+      name_en: "Automotive-grade memory"
+      name_zh: "车规级存储"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Memory under automotive qualification/availability regimes (AEC-Q100/ISO 26262); distinct from lpdram_low_power_memory (product class, not regime)."
+      value_chain_position: "midstream"
+    - id: "theme:nearline_hard_disk_drives"
+      name_en: "Nearline hard disk drives (HDD)"
+      name_zh: "近线机械硬盘"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Magnetic recording capacity tier; distinct from nand_enterprise_storage (flash-based framing)."
+      value_chain_position: "midstream"
+    - id: "theme:tape_archival_storage"
+      name_en: "Tape archival storage"
+      name_zh: "磁带归档存储"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Sequential-access tape archive tier; distinct from nearline_hard_disk_drives (random-access disk)."
+      value_chain_position: "midstream"
+    - id: "theme:processing_in_memory_devices"
+      name_en: "Processing-in-memory (PIM) devices"
+      name_zh: "存算一体（PIM）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Compute embedded inside memory stacks; distinct from conventional_dram (standard DRAM) and from chiplet_multidie_compute (compute-die partitioning)."
+      value_chain_position: "midstream"
+    - id: "theme:cxl_memory_expansion_devices"
+      name_en: "CXL memory expansion & pooling devices"
+      name_zh: "CXL 内存扩展与池化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Memory decoupled from host DIMM slots over CXL; distinct from conventional_dram (standard DIMMs) and pcie_fabric_silicon (generic fabric)."
+      value_chain_position: "midstream"
+    - id: "theme:enterprise_ssd_controllers"
+      name_en: "Enterprise SSD controllers"
+      name_zh: "企业级 SSD 主控芯片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Controller silicon/firmware component layer; distinct from nand_enterprise_storage (NAND and storage-systems framing)."
+      value_chain_position: "enabler"
+    - id: "theme:memory_storage_module_assembly"
+      name_en: "Memory & storage module assembly"
+      name_zh: "内存与存储模组制造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Module assembly/branding layer; distinct from dram_interface_chipsets (companion silicon) and nand_enterprise_storage (basket framing)."
+      value_chain_position: "midstream"
+    - id: "theme:dram_interface_chipsets"
+      name_en: "DRAM interface & companion chipsets"
+      name_zh: "内存接口及配套芯片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Register/PMIC/CKD companion chips on modules; distinct from memory_storage_module_assembly (assembly) and conventional_dram (the DRAM die)."
+      value_chain_position: "enabler"
+    - id: "theme:software_defined_storage_platforms"
+      name_en: "Software-defined storage platforms"
+      name_zh: "软件定义存储"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Storage control software over commodity hardware; distinct from nand_enterprise_storage (hardware) and enterprise_ssd_controllers (silicon)."
+      value_chain_position: "downstream"
+    - id: "theme:ion_implant_doping_equipment"
+      name_en: "Ion implant & doping equipment"
+      name_zh: "离子注入设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Dopant-implantation tool family inside wfe_process_tools; distinct from etch_deposition_equipment (material removal/addition)."
+      value_chain_position: "midstream"
+    - id: "theme:cmp_polishing_equipment"
+      name_en: "CMP planarization equipment"
+      name_zh: "CMP 抛光设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Mechanical-chemical planarization tool family; distinct from etch_deposition_equipment (etch/deposition chemistries)."
+      value_chain_position: "midstream"
+    - id: "theme:thermal_anneal_equipment"
+      name_en: "Thermal processing & anneal equipment"
+      name_zh: "热处理与退火设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Furnace/RTP/laser-anneal tool family; distinct from epitaxial_growth_equipment (ordered film growth) and etch/deposition."
+      value_chain_position: "midstream"
+    - id: "theme:wafer_cleaning_prep_equipment"
+      name_en: "Wafer cleaning & surface-prep equipment"
+      name_zh: "清洗与湿法设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Wet/dry surface-preparation tool family; distinct from etch_deposition_equipment (patterned removal/addition vs clean/prep)."
+      value_chain_position: "midstream"
+    - id: "theme:coater_developer_tracks"
+      name_en: "Coater/developer tracks"
+      name_zh: "涂胶显影设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Pre/post-exposure track paired to litho; distinct from lithography_tools (the exposure tool itself)."
+      value_chain_position: "midstream"
+    - id: "theme:epitaxial_growth_equipment"
+      name_en: "Epitaxial growth equipment"
+      name_zh: "外延生长设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Single-crystal epi reactor family; distinct from thermal_anneal_equipment (treatment vs growth) and etch/deposition (amorphous/polycrystalline films)."
+      value_chain_position: "midstream"
+    - id: "theme:advanced_packaging_assembly_equipment"
+      name_en: "Advanced packaging & assembly equipment"
+      name_zh: "先进封装与组装设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Back-end assembly capital (bonders, TSV, molding); distinct from wfe_process_tools (front-end tools) and from packaging service/product rows (hbm_packaging)."
+      value_chain_position: "midstream"
+    - id: "theme:test_ate_equipment"
+      name_en: "Semiconductor test systems (ATE)"
+      name_zh: "半导体测试机（ATE）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Finished-device test systems; distinct from process_metrology_inspection (in-line process control) and system_level_test_services (contract capacity)."
+      value_chain_position: "midstream"
+    - id: "theme:probe_card_test_interfaces"
+      name_en: "Probe cards & test interfaces"
+      name_zh: "探针卡与测试接口"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Contact consumables/interfaces; distinct from test_ate_equipment (tester systems) - recurring-consumable vs capital mechanism."
+      value_chain_position: "upstream"
+    - id: "theme:photomask_maskshop_supply"
+      name_en: "Photomask & mask-shop supply"
+      name_zh: "光掩模版（光罩）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Reticle product and mask-shop service chain; distinct from lithography_tools (the exposure equipment that consumes masks)."
+      value_chain_position: "upstream"
+    - id: "theme:vacuum_subsystem_components"
+      name_en: "Vacuum subsystem components"
+      name_zh: "真空子系统与部件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Vacuum generation/flow component class within the broad wafer_fab_subsystems layer; a recognized standalone parts segment."
+      value_chain_position: "upstream"
+    - id: "theme:rf_power_matching_subsystems"
+      name_en: "RF power & matching subsystems"
+      name_zh: "射频电源与匹配子系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Plasma-energy delivery components; distinct from vacuum_subsystem_components (vacuum generation) - both split the broad subsystems layer."
+      value_chain_position: "upstream"
+    - id: "theme:fab_automation_amhs"
+      name_en: "Fab automation & AMHS"
+      name_zh: "工厂自动化与物料搬运（AMHS）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Inter-tool lot logistics automation to SEMI interface standards; distinct from wafer_fab_subsystems (tool-internal subsystems)."
+      value_chain_position: "enabler"
+    - id: "theme:bulk_gas_chemical_delivery_systems"
+      name_en: "Bulk gas & chemical delivery systems"
+      name_zh: "大宗气体与化学品输送系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Facility-to-tool delivery infrastructure; distinct from wafer_fab_subsystems (tool-internal) and vacuum_subsystem_components (vacuum generation)."
+      value_chain_position: "enabler"
+    - id: "theme:equipment_refurb_remarket"
+      name_en: "Equipment refurbishment & remarket"
+      name_zh: "设备翻新与再流通"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Secondary-life tool market; distinct from wafer_fab_subsystems (new-equipment supply) - aftermarket mechanism."
+      value_chain_position: "downstream"
+    - id: "theme:generator_backup_power"
+      name_en: "Backup generator power"
+      name_zh: "备用柴油发电机组"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Engine-generator sets; distinct from ups_power_conversion (conversion electronics) - the two halves of the backup chain."
+      value_chain_position: "upstream"
+    - id: "theme:fuel_cell_prime_power"
+      name_en: "Fuel cell power systems"
+      name_zh: "燃料电池供电系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Electrochemical prime power; distinct from generator_backup_power (combustion gensets, emergency-only)."
+      value_chain_position: "upstream"
+    - id: "theme:onsite_gas_turbine_power"
+      name_en: "On-site gas turbine power"
+      name_zh: "现场燃机自备电源"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Behind-the-meter prime-power turbines; distinct from generator_backup_power (emergency gensets) and fuel_cell_prime_power (electrochemical)."
+      value_chain_position: "upstream"
+    - id: "theme:battery_backup_storage_ess"
+      name_en: "Battery backup & facility ESS"
+      name_zh: "锂电备电与储能系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Electrochemical storage + BMS in the facility; distinct from ups_power_conversion (conversion electronics) and from grid-scale front-of-meter ESS."
+      value_chain_position: "midstream"
+    - id: "theme:thermal_interface_materials"
+      name_en: "Thermal interface materials (TIM)"
+      name_zh: "导热界面材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Package-level conduction materials; distinct from liquid_cooling_thermal (cooling systems/loops)."
+      value_chain_position: "midstream"
+    - id: "theme:dielectric_coolant_fluids"
+      name_en: "Coolant & dielectric fluids"
+      name_zh: "冷却液与介电工质"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Working-fluid chemistry; distinct from thermal_interface_materials (conduction interface) and liquid_cooling_thermal (cooling equipment)."
+      value_chain_position: "midstream"
+    - id: "theme:precision_air_handler_cooling"
+      name_en: "Precision air handling (CRAC/CRAH)"
+      name_zh: "机房精密空调"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Air-side cooling equipment; distinct from liquid_cooling_thermal (liquid loops) - the co-existing mainstream air path."
+      value_chain_position: "midstream"
+    - id: "theme:waste_heat_reuse"
+      name_en: "Data-center waste heat reuse"
+      name_zh: "数据中心余热回收"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Heat export/recovery systems with municipal offtake; distinct from liquid_cooling_thermal (heat rejection)."
+      value_chain_position: "downstream"
+    - id: "theme:medium_voltage_dc_architecture"
+      name_en: "Medium-voltage DC power architecture"
+      name_zh: "中压直流供电架构"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "End-to-end MV-to-rack DC distribution chain; distinct from ups_power_conversion (UPS products) and hv_transformers_switchgear (AC primary equipment)."
+      value_chain_position: "midstream"
+    - id: "theme:power_busway_distribution"
+      name_en: "Overhead busway & rack power distribution"
+      name_zh: "数据中心母线槽配电"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "In-room trunking/tap-off hardware; distinct from hv_transformers_switchgear (HV/campus primary) and ups_power_conversion (conversion)."
+      value_chain_position: "midstream"
+    - id: "theme:prefab_power_modules"
+      name_en: "Prefabricated power modules"
+      name_zh: "预制化电力模组"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Factory-integrated power trains combining MV gear, transformer, UPS, PDU; distinct from the discrete product classes it integrates."
+      value_chain_position: "midstream"
+    - id: "theme:dcim_energy_management_software"
+      name_en: "DCIM & energy management software"
+      name_zh: "数据中心能碳管理软件（DCIM）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Facility-side monitoring/optimization software; distinct from grid_operating_software (utility-side) and all power/cooling hardware rows."
+      value_chain_position: "enabler"
+    - id: "theme:haleu_advanced_fuel_supply"
+      name_en: "HALEU advanced fuel supply"
+      name_zh: "高浓低浓铀（HALEU）燃料供应"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "High-assay enrichment/supply layer for advanced reactors; distinct from fuel_cycle (legacy mining-through-enrichment LEU scope)."
+      value_chain_position: "upstream"
+    - id: "theme:triso_fuel_form_fabrication"
+      name_en: "TRISO coated-particle fuel fabrication"
+      name_zh: "TRISO 包覆燃料制造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Coated-particle fuel-form manufacture; distinct from haleu_advanced_fuel_supply (enrichment supply) and legacy pellet/assembly cycle."
+      value_chain_position: "upstream"
+    - id: "theme:fuel_assembly_fabrication"
+      name_en: "Nuclear fuel assembly fabrication"
+      name_zh: "核燃料组件制造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Fabrication tail converting enriched product into qualified assemblies; distinct from fuel_cycle (scoped mining-through-enrichment)."
+      value_chain_position: "upstream"
+    - id: "theme:nuclear_plant_construction_epc"
+      name_en: "Nuclear plant construction & EPC"
+      name_zh: "核电工程建造（EPC）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Engineering/construction act under nuclear QA; distinct from nuclear_components (component manufacturing) and reactor_technology (design)."
+      value_chain_position: "midstream"
+    - id: "theme:heavy_component_forgings"
+      name_en: "Heavy nuclear forgings"
+      name_zh: "核电大型铸锻件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "RPV/steam-generator class forgings; distinct from nuclear_components (broad components layer) - the recognized bottleneck class."
+      value_chain_position: "upstream"
+    - id: "theme:nuclear_i_c_dcs_systems"
+      name_en: "Nuclear instrumentation & control (DCS)"
+      name_zh: "核电数字化仪控（DCS）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Safety-class digital I&C systems; distinct from nuclear_components (mechanical components) - separate qualification discipline."
+      value_chain_position: "enabler"
+    - id: "theme:turbine_island_equipment"
+      name_en: "Conventional-island (turbine island) equipment"
+      name_zh: "常规岛设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Secondary-cycle equipment (turbines, generators); distinct from nuclear_components (nuclear-island scope)."
+      value_chain_position: "midstream"
+    - id: "theme:nuclear_plant_operations"
+      name_en: "Nuclear plant operations"
+      name_zh: "核电站运营"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Licensed generation-asset operators; distinct from reactor_technology (designers) - the downstream layer the supply chain feeds."
+      value_chain_position: "downstream"
+    - id: "theme:decommissioning_waste_management"
+      name_en: "Decommissioning & waste management"
+      name_zh: "核设施退役与废物管理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Plant dismantling and site-waste disposition; distinct from spent_fuel_management (spent-fuel storage/reprocessing)."
+      value_chain_position: "downstream"
+    - id: "theme:spent_fuel_management"
+      name_en: "Spent fuel storage & reprocessing"
+      name_zh: "乏燃料贮运与后处理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Interim storage, transport, reprocessing, disposal programs; distinct from decommissioning_waste_management and from fuel_cycle front-end scope."
+      value_chain_position: "downstream"
+    - id: "theme:nuclear_heat_hydrogen_applications"
+      name_en: "Nuclear heat & hydrogen applications"
+      name_zh: "核能供热与制氢"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Heat/hydrogen products from nuclear assets; distinct from nuclear_plant_operations (electricity generation)."
+      value_chain_position: "downstream"
+    - id: "theme:medical_isotope_production"
+      name_en: "Medical isotope production"
+      name_zh: "医用同位素生产"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Isotope irradiation/processing services; distinct from nuclear_plant_operations (power generation) - separate product line on nuclear infrastructure."
+      value_chain_position: "downstream"
+    - id: "theme:electrical_steel_core_materials"
+      name_en: "Electrical steel & core materials"
+      name_zh: "电工钢（取向硅钢）铁芯材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Core material input to transformers; distinct from hv_transformers_switchgear (transformer/switchgear products) - upstream bottleneck layer."
+      value_chain_position: "upstream"
+    - id: "theme:grid_protection_control_systems"
+      name_en: "Grid protection & secondary systems"
+      name_zh: "继电保护与二次系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Substation secondary protection/control layer; distinct from hv_transformers_switchgear (primary power-carrying equipment) and feeder automation."
+      value_chain_position: "midstream"
+    - id: "theme:advanced_metering_infrastructure"
+      name_en: "Smart metering & AMI"
+      name_zh: "智能电表与 AMI"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Edge metering devices and head-end systems; distinct from grid_distribution_automation (feeder automation control)."
+      value_chain_position: "downstream"
+    - id: "theme:grid_operating_software"
+      name_en: "Grid operating software (EMS/ADMS/DERMS)"
+      name_zh: "电网调度与运营软件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Utility-side software platform layer; distinct from grid_distribution_automation (field hardware) and dcim_energy_management_software (facility-side)."
+      value_chain_position: "enabler"
+    - id: "theme:virtual_power_plant_aggregation"
+      name_en: "Virtual power plant aggregation"
+      name_zh: "虚拟电厂聚合"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Merchant aggregation of distributed assets into markets; distinct from grid_operating_software (utility platforms) and grid_scale_battery_storage (owned plants)."
+      value_chain_position: "downstream"
+    - id: "theme:grid_scale_battery_storage"
+      name_en: "Grid-scale battery storage systems"
+      name_zh: "电网侧储能系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Front-of-meter utility ESS plants; distinct from battery_backup_storage_ess (facility backup) and solar_inverters (PV inverter products)."
+      value_chain_position: "midstream"
+    - id: "theme:grid_forming_inverter_technology"
+      name_en: "Grid-forming inverter technology"
+      name_zh: "构网型逆变器"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Grid-forming capability class specified in new grid codes; distinct from solar_inverters (grid-following PV product) and from storage plants."
+      value_chain_position: "enabler"
+    - id: "theme:reactive_power_compensation"
+      name_en: "Reactive power compensation (SVC/STATCOM)"
+      name_zh: "无功补偿装置（SVC/STATCOM）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Dedicated compensation plant; distinct from hv_transformers_switchgear (primary equipment) and grid_forming_inverter_technology (IBR control capability)."
+      value_chain_position: "midstream"
+    - id: "theme:hvdc_converter_stations"
+      name_en: "HVDC converter stations & valves"
+      name_zh: "换流站与换流阀"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Converter power electronics and stations; distinct from transmission_hvdc_cabling (cable systems) - the two halves of an HVDC link."
+      value_chain_position: "midstream"
+    - id: "theme:transmission_line_construction_epc"
+      name_en: "Transmission line construction & EPC"
+      name_zh: "输电线路工程建造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "The construction act installing lines/circuits; distinct from equipment and cable manufacturing rows (hv_transformers_switchgear, transmission_hvdc_cabling)."
+      value_chain_position: "midstream"
+    - id: "theme:dynamic_line_rating_sensors"
+      name_en: "Dynamic line rating & line sensing"
+      name_zh: "线路动态增容与感知"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Line-side sensing and rating computation; distinct from advanced_overhead_conductors (conductor hardware) and grid_operating_software (network platforms)."
+      value_chain_position: "enabler"
+    - id: "theme:microgrid_systems_integration"
+      name_en: "Microgrid systems & integration"
+      name_zh: "微电网系统集成"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Single-site islandable systems; distinct from virtual_power_plant_aggregation (market-wide aggregation) and datacenter_backup_generation (facility backup)."
+      value_chain_position: "downstream"
+    - id: "theme:ev_charging_networks"
+      name_en: "EV charging networks & equipment"
+      name_zh: "充电网络与充电桩"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Electrification demand infrastructure; distinct from grid_distribution_automation (utility automation) - the load-side network layer."
+      value_chain_position: "downstream"
+    - id: "theme:ultra_hv_ac_transmission"
+      name_en: "Ultra-high-voltage AC transmission"
+      name_zh: "特高压交流输电"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "UHV corridor/system engineering class; distinct from hv_transformers_switchgear (standard HV equipment products) and hvdc_converter_stations (DC terminals)."
+      value_chain_position: "midstream"
+    - id: "theme:advanced_overhead_conductors"
+      name_en: "Advanced overhead conductors"
+      name_zh: "节能导线与复合材料导线"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Bare overhead conductor technology; distinct from transmission_hvdc_cabling (insulated underground/submarine cable) and from line-rating sensors."
+      value_chain_position: "upstream"
+    - id: "theme:silicon_ingot_wafer_growth"
+      name_en: "Silicon ingot & wafer growth"
+      name_zh: "单晶拉棒与硅片"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Ingot pulling and wafering step; distinct from polysilicon_solar_feedstock (feedstock production) and pv_cell_module_manufacturing (cell/module processing)."
+      value_chain_position: "upstream"
+    - id: "theme:quartz_crucible_consumables"
+      name_en: "Quartz crucible consumables"
+      name_zh: "石英坩埚耗材"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Consumable the puller consumes; distinct from silicon_ingot_wafer_growth (the wafer product) - auxiliary-materials layer."
+      value_chain_position: "upstream"
+    - id: "theme:pv_glass_encapsulant_materials"
+      name_en: "PV glass & encapsulant materials"
+      name_zh: "光伏玻璃与封装胶膜"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Encapsulant/front-glass materials layer; distinct from pv_cell_module_manufacturing (module assembly) - a distinct materials segment."
+      value_chain_position: "upstream"
+    - id: "theme:pv_metalization_pastes"
+      name_en: "PV metalization pastes"
+      name_zh: "光伏银浆与金属化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Contact-material consumable layer; distinct from pv_cell_module_manufacturing (cell production) - paste formulation as its own segment."
+      value_chain_position: "upstream"
+    - id: "theme:pv_manufacturing_equipment"
+      name_en: "PV manufacturing equipment"
+      name_zh: "光伏制造设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Machines that make cells/modules; distinct from pv_cell_module_manufacturing (the producers) - mirrors the semicap distinction in the PV chain."
+      value_chain_position: "enabler"
+    - id: "theme:perovskite_tandem_photovoltaics"
+      name_en: "Perovskite & tandem photovoltaics"
+      name_zh: "钙钛矿及叠层电池"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "New absorber/tandem device system; distinct from pv_cell_module_manufacturing (incumbent c-Si production)."
+      value_chain_position: "midstream"
+    - id: "theme:thin_film_pv_modules"
+      name_en: "Thin-film PV modules (CdTe/CIGS)"
+      name_zh: "薄膜光伏组件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Compound thin-film device mechanism; distinct from perovskite_tandem_photovoltaics (emerging system) and from c-Si manufacturing."
+      value_chain_position: "midstream"
+    - id: "theme:building_integrated_pv"
+      name_en: "Building-integrated PV (BIPV)"
+      name_zh: "光伏建筑一体化（BIPV）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Building-envelope-integrated product systems; distinct from pv_project_development_epc (conventional project build) and trackers/BOS hardware."
+      value_chain_position: "downstream"
+    - id: "theme:agrivoltaic_dual_use_systems"
+      name_en: "Agrivoltaic dual-use systems"
+      name_zh: "农光互补系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Land dual-use system design/economics; distinct from pv_project_development_epc (generic EPC) and floating_pv_systems (water siting)."
+      value_chain_position: "downstream"
+    - id: "theme:floating_pv_systems"
+      name_en: "Floating PV systems"
+      name_zh: "水上漂浮光伏"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Water-sited float/mooring engineering; distinct from agrivoltaic_dual_use_systems (land) and solar_trackers_bos (tracker/BOS hardware)."
+      value_chain_position: "downstream"
+    - id: "theme:pv_recycling_end_of_life"
+      name_en: "PV recycling & end-of-life"
+      name_zh: "组件回收与退役处理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "End-of-life processing and material recovery; distinct from pv_operations_maintenance (in-life O&M)."
+      value_chain_position: "downstream"
+    - id: "theme:pv_operations_maintenance"
+      name_en: "PV plant operations & maintenance"
+      name_zh: "电站运维（O&M）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Operate-and-maintain services; distinct from pv_project_development_epc (develop-and-build)."
+      value_chain_position: "downstream"
+    - id: "theme:pv_project_development_epc"
+      name_en: "PV project development & EPC"
+      name_zh: "电站开发与 EPC"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C1_MICRO_RESEARCH.md"
+      note: "Site development through construction/commissioning; distinct from pv_operations_maintenance (operate) and solar_trackers_bos (BOS hardware supply)."
+      value_chain_position: "downstream"
+  parents:
+    # theme -> new sub_themes
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_manufacturing_chain", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_network_fabric", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_design_enablement", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:memory_product_stack", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:storage_stack_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:advanced_packaging_test_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:equipment_component_periphery", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:fab_automation_facility_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:datacenter_backup_generation", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:datacenter_thermal_chain", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:datacenter_distribution_architecture", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:advanced_nuclear_fuel_chain", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_plant_supply_chain", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_back_end_lifecycle", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_equipment_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_software_flexibility", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_upstream_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_technology_frontiers", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_downstream_deployment", asserted_on: "2026-10-21"}
+    # sub_theme -> micro_theme
+    - {parent: "theme:ai_manufacturing_chain", child: "theme:leading_edge_foundry_manufacturing", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_manufacturing_chain", child: "theme:abf_package_substrate_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_manufacturing_chain", child: "theme:system_level_test_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_network_fabric", child: "theme:optical_transceiver_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_network_fabric", child: "theme:co_packaged_optics", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_network_fabric", child: "theme:network_offload_processors", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_network_fabric", child: "theme:pcie_fabric_silicon", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_design_enablement", child: "theme:eda_design_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_design_enablement", child: "theme:semiconductor_ip_licensing", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_design_enablement", child: "theme:chiplet_multidie_compute", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:lpdram_low_power_memory", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:niche_specialty_dram", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:embedded_flash_storage_ufs", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:automotive_grade_memory", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:nearline_hard_disk_drives", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:tape_archival_storage", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:processing_in_memory_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_product_stack", child: "theme:cxl_memory_expansion_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:storage_stack_integration", child: "theme:enterprise_ssd_controllers", asserted_on: "2026-10-21"}
+    - {parent: "theme:storage_stack_integration", child: "theme:memory_storage_module_assembly", asserted_on: "2026-10-21"}
+    - {parent: "theme:storage_stack_integration", child: "theme:dram_interface_chipsets", asserted_on: "2026-10-21"}
+    - {parent: "theme:storage_stack_integration", child: "theme:software_defined_storage_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:ion_implant_doping_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:cmp_polishing_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:thermal_anneal_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:wafer_cleaning_prep_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:coater_developer_tracks", asserted_on: "2026-10-21"}
+    - {parent: "theme:wfe_process_tools", child: "theme:epitaxial_growth_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_packaging_test_equipment", child: "theme:advanced_packaging_assembly_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_packaging_test_equipment", child: "theme:test_ate_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_packaging_test_equipment", child: "theme:probe_card_test_interfaces", asserted_on: "2026-10-21"}
+    - {parent: "theme:equipment_component_periphery", child: "theme:photomask_maskshop_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:equipment_component_periphery", child: "theme:vacuum_subsystem_components", asserted_on: "2026-10-21"}
+    - {parent: "theme:equipment_component_periphery", child: "theme:rf_power_matching_subsystems", asserted_on: "2026-10-21"}
+    - {parent: "theme:equipment_component_periphery", child: "theme:equipment_refurb_remarket", asserted_on: "2026-10-21"}
+    - {parent: "theme:fab_automation_facility_systems", child: "theme:fab_automation_amhs", asserted_on: "2026-10-21"}
+    - {parent: "theme:fab_automation_facility_systems", child: "theme:bulk_gas_chemical_delivery_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_backup_generation", child: "theme:generator_backup_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_backup_generation", child: "theme:fuel_cell_prime_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_backup_generation", child: "theme:onsite_gas_turbine_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_backup_generation", child: "theme:battery_backup_storage_ess", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_thermal_chain", child: "theme:thermal_interface_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_thermal_chain", child: "theme:dielectric_coolant_fluids", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_thermal_chain", child: "theme:precision_air_handler_cooling", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_thermal_chain", child: "theme:waste_heat_reuse", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_distribution_architecture", child: "theme:medium_voltage_dc_architecture", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_distribution_architecture", child: "theme:power_busway_distribution", asserted_on: "2026-10-21"}
+    - {parent: "theme:datacenter_distribution_architecture", child: "theme:prefab_power_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_nuclear_fuel_chain", child: "theme:haleu_advanced_fuel_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_nuclear_fuel_chain", child: "theme:triso_fuel_form_fabrication", asserted_on: "2026-10-21"}
+    - {parent: "theme:advanced_nuclear_fuel_chain", child: "theme:fuel_assembly_fabrication", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_plant_supply_chain", child: "theme:nuclear_plant_construction_epc", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_plant_supply_chain", child: "theme:heavy_component_forgings", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_plant_supply_chain", child: "theme:nuclear_i_c_dcs_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_plant_supply_chain", child: "theme:turbine_island_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_back_end_lifecycle", child: "theme:decommissioning_waste_management", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_back_end_lifecycle", child: "theme:spent_fuel_management", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:electrical_steel_core_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:grid_protection_control_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:reactive_power_compensation", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:hvdc_converter_stations", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:ultra_hv_ac_transmission", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:advanced_overhead_conductors", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_equipment_supply", child: "theme:transmission_line_construction_epc", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:grid_operating_software", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:advanced_metering_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:virtual_power_plant_aggregation", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:grid_scale_battery_storage", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:grid_forming_inverter_technology", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:dynamic_line_rating_sensors", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_software_flexibility", child: "theme:microgrid_systems_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_upstream_supply", child: "theme:silicon_ingot_wafer_growth", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_upstream_supply", child: "theme:quartz_crucible_consumables", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_upstream_supply", child: "theme:pv_glass_encapsulant_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_upstream_supply", child: "theme:pv_metalization_pastes", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_technology_frontiers", child: "theme:perovskite_tandem_photovoltaics", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_technology_frontiers", child: "theme:thin_film_pv_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:building_integrated_pv", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:agrivoltaic_dual_use_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:floating_pv_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:pv_recycling_end_of_life", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:pv_operations_maintenance", asserted_on: "2026-10-21"}
+    - {parent: "theme:pv_downstream_deployment", child: "theme:pv_project_development_epc", asserted_on: "2026-10-21"}
+    # theme -> micro_theme (every proposed micro also hangs directly off its theme)
+    - {parent: "theme:ai_semiconductors", child: "theme:leading_edge_foundry_manufacturing", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:abf_package_substrate_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:system_level_test_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:chiplet_multidie_compute", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:optical_transceiver_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:co_packaged_optics", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:network_offload_processors", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:pcie_fabric_silicon", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:eda_design_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:semiconductor_ip_licensing", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:edge_inference_processors", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_power_delivery_silicon", asserted_on: "2026-10-21"}
+    - {parent: "theme:ai_semiconductors", child: "theme:ai_server_board_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:lpdram_low_power_memory", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:niche_specialty_dram", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:embedded_flash_storage_ufs", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:automotive_grade_memory", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:nearline_hard_disk_drives", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:tape_archival_storage", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:processing_in_memory_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:cxl_memory_expansion_devices", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:enterprise_ssd_controllers", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:memory_storage_module_assembly", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:dram_interface_chipsets", asserted_on: "2026-10-21"}
+    - {parent: "theme:memory_storage", child: "theme:software_defined_storage_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:ion_implant_doping_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:cmp_polishing_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:thermal_anneal_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:wafer_cleaning_prep_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:coater_developer_tracks", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:epitaxial_growth_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:advanced_packaging_assembly_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:test_ate_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:probe_card_test_interfaces", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:photomask_maskshop_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:vacuum_subsystem_components", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:rf_power_matching_subsystems", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:fab_automation_amhs", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:bulk_gas_chemical_delivery_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:semicap_equipment", child: "theme:equipment_refurb_remarket", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:generator_backup_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:fuel_cell_prime_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:onsite_gas_turbine_power", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:battery_backup_storage_ess", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:thermal_interface_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:dielectric_coolant_fluids", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:precision_air_handler_cooling", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:waste_heat_reuse", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:medium_voltage_dc_architecture", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:power_busway_distribution", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:prefab_power_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:data_center_power", child: "theme:dcim_energy_management_software", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:haleu_advanced_fuel_supply", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:triso_fuel_form_fabrication", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:fuel_assembly_fabrication", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_plant_construction_epc", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:heavy_component_forgings", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_i_c_dcs_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:turbine_island_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_plant_operations", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:decommissioning_waste_management", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:spent_fuel_management", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:nuclear_heat_hydrogen_applications", asserted_on: "2026-10-21"}
+    - {parent: "theme:nuclear_power", child: "theme:medical_isotope_production", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:electrical_steel_core_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_protection_control_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:advanced_metering_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_operating_software", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:virtual_power_plant_aggregation", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_scale_battery_storage", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:grid_forming_inverter_technology", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:reactive_power_compensation", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:hvdc_converter_stations", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:transmission_line_construction_epc", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:dynamic_line_rating_sensors", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:microgrid_systems_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:ev_charging_networks", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:ultra_hv_ac_transmission", asserted_on: "2026-10-21"}
+    - {parent: "theme:grid_electrification", child: "theme:advanced_overhead_conductors", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:silicon_ingot_wafer_growth", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:quartz_crucible_consumables", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_glass_encapsulant_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_metalization_pastes", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_manufacturing_equipment", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:perovskite_tandem_photovoltaics", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:thin_film_pv_modules", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:building_integrated_pv", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:agrivoltaic_dual_use_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:floating_pv_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_recycling_end_of_life", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_operations_maintenance", asserted_on: "2026-10-21"}
+    - {parent: "theme:solar", child: "theme:pv_project_development_epc", asserted_on: "2026-10-21"}
