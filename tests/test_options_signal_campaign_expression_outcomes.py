@@ -5,16 +5,24 @@ import copy
 import json
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
-from hashlib import sha256
 
 import pytest
 
 from engine import options_signal_campaign as campaigns
 from engine import options_alpha_expression_outcome as expressions
 from engine import options_alpha_expression_publication as publication
-from engine import options_nbbo_cohort as cohort
 import test_options_alpha_exact_option_outcome as ruler_tests
+import test_options_signal_episode as episode_tests
 import test_publish_options_alpha_candidate_r2 as publisher_tests
+
+# The canonical sep03 checkpoint contracts pin the exact physical incident
+# generation: 24578 lawful prefix rows plus the 3845 quarantined rows. The
+# campaign owner re-derives every admitted row against its sources, so the
+# lawful prefix of a corrected fixture must be real, source-derived history
+# at exactly that scale — filler rows would fail the native source binding.
+LAWFUL_OUTCOME_ROWS = 24578
+QUARANTINE_OUTCOME_ROWS = 3845
+INCIDENT_OUTCOME_ROWS = LAWFUL_OUTCOME_ROWS + QUARANTINE_OUTCOME_ROWS
 
 
 class SessionS3(publisher_tests.MetadataS3):
@@ -36,7 +44,9 @@ def _fixture(tmp_path, monkeypatch):
     receipt = ruler_tests._expression_receipt(
         **contract, expression_id=intent['expression_id'],
         source_candidate_id=intent['candidate_id'],
-        decision_receipt_sha256=sha256(cohort.canonical_json_bytes(intent)).hexdigest(),
+        # The publisher's sealed intent digest, not a re-digest of the intent
+        # mapping: the codec binds the receipt to the retained availability.
+        decision_receipt_sha256=availability['intent_bytes_sha256'],
         source_rule_digest_sha256=intent['selection_policy_sha256'],
         decision_at=intent['decision_at'], available_at=availability['available_at'],
         selection_fence_at=intent['decision_at'],
@@ -108,10 +118,13 @@ def test_checkpoint_last_interruption_retains_exact_physical_append(tmp_path, mo
         provider = SessionS3()
         publisher_tests._publish_expression(provider, tmp_path / 'second', feeds[0], [second])
         pair = publisher_tests._read_expression(provider, tmp_path / 'second')
+        second_availability = publication.resolve_intent_availability(
+            pair, second['expression_id'])
+        assert second_availability['status'] == 'available'
         payload = dict(evidence.expression.parsed_payload)
         payload.update(expression_id=second['expression_id'], decision_at=second['decision_at'],
                        selection_fence_at=second['decision_at'],
-                       decision_receipt_sha256=sha256(cohort.canonical_json_bytes(second)).hexdigest())
+                       decision_receipt_sha256=second_availability['intent_bytes_sha256'])
         evidence = replace(evidence, publication_pair=pair,
                            expression=ruler_tests._expression_receipt(**payload))
     checkpoint_before = (root / campaigns.CHECKPOINT_PATH).read_bytes()
@@ -161,25 +174,65 @@ def test_existing_expression_is_immutable_and_namespace_does_not_alias_underlyin
     assert key != (expression['campaign_revision_id'], 'h60')
 
 
+def _append_jsonl(path, rows):
+    with path.open('ab') as handle:
+        for row in rows:
+            handle.write(campaigns.canonical_bytes(row) + b'\n')
+
+
+def _scale_to_canonical_incident(root):
+    """Derive a real lawful prefix at the canonical incident scale.
+
+    The checkpoint contracts pin the exact physical incident generation
+    (24578 lawful + 3845 quarantined rows) and the owner re-derives every
+    admitted outcome against its sources, so the prefix cannot be filler.
+    24578 synthetic one-member episode groups (distinct strikes, one NYSE
+    session) each gain a terminal-incomplete H+60 anchor that consumes no
+    price observation. The unchanged owner then derives those campaign
+    revisions and their lawful prefix outcomes itself; nothing here writes
+    campaign or outcome rows by hand. The sealed feed candidate's own
+    campaign stays pending: its H+60 completion necessarily postdates the
+    sealed feed's generation clock, exactly as the native enrichment
+    requires for any joined underlying outcome.
+    """
+    pairs = []
+    for n in range(LAWFUL_OUTCOME_ROWS):
+        episode = episode_tests._episode(
+            id=f'oa3-scale-{n}',
+            ts='2026-08-14T19:59:00Z', observed_at='2026-08-14T20:00:00Z',
+            decision_at='2026-08-14T20:00:00Z', available_at='2026-08-14T20:00:00Z',
+            root='NVDA', right='C', exp='2026-08-21', strike=225.0 + n * 0.05, dte=7)
+        # available_at sits on the session close, so the H+60 window is a
+        # terminal-incomplete session fact: no bars, no price receipt.
+        pairs.append((episode, episode_tests.derive_h60_outcome(
+            episode, None, computed_at=datetime(2026, 8, 14, 21, 30, tzinfo=timezone.utc),
+            price_source='fixtures/oa3_scale/nvda.parquet')))
+    _append_jsonl(root / campaigns.EPISODES_PATH, [episode for episode, _ in pairs])
+    _append_jsonl(root / campaigns.H60_PATH, [h60 for _, h60 in pairs])
+    summary = campaigns.run(root_dir=root)
+    assert summary['campaign_revisions_appended'] == LAWFUL_OUTCOME_ROWS
+    assert summary['campaign_outcomes_total'] == LAWFUL_OUTCOME_ROWS
+
+
 def _corrected_runtime(root, evidence, monkeypatch, tmp_path):
     """Private synthetic policy; real native prefix and receipt validation."""
     import test_options_signal_campaign_effective_view as correction_tests
     original = campaigns.load_ledger(root / campaigns.OUTCOMES_PATH, campaigns.OUTCOMES_PATH)
     assert original.count == 0
+    _scale_to_canonical_incident(root)
+    quarantine = [correction_tests._row(f'quarantined-{n}', LAWFUL_OUTCOME_ROWS + n,
+                                        computed_at=correction_tests.COMPUTED_AT).value
+                  for n in range(1, QUARANTINE_OUTCOME_ROWS + 1)]
+    _append_jsonl(root / campaigns.OUTCOMES_PATH, quarantine)
     source = campaigns.load_ledger(root / campaigns.CAMPAIGNS_PATH, campaigns.CAMPAIGNS_PATH)
-    rows = [correction_tests._row(f'quarantined-{n}', n + 1,
-                                  computed_at=correction_tests.COMPUTED_AT).value
-            for n in range(3845)]
-    candidate_id = evidence.expression.parsed_payload['source_candidate_id']
-    candidate = next(value for value in evidence.publication_pair.feed['formed_candidates']
-                     if value['candidate_id'] == candidate_id)
-    rows[0]['campaign_revision_id'] = candidate['frozen_formation']['campaign_revision_id']
-    physical = b''.join(campaigns.canonical_bytes(row) + b'\n' for row in rows)
-    (root / campaigns.OUTCOMES_PATH).write_bytes(physical)
     outcomes = campaigns.load_ledger(root / campaigns.OUTCOMES_PATH, campaigns.OUTCOMES_PATH)
+    assert outcomes.count == INCIDENT_OUTCOME_ROWS
+    physical = outcomes.raw
     policy = correction_tests._small_policy(
-        campaign_count=source.count, lawful_count=0, incident_count=3845,
-        quarantine_count=3845, computed_at=correction_tests.COMPUTED_AT,
+        campaign_count=source.count, lawful_count=LAWFUL_OUTCOME_ROWS,
+        incident_count=INCIDENT_OUTCOME_ROWS,
+        quarantine_count=QUARANTINE_OUTCOME_ROWS,
+        computed_at=correction_tests.COMPUTED_AT,
         campaign_snapshot=source, outcome_snapshot=outcomes)
     monkeypatch.setattr(campaigns.CorrectionPolicy, 'load_canonical', lambda root_dir=None: policy)
     receipt = correction_tests._receipt(policy)
@@ -216,10 +269,12 @@ def test_corrected_v2_to_v3_crash_recovery_and_private_reader(tmp_path, monkeypa
     assert (root / campaigns.OUTCOMES_PATH).read_bytes() == physical
     checkpoint = json.loads((root / campaigns.CHECKPOINT_PATH).read_bytes())
     assert checkpoint['schema'] == campaigns.CAMPAIGN_CHECKPOINT_V3_SCHEMA
-    assert checkpoint['populations']['quarantined_underlying_rows'] == 3845
+    assert checkpoint['populations']['quarantined_underlying_rows'] == QUARANTINE_OUTCOME_ROWS
     assert checkpoint['populations']['expression_rows'] == 1
-    assert checkpoint['correction']['quarantine']['reserved_key_count'] == 3845
-    assert checkpoint['correction']['reserved_keys']['count'] == 3846
+    assert checkpoint['correction']['quarantine']['reserved_key_count'] == QUARANTINE_OUTCOME_ROWS
+    # Lawful admitted keys + quarantined reserved keys + the appended
+    # expression key form the exact global occupied set.
+    assert checkpoint['correction']['reserved_keys']['count'] == INCIDENT_OUTCOME_ROWS + 1
     source = campaigns.load_ledger(root / campaigns.CAMPAIGNS_PATH, campaigns.CAMPAIGNS_PATH)
     outcomes = campaigns.load_ledger(root / campaigns.OUTCOMES_PATH, campaigns.OUTCOMES_PATH)
     view = campaigns.build_effective_outcome_view(source, outcomes, policy,
@@ -236,7 +291,7 @@ def test_corrected_v2_to_v3_crash_recovery_and_private_reader(tmp_path, monkeypa
     assert campaigns.read_expression_outcomes(
         effective_outcomes=view, correction_activation_receipt=receipt,
         expression_id=intent['expression_id'], observation_at='2026-08-14T16:59:59Z') == ()
-    assert selected[0].ordinal == 3846
+    assert selected[0].ordinal == INCIDENT_OUTCOME_ROWS + 1
     assert selected[0].raw == outcomes.rows[-1].raw
     assert selected[0].sha256 == outcomes.rows[-1].sha256
     selected[0].value['authority']['may_trade'] = True

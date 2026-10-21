@@ -30,6 +30,8 @@ legacy histories keep their existing v1/v2 checkpoint bytes. After an interrupte
 append, the owner verifies the old checkpoint's recorded physical prefixes and
 validates the tail, then seals the same immutable rows. A replay with identical
 input is a no-op; different bytes for an occupied expression key refuse.
+Callers must retain the original `observed_at` with that evidence rather than
+replace it with the current wall clock on replay.
 
 The existing correction policy and its exact activation receipt continue to gate
 any history covered by that policy, including v3 continuation. This source does
@@ -44,6 +46,17 @@ observed by the consumer's explicit observation clock. It never exposes future
 outcome observations to an earlier consumer clock. The legacy v2
 candidate enrichment continues joining underlying outcomes only. Neither path
 turns an expression commitment into public expression distribution.
+This private effective-view reader requires a corrected history and its actual
+activation receipt. A never-corrected v3 ledger with `correction: null` remains
+valid under the ledger owner, but cannot use this corrected-history reader.
+
+Persisted validation proves shape and binding, not protection against a writer
+that can rewrite the uncheckpointed tail. Build-time campaign revision binding
+uses the sealed candidate's frozen formation. The persisted row's own digest
+does not independently bind its campaign revision; checkpointed prefixes and
+identical-evidence replay detect changes, but an unreplayed tail remains a
+documented attribution limitation. This source preparation grants no live writer
+or scientific admission on that basis.
 
 All authorities remain literal false, `training_eligible` remains false, and
 records explicitly declare `local_retained_evidence_not_source_admission`.
