@@ -912,7 +912,8 @@ def compute() -> dict | None:
         cyc["meta"]["asOf"],
         today=_dt.datetime.now(_dt.timezone.utc).date(),
     )
-    if rotation_alignment["status"] == "aligned" and rotation_raw.get("ts"):
+    if rotation_raw.get("ts"):
+        # provenance only — ts is never the gate
         rotation_alignment["artifact_generated_at"] = rotation_raw["ts"]
     if rotation_alignment["status"] != "aligned":
         if rotation_raw:
