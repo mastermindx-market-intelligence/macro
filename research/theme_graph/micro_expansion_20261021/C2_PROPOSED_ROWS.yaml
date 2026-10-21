@@ -1,0 +1,759 @@
+# C2 GMI micro-theme expansion proposals — PROPOSED ONLY, not ratified (lane gmi-micro-c2-20261021-r4, 2026-10-21).
+# Format mirrors config/theme_crosswalk.yml hierarchy rows exactly; every row is nominated from the lane research record.
+hierarchy:
+  sub_themes:
+    - id: "theme:secops_detection_response"
+      name_en: "Security Operations & Response"
+      name_zh: "安全运营与响应"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Detect-respond-recover operations layer: telemetry analytics, managed operations, forensics, ranges; distinct from the preventive control platforms of security_control_platforms."
+    - id: "theme:security_control_platforms"
+      name_en: "Security Control Platforms"
+      name_zh: "安全控制平台"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Product platforms that enforce preventive and runtime controls across zero-trust, application, data, OT and mail surfaces; distinct from operations/response workstreams."
+    - id: "theme:security_foundation_governance"
+      name_en: "Security Foundations & Governance"
+      name_zh: "安全基础与治理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Trust hardware, post-quantum migration and governance/risk-transfer substrate under all controls; upstream and governance tiers, not a detection or endpoint control."
+      value_chain_position: "enabler"
+    - id: "theme:combat_platforms_systems"
+      name_en: "Combat Platform Systems"
+      name_zh: "作战平台系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Major weapon platform families - combat aircraft, rotorcraft, land vehicles, air defense, undersea systems; distinct from the munitions chain and from industrial-base inputs."
+    - id: "theme:defense_industrial_base"
+      name_en: "Defense Industrial Base"
+      name_zh: "国防工业基础"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Upstream inputs to all platforms: engines, energetics, trusted microelectronics, structures and composites; distinct from finished platforms and from munition assembly."
+      value_chain_position: "upstream"
+    - id: "theme:mission_support_enablers"
+      name_en: "Mission Support & Enablement"
+      name_zh: "任务保障与赋能"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Training simulation, logistics sustainment and test-evaluation infrastructure that sustain readiness; services and infrastructure, not combat platforms or munitions."
+      value_chain_position: "downstream"
+    - id: "theme:civil_aerospace_economy"
+      name_en: "Civil Aerospace Economy"
+      name_zh: "民用航空经济"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Civil air-traffic management and business/general aviation, the non-defense half of aerospace; distinct from military platforms and defense industrial base."
+      value_chain_position: "downstream"
+    - id: "theme:autonomous_service_robots"
+      name_en: "Autonomous & Service Robots"
+      name_zh: "自主与服务机器人"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Mobile and service robot form factors - AMRs, humanoids, field, medical-rehab, lab robots; distinct from fixed and collaborative arms under robot_arm_systems."
+    - id: "theme:robot_software_intelligence"
+      name_en: "Robot Software & Intelligence"
+      name_zh: "机器人软件与智能"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Robot middleware, learned task policies and simulation/digital-twin training; the intelligence and tooling layer, distinct from motion control and from physical robot hardware."
+      value_chain_position: "enabler"
+    - id: "theme:automation_integration_systems"
+      name_en: "Automation Systems & Integration"
+      name_zh: "自动化系统集成"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Whole-facility material-flow and factory automation delivery - warehouse systems, fab automation, integration services, plant connectivity; downstream of unit-robot manufacture."
+      value_chain_position: "downstream"
+    - id: "theme:space_segment_industry"
+      name_en: "Space Segment Industry"
+      name_zh: "空间段产业"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "On-orbit hardware industry - spacecraft assembly, components and subsystems, servicing and in-space manufacturing; distinct from ground infrastructure and from services sold to users."
+      value_chain_position: "midstream"
+    - id: "theme:launch_ground_infrastructure"
+      name_en: "Launch & Ground Infrastructure"
+      name_zh: "发射与地面基础设施"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Capital infrastructure of the space economy - launch propulsion, spaceports, teleport/ground-station networks; distinct from the launch services sold and from user terminals."
+      value_chain_position: "upstream"
+    - id: "theme:space_data_services"
+      name_en: "Space Data Services"
+      name_zh: "空间数据服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Value-added data and assurance services from orbit - geospatial analytics, satellite IoT, PNT, traffic management; distinct from communications services and from spacecraft hardware."
+      value_chain_position: "downstream"
+    - id: "theme:merchant_acceptance_processing"
+      name_en: "Merchant Acceptance & Processing"
+      name_zh: "商户受理与处理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Merchant-side money acceptance - processing/gateways, POS acceptance hardware, B2B payables automation; downstream of the network rails, not the rails themselves."
+      value_chain_position: "downstream"
+    - id: "theme:money_movement_rails"
+      name_en: "Money Movement Rails"
+      name_zh: "支付与资金网络"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Inter-party value transfer infrastructure - card schemes, instant account rails, stablecoins, CBDC, cross-border; the clearing and settlement layer beneath merchant processing."
+      value_chain_position: "midstream"
+    - id: "theme:open_finance_platforms"
+      name_en: "Open Finance & Embedded Platforms"
+      name_zh: "开放金融与平台"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Data-access and distribution platforms - open banking APIs, embedded finance/BaaS, digital wealth; distinct from payment rails and from acceptance processing."
+  micro_themes:
+    - id: "theme:extended_detection_response"
+      name_en: "Extended detection and response platforms"
+      name_zh: "扩展检测与响应（XDR/SIEM）"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Cross-source telemetry analytics and response orchestration (XDR/SIEM/SOAR); distinct from endpoint_security, which protects the device itself rather than correlating signals across domains."
+      value_chain_position: "midstream"
+    - id: "theme:managed_security_services"
+      name_en: "Managed security services"
+      name_zh: "托管安全服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Delivers monitoring and response as an outsized service (MSSP/co-managed SOC); downstream service delivery distinct from selling the platforms used, unlike extended_detection_response."
+      value_chain_position: "downstream"
+    - id: "theme:threat_intelligence_vulnerability_research"
+      name_en: "Threat intelligence & vulnerability research"
+      name_zh: "威胁情报与漏洞研究"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Produces the upstream raw material of defense: intel feeds, vuln discovery, coordinated disclosure, attack-surface mapping; input tier, not a control or response product."
+      value_chain_position: "upstream"
+    - id: "theme:digital_forensics_incident_response"
+      name_en: "Digital forensics & incident response"
+      name_zh: "数字取证与应急响应"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Post-compromise evidence, root-cause and recovery engagements; reactive after-the-event work, distinct from continuous managed_security_services monitoring."
+      value_chain_position: "downstream"
+    - id: "theme:cyber_range_training"
+      name_en: "Cyber ranges & workforce training"
+      name_zh: "网络靶场与安全实训"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds human capability - live-fire ranges, adversary-emulation exercises, certification curricula; an enablement tier with no prevention or detection control of its own."
+      value_chain_position: "enabler"
+    - id: "theme:zero_trust_architecture"
+      name_en: "Zero-trust architecture & microsegmentation"
+      name_zh: "零信任架构"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Removes implicit trust per request (ZTNA, microsegmentation, policy engines); an architecture principle replacing the perimeter model that network_security is built on."
+      value_chain_position: "midstream"
+    - id: "theme:application_security_testing"
+      name_en: "Application security testing"
+      name_zh: "应用安全测试"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Finds flaws in first-party code and APIs across the dev pipeline (SAST/DAST/API testing); code-level pre-production scope distinct from cloud_security runtime workload protection."
+      value_chain_position: "midstream"
+    - id: "theme:supply_chain_security_sca"
+      name_en: "Software supply chain security"
+      name_zh: "软件供应链安全"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Assures artifact and dependency integrity after code is written - SBOM, build attestation, signing; provenance of third-party components, not scanning of owned code."
+      value_chain_position: "midstream"
+    - id: "theme:data_security_posture"
+      name_en: "Data security & posture management"
+      name_zh: "数据安全态势管理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Protects the data object itself - discovery, classification, DSPM, DLP, key management; distinct from identity_access_management (who may act) and cloud_security (where workloads run)."
+      value_chain_position: "midstream"
+    - id: "theme:operational_technology_security"
+      name_en: "OT / industrial-control security"
+      name_zh: "工业控制安全"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Secures PLC/SCADA process networks where availability and safety dominate; plant-floor protocol world distinct from enterprise endpoint and network IT controls."
+      value_chain_position: "midstream"
+    - id: "theme:email_collaboration_security"
+      name_en: "Email & collaboration security"
+      name_zh: "邮件与协作安全"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Filters the phishing/business-email-compromise channel where most intrusions begin; content-borne social attack surface distinct from device or perimeter controls."
+      value_chain_position: "midstream"
+    - id: "theme:identity_fraud_anti_abuse"
+      name_en: "Consumer fraud & anti-abuse"
+      name_zh: "反欺诈与业务反滥用"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Stops account takeover, bots and payment abuse against consumer-facing apps; distinct from identity_access_management, which governs workforce/enterprise access rights."
+      value_chain_position: "midstream"
+    - id: "theme:hardware_root_of_trust"
+      name_en: "Hardware root of trust & secure elements"
+      name_zh: "硬件信任根"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Silicon-level anchoring - TPM/secure enclaves, HSMs, measured boot; upstream trust substrate beneath all software controls, not a control product itself."
+      value_chain_position: "upstream"
+    - id: "theme:post_quantum_cryptography_migration"
+      name_en: "Post-quantum cryptography migration"
+      name_zh: "抗量子密码迁移"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Replaces harvest-now-decrypt-later-exposed public-key crypto across products; crypto-agility program layer distinct from hardware_root_of_trust silicon form factors."
+      value_chain_position: "upstream"
+    - id: "theme:security_governance_compliance"
+      name_en: "Security governance, risk & compliance"
+      name_zh: "安全治理与合规"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Governs and evidences security - GRC platforms, control frameworks, cyber risk quantification, disclosure; the management tier, distinct from any technical control."
+      value_chain_position: "enabler"
+    - id: "theme:cyber_insurance_risk_transfer"
+      name_en: "Cyber insurance & risk transfer"
+      name_zh: "网络保险"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Transfers breach loss financially - underwriting, accumulation modelling, incident-cost coverage; a financial product, not a security technology."
+      value_chain_position: "downstream"
+    - id: "theme:fixed_wing_combat_aircraft"
+      name_en: "Fixed-wing combat aircraft"
+      name_zh: "固定翼作战飞机"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Designs and builds fighters, bombers and trainers as multi-decade platform programs; distinct from aerospace_components_aftermarket (parts/services) and from munitions."
+      value_chain_position: "downstream"
+    - id: "theme:rotorcraft_vertical_lift"
+      name_en: "Rotorcraft & vertical-lift platforms"
+      name_zh: "直升机与旋翼机平台"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Helicopters, tiltrotors and eVTOL-class vertical lift with a distinct certification and industrial base; separate platform family from fixed_wing_combat_aircraft."
+      value_chain_position: "downstream"
+    - id: "theme:land_systems_armored_vehicles"
+      name_en: "Land systems & armored vehicles"
+      name_zh: "装甲车辆与陆战装备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Tanks, fighting vehicles, artillery platforms and their upgrade cycles; ground-domain platforms distinct from naval_shipbuilding and air platforms."
+      value_chain_position: "downstream"
+    - id: "theme:air_defense_systems"
+      name_en: "Air & missile defense systems"
+      name_zh: "防空反导系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Integrated layered air-defense system-of-systems (sensor-fused interceptors, C2 of the shield); distinct from missiles_munitions_effects, which is expendable munition output economics."
+      value_chain_position: "midstream"
+    - id: "theme:undersea_systems_sonar"
+      name_en: "Undersea warfare & sonar systems"
+      name_zh: "水下战系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Sonar arrays, torpedoes, seabed surveillance and undersea vehicles; the acoustic ocean domain, distinct from naval_shipbuilding hull construction."
+      value_chain_position: "midstream"
+    - id: "theme:aerospace_propulsion_engines"
+      name_en: "Aircraft engines & propulsion"
+      name_zh: "航空发动机"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Designs, makes and overhauls gas-turbine aero engines with long-life aftermarket; distinct from missile_propulsion_supply, which is expendable solid-rocket motor output."
+      value_chain_position: "midstream"
+    - id: "theme:explosive_energetics_materials"
+      name_en: "Energetics & propellant materials"
+      name_zh: "含能材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Chemical energetics base - propellants, explosives, pyrotechnics - feeding motors and warheads; upstream molecular manufacturing distinct from motor assembly."
+      value_chain_position: "upstream"
+    - id: "theme:defense_electronics_microelectronics"
+      name_en: "Defense microelectronics & trusted chips"
+      name_zh: "国防微电子"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Trusted/radiation-hardened foundry supply and defense-grade chip packaging; upstream component tier beneath defense_sensors_electronics_c2 system integration."
+      value_chain_position: "upstream"
+    - id: "theme:aerospace_structures_composites"
+      name_en: "Airframe structures & composites"
+      name_zh: "航空结构与复合材料"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Fabricates fuselage/wing subassemblies and advanced composite aerostructures; structural airframe tier distinct from engines and from components_aftermarket distribution."
+      value_chain_position: "upstream"
+    - id: "theme:military_training_simulation"
+      name_en: "Military training & simulation"
+      name_zh: "军事训练与仿真"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds crew simulators, live-virtual-constructive ranges and mission rehearsal systems; readiness service distinct from any combat platform or sensor."
+      value_chain_position: "downstream"
+    - id: "theme:military_logistics_sustainment"
+      name_en: "Military logistics & sustainment"
+      name_zh: "军事后勤与装备保障"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Runs depot maintenance, supply-chain and readiness engineering for fielded forces; fleet-availability economics distinct from parts resale in aerospace_components_aftermarket."
+      value_chain_position: "downstream"
+    - id: "theme:defense_test_evaluation_infrastructure"
+      name_en: "Test, evaluation & range infrastructure"
+      name_zh: "试验鉴定与靶场设施"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Operates proving grounds, instrumentation and T&E services that qualify systems; infrastructure tier upstream of fielding, distinct from training operations."
+      value_chain_position: "enabler"
+    - id: "theme:air_traffic_management_systems"
+      name_en: "Air traffic management systems"
+      name_zh: "空中交通管理系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds ATC automation, surveillance and UTM airspace systems; airspace infrastructure distinct from onboard avionics and from defense C2 electronics."
+      value_chain_position: "midstream"
+    - id: "theme:business_general_aviation"
+      name_en: "Business & general aviation aircraft"
+      name_zh: "公务机与通用航空"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Business jets, turboprops and piston GA airframes sold to private/corporate operators; civil demand cycle distinct from defense platform procurement."
+      value_chain_position: "downstream"
+    - id: "theme:autonomous_mobile_robots"
+      name_en: "Autonomous mobile robots (AMR/AGV)"
+      name_zh: "自主移动机器人"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Self-navigating mobile platforms for intralogistics and inspection; mobility form factor distinct from fixed and collaborative arms under robot_arm_systems."
+      value_chain_position: "midstream"
+    - id: "theme:humanoid_robots"
+      name_en: "Humanoid robots"
+      name_zh: "人形机器人"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Bipedal general-purpose form factor built for human environments; new hardware class with its own actuator/electronics stack, not a variant of arm systems."
+      value_chain_position: "midstream"
+    - id: "theme:agricultural_field_robotics"
+      name_en: "Agricultural & field robotics"
+      name_zh: "农业机器人"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Weeding, harvesting, milking and field-scouting machines that act on crops; physical field machinery distinct from the agronomic data platforms of precision_agriculture_platforms."
+      value_chain_position: "midstream"
+    - id: "theme:rehabilitation_medical_robots"
+      name_en: "Rehabilitation & hospital service robots"
+      name_zh: "康复与医疗服务机器人"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Exoskeletons, rehab trainers and hospital logistics robots; therapy and care robotics distinct from operating-room surgical_robotics_systems."
+      value_chain_position: "midstream"
+    - id: "theme:laboratory_automation_robots"
+      name_en: "Laboratory automation robotics"
+      name_zh: "实验室自动化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Liquid handling and bench-top automation for life-science labs; wet-lab workflow robotics distinct from industrial arms and from sequencer instruments."
+      value_chain_position: "midstream"
+    - id: "theme:robot_software_middleware"
+      name_en: "Robot operating systems & middleware"
+      name_zh: "机器人操作系统与中间件"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Robot-level frameworks and fleet orchestration abstracting heterogeneous hardware; distinct from industrial_motion_controls, which closes servo loops on one machine."
+      value_chain_position: "enabler"
+    - id: "theme:embodied_ai_robot_learning"
+      name_en: "Embodied AI & robot learning"
+      name_zh: "具身智能"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Learned manipulation/navigation policies from demonstration and foundation models; task-acquisition intelligence distinct from machine_vision perception sensing."
+      value_chain_position: "enabler"
+    - id: "theme:robot_simulation_digital_twin"
+      name_en: "Robot simulation & digital twins"
+      name_zh: "机器人仿真与数字孪生"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Physics-accurate virtual training and commissioning before deployment; verification tooling distinct from the learned policies of embodied_ai_robot_learning."
+      value_chain_position: "enabler"
+    - id: "theme:robot_end_effectors_tooling"
+      name_en: "Robot end effectors & tooling"
+      name_zh: "机器人末端执行器"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Grippers, force sensors and quick-change tooling where the robot meets the task; task-facing consumable layer distinct from joint actuation components."
+      value_chain_position: "upstream"
+    - id: "theme:warehouse_automation_systems"
+      name_en: "Warehouse & fulfillment automation systems"
+      name_zh: "仓储物流自动化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Designs and integrates goods-to-person, AS/RS and sortation systems as facilities; system-of-systems delivery distinct from selling unit AMR machines."
+      value_chain_position: "downstream"
+    - id: "theme:semiconductor_factory_automation"
+      name_en: "Semiconductor factory automation"
+      name_zh: "半导体工厂自动化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Cleanroom AMHS, wafer handling robotics and fab scheduling software; vertical fab-logistics automation distinct from the process tools themselves."
+      value_chain_position: "downstream"
+    - id: "theme:robotics_system_integration"
+      name_en: "Robotics & automation system integration"
+      name_zh: "机器人系统集成"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Engineers, installs and services turnkey automation cells for end users; downstream deployment economy distinct from robot/component manufacturing."
+      value_chain_position: "downstream"
+    - id: "theme:industrial_iot_condition_monitoring"
+      name_en: "Industrial IoT & condition monitoring"
+      name_zh: "工业互联网与状态监测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Plant-wide sensors, connectivity and OEE/predictive-maintenance analytics; plant data plane distinct from machine-level motion control and robot perception."
+      value_chain_position: "enabler"
+    - id: "theme:spacecraft_manufacturing_satellites"
+      name_en: "Spacecraft & satellite manufacturing"
+      name_zh: "卫星整星制造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Assembles satellite buses and payloads as the space segment OEM tier; distinct from launch_services (orbit access) and from satellite_ground_terminals (user equipment)."
+      value_chain_position: "midstream"
+    - id: "theme:space_components_subsystems"
+      name_en: "Space components & subsystems"
+      name_zh: "航天器部组件与单机"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds reaction wheels, star trackers, thrusters, arrays and space-grade electronics; unit-supplier tier upstream of spacecraft_manufacturing_satellites assembly."
+      value_chain_position: "upstream"
+    - id: "theme:in_orbit_services_servicing"
+      name_en: "On-orbit servicing & life extension"
+      name_zh: "在轨服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Rendezvous, docking, refueling, repair and deorbit missions on client spacecraft; operations on others' satellites, distinct from building them."
+      value_chain_position: "midstream"
+    - id: "theme:in_space_manufacturing"
+      name_en: "In-space manufacturing & research platforms"
+      name_zh: "在轨制造"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Uses the orbital environment to produce materials and biomedical research outputs; production economics distinct from servicing existing spacecraft."
+      value_chain_position: "midstream"
+    - id: "theme:launch_vehicle_propulsion"
+      name_en: "Launch vehicle propulsion"
+      name_zh: "运载火箭动力系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Develops rocket engines and propulsion stages sold to vehicle programs; propulsion hardware tier upstream of launch_services flights."
+      value_chain_position: "upstream"
+    - id: "theme:spaceport_launch_infrastructure"
+      name_en: "Spaceports & launch infrastructure"
+      name_zh: "商业航天发射场"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Owns/permits pads, range integration and recovery infrastructure; fixed-capital service layer distinct from vehicle propulsion and launch services."
+      value_chain_position: "upstream"
+    - id: "theme:ground_segment_as_a_service"
+      name_en: "Ground stations & ground segment services"
+      name_zh: "地面段站网服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Operates teleport/ground-station networks for downlink, TT&C and data routing as a service; operator infrastructure distinct from user satellite_ground_terminals."
+      value_chain_position: "midstream"
+    - id: "theme:space_situational_awareness_traffic"
+      name_en: "Space situational awareness & traffic management"
+      name_zh: "太空态势感知"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Tracks objects, screens conjunctions and provides space-weather/debris services; safety-of-flight assurance distinct from earth_observation imaging data."
+      value_chain_position: "downstream"
+    - id: "theme:geospatial_intelligence_analytics"
+      name_en: "Geospatial intelligence & EO analytics"
+      name_zh: "地理空间智能"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Turns imagery into decision products - change detection, SAR analytics, mapping platforms; downstream analytics tier distinct from raw-data earth_observation."
+      value_chain_position: "downstream"
+    - id: "theme:positioning_navigation_timing"
+      name_en: "Satellite navigation & timing (PNT)"
+      name_zh: "卫星导航与授时"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "GNSS chips, augmentation and resilient alternative-PNT services; the positioning service class, distinct from communications and imaging services."
+      value_chain_position: "midstream"
+    - id: "theme:satellite_iot_messaging"
+      name_en: "Satellite IoT & narrowband messaging"
+      name_zh: "卫星物联网"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Machine-scale store-and-forward telemetry over narrowband NTN links; mass-of-things service distinct from human-broadband and direct-to-device rows."
+      value_chain_position: "downstream"
+    - id: "theme:space_security_counterspace"
+      name_en: "Space security & counterspace systems"
+      name_zh: "空间安全与攻防系统"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Defends orbit assets - hardened/proliferated architectures, jamming detection, space domain awareness for defense; distinct from protected military_space_communications services."
+      value_chain_position: "midstream"
+    - id: "theme:deep_space_missions"
+      name_en: "Deep space & planetary exploration"
+      name_zh: "深空探测"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds lunar/planetary probes, landers and relay infrastructure for science missions; exploration program tier distinct from Earth-facing services."
+      value_chain_position: "midstream"
+    - id: "theme:digital_payment_processing"
+      name_en: "Digital payment processing & gateways"
+      name_zh: "数字支付处理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Authorizes, captures and settles card/account transactions for merchants (acquiring, gateways, orchestration); merchant-side acceptance distinct from the network rails."
+      value_chain_position: "downstream"
+    - id: "theme:pos_hardware_smart_terminals"
+      name_en: "Payment terminals & acceptance hardware"
+      name_zh: "支付终端与受理设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds certified POS/smart terminals and softPOS acceptance devices; hardware form-factor tier upstream of processing software, distinct from the rails."
+      value_chain_position: "upstream"
+    - id: "theme:b2b_payments_automation"
+      name_en: "B2B payments & AP/AR automation"
+      name_zh: "企业支付自动化"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Automates business invoicing, payables/receivables, virtual cards and corporate spend; enterprise workflow payments distinct from consumer checkout processing."
+      value_chain_position: "downstream"
+    - id: "theme:payment_network_schemes"
+      name_en: "Payment networks & clearing schemes"
+      name_zh: "支付网络与清算"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Operates scheme switching, clearing and the four-party rules economics between issuers and acquirers; the rail itself, distinct from merchant-side processing."
+      value_chain_position: "midstream"
+    - id: "theme:instant_account_payment_rails"
+      name_en: "Instant account-to-account payment rails"
+      name_zh: "实时账户支付"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Real-time bank-account schemes and ISO 20022 adoption on account rails; account-based mechanism distinct from card schemes and from blockchain rails."
+      value_chain_position: "midstream"
+    - id: "theme:stablecoin_tokenized_money"
+      name_en: "Stablecoins & tokenized money"
+      name_zh: "稳定币与代币化货币"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Issues/reserves private tokenized cash-equivalents moving on distributed ledgers; blockchain rail distinct from sovereign CBDC and account-based instant rails."
+      value_chain_position: "midstream"
+    - id: "theme:cbdc_infrastructure"
+      name_en: "Central bank digital currency infrastructure"
+      name_zh: "央行数字货币"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Builds sovereign digital-currency core systems, wallets and two-tier distribution; state-issued money infrastructure distinct from private stablecoin issuance."
+      value_chain_position: "midstream"
+    - id: "theme:cross_border_remittance_infra"
+      name_en: "Cross-border payments & remittances"
+      name_zh: "跨境支付与汇款"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Moves value across corridors - FX, correspondent bypass, remittance networks; multi-jurisdiction settlement distinct from domestic rails of any technology."
+      value_chain_position: "midstream"
+    - id: "theme:open_banking_data_sharing"
+      name_en: "Open banking & financial data access"
+      name_zh: "开放银行"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Exposes/aggregates account data and payment initiation under mandated API frameworks; data-access layer distinct from moving or processing money itself."
+      value_chain_position: "enabler"
+    - id: "theme:embedded_finance_baas"
+      name_en: "Embedded finance & banking-as-a-service"
+      name_zh: "嵌入式金融与银行即服务"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Embeds regulated financial products into non-financial brands via API stacks; distribution/embedding model distinct from open-banking data access rights."
+      value_chain_position: "downstream"
+    - id: "theme:digital_lending_credit_tech"
+      name_en: "Digital lending & credit technology"
+      name_zh: "数字信贷"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Underwrites and services consumer/SME credit digitally with alternative data decisioning; credit extension risk, not payment movement."
+      value_chain_position: "downstream"
+    - id: "theme:retail_investment_platforms"
+      name_en: "Digital wealth & retail investment platforms"
+      name_zh: "数字财富管理"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Retail brokerage infrastructure, robo-advisory and savings-investment apps; wealth product distribution distinct from payments and lending."
+      value_chain_position: "downstream"
+    - id: "theme:transaction_monitoring_aml"
+      name_en: "Transaction monitoring & AML compliance"
+      name_zh: "反洗钱与交易监控"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Screens money flows for AML/sanctions and files regulatory reporting; financial-crime compliance distinct from consumer anti-abuse and enterprise IAM."
+      value_chain_position: "enabler"
+    - id: "theme:cash_cycle_atm_networks"
+      name_en: "Cash cycle & ATM networks"
+      name_zh: "现金循环与自助设备"
+      asserted_on: "2026-10-21"
+      nominated_from: "research:research/theme_graph/micro_expansion_20261021/C2_MICRO_RESEARCH.md"
+      note: "Manufactures/operates ATMs and cash logistics, recycling and recirculation; physical cash infrastructure persisting alongside digital rails."
+      value_chain_position: "midstream"
+  parents:
+    # --- cybersecurity ---
+    - {parent: "theme:cybersecurity", child: "theme:secops_detection_response", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:security_control_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:security_foundation_governance", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:extended_detection_response", asserted_on: "2026-10-21"}
+    - {parent: "theme:secops_detection_response", child: "theme:extended_detection_response", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:managed_security_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:secops_detection_response", child: "theme:managed_security_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:threat_intelligence_vulnerability_research", asserted_on: "2026-10-21"}
+    - {parent: "theme:secops_detection_response", child: "theme:threat_intelligence_vulnerability_research", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:digital_forensics_incident_response", asserted_on: "2026-10-21"}
+    - {parent: "theme:secops_detection_response", child: "theme:digital_forensics_incident_response", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:cyber_range_training", asserted_on: "2026-10-21"}
+    - {parent: "theme:secops_detection_response", child: "theme:cyber_range_training", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:zero_trust_architecture", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:zero_trust_architecture", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:application_security_testing", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:application_security_testing", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:supply_chain_security_sca", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:supply_chain_security_sca", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:data_security_posture", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:data_security_posture", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:operational_technology_security", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:operational_technology_security", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:email_collaboration_security", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:email_collaboration_security", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:identity_fraud_anti_abuse", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_control_platforms", child: "theme:identity_fraud_anti_abuse", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:hardware_root_of_trust", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_foundation_governance", child: "theme:hardware_root_of_trust", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:post_quantum_cryptography_migration", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_foundation_governance", child: "theme:post_quantum_cryptography_migration", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:security_governance_compliance", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_foundation_governance", child: "theme:security_governance_compliance", asserted_on: "2026-10-21"}
+    - {parent: "theme:cybersecurity", child: "theme:cyber_insurance_risk_transfer", asserted_on: "2026-10-21"}
+    - {parent: "theme:security_foundation_governance", child: "theme:cyber_insurance_risk_transfer", asserted_on: "2026-10-21"}
+    # --- defense_aerospace ---
+    - {parent: "theme:defense_aerospace", child: "theme:combat_platforms_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:defense_industrial_base", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:mission_support_enablers", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:civil_aerospace_economy", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:fixed_wing_combat_aircraft", asserted_on: "2026-10-21"}
+    - {parent: "theme:combat_platforms_systems", child: "theme:fixed_wing_combat_aircraft", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:rotorcraft_vertical_lift", asserted_on: "2026-10-21"}
+    - {parent: "theme:combat_platforms_systems", child: "theme:rotorcraft_vertical_lift", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:land_systems_armored_vehicles", asserted_on: "2026-10-21"}
+    - {parent: "theme:combat_platforms_systems", child: "theme:land_systems_armored_vehicles", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:air_defense_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:combat_platforms_systems", child: "theme:air_defense_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:undersea_systems_sonar", asserted_on: "2026-10-21"}
+    - {parent: "theme:combat_platforms_systems", child: "theme:undersea_systems_sonar", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:aerospace_propulsion_engines", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_industrial_base", child: "theme:aerospace_propulsion_engines", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:explosive_energetics_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_industrial_base", child: "theme:explosive_energetics_materials", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:defense_electronics_microelectronics", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_industrial_base", child: "theme:defense_electronics_microelectronics", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:aerospace_structures_composites", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_industrial_base", child: "theme:aerospace_structures_composites", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:military_training_simulation", asserted_on: "2026-10-21"}
+    - {parent: "theme:mission_support_enablers", child: "theme:military_training_simulation", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:military_logistics_sustainment", asserted_on: "2026-10-21"}
+    - {parent: "theme:mission_support_enablers", child: "theme:military_logistics_sustainment", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:defense_test_evaluation_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:mission_support_enablers", child: "theme:defense_test_evaluation_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:air_traffic_management_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:civil_aerospace_economy", child: "theme:air_traffic_management_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:defense_aerospace", child: "theme:business_general_aviation", asserted_on: "2026-10-21"}
+    - {parent: "theme:civil_aerospace_economy", child: "theme:business_general_aviation", asserted_on: "2026-10-21"}
+    # --- robotics_automation ---
+    - {parent: "theme:robotics_automation", child: "theme:autonomous_service_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:robot_software_intelligence", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:automation_integration_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:autonomous_mobile_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:autonomous_service_robots", child: "theme:autonomous_mobile_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:humanoid_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:autonomous_service_robots", child: "theme:humanoid_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:agricultural_field_robotics", asserted_on: "2026-10-21"}
+    - {parent: "theme:autonomous_service_robots", child: "theme:agricultural_field_robotics", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:rehabilitation_medical_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:autonomous_service_robots", child: "theme:rehabilitation_medical_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:laboratory_automation_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:autonomous_service_robots", child: "theme:laboratory_automation_robots", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:robot_software_middleware", asserted_on: "2026-10-21"}
+    - {parent: "theme:robot_software_intelligence", child: "theme:robot_software_middleware", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:embodied_ai_robot_learning", asserted_on: "2026-10-21"}
+    - {parent: "theme:robot_software_intelligence", child: "theme:embodied_ai_robot_learning", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:robot_simulation_digital_twin", asserted_on: "2026-10-21"}
+    - {parent: "theme:robot_software_intelligence", child: "theme:robot_simulation_digital_twin", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:robot_end_effectors_tooling", asserted_on: "2026-10-21"}
+    - {parent: "theme:robot_arm_systems", child: "theme:robot_end_effectors_tooling", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:warehouse_automation_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:automation_integration_systems", child: "theme:warehouse_automation_systems", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:semiconductor_factory_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:automation_integration_systems", child: "theme:semiconductor_factory_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:robotics_system_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:automation_integration_systems", child: "theme:robotics_system_integration", asserted_on: "2026-10-21"}
+    - {parent: "theme:robotics_automation", child: "theme:industrial_iot_condition_monitoring", asserted_on: "2026-10-21"}
+    - {parent: "theme:automation_integration_systems", child: "theme:industrial_iot_condition_monitoring", asserted_on: "2026-10-21"}
+    # --- space_satellite ---
+    - {parent: "theme:space_satellite", child: "theme:space_segment_industry", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:launch_ground_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:space_data_services", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:spacecraft_manufacturing_satellites", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_segment_industry", child: "theme:spacecraft_manufacturing_satellites", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:space_components_subsystems", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_segment_industry", child: "theme:space_components_subsystems", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:in_orbit_services_servicing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_segment_industry", child: "theme:in_orbit_services_servicing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:in_space_manufacturing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_segment_industry", child: "theme:in_space_manufacturing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:launch_vehicle_propulsion", asserted_on: "2026-10-21"}
+    - {parent: "theme:launch_ground_infrastructure", child: "theme:launch_vehicle_propulsion", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:spaceport_launch_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:launch_ground_infrastructure", child: "theme:spaceport_launch_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:ground_segment_as_a_service", asserted_on: "2026-10-21"}
+    - {parent: "theme:launch_ground_infrastructure", child: "theme:ground_segment_as_a_service", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:space_situational_awareness_traffic", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_data_services", child: "theme:space_situational_awareness_traffic", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:geospatial_intelligence_analytics", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_data_services", child: "theme:geospatial_intelligence_analytics", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:positioning_navigation_timing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_data_services", child: "theme:positioning_navigation_timing", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:satellite_iot_messaging", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_data_services", child: "theme:satellite_iot_messaging", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:space_security_counterspace", asserted_on: "2026-10-21"}
+    - {parent: "theme:space_satellite", child: "theme:deep_space_missions", asserted_on: "2026-10-21"}
+    # --- fintech_payments ---
+    - {parent: "theme:fintech_payments", child: "theme:merchant_acceptance_processing", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:money_movement_rails", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:open_finance_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:digital_payment_processing", asserted_on: "2026-10-21"}
+    - {parent: "theme:merchant_acceptance_processing", child: "theme:digital_payment_processing", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:pos_hardware_smart_terminals", asserted_on: "2026-10-21"}
+    - {parent: "theme:merchant_acceptance_processing", child: "theme:pos_hardware_smart_terminals", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:b2b_payments_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:merchant_acceptance_processing", child: "theme:b2b_payments_automation", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:payment_network_schemes", asserted_on: "2026-10-21"}
+    - {parent: "theme:money_movement_rails", child: "theme:payment_network_schemes", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:instant_account_payment_rails", asserted_on: "2026-10-21"}
+    - {parent: "theme:money_movement_rails", child: "theme:instant_account_payment_rails", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:stablecoin_tokenized_money", asserted_on: "2026-10-21"}
+    - {parent: "theme:money_movement_rails", child: "theme:stablecoin_tokenized_money", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:cbdc_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:money_movement_rails", child: "theme:cbdc_infrastructure", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:cross_border_remittance_infra", asserted_on: "2026-10-21"}
+    - {parent: "theme:money_movement_rails", child: "theme:cross_border_remittance_infra", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:open_banking_data_sharing", asserted_on: "2026-10-21"}
+    - {parent: "theme:open_finance_platforms", child: "theme:open_banking_data_sharing", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:embedded_finance_baas", asserted_on: "2026-10-21"}
+    - {parent: "theme:open_finance_platforms", child: "theme:embedded_finance_baas", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:retail_investment_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:open_finance_platforms", child: "theme:retail_investment_platforms", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:digital_lending_credit_tech", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:transaction_monitoring_aml", asserted_on: "2026-10-21"}
+    - {parent: "theme:fintech_payments", child: "theme:cash_cycle_atm_networks", asserted_on: "2026-10-21"}
