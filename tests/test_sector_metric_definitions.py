@@ -5,6 +5,11 @@ Synthetic-input pins for every `measured` metric whose computation is isolatable
 via the labelled rs_history meta), plus source-formula pins (exact-line regex) for the
 metrics computed inline or behind a site/ file read — the doc marks which is which.
 
+SIC-D-B04 r3 (RB04 repair) added pins: the no-basis TR closes load in compute(), the
+exact `dir_hit_rate` / `mean_excess_vs_bench` source expressions, the Neutral clause
+of the `_DIR_HIT_RATE_DEFINITION` literal, and a citation auditor that opens every
+cited file and asserts the cited line range still contains a token the doc row names.
+
 No network, no data/ reads, no site/ reads.
 Run: python3 -m pytest -q -p no:cacheprovider tests/test_sector_metric_definitions.py
 """
@@ -105,6 +110,22 @@ def test_abs_gate_ret_12m_is_252_session_ratio():
     assert g2["above_200dma"] is False and g2["pos_12m"] is True
 
 
+def test_abs_gate_ret_12m_is_none_below_253_rows_and_pos_12m_is_guarded():
+    # RB04 MINOR: ret_12m needs >= 253 non-null rows else None; pos_12m is
+    # None-guarded (False, never None and never an error).
+    idx = pd.bdate_range("2023-01-02", periods=252)
+    rising_short = pd.Series(np.linspace(100.0, 200.0, 252), index=idx)
+    ok, g = _abs_gate(rising_short)
+    assert g["ret_12m"] is None                    # 252 rows < n + skip + 1 = 253
+    assert g["pos_12m"] is False                   # guarded read of a None ret_12m
+    assert g["ret_12m"] != pytest.approx(1.0)      # no accidental ratio off a short tape
+    # with NaN holes the count is of NON-NULL rows only
+    holed = rising_short.copy()
+    holed.iloc[:5] = np.nan
+    ok_h, g_h = _abs_gate(holed)
+    assert g_h["ret_12m"] is None                  # 247 usable rows, still short
+
+
 def test_grade_next_bar_return_is_next_bar_and_h_bars():
     n = 60
     close = pd.Series(np.arange(101.0, 101.0 + n), index=pd.bdate_range("2024-01-02", periods=n))
@@ -138,6 +159,15 @@ def test_rs_meta_pins_basis_benchmark_and_reconstruction_label():
     # the shared ratio formula and the limit-free basket variant (B01 F4)
     assert "ratio = t / b.reindex(t.index).ffill(limit=RS_BENCH_FFILL_LIMIT)" in src
     assert 'rs = (full / spy.reindex(full.index).ffill()).dropna()' in src
+    # SIC-D-B04 r3 pin (a): compute() loads the RS/momentum panel with NO basis
+    # argument — the yahoo_closes default basis="tr" (engine/inputs.py) IS the TR
+    # pin, not just the meta literal. Exactly one such load, and the structural
+    # sibling names its basis, so a flipped default cannot hide.
+    lines = src.splitlines()
+    no_basis = [i for i, l in enumerate(lines) if l.strip() == "closes = yahoo_closes()"]
+    assert len(no_basis) == 1, "compute() no-basis closes load moved or multiplied"
+    assert any('yahoo_closes(basis="price")' in l for l in lines), \
+        "price-basis sibling load drifted (TR/price split no longer adjacent)"
 
 
 def test_heat_and_breadth_formula_pins():
@@ -147,14 +177,32 @@ def test_heat_and_breadth_formula_pins():
     assert 'row["heat_" + tf] = round(a["vals"][tf] / w, 2) if w else None' in src
     # SIC-D-B03: breadth is None (not 0) when no tile moved — honest null, no max(…, 1) floor
     assert 'row["breadth_pct"] = round(100.0 * adv / (adv + dec), 0) if (adv + dec) else None' in src
+    # post-base coverage fields the census now documents
+    assert 'row["n_tiles"] = a["n_tiles"]' in src
+    assert 'row["n_priced_1M"] = a["n_priced_1M"]' in src
+    assert 'row["n_unchanged_1M"] = a["n_unchanged_1M"]' in src
+    assert 'row["weight_coverage_1M"] = round(a["w_1m"] / a["w"], 4) if a["w"] else None' in src
+    assert 'row["breadth_basis"] = "adv_over_adv_plus_dec_excl_unchanged"' in src
 
 
 def test_grader_scorecard_formula_pins():
     src = _src("engine/sector_central_grader.py")
     assert '"excess": (fr - br) if br is not None else None' in src   # pp-diff, not ratio
     assert '((up["fwd"] > 0).sum() + (dn["fwd"] < 0).sum()) / len(g)' in src
-    assert '"dir_hit_rate"' in src and '"mean_excess_vs_bench"' in src
     assert 'subset=["date", "id"], keep="first"' in src               # keep-first ledger
+    # SIC-D-B04 r3 pin (b): the exact publish expressions, not existence-only
+    # 'the key exists somewhere in the file' checks that let the doc drift.
+    assert '"dir_hit_rate": round(hit, 3) if hit is not None else None' in src
+    assert ('"mean_excess_vs_bench": (round(float(g["excess"].dropna().mean()), 4)'
+            in src)
+    assert '"rank_ic": round(float(np.mean(ics)), 4) if ics else None' in src
+    # SIC-D-B04 r3 pin (c): the artifact ships its own definition literal — pin the
+    # Neutral clause so the wording cannot silently drop the denominator contract.
+    assert ("correct up + correct down calls / all graded rows including Neutral"
+            in src), "_DIR_HIT_RATE_DEFINITION lost its Neutral clause"
+    assert "not a conditional hit rate, not a win rate" in src
+    # the conditional counterpart the doc points at
+    assert '"conditional_directional_hit_rate": rate' in src
 
 
 def test_conviction_and_trend_gate_formula_pins():
@@ -165,6 +213,32 @@ def test_conviction_and_trend_gate_formula_pins():
     assert "SMA_TREND_D = 200" in narr
     assert "_cum_ret(s, 252, skip=0)" in narr
     assert "v = s.iloc[-1 - skip] / base - 1.0" in narr
+    assert "if len(s) < n + skip + 1:" in narr        # RB04 MINOR: the 253-row guard
+    assert "pos12 = bool(r12 is not None and r12 > 0)" in narr  # None-guarded pos_12m
+
+
+def test_post_base_writer_pins():
+    """SIC-D-B04 r3: the post-base fields the new doc section documents exist in
+    the tree exactly where the doc cites them."""
+    cycles = _src("engine/sector_cycles.py")
+    for literal in (
+        'nw["phase_v2_age_bars"] = (age.get("sessions")',
+        '"rhythm_version": 1',
+        '"correction_contract": {',
+        'rec["rhythm"] = rhythm',
+        'rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)',
+        'nw["hazard"] = hz',
+    ):
+        assert literal in cycles, f"post-base cycles writer drifted: {literal!r}"
+    rhythm = _src("engine/cycle_rhythm.py")
+    assert 'ESTIMATE_KINDS_SCHEMA = "sector_cycles.estimate_kinds.v1"' in rhythm
+    assert "live_feature_parity" in rhythm
+    phase_age = _src("engine/cycle_phase_age.py")
+    assert 'PHASE_AGE_METHOD = "forward_log_replay.v2"' in phase_age
+    assert '"measured"' in phase_age and '"lower_bound"' in phase_age
+    hazard = _src("engine/hazard_score.py")
+    assert '"source": "MODEL", "cell_verdict": "PASS"' in hazard
+    assert '"source": "PRIOR", "cell_verdict": "PRIOR"' in hazard
 
 
 # ── the doc and the pins agree ─────────────────────────────────────────────────
@@ -174,6 +248,15 @@ PINNED_FIELDS = (
     "excess", "dir_hit_rate", "breadth_pct", "heat_1D", "heat_1M", "heat_YTD",
     "adv", "dec", "score", "pos_rate", "mean_fwd", "mean_excess", "rank_ic",
     "n_above_trend",
+    # SIC-D-B04 r3: fields published after base 3d8d14ac (RB04 MAJOR-2)
+    "phase_v2_age_bars", "phase_v2_age_sessions", "phase_v2_age_status",
+    "rhythm_version", "correction_contract", "estimate_kinds",
+    "live_feature_parity", "n_tiles", "n_priced_1M", "n_unchanged_1M",
+    "weight_coverage_1M", "breadth_basis", "conditional_directional_hit_rate",
+    "dir_hit_rate_definition", "grader_schema_version", "n_directional",
+    "n_neutral", "n_correct_directional", "directional_coverage",
+    "conditional_hit_rate_se", "neutral_outcomes", "rank_ic_distribution",
+    "excess_distribution", "by_cohort_month",
 )
 
 
@@ -181,7 +264,7 @@ def test_b04_doc_rows_are_wellformed_and_cover_the_pinned_fields():
     text = DOC.read_text(encoding="utf-8")
     assert text.startswith("# B04"), "doc header drifted"
     assert "unmeasured" in text and "**measured**" in text
-    status_cells = re.findall(r"\|\s*(\*\*measured\*\*|\*\*unmeasured\*\*)[^|]*\|", text)
+    status_cells = re.findall(r"\|\s*(\*\*measured\*\*|\*\*unmeasured\*\*|\*\*descriptive\*\*|\*\*disclosure\*\*)[^|]*\|", text)
     assert len(status_cells) >= 20, "metric table shrank"
     for f in PINNED_FIELDS:
         assert f in text, f"B04 doc lost pinned field {f!r}"
@@ -192,6 +275,66 @@ def test_b04_doc_rows_are_wellformed_and_cover_the_pinned_fields():
         assert re.search(r"\.(?:py|js):\d+", row), f"row without a file:line citation: {row[:80]}"
     # the 20-interval row is recorded as absent, not invented
     assert "does not exist on these two artifacts" in text
+    # the post-base section exists and is a table, not prose
+    assert "## Fields published after base 3d8d14ac" in text
+
+
+# ── SIC-D-B04 r3 pin (d): the citation auditor ─────────────────────────────────
+_CITE = re.compile(r"`([A-Za-z0-9_./-]+\.(?:py|js)):(\d+)(?:-(\d+))?`")
+_CITE_BODY = re.compile(r"[A-Za-z0-9_./-]+\.(?:py|js):\d+(?:-\d+)?")
+_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]{3,}")
+# tokens too generic to prove a citation still points at its formula — a cite that
+# only matches through one of these has already drifted
+_GENERIC = {
+    "round", "float", "int", "bool", "str", "None", "True", "False", "dict",
+    "list", "tuple", "data", "self", "return", "sorted", "sort", "value",
+}
+
+
+def _doc_data_rows() -> list[str]:
+    text = DOC.read_text(encoding="utf-8")
+    return re.findall(r"^\| `[^|]*\|.*\|$", text, re.M)
+
+
+def _row_tokens(row: str) -> set[str]:
+    """Named tokens of a doc row: every backticked span except the citations
+    themselves (spans shorter than 4 chars are too weak as substring proofs),
+    plus the identifiers inside those spans, minus a generic-word stoplist."""
+    tokens: set[str] = set()
+    for span in re.findall(r"`([^`]+)`", row):
+        if _CITE_BODY.fullmatch(span):
+            continue
+        if len(span) >= 4 and span not in _GENERIC:
+            tokens.add(span)
+        tokens.update(t for t in _IDENT.findall(span) if t not in _GENERIC)
+    return tokens
+
+
+def _cited_segment(rel: str, start: int, end: int) -> str:
+    lines = (ROOT / rel).read_text(encoding="utf-8").splitlines()
+    assert 1 <= start <= end <= len(lines), \
+        f"{rel}:{start}-{end} points outside the file ({len(lines)} lines)"
+    return "\n".join(lines[start - 1:end])
+
+
+def test_b04_doc_citations_resolve_to_lines_that_name_the_row():
+    """Every `file.py:NNN[-MMM]` citation in every data row is opened and the
+    cited line range must still contain a token the same row names — so a moved
+    formula or a stale line number fails CI instead of shipping drift."""
+    rows = _doc_data_rows()
+    cited = 0
+    for row in rows:
+        tokens = _row_tokens(row)
+        assert tokens, f"row names no backticked token: {row[:80]}"
+        for rel, start, end in _CITE.findall(row):
+            cited += 1
+            seg = _cited_segment(rel, int(start), int(end or start))
+            hits = [t for t in tokens if t in seg]
+            assert hits, (
+                f"citation `{rel}:{start}-{end or start}` no longer contains any "
+                f"token the row names (row starts: {row[:60]}…)"
+            )
+    assert cited >= 60, f"citation auditor only saw {cited} citations — parser drift?"
 
 
 if __name__ == "__main__":
