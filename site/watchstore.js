@@ -799,6 +799,229 @@
     });
   }
 
+  /* ---- the checked, idempotent save (R7 Wave A §6.4/§10/§13) ----------------
+     saveChecked(listId, tickers, opts) — one save that reports what the ACCOUNT
+     actually answered, never repeats itself, and never claims "saved" without
+     reading the list back. Strictly composed from the primitives above
+     (symbolsFetch / symbolAdd / _deadline); _symbolInsert, the outbox and every
+     retry semantic stay untouched.
+
+     opts.decisions   {TICKER: {en, zh}} — tonight's decision per ticker. On a
+                      confirmed read-back, each is frozen into the
+                      "When you saved" snapshot (localStorage
+                      `mdash.watchlist.saved_snap.v1`), never overwriting an
+                      existing entry: what you saved stays as it was.
+     opts.returnFocus an Element — echoed on every outcome detail so the page can
+                      hand focus back to the invoking control once the account
+                      has answered.
+
+     Resolves (never rejects) with one outcome, also dispatched on `document`
+     as `ws-save-outcome` (a `{state:'waiting', listName, names}` detail is
+     emitted once at the start of a real attempt):
+
+       {state:'saved', readBackAt, names, already, listCount, decisionsKept, listName}
+       {state:'rejected', reason, listName, names}   — the account answered no;
+                                                       nothing was added anywhere
+       {state:'uncertain', askedAt, listName, names} — no answer in time, or a
+                                                       write landed ambiguously;
+                                                       the NEXT save's check-first
+                                                       read is what prevents a
+                                                       second write, never a retry
+
+     `names` carries every requested ticker confirmed by the read-back (in
+     request order); `already` is the subset that was on the server BEFORE any
+     write, reported so the page can say "<N> names, <TK> is already in it". */
+  var SAVE_SNAP_KEY = 'mdash.watchlist.saved_snap.v1';
+  var SAVE_DEADLINE_TAG = 'saveChecked-deadline';
+  var saveChain = {};        // listId -> tail of the serialized save queue
+
+  /* Race one server call against the shared cloud deadline. The underlying
+     promise is NOT cancelled (a fetch cannot be) — a deadline loser may still
+     land its write afterwards, which is exactly the ambiguity 'uncertain'
+     names, and why the next attempt checks before writing again. */
+  function _withDeadline(fn) {
+    var d = _deadline(PF_CLOUD_DEADLINE_MS, SAVE_DEADLINE_TAG);
+    var p = Promise.resolve().then(fn);
+    return Promise.race([p, d.promise]).then(
+      function (v) { d.cancel(); return v; },
+      function (e) { d.cancel(); throw e; }
+    );
+  }
+  /* A refusal is the account's own error payload — postgrest-js hands server
+     errors back as plain objects ({message, code}), while deadline tags, fetch
+     failures and our own argument errors are Error instances. Only a real
+     answer may paint 'rejected'; "we could not hear the answer" may not. */
+  function _isRefusalErr(err) {
+    return !!(err && typeof err === 'object' &&
+              !(err instanceof Error) &&
+              ((err.message != null && err.message !== '') || err.code != null));
+  }
+  function _saveEmit(detail) {
+    try {
+      document.dispatchEvent(new CustomEvent('ws-save-outcome', { detail: detail }));
+    } catch (e) {}
+  }
+  function _listKnown(listId) {
+    for (var i = 0; i < listsCache.length; i++) {
+      if (String(listsCache[i].id) === String(listId)) return true;
+    }
+    return false;
+  }
+  function _pad2(n) { return ('0' + n).slice(-2); }
+  /* Freeze the "When you saved" snapshot for exactly the tickers the read-back
+     confirmed. Frozen history: an existing list+ticker entry is never
+     overwritten — a later correction belongs in the Tonight column, beside the
+     saved decision, not on top of it. Every storage access is guarded. */
+  function _saveSnapshots(listId, confirmed, decisions) {
+    if (!decisions || typeof decisions !== 'object') return;
+    var snap = {};
+    try {
+      var raw = localStorage.getItem(SAVE_SNAP_KEY);
+      if (raw) snap = JSON.parse(raw);
+    } catch (e) { snap = {}; }
+    if (!snap || typeof snap !== 'object') snap = {};
+    var perList = snap[listId];
+    if (!perList || typeof perList !== 'object') { perList = {}; snap[listId] = perList; }
+    var now = new Date();
+    var day = now.getFullYear() + '-' + _pad2(now.getMonth() + 1) + '-' + _pad2(now.getDate());
+    var changed = false;
+    confirmed.forEach(function (t) {
+      if (perList[t]) return;                     // frozen history
+      var dec = decisions[t];
+      if (!dec || !(dec.en || dec.zh)) return;    // no decision supplied -> no snapshot
+      perList[t] = { d: day, en: String(dec.en || ''), zh: String(dec.zh || '') };
+      changed = true;
+    });
+    if (!changed) return;
+    try { localStorage.setItem(SAVE_SNAP_KEY, JSON.stringify(snap)); } catch (e) {}
+  }
+
+  /* The save must land in a list the account actually knows. listsCache is
+     only a cache — an id absent from it may be a list created elsewhere since
+     our last refresh, so absence alone never answers; ask once, then decide. */
+  function ensureList(listId) {
+    if (_listKnown(listId)) return Promise.resolve(true);
+    return _withDeadline(listsFetch).then(function () { return _listKnown(listId); });
+  }
+
+  function saveChecked(listId, tickers, opts) {
+    var o = opts || {};
+    // normalize + de-dupe the request, preserving order (fif's uppercase rule)
+    var want = [], seenReq = {};
+    (Array.isArray(tickers) ? tickers : [tickers]).forEach(function (t) {
+      var n = String(t == null ? '' : t).trim().toUpperCase();
+      if (n && !seenReq[n]) { seenReq[n] = 1; want.push(n); }
+    });
+    var listName = listNameOf(listId) || String(listId || '');
+    var askedAt = nowISO();
+    var rf = o.returnFocus || null;
+
+    // Serialize per list: two concurrent saves for one list would both pass a
+    // pre-read that cannot see the other's in-flight insert, and the schema
+    // carries no unique (watchlist_id, symbol) index to catch the duplicate.
+    var prev = saveChain[listId] || Promise.resolve();
+    var run = prev.then(_doSaveChecked, _doSaveChecked);
+    saveChain[listId] = run;
+    return run;
+
+    function _doSaveChecked() {
+      // synchronous guards: no attempt, no waiting event, zero network
+      if (!user || !sb) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'no-session', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      if (!listId || !want.length) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'bad-args', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      _saveEmit({ state: 'waiting', listName: listName, names: want.slice(), returnFocus: rf });
+
+      var wroteAnything = false;
+      var uncertain = function () {
+        return { state: 'uncertain', askedAt: askedAt, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+      var rejected = function (reason) {
+        return { state: 'rejected', reason: reason, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+
+      return ensureList(listId)
+        .then(function (known) {
+          if (!known) return rejected('no-list');
+          // check FIRST: tickers already on the server are never written again
+          return _withDeadline(function () { return symbolsFetch(listId); })
+            .then(function (rows) {
+              var present = {};
+              (rows || []).forEach(function (r) {
+                if (r && r.symbol) present[String(r.symbol).toUpperCase()] = true;
+              });
+              var already = want.filter(function (t) { return !!present[t]; });
+              var missing = want.filter(function (t) { return !present[t]; });
+              var chain = Promise.resolve();
+              missing.forEach(function (t) {
+                chain = chain.then(function () {
+                  return _withDeadline(function () { return symbolAdd(listId, t); })
+                    .then(function () { wroteAnything = true; });
+                });
+              });
+              return chain.then(function () {
+                return { ok: true, already: already };
+              }, function (err) {
+                return { ok: false, err: err, already: already };
+              });
+            })
+            .then(function (stage) {
+              if (stage.state) return stage;
+              // A refusal with NOTHING landed is the account answering no. Any
+              // other write failure — transport, deadline, or a refusal after a
+              // landed write — is ambiguous, and the read-back decides.
+              if (!stage.ok && _isRefusalErr(stage.err) && !wroteAnything) {
+                return rejected(String((stage.err && stage.err.message) ||
+                                       (stage.err && stage.err.code) || 'refused'));
+              }
+              return _withDeadline(function () { return symbolsFetch(listId); })
+                .then(function (rows) {
+                  var onList = {};
+                  (rows || []).forEach(function (r) {
+                    if (r && r.symbol) onList[String(r.symbol).toUpperCase()] = true;
+                  });
+                  var confirmed = want.filter(function (t) { return !!onList[t]; });
+                  if (confirmed.length !== want.length) return uncertain();
+                  _saveSnapshots(listId, confirmed, o.decisions);
+                  return {
+                    state: 'saved', readBackAt: nowISO(),
+                    names: want.slice(), already: stage.already,
+                    listCount: (rows || []).length,
+                    decisionsKept: !!o.decisions,
+                    listName: listName, returnFocus: rf
+                  };
+                }, function () {
+                  // the read-back itself did not answer — the write's effect is
+                  // unknown either way, so 'uncertain' is the only honest state
+                  return uncertain();
+                });
+            });
+        })
+        .then(_finish, function (err) {
+          // ensureList / unexpected failures: a refusal answers no; anything
+          // else means nobody answered.
+          if (_isRefusalErr(err)) {
+            return _finish(rejected(String(err.message || err.code || 'refused')));
+          }
+          return _finish(uncertain());
+        });
+    }
+    function _finish(result) {
+      if (result && result.state !== 'waiting') _saveEmit(result);
+      return result;
+    }
+  }
+
   // ---- pull: fetch cloud symbols and merge into WL --------------------------
   function pull() {
     if (!user || !sb) return Promise.resolve();
@@ -2060,7 +2283,10 @@
       list: symbolsFetch,            // server read; also refreshes the list's cache
       add: symbolAdd,
       remove: symbolRemove,
-      push: pushList                 // full-membership diff, scoped to one list
+      push: pushList,                // full-membership diff, scoped to one list
+      // R7 Wave A: the checked, idempotent save — reports what the account
+      // answered (saved | rejected | uncertain) after reading the list back.
+      saveChecked: saveChecked
     },
     // FIF X2-n designated-list helper (R2): the issuer-watch subscription
     // surface. Data functions only; no call site ships in this wave.
