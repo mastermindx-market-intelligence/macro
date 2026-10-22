@@ -4907,6 +4907,11 @@ CURATED_EXCLUSIVE = {
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
     # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
     "china-altdata-catalysts",
+    # 2026-10-21 W33-LA: the Macro Signals reader-repair render suites. As a step
+    # in unrun-builders-render they moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes; its own exclusive job keeps
+    # the page template, its includes and the suites; ceilings stay fixed.
+    "macro-signals-conditions",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
