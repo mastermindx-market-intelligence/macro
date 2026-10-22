@@ -492,6 +492,15 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 /* == gmi:s2 (W2A) == */
 /* == /gmi:s2 == */
 /* == gmi:s1s5 (W2B) == */
+/* S1: the specimen's head identity line carried inline margin-bottom:6px (s1_issuer). */
+.gmi-ident--head{ margin-bottom:6px; }
+/* S5: conversions of the specimen's non-data inline styles (R7), one class each. */
+.gmi-state-ic{ display:flex; }
+.gmi-mini-row{ display:flex; gap:10px; align-items:center; }
+.gmi-mini-lab{ flex:0 0 110px; }
+.gmi-state-mag{ display:flex; align-items:baseline; gap:10px; }
+.gmi-mag-num--lg{ font-size:var(--fs-num-lg); }
+.gmi-skel-stack{ display:flex; flex-direction:column; gap:10px; }
 /* == /gmi:s1s5 == */
 /* == gmi:s3s4 (W2C) == */
 /* == /gmi:s3s4 == */
