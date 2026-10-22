@@ -593,6 +593,12 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     )
 
 
+def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
+    from scripts.ci_browser_dependency_capture import capture_commands
+
+    return capture_commands()
+
+
 def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
@@ -612,6 +618,11 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         "phase": "browser_setup", "command": step["run"],
         "timeout_minutes": step["timeout-minutes"],
         "budget": "within_original_logical_job_deadline",
+        "diagnostics": _browser_dependency_diagnostic_commands(),
+        "diagnostic_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+            for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
+        },
     }
 
 
@@ -3660,28 +3671,33 @@ def _run_job(
             )
             print(f"::group::{job.job_id} — {step_name}", flush=True)
             group_open = True
-            remaining = (
-                max(0.0, job_deadline - time.monotonic())
-                if job_deadline is not None
-                else None
-            )
-            if setup is not None and remaining is not None:
-                remaining = min(remaining, setup["timeout_minutes"] * 60)
-            if remaining is not None and remaining <= 0:
-                result = CommandObservation(
-                    outcome="timed_out",
-                    returncode=None,
-                    failure_signature=None,
-                    detail="logical job timeout exhausted before this step started",
-                    timeout_settlement="not_started",
-                )
-            else:
+            commands = (*setup["diagnostics"], command) if setup is not None else (command,)
+            setup_deadline = None
+            for command_index, current_command in enumerate(commands):
+                now = time.monotonic() if job_deadline is not None else None
+                if setup is not None and setup_deadline is None:
+                    setup_deadline = now + setup["timeout_minutes"] * 60
+                remaining = max(0.0, job_deadline - now) if now is not None else None
+                if setup_deadline is not None:
+                    remaining = min(remaining, max(0.0, setup_deadline - now))
+                if remaining is not None and remaining <= 0:
+                    result = CommandObservation(
+                        outcome="timed_out", returncode=None, failure_signature=None,
+                        detail="logical job timeout exhausted before this command started",
+                        timeout_settlement="not_started",
+                    )
+                    break
                 command_attempted = True
-                result = _stream_command(
-                    command,
-                    env=semantic_env,
-                    timeout_seconds=remaining,
-                )
+                result = _stream_command(current_command, env=semantic_env, timeout_seconds=remaining)
+                is_diagnostic = command_index < len(commands) - 1
+                if is_diagnostic:
+                    if result.outcome == "timed_out" or result.timeout_settlement == "unknown":
+                        result = replace(result, detail="dependency input capture: " + (result.detail or result.outcome))
+                        break
+                    if result.outcome != "passed":
+                        # A settled read failure supplies no configuration fact.
+                        # It cannot substitute for the required installer/tests.
+                        print("::warning title=browser-dependency-inputs::capture unavailable; required installation remains unchanged", flush=True)
         except Exception as exc:  # noqa: BLE001 — preserve earlier observations
             if command_attempted:
                 timeout_settlement = "unknown"
