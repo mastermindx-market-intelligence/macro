@@ -4907,6 +4907,11 @@ CURATED_EXCLUSIVE = {
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
     # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
     "china-altdata-catalysts",
+    # 2026-10-21 W33-LA: the Macro Signals reader-repair render suites. As a step
+    # in unrun-builders-render they moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes; its own exclusive job keeps
+    # the page template, its includes and the suites; ceilings stay fixed.
+    "macro-signals-conditions",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -5171,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_840),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_813),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_844),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_817),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5189,14 +5194,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     step. That job was already selected on the index and free-content
     probes, so no job joins any probe; the step costs exactly 3 estimator
     units (one command plus one tests/test_ path). Local check_contract_delta
-    on 12f666b3 against base a46365b2 measured:
+    on the merge with main dabf745b (after the fixed-redirect and API-composition
+    funds) measured:
 
-        templates/index.html          135 jobs, 5,837 -> 5,840 weight
-        scripts/build_free_content.py 135 jobs, 5,810 -> 5,813 weight
-        engine/prophet/plan_book.py    128 jobs, 5,586 -> 5,589 weight
+        templates/index.html          135 jobs, 5,841 -> 5,844 weight
+        scripts/build_free_content.py 135 jobs, 5,814 -> 5,817 weight
+        engine/prophet/plan_book.py    128 jobs, 5,590 -> 5,593 weight
 
     Newly selected jobs: none; all three probes stay at ten packs. Fund only
-    the measured excess: index 5,837 -> 5,840 and build 5,810 -> 5,813, no
+    the measured excess: index 5,841 -> 5,844 and build 5,814 -> 5,817, no
     padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
     the ten-pack limit, selector code and every prior suite remain unchanged.
     Planning weights are not measured execution times.
@@ -5206,6 +5212,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     suites. Actual composed planner: index 135 / 5,837; free-content 135 /
     5,810. No jobs were added or removed. Fund only these +5 weight deltas;
     preserve all job-count, plan-book and pack ceilings and every check.
+
+    2026-10-21 fixed-redirect producer integration adds the page-only regression
+    to the same data-base-shim command (+2 estimator units, no new jobs).
+    Actual planner measures index135/5841 and free-content135/5814;
+    retain prophet5600, all job/pack bounds and execution timeouts.
+
+    2026-10-21 HK lookup full-template regression (PR9997, base ecd8540):
+    the existing data-base-shim command gains one meaningful pytest suite.
+    Exact hosted contract-delta measured index 135 jobs / 5,839 units and
+    free-content 135 / 5,812, each +2 with no newly selected jobs; prophet
+    remains 128 / 5,588 below its existing ceiling. Rebase only the two
+    demonstrated accounting ceilings; execution budgets and selection stay intact.
 
     2026-10-21 Shared Shell integration with protected 53eefbe142c8c:
     the canonical planner on f75612e0 measures index 135 jobs / 5,832 weight,
