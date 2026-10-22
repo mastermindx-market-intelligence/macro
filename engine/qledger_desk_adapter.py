@@ -647,12 +647,23 @@ def register_prospective(rows: Iterable[dict], *, family: str,
                 or stats["native_write_status"] not in {"no_write", "materialized"}):
             stats["error"] = "native batch has failed or unproven claim/write results"
             raise NativeProspectiveFailure(native_intent, stats)
+        # Returned open rows can be old dedupes. Only the exact actual write's
+        # sealed base distinguishes a NEW accepted claim without a fresh read
+        # or restamping old claims. An all-rejected new suffix starts no clock.
+        stats["n_new_accepted"] = 0
+        if attempts:
+            from engine.qledger_store import _legacy_rows_from_lines, _snapshot_lines
+            old_ids = {str(row.get("claim_id")) for row in _legacy_rows_from_lines(
+                _snapshot_lines(attempts[-1].write.plan._before))}
+            stats["n_new_accepted"] = sum(row.get("status") == "open"
+                and str(row.get("claim_id")) not in old_ids for row in results)
 
     stats["n_accepted"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "open")
     stats["n_rejected"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "rejected")
 
     if (not dry_run and stats["n_accepted"] > 0
-            and (native_intent is None or stats["native_write_status"] == "materialized")):
+            and (native_intent is None or (stats["native_write_status"] == "materialized"
+                                         and stats["n_new_accepted"] > 0))):
         from engine import qledger_evidence_clock as _clock  # local import — avoid a hard
                                                               # dependency for callers that
                                                               # never actually register

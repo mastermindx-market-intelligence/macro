@@ -624,3 +624,18 @@ def test_thematic_owner_partial_desk_append_is_unknown_not_no_rows(original, mon
     assert failure.value.result.written_rows == ()
     assert failure.value.result.claims_status == "not_attempted"
     assert not binding.attempts and not clocks and not (root / "bridge").exists()
+
+
+@thematic_source
+def test_thematic_owner_old_open_plus_new_rejected_does_not_start_clock(original, monkeypatch):
+    td, adapter, _, binding, _, _, _, clocks, invoke = thematic_owner(original, monkeypatch)
+    rows = [{'market': 'us', 'lean': 'overweight', 'id': 'old'},
+            {'market': 'us', 'lean': 'overweight', 'id': 'new'}]
+    monkeypatch.setattr(td, '_append_ledger', lambda *a, **k: rows)
+    monkeypatch.setattr(adapter, 'translate_row', lambda row, **k:
+        {'claim_id': 'x' if row['id'] == 'old' else 'new-rejected',
+         'status': 'open' if row['id'] == 'old' else 'rejected', 'horizon_d': 5})
+    value = invoke()['us']
+    assert value.claims_status == 'materialized'
+    assert value.registration['n_accepted'] == 1 and value.registration['n_rejected'] == 1
+    assert value.family_clock_status == 'not_attempted' and not clocks
