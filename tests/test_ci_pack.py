@@ -5201,9 +5201,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_870),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_842),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_614),
+    ("templates/index.html", 136, 5_872),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_844),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_616),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5211,6 +5211,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 F11 selected-version read test registered once in the existing
+    Brain gateway job: exact hosted compiler measured index136/5872,
+    free135/5844, Prophet128/5616, each probe at ten packs and selected IDs
+    unchanged vs base79e5f9b0. Fund only the actual two estimator units per
+    probe; these are planner estimates, not runtime timings, and every limit
+    except these three measured estimates is preserved.
 
     2026-10-22 merge protected D04-A2 source-clock coverage (dc3a) and
     autosave adoption: actual compiler measures index136/5870, free135/5842,
