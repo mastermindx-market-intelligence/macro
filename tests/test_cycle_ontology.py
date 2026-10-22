@@ -36,6 +36,9 @@ from engine.cycle_ontology import (
     ONTOLOGY_VERSION,
     PHASES,
     STANCES,
+    DOCTRINE_STANCE,
+    DOCTRINE_STANCES,
+    doctrine_for,
     TurnParams,
     canonical_position,
     classify_phase,
@@ -960,3 +963,68 @@ def test_classify_phase_low_pos_recovery_trough():
     r_down = classify_phase(20.0, -5.0, _bearish_mtf(), {"macd_pos": False})
     assert r_up["phase"]   == "Recovery", f"Expected Recovery, got {r_up['phase']}"
     assert r_down["phase"] == "Trough",   f"Expected Trough, got {r_down['phase']}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 13. Doctrine stance — producer-stamped action vocabulary (RIG
+#     sector-intelligence-cycles-20261021, adjudication SIC-ADJ-01 / SIC-V3-C01, C02)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_DOCTRINE_INK_BY_TONE = {
+    "bullish": {"ok", "warn"}, "anticipatory": {"ok"}, "caution": {"warn"},
+    "bearish": {"warn", "muted"}, "neutral": {"muted"},
+}
+
+
+def test_doctrine_stance_maps_every_engine_stance_exactly_once():
+    """Every STANCES key has one doctrine target; no extra keys; None is never mapped
+    (a missing stance is "Stance unavailable", never a chip — SIC-V3-C02)."""
+    assert set(DOCTRINE_STANCE) == set(STANCES)
+    assert None not in DOCTRINE_STANCE
+    assert all(v in DOCTRINE_STANCES for v in DOCTRINE_STANCE.values())
+    assert "ignore" not in DOCTRINE_STANCE.values()
+    assert set(DOCTRINE_STANCES) == {"act", "get_ready", "watch", "protect", "aside", "ignore"}
+    assert doctrine_for(None) is None
+    assert doctrine_for("NOT A STANCE") is None
+
+
+def test_doctrine_ink_never_contradicts_engine_tone():
+    """Chip ink is a function of the doctrine word, and the doctrine word may only be
+    reached from a tone whose ink group contains it (SIC-V3-C01: ink never contradicts
+    now.tone). Stance is not direction: ink ∈ {ok, warn, muted} only."""
+    for eng, key in DOCTRINE_STANCE.items():
+        ink = DOCTRINE_STANCES[key]["ink"]
+        assert ink in {"ok", "warn", "muted"}, (eng, key, ink)
+        assert ink in _DOCTRINE_INK_BY_TONE[STANCES[eng]["tone"]], (eng, key, ink)
+    # the adjudicated rows (verdict.yml SIC-ADJ-01)
+    assert DOCTRINE_STANCE["BUY"] == "act"
+    assert DOCTRINE_STANCE["GET READY"] == "get_ready"
+    assert {DOCTRINE_STANCE[s] for s in ("HOLD", "HIGH-RISK BOUNCE", "COUNTERTREND ONLY")} == {"watch"}
+    assert {DOCTRINE_STANCE[s] for s in ("TRIM", "SELL")} == {"protect"}
+    assert {DOCTRINE_STANCE[s] for s in ("WAIT", "AVOID")} == {"aside"}
+
+
+def test_resolve_state_stamps_doctrine_fields_for_every_cell():
+    """resolve_state emits the four doctrine fields for every phase×ladder cell, and
+    they agree with DOCTRINE_STANCE / DOCTRINE_STANCES for the stamped engine stance."""
+    for phase in PHASES:
+        for ladder in LADDER:
+            for pos in (20.0, 50.0, 80.0):
+                r = resolve_state(pos=pos, phase=phase, phase_dir="rising",
+                                  ladder_state=ladder, dc_phase=None, failed_cycle=False)
+                key = DOCTRINE_STANCE[r["stance"]]
+                assert r["doctrine_stance"] == key, (phase, ladder, pos)
+                assert r["doctrine_stance_en"] == DOCTRINE_STANCES[key]["en"]
+                assert r["doctrine_stance_zh"] == DOCTRINE_STANCES[key]["zh"]
+                assert r["doctrine_ink"] == DOCTRINE_STANCES[key]["ink"]
+                assert r["doctrine_ink"] in _DOCTRINE_INK_BY_TONE[r["tone"]]
+
+
+def test_export_payload_carries_doctrine_without_logic():
+    """The generated-JS payload carries the doctrine vocabulary, the engine→doctrine map
+    and a doctrine_stance on every crosswalk cell, so JS renders stamped values only."""
+    payload = export_payload()
+    assert payload["doctrine"] == DOCTRINE_STANCES
+    assert payload["doctrine_stance"] == DOCTRINE_STANCE
+    for key, cell in payload["crosswalk"].items():
+        assert cell["doctrine_stance"] == DOCTRINE_STANCE[cell["stance"]], key

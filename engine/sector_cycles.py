@@ -35,6 +35,10 @@ import pandas as pd
 
 from engine import basket_index, cycles
 from engine import cycle_ontology as onto
+
+# SIC-ADJ-01: doctrine-stance fields the producer stamps beside the engine stance.
+_DOCTRINE_KEYS = ("doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink")
+
 from engine import cycle_phase_age
 from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
@@ -170,6 +174,7 @@ SEMANTIC_FAMILIES: dict = {
         "phase_v2_position_input", "phase_v2_age_sessions", "phase_v2_age",
         "phase_v2_age_status", "stance", "divergence", "tone", "stance_zh",
         "divergence_note", "divergence_note_zh", "clocks",
+        "doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink",
     ],
     # Reads that depend on NEITHER position method (same file): weekly/3-day
     # MACD (:928), ZigZag swing dates (:825), 200-bar trend + window return
@@ -890,6 +895,9 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
     # (D1 doctrine: "JS renders resolved fields the Python kernel stamped").
     stance = divergence = tone = None
     stance_zh = divergence_note = divergence_note_zh = clocks = None
+    # SIC-ADJ-01: the producer stamps the doctrine stance the face shows; None when
+    # the engine stamped no stance (the face then shows "Stance unavailable").
+    doctrine = {k: None for k in _DOCTRINE_KEYS}
     try:
         if ladder_state in onto.LADDER:
             rs_out = onto.resolve_state(
@@ -910,9 +918,11 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             divergence_note = rs_out.get("divergence_note")
             divergence_note_zh = rs_out.get("divergence_note_zh")
             clocks = rs_out.get("clocks")
+            doctrine = {k: rs_out.get(k) for k in _DOCTRINE_KEYS}
     except Exception:  # noqa: BLE001
         stance = divergence = tone = None
         stance_zh = divergence_note = divergence_note_zh = clocks = None
+        doctrine = {k: None for k in _DOCTRINE_KEYS}
 
     rec = {
         "price": price_pts, "osc": osc_pts, "turns": swings, "proj": proj,
@@ -952,6 +962,10 @@ def record_series(full: pd.Series, *, win_start: pd.Timestamp, last_ts: pd.Times
             "divergence_note":   divergence_note,
             "divergence_note_zh": divergence_note_zh,
             "clocks":            clocks,
+            # SIC-ADJ-01: producer-stamped doctrine stance (engine/cycle_ontology.py
+            # DOCTRINE_STANCE). The face shows doctrine_stance_*; the engine stance
+            # above is provenance-drawer content. No renderer maps stance→doctrine.
+            **doctrine,
             # W2.2: structure basis (mirrored here for the forward-log writer)
             "basis":           basis,
         },

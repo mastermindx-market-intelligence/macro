@@ -122,6 +122,49 @@
       "tone": "caution"
     }
   },
+  "doctrine": {
+    "act": {
+      "en": "Act",
+      "zh": "行动",
+      "ink": "ok"
+    },
+    "get_ready": {
+      "en": "Get ready",
+      "zh": "准备就绪",
+      "ink": "ok"
+    },
+    "watch": {
+      "en": "Watch — don't chase",
+      "zh": "观望——勿追高",
+      "ink": "warn"
+    },
+    "protect": {
+      "en": "Protect gains",
+      "zh": "保护收益",
+      "ink": "warn"
+    },
+    "aside": {
+      "en": "Stand aside",
+      "zh": "暂时回避",
+      "ink": "muted"
+    },
+    "ignore": {
+      "en": "Ignore",
+      "zh": "忽略",
+      "ink": "muted"
+    }
+  },
+  "doctrine_stance": {
+    "BUY": "act",
+    "GET READY": "get_ready",
+    "HOLD": "watch",
+    "HIGH-RISK BOUNCE": "watch",
+    "COUNTERTREND ONLY": "watch",
+    "TRIM": "protect",
+    "SELL": "protect",
+    "WAIT": "aside",
+    "AVOID": "aside"
+  },
   "ladder": [
     "DECLINE",
     "BOTTOM WATCH",
@@ -152,7 +195,8 @@
       "en": "Avoid",
       "zh": "回避",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "aside"
     },
     "Recovery|DECLINE": {
       "stance": "AVOID",
@@ -161,7 +205,8 @@
       "en": "Avoid",
       "zh": "回避",
       "note_en": "The broader phase suggests recovery, but the daily cycle has failed. Phase confidence is low; treat as bottoming rather than confirmed entry.",
-      "note_zh": "更大级别阶段显示复苏，但日线周期已失败。阶段置信度低；视为筑底而非确认入场。"
+      "note_zh": "更大级别阶段显示复苏，但日线周期已失败。阶段置信度低；视为筑底而非确认入场。",
+      "doctrine_stance": "aside"
     },
     "Expansion|DECLINE": {
       "stance": "WAIT",
@@ -170,7 +215,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "The trend phase is Expansion but the daily cycle is in Decline. Tactical caution warranted; wait for daily recovery confirmation.",
-      "note_zh": "趋势阶段为扩张，但日线周期处于下行。需战术谨慎；等待日线周期恢复确认。"
+      "note_zh": "趋势阶段为扩张，但日线周期处于下行。需战术谨慎；等待日线周期恢复确认。",
+      "doctrine_stance": "aside"
     },
     "Peak|DECLINE": {
       "stance": "TRIM",
@@ -179,7 +225,8 @@
       "en": "Trim",
       "zh": "减仓",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Downturn|DECLINE": {
       "stance": "AVOID",
@@ -188,7 +235,8 @@
       "en": "Avoid",
       "zh": "回避",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "aside"
     },
     "Trough|BOTTOM WATCH": {
       "stance": "GET READY",
@@ -197,7 +245,8 @@
       "en": "Get Ready",
       "zh": "准备",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "get_ready"
     },
     "Recovery|BOTTOM WATCH": {
       "stance": "GET READY",
@@ -206,7 +255,8 @@
       "en": "Get Ready",
       "zh": "准备",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "get_ready"
     },
     "Expansion|BOTTOM WATCH": {
       "stance": "WAIT",
@@ -215,7 +265,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "aside"
     },
     "Peak|BOTTOM WATCH": {
       "stance": "COUNTERTREND ONLY",
@@ -224,7 +275,8 @@
       "en": "Countertrend Only",
       "zh": "仅限逆势短线",
       "note_en": "Cycle read is Topping; the daily timing ladder is hunting a short-term low. Any buy here is countertrend only.",
-      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。"
+      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。",
+      "doctrine_stance": "watch"
     },
     "Downturn|BOTTOM WATCH": {
       "stance": "WAIT",
@@ -233,7 +285,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "aside"
     },
     "Trough|TURN SIGNALED": {
       "stance": "BUY",
@@ -242,7 +295,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Recovery|TURN SIGNALED": {
       "stance": "BUY",
@@ -251,7 +305,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Expansion|TURN SIGNALED": {
       "stance": "BUY",
@@ -260,7 +315,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Peak|TURN SIGNALED": {
       "stance": "COUNTERTREND ONLY",
@@ -269,7 +325,8 @@
       "en": "Countertrend Only",
       "zh": "仅限逆势短线",
       "note_en": "Cycle read is Topping; the daily timing ladder is hunting a short-term low. Any buy here is countertrend only.",
-      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。"
+      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。",
+      "doctrine_stance": "watch"
     },
     "Trough|FRESH BUY": {
       "stance": "BUY",
@@ -278,7 +335,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Recovery|FRESH BUY": {
       "stance": "BUY",
@@ -287,7 +345,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Expansion|FRESH BUY": {
       "stance": "BUY",
@@ -296,7 +355,8 @@
       "en": "Buy",
       "zh": "买入",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "act"
     },
     "Peak|FRESH BUY": {
       "stance": "COUNTERTREND ONLY",
@@ -305,7 +365,8 @@
       "en": "Countertrend Only",
       "zh": "仅限逆势短线",
       "note_en": "Cycle read is Topping; the daily timing ladder is hunting a short-term low. Any buy here is countertrend only.",
-      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。"
+      "note_zh": "周期读数为做顶中；日线时点阶梯正在寻找短线低点。此处任何买入仅属逆势短线。",
+      "doctrine_stance": "watch"
     },
     "Trough|RALLY ON": {
       "stance": "HOLD",
@@ -314,7 +375,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "Cycle read is washed out / bottoming; daily sell signals are late-downleg noise. Stance is Wait — the sell opportunity has passed.",
-      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。"
+      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。",
+      "doctrine_stance": "watch"
     },
     "Recovery|RALLY ON": {
       "stance": "HOLD",
@@ -323,7 +385,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Expansion|RALLY ON": {
       "stance": "HOLD",
@@ -332,7 +395,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Peak|RALLY ON": {
       "stance": "HOLD",
@@ -341,7 +405,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Downturn|RALLY ON": {
       "stance": "HOLD",
@@ -350,7 +415,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "The cycle is in Downturn but the daily ladder shows a rallying structure. Hold, but trim into strength — the larger trend is down.",
-      "note_zh": "周期处于下行阶段，但日线阶梯显示反弹结构。持有，但逢强减仓——更大趋势向下。"
+      "note_zh": "周期处于下行阶段，但日线阶梯显示反弹结构。持有，但逢强减仓——更大趋势向下。",
+      "doctrine_stance": "watch"
     },
     "Trough|TOP WATCH": {
       "stance": "WAIT",
@@ -359,7 +425,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "Cycle read is washed out / bottoming; daily sell signals are late-downleg noise. Stance is Wait — the sell opportunity has passed.",
-      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。"
+      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。",
+      "doctrine_stance": "aside"
     },
     "Recovery|TOP WATCH": {
       "stance": "HOLD",
@@ -368,7 +435,8 @@
       "en": "Hold",
       "zh": "持有",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Expansion|TOP WATCH": {
       "stance": "TRIM",
@@ -377,7 +445,8 @@
       "en": "Trim",
       "zh": "减仓",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Peak|TOP WATCH": {
       "stance": "TRIM",
@@ -386,7 +455,8 @@
       "en": "Trim",
       "zh": "减仓",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Downturn|TOP WATCH": {
       "stance": "TRIM",
@@ -395,7 +465,8 @@
       "en": "Trim",
       "zh": "减仓",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Trough|ROLLING OVER": {
       "stance": "WAIT",
@@ -404,7 +475,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "Cycle read is washed out / bottoming; daily sell signals are late-downleg noise. Stance is Wait — the sell opportunity has passed.",
-      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。"
+      "note_zh": "周期读数为超跌/筑底阶段；日线卖出信号属下行尾段噪音。立场观望——卖出时机已过。",
+      "doctrine_stance": "aside"
     },
     "Recovery|ROLLING OVER": {
       "stance": "WAIT",
@@ -413,7 +485,8 @@
       "en": "Wait",
       "zh": "观望",
       "note_en": "The broader phase suggests recovery, but the daily cycle has failed. Phase confidence is low; treat as bottoming rather than confirmed entry.",
-      "note_zh": "更大级别阶段显示复苏，但日线周期已失败。阶段置信度低；视为筑底而非确认入场。"
+      "note_zh": "更大级别阶段显示复苏，但日线周期已失败。阶段置信度低；视为筑底而非确认入场。",
+      "doctrine_stance": "aside"
     },
     "Expansion|ROLLING OVER": {
       "stance": "TRIM",
@@ -422,7 +495,8 @@
       "en": "Trim",
       "zh": "减仓",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Peak|ROLLING OVER": {
       "stance": "SELL",
@@ -431,7 +505,8 @@
       "en": "Sell",
       "zh": "卖出",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Downturn|ROLLING OVER": {
       "stance": "SELL",
@@ -440,7 +515,8 @@
       "en": "Sell",
       "zh": "卖出",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "protect"
     },
     "Trough|COUNTERTREND BOUNCE": {
       "stance": "HIGH-RISK BOUNCE",
@@ -449,7 +525,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Recovery|COUNTERTREND BOUNCE": {
       "stance": "HIGH-RISK BOUNCE",
@@ -458,7 +535,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Expansion|COUNTERTREND BOUNCE": {
       "stance": "HIGH-RISK BOUNCE",
@@ -467,7 +545,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Peak|COUNTERTREND BOUNCE": {
       "stance": "HIGH-RISK BOUNCE",
@@ -476,7 +555,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Downturn|COUNTERTREND BOUNCE": {
       "stance": "HIGH-RISK BOUNCE",
@@ -485,7 +565,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Trough|CONFIRMING TURN": {
       "stance": "HIGH-RISK BOUNCE",
@@ -494,7 +575,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Recovery|CONFIRMING TURN": {
       "stance": "HIGH-RISK BOUNCE",
@@ -503,7 +585,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Expansion|CONFIRMING TURN": {
       "stance": "HIGH-RISK BOUNCE",
@@ -512,7 +595,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Peak|CONFIRMING TURN": {
       "stance": "HIGH-RISK BOUNCE",
@@ -521,7 +605,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Downturn|CONFIRMING TURN": {
       "stance": "HIGH-RISK BOUNCE",
@@ -530,7 +615,8 @@
       "en": "High-Risk Bounce",
       "zh": "高风险反弹",
       "note_en": "",
-      "note_zh": ""
+      "note_zh": "",
+      "doctrine_stance": "watch"
     },
     "Downturn|TURN SIGNALED|pos>=55": {
       "stance": "COUNTERTREND ONLY",
@@ -540,7 +626,8 @@
       "zh": "仅限逆势短线",
       "note_en": "Position is elevated in a Downturn phase. Daily buy signal is countertrend — the larger cycle suggests the rebound will fail.",
       "note_zh": "下行阶段中位置偏高。日线买入信号属逆势——更大级别周期暗示反弹将失败。",
-      "pos_gate": ">=55"
+      "pos_gate": ">=55",
+      "doctrine_stance": "watch"
     },
     "Downturn|TURN SIGNALED|pos<55": {
       "stance": "GET READY",
@@ -550,7 +637,8 @@
       "zh": "准备",
       "note_en": "",
       "note_zh": "",
-      "pos_gate": "<55"
+      "pos_gate": "<55",
+      "doctrine_stance": "get_ready"
     },
     "Downturn|FRESH BUY|pos>=55": {
       "stance": "COUNTERTREND ONLY",
@@ -560,7 +648,8 @@
       "zh": "仅限逆势短线",
       "note_en": "Position is elevated in a Downturn phase. Daily buy signal is countertrend — the larger cycle suggests the rebound will fail.",
       "note_zh": "下行阶段中位置偏高。日线买入信号属逆势——更大级别周期暗示反弹将失败。",
-      "pos_gate": ">=55"
+      "pos_gate": ">=55",
+      "doctrine_stance": "watch"
     },
     "Downturn|FRESH BUY|pos<55": {
       "stance": "BUY",
@@ -570,7 +659,8 @@
       "zh": "买入",
       "note_en": "",
       "note_zh": "",
-      "pos_gate": "<55"
+      "pos_gate": "<55",
+      "doctrine_stance": "act"
     }
   },
   "divergence_notes": {
