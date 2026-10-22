@@ -210,7 +210,7 @@ DESIGN (a84208a865fe09119) returned DONE for the design deliverable only: Paper 
 - **B23 shipped as #9947** `claude/prophet-r7-b23-journey-latency` @`cfb8b81f` (parent `a5498b7e`; 8 files +2874/−2; `washout-turn-organ` closure MISS=0 incl. `scripts/capture_page_evidence.py`, which entered the inferred closure through string references; probe deltas 0/0/0; merge-tree clean vs main `434e5e30`). Watcher `bmn1v307k`; READ_ONLY review lane `pro-source-b23-review-20261021-r1` (`blkfzc66t`). The local `tests/test_ci_pack.py` run in an exported tree stops at the environment-only `information-to-price-eval-receipts derives no closure` ValueError — it is NOT a proof for any other job; `washout_miss.py` is the local closure proof.
 - **#9940 RED on `d09eae69`** (ci-pack-0 `test_curated_exclusive_scopes_cover_their_own_import_closure`, contract-delta, ci-gate; run 39561003560): the F17 remedy did not close the curated scope. Triage: local reproduction on the exported head + one bounded CI-log read after the guard cooldown. Not merged; never merge red.
 
-### CP 08:3xZ — checkpoint (READ THIS ONE FIRST)
+### CP 08:3xZ — checkpoint (superseded by CP 10-22 01:3xZ)
 - **MERGED today (DO_NOT_REDO)**: unchanged from CP 07:2xZ (#9921, #9928, #9929, #9930, #9931, #9934, #9935 + earlier). Main = `434e5e30` (#9926, foreign).
 - **OPEN**: #9947 (B23) @`cfb8b81f` watcher `bmn1v307k` + review lane `blkfzc66t`; #9945 (B05) @`b0f8eb3b` watcher `bw2plzlqo`; **#9940 RED** @`d09eae69` (triage above; watcher `b2kbx3qil` finished). Merge rule unchanged: review PASS + green + reviewDecision + fence + `--match-head-commit`; never arm.
 - **Orchestrators**: DESIGN / INTEL / REGIONAL / SOURCE all COMPLETED (message only, never re-spawn). NEXT: spawn ONE BUILD orchestrator for Wave A (F20); then browser-proof commission (mastermind-product-path-proof) after Wave A merges; Wave B routing packet at Stage 6.
@@ -356,3 +356,120 @@ law (B21 release limit). U10 gated on B07/B20 (Wave A/B product units).
   `--match-head-commit cfb8b81f`). The D11 lab-p75 method (F24) is now in tree.
 - **B00 (D10) done in this commit**: `PROPHET_END_TO_END_MASTERPLAN_FABLE_2026-10-20.md` (1190 lines, sha256
   `1608eac9…49b69` in the `.sha256` sidecar) committed verbatim under `research/prophet_v4/r7_program/`.
+
+### Seat ruling F26 — B21 U2 rulings; B01 relocation lawful and re-homed; Wave A reviews consumed; fabric admission state (11:xxZ)
+- **B21 U2 rulings (bound into the frozen spec before the lane ran):** (a) `REQUIRES_TIER = "essential"` on every
+  notification row — the alert surface is part of the paid research journey, never a free-tier feature, and the tier
+  literal is pinned by the suite, not read from a config; (b) `episode_opened` is NOT minted in v1 — the contract
+  (§eligibility) marks it optional and a new-ACTIVE-episode alert on a watched name would fire before any entry evidence
+  exists, which the truthful-entry rule forbids; it is deferred to a later unit, not dropped. U2 returned DONE at
+  `6e6798aa` (lane `pro-source-b21u2-20261021-r1`; local ref `refs/pro/b21u2`): `engine/prophet_journey_notifications.py`
+  (1,047 lines; tier literal :84, episode_opened exclusion :34), 18 hermetic tests, prophet-lab registration + one
+  step, probe ceilings funded by exactly the measured +3 (index 5,825→5,828, build 5,798→5,801). Seat check: merge-tree
+  CLEAN against `dcd72169` (main after IM17 #9960 and #9963); parent `562fc7dd` is an ancestor of main; suite + packing
+  probes re-run on the merged export (result in the CP below); independent Opus review commissioned (READ_ONLY) with the
+  contract as the standard. U1 stays BLOCKED-CUSTODY (#9774 holds `lib/user_prefs.py`); U3 (dag.yml placement) waits
+  for U1+U2; U4/U5 wait for U2 to land.
+- **#9940 MERGED → `ca7edbcf`** (F21 closure remedy; MISS=0). DO_NOT_REDO.
+- **B01 (#9951) packing + relocation:** registering the recorded_at clock test in `prophet-lab` costs +3 estimator units
+  (`scripts/run_ci_pack.py::_job_weight`: one command + one `tests/test_` path) on three probe ceilings. Rather than fund
+  it, the seat relocated the registration to `washout-turn-organ` (`gate: code`, `scope: exclusive`, never selected by
+  `PACKING_PROBES`) — weight-neutral by construction. Lawfulness measured, not assumed: closure
+  `washout-turn-organ` ORIG 973/968 MISS=0 → RELOC 975/970 MISS=0 (the organ also had to declare
+  `tests/test_us_candidate_episode_reconciler.py`, which the new test imports); `prophet-lab` MISS=864 both before and
+  after (it is not exclusive, so no closure obligation); `tests/test_ci_pack.py -k "packing or curated_exclusive"` 5
+  passed. Commit `10627ea2` pushed to #9951, then main `1c99ae69` added the cnp1arch registrations to the same
+  washout-turn-organ paths list → `mergeStateStatus: DIRTY`. Re-homed as a true merge commit `4a47aac2` (parents
+  `10627ea2` + `1c99ae69`; manifest hand-resolved: main's cnp1arch paths kept, B01's two paths + step re-added; net
+  delta vs main exactly 4 manifest lines + the script + the test); merge-tree CLEAN vs `dcd72169`. Fenced push +
+  watcher + CI in the CP below.
+- **Wave A reviews consumed (native Opus reviewers, READ_ONLY):** A1 #9954 @`25f6ca41` PASS_WITH_NOTES; A3 #9955
+  @`21a95484` PASS_WITH_NOTES (five notes, one evidence gap, none gating); **A2 #9956 @`b48469a5` FAIL** — Surface 1
+  `saveChecked` BLOCKING: a transport loss is reported as `rejected` with "Nothing was added anywhere." and no read-back,
+  because `_isRefusalErr` treats any object with a non-empty `message` as a refusal; Surface 8 custody NOTE: the eighth
+  derived file (`site/research_screener.html` content-hash stamp) owed. Reports filed under `reviews/`. The Wave A
+  BUILD orchestrator returned PARTIAL (fabric NO_HOST for the repair lane) → seat custody: a WAVE A LANDING orchestrator
+  (Opus, fable-mode) was commissioned to execute the A2 repair locally, rebake the stamps last, and mint the visual
+  evidence receipts; the seat verifies, fences, pushes and merges (A1/A3 on green; A2 on PASS after re-review).
+- **Visual-evidence gate (`design-governance` job):** `scripts/check_ui_visual_evidence.py --diff-file` requires every
+  material changed template/CSS/JS path to appear verbatim in `changed_paths` of a committed `EVIDENCE.yml`
+  (`schema: mastermind.page_evidence_receipt.v1`) under `mockups/evidence/` or `mockups/refs/`, whose manifest
+  (`mastermind.p0_evidence.v2`) holds 8 captured cells per page (desktop/mobile × en/zh × dark/light, PNG sha256 +
+  bytes). Precedent `14799f15` (#9878). Capture tool `scripts/capture_page_evidence.py`. Wave A receipts go under
+  `mockups/evidence/prophet-r7-wave-a/<page>/` (A2 = rendered `/watchlist.html`; A1 = tracked `site/macro.html` served
+  from the A1 tree + plan-cards specimen; A3 = `_prophet_receipts.html.j2` specimen). The ratchet
+  (`check_design_system.py --mode enforce-added`) accepts radii only via `var(--r-*)`.
+- **research-screener red is self-caused**, not a flake: `site/research_screener.html` is baked with a content-hash
+  stamp over the shared CSS/JS; any template/CSS/JS change needs the stamp-only rebake (one-liner in the seat kit)
+  as the LAST step of the commit.
+- **Fabric admission state (recorded once):** `host_pick.py --mode build` refuses every build host on the disk-reserve
+  criterion alone (ubuntu0 278.8 < 315 G, ubuntu2 159.1 < 165 G, ubuntu3 314.5 < 315 G; ubuntu1 load FAIL;
+  ubuntu4/m1/mb canary-only). The reserve is consumed by finished `~/lanes/wt/pro-*` trees (~1 G each: ubuntu3 15,
+  ubuntu2 10, ubuntu0 12). Reclaim evidence under `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`: no lane HEAD is an
+  ancestor of main (every lane result was consumed through a seat re-homed commit, so the lane SHAs never reach
+  main), no MERGED PR has an exact lane head, and `git ls-remote origin 'refs/heads/lane/pro-*'` is empty → **no tree
+  holds a positive completion signal → KEEP all**; the seat does not improvise a tree-equality signal (that would be a
+  new DEC for the fabric owners). The evidence probe itself hung >2 h in its ancestry phase (per-SHA `git fetch` into a
+  promisor clone — the 10-21 upload-pack trap) and was stopped. Consequence: Wave A, U-series and Wave B execute via the
+  seat and native Opus orchestrators under the continuation law (no worker started, lawful tools and custody, no
+  conflicting owner, no EFFECT_UNKNOWN); the Chairman's fabric-first preference is recorded as unsatisfiable for this
+  program until the fabric owners reclaim or extend the law. Lane hosts also lack Playwright, so captures run locally.
+- **Harness facts worth keeping:** native reviewers stop at 24 turns and resume by SendMessage to the same agent (works,
+  keeps context); reviewer AND orchestrator commissions are hook-enforced to exact line-leading `SECTION:` labels
+  (orchestration = MISSION/WHY/SCOPE/OUT OF SCOPE/RETURN); `launch_build3.sh` refuses a packet whose COMMON block
+  contains "validated" more than once; `gh pr checks --watch` armed before the ci pack registers exits at once showing
+  only `ci-authority` rows (re-arm after registration, ARM LAST); zsh `$VAR:e`/`$VAR:t` are modifiers (use `${VAR}:path`).
+
+### Seat ruling F27 — B4 same-read capture (#9959): spec point 6 amended, repair `628cc4c6`, re-review PASS_WITH_NOTES (11:xxZ)
+- **First review FAIL** (lane `pro-source-b4nightly-review-20261021-r1`, report `reviews/B4_NIGHTLY_CAPTURE_REVIEW_2026-10-21.md`):
+  two BLOCKING — F1 verdict trace (`blockers`/`reasons`) persisted inside `facts`; F2 null-`security_id` key collision
+  killed the census (two unbound candidates collide on the None key) — plus F3 `--root` honoured under `--nightly`, F4
+  dry-run gated on the armed lane, F5 row content echoed in conflict messages, F7 fence test unanchored, F8 non-atomic
+  day-file write, F9 `_CONTRACT_ERRORS` wider than the same-read module, F12 malformed day file → traceback.
+- **Spec point 6 AMENDED by the seat:** the capture key is `(stamp_date, candidate_source_event_id,
+  candidate_generation_id, strategy_definition_id)` — the source event id is the identity the B1 ledger already
+  guarantees unique per stamp, whereas `security_id` is legitimately null for unbound candidates; `VERDICT_FIELDS`
+  include `blockers`/`reasons`, so the capture strips them at read AND refuses them at write time (top level and
+  anywhere in `facts`).
+- **Repair `628cc4c6`** (seat temp-index commit, direct-labor exception as in F25; pushed to #9959 under the unchanged
+  fence): F1 strip + write-time refusal; F2 key; F4 `--nightly --dry-run` ungated and writes nothing; F5 conflicts carry
+  only sha256 digests; F7 fence test anchored on the repo root with a positive control; F8 `mkstemp` → `fsync` →
+  `os.replace`, temp unlinked on any exception; F9 `_CONTRACT_ERRORS` narrowed to the same-read list; F12
+  `CaptureDayFileError` → JSON error + exit 2; F3 recorded (`root_override`, `data_root` in the run document).
+- **Re-review PASS_WITH_NOTES** (native Opus reviewer, READ_ONLY; report `reviews/B4_NIGHTLY_CAPTURE_REREVIEW_2026-10-21.md`;
+  both files byte-identical to `628cc4c6`; 20 passed; undo-the-fix reruns fail F1 3/20, F2 2/20, F4 1/20, F5 1/20).
+  Residuals RULED: **F3 PARTIAL → ACCEPTED** — the nightly workflow invocation passes no `--root`, the override is
+  visible in the run document, and refusing it would remove the only lawful rehearsal path on a non-production root;
+  **F12 PARTIAL → minor follow-up** — invalid UTF-8, an unhashable key field and a NaN value still exit 1 with a
+  traceback (file untouched; no data loss); **N1 (day file mode 0600 via `mkstemp`) → minor follow-up** — the nightly
+  runner user is the sole reader on the Mac Studio; fold `os.chmod(path, 0o644 & ~umask)` into the next B4-touching
+  commit rather than re-spending a 40-minute CI cycle on a mode bit; N2 docstring and N3 (pre-existing rows not
+  re-checked on rewrite) nits; the commit message's "F3" label on the digest change (the review's F5) is a label slip,
+  not a behaviour. None is a merge barrier. Merge rule unchanged: full table green + reviewDecision + fence →
+  `gh pr merge 9959 --squash --match-head-commit 628cc4c69ec1a561530ac700f862b102242c4770`.
+
+### CP 2026-10-22 01:3xZ — checkpoint (READ THIS ONE FIRST)
+- **MERGED (DO_NOT_REDO):** B4 same-read capture #9959 → `8c02ea8f` (01:45Z 10-21, `--match-head-commit 628cc4c6`, full table
+  green, fence unchanged); #9940 → `ca7edbcf`; #9947 B23; #9945 B05; #9921; #9928. origin/main at `05613221` as of this CP.
+- **OPEN + watched:** #9951 B01 @`4a47aac2` (re-home merge commit pushed 10-22 01:21Z after organ closure MISS=0 on the
+  re-homed export + packing probes 7 passed; review PASS_WITH_NOTES consumed in F25 — merge on full-table green with
+  `--match-head-commit 4a47aac23e13a13455a94ca3fae74f23db5daf4a`; watcher handle b63o19edc, delayed start so it arms after the
+  pack registers). **#9999 B21 U2 @`6e6798aa`** (new PR, body from `$S/u2_pr_body.md`; merged-export suite 18 passed + probes 7
+  passed; merge-tree CLEAN vs `05613221`; watcher handle bzb3z80dl) — MERGE ONLY after the Opus review report
+  `$S/reviews/B21_U2_NOTIFICATIONS_REVIEW_2026-10-21.md` reads PASS/PASS_WITH_NOTES (reviewer ab615aa011f1c80d1 resumed by
+  message 01:2xZ after a session-limit 429 outage that also stopped the Wave A landing orchestrator; both resumed, never re-spawn).
+  #9954 A1 / #9956 A2 / #9955 A3 unchanged heads; fix commits owed by WAVE A LANDING orchestrator a9169130a55a2feff
+  (return file `$S/reviews/WAVE_A_LANDING_RETURN_2026-10-21.md`; P1 A2 repair + mutation proof done, P2 census done:
+  A1 reds = `p0b-receipt-closure` (site/theme.css pinned by prophet-p0b-zero-fouc receipts → seat GRANTED the remint 01:2xZ)
+  + research-screener stamp (rebake carried); A2/A3 need new EVIDENCE receipts; refs `refs/pro/wa-a{1,2,3}-fix` not yet minted).
+- **Seat next actions, in order:** (1) consume b63o19edc → merge #9951; (2) consume the U2 review → merge #9999 on green (on
+  FAIL: temp-index repair + SendMessage re-review); (3) consume the landing return → verify each `wa-a*-fix` (parent = PR
+  head, both design-governance commands, tests) → fence → push to the PR branches (`gh pr view N --json headRefName`) →
+  watchers → Opus re-review of the A2 fix → merge A1/A3 on green, A2 on PASS; (4) Wave B routing packet (custody
+  #9495/#9294/#8444; disclaimer, "Check again"/"Choose another list", `saveChecked` wiring); (5) U1 after #9774 merges, U3
+  after U1+U2, U4/U5 after U2 lands; (6) records r7 + memory.
+- **Fabric:** still disk-reserve blocked for the seat (F26); the GMI seat reported reclaiming ITS OWN trees 10-21 — this
+  seat's `pro-*` trees stay (no positive completion signal); re-run `host_pick.py --mode build --refresh --exclude m2` before
+  the next lane attempt rather than assuming.
+- **Harness note (10-21→10-22):** a claude-opus-5-5 "session limit" 429 kills native children mid-flight; their work on
+  disk survives and SendMessage resumes them once the limit clears — record the resume time, never re-spawn.
