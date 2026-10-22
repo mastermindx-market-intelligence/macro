@@ -1,0 +1,542 @@
+{
+  "schema": "china_hk_recovery_audit_evidence.v1",
+  "audit_scope": "Read-only product census and source/served-output audit; synthetic verification only. No product implementation or release.",
+  "source_revision": "1f536032d446e2b51bda47f0575e371f0c4a0aae",
+  "protected_mastermind_revision": "c9cbee5569ba50e30e28715d930809061a169517",
+  "observed_production": [
+    {
+      "market": "china",
+      "url": "https://www.mastermind-x.com/china.html",
+      "status": 200,
+      "fetched_at": "2026-10-22T04:00:00.179441+00:00",
+      "bytes": 265909,
+      "sha256": "2588a511b70993a844f9aa37c178357ed396ff39e991bc107293c29e7e228776",
+      "etag": "\"dmb1pwgc2a935p6d\"",
+      "last_modified": "Thu, 22 Oct 2026 03:27:26 GMT",
+      "cf_cache_status": null,
+      "age": null,
+      "title": "China A-Share Regime — 2026-10-21",
+      "phrases": {
+        "Risk receding": 1,
+        "rrx-rec is-turn": 1,
+        "Begin scaling exposure": 1,
+        "~6pp": 1,
+        "INTERNALS": 0
+      },
+      "recovery_excerpt": " normal 常态 ↘ Risk receding — liquidity turning supportive 风险回落 — 流动性转向支持 TURN 转向 ? Illustrative context, not a buy trigger. It reads the radar's own intensity trajectory (leak-free) plus the display-only central-bank liquidity series; unlike the alert legs it is not forward-tested yet, and risk can re-accelerate. The de-risk → re-risk response is sizing, scaled in deliberately. BoJ enters only via the aggregate global central-bank tide (no isolated BoJ feed). 仅为示意性背景，并非买入信号。它读取雷达自身的强度轨迹（无未来函数）以及仅供展示的央行流动性序列；不同于警报腿，此读数尚未经前瞻检验，风险可能再度加速。降险→回补的应对是仓位管理、分批进行。日本央行仅通过全球央行总潮汐体现（无独立日本数据源）。 The radar's intensity is rolling over. 雷达强度正见顶回落。 Central banks 央行 💵 Fed liquidity expanding 美联储流动性扩张 ? Net liquidity (WALCL − RRP − TGA) rising (+$79B/20d) — TGA drawdown / reserves added. 净流动性（WALCL − RRP − TGA）上升（+788亿美元/20日）— TGA 回落／准备金注入。 When liquidity is expanding like this, buying dips has historically worked ~6pp more often over the next month (a measured odds edge, not a promise). 历史上，在流动性扩张期间逢低买入的成功率比平均高约6个百分点（次月维度）——这是一个经过回测的概率优势，不是承诺。 Do 应对 The risk-off may be nearing its end. Begin scaling exposure back in tranches — keep stops, let price confirm the low. Don't chase the first bounce. 避险或已接近尾声。可分批逐步回补敞口 — 保留止损，待价格确认低点，切勿追逐首次反弹。 Leading 领先信号 A-share breadth A股广度跌破200日 100th 第100百分位 ✓ Do 应对 Protect capital: raise cash, no new chases. 保住本金：提高现金、勿追新高。 Overseas pressure 境外传导 Low 低 Pressure from abroad: low 海外传导压力：低 South Korea 韩国 ? South Korea: connection 5.0%, 21.7% off its 21-day high, -19.3% in 10 sessions | Japan: connection 5.6%, 8.0% off its 21-day high, -2.6% in 10 sessions | Hong Kong: connection 12.1%, 3.6% off its 21-day high, 0.9% in 10 sessions 韩国：关联5.0%，近21日高点回落21.7%，近10日-19.3%；日本：关联5.6%，近21日高点回落8.0%，近10日-2.6%；香港：关联12.1%，近21日高点回落3.6%，近10日0.9% as of 2026-10-18 截至 2026-10-18 Yuan pressure 人民币压力 Normal 正常 Offshore yuan: no unusual pressure 离岸人民币：无异常压力 -57bp Dollar 美元 Rising 走强 Dollar rising — headwind for EM 美元走强 — 新兴市场逆风 🧾 Track record 往绩 28 graded 已评分 · 0.78× vs base rate 对比基准 · not yet moving the verdict 尚未参与定调 ? Past-year hit rate: on 4 of 12 elevated days (33%) a ≥5% drop followed within 21 days | by scare: on 4 of 12 breadth days (daily readings — consecutive days overlap) | Watch/caution: on 8 of 16 watch/caution days a drop followed | Recovery: too few graded 过去一年命中率：12 个警报日中有 4 天（33%）在21天内出现 ≥5% 下跌；按类别：12 个breadth日中有 4 天（按日读数——连续日期相互重叠） | 观察/谨慎：16 个观察/谨慎日中有 8 天先于下跌 | 修复信号：暂无足够评分 Leading 领先信号 Shanghai Composite 7% below its 200-day average 上证综指低于200日均线 7% A-share breadth A股广度跌破200日 ? Overseas 境外 Pressure from abroad 海外传导压力 Low 低 ? Track record 往绩 4 of 12 alerts led to a drop 12 次警报中 4 次先于下跌 ? <div cla"
+    },
+    {
+      "market": "hk",
+      "url": "https://www.mastermind-x.com/hk.html",
+      "status": 200,
+      "fetched_at": "2026-10-22T04:00:00.954910+00:00",
+      "bytes": 257288,
+      "sha256": "6f6e5cfcb20107dab09af6a3e636ca2eb6fe35b9fb343c53536094cd678a624f",
+      "etag": "\"dmb1pwk5008u5iiw\"",
+      "last_modified": "Thu, 22 Oct 2026 03:27:26 GMT",
+      "cf_cache_status": null,
+      "age": null,
+      "title": "Hong Kong Regime — 2026-10-21",
+      "phrases": {
+        "Risk receding": 1,
+        "rrx-rec is-turn": 1,
+        "Begin scaling exposure": 1,
+        "~6pp": 1,
+        "INTERNALS": 0
+      },
+      "recovery_excerpt": " normal 常态 ↘ Risk receding — liquidity turning supportive 风险回落 — 流动性转向支持 TURN 转向 ? Illustrative context, not a buy trigger. It reads the radar's own intensity trajectory (leak-free) plus the display-only central-bank liquidity series; unlike the alert legs it is not forward-tested yet, and risk can re-accelerate. The de-risk → re-risk response is sizing, scaled in deliberately. BoJ enters only via the aggregate global central-bank tide (no isolated BoJ feed). 仅为示意性背景，并非买入信号。它读取雷达自身的强度轨迹（无未来函数）以及仅供展示的央行流动性序列；不同于警报腿，此读数尚未经前瞻检验，风险可能再度加速。降险→回补的应对是仓位管理、分批进行。日本央行仅通过全球央行总潮汐体现（无独立日本数据源）。 Pullback odds 54% → 31% (peaked 11 days ago). 回撤概率 54% → 31%（11 日前见顶）。 Central banks 央行 💵 Fed liquidity expanding 美联储流动性扩张 ? Net liquidity (WALCL − RRP − TGA) rising (+$79B/20d) — TGA drawdown / reserves added. 净流动性（WALCL − RRP − TGA）上升（+788亿美元/20日）— TGA 回落／准备金注入。 When liquidity is expanding like this, buying dips has historically worked ~6pp more often over the next month (a measured odds edge, not a promise). 历史上，在流动性扩张期间逢低买入的成功率比平均高约6个百分点（次月维度）——这是一个经过回测的概率优势，不是承诺。 Do 应对 The risk-off may be nearing its end. Begin scaling exposure back in tranches — keep stops, let price confirm the low. Don't chase the first bounce. 避险或已接近尾声。可分批逐步回补敞口 — 保留止损，待价格确认低点，切勿追逐首次反弹。 Do 应对 Normal exposure. 正常仓位。 Overseas pressure 境外传导 Low 低 Pressure from abroad: low 海外传导压力：低 China 中国 ? China: connection 14.0%, 6.0% off its 21-day high, -4.4% in 10 sessions | Japan: connection 9.0%, 8.0% off its 21-day high, -2.6% in 10 sessions | South Korea: connection 7.0%, 21.7% off its 21-day high, -19.3% in 10 sessions 中国：关联14.0%，近21日高点回落6.0%，近10日-4.4%；日本：关联9.0%，近21日高点回落8.0%，近10日-2.6%；韩国：关联7.0%，近21日高点回落21.7%，近10日-19.3% as of 2026-10-18 截至 2026-10-18 Yuan pressure 人民币压力 Normal 正常 Offshore yuan: no unusual pressure 离岸人民币：无异常压力 -57bp Dollar 美元 Rising 走强 Dollar rising — headwind for EM 美元走强 — 新兴市场逆风 🧾 Track record 往绩 31 graded 已评分 · 0.0× vs base rate 对比基准 · not yet moving the verdict 尚未参与定调 ? Past-year hit rate: too few graded alerts yet | by scare: on 0 of 3 capital_flow days (daily readings — consecutive days overlap) | Watch/caution: on 1 of 15 watch/caution days a drop followed | Recovery: too few graded 过去一年命中率：暂无足够评分记录；按类别：3 个capital_flow日中有 0 天（按日读数——连续日期相互重叠） | 观察/谨慎：15 个观察/谨慎日中有 1 天先于下跌 | 修复信号：暂无足够评分 Leading 领先信号 Hang Seng 7% below its 200-day average 恒生指数低于200日均线 7% ? Overseas 境外 Pressure from abroad 海外传导压力 Low 低 ? Track record 往绩 Grading calls as they mature 评分随信号成熟展开 Calendar 日历 2026-10-22 HK CPI (composite) 香港 CPI（综合） 2026-10-28 US FOMC decision 美联储 FOMC 决议 2026-10-29 <span class=\"rrd-c"
+    }
+  ],
+  "served_bytes_equal_pinned_generated_files": {
+    "china": true,
+    "hk": true,
+    "verification": "SHA-256 comparison of downloaded bodies with git show 1f536032d446e2b51bda47f0575e371f0c4a0aae:site/{china,hk}.html"
+  },
+  "rendered_metrics": {
+    "cn": {
+      "state": "risk-off",
+      "score": 92,
+      "breadth_percentile": 100,
+      "benchmark_200dma_distance_percent": -7,
+      "probability_display_percent": {
+        "h5": 15,
+        "h10": 27,
+        "h21": 45
+      },
+      "normal_h21_percent": 30,
+      "graded_readings": 28
+    },
+    "hk": {
+      "state": "calm",
+      "score": 43,
+      "benchmark_200dma_distance_percent": -7,
+      "probability_display_percent": {
+        "h5": 0,
+        "h10": 0,
+        "h21": 31
+      },
+      "normal_h21_percent": 31,
+      "graded_readings": 31
+    }
+  },
+  "source_blobs": {
+    "main_engine/risk_radar_recovery.py": {
+      "blob": "763a11d58f40e6b002a671fcb4b84c7cd323e55b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1f536032d446e2b51bda47f0575e371f0c4a0aae/engine/risk_radar_recovery.py"
+    },
+    "main_engine/risk_radar_intl.py": {
+      "blob": "4ed9bdebf6e76cbf529115203ae5d8820ba07f13",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1f536032d446e2b51bda47f0575e371f0c4a0aae/engine/risk_radar_intl.py"
+    },
+    "main_templates/_risk_radar_card.html.j2": {
+      "blob": "3431444b855b7ad59f8e79980653c3dd89f987a9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1f536032d446e2b51bda47f0575e371f0c4a0aae/templates/_risk_radar_card.html.j2"
+    },
+    "intl_tune": {
+      "blob": "08365f88564b1585ecd3b35f49556bc2bcd1feb0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1f536032d446e2b51bda47f0575e371f0c4a0aae/engine/risk_radar_intl_tune.py"
+    },
+    "liquidity_ladder": {
+      "blob": "bc209b9f0231932b9bc51697fde48e6812a71652",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1f536032d446e2b51bda47f0575e371f0c4a0aae/research/LIQUIDITY_LADDER.md"
+    },
+    "candidate_recovery": {
+      "blob": "70f51195bf4f941167b7c3b9ae916fd93e4e435f",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f7545a519c02fb8fb7b4c5b8e9f73c62e00aecc0/engine/risk_radar_recovery.py"
+    }
+  },
+  "classifier_verification": {
+    "exact_constants": {
+      "_STATE_ORDER": [
+        "calm",
+        "watch",
+        "caution",
+        "elevated",
+        "risk-off"
+      ],
+      "_TRAJ_SPARK": 24,
+      "_TRAJ_VEL_LB": 5,
+      "_TRAJ_ODDS_LB": 10
+    },
+    "synthetic_trajectory": {
+      "intensity": 92,
+      "peak": 98,
+      "peak_days_ago": 15,
+      "off_peak": 6,
+      "velocity": -2,
+      "phase": "receding",
+      "reached_risk": true,
+      "state_now": "risk-off",
+      "odds_now": 0.45,
+      "odds_peak": 0.45,
+      "odds_delta": 0,
+      "window": 30
+    },
+    "local_breadth_display_percentile": 100,
+    "benchmark_description": "Can independently remain falling; neither benchmark nor local breadth is a classifier input.",
+    "recovery_gate_truth_table": [
+      {
+        "deescalation": null,
+        "suppressed": false,
+        "turn_confirmed": true
+      },
+      {
+        "deescalation": {},
+        "suppressed": false,
+        "turn_confirmed": true
+      },
+      {
+        "deescalation": {
+          "eligible": null
+        },
+        "suppressed": false,
+        "turn_confirmed": true
+      },
+      {
+        "deescalation": {
+          "eligible": false
+        },
+        "suppressed": true,
+        "turn_confirmed": false
+      },
+      {
+        "deescalation": {
+          "eligible": true
+        },
+        "suppressed": false,
+        "turn_confirmed": true
+      }
+    ],
+    "limitations": "Exact classifier and gate semantics, not a historical replay or proof of current component path; spark rendering stubbed."
+  },
+  "tuner_verification": {
+    "source_sha": "1f536032d446e2b51bda47f0575e371f0c4a0aae",
+    "scope": "Synthetic no-file no-network execution of exact tuner functions; not production calibration provenance",
+    "rows": [
+      {
+        "invocation": 1,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.15,
+          "h10": 0.27,
+          "h21": 0.45
+        },
+        "after": {
+          "h5": 0.1,
+          "h10": 0.22,
+          "h21": 0.4
+        },
+        "display_percent": {
+          "h5": 10,
+          "h10": 22,
+          "h21": 40
+        },
+        "brier_h21": {
+          "current": 0.2325,
+          "candidate": 0.22
+        }
+      },
+      {
+        "invocation": 2,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.1,
+          "h10": 0.22,
+          "h21": 0.4
+        },
+        "after": {
+          "h5": 0.05,
+          "h10": 0.17,
+          "h21": 0.35
+        },
+        "display_percent": {
+          "h5": 5,
+          "h10": 17,
+          "h21": 35
+        },
+        "brier_h21": {
+          "current": 0.22,
+          "candidate": 0.2125
+        }
+      },
+      {
+        "invocation": 3,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.05,
+          "h10": 0.17,
+          "h21": 0.35
+        },
+        "after": {
+          "h5": 0.025,
+          "h10": 0.12,
+          "h21": 0.325
+        },
+        "display_percent": {
+          "h5": 2,
+          "h10": 12,
+          "h21": 32
+        },
+        "brier_h21": {
+          "current": 0.2125,
+          "candidate": 0.2106
+        }
+      },
+      {
+        "invocation": 4,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.025,
+          "h10": 0.12,
+          "h21": 0.325
+        },
+        "after": {
+          "h5": 0.013,
+          "h10": 0.07,
+          "h21": 0.312
+        },
+        "display_percent": {
+          "h5": 1,
+          "h10": 7,
+          "h21": 31
+        },
+        "brier_h21": {
+          "current": 0.2106,
+          "candidate": 0.2101
+        }
+      },
+      {
+        "invocation": 5,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.013,
+          "h10": 0.07,
+          "h21": 0.312
+        },
+        "after": {
+          "h5": 0.006,
+          "h10": 0.035,
+          "h21": 0.306
+        },
+        "display_percent": {
+          "h5": 1,
+          "h10": 4,
+          "h21": 31
+        },
+        "brier_h21": {
+          "current": 0.2101,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 6,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.006,
+          "h10": 0.035,
+          "h21": 0.306
+        },
+        "after": {
+          "h5": 0.003,
+          "h10": 0.018,
+          "h21": 0.303
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 2,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 7,
+        "unchanged_sample_n": 30,
+        "status": "apply",
+        "before": {
+          "h5": 0.003,
+          "h10": 0.018,
+          "h21": 0.303
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 8,
+        "unchanged_sample_n": 30,
+        "status": "hold",
+        "before": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 9,
+        "unchanged_sample_n": 30,
+        "status": "hold",
+        "before": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 10,
+        "unchanged_sample_n": 30,
+        "status": "hold",
+        "before": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 11,
+        "unchanged_sample_n": 30,
+        "status": "hold",
+        "before": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      },
+      {
+        "invocation": 12,
+        "unchanged_sample_n": 30,
+        "status": "hold",
+        "before": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "after": {
+          "h5": 0.002,
+          "h10": 0.009,
+          "h21": 0.301
+        },
+        "display_percent": {
+          "h5": 0,
+          "h10": 1,
+          "h21": 30
+        },
+        "brier_h21": {
+          "current": 0.21,
+          "candidate": 0.21
+        }
+      }
+    ],
+    "final_assertions": {
+      "exit_code": 0,
+      "claims": [
+        "Exactly seven apply decisions on unchanged 30-row sample",
+        "Terminal probabilities h5=.002 h10=.009 h21=.301",
+        "Whole-percent display 0 / 1 / 30"
+      ]
+    },
+    "exploratory_limit": "An initial exploratory expectation that both short horizons would round to zero in this particular fixture was false. The observed result and final assertions are 0 / 1 / 30; no production-zero attribution is made."
+  },
+  "pr7029": {
+    "state": "OPEN",
+    "merged": false,
+    "head": "f7545a519c02fb8fb7b4c5b8e9f73c62e00aecc0",
+    "run": 35740798313,
+    "run_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35740798313",
+    "conclusion": "failure",
+    "ci_pack_4_job": 106791445040,
+    "ci_gate_job": 106802304592,
+    "other_packs_success": 11,
+    "latest_checkpoint": "https://github.com/mastermindx-market-intelligence/macro/pull/7029#issuecomment-5974841314",
+    "fresh_check_method": "gh api repos/mastermindx-market-intelligence/macro/commits/f7545a519c02fb8fb7b4c5b8e9f73c62e00aecc0/check-runs?per_page=100 and actions/runs?head_sha=...&per_page=20",
+    "latest_run_created_at": "2026-09-22T14:30:33Z",
+    "latest_run_updated_at": "2026-09-22T15:02:09Z"
+  },
+  "independent_review": {
+    "fabric_return": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_result",
+      "run_id": "cn-hk-recovery-math-audit-20261022-01",
+      "effective_run_id": "cn-hk-recovery-math-audit-20261022-01",
+      "accept_run_id": "cn-hk-recovery-math-audit-20261022-01",
+      "root_id": "china-hk-risk-receding-audit-20261022",
+      "adapter_response": "Audit complete. Report at `/tmp/audit/REPORT.md`, 7990 bytes.\n\n## What I did\n\nTranscribed `_trajectory_from_series` **verbatim** into a scratch harness (`/tmp/audit/harness.py`) alongside the intl `_trajectory` body and the `assess` recovery block, then ran deterministic synthetic series through them. No production, repo, branch or external service touched; no real market data used. Everything below is **synthetic input → exact output**.\n\n## The three questions, answered\n\n**1. Can receding coexist with very high local breadth danger and ongoing lower benchmark closes? Yes, structurally.** The classifier only ever sees `win` (a weighted composite), `states` (bucketed from that same composite) and `odds`. It never receives `cn_breadth` or benchmark closes — those are a separate display object. Executed: CN composite 80→45 with the local breadth leg pinned at 0.97 (band `risk-off`) and 29/30 lower benchmark closes → `phase='receding'`, `state_now='calm'`, `odds_now=0.27`.\n\n**2. Why bucketed odds stay unchanged.** `odds = _probs(cal, st)[\"h21\"]` is a lookup on the five-value band table, further capped by the gate. It is a step function. Executed: 30 sessions oscillating 67→74 across one band → `odds_now = odds_peak = 0.35`, `odds_delta = 0.0`, while `phase='receding'`. Worse, in case1 the composite fell 35 points and `odds_delta` was still `0.0`, because both endpoints of the 7-session delta are the `calm` bucket. A flat odds tile is the *expected* rendering precisely when the panel is most confident.\n\n**3. Absent deescalation permission + foreign Fed liquidity → yes, `turn_confirmed` still fires.** The intl compute contract has 18 keys and `deescalation` is not one of them, so `suppressed = bool(None) = False`. Executed across all four branches: absent → `turn_confirmed=True`, green; `eligible=None` → `True`, green (fails open); only `eligible is False` blocks it — from a key intl never emits. And `turn_confirmed_full` is `None` for intl and unread by the green display, so there is no residual check.\n\n## Severity-ranked findings\n\n- **F1 HIGH** — the one-voice veto has no intl carrier; green TURN is structurally unopposed on cn/hk.\n- **F2 HIGH** — `rateshock` carries weight 1.0 in *both* CN and HK over the same three US legs, and the Fed expanding catalyst is read from US latest. Executed: US rateshock 0.95→0.30 while local breadth *worsened* 0.55→0.62 → `receding` → `turn_confirmed=True`. One variable produces both the de-escalation and its confirmation.\n- **F3 MEDIUM** — the gate cap rewrites loud tiers and their odds but leaves `reached_risk` intact: \"we were risky\" survives a cap the odds don't.\n- **F4 MEDIUM** — bucketed odds, above.\n- **F5 MEDIUM** — both phase gates are discontinuous. `off_peak` 2.9 → `peaking`, 3.1 → `receding` on identical shapes; `velocity` −1.4 → `flat`, −1.5 → `receding` with identical peak *and* current. `[80.0]*30` never moved reads `peaking` with `reached_risk=true`, so the panel appears on a market that hasn't moved. `reached_risk` is a 30-session window statistic with no memory — the exact bug class the intl contract fixed for `recent_parabolic` with `_GATE_MEMORY`.\n\n## Caveats\n\nSix assumptions are named in the report. Two are load-bearing: `_TRAJ_VEL_LB` (I used 7; on one series lb=3 reads `flat`, lb=7 reads `receding`) and the composite aggregation formula (weights supplied, formula not). One external fact closes F1/F2 — whether the live cn/hk artifact carries `deescalation` — which is release history the parent owns; F1 states both branches so the finding holds either way.\n",
+      "response_sha256": "4a57d24d1dc15c0173adf99a7bccc29f5a3684ff5506363bc72646e5881537c9",
+      "response_bytes": 3627,
+      "accepted": false,
+      "digest_scope": "exact complete adapter CLI response; not a cryptographic artifact attestation",
+      "retry_allowed": false
+    },
+    "fabric_acceptance": {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "cn-hk-recovery-math-audit-20261022-01",
+      "root_id": "china-hk-risk-receding-audit-20261022",
+      "accepted": true,
+      "accepted_by": "reviewer",
+      "reviewed_response_sha256": "4a57d24d1dc15c0173adf99a7bccc29f5a3684ff5506363bc72646e5881537c9",
+      "verification_summary": "Read full 3627-byte response. Source at 1f536032 verifies missing intl eligibility, legacy green and bucketed odds. Independently executed exact classifier with actual 5/10-session constants: 98-to-92, still risk-off, constant 45% odds => receding; eligibility truth table blocks only explicit false. Correct worker assumption of 7 sessions. Reject literal one-variable causality: US rates and Fed net liquidity are distinct. Accept structural findings only, not assumed aggregation, unverified example numbers, market prediction or unread worker-local artifacts. Child terminal rc0; no product mutation.",
+      "legacy_acceptance_not_atomic_attestation": true,
+      "retry_allowed": false
+    },
+    "adjudication": "Structural findings accepted after exact-source verification. Worker assumed 7-session lookbacks; actual constants are 5/10. Literal one-variable causality and assumed aggregation examples rejected. Referenced worker-local report/harness were not retrieved and are not used as independent artifact proof.",
+    "semantic_review": "Native principal adviser accepted report after removing unqualified current liquidity wording, explicitly naming HK recent-peak comparison and preserving forecast/action authority."
+  },
+  "data_snapshot_limit": {
+    "surface": "mmx-data-workspace macro_snapshot",
+    "qualification": "unqualified local snapshot; not production",
+    "last_benchmark_and_china_breadth_date": "2026-10-09",
+    "implication": "Cannot substitute these series for an October21 production reconstruction; not proof live inputs are stale."
+  },
+  "unproven": [
+    "Current-day recomputation from production inputs",
+    "Cause and exact calibration history of live HK displayed zero values",
+    "Exact reintroduction commit after generated-only China hotfix7068",
+    "Any market-bottom forecast or strategy qualification",
+    "Deployment or production acceptance of recovery repair7029"
+  ],
+  "side_effects": {
+    "product_code_changed": false,
+    "production_changed": false,
+    "calibration_changed": false,
+    "source_data_changed": false,
+    "held_pr_released": false,
+    "new_model_fit": false,
+    "new_market_backtest": false
+  }
+}
