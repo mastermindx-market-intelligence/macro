@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEIS-BULL-20260922",
-  "asof": "2026-10-18",
+  "asof": "2026-10-22",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 27.3,
-  "raw_confidence": 25.7,
-  "delta_vs_base": -32.7,
+  "management_confidence": 22.0,
+  "raw_confidence": 24.0,
+  "delta_vs_base": -38.0,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 37.5,
+    "validity": 3.2,
     "progress": 0.0,
-    "pace": 10.1,
+    "pace": 5.7,
     "retention": 50.0,
-    "overlay": 32.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.483,
+    "dist_to_stop_r": 0.123,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 51.1,
-    "p1": -0.3443,
-    "p2": -0.1722,
+    "horizon_pct_used": 60.0,
+    "p1": -0.5848,
+    "p2": -0.2924,
     "p3": null,
-    "move_r": -0.517,
+    "move_r": -0.877,
     "mfe_r": 0.671,
-    "mae_r": -0.517
+    "mae_r": -1.105
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Phase: invalidated \u2192 triggered_pre_t1",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 24.579998779296886,
-  "_mae": -18.930010986328114,
+  "_mae": -40.485003662109364,
   "_max_p1": 0.4471123015788427,
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 27,
+  "tau": 0.6
 }

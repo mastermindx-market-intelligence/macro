@@ -2465,6 +2465,10 @@ except Exception as _government_revenue_exc:  # noqa: BLE001
 from app.research import router as research_router  # noqa: E402
 app.include_router(research_router)
 
+# Registered-user Macro Command reads use the qualified served publication.
+from app.macro_command import router as macro_command_router  # noqa: E402
+app.include_router(macro_command_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing
@@ -2553,6 +2557,11 @@ app.include_router(ontology_explorer_router)
 from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
 
+# Exact, entitled institutional research reads share the existing Forensics
+# authentication/entitlement boundary; the private catalog is never a site asset.
+from app.institutional_research import router as institutional_research_router  # noqa: E402
+app.include_router(institutional_research_router)
+
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
 # product projection. Its router performs early site_full enforcement before
 # touching the isolated read-only public generation root. This route is a paid
@@ -2563,6 +2572,10 @@ app.include_router(forensics_router)
 from app.biocatalyst import router as biocatalyst_router  # noqa: E402
 app.include_router(biocatalyst_router)
 
+# Device-native MedTech product data; source acquisition remains worker-only.
+from app.medtech import router as medtech_router  # noqa: E402
+app.include_router(medtech_router)
+
 # Prophet Operator Lab (LAB-0 / V4-B5A): authenticated, read-only projection of
 # canonical Radar live output + Prophet plan data into six frozen Lab boards.
 # Zero ranking/gating/sizing/plan-origination/signal-origination/Prophet-
@@ -2571,6 +2584,11 @@ app.include_router(biocatalyst_router)
 # BioCatalyst above.
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
+
+# Same-box input only: public edge requests are denied before auth or file I/O.
+# Terminal retains holdings and computes derived risk metrics in its own compiler.
+from app.treasury_history import router as treasury_history_router  # noqa: E402
+app.include_router(treasury_history_router)
 
 # B03 reads the existing uncapped observation input only after site_full auth.
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402

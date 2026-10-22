@@ -996,3 +996,142 @@ def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
     }
     for token, pair in expected.items():
         assert labels.value_pair(token) == pair, token
+
+
+def test_suite_section_navigation_uses_only_the_existing_shell_candidate() -> None:
+    """Execute the shipped IIFE, including initial boot and accepted-location events.
+
+    The small DOM supplies tab/section relationships and records effects; it does
+    not implement the resolver. Real geometry remains a browser acceptance check.
+    """
+    node = shutil.which("node")
+    assert node is not None, "the suite runtime regression requires Node"
+    harness = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync(process.argv[1], 'utf8');
+
+function mount(bridge, initial = '#history') {
+  const events = new Map(), scrolls = [], historyWrites = [];
+  let current = new URL('https://example.test/macro_liquidity_regime.html?scope=US' + initial);
+  let document;
+  function element(id, attrs = {}, parent = null) {
+    const listeners = new Map(), classes = new Set();
+    return {
+      id, attrs, parent, hidden: false, tabIndex: -1,
+      classList: {
+        toggle(name, on) { on ? classes.add(name) : classes.delete(name); },
+        add(name) { classes.add(name); }, remove(name) { classes.delete(name); },
+      },
+      getAttribute(name) { return Object.hasOwn(attrs, name) ? attrs[name] : null; },
+      setAttribute(name, value) { attrs[name] = String(value); },
+      removeAttribute(name) { delete attrs[name]; },
+      addEventListener(name, fn) { listeners.set(name, fn); },
+      fire(name, event = {}) { listeners.get(name)?.(event); },
+      focus() { document.activeElement = this; },
+      closest() { return Object.hasOwn(attrs, 'data-mq-panel') ? this : parent; },
+      scrollIntoView(options) {
+        assert.equal(this.closest().hidden, false, 'reveal before scrolling');
+        assert.equal(options.block, 'start');
+        scrolls.push(id);
+      },
+    };
+  }
+  const names = ['current', 'drivers', 'history'];
+  const panels = names.map(name => element('mq-panel-' + name, {'data-mq-panel': name}));
+  const tabs = names.map(name => element('tab-' + name, {'data-mq-tab': name}));
+  const target = element('mq-metrics-title', {}, panels[0]);
+  const outside = element('mq-shell');
+  const unknownPanel = element('unsupported', {'data-mq-panel': 'unsupported'});
+  const collision = element('current', {}, panels[2]);
+  const elements = new Map([...panels, ...tabs, target, outside, unknownPanel, collision].map(x => [x.id, x]));
+  document = {
+    readyState: 'complete', activeElement: null,
+    documentElement: element('html', {'data-lang': 'en'}),
+    getElementById(id) { return elements.get(id) || null; },
+    querySelector() { return null; },
+    querySelectorAll(selector) {
+      if (selector === '[data-mq-panel]') return panels;
+      if (selector === '[data-mq-tab]') return tabs;
+      return [];
+    },
+    addEventListener() {},
+  };
+  const window = {
+    get location() { return current; },
+    MMXSharedShell: bridge,
+    history: { replaceState(state, title, url) { historyWrites.push(url.toString()); current = new URL(url, current); } },
+    addEventListener(name, fn) { events.set(name, fn); },
+  };
+  vm.runInNewContext(source, {window, document, URL});
+  function check(name) {
+    assert.deepEqual(panels.filter(p => !p.hidden).map(p => p.attrs['data-mq-panel']), [name]);
+    for (const tab of tabs) {
+      const active = tab.attrs['data-mq-tab'] === name;
+      assert.equal(tab.attrs['aria-selected'], String(active));
+      assert.equal(tab.tabIndex, active ? 0 : -1);
+    }
+  }
+  function accept(hash, event = 'mmx:shell-location') {
+    current.hash = hash;
+    const before = current.href, writes = historyWrites.length;
+    events.get(event)();
+    assert.equal(current.href, before, 'resolution must preserve the exact URL');
+    assert.equal(historyWrites.length, writes, 'resolution must not publish history');
+  }
+  return {check, accept, scrolls, historyWrites, target, tabs, document, window};
+}
+
+// Standalone and an unrelated global retain their existing named-tab-only behavior.
+for (const bridge of [undefined, null, {}, {__mmxBridge: 'foreign', active: true}]) {
+  const page = mount(bridge);
+  for (const event of ['hashchange', 'mmx:shell-location']) {
+    page.accept('#mq-metrics-title', event); page.check('history');
+    page.accept('#drivers', event); page.check('drivers');
+    page.accept('#history', event);
+  }
+  assert.deepEqual(page.scrolls, []);
+  mount(bridge, '#mq-panel-history').check('current');
+}
+
+for (const active of [false, true]) {
+  const bridge = {__mmxBridge: 'mmx.shared-shell.v1', active};
+  for (const hash of ['#mq-metrics-title', '#mq%2Dmetrics%2Dtitle']) {
+    const page = mount(bridge, hash); page.check('current');
+    assert.deepEqual(page.scrolls, ['mq-metrics-title']);
+    assert.equal(page.window.location.hash, hash);
+    assert.equal(page.window.location.search, '?scope=US');
+    assert.deepEqual(page.historyWrites, []);
+  }
+  for (const name of ['current', 'drivers', 'history']) {
+    mount(bridge, '#' + name).check(name);
+    mount(bridge, '#mq-panel-' + name).check(name);
+  }
+  for (const event of ['hashchange', 'mmx:shell-location']) {
+    for (const from of ['drivers', 'history']) {
+      const page = mount(bridge, '#' + from);
+      page.accept('#mq-metrics-title', event); page.check('current');
+      assert.deepEqual(page.scrolls, ['mq-metrics-title']);
+    }
+    for (const hash of ['', '#missing', '#mq-shell', '#bad%ZZ', '#unsupported']) {
+      const page = mount(bridge); page.accept(hash, event); page.check('history');
+      assert.deepEqual(page.scrolls, []);
+    }
+    const precedence = mount(bridge);
+    precedence.accept('#current', event); precedence.check('current');
+    assert.deepEqual(precedence.scrolls, [], 'named tab wins over colliding section ID');
+  }
+  const keyboard = mount(bridge, '#current');
+  keyboard.tabs[1].fire('click'); keyboard.check('drivers');
+  keyboard.tabs[1].fire('keydown', {key: 'End', preventDefault() {}});
+  keyboard.check('history');
+  assert.equal(keyboard.document.activeElement, keyboard.tabs[2]);
+}
+console.log('suite candidate, standalone, fragment, history, scroll and keyboard controls passed');
+"""
+    result = subprocess.run(
+        [node, "-e", harness, str(TEMPLATES / "macro_suite.js")],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

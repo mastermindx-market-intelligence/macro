@@ -1,0 +1,43 @@
+{
+  "started_at": "2026-10-20T14:32:27.094596+00:00",
+  "head_before": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "fetch_command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "fetch",
+    "--no-tags",
+    "origin",
+    "main"
+  ],
+  "fetch_finished_at": "2026-10-20T14:32:51.612007+00:00",
+  "fetch_exit": 0,
+  "fetch_log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile-fetch.log",
+    "bytes": 179,
+    "sha256": "78112378796baab11964126d7bd1f2485d21583603df1dc9ea049cad6f87c683"
+  },
+  "head_after_fetch": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "main": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "fetch_head": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "status_after_fetch": [],
+  "merge_base": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "incoming_paths": {
+    "count": 4815,
+    "file": "macro-140bd-main-reconcile-incoming-paths.txt",
+    "sha256": "009dcb53b8ea13b2f5e583c3eaef0ddfdb7239a0a6b4701ca5e1c8e9a4667840"
+  },
+  "preview_started_at": "2026-10-20T14:32:57.603396+00:00",
+  "finished_at": "2026-10-20T14:32:58.665993+00:00",
+  "preview_exit": 1,
+  "preview_tree": "837cb25e0b3cc32aa5b0dee9bd280655eeeb50ac",
+  "preview_conflicts": [
+    "site/etfs.html",
+    "site/us_stocks.html"
+  ],
+  "preview_stdout_sha256": "61cd40d278c8eb606174dbf0523156b10fac2dd2a071bfa5119ab5480fb9c9df",
+  "preview_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "preview_stderr_tail": "",
+  "head_after": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "status_after": []
+}

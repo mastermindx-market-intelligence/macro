@@ -1,81 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-16",
-  "generated_at_utc": "2026-10-16T12:15:34.309977+00:00",
+  "asof": "2026-10-22",
+  "generated_at_utc": "2026-10-22T13:07:01.255504+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-10-16",
-      "window_end": null,
-      "etype": "CPI",
-      "label_en": "CPI (consumer prices)",
-      "label_zh": "CPI（居民消费价格）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-16",
-      "window_end": null,
-      "etype": "PPI",
-      "label_en": "PPI (producer prices)",
-      "label_zh": "PPI（工业生产者价格）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-19",
-      "window_end": null,
-      "etype": "ACTIVITY",
-      "label_en": "IP, FAI & retail sales",
-      "label_zh": "工业增加值、固投与社零",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-19",
-      "window_end": null,
-      "etype": "GDP",
-      "label_en": "GDP (quarterly)",
-      "label_zh": "GDP（季度）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-19",
-      "window_end": null,
-      "etype": "HK_UNEMP",
-      "label_en": "HK unemployment",
-      "label_zh": "香港失业率",
-      "region": "hk",
-      "impact": "medium",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-20",
-      "window_end": null,
-      "etype": "LPR",
-      "label_en": "LPR fix (loan prime rate)",
-      "label_zh": "LPR 报价（贷款市场报价利率）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
     {
       "date": "2026-10-20",
       "window_end": "2026-12-15",
@@ -386,6 +314,54 @@
       "impact": "high",
       "source_class": "rule",
       "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-12-01",
+      "window_end": null,
+      "etype": "CAIXIN_M",
+      "label_en": "Caixin Manufacturing PMI",
+      "label_zh": "财新制造业 PMI",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-12-01",
+      "window_end": null,
+      "etype": "HK_PMI",
+      "label_en": "S&P Global HK PMI",
+      "label_zh": "标普全球香港 PMI",
+      "region": "hk",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.hk_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-12-03",
+      "window_end": null,
+      "etype": "CAIXIN_S",
+      "label_en": "Caixin Services PMI",
+      "label_zh": "财新服务业 PMI",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-12-04",
+      "window_end": null,
+      "etype": "US_NFP",
+      "label_en": "US payrolls (NFP)",
+      "label_zh": "美国非农就业",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
       "approx": false
     }
   ],

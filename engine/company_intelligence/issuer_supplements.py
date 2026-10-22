@@ -13,7 +13,7 @@ from engine.company_intelligence.documents import SourceDocument,text_span,verif
 from engine.company_intelligence.contracts import canonical_json_bytes
 from engine.company_intelligence.documents import FilingKey
 from engine.earnings_release.receipts import receipt_for_char_span,replay_receipt
-from engine.company_intelligence.event_workspace import validate_event_workspace,_strip_private
+from engine.company_intelligence.event_workspace import validate_event_workspace,_strip_private,_ceil_second
 
 
 def _instant(value):
@@ -23,6 +23,7 @@ def _instant(value):
 
 
 def _rules(kind):
+    if kind=='LMT_RMS':return ()  # Numeric cells have their own closed table rules.
     if kind=='LHX_10Q':return (
         ('msl_preferred_payout_terms','Subsidiary Series A Preferred Stock payout options include',None,'reported_shareholder_terms','contractual_preferred_terms:conditional_alternatives'),
         ('msl_qipo_conversion_terms','Conversion Upon QIPO.',None,'company_forward','contractual_preferred_conversion:conditional_QIPO'),
@@ -63,8 +64,24 @@ def build_issuer_supplement(*,kind,body,url,filing,event_id,period,observed_at,s
         if parsed.hostname!='investors.l3harris.com' or filing is not None:raise ValueError('issuer_publication_not_native_SEC_filing')
         if available!=observed:raise ValueError('issuer_publication_availability_time_unproved')
         parser_id=url # parser input identity is a URI, never a SEC accession
+    elif kind=='LMT_RMS':
+        from engine.company_intelligence.rms_segment_profile import URL,EVENT
+        if not isinstance(filing,dict) or url!=URL or event_id!=EVENT or period!='2026Q2':
+            raise ValueError('RMS_source_event_period_mismatch')
+        if filing.get('cik')!='0000936468' or filing.get('accession')!='0001628280-26-049277' or filing.get('form')!='8-K':
+            raise ValueError('RMS_native_filing_identity_mismatch')
+        if filing.get('filing_date')!='2026-07-23' or filing.get('report_date')!='2026-07-23':
+            raise ValueError('RMS_native_filing_date_mismatch')
+        if _instant(filing.get('acceptance_datetime'))!=_instant('2026-07-23T10:30:57Z') or observed<_instant(filing['acceptance_datetime']):
+            raise ValueError('RMS_native_filing_acceptance_mismatch')
+        if available!=observed:raise ValueError('RMS_changed_byte_version_requires_actual_retrieval_clock')
+        # SourceDocument serializes whole seconds. Reuse the native conservative
+        # boundary rather than expose this observation before its real capture.
+        observed=available=_ceil_second(observed)
+        native=FilingKey(cik=filing['cik'],accession=filing['accession'])
+        parser_id=native.accession
     else:raise ValueError('supplement_profile_unsupported')
-    doc=normalize_filing({'content':body,'accession':parser_id,'entity_cik':'0000202058',
+    doc=normalize_filing({'content':body,'accession':parser_id,'entity_cik':native.cik if native else '0000202058',
         'form':filing['form'] if native else None,'filed_at':filing['filing_date'] if native else None,
         'report_date':filing['report_date'] if native else None,'source_url':url})
     if kind=='LHX_10Q' and not any(f'For Second Quarter {period[:4]}'==b.text for b in doc.blocks):raise ValueError('supplement_current_period_not_source_qualified')
@@ -79,7 +96,7 @@ def build_issuer_supplement(*,kind,body,url,filing,event_id,period,observed_at,s
         same=prior.get('document_id')==document_id and prior.get('source_sha256')==digest
         if same:
             prior_clock=_instant(prior['source_clock']['observed_at'])
-            if native is None:available=_instant(prior['source_clock']['available_at'])
+            if native is None or kind=='LMT_RMS':available=_instant(prior['source_clock']['available_at'])
             if prior_clock>observed or prior_clock<available.replace(microsecond=0):raise ValueError('prior_supplement_clock_invalid')
             observed=prior_clock;revision=old_doc['revision'];supersedes=old_doc['supersedes_document_id']
         else:
@@ -99,17 +116,27 @@ def build_issuer_supplement(*,kind,body,url,filing,event_id,period,observed_at,s
         span=text_span(document_id=document_id,document_version=1,body_sha256=digest,segment_index=0,segment_text=body,start_byte=receipt.byte_start,end_byte=receipt.byte_end,text=receipt.span_text,rights_profile='rp_public_primary_v1')
         verify_span(span,segment_text=body,body_sha256=digest)
         facts.append({'schema':'event_fact.v1','fact_id':event_id+':'+metric,'event_id':event_id,'metric':metric,'value':block.text,'unit':'source_reported_terms','period':period,'basis':basis,'fact_class':fact_class,'source_span':span.to_payload()})
+    if kind=='LMT_RMS':
+        from engine.company_intelligence.rms_segment_profile import numeric_facts
+        facts=numeric_facts(document=doc,body=body,digest=digest,event_id=event_id)
     source={'kind':'issuer_supplement','supplement_profile':kind,'document_id':document_id,'source_sha256':digest,'url':url,'form':filing['form'] if native else None,'filing_key':native.to_payload() if native else None,'receipt_state':'byte_replayed','source_document':source_doc.to_payload(),'source_clock':{'available_at':source_doc.to_payload()['available_at'],'observed_at':source_doc.to_payload()['fetched_at']},'printed_publication_date':'2026-08-04' if not native else None,'availability_basis':'native_SEC_acceptance' if native else 'conservative_actual_retrieval_no_publication_time_claim'}
+    if kind=='LMT_RMS':
+        from engine.company_intelligence.rms_segment_profile import AVAILABILITY
+        source['availability_basis']=AVAILABILITY
     return {'source':source,'facts':facts}
 
 
 def append_issuer_supplements(workspace,supplements):
     """Append owner-qualified documents; leave original EX99 lifecycle intact."""
     output=deepcopy(workspace)
-    if output['issuer']['company_id']!='cik:0000202058':raise ValueError('supplement_workspace_subject_mismatch')
     for supplement in supplements:
         source=supplement['source'];document=source['source_document']
         if document['event_id']!=output['event_id']:raise ValueError('supplement_event_mismatch')
+        subject={'LHX_10Q':'cik:0000202058','LHX_sale':'cik:0000202058','LMT_RMS':'cik:0000936468'}.get(source.get('supplement_profile'))
+        if subject is None or output['issuer']['company_id']!=subject:raise ValueError('supplement_workspace_subject_mismatch')
+        if source.get('supplement_profile')=='LMT_RMS' and (output['fiscal_period']['year'],output['fiscal_period']['quarter'])!=(2026,2):
+            raise ValueError('RMS_workspace_fiscal_period_mismatch')
+        validate_supplement_source(source,event_id=output['event_id'])
         existing=[s for s in output['sources'] if s.get('document_id')==source['document_id']]
         if existing:raise ValueError('duplicate_supplement_document')
         output['sources'].append(source)
@@ -125,7 +152,7 @@ def append_issuer_supplements(workspace,supplements):
 
 def validate_supplement_source(source,*,event_id):
     """Closed source-document proof used by the existing generation owner."""
-    if source.get('kind')!='issuer_supplement' or source.get('supplement_profile') not in ('LHX_10Q','LHX_sale'):raise ValueError('supplement_source_kind_unqualified')
+    if source.get('kind')!='issuer_supplement' or source.get('supplement_profile') not in ('LHX_10Q','LHX_sale','LMT_RMS'):raise ValueError('supplement_source_kind_unqualified')
     doc=source.get('source_document') or {}
     required={'schema','authority','document_id','event_id','document_kind','source_class','revision','content_sha256','content_bytes','filing_key','fetched_at','published_at','available_at','supersedes_document_id','superseded_by_document_id','rights_profile','rights_state','presented_fiscal_label','holds_bytes'}
     if set(doc)!=required or doc.get('schema')!='source_document.v1' or doc.get('authority')!='context_only' or doc.get('event_id')!=event_id or doc.get('document_id')!=source.get('document_id') or doc.get('content_sha256')!=source.get('source_sha256') or doc.get('rights_profile')!='rp_public_primary_v1' or doc.get('rights_state')!='public_primary' or doc.get('holds_bytes') is not True or source.get('receipt_state')!='byte_replayed':raise ValueError('supplement_source_document_unqualified')
@@ -140,5 +167,14 @@ def validate_supplement_source(source,*,event_id):
     origin=urlparse(source.get('url') or '')
     if source['supplement_profile']=='LHX_10Q':
         if native is None or native.cik!='0000202058' or source.get('form')!='10-Q' or origin.hostname!='www.sec.gov' or not origin.path.startswith('/Archives/edgar/data/202058/'+native.accession.replace('-','')+'/') or source.get('availability_basis')!='native_SEC_acceptance':raise ValueError('supplement_SEC_native_identity_unqualified')
+    elif source['supplement_profile']=='LMT_RMS':
+        from engine.company_intelligence.rms_segment_profile import URL,EVENT,AVAILABILITY
+        if (event_id!=EVENT or native is None or native.cik!='0000936468'
+                or native.accession!='0001628280-26-049277' or source.get('form')!='8-K'
+                or source.get('url')!=URL or doc['presented_fiscal_label']!='2026Q2'
+                or doc['document_kind']!='filing' or doc['source_class']!='primary_filing'
+                or doc['published_at'] is not None or observed!=available
+                or source.get('availability_basis')!=AVAILABILITY):
+            raise ValueError('RMS_source_identity_availability_unqualified')
     elif native is not None or source.get('form') is not None or origin.hostname!='investors.l3harris.com' or doc['published_at'] is not None or observed!=available or source.get('availability_basis')!='conservative_actual_retrieval_no_publication_time_claim':raise ValueError('issuer_source_identity_availability_unqualified')
     return observed,available

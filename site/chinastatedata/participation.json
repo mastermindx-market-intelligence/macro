@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-29",
+  "date": "2026-10-20",
   "authority": {
     "tier": "context_only",
     "may_rank": false,
@@ -76,34 +76,34 @@
     },
     "actor_semantics": "who_controls is a heuristic participation regime label, not beneficial-owner, seat, fund, institution, or ultimate-actor identity"
   },
-  "turnover_z20": -2.245378950596541,
-  "turnover_z60": -1.9924369894745029,
-  "margin_balance": 26089.90447105,
-  "margin_chg_5d": -1.6516248782357246,
-  "margin_to_mcap": 2.66815,
-  "southbound_net": 14.629999999999,
-  "southbound_z": -0.27899579788706375,
-  "etf_share_chg": 0.0,
+  "turnover_z20": -1.0320647502378175,
+  "turnover_z60": -1.5130239384703386,
+  "margin_balance": 24803.46629171,
+  "margin_chg_5d": -2.5727578736917223,
+  "margin_to_mcap": 2.647055,
+  "southbound_net": -1722.97,
+  "southbound_z": -0.47852750548919326,
+  "etf_share_chg": -0.2201927530252721,
   "zt_breadth": null,
   "failed_seal_ratio": null,
-  "qvix": 17.2,
-  "qvix_z": -1.0345908498327456,
-  "broker_rs": 0.0700000529213023,
+  "qvix": null,
+  "qvix_z": null,
+  "broker_rs": 0.07607394663691805,
   "regime": "dormant",
   "who_controls": "mixed",
   "risk": "low",
   "evidence": [
-    "turnover_z20=-2.25",
-    "fin_pct_float=2.67%",
-    "broker_rs=0.0700 (positive, sector leading)",
-    "qvix_z=-1.03 (inverted-semantics: high=stress)"
+    "turnover_z20=-1.03",
+    "fin_pct_float=2.65%",
+    "broker_rs=0.0761 (positive, sector leading)"
   ],
   "contradictions": [],
   "data_gaps": [
-    "zt_breadth:null on 2026-09-29",
+    "zt_breadth:null on 2026-10-20",
+    "qvix_z:null on 2026-10-20",
     "northbound:DEAD post-2024-08-16 SLF-050",
-    "snapshot_staleness:published row 2026-09-29 is 17d behind tape tail 2026-10-16; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "snapshot_staleness:published row 2026-10-20 is 2d behind tape tail 2026-10-22; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ],
   "backfill": false,
-  "snapshot_note": "core legs null on 2026-10-16; publishing last fully-populated row (2026-09-29)"
+  "snapshot_note": "core legs null on 2026-10-22; publishing last fully-populated row (2026-10-20)"
 }

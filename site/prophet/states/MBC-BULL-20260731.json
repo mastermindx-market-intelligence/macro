@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MBC-BULL-20260731",
-  "asof": "2026-10-18",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 9.9,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -50.1,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-22",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.5,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.5,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 0.9,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 26.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.046,
+    "dist_to_stop_r": 0.068,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
-    "p1": -0.6971,
-    "p2": -0.3485,
+    "horizon_pct_used": 157.8,
+    "p1": -0.621,
+    "p2": -0.3105,
     "p3": null,
-    "move_r": -1.046,
+    "move_r": -0.932,
     "mfe_r": 0.065,
     "mae_r": -1.095
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889
+  "days_elapsed": 71,
+  "tau": 1.5778
 }

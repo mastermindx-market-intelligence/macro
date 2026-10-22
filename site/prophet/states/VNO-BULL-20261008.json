@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VNO-BULL-20261008",
-  "asof": "2026-10-18",
+  "asof": "2026-10-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 15.9,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.45,
+    "dist_to_stop_r": -0.167,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 22.2,
-    "p1": -1.6333,
-    "p2": -0.8167,
+    "horizon_pct_used": 31.1,
+    "p1": -0.7778,
+    "p2": -0.3889,
     "p3": null,
-    "move_r": -2.45,
+    "move_r": -1.167,
     "mfe_r": 0.0,
-    "mae_r": -2.45
+    "mae_r": -2.7
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.3732910133512632e-06,
-  "_mae": -1.4699998474121116,
+  "_mae": -1.620001373291018,
   "_max_p1": 1.5258789037236282e-06,
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 10,
-  "tau": 0.2222
+  "days_elapsed": 14,
+  "tau": 0.3111
 }

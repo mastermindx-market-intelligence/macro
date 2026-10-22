@@ -205,6 +205,7 @@ def _detail_vm(ev: dict, built: str, leg_meta: dict | None = None,
               "experimental": spec.experimental,
               "caveat_en": spec.caveat_en, "caveat_zh": spec.caveat_zh},
         "as_of": ev["asof"], "built": built, "income_now": ev["income"],
+        "bench_start": ev["bench"].index[0].strftime("%b %d, %Y"),
         "risk_w": ev["risk_w"], "cash_w": ev["cash_w"], "score": ev["score"],
         "band_label": band_label, "band_label_zh": band_label_zh, "band_color": band_color,
         "last_switch": ev["last_switch"], "legs": legs, "sc": ev["sc"], "at": ev["at"],
@@ -232,6 +233,7 @@ def _card(ev: dict, stance: dict | None = None) -> dict:
         "maxdd": sc["maxdd"], "hodl_maxdd": sc["hodl_maxdd"],
         "income": ev["income"], "years": sc["years"],
         "stance_en": stance_en, "stance_zh": stance_zh,
+        "as_of": ev["asof"], "score": ev["score"] if spec.score is not None else None,
     }
 
 

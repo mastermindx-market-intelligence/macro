@@ -41,6 +41,7 @@ from .filing_attestation import (
 )
 from .filing_package import FilingPackage
 from .ixbrl_extraction import IxbrlExtraction
+from .issuer_sic import IssuerSicResolver
 from .query_snapshots import (
     HARD_MAX_SNAPSHOT_LEDGER_BYTES,
     HARD_MAX_SNAPSHOT_MANIFEST_BYTES,
@@ -594,14 +595,23 @@ def _preflight_base_snapshot(store: StrictBoundedReadStore, snapshot_id: str) ->
     return MappingProxyType(cache)
 
 
-def _verified_base_snapshot(store: StrictBoundedReadStore, snapshot_id: str) -> QuerySnapshot:
+def _verified_base_snapshot(
+    store: StrictBoundedReadStore,
+    snapshot_id: str,
+    *,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+) -> QuerySnapshot:
     cache = _preflight_base_snapshot(store, snapshot_id)
     try:
         # Never hand the legacy v1 verifier the mutable remote store after this
         # point: it only receives the exact bounded bytes whose hashes we just
         # checked. This closes both unbounded re-read and read-after-preflight
         # substitution paths without mutating v1 in this additive lane.
-        base = verify_query_snapshot(_FrozenV1ReplayStore(cache), snapshot_id=snapshot_id)
+        base = verify_query_snapshot(
+            _FrozenV1ReplayStore(cache),
+            snapshot_id=snapshot_id,
+            issuer_sic_resolver=issuer_sic_resolver,
+        )
     except (QuerySnapshotError, TypeError, ValueError) as exc:
         raise AttestedQuerySnapshotError(f"base query snapshot cannot be replay-verified: {exc}") from exc
     if base.snapshot_id != snapshot_id:
@@ -1954,6 +1964,7 @@ def prepare_attested_query_snapshot(
     occurrence_bindings: Sequence[AttestedOccurrenceBinding],
     operator_verification_observed_at: datetime | str,
     published_at: datetime | str,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> PreparedAttestedQuerySnapshot:
     """Prepare a v2 overlay on one explicit, already-published v1 receipt.
 
@@ -1966,7 +1977,7 @@ def prepare_attested_query_snapshot(
     if (query_snapshot_id is None) == (base_snapshot_id is None):
         raise AttestedQuerySnapshotError("supply exactly one of query_snapshot_id or base_snapshot_id")
     requested = _v1_snapshot_id(query_snapshot_id if query_snapshot_id is not None else base_snapshot_id or "")
-    base = _verified_base_snapshot(store, requested)
+    base = _verified_base_snapshot(store, requested, issuer_sic_resolver=issuer_sic_resolver)
     if type(companyfacts_conversion) is not CompanyFactsLedgerConversion:
         raise AttestedQuerySnapshotError("companyfacts_conversion must be an exact CompanyFactsLedgerConversion")
     try:
@@ -2402,9 +2413,14 @@ def _preflight_prepared_publication(
     payloads: Mapping[str, bytes],
     attestation_materials: Sequence[AttestationMaterial],
     companyfacts_conversion: CompanyFactsLedgerConversion,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> None:
     """Renew every external claim and replay the full overlay before writes."""
-    base = _verified_base_snapshot(store, manifest["base_snapshot"]["snapshot_id"])
+    base = _verified_base_snapshot(
+        store,
+        manifest["base_snapshot"]["snapshot_id"],
+        issuer_sic_resolver=issuer_sic_resolver,
+    )
     if _base_projection(base) != manifest["base_snapshot"]:
         raise AttestedQuerySnapshotError("prepared attested snapshot base receipt does not match manifest")
 
@@ -2449,14 +2465,21 @@ def _preflight_prepared_publication(
     )
 
 
-def _snapshot_from_manifest(store: StrictBoundedReadStore, *, snapshot_id: str) -> AttestedQuerySnapshot:
+def _snapshot_from_manifest(
+    store: StrictBoundedReadStore,
+    *,
+    snapshot_id: str,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+) -> AttestedQuerySnapshot:
     snapshot_id = _snapshot_id(snapshot_id)
     manifest_key = _manifest_key(snapshot_id)
     manifest = _decode_manifest(_read_bounded(store, manifest_key, maximum=HARD_MAX_ATTESTED_SNAPSHOT_MANIFEST_BYTES))
     if manifest["snapshot_id"] != snapshot_id:
         raise AttestedQuerySnapshotError("attested snapshot manifest does not match requested id")
     base_ref = manifest["base_snapshot"]
-    base = _verified_base_snapshot(store, base_ref["snapshot_id"])
+    base = _verified_base_snapshot(
+        store, base_ref["snapshot_id"], issuer_sic_resolver=issuer_sic_resolver
+    )
     if _base_projection(base) != base_ref:
         raise AttestedQuerySnapshotError("attested snapshot base receipt does not match manifest")
     artifacts = tuple(AttestedQuerySnapshotArtifact(**item) for item in manifest["objects"])
@@ -2501,6 +2524,7 @@ def publish_attested_query_snapshot(
     *,
     attestation_materials: Sequence[AttestationMaterial],
     companyfacts_conversion: CompanyFactsLedgerConversion,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> AttestedQuerySnapshot:
     """Renew, replay, write immutable objects, then advance only v2 latest.
 
@@ -2532,6 +2556,7 @@ def publish_attested_query_snapshot(
         payloads=payloads,
         attestation_materials=attestation_materials,
         companyfacts_conversion=companyfacts_conversion,
+        issuer_sic_resolver=issuer_sic_resolver,
     )
     with _PUBLISH_LOCK:
         for artifact in artifacts:
@@ -2547,7 +2572,9 @@ def publish_attested_query_snapshot(
             collision_error="attested snapshot immutable manifest collision",
             readback_error="attested snapshot manifest read-back mismatch",
         )
-        snapshot = _snapshot_from_manifest(store, snapshot_id=snapshot_id)
+        snapshot = _snapshot_from_manifest(
+            store, snapshot_id=snapshot_id, issuer_sic_resolver=issuer_sic_resolver
+        )
         _publish_pointer(store, snapshot)
         return snapshot
 

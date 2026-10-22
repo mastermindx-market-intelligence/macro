@@ -1,0 +1,76 @@
+{
+  "schema": "news.activation.portable_test_receipt.v1",
+  "started_at": "2026-10-20T17:17:58.517775+00:00",
+  "completed_at": "2026-10-20T17:17:58.664574+00:00",
+  "reviewer": "/root/news_release_owner",
+  "reviewed_head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+  "expected_merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_publisher_activation_operation.py"
+  ],
+  "working_directory": "Directory containing the three sibling artifacts; test executed in an unrelated temporary directory, not the original scratch directory",
+  "returncode": 0,
+  "tests_run": 13,
+  "test_names": [
+    "test_apply_preserves_values_orders_effects_and_never_replays",
+    "test_atomic_no_clobber_and_stale_preimage",
+    "test_duplicate_missing_reordered_or_extra_environment_file_refused",
+    "test_duplicate_single_value_service_property_refused",
+    "test_failed_check_retains_phase_and_refuses_automatic_retry",
+    "test_malformed_env_is_not_evaluated",
+    "test_non_alpaca_and_duplicate_key_refused",
+    "test_optional_key_without_prior_carrier_refused",
+    "test_preview_has_no_effect",
+    "test_receipt_symlink_is_preserved_and_refused",
+    "test_service_state_preserves_repeated_environment_files_in_order",
+    "test_service_state_supports_combined_environment_files_property",
+    "test_unrelated_duplicate_keys_remain_untouched"
+  ],
+  "artifacts": [
+    {
+      "file": "publisher_activation_operation.py",
+      "bytes": 28535,
+      "sha256": "4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428"
+    },
+    {
+      "file": "test_publisher_activation_operation.py",
+      "bytes": 14563,
+      "sha256": "aff80eff8c353efa9782cc802f173d99a5f61c1c03a91dbb545364ee9895c645"
+    },
+    {
+      "file": "publisher_activation_fixture_receipts.json",
+      "bytes": 3915,
+      "sha256": "8d2f4a528f3847f3afbea3f24ae8bbc04b2a25dee890d843537abba8b1d67bd3"
+    }
+  ],
+  "portability": {
+    "operation_resolved_relative_to_test_file": true,
+    "fixture_resolved_relative_to_test_file": true,
+    "scratch_absolute_paths_in_test": false,
+    "original_test_AST_identical_after_reversing_three_filename_substitutions": true,
+    "activation_script_bytes_unchanged": true
+  },
+  "qualification_scope": "Isolated local operation and service-parser simulations; systemctl/git/provider commands are fakes, source/service fixtures are local, and no production activation proof is claimed",
+  "effects": {
+    "remote_edits": 0,
+    "remote_executions": 0,
+    "provider_calls": 0,
+    "live_writes": 0
+  },
+  "stdout": "",
+  "stderr": "test_apply_preserves_values_orders_effects_and_never_replays (test_publisher_activation_operation.OperationTests.test_apply_preserves_values_orders_effects_and_never_replays) ... ok\ntest_atomic_no_clobber_and_stale_preimage (test_publisher_activation_operation.OperationTests.test_atomic_no_clobber_and_stale_preimage) ... ok\ntest_duplicate_missing_reordered_or_extra_environment_file_refused (test_publisher_activation_operation.OperationTests.test_duplicate_missing_reordered_or_extra_environment_file_refused) ... ok\ntest_duplicate_single_value_service_property_refused (test_publisher_activation_operation.OperationTests.test_duplicate_single_value_service_property_refused) ... ok\ntest_failed_check_retains_phase_and_refuses_automatic_retry (test_publisher_activation_operation.OperationTests.test_failed_check_retains_phase_and_refuses_automatic_retry) ... ok\ntest_malformed_env_is_not_evaluated (test_publisher_activation_operation.OperationTests.test_malformed_env_is_not_evaluated) ... ok\ntest_non_alpaca_and_duplicate_key_refused (test_publisher_activation_operation.OperationTests.test_non_alpaca_and_duplicate_key_refused) ... ok\ntest_optional_key_without_prior_carrier_refused (test_publisher_activation_operation.OperationTests.test_optional_key_without_prior_carrier_refused) ... ok\ntest_preview_has_no_effect (test_publisher_activation_operation.OperationTests.test_preview_has_no_effect) ... ok\ntest_receipt_symlink_is_preserved_and_refused (test_publisher_activation_operation.OperationTests.test_receipt_symlink_is_preserved_and_refused) ... ok\ntest_service_state_preserves_repeated_environment_files_in_order (test_publisher_activation_operation.OperationTests.test_service_state_preserves_repeated_environment_files_in_order) ... ok\ntest_service_state_supports_combined_environment_files_property (test_publisher_activation_operation.OperationTests.test_service_state_supports_combined_environment_files_property) ... ok\ntest_unrelated_duplicate_keys_remain_untouched (test_publisher_activation_operation.OperationTests.test_unrelated_duplicate_keys_remain_untouched) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.095s\n\nOK\n",
+  "runtime_requirements": {
+    "python": "3.12",
+    "platform": "POSIX",
+    "effective_uid": 0,
+    "reason": "The unmodified operation root and file-ownership guards are exercised against temporary test files; run in an isolated root container/runtime."
+  },
+  "observed_runtime": {
+    "python": "3.12.14",
+    "effective_uid": 0
+  }
+}

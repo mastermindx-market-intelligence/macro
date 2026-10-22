@@ -25,7 +25,7 @@ from __future__ import annotations
 import ast
 import csv
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from decimal import (
     Context,
     Decimal,
@@ -45,6 +45,7 @@ from itertools import islice
 import re
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Protocol, Sequence
+from zoneinfo import ZoneInfo
 
 from .metric_registry import (
     ConceptAlias,
@@ -53,6 +54,7 @@ from .metric_registry import (
     MappingRule,
     MetricContract,
     MetricRegistry,
+    formula_signed_terms,
     qualify_metric,
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
@@ -89,10 +91,21 @@ from .raw_ledger import (
     utc_text,
 )
 from .detectors import issuer_class_for_sic
+from .not_presented import (
+    NA_BASIS_NOT_PRESENTED_ITEM,
+    NOT_PRESENTED_REASON,
+    NotPresentedError,
+    NotPresentedEvidence,
+    NotPresentedPack,
+    evaluate_not_presented_package,
+    package_linkbases,
+    verify_not_presented_evidence,
+)
 
 # An empty projection for the overwhelmingly common no-evidence path, so a
 # FIF-3A3 query allocates nothing new.
 _EMPTY_ROOT_MAP: Mapping[str, str] = MappingProxyType({})
+_EMPTY_PACKAGE_MAP: Mapping[str, Any] = MappingProxyType({})
 
 # Per-engine memo ceiling for confirmation-unified roots.
 MAX_EFFECTIVE_ROOT_CACHE_ENTRIES = 4096
@@ -134,6 +147,8 @@ HARD_MAX_MATRIX_EDGES = 200_000
 HARD_MAX_RECEIPT_WIRE_BYTES = 128 * 1024 * 1024
 HARD_MAX_RECEIPT_CONTAINER_ITEMS = HARD_MAX_MATRIX_NODES
 MAX_QUERY_TEXT_CHARS = 4096
+# Filing packages admitted beside a not-presented rule pack (step 5 b2).
+HARD_MAX_NOT_PRESENTED_PACKAGES = 10_000
 
 # A selected occurrence can prove that the normalized value is internally
 # consistent with one immutable source artifact.  It cannot, without the
@@ -279,6 +294,36 @@ def _date_value(value: date | datetime | str | None, *, field_name: str) -> date
 
 def _date_text(value: date | None) -> str | None:
     return value.isoformat() if value is not None else None
+
+
+_EDGAR_TIMEZONE = ZoneInfo("America/New_York")
+_EDGAR_FILING_CUTOFF = time(17, 30)
+_EDGAR_MAX_WEEKDAY_ROLL = 3
+
+
+def _latest_edgar_filed_date(accepted_at: datetime) -> date:
+    """Return the latest SEC filing date consistent with an EDGAR acceptance.
+
+    Regulation S-T Rule 13(a): a submission accepted after 5:30 p.m. Eastern
+    time, or on a non-business day, is deemed filed on the next business day,
+    so its filing date legitimately follows the acceptance date (in UTC and
+    in Eastern time).  Within filing hours the filing date may not follow the
+    Eastern acceptance date.  Federal holidays and unscheduled EDGAR closures
+    are not modelled: an out-of-hours acceptance may roll to at most the third
+    weekday after its Eastern date (the next business day past two intervening
+    weekday closures).  ``filed_at`` never gates availability; this bound only
+    keeps filing metadata consistent with the occurrence it describes.
+    """
+    eastern = accepted_at.astimezone(_EDGAR_TIMEZONE)
+    bound = eastern.date()
+    if bound.weekday() < 5 and eastern.time() < _EDGAR_FILING_CUTOFF:
+        return bound
+    rolled = 0
+    while rolled < _EDGAR_MAX_WEEKDAY_ROLL:
+        bound += timedelta(days=1)
+        if bound.weekday() < 5:
+            rolled += 1
+    return bound
 
 
 def _positive_int(value: int, *, field_name: str, ceiling: int) -> int:
@@ -616,6 +661,35 @@ def _csv_safe(value: Any) -> str:
     """Prevent spreadsheet formula interpretation of textual export fields."""
     text = str(value)
     return f"'{text}" if text.startswith(("=", "+", "-", "@", "\t", "\r")) else text
+
+
+# In-row marker for a qualified sum in the tabular exports (CSV, XLSX derived
+# from CSV, and the Parquet cells projection).  A qualified sum is a formula
+# VALUE whose versioned not-presented policy omitted one or more operands; the
+# JSON receipt prints them as ``provenance.qualified_not_presented``.  The
+# tabular rows have one fixed column set, so the reason column (always empty
+# on a VALUE) carries this marker plus the omitted operand IDs instead.  A
+# reader therefore never sees a qualified sum as a plain number.  No kernel
+# reason starts with this prefix.
+QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX = "qualified_not_presented: "
+
+
+def _export_reason_text(cell: Any) -> str | None:
+    """Reason-column text shared by the CSV/XLSX and Parquet projections.
+
+    Every cell exports its kernel reason unchanged, except a qualified sum,
+    which exports the in-row qualifier marker.  Before the not-presented
+    policy clock no cell carries a qualifier, so pre-clock export bytes are
+    the historical bytes.
+    """
+    qualified = cell.provenance.qualified_not_presented
+    if not qualified:
+        return cell.reason
+    if cell.state is not CellState.VALUE or cell.reason is not None:
+        raise QueryValidationError(
+            "a not-presented qualifier is exported only on a formula value"
+        )
+    return QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX + ", ".join(qualified)
 
 
 @dataclass(frozen=True)
@@ -991,6 +1065,18 @@ class CellProvenance:
     # other receipt so existing bytes stay identical.
     issuer_class: str | None = None
     issuer_class_basis: str | None = None
+    # Not-presented (NP) verdict (step 5 b2).  Printed only on a direct
+    # ``not_presented`` NOT_APPLICABLE cell; absent from every other receipt
+    # so existing bytes stay identical.  ``na_basis`` names why N/A is lawful;
+    # ``not_presented`` is the recomputable linkbase evidence behind it.
+    na_basis: str | None = None
+    not_presented: NotPresentedEvidence | None = None
+    # Formula not-presented qualifier (step 5 build-c, R-FORMULA F3).  Printed
+    # only on a formula VALUE cell whose governed policy left a not-presented
+    # operand out of a signed sum, or that inherited such a qualifier from a
+    # VALUE operand; it names the omitted metric IDs.  Absent from every other
+    # receipt so existing bytes stay identical.
+    qualified_not_presented: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         try:
@@ -1087,6 +1173,7 @@ class CellProvenance:
             "reason",
             "issuer_class",
             "issuer_class_basis",
+            "na_basis",
         ):
             object.__setattr__(
                 self,
@@ -1095,6 +1182,22 @@ class CellProvenance:
             )
         if self.form is not None:
             object.__setattr__(self, "form", self.form.upper())
+        if self.not_presented is not None and not isinstance(
+            self.not_presented, NotPresentedEvidence
+        ):
+            raise QueryValidationError("provenance.not_presented must be NP evidence")
+        # The NP pair is all-or-nothing and closed: a basis without evidence
+        # (or evidence without a basis) is an N/A nobody can recompute.
+        if (self.na_basis is None) is not (self.not_presented is None):
+            raise QueryValidationError(
+                "provenance.na_basis and provenance.not_presented must appear together"
+            )
+        if self.na_basis is not None and self.na_basis != NA_BASIS_NOT_PRESENTED_ITEM:
+            raise QueryValidationError("provenance.na_basis is not a governed N/A basis")
+        if (self.not_presented is not None) is not (self.reason == NOT_PRESENTED_REASON):
+            raise QueryValidationError(
+                "not-presented evidence must match the not_presented reason"
+            )
         for field_name in (
             "source_body_sha256",
             "filing_metadata_content_sha256",
@@ -1151,10 +1254,11 @@ class CellProvenance:
             if (
                 self.accepted_at is not None
                 and self.filed_at is not None
-                and self.filed_at > self.accepted_at.date()
+                and self.filed_at > _latest_edgar_filed_date(self.accepted_at)
             ):
                 raise QueryValidationError(
-                    "filing metadata provenance filed_at follows source acceptance"
+                    "filing metadata provenance filed_at follows the EDGAR filing date "
+                    "of source acceptance"
                 )
         if self.alias_priority is not None and (
             isinstance(self.alias_priority, bool)
@@ -1199,6 +1303,20 @@ class CellProvenance:
                 field_name="provenance.dependency_cell_ids",
             ),
         )
+        object.__setattr__(
+            self,
+            "qualified_not_presented",
+            _canonical_text_tuple(
+                self.qualified_not_presented,
+                field_name="provenance.qualified_not_presented",
+            ),
+        )
+        if self.qualified_not_presented and (
+            self.kind is not ProvenanceKind.FORMULA or self.reason is not None
+        ):
+            raise QueryValidationError(
+                "provenance.qualified_not_presented is printed only on a formula value"
+            )
         if self.selected_raw_fact is not None and not isinstance(
             self.selected_raw_fact, RawFactOccurrence
         ):
@@ -1301,6 +1419,9 @@ class CellProvenance:
                 self.selected_raw_fact,
                 self.issuer_class,
                 self.issuer_class_basis,
+                self.na_basis,
+                self.not_presented,
+                self.qualified_not_presented,
             )
             if any(value not in (None, (), []) for value in excluded):
                 raise QueryValidationError("opaque provenance cannot expose receipt details")
@@ -1464,6 +1585,12 @@ class CellProvenance:
             payload["issuer_class"] = self.issuer_class
         if self.issuer_class_basis is not None:
             payload["issuer_class_basis"] = self.issuer_class_basis
+        if self.na_basis is not None:
+            payload["na_basis"] = self.na_basis
+        if self.not_presented is not None:
+            payload["not_presented"] = self.not_presented.to_dict()
+        if self.qualified_not_presented:
+            payload["qualified_not_presented"] = list(self.qualified_not_presented)
         return payload
 
     @classmethod
@@ -1730,14 +1857,34 @@ def _cell_provenance_from_dict(value: Any) -> CellProvenance:
             # historical receipts replay unchanged and refusals parse back.
             "issuer_class",
             "issuer_class_basis",
+            # Optional not-presented verdict keys (step 5 b2), same contract.
+            "na_basis",
+            "not_presented",
+            # Optional formula qualifier (step 5 build-c), same contract.
+            "qualified_not_presented",
         }
     )
     raw = _strict_wire_mapping(
         value,
         field_name="cell.provenance",
         allowed=allowed,
-        required=allowed - {"issuer_class", "issuer_class_basis"},
+        required=allowed
+        - {
+            "issuer_class",
+            "issuer_class_basis",
+            "na_basis",
+            "not_presented",
+            "qualified_not_presented",
+        },
     )
+    if raw.get("not_presented") is not None:
+        try:
+            raw = {
+                **raw,
+                "not_presented": NotPresentedEvidence.from_dict(raw["not_presented"]),
+            }
+        except NotPresentedError as exc:
+            raise QueryValidationError(f"invalid cell provenance: {exc}") from exc
     selected = (
         _raw_fact_from_dict(raw["selected_raw_fact"])
         if raw["selected_raw_fact"] is not None
@@ -1768,6 +1915,17 @@ def _cell_provenance_from_dict(value: Any) -> CellProvenance:
         field_name="cell.provenance.dependency_cell_ids",
         maximum=HARD_MAX_DEPENDENCY_RECEIPTS,
     )
+    qualified_not_presented: tuple[Any, ...] = ()
+    if "qualified_not_presented" in raw:
+        qualified_not_presented = _wire_list(
+            raw["qualified_not_presented"],
+            field_name="cell.provenance.qualified_not_presented",
+            maximum=HARD_MAX_PROVENANCE_IDS,
+        )
+        if not qualified_not_presented:
+            raise QueryValidationError(
+                "cell.provenance.qualified_not_presented is omitted, never empty"
+            )
     try:
         return CellProvenance(
             **{
@@ -1778,6 +1936,7 @@ def _cell_provenance_from_dict(value: Any) -> CellProvenance:
                 "mapping_digests": mapping_digests,
                 "source_occurrence_ids": source_occurrence_ids,
                 "dependency_cell_ids": dependency_cell_ids,
+                "qualified_not_presented": qualified_not_presented,
             }
         )
     except (TypeError, ValueError) as exc:
@@ -2522,6 +2681,8 @@ def _governance_available_at(
         if bundle.formula_pack is None:
             raise QueryValidationError("formula metric has no visible formula lane")
         clocks.extend((bundle.formula_pack.available_at, contract.formula.rule.available_at))
+        if contract.formula.not_presented_policy is not None:
+            clocks.append(contract.formula.not_presented_policy.rule.available_at)
     return max(clocks)
 
 
@@ -2724,6 +2885,7 @@ def _validate_period_rejection_provenance(
         provenance.source_occurrence_ids,
         provenance.dependency_cell_ids,
         provenance.selected_raw_fact,
+        provenance.qualified_not_presented,
     )
     if any(value not in (None, (), []) for value in forbidden):
         raise QueryValidationError(
@@ -2783,6 +2945,7 @@ def _validate_qualification_refusal_provenance(
         provenance.source_occurrence_ids,
         provenance.dependency_cell_ids,
         provenance.selected_raw_fact,
+        provenance.qualified_not_presented,
     )
     if any(value not in (None, (), []) for value in forbidden):
         raise QueryValidationError(
@@ -2844,6 +3007,12 @@ _DIRECT_SOURCE_WITNESS_NON_VALUE_OUTCOMES = {
     "filing form is unavailable or outside the governed metric contract": CellState.NOT_EVALUABLE,
     "source numeric value is outside the query decimal contract": CellState.NOT_EVALUABLE,
 }
+# Not-presented (step 5 b2): the standard-absence branch upgraded to N/A only
+# when governed linkbase evidence recomputes.  Source-less like the absence it
+# replaces; the evidence object carries the filing binding instead.
+_DIRECT_NOT_PRESENTED_OUTCOMES = {
+    NOT_PRESENTED_REASON: CellState.NOT_APPLICABLE,
+}
 
 
 def _applicable_direct_alias_identities(
@@ -2894,6 +3063,7 @@ def _validate_direct_non_value_shape(
         _DIRECT_SOURCELESS_NON_VALUE_OUTCOMES.get(reason)
         or _DIRECT_ALIAS_EVIDENCE_NON_VALUE_OUTCOMES.get(reason)
         or _DIRECT_SOURCE_WITNESS_NON_VALUE_OUTCOMES.get(reason)
+        or _DIRECT_NOT_PRESENTED_OUTCOMES.get(reason)
     )
     if expected_state is None or node.state is not expected_state:
         raise QueryValidationError(
@@ -2918,6 +3088,38 @@ def _validate_direct_non_value_shape(
         provenance.published_at,
         provenance.unit,
     )
+    if reason in _DIRECT_NOT_PRESENTED_OUTCOMES:
+        evidence = provenance.not_presented
+        if (
+            evidence is None
+            or provenance.na_basis != NA_BASIS_NOT_PRESENTED_ITEM
+            or alias is not None
+            or any(value is not None for value in direct_source_fields)
+            or provenance.source_ready_at is not None
+            or provenance.system_ready_at is not None
+            or provenance.source_occurrence_ids
+        ):
+            raise QueryValidationError(
+                "not-presented outcome has an invalid provenance shape"
+            )
+        if not evidence.rule_id.startswith(f"not_presented.{node.metric_id}/"):
+            raise QueryValidationError(
+                "not-presented evidence names another metric's rule"
+            )
+        applicable_aliases = _applicable_direct_alias_identities(contract, node.period)
+        if not applicable_aliases or _has_ambiguous_direct_alias_priorities(
+            applicable_aliases
+        ):
+            raise QueryValidationError(
+                "not-presented outcome requires one unambiguous applicable alias set"
+            )
+        if provenance.policy is BitemporalPolicy.LATEST_RESTATED:
+            raise QueryValidationError(
+                "not-presented outcome contradicts latest_restated policy"
+            )
+        return
+    if provenance.not_presented is not None or provenance.na_basis is not None:
+        raise QueryValidationError("only a not-presented outcome carries NP evidence")
     if reason in _DIRECT_SOURCELESS_NON_VALUE_OUTCOMES:
         if (
             alias is not None
@@ -3107,6 +3309,8 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
             raise QueryValidationError("non-value direct cell cannot claim selected raw evidence")
         _validate_direct_non_value_shape(node, contract, alias)
         return
+    if provenance.not_presented is not None or provenance.na_basis is not None:
+        raise QueryValidationError("direct value cell cannot carry NP evidence")
     fact = provenance.selected_raw_fact
     if fact is None or alias is None:
         raise QueryValidationError("direct value cell requires selected raw fact and alias")
@@ -3188,6 +3392,196 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
         raise QueryValidationError("selected raw fact dimensions violate metric contract")
 
 
+# R-FORMULA F3 (step 5 build-c): reasons a governed formula not-presented
+# policy prints.  The N/A prefix also marks a formula cell as a not-presented
+# operand of a downstream formula.
+FORMULA_NOT_PRESENTED_PREFIX = "formula_not_presented: "
+FORMULA_NOT_PRESENTED_WITHHELD_PREFIX = "not_presented_dependency: "
+FORMULA_QUALIFIED_WITHHELD_PREFIX = "qualified_dependency: "
+_FORMULA_REVISION_BASIS_REASON = (
+    "incompatible_revision_basis: formula dependencies require one shared source accession/document"
+)
+
+
+@dataclass(frozen=True)
+class _FormulaPolicyOutcome:
+    state: CellState
+    value: Decimal | None
+    reason: str | None
+    qualified_not_presented: tuple[str, ...] = ()
+    # True when the receipt summarizes its revision basis over the presented
+    # (VALUE) operands only, because an operand was left out of the sum.
+    value_summary: bool = False
+
+
+def _is_not_presented_operand(item: Any) -> bool:
+    if item.state is not CellState.NOT_APPLICABLE:
+        return False
+    reason = item.reason or ""
+    return reason == NOT_PRESENTED_REASON or reason.startswith(FORMULA_NOT_PRESENTED_PREFIX)
+
+
+def _eval_qualified_sum(formula: FormulaRule, values: Mapping[str, Decimal]) -> Decimal:
+    """Add the presented operands of a governed signed sum (R-FORMULA F3).
+
+    An omitted operand is left out of the sum; it is never materialized as
+    zero.  The fixed query Decimal contract is the one ``_eval_formula_decimal``
+    applies.
+    """
+    try:
+        terms = formula_signed_terms(formula.expression, formula.dependencies)
+    except ValueError as exc:
+        raise QueryValidationError(str(exc)) from exc
+    try:
+        with localcontext(_formula_context()):
+            result: Decimal | None = None
+            for name, sign in terms:
+                if name not in values:
+                    continue
+                value = values[name]
+                if not isinstance(value, Decimal):
+                    raise QueryValidationError(
+                        f"formula dependency {name} is not a Decimal value"
+                    )
+                term = +_bounded_decimal(value, field_name=f"formula dependency {name}")
+                if sign < 0:
+                    term = -term
+                result = term if result is None else result + term
+            if result is None:
+                raise QueryValidationError("qualified_sum has no presented operand")
+            result = +result
+            if not result.is_finite():
+                raise QueryValidationError("formula result is not finite")
+            return _bounded_decimal(result, field_name="formula result")
+    except (DecimalException, OverflowError) as exc:
+        raise QueryValidationError(
+            "formula numeric result violates the fixed decimal contract"
+        ) from exc
+
+
+def _formula_policy_outcome(
+    dependencies: Sequence[Any],
+    formula: FormulaRule,
+) -> _FormulaPolicyOutcome | None:
+    """Formula stage for not-presented operands, shared by kernel and replay.
+
+    Returns ``None`` unless a dependency is a governed not-presented N/A (or a
+    formula N/A that a not-presented operand caused) or a VALUE dependency
+    carries a not-presented qualifier; the historical triage then decides with
+    unchanged bytes.  Any other N/A dependency also defers to that triage.
+
+    The formula's versioned ``not_presented_policy`` decides; without one the
+    formula is withheld (MISSING), never zero-filled.  A qualified sum adds the
+    presented operands only when every omitted operand is eligible, every
+    presented operand shares one revision basis, and every omission's
+    linkbase evidence comes from that same accession; the omitted IDs are
+    printed on the VALUE receipt.
+    """
+    np_ops = [item for item in dependencies if _is_not_presented_operand(item)]
+    qualified_ops = [
+        item
+        for item in dependencies
+        if item.state is CellState.VALUE and item.provenance.qualified_not_presented
+    ]
+    if not np_ops and not qualified_ops:
+        return None
+    if any(
+        item.state is CellState.NOT_APPLICABLE and not _is_not_presented_operand(item)
+        for item in dependencies
+    ):
+        return None
+    if np_ops:
+        not_evaluable = [item for item in dependencies if item.state is CellState.NOT_EVALUABLE]
+        if not_evaluable:
+            return _FormulaPolicyOutcome(
+                CellState.NOT_EVALUABLE,
+                None,
+                "incompatible_dependencies: "
+                + ", ".join(
+                    f"{item.metric_id} ({item.reason or 'not_evaluable'})"
+                    for item in not_evaluable
+                ),
+            )
+        missing = [item for item in dependencies if item.state is CellState.MISSING]
+        if missing:
+            return _FormulaPolicyOutcome(
+                CellState.MISSING,
+                None,
+                "missing_dependency: "
+                + ", ".join(f"{item.metric_id} ({item.reason or 'missing'})" for item in missing),
+            )
+    elif any(item.state is not CellState.VALUE for item in dependencies):
+        return None
+    np_policy = formula.not_presented_policy
+    mode = np_policy.mode if np_policy is not None else "withhold"
+    np_ids = [item.metric_id for item in np_ops]
+    if np_ops and np_policy is not None and mode == "qualified_sum":
+        if any(item not in np_policy.eligible_operands for item in np_ids):
+            mode = "withhold"
+        elif len(np_ops) == len(dependencies):
+            mode = np_policy.all_not_presented or "withhold"
+    if np_ops and mode == "withhold":
+        return _FormulaPolicyOutcome(
+            CellState.MISSING, None, FORMULA_NOT_PRESENTED_WITHHELD_PREFIX + ", ".join(np_ids)
+        )
+    if np_ops and mode == "not_applicable":
+        return _FormulaPolicyOutcome(
+            CellState.NOT_APPLICABLE, None, FORMULA_NOT_PRESENTED_PREFIX + ", ".join(np_ids)
+        )
+    if qualified_ops and (np_policy is None or np_policy.qualified_operand == "withhold"):
+        return _FormulaPolicyOutcome(
+            CellState.MISSING,
+            None,
+            FORMULA_QUALIFIED_WITHHELD_PREFIX
+            + ", ".join(item.metric_id for item in qualified_ops),
+        )
+    presented = [item for item in dependencies if item.state is CellState.VALUE]
+    revision_bases = {
+        (
+            item.provenance.source,
+            item.provenance.accession,
+            item.provenance.document_id,
+            item.provenance.source_body_sha256,
+        )
+        for item in presented
+    }
+    if len(revision_bases) != 1 or any(
+        any(part is None for part in basis) for basis in revision_bases
+    ):
+        return _FormulaPolicyOutcome(CellState.NOT_EVALUABLE, None, _FORMULA_REVISION_BASIS_REASON)
+    shared_accession = next(iter(revision_bases))[1]
+    if any(
+        item.provenance.not_presented is None
+        or item.provenance.not_presented.accession != shared_accession
+        for item in np_ops
+    ):
+        return _FormulaPolicyOutcome(CellState.NOT_EVALUABLE, None, _FORMULA_REVISION_BASIS_REASON)
+    values = {item.metric_id: item.value for item in presented}
+    if any(value is None for value in values.values()):
+        raise QueryValidationError("formula value dependency lacks a Decimal value")
+    bound = {key: value for key, value in values.items() if value is not None}
+    try:
+        result = (
+            _eval_qualified_sum(formula, bound)
+            if np_ops
+            else _eval_formula_decimal(formula.expression, bound)
+        )
+    except ZeroDivisionError:
+        return _FormulaPolicyOutcome(CellState.NOT_EVALUABLE, None, "division_by_zero")
+    except QueryValidationError as exc:
+        return _FormulaPolicyOutcome(CellState.NOT_EVALUABLE, None, str(exc))
+    qualifiers = set(np_ids)
+    for item in qualified_ops:
+        qualifiers.update(item.provenance.qualified_not_presented)
+    return _FormulaPolicyOutcome(
+        CellState.VALUE,
+        result,
+        None,
+        tuple(sorted(qualifiers)),
+        value_summary=bool(np_ops),
+    )
+
+
 def _expected_denominator_refusal(
     dependencies: Sequence[CellNode],
     formula: FormulaRule,
@@ -3223,6 +3617,9 @@ def _expected_formula_outcome(
     refusal = _expected_denominator_refusal(dependencies, formula)
     if refusal is not None:
         return refusal[0], None, refusal[1]
+    np_outcome = _formula_policy_outcome(dependencies, formula)
+    if np_outcome is not None:
+        return np_outcome.state, np_outcome.value, np_outcome.reason
     not_applicable = [item for item in dependencies if item.state is CellState.NOT_APPLICABLE]
     if not_applicable:
         return (
@@ -3398,8 +3795,23 @@ def _validate_formula_node(
         raise QueryValidationError(
             "formula selected mapping summary does not match dependencies"
         )
+    np_outcome = (
+        _formula_policy_outcome(dependencies, formula)
+        if _expected_denominator_refusal(dependencies, formula) is None
+        else None
+    )
+    summary = (
+        tuple(item for item in dependencies if item.state is CellState.VALUE)
+        if np_outcome is not None and np_outcome.value_summary
+        else dependencies
+    )
+    expected_qualifier = np_outcome.qualified_not_presented if np_outcome is not None else ()
+    if provenance.qualified_not_presented != expected_qualifier:
+        raise QueryValidationError(
+            "formula not-presented qualifier does not recompute from governed dependencies"
+        )
     for field_name in ("source", "accession", "document_id", "source_body_sha256", "source_url"):
-        values = {getattr(item.provenance, field_name) for item in dependencies}
+        values = {getattr(item.provenance, field_name) for item in summary}
         expected = next(iter(values)) if len(values) == 1 else None
         if getattr(provenance, field_name) != expected:
             raise QueryValidationError(f"formula {field_name} summary does not match dependencies")
@@ -3407,7 +3819,7 @@ def _validate_formula_node(
         item.provenance.source_ready_at for item in dependencies
     )
     expected_system_ready = _clock_max(
-        [max(contract.rule.available_at, formula.rule.available_at)]
+        [_formula_governed_available_at(contract, formula)]
         + [item.provenance.system_ready_at for item in dependencies]
     )
     if provenance.source_ready_at != expected_source_ready:
@@ -3923,7 +4335,7 @@ class MetricMatrix:
                 cell.state.value,
                 decimal_text(cell.value) or "",
                 cell.unit or "",
-                cell.reason or "",
+                _export_reason_text(cell) or "",
                 provenance.accession or "",
                 provenance.form or "",
                 _date_text(provenance.filed_at) or "",
@@ -4091,7 +4503,7 @@ def _mapping_rule_payload(mapping: MappingRule) -> dict[str, Any]:
 
 
 def _formula_rule_payload(formula: FormulaRule) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "metric_id": formula.metric_id,
         "rule": _immutable_rule_payload(formula.rule),
         "expression": formula.expression,
@@ -4099,6 +4511,22 @@ def _formula_rule_payload(formula: FormulaRule) -> dict[str, Any]:
         "output_unit": formula.output_unit,
         "dependency_period_alignment": formula.dependency_period_alignment,
     }
+    np_policy = formula.not_presented_policy
+    if np_policy is not None:
+        # R-FORMULA F3: the policy joins the governed formula digest from its
+        # own rule clock.  Before that clock the cutoff bundle strips it, so
+        # every historical digest keeps its exact bytes.
+        policy_payload: dict[str, Any] = {
+            "rule": _immutable_rule_payload(np_policy.rule),
+            "mode": np_policy.mode,
+            "qualified_operand": np_policy.qualified_operand,
+            "reason": np_policy.reason,
+        }
+        if np_policy.mode == "qualified_sum":
+            policy_payload["eligible_operands"] = list(np_policy.eligible_operands)
+            policy_payload["all_not_presented"] = np_policy.all_not_presented
+        payload["not_presented_policy"] = policy_payload
+    return payload
 
 
 _REPORTED_REVISION_EVENT_TYPES = frozenset(
@@ -4115,6 +4543,14 @@ _REPORTED_REVISION_EVENT_TYPES = frozenset(
 def _clock_max(values: Iterable[datetime | None]) -> datetime | None:
     present = tuple(value for value in values if value is not None)
     return max(present) if present else None
+
+
+def _formula_governed_available_at(contract: MetricContract, formula: FormulaRule) -> datetime:
+    """Rule knowledge gate for a formula cell: contract, formula and visible policy."""
+    clocks = [contract.rule.available_at, formula.rule.available_at]
+    if formula.not_presented_policy is not None:
+        clocks.append(formula.not_presented_policy.rule.available_at)
+    return max(clocks)
 
 
 def _rounding_tolerance(fact: RawFactOccurrence) -> Decimal:
@@ -4258,7 +4694,18 @@ class BitemporalMetricQueryEngine:
         filing_metadata: Mapping[str, FilingMetadata | Mapping[str, Any]] | None = None,
         bounds: QueryBounds | None = None,
         lineage_evidence: Iterable[LineageEvidenceReceipt] = (),
+        not_presented_pack: NotPresentedPack | None = None,
+        filing_packages: Iterable[Any] = (),
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None = None,
     ) -> None:
+        # FIF A01/A11: the original Clark namespace per (accession,
+        # source_occurrence_key), read from the source filings by the same
+        # helper the mint path uses.  When supplied, a lineage receipt's
+        # attested taxonomy URI pair must equal the source's, so a forgery
+        # that swaps both URIs to another approved namespace (with a
+        # recomputed receipt_id) fails closed.  Absent keeps the receipt's
+        # policy-gated attestation as the only URI evidence.
+        self._source_taxonomy_uris = self._freeze_source_taxonomy_uris(source_taxonomy_uris)
         if isinstance(ledger, RawFactLedger):
             self.ledger = ledger
         else:
@@ -4340,6 +4787,69 @@ class BitemporalMetricQueryEngine:
         self._effective_root_cache: dict[
             tuple[str, datetime, datetime], Mapping[str, str]
         ] = {}
+        # Step 5 b2 not-presented evidence.  Absent pack => the standard
+        # absence branch is untouched and every receipt stays byte-identical.
+        (
+            self._not_presented_pack,
+            self._packages_by_accession,
+        ) = self._admit_not_presented(not_presented_pack, filing_packages)
+
+    @staticmethod
+    def _freeze_source_taxonomy_uris(
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None,
+    ) -> Mapping[tuple[str, str], str] | None:
+        if source_taxonomy_uris is None:
+            return None
+        if not isinstance(source_taxonomy_uris, Mapping):
+            raise LineageEvidenceError("source_taxonomy_uris must be a mapping")
+        frozen: dict[tuple[str, str], str] = {}
+        for key, uri in source_taxonomy_uris.items():
+            if (
+                not isinstance(key, tuple)
+                or len(key) != 2
+                or not all(isinstance(part, str) for part in key)
+                or not isinstance(uri, str)
+            ):
+                raise LineageEvidenceError(
+                    "source_taxonomy_uris maps (accession, source_occurrence_key) to a URI"
+                )
+            frozen[key] = uri
+        return MappingProxyType(frozen)
+
+    def _taxonomy_uris_match_source(
+        self,
+        parent_representative: RawFactOccurrence,
+        child_representative: RawFactOccurrence,
+        evidence: Mapping[str, Any],
+    ) -> bool:
+        """Whether the receipt's URI pair is the source's own namespace pair.
+
+        Without a source map the receipt's policy-gated attestation is the
+        only URI evidence and this is vacuously true.  With one, both
+        representatives must have a source namespace, those must agree (the
+        guard-11 rule the mint applied), and the receipt must carry exactly
+        that namespace on both sides.
+        """
+        if self._source_taxonomy_uris is None:
+            return True
+        parent_uri = self._source_taxonomy_uris.get(
+            (
+                parent_representative.source.accession,
+                parent_representative.source_occurrence_key or "",
+            )
+        )
+        child_uri = self._source_taxonomy_uris.get(
+            (
+                child_representative.source.accession,
+                child_representative.source_occurrence_key or "",
+            )
+        )
+        if not parent_uri or parent_uri != child_uri:
+            return False
+        return (
+            evidence.get("parent_taxonomy_uri") == parent_uri
+            and evidence.get("child_taxonomy_uri") == child_uri
+        )
 
     @staticmethod
     def _normalize_entities(
@@ -4505,6 +5015,8 @@ class BitemporalMetricQueryEngine:
                 governing_clocks.extend(
                     (bundle.formula_pack.available_at, formula.rule.available_at)  # type: ignore[union-attr]
                 )
+                if formula.not_presented_policy is not None:
+                    governing_clocks.append(formula.not_presented_policy.rule.available_at)
             governance_available[contract.metric_id] = max(governing_clocks)
 
         catalog_digest = (
@@ -4692,8 +5204,10 @@ class BitemporalMetricQueryEngine:
                         "filing metadata available_at cannot precede source acceptance"
                     )
                 if metadata.filed_at is not None and fact.accepted_at is not None:
-                    if metadata.filed_at > fact.accepted_at.date():
-                        raise QueryValidationError("filing metadata filed_at follows source acceptance")
+                    if metadata.filed_at > _latest_edgar_filed_date(fact.accepted_at):
+                        raise QueryValidationError(
+                            "filing metadata filed_at follows the EDGAR filing date of source acceptance"
+                        )
                 existing = frozen.get(fact.occurrence_id)
                 if existing is not None and existing != metadata:
                     raise QueryValidationError(
@@ -5152,12 +5666,19 @@ class BitemporalMetricQueryEngine:
         # construction — an empty class policy admits every issuer, and
         # formula=None keeps the denominator branch out of this stage (the
         # formula is qualified in _evaluate_formula once its dependency values
-        # exist).
+        # exist).  Period-first precedence: the receipt validators weigh a
+        # period-contract rejection above an issuer-class refusal, so when the
+        # requested period violates the contract this stage stands down and
+        # the direct/formula period-rejection paths below emit the cell.
         issuer_class = (
             issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
         )
-        qualification = qualify_metric(contract, None, issuer_class, {})
-        if qualification.state != "applicable":
+        qualification = (
+            None
+            if self._period_contract_error(contract, period) is not None
+            else qualify_metric(contract, None, issuer_class, {})
+        )
+        if qualification is not None and qualification.state != "applicable":
             reason = qualification.reason
             provenance_overrides: dict[str, Any] = {}
             if issuer_class is not None:
@@ -5244,7 +5765,7 @@ class BitemporalMetricQueryEngine:
         return max(contract.rule.available_at, mapping.rule.available_at)
 
     def _formula_rule_available_at(self, contract: MetricContract, formula: FormulaRule) -> datetime:
-        return max(contract.rule.available_at, formula.rule.available_at)
+        return _formula_governed_available_at(contract, formula)
 
     def _aliases_for_period(
         self,
@@ -5337,6 +5858,200 @@ class BitemporalMetricQueryEngine:
         # or availability clock until an explicitly bound witness is visible.
         return None
 
+    @staticmethod
+    def _admit_not_presented(
+        pack: NotPresentedPack | None,
+        packages: Iterable[Any],
+    ) -> tuple[NotPresentedPack | None, Mapping[str, Any]]:
+        if isinstance(packages, (str, bytes, bytearray, Mapping)):
+            raise QueryValidationError("filing_packages must be a bounded collection")
+        materialized = tuple(islice(packages, HARD_MAX_NOT_PRESENTED_PACKAGES + 1))
+        if len(materialized) > HARD_MAX_NOT_PRESENTED_PACKAGES:
+            raise QueryValidationError("filing_packages exceed the hard package bound")
+        if pack is None:
+            if materialized:
+                raise QueryValidationError("filing_packages require a not_presented_pack")
+            return None, _EMPTY_PACKAGE_MAP
+        if not isinstance(pack, NotPresentedPack):
+            raise QueryValidationError("not_presented_pack must be a loaded NP rule pack")
+        by_accession: dict[str, Any] = {}
+        for package in materialized:
+            manifest = getattr(package, "manifest", None)
+            accession = manifest.get("accession") if isinstance(manifest, Mapping) else None
+            if not isinstance(accession, str) or not accession:
+                raise QueryValidationError("filing package has no accession identity")
+            if accession in by_accession:
+                raise QueryValidationError(f"duplicate filing package for {accession}")
+            by_accession[accession] = package
+        return pack, MappingProxyType(by_accession)
+
+    @staticmethod
+    def _np_consolidated_usd(fact: RawFactOccurrence) -> bool:
+        return bool(
+            fact.dimensions_known
+            and not fact.context.explicit_dimensions
+            and not fact.context.typed_dimensions
+            and _canonical_raw_unit(fact) == "USD"
+        )
+
+    def _not_presented_slot(
+        self,
+        entity_id: str,
+        parent_tiers: Sequence[Sequence[str]],
+        period: PeriodRequest,
+        policy: QueryPolicy,
+    ) -> tuple[str, dict[str, Decimal]] | None:
+        """Anchor the slot to one filing and build its exact context fact map.
+
+        The anchor is the filing whose consolidated USD parent total the
+        ordinary selector would pick for this period; the first parent tier
+        with a selectable total decides.  Two tier members anchored to
+        different filings, a bound overflow, or two different values for one
+        concept in the anchor filing all fail closed (``None``: stay absent).
+        """
+        period_key = _request_period_index_key(period)
+        anchor: str | None = None
+        for tier in parent_tiers:
+            accessions: set[str] = set()
+            for concept in tier:
+                events = self._events_by_entity_qname_period.get(
+                    (entity_id, concept, period_key), ()
+                )
+                visible, over_bound = self._bounded_visible_events(events, policy)
+                if over_bound:
+                    return None
+                eligible = tuple(item for item in visible if self._np_consolidated_usd(item))
+                if not eligible:
+                    continue
+                selection = self._select_source_group(eligible, policy)
+                if selection.state is not CellState.VALUE or selection.occurrence is None:
+                    continue
+                accessions.add(selection.occurrence.source.accession)
+            if len(accessions) > 1:
+                return None
+            if accessions:
+                anchor = accessions.pop()
+                break
+        if anchor is None:
+            return None
+        facts: dict[str, Decimal] = {}
+        for item in self._events_by_accession.get(anchor, ()):
+            if (
+                item.source.entity_id != entity_id
+                or not self._context_matches_period(item, period)
+                or not self._event_temporally_eligible(item, policy)
+                or not self._np_consolidated_usd(item)
+                or item.is_withdrawn
+                or item.is_nil
+                or item.parsed_value is None
+            ):
+                continue
+            try:
+                value = Decimal(str(item.parsed_value))
+            except (InvalidOperation, ValueError):
+                return None
+            if not value.is_finite():
+                return None
+            prior = facts.get(item.concept_qname)
+            if prior is not None and prior != value:
+                return None
+            facts[item.concept_qname] = value
+        return anchor, facts
+
+    def _not_presented_verdict_for(
+        self,
+        entity_id: str,
+        metric_id: str,
+        period: PeriodRequest,
+        policy: QueryPolicy,
+    ) -> NotPresentedEvidence | None:
+        pack = self._not_presented_pack
+        if pack is None or policy.selection is BitemporalPolicy.LATEST_RESTATED:
+            return None
+        rule = pack.visible_rule(metric_id, recorded_at=policy.recorded_at)
+        if rule is None:
+            return None
+        slot = self._not_presented_slot(entity_id, rule.parent_tiers, period, policy)
+        if slot is None:
+            return None
+        accession, facts = slot
+        package = self._packages_by_accession.get(accession)
+        if package is None:
+            return None
+        calculation, presentation = package_linkbases(package)
+        try:
+            verdict = evaluate_not_presented_package(
+                pack,
+                metric_id,
+                calculation=calculation,
+                presentation=presentation,
+                facts_in_context=facts,
+                recorded_at=policy.recorded_at,
+                accession=accession,
+            )
+        except NotPresentedError:
+            return None
+        if not verdict.is_not_presented:
+            return None
+        return NotPresentedEvidence.from_verdict(verdict)
+
+    def verify_not_presented(self, cell: "MetricCell | CellNode") -> None:
+        """Recompute a ``not_presented`` cell from the admitted package bytes.
+
+        Refuses a cell whose evidence (rule identity, pack digest, linkbase
+        digests, counts, accession) does not equal a fresh recomputation
+        under the cell's own cutoffs and its own anchor filing.
+        """
+        provenance = cell.provenance
+        evidence = provenance.not_presented
+        if (
+            evidence is None
+            or cell.state is not CellState.NOT_APPLICABLE
+            or cell.reason != NOT_PRESENTED_REASON
+        ):
+            raise QueryValidationError("cell is not a not-presented verdict")
+        pack = self._not_presented_pack
+        if pack is None:
+            raise QueryValidationError("no not-presented pack is admitted")
+        if provenance.policy is BitemporalPolicy.LATEST_RESTATED:
+            raise QueryValidationError("not-presented evidence contradicts latest_restated policy")
+        policy = QueryPolicy(
+            source_snapshot_at=provenance.source_snapshot_at,
+            recorded_at=provenance.recorded_cutoff_at,
+            selection=provenance.policy,
+        )
+        package = self._packages_by_accession.get(evidence.accession)
+        if package is None:
+            raise QueryValidationError("not-presented evidence names no admitted package")
+        slot = self._not_presented_slot(
+            cell.entity_id,
+            self._np_parent_tiers(pack, cell.metric_id),
+            cell.period,
+            policy,
+        )
+        if slot is None or slot[0] != evidence.accession:
+            raise QueryValidationError("not-presented evidence does not anchor to its filing")
+        calculation, presentation = package_linkbases(package)
+        try:
+            verify_not_presented_evidence(
+                pack,
+                cell.metric_id,
+                {"na_basis": provenance.na_basis, **evidence.to_dict()},
+                calculation=calculation,
+                presentation=presentation,
+                facts_in_context=slot[1],
+                recorded_at=policy.recorded_at,
+            )
+        except NotPresentedError as exc:
+            raise QueryValidationError(str(exc)) from exc
+
+    @staticmethod
+    def _np_parent_tiers(
+        pack: NotPresentedPack, metric_id: str
+    ) -> tuple[tuple[str, ...], ...]:
+        rule = pack.rules.get(metric_id)
+        return rule.parent_tiers if rule is not None else ()
+
     def _admit_lineage_evidence(
         self,
         lineage_evidence: Iterable[LineageEvidenceReceipt],
@@ -5396,6 +6111,18 @@ class BitemporalMetricQueryEngine:
                     f"mints ({envelope_refusal})"
                 )
             evidence = receipt.positive_evidence or {}
+            # FIF A01/A11: with a source namespace map, the attested URI
+            # pair must be the source's, keyed exactly as the mint keyed it
+            # (the canonical representative of each full group).
+            if not self._taxonomy_uris_match_source(
+                _canonical_duplicate_representative(parent_group),
+                _canonical_duplicate_representative(child_group),
+                evidence,
+            ):
+                raise LineageEvidenceError(
+                    "lineage evidence taxonomy namespace is not the source's "
+                    f"({REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE})"
+                )
             # FIF T1: bind the WHOLE payload, not just the edge.  A receipt
             # digest only proves internal self-consistency, so a forged
             # bundle with a correctly recomputed receipt_id must still equal
@@ -5661,6 +6388,12 @@ class BitemporalMetricQueryEngine:
         if parent_representative.occurrence_id != receipt.parent_occurrence_id:
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if representative.occurrence_id != receipt.child_occurrence_id:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # FIF A01/A11: a policy-approved URI pair is still only an
+        # attestation; with a source namespace map it must be the source's.
+        if not self._taxonomy_uris_match_source(
+            parent_representative, representative, evidence
+        ):
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("concept_qname") != representative.concept_qname:
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
@@ -6423,6 +7156,34 @@ class BitemporalMetricQueryEngine:
                 ),
                 reason=reason,
             )
+        if self._not_presented_pack is not None and not any(
+            events for _candidate, events in visible_candidate_events
+        ):
+            # Step 5 b2: an absence with no visible alias fact at all may be
+            # upgraded to N/A, but only on governed, recomputable linkbase
+            # evidence from the slot's own filing.  Anything else stays absent.
+            not_presented = self._not_presented_verdict_for(
+                entity.entity_id, contract.metric_id, period, policy
+            )
+            if not_presented is not None:
+                return self._new_cell(
+                    entity=entity,
+                    governance_bundle=projection.governance_bundle,
+                    metric_id=contract.metric_id,
+                    period=period,
+                    state=CellState.NOT_APPLICABLE,
+                    value=None,
+                    unit=contract.units[0] if contract.units else None,
+                    provenance=self._base_provenance(
+                        projection,
+                        policy,
+                        contract,
+                        reason=NOT_PRESENTED_REASON,
+                        na_basis=NA_BASIS_NOT_PRESENTED_ITEM,
+                        not_presented=not_presented,
+                    ),
+                    reason=NOT_PRESENTED_REASON,
+                )
         reason = (
             "no eligible explicitly typed reported revision vintage"
             if policy.selection is BitemporalPolicy.LATEST_RESTATED
@@ -6463,9 +7224,15 @@ class BitemporalMetricQueryEngine:
         dependencies: Sequence[MetricCell],
         *,
         reason: str | None = None,
+        summary_dependencies: Sequence[MetricCell] | None = None,
+        qualified_not_presented: tuple[str, ...] = (),
     ) -> CellProvenance:
+        # A qualified sum summarizes its revision basis over the presented
+        # operands only: a not-presented operand has no source of its own.
+        summary = dependencies if summary_dependencies is None else summary_dependencies
+
         def common(field_name: str) -> Any | None:
-            values = {getattr(item.provenance, field_name) for item in dependencies}
+            values = {getattr(item.provenance, field_name) for item in summary}
             if len(values) != 1:
                 return None
             value = next(iter(values))
@@ -6510,6 +7277,7 @@ class BitemporalMetricQueryEngine:
             source_url=common("source_url"),
             dependency_cell_ids=tuple(item.cell_id for item in dependencies),
             unit=formula.output_unit,
+            qualified_not_presented=qualified_not_presented,
         )
 
     def _evaluate_formula(
@@ -6622,6 +7390,37 @@ class BitemporalMetricQueryEngine:
                 ),
                 dependency_cells=dependency_cells,
                 reason=reason,
+            )
+        # R-FORMULA F3 (step 5 build-c): a governed not-presented operand, or
+        # a VALUE operand carrying a not-presented qualifier, is decided by the
+        # formula's versioned policy; every other case keeps the historical
+        # triage below byte for byte.
+        np_outcome = _formula_policy_outcome(dependency_cells, formula)
+        if np_outcome is not None:
+            return self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=contract.metric_id,
+                period=period,
+                state=np_outcome.state,
+                value=np_outcome.value,
+                unit=formula.output_unit,
+                provenance=self._formula_provenance(
+                    projection,
+                    policy,
+                    contract,
+                    formula,
+                    dependency_cells,
+                    reason=np_outcome.reason,
+                    summary_dependencies=(
+                        [item for item in dependency_cells if item.state is CellState.VALUE]
+                        if np_outcome.value_summary
+                        else None
+                    ),
+                    qualified_not_presented=np_outcome.qualified_not_presented,
+                ),
+                dependency_cells=dependency_cells,
+                reason=np_outcome.reason,
             )
         not_applicable = [
             item for item in dependency_cells if item.state is CellState.NOT_APPLICABLE

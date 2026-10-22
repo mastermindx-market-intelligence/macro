@@ -1,0 +1,26 @@
+{
+  "schema": "mastermind.attended.candidate_preflight_refusal.v1",
+  "observed_at": "2026-10-20T04:16:59.649768+00:00",
+  "first_process": 78892,
+  "first_exit": 1,
+  "assertion_path": "jobs.bea-gvc-current-descriptive-consumer.paths",
+  "reason": "candidate-only checker incorrectly required global unique paths; 35 duplicates each multiplicity2 already exist identically in base/ours/incoming",
+  "reconciliation_process": 79859,
+  "reconciliation_exit": 0,
+  "base_ours_incoming_candidate_lengths": [
+    876,
+    878,
+    878,
+    880
+  ],
+  "candidate_missing_union": [],
+  "candidate_extra_union": [],
+  "candidate_multiset_matches_exact_independent_additions": true,
+  "unchanged_head": "69e8566dc85e701c70ace72320a16d4ba6c95847",
+  "unchanged_index": "6a9da6c6638b9525052131e9c1e3c26eb2242b46",
+  "tracked_status": "",
+  "candidate_files_before_v2": [],
+  "correction": "check exact multiplicities plus both subsequence orders; do not remove inherited duplicates or weaken source/CI rules",
+  "original_script_sha256": "75b0b6527e795fce22fe8249b35cb67a0d6f0d42586df0e7bc062b97ceb0e520",
+  "v2_script_sha256": "96669fa46e086788862becb1aa32e54bdee4c64e7cee64f5ce97a3e3acb3459e"
+}

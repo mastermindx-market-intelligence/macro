@@ -120,6 +120,10 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
   <div class="h1">{{ t(s.name_en, s.name_zh) }}</div>
   <div class="sub" style="margin-bottom:6px">{{ t(s.thesis_en, s.thesis_zh) }}</div>
   <div class="sub faint" style="margin-bottom:8px">{{ t('As of','截至') }} {{ as_of }} · {{ t(s.bench_en, s.bench_zh) }} · {{ t('current income','当前票息') }} ~{{ income_now }}%</div>
+  {% if bench_start %}
+  <div class="sub faint" style="margin-bottom:8px">{{ t('Backtest window','回测窗口') }}
+    {{ bench_start }} → {{ as_of }} ({{ sc.years }}y)</div>
+  {% endif %}
   {% if s.experimental %}<span class="tag exp">⚗ {{ t('Experimental — display-only (Phase-0)','实验性 — 仅展示（Phase-0）') }}</span>{% endif %}
   <span class="tag">{{ t('A drawdown / Sharpe engine — not a yield-maximizer','回撤 / 夏普引擎 — 并非收益最大化工具') }}</span>
 
@@ -199,6 +203,26 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
     <div class="card score"><div class="k">{{ t('Income yield now','当前票息') }}</div><div class="v">{{ income_now }}%</div><div class="sub">{{ t('blended risk-asset + cash','风险资产 + 现金加权') }}</div></div>
     <div class="card score"><div class="k">{{ t('Deflated Sharpe','贬值夏普') }}</div><div class="v">{% if dsr %}{{ dsr.dsr }}{% else %}—{% endif %}</div><div class="sub">{{ t('multiple-testing haircut','多重检验折减') }}{% if dsr %} · n={{ dsr.n_trials }}{% endif %}</div></div>
   </div>
+  {% if at %}
+  <div class="grid cols-2" style="margin-top:18px">
+    <div class="card score">
+      <div class="k">{{ t('After-tax CAGR (taxable, 35%)','税后年化（应税，35%）') }}</div>
+      <div class="v">{{ at.after_tax_cagr }}%</div>
+      <div class="sub">{{ t('buy & hold','买入持有') }} {{ at.hodl_cagr }}% ·
+        {{ t('cum. tax','累计税') }} {{ at.cumulative_tax_paid_x }}×</div>
+    </div>
+    <div class="card score">
+      <div class="k">{{ t('Cash-sleeve contribution','现金仓位贡献') }}</div>
+      {% if sc.carry_pp is number and sc.carry_pp == sc.carry_pp %}
+      <div class="v">{{ '%+.2f'|format(sc.carry_pp) }}pp</div>
+      {% else %}<div class="v">—</div>{% endif %}
+      <div class="sub">{{ t('CAGR without it','不含该部分年化') }}
+        {% if sc.cagr_nocarry is number and sc.cagr_nocarry == sc.cagr_nocarry %}
+        {{ sc.cagr_nocarry }}%{% else %}—{% endif %} ·
+        {{ t(s.cash_en, s.cash_zh) }} {{ t('yield while de-risked','降险期间收益') }}</div>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- ===== rule-book ===== -->
   <div class="section-title">{{ t('The rule-book · risk band → weight','规则手册 · 风险区间 → 权重') }}</div>
