@@ -5176,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_852),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_829),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5187,6 +5187,18 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    Current-main d54f24d4 plus the two Treasury suites composes to
+    5,856/5,829 weight with 136 jobs in both probes. Preserve the new
+    CAGR handler coverage, Treasury coverage, and all pack limits.
+
+    Current-main 9b48e798 also retains Prophet journey notifications (+3).
+    Compose that accepted coverage with Treasury (+4 over main): index
+    5,847 -> 5,851 and free-content 5,820 -> 5,824. No other bound changes.
+
+    Treasury/current-main composition (2ebafe80) retains the GMI micro-theme
+    step below plus the two Treasury suites: +4 units on main, hence
+    index 5,844 -> 5,848 and free-content 5,817 -> 5,821. Job counts,
+    selectors, all suites, plan-book and ten-pack ceilings stay unchanged.
     2026-10-22 CAGR truthful-copy integration adds the actual handler pytest
     to calculator-input-integrity (+5 estimator units). It newly selects
     that existing job on the free-content probe (135 -> 136 jobs); index
@@ -5235,6 +5247,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling, the ten-pack limit, selector code and every prior suite remain
     unchanged. Planning weights are not measured execution times;
     current-head CI must execute this assertion.
+
+    Native refresh e0b639a composes Treasury with protected dabf745b.
+    Main now includes both HK lookup and fixed-redirect regression coverage.
+    The two unchanged Treasury suites add four estimator units beyond main:
+    local red measures index 5,845 > 5,841 and free-content 5,818 > 5,814.
+    Import closure passes; job counts, plan-book weight, ten-pack limit,
+    selectors, execution budgets and all suites remain unchanged.
+
+    Current-main ae93436a composition preserves all accepted main coverage.
+    The two unchanged Treasury suites add exactly four estimator units:
+    index 5,837 -> 5,841; free-content 5,810 -> 5,814. Local red measured
+    only those two weight breaches; job/pack ceilings and selectors stay fixed.
+
+    Same-carrier Treasury integration with main35321d4c preserves the B04-A0
+    step below and adds its own two suites. Exact local packing RED measured
+    only weight breaches: index 5,829 > 5,825 and build 5,802 > 5,798.
+    Fund those four Treasury units on top of main, with no new job, selector,
+    pack, or test-coverage changes. All job and ten-pack ceilings stay fixed.
 
     2026-10-21 qualified Today and Research API composition adds exactly five
     estimator units to research-vault-api (7 -> 12) for the two mandatory API
@@ -5294,6 +5324,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Compose that measured +7 with the incoming news allowance below: change
     only free-content's 5,795 -> 5,802. Keep its 135-job ceiling, the other
     probe ceilings, ten packs, selectors, declarations and suites unchanged.
+
+    Same-carrier integration with protected main0bd1bedcff40 measures exactly
+    +4 Treasury-suite estimator units beyond current-main bounds: index
+    5822 -> 5826, build_free_content 5795 -> 5799. The discriminating local
+    red records precisely those two four-unit weight breaches, no job/pack
+    breach. Preserve current-main Press coverage, all job ceilings, plan-book
+    weight5600 and ten packs. No source/test invocation is removed.
+
+    2026-10-20 Treasury internal input (MO-DELTA-014, PR9880) adds two
+    focused composer/transport suites to the existing prophet-lab invocation.
+    Hosted contract-delta39430792073/job118655030591 measured no new selected
+    jobs: templates/index.html 5822 -> 5826 and build_free_content 5697 ->
+    5701, exactly four estimator units for those two suites. Fund only that
+    measured work. Preserve every job-count ceiling, the plan-book weight,
+    the ten-pack ceiling, all scope/closure audits and every suite/assertion.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
