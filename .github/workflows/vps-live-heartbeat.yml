@@ -49,6 +49,20 @@ jobs:
             /engine/research_vault/catalog.py
             /engine/research_vault/sidecar.py
             /engine/research_vault/fulltext.py
+            /engine/research_vault/corpus.py
+            /engine/research_vault/r2_store.py
+            /engine/research_vault/read_port.py
+            /engine/research_vault/read_service.py
+            /engine/research_intelligence/__init__.py
+            /engine/research_intelligence/store.py
+            /engine/research_intelligence/extractor.py
+            /engine/research_intelligence/schema.py
+            /engine/research_intelligence/selection.py
+            /engine/research_intelligence/projection.py
+            /engine/research_intelligence/vault_adapter.py
+            /engine/qual_extraction.py
+            /lib/__init__.py
+            /lib/config.py
             /tests/test_research_vault_fulltext.py
             /tests/test_research_pinned_producer_workflow.py
             /.github/workflows/research-ingest.yml
