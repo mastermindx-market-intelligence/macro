@@ -3668,10 +3668,6 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -3943,6 +3939,10 @@ jobs:
       - "engine/baskets_intl.py"
       - "engine/beneficial_ownership.py"
       - "engine/btc_mtf.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/capital_allocation.py"
       - "engine/coiled.py"
       - "engine/composite_score.py"
@@ -5928,11 +5928,6 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "app/catalyst_opportunity.py"
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -6340,6 +6335,11 @@ jobs:
       - "engine/intelligence_workspace/context_compiler.py"
       - "engine/intelligence_workspace/contracts.py"
       - "engine/intelligence_workspace/entity.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/projection.py"
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
@@ -15212,9 +15212,6 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -15517,6 +15514,9 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_regime.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/narrative_rotation.py"
       - "engine/news_common.py"
       - "engine/news_events.py"
@@ -15958,10 +15958,6 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -16161,6 +16157,10 @@ jobs:
       # Widening here per the guard's own remedy ("widening is always the safe
       # direction") rather than leaving the pack red.
       - "engine/oracle/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/pick_lab/**"
       - "engine/prophet_live/**"
       - "engine/activist.py"
@@ -18038,11 +18038,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "app/catalyst_opportunity.py"
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -18423,6 +18418,11 @@ jobs:
       - engine/intelligence_workspace/__init__.py
       - engine/intelligence_workspace/adapters/base.py
       - engine/intelligence_workspace/adapters/company_intelligence.py
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - engine/intelligence_workspace/adapters/earnings.py
       - engine/intelligence_workspace/adapters/industry.py
       - engine/intelligence_workspace/adapters/quote.py
@@ -19599,9 +19599,6 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
       - "tests/fixtures/government_program_ontology/builders.py"
       - "tests/test_government_program_public_capacity.py"
       - "tests/test_government_program_capacity_ui.py"
@@ -19663,6 +19660,9 @@ jobs:
       - "engine/research_vault/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/theme_graph/**"
       # D5's app/prophet_lab route extends this curated app closure through the
       # canonical issuer reader. Keep the measured stock-identity package files
@@ -20374,10 +20374,6 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -20589,6 +20585,10 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -25541,10 +25541,6 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -25754,6 +25750,10 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -26027,11 +26027,6 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "app/catalyst_opportunity.py"
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       - lib/dataos/web_history.py
       - lib/dataos/web_readers.py
       - lib/dataos/web_workspace.py
@@ -26514,6 +26509,11 @@ jobs:
       - "engine/intelligence_workspace/runtime.py"
       - "engine/intraday_greeks.py"
       - "engine/k3e_expectation_surface.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
       - "engine/liquidity_chip.py"
@@ -28647,11 +28647,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      # Catalyst route import closure; selection only, no test exemptions.
-      - "app/catalyst_opportunity.py"
-      - "engine/catalyst_opportunity/projection.py"
-      - "engine/catalyst_opportunity/reader.py"
-      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -29070,6 +29065,11 @@ jobs:
       - "engine/intelligence_workspace/adapters/industry.py"
       - "engine/intelligence_workspace/adapters/quote.py"
       - "engine/intelligence_workspace/adapters/stage.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/adapters/technicals.py"
       - "engine/intelligence_workspace/adapters/theme.py"
       - "engine/intelligence_workspace/consumers.py"
