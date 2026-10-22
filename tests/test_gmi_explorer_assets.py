@@ -60,6 +60,12 @@ def _light_blocks() -> list:
 
 
 # --- STEP-1 port-round token table: name -> (dark value, light value or None) ---
+SURFACE_MARK = "/* ---------- P. per-surface rules"
+# W1.5 shared-layer deltas vs the specimen (orchestrator record CP3): the drawn search
+# placeholder became a real <input>; two specimen inline styles became shared classes.
+W15_REMOVED = {".gmi-search-ph"}
+W15_ADDED = {".gmi-search-in", ".gmi-cells--mini", ".gmi-empty-inline"}
+
 NEW_TOKENS = {
     "--gmi-btn-lift": ("none", "0 1px 2px rgba(20,30,50,.06)"),
     "--gmi-rail": ("color-mix(in srgb, var(--text) 10%, transparent)", None),
@@ -85,6 +91,7 @@ NEW_TOKENS = {
     "--gmi-cell-key": ("12px", None),
     "--gmi-cell-xl": ("20px", None),
     "--gmi-cell-strip": ("6px", None),
+    "--gmi-cell-mini": ("8px", None),  # W1.5: specimen inline 8px mini-cell size (R7)
     "--gmi-chain-slot": ("24px", None),
     "--gmi-chain-edge-none": ("0px", None),
     "--gmi-chain-rail": ("22px", None),
@@ -185,7 +192,11 @@ def test_gmi_css_selector_parity():
     specimen = _read_mockups("gmi_explorer.css")
     start = specimen.index("/* ---------- C.")
     spec_classes = set(re.findall(r"\.gmi-[a-z0-9-]+", specimen[start:]))
-    gmi_classes = set(re.findall(r"\.gmi-[a-z0-9-]+", GMI_CSS))
+    # Section P holds per-surface lane rules (new classes converted from specimen inline
+    # styles); parity covers the ported sections only, plus the recorded W1.5 deltas.
+    ported = GMI_CSS.split(SURFACE_MARK, 1)[0]
+    gmi_classes = set(re.findall(r"\.gmi-[a-z0-9-]+", ported))
+    spec_classes = (spec_classes - W15_REMOVED) | W15_ADDED
     assert gmi_classes == spec_classes, (
         f"only-in-specimen={sorted(spec_classes - gmi_classes)} "
         f"only-in-gmi.css={sorted(gmi_classes - spec_classes)} "

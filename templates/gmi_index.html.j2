@@ -2,7 +2,7 @@
 {% from "_gmi_macros.html.j2" import t %}
 {% from "_gmi_head.html.j2" import head %}
 {% block title %}GMI Explorer — All micro-themes{% endblock %}
-{% block seo %}{% set seo_title = 'GMI Explorer — All micro-themes | Mastermind' %}{% set seo_desc = 'Every one of the 371 micro-themes, grouped by category, with held and admitted links marked on their row.' %}{% set seo_path = 'gmi-index.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — All micro-themes | Mastermind' %}{% set seo_desc = 'Every one of the ' ~ model.totals.micros ~ ' micro-themes, grouped by category, with held and admitted links marked on their row.' %}{% set seo_path = 'gmi-index.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
 {% set M = model.totals.micros %}
 {{ head([('Research','研究'),('Theme map','主题地图'),('Index','索引')], 'All micro-themes', '全部细分主题',

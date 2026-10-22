@@ -41,6 +41,103 @@ if(on&&cur!==a){cur=a;if(tr.scrollWidth>tr.clientWidth)tr.scrollLeft=a.offsetLef
 var all=new URLSearchParams(location.hash.slice(1)).get('open')==='all';
 if(!all&&window.matchMedia('(max-width:640px)').matches){gs.forEach(function(g,i){if(i>0)g.removeAttribute('open');});}})();
 
+/* TREE ACCORDION + SEARCH (orchestrator rulings G-UI-11/G-UI-12). The S2 tree renders EVERY
+   row; rows under a closed parent carry `hidden`. Rows declare their place with
+   data-gmi-tree-id / data-gmi-tree-parent, and every searchable row carries data-gmi-q
+   ("<en> <zh>"). A search box is input[data-gmi-filter=<scope>]: scope "index" filters the
+   [data-gmi-index] rows, any other scope filters the .gmi-tree rows. Its no-match line is
+   [data-gmi-nomatch=<scope>]. The "See all" row (.gmi-trow--more) is never touched. */
+(function(){
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function hit(el,q){return norm(el.getAttribute('data-gmi-q')).indexOf(q)!==-1;}
+function noMatch(scope,on){[].forEach.call(document.querySelectorAll('[data-gmi-nomatch="'+scope+'"]'),function(p){p.hidden=!on;});}
+
+/* ---- tree ---- */
+var tree=document.querySelector('.gmi-tree');
+var trows=tree?[].slice.call(tree.querySelectorAll('[data-gmi-tree-id],[data-gmi-tree-parent]')):[];
+var byId={};trows.forEach(function(r){var id=r.getAttribute('data-gmi-tree-id');if(id)byId[id]=r;});
+function parent(r){var p=r.getAttribute('data-gmi-tree-parent');return p&&byId[p]?byId[p]:null;}
+function expandable(r){return r.hasAttribute('aria-expanded');}
+function isOpen(r){return r.getAttribute('aria-expanded')==='true';}
+function setOpen(r,on){if(!expandable(r))return;r.setAttribute('aria-expanded',String(on));r.classList.toggle('gmi-trow--open',on);}
+var tq='',snap=null;
+function treeRender(){
+  var keep=null,n=0;
+  if(tq){keep={};trows.forEach(function(r){if(!hit(r,tq))return;n++;
+    for(var a=r;a;a=parent(a)){keep[a.getAttribute('data-gmi-tree-id')||('#'+trows.indexOf(a))]=true;}});}
+  trows.forEach(function(r){var vis=true;
+    if(keep&&!keep[r.getAttribute('data-gmi-tree-id')||('#'+trows.indexOf(r))])vis=false;
+    for(var a=parent(r);vis&&a;a=parent(a)){if(!isOpen(a))vis=false;}
+    r.hidden=!vis;});
+  noMatch('tree',!!tq&&n===0);
+  var items=visibleItems();
+  if(items.length&&!items.some(function(r){return r.tabIndex===0;})){
+    trows.forEach(function(r){if(r.getAttribute('role')==='treeitem')r.tabIndex=-1;});items[0].tabIndex=0;}
+}
+function visibleItems(){return tree?[].slice.call(tree.querySelectorAll('[role="treeitem"]')).filter(function(r){return !r.hidden;}):[];}
+function focusItem(r){if(!r)return;visibleItems().forEach(function(x){x.tabIndex=-1;});r.tabIndex=0;r.focus();}
+function toggle(r){setOpen(r,!isOpen(r));treeRender();}
+if(tree){
+  tree.addEventListener('click',function(e){var r=e.target.closest('[role="treeitem"]');
+    if(!r||!tree.contains(r)||e.target.closest('a,button,input'))return;
+    if(expandable(r))toggle(r);focusItem(r);});
+  tree.addEventListener('keydown',function(e){var r=e.target.closest('[role="treeitem"]');if(!r||e.target!==r)return;
+    var items=visibleItems(),i=items.indexOf(r),k=e.key;
+    if(k==='Enter'||k===' '){if(expandable(r)){e.preventDefault();toggle(r);}}
+    else if(k==='ArrowDown'){e.preventDefault();focusItem(items[i+1]);}
+    else if(k==='ArrowUp'){e.preventDefault();focusItem(items[i-1]);}
+    else if(k==='Home'){e.preventDefault();focusItem(items[0]);}
+    else if(k==='End'){e.preventDefault();focusItem(items[items.length-1]);}
+    else if(k==='ArrowRight'){e.preventDefault();if(expandable(r)&&!isOpen(r))toggle(r);else if(isOpen(r))focusItem(visibleItems()[i+1]);}
+    else if(k==='ArrowLeft'){e.preventDefault();if(expandable(r)&&isOpen(r))toggle(r);else focusItem(parent(r));}});
+  treeRender();
+}
+
+/* ---- index ---- */
+var idx=document.querySelector('[data-gmi-index]');
+var groups=idx?[].slice.call(idx.querySelectorAll(':scope > details')):[];
+var iq='',isnap=null;
+function indexRender(){
+  var n=0;
+  groups.forEach(function(g){var any=false,h=null,hv=false;
+    [].forEach.call(g.children,function(el){
+      if(el.tagName==='SUMMARY')return;
+      if(el.classList.contains('gmi-index-t')){if(h)h.hidden=!!iq&&!hv;h=el;hv=false;return;}
+      var m=!iq||(el.hasAttribute('data-gmi-q')&&hit(el,iq));
+      el.hidden=!m;if(m&&el.hasAttribute('data-gmi-q')){hv=true;any=true;if(iq)n++;}});
+    if(h)h.hidden=!!iq&&!hv;
+    g.hidden=!!iq&&!any;
+    if(iq&&any)g.setAttribute('open','');});
+  noMatch('index',!!iq&&n===0);
+}
+
+/* ---- inputs ---- */
+var inputs=[].slice.call(document.querySelectorAll('input[data-gmi-filter]'));
+inputs.forEach(function(inp){
+  var scope=inp.getAttribute('data-gmi-filter');
+  inp.addEventListener('input',function(){var q=norm(inp.value);
+    if(scope==='index'){
+      if(q&&!iq)isnap=groups.map(function(g){return g.hasAttribute('open');});
+      iq=q;indexRender();
+      if(!q&&isnap){groups.forEach(function(g,i){if(isnap[i])g.setAttribute('open','');else g.removeAttribute('open');});isnap=null;}
+    }else{
+      if(q&&!tq)snap=trows.map(function(r){return isOpen(r);});
+      tq=q;
+      if(q){trows.forEach(function(r){if(!hit(r,q))return;for(var a=parent(r);a;a=parent(a))setOpen(a,true);});}
+      else if(snap){trows.forEach(function(r,i){setOpen(r,snap[i]);});snap=null;}
+      treeRender();
+    }});
+  inp.addEventListener('keydown',function(e){if(e.key==='Escape'&&inp.value){e.preventDefault();inp.value='';
+    inp.dispatchEvent(new Event('input'));}});
+});
+/* "/" focuses the page's first search box unless the user is already typing somewhere. */
+if(inputs.length){document.addEventListener('keydown',function(e){
+  if(e.key!=='/'||e.metaKey||e.ctrlKey||e.altKey)return;
+  var a=document.activeElement;
+  if(a&&(a.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))return;
+  e.preventDefault();inputs[0].focus();});}
+})();
+
 /* ARIA/PLACEHOLDER SWAP: mirror the active language (html[data-lang], owned by theme.js)
    into aria-label / placeholder. Never touches title. Run on load, on the langchange
    event theme.js dispatches on document, and from a data-lang MutationObserver. */

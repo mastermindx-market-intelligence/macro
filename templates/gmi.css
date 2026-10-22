@@ -328,13 +328,19 @@ html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
   .gmi-big0 .gmi-mag-num{ font-size:var(--fs-num-xl); }
   .gmi-relgrid .gmi-mag-num{ font-size:var(--fs-num-xl); } .gmi-relgrid .gmi-mag-cap{ max-width:none; }
 }
-/* reference-only: specimen shows the nav without its dropdown menus */
-.gmi-page .nav-dd-menu{ display:none !important; }
 
 /* ---------- N. utilities + index layout (added round 1) -------------------------- */
 /* theme.css ships no visually-hidden utility; bilingual a11y text uses this + .l-en/.l-zh */
 .gmi-vh{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
-.gmi-search-ph{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gmi-search-in{ flex:1 1 auto; min-width:0; min-height:42px; margin:0; padding:0; border:0; background:transparent; appearance:none; -webkit-appearance:none;
+  color:var(--text); font:inherit; text-overflow:ellipsis; }
+.gmi-search-in::placeholder{ color:var(--muted); opacity:1; }
+.gmi-search-in::-webkit-search-decoration{ -webkit-appearance:none; }
+.gmi-page .gmi-search-in:focus-visible{ outline:none; }
+.gmi-page .gmi-search:focus-within{ border-color:var(--link); box-shadow:var(--gmi-select); }
+/* shared W2 conversions of specimen inline styles (R7) */
+.gmi-empty-inline{ padding:8px 0; text-align:left; }
+.gmi-cells--mini{ display:flex; flex-wrap:wrap; gap:3px; --gmi-cell:var(--gmi-cell-mini); }
 .gmi-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; }
 .gmi-list li{ display:flex; gap:10px; align-items:baseline; padding:8px 0; border-top:1px solid var(--gmi-hair); font-size:var(--fs-sm); }
 .gmi-list li:first-child{ border-top:0; }
@@ -481,3 +487,11 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
   .gmi-index-h{ top:57px; }
   .gmi-index-group{ scroll-margin-top:57px; }
 }
+
+/* ---------- P. per-surface rules (one anchored block per W2 lane; edit only your own) ---------- */
+/* == gmi:s2 (W2A) == */
+/* == /gmi:s2 == */
+/* == gmi:s1s5 (W2B) == */
+/* == /gmi:s1s5 == */
+/* == gmi:s3s4 (W2C) == */
+/* == /gmi:s3s4 == */

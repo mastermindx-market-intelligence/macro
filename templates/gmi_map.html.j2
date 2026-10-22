@@ -2,7 +2,7 @@
 {% from "_gmi_macros.html.j2" import t %}
 {% from "_gmi_head.html.j2" import head %}
 {% block title %}GMI Explorer — Theme map{% endblock %}
-{% block seo %}{% set seo_title = 'GMI Explorer — Theme map | Mastermind' %}{% set seo_desc = 'All 371 micro-themes on one census sheet: which hold an admitted company, which hold a proposed link, by category and by value-chain position.' %}{% set seo_path = 'gmi.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Theme map | Mastermind' %}{% set seo_desc = 'All ' ~ model.totals.micros ~ ' micro-themes on one census sheet: which hold an admitted company, which hold a proposed link, by category and by value-chain position.' %}{% set seo_path = 'gmi.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
 {% set A = model.totals.admitted_micros %}
 {% set M = model.totals.micros %}

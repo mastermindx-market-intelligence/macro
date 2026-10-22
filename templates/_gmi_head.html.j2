@@ -1,13 +1,14 @@
 {#- GMI explorer page head — EXACTLY the specimen head() markup
     (build_specimens.py ~line 196): header.gmi-head > div.gmi-head-main >
     nav.gmi-crumb, h1.gmi-h1, p.gmi-sub; div.gmi-head-side. Every string goes
-    through t(); crumb separators are <i aria-hidden="true">›</i>. -#}
+    through t(); crumb separators are <i aria-hidden="true">›</i>. `extra` (HTML) sits
+    between the crumb and the h1 — the specimen head(extra=) slot (S1 ticker line). -#}
 {% from "_gmi_macros.html.j2" import t %}
-{% macro head(crumb, h1_en, h1_zh, sub_en, sub_zh, side="") -%}
+{% macro head(crumb, h1_en, h1_zh, sub_en, sub_zh, side="", extra="") -%}
 <header class="gmi-head">
   <div class="gmi-head-main">
     <nav class="gmi-crumb" aria-label="Breadcrumb">{%- for c_en, c_zh in crumb -%}{% if not loop.first %}<i aria-hidden="true">›</i>{% endif %}{{ t(c_en, c_zh) }}{%- endfor -%}</nav>
-    <h1 class="gmi-h1">{{ t(h1_en, h1_zh) }}</h1>
+    {{ extra }}<h1 class="gmi-h1">{{ t(h1_en, h1_zh) }}</h1>
     <p class="gmi-sub">{{ t(sub_en, sub_zh) }}</p>
   </div>
   <div class="gmi-head-side">{{ side }}</div>

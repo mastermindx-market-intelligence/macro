@@ -3523,7 +3523,7 @@ html[data-theme="light"]{
   --gmi-ladder-ink-cat:   color-mix(in srgb, var(--text) 62%, transparent);
   --r-gmi-focus:4px; --r-gmi-xs:1px; --r-gmi-sm:2px; --r-gmi-md:3px; --r-gmi-kbd:5px; --r-gmi-tag:6px;
   --r-gmi-dot:50%; --r-gmi-bar-top:3px 3px 0 0;
-  --gmi-cell-key:12px; --gmi-cell-xl:20px; --gmi-cell-strip:6px;
+  --gmi-cell-key:12px; --gmi-cell-xl:20px; --gmi-cell-strip:6px; --gmi-cell-mini:8px;
   --gmi-chain-slot:24px; --gmi-chain-edge-none:0px; --gmi-chain-rail:22px; --gmi-chain-edge:40px;
   --gmi-pip:12px; --gmi-pip-anchor:22px; --gmi-pip-void:10px; --gmi-pip-cat:9px;
 }
