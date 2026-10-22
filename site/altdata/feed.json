@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-22T10:07:55.390301+00:00",
+  "generated_utc": "2026-10-22T14:46:06.511345+00:00",
   "as_of": "2026-10-22",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -15021,14 +15021,6 @@
         "detail": "M&A / Divestitures"
       },
       {
-        "ticker": "ALUR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "BKKT",
         "category": "Delistings",
         "confidence": "high",
@@ -17965,14 +17957,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "NXH",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "IRT",
         "category": "Acquisitions",
         "confidence": "high",
@@ -18587,6 +18571,14 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
+      },
+      {
+        "ticker": "BBBYW",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "GENC",
@@ -19709,7 +19701,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "TRPPF",
+        "ticker": "TCEYF",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -20165,7 +20157,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "ARBE",
+        "ticker": "ARBEW",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -20283,6 +20275,14 @@
         "activist": false,
         "filer": null,
         "detail": "Issuer Tenders"
+      },
+      {
+        "ticker": "ALURW",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
       },
       {
         "ticker": "CHGA",
@@ -20773,7 +20773,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "SUNFF",
+        "ticker": "SLFQF",
         "category": "Issuer Tenders",
         "confidence": "high",
         "activist": false,
@@ -20845,7 +20845,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "PONOR",
+        "ticker": "PONOU",
         "category": "Acquisitions",
         "confidence": "medium",
         "activist": false,
@@ -21373,7 +21373,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "DCOM-P",
+        "ticker": "DCBG",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22237,7 +22237,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "FHN-PH",
+        "ticker": "FHN-PF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -22381,7 +22381,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "SBXUF",
+        "ticker": "SBXWF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -22629,7 +22629,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "TDS-PU",
+        "ticker": "TDS-PV",
         "category": "Deal Terminations",
         "confidence": "high",
         "activist": false,
@@ -23038,6 +23038,14 @@
       },
       {
         "ticker": "NFBK",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "ABIT",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -24605,6 +24613,14 @@
         "detail": "Activist Campaigns"
       },
       {
+        "ticker": "MAMK",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
         "ticker": "IVVD",
         "category": "Delistings",
         "confidence": "high",
@@ -24893,7 +24909,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "NVNWF",
+        "ticker": "NVNIW",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -25637,7 +25653,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "AGQPF",
+        "ticker": "AQNB",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -25909,7 +25925,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTQ",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -26933,7 +26949,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TEGO",
+        "ticker": "STWI",
         "category": "Acquisitions",
         "confidence": "medium",
         "activist": false,
