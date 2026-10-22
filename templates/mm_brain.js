@@ -38,7 +38,7 @@
   /* Optional native presentation assets come from THIS widget's origin, including
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
-  var visualScriptVersion = '1d23a300';
+  var visualScriptVersion = '2e3ce3a5';
   var visualStyleVersion = '1eb2aabf';
   var visualAssetPromise = null;
   function loadVisualAssets() {
@@ -3508,7 +3508,7 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
+    else if (a === 'home') { var _d = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html'; var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; } }
     else if (a === 'search') toggleSearch();
     else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }

@@ -2604,6 +2604,18 @@
   }
   var _lastFocus = null;
   function openSheet(mode, opts) {
+    // Shared Shell: ONE central guard covers every sheet opener in this file —
+    // the delegated CTA-capture listener, the gear/nav/pricing wirings
+    // (bindChromeCta, bindPlanCta, wireGearAccount), window.MMOnboard.open for
+    // hosts/tests, and bootDeepLinks (?upgrade=1, ?signup/?signin/?plan intents,
+    // the OAuth-resume stash, and the mid-flow reload restore). Claiming on
+    // candidate existence — including pre-INIT, where openAuth queues — means
+    // boot-time deep links hand off instead of building an in-frame sheet, and
+    // exactly one bridge intent crosses per user action. Only fixed tokens
+    // map; `opts` (plan target, period, resume flags, opts.me) never cross.
+    // Standalone (no candidate): zero delta, the legacy sheet opens with the
+    // caller's opts untouched.
+    if (_mmShellHandoff(mode)) return;
     if (mode === "upgrade") { openUpgrade(opts || {}); return; }
     ensureAssets();
     // Warm the Supabase broker + SDK the instant the sheet opens, so the first
@@ -2921,6 +2933,28 @@
     el.setAttribute("data-zh", zh);
     el.__en = en;
     el.innerHTML = (lang() === "zh") ? zh : en;
+  }
+  // Shared Shell bridge: when a qualified candidate exists — its installation
+  // already passed the parent/frame-generation/referrer guards, and it is
+  // deleted on teardown — the parent owns the auth UI, so this frame never
+  // builds a duplicate sheet. The handoff claims BEFORE and after the first
+  // context apply, because bridge.openAuth is queue-safe pre-INIT and the
+  // bridge drains queued intents right after INIT. Only the fixed intent
+  // tokens cross: "signup" stays "signup", "upgrade" maps to "billing"; every other real sheet mode
+  // this file carries ("signin", and the password-recovery "recover"/"reset"
+  // legs) maps to "signin" — the parent's sign-in panel owns recovery UX, so
+  // no credential surface is ever re-rendered inside the frame. Stash
+  // contents, plan targets, credentials, and any other parameters never cross
+  // the bridge. No candidate => false => the legacy sheet opens exactly as
+  // before (standalone landing behavior is untouched).
+  function _mmShellHandoff(mode) {
+    try {
+      var s = window.MMXSharedShell;
+      if (!s || typeof s.openAuth !== 'function') return false;
+      var intent = (mode === 'signup') ? 'signup' : (mode === 'upgrade' ? 'billing' : 'signin');
+      try { s.openAuth(intent); } catch (e) {}
+      return true;
+    } catch (e) { return false; }
   }
   function setChromeLabel(el, key) { paintBilingual(el, UPCHROME[key][0], UPCHROME[key][1]); }
   function bindChromeCta(cta) {
