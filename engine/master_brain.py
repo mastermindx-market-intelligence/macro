@@ -1363,6 +1363,36 @@ def gather_state(root: Path | None = None) -> dict:
         state["forward_calendar"] = _fcc.gather_forward_calendar(root)
     except Exception:  # noqa: BLE001 — additive, never fatal
         pass
+    # Options Pulse (options_pulse/v1): compact DISPLAY-ONLY options context for the
+    # narrator. It runs the SAME projector as the aibrief card, so the page and the
+    # model can never hold two interpretations of the same published bytes. Fail-open.
+    try:
+        from engine import options_pulse as _opulse  # noqa: PLC0415
+
+        def _opulse_read(rel: str):
+            try:
+                _p = root / rel
+                if not _p.exists():
+                    return None, None
+                _raw = _p.read_bytes()
+                if len(_raw) > _opulse.MAX_SOURCE_BYTES:
+                    return None, None
+                return json.loads(_raw), _opulse.digest_bytes(_raw)
+            except Exception:  # noqa: BLE001
+                return None, None
+
+        _gx, _gx_d = _opulse_read("site/gex/QQQ.json")
+        _ib, _ib_d = _opulse_read("site/options_intel_brief.json")
+        _sg, _sg_d = _opulse_read("data/options_flow/signing_gate.json")
+        _pulse = _opulse.build_pulse(
+            symbol="QQQ", gex=_gx, gex_file="site/gex/QQQ.json", gex_digest=_gx_d,
+            intel=_ib, intel_file="site/options_intel_brief.json", intel_digest=_ib_d,
+            gate=_sg, gate_file="data/options_flow/signing_gate.json", gate_digest=_sg_d,
+            now=datetime.now(timezone.utc),
+        )
+        state["options_pulse"] = _pulse["context"]
+    except Exception:  # noqa: BLE001 — additive, never fatal
+        pass
     return state
 
 
