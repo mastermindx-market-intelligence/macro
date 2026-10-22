@@ -27,7 +27,7 @@ SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
 MOVERS_GUARD_BEGIN = "# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_GUARD_END = "# END MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_MATCHER_NAME = "@movers_seo_redirect"
-CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then'
+CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then'
 CADDY_VALIDATE_LINE = 'caddy validate --config "$APP_DIR/app/deploy/Caddyfile"'
 CADDY_INSTALL_LINE = 'install -m 0644 "$APP_DIR/app/deploy/Caddyfile"'
 
@@ -148,6 +148,8 @@ def _run_caddy_block(
     generated_body: str | None,
     served_body: str | None,
     symlink_page: str | None = None,
+    autosave_mode: bool = False,
+    fresh_updater: bool = True,
 ):
     app = tmp_path / "opt" / "macro"
     for relative in ("app/deploy", "templates", "site", "site.served"):
@@ -177,6 +179,23 @@ def _run_caddy_block(
         .replace("__BLOCK__", block.replace("/etc/caddy/Caddyfile", str(etc_caddy)))
     )
     harness_path = tmp_path / "caddy_block_harness.sh"
+    if autosave_mode:
+        harness = harness.replace(
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; }',
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; '
+            'printf "%s\\n" "/usr/bin/caddy reload --config /var/lib/caddy/.config/caddy/autosave.json --force"; }',
+        )
+        # The shell boundary runs verbatim; only native side effects and its
+        # predecessor FD are controlled fixture capabilities.
+        harness = 'CADDY_RECONCILE_ARGS=()\n' + harness
+        harness = harness.replace(
+            'command cmp $flag "$left" "$right"',
+            'case "$left" in /proc/*/fd/255) return '
+            + ('0' if fresh_updater else '1') + ' ;; esac\n'
+            '\tcommand cmp $flag "$left" "$right"',
+        )
+        harness = harness.replace('caddy() {',
+            'python3() { printf \'API_PUBLICATION %s\\n\' "$*" >> "$FAKE_LOG"; }\ncaddy() {', 1)
     harness_path.write_text(harness, encoding="utf-8")
     completed = subprocess.run(
         ["bash", str(harness_path)],
@@ -186,6 +205,27 @@ def _run_caddy_block(
         check=False,
     )
     return completed, app, etc_caddy, log
+
+
+@pytest.mark.parametrize("fresh_updater", [True, False])
+def test_autosave_caddy_uses_publication_only_from_fresh_updater(tmp_path, fresh_updater):
+    completed, _, etc_caddy, log = _run_caddy_block(
+        tmp_path, _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY,
+        generated_body=COHERENT_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+        autosave_mode=True, fresh_updater=fresh_updater,
+    )
+    actions = _action_lines(log)
+    assert completed.returncode == (0 if fresh_updater else 1), completed.stderr
+    assert sum(line.startswith("API_PUBLICATION ") for line in actions) == int(fresh_updater)
+    assert not any(line.startswith(("caddy ", "install ", "systemctl reload", "systemctl restart"))
+                   for line in actions)
+    assert etc_caddy.read_text() == INSTALLED_BASELINE_CADDY
+    if not fresh_updater:
+        assert "predecessor updater inode" in completed.stderr
 
 
 def _action_lines(log: Path) -> list[str]:
@@ -262,6 +302,7 @@ def test_movers_caddy_guard_admits_matching_nonempty_triple_and_keeps_ordering(t
     assert completed.returncode == 0, completed.stderr
     candidate_path = f"{app}/app/deploy/Caddyfile"
     assert _action_lines(log) == [
+        "systemctl show caddy -p ExecReload --value",
         f"caddy validate --config {candidate_path} --adapter caddyfile",
         f"install {etc_caddy}",
         "systemctl reload caddy",
@@ -300,6 +341,7 @@ def test_movers_caddy_guard_is_inert_without_the_named_matcher(tmp_path):
         assert completed.returncode == 0, completed.stderr
         candidate_path = f"{app}/app/deploy/Caddyfile"
         assert _action_lines(log) == [
+            "systemctl show caddy -p ExecReload --value",
             f"caddy validate --config {candidate_path} --adapter caddyfile",
             f"install {etc_caddy}",
             "systemctl reload caddy",

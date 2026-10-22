@@ -2461,6 +2461,8 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+          # Reuse this existing stocks-reference credential binding before stock-library build.
+          python -m scripts.capture_stock_liquidity_currency || echo "::warning::F08 dated currency remains unqualified; prior retained receipt preserved"
       - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
         # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
         # organ's per-name state over the graded universe, evaluated on a run-wide PIT

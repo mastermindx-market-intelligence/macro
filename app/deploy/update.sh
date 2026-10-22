@@ -6,6 +6,19 @@
 # instead of waiting on a once-a-night pull.
 set -euo pipefail
 APP_DIR="/opt/macro"
+# Attended recovery of a source baseline which was installed but never adopted
+# by the complete API-managed Caddy configuration. Normal cron has no arguments.
+CADDY_SOURCE_BASELINE=""
+CADDY_RECONCILE_ARGS=()
+if [ "$#" -ne 0 ]; then
+	if [ "$#" -ne 2 ] || [ "$1" != --caddy-source-baseline ] ||
+	   [[ ! "$2" =~ ^[0-9a-f]{40}$ ]]; then
+		echo "macro-update: expected --caddy-source-baseline <protected-40-SHA>" >&2
+		exit 2
+	fi
+	CADDY_SOURCE_BASELINE=$2
+	CADDY_RECONCILE_ARGS=(--source-baseline "$2")
+fi
 
 # Serialize runs. Cron fires every 3 min, but a big nightly render commit can
 # take longer than that (fetch + reset + rsync of a multi-hundred-MB site/).
@@ -417,7 +430,7 @@ fi
 
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
 # config can never take the site down — reload is gated on `caddy validate`).
-if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
+if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
 	# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD
 	# Fail-closed ordering guard for the staged Movers SEO redirect. The
 	# @movers_seo_redirect matcher is a FUTURE repo-side construct (no such
@@ -464,7 +477,20 @@ if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
 		fi
 	fi
 	# END MOVERS_SEO_REDIRECT_CADDY_GUARD
-	if caddy validate --config "$APP_DIR/app/deploy/Caddyfile" --adapter caddyfile; then
+	# API-managed Caddy has a complete autosave configuration containing other
+	# publishers' routes. Reconcile only qualified Macro source changes through
+	# its native version fence; never reload a source-only or old autosave file.
+	if systemctl show caddy -p ExecReload --value | grep -Fq -- '--config /var/lib/caddy/.config/caddy/autosave.json'; then
+		if ! cmp -s "/proc/$$/fd/255" "$APP_DIR/app/deploy/update.sh"; then
+			echo "macro-update: refusing Caddy adoption from a predecessor updater inode" >&2
+			exit 1
+		fi
+		python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" "${CADDY_RECONCILE_ARGS[@]}"
+		RECONCILED=1
+	elif [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
+		echo "macro-update: pending/attended Caddy adoption requires the qualified autosave mode" >&2
+		exit 1
+	elif caddy validate --config "$APP_DIR/app/deploy/Caddyfile" --adapter caddyfile; then
 		install -m 0644 "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile
 		systemctl reload caddy 2>/dev/null || systemctl restart caddy
 		RECONCILED=1
