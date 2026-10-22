@@ -21,8 +21,10 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Deliver the two native canonical-main article artifacts from publication branch93faeb16 through one protected PR, normal updater and exact native-ledger/Markdown/public consumer acceptance. Native emission already executed once; no writer or replay. Keep9650 observer93558/exactCI39231026885 running but feature merge disarmed until content lands; then complete that same feature carrier. Original histories/refusals preserved; no workflow promotion of already published sources.
+next_action: Original root recovered interrupted child;9696 actualprotected3e392265 installed/public/browser PASS.9650 exactCI39341951816 allgreen, but currentDIRTY; twoownedknowledge conflicts resolved against protectedmain7777 preserving9pins/7nativefiles. Finish SAMEbranch realconflictrepair push after head/lease/capacity fence, new exactCI/protectedinstall/recovery/native-rowreplay. No emitter/TerminalOP replay.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1075
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9696
   - https://github.com/mastermindx-market-intelligence/macro/pull/9648
   - https://github.com/mastermindx-market-intelligence/macro/pull/9650
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
