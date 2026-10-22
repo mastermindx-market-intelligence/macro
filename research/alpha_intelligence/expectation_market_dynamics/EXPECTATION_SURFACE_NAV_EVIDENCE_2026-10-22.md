@@ -130,6 +130,92 @@ PNGs (all < 600 KB), under `research/alpha_intelligence/expectation_market_dynam
 2. Screenshot server ran on port 8931 instead of 8765 — port 8765 was already bound by another session's process (my server's bind failed with EADDRINUSE; the other listener was left untouched).
 3. `capture_page_evidence.py` ran against a locally built page (data was available on the host, so no live-origin fallback was needed); the two build-derived site files were restored to HEAD after capture and never staged.
 
+## Round 2 (bridge repair)
+
+Lane `itp-es-nav-20261022-r2` (pool glm, model glm-5.3-flash), commissioned by the
+Meta-CEO seat 2fc05761 (same program/WS). Round 1's deliverables all stay; this
+round adds the missing client-side icon-drawing bridge entries and re-captures the
+open-menu proof.
+
+### Head / base
+
+- Base (round 1's head, worktree HEAD at start, and `origin/claude/itp-es-nav-2026-10-22` at fetch): `9b14fba35cc8993d083eef0a02358f8a91f3c371`
+- origin/main at fetch time: `7abe860f0ab79f206ea846d7ffe6df0fdc2579d0` (NOT merged — containment forbids it)
+- Branch: `lane/itp-es-nav-20261022-r2` (local); pushed to `claude/itp-es-nav-2026-10-22`
+- Feat commit: `0cd460195c1a2596a6ed465e865ab278ed660be6`; test commit: `07b9ad985c3a0d95d52158ba4f530a3cd8a19392` (evidence commit sha in `ES_NAV_RECORD.md`, untracked)
+
+### The two bridge lines (templates/nav_market.js, exactly 2 insertions / 0 deletions)
+
+Immediately after the `MOCKUP_ICON_PATHS.earnings_wire = …` line:
+
+```js
+  MOCKUP_ICON_PATHS.expectation_surface = '<path class="ghost" d="M6 40h36M8 8v32"/><path d="M10 31c8-1 14-6 26-8"/><path d="M10 15c8 1 14 6 26 8"/><path class="accent" d="M10 23h22"/><circle class="soft-fill" cx="36" cy="23" r="4"/><path d="M36 15v4M36 27v4M30 23h2M40 23h2"/>';
+```
+
+Immediately after the `'macro_context.html': ['macro_weather', 'cyan'],` entry in `MOCKUP_RESEARCH_ICON_BY_FILE`:
+
+```js
+    'expectation_surface.html': ['expectation_surface', 'violet'],
+```
+
+`git diff --stat 9b14fba35cc… HEAD -- templates/nav_market.js` → `2 insertions(+)`, 0 deletions. `node --check templates/nav_market.js` → OK. `site/nav_market.js` is the byte-copy (`cmp` silent); `scripts.check_template_site_sync` → OK (139 pairs); `scripts.sync_chat_nav` check mode → OK (partial unchanged this round, no `--fix` run).
+
+### Tests
+
+`tests/test_expectation_surface_nav.py` extended with 4 bridge-contract tests (round 1's 5 kept untouched): drawing assignment unique with `ghost`/`accent`/`soft-fill` classes and no `fill=`/`stroke=`/`#`/`rgb(`/`style=`; map entry unique, after `macro_context`, before the closing `};`; `site/nav_market.js` byte-equals the template; the six drill files still present exactly once in the map. Suite: **9 passed**.
+
+Pinned parity set (7 suites, base vs lane): base **68 passed / 4 failed**, lane **72 passed / 4 failed** — the failure-id sets are EQUAL under `comm` (lane set ⊆ base set, no new failure). The 4 are: the 3 known `test_nav_submenu_icons.py` failures (round-1 G1) plus `test_nav_hover_bridge.py::test_nav_release_key_moves_with_the_payload_it_busts` — **pre-existing at base 9b14fba with a clean tree, recorded verbatim per commission** (a 4th pre-existing failure beyond round 1's known-3 list; not caused by this lane's two added table lines — see GAPS G4).
+
+### Design ratchet (CI pack)
+
+- Round-2 diff (`9b14fba…` → HEAD, templates+site, 16 lines): `check_design_system.py --mode enforce-added` → **blocking=0**.
+- Full PR diff (`8c23f6b26a36…` → HEAD, 54 lines): **blocking=1** on `templates/product-nav-icons.css:390 [literal-custom-property] --research-icon-mask` — round 1's G3 structural finding, expected here, not this round's to fix.
+
+### Evidence receipt (CI pack)
+
+`check_ui_visual_evidence.py` → rc 0 on BOTH the round-2 diff and the full PR diff (the two JS table entries are not material runtime JS). First branch of item 6b applied: `mockups/evidence/expectation-surface-nav/` left byte-identical, no receipt regeneration.
+
+### Open-menu screenshots (re-captured; bridge verified in-page)
+
+Local build path: `site/expectation_surface.html` rebuilt locally (`scripts.build_expectation_surface.build(write=True)`, exactly 2 derived site files written, both restored to HEAD after capture — never staged), served via `python3 -m http.server 8933 --directory site`; the page loaded is the local build running THIS round's `site/nav_market.js` (the derived pair), no route injection needed. Bridge before/after: the built page carries **7** server-rendered `.research-icon` tiles (six siblings + this row); after load `document.querySelectorAll('.research-icon').length === 0` on every captured page (assert per shot) — the bridge converted every row including this one.
+
+Captured row markup from the live page:
+
+```html
+<span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="ghost" d="M6 40h36M8 8v32"></path><path d="M10 31c8-1 14-6 26-8"></path><path d="M10 15c8 1 14 6 26 8"></path><path class="accent" d="M10 23h22"></path><circle class="soft-fill" cx="36" cy="23" r="4"></circle><path d="M36 15v4M36 27v4M30 23h2M40 23h2"></path></svg></span>
+```
+
+Tile parity in the captured menu (desktop 1440): all three tiles **58×58 CSS px**, rows 602×78 @ x=171 (left column: Cycle Intelligence y=360, Expectation Surface y=444) and x=797 (right column: Macro Weather y=360) — same geometry round 1 measured. Pixel census of the ES tile in the 2× crop: std 29.8, top-colour share 0.78 (family: cycle 0.727, macro 0.757 — a flat mask square would be >0.9) and 742 blue-dominant (violet accent) px: the tile is a line drawing with the violet accent, not the grey mask square.
+
+scrollWidth == clientWidth with the menu open: **1440 == 1440** and **390 == 390** (all 8 combos; the mobile 390 shots were re-captured with an explicit in-viewport row-visibility assert: row box y=536/541, h=68).
+
+PNGs (all < 600 KB), overwriting round 1 in place under `evidence/es_nav_2026-10-22/`:
+
+| file | bytes | sha256 (first 16) |
+|---|---|---|
+| es_nav_1440_dark_en.png | 138519 | 2d18e2aba3a3a245 |
+| es_nav_1440_dark_zh.png | 196046 | 5a88e4d667066c2a |
+| es_nav_1440_light_en.png | 205458 | 40cf8d66f4e59eb2 |
+| es_nav_1440_light_zh.png | 220420 | c5b580b38278dfe7 |
+| es_nav_390_dark_en.png | 57425 | c20e9875fe6cde63 |
+| es_nav_390_dark_zh.png | 56463 | 2e640e3efbf0020c |
+| es_nav_390_light_en.png | 57788 | 8953a8259fabeb14 |
+| es_nav_390_light_zh.png | 57174 | ec9ed39225a15098 |
+| es_nav_icon_2x.png | 46199 | de1dbf30b0bd5a65 |
+
+`es_nav_icon_2x.png`: 2× device-scale crop, 2504×364 px = 1252×182 CSS px (union of the three rows + 12/10 px padding — same box round 1 used; the drill is a two-column grid, deviation D1 from round 1 applies unchanged).
+
+### Round 2 GAPS
+
+4. **G4 (pre-existing at base, not caused by this lane):** `tests/test_nav_hover_bridge.py::test_nav_release_key_moves_with_the_payload_it_busts` fails at base `9b14fba35cc…` with a clean tree. It is outside this round's known-3 list, so it is recorded verbatim; the parity comm shows the lane adds no failure beyond the base four, and the test file is not this lane's to edit.
+
+Round 1's G1–G3 stand unchanged.
+
+### Round 2 DEVIATIONS
+
+4. The seat's R1/R2 line positions ("currently line 136/line 164") matched the file exactly; no deviation in the edit itself. The four numbered items here continue round 1's DEVIATIONS numbering: D4 is that the guarded visual-delegation helper returned a typed refusal (`GLM_VISION_DELEGATION_REFUSED reason=controller_minimax_lease_required`), so the crop's same-family judgment rests on DOM facts (identical 58×58 tiles, identical `icon-drawing` markup shape) and deterministic pixel statistics instead of a second model's visual read.
+5. D5: the first 390 capture pass ran against the correct built page and passed its own assertions, but did not assert row visibility; all four 390 shots were re-captured with an explicit visibility/in-viewport assert (values above) before commit. The 1440 shots from the first pass needed no re-capture (their row facts were already asserted and recorded).
+
 ## VERDICT
 
 See `ES_NAV_RECORD.md` at the worktree root (untracked, per commission). Copy appended below at commit time if not already present.
