@@ -1,0 +1,89 @@
+{
+  "schema": "catalyst.stock_context.integration_recovery.v1",
+  "recorded_at": "2026-10-22T13:52:33.723718Z",
+  "scope": "SOURCE_INTEGRATION_ONLY",
+  "disposition": "NONACTIVATED_RESEARCH_CONSUMER_DRAFT_HOLD",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 9616,
+  "operation_id": "catalyst-stock-context-r1-20261019",
+  "branch": "sol/web-catalyst-stock-context-r1-20261019",
+  "source_parent": "13b528d07e52680570a837f27571b64eb8176ca8",
+  "code_commit": "e96936d977bf75025e82ae76d49b055f0405c317",
+  "composition_base": "2926e83157923c754751818026a4d0ce89a2a977",
+  "merge_base": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+  "repair": {
+    "changed_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "tests/test_ci_pack.py"
+    ],
+    "main_jobs_preserved": 349,
+    "total_jobs": 350,
+    "original_catalyst_job_bytes": 2351,
+    "original_curation_block_characters": 344,
+    "original_job_definition_unchanged": true,
+    "main_job_definitions_and_order_preserved": true,
+    "packing_limits_changed": false,
+    "source_tests_or_assertions_weakened": false,
+    "manifest_insertion_before": "  c19-short-pressure-availability:",
+    "curation_insertion_before": "# PR #7861: Options matrix source/session/retention checks are hermetic.",
+    "algorithm": "Retain the complete captured-main file and insert only the original Catalyst declaration/block at stable common context; removing that insertion restores captured-main bytes exactly."
+  },
+  "file_proof": {
+    ".github/ci/legacy-jobs.yml": {
+      "main_blob": "755cb5908c0939817a256e3698b2e1bfd108fe44",
+      "candidate_sha256": "3cb8d65a581728c7877e7b22ee610ddac13053d4cd1b4c911183e68edaad9308",
+      "three_way_exit_code": 0,
+      "three_way_output_equals_candidate": true,
+      "main_bytes_preserved": true
+    },
+    "tests/test_ci_pack.py": {
+      "main_blob": "99c1cdaceab6a708635fc1c893a617cb5f10e053",
+      "candidate_sha256": "f3909fda41123501aa463ccaa9bcd543134827c241e9296a9e01a893c7e66cd0",
+      "three_way_exit_code": 0,
+      "three_way_output_equals_candidate": true,
+      "main_bytes_preserved": true
+    }
+  },
+  "composition_proof": {
+    "command": "git merge-tree --write-tree 2926e83157923c754751818026a4d0ce89a2a977 e96936d977bf75025e82ae76d49b055f0405c317",
+    "exit_code": 0,
+    "tree": "18d0abd72cae023f15db14555856b405d0e88a6e",
+    "code_commit_diff_names_exactly_two_repaired_paths": true,
+    "diff_check_exit_code": 0,
+    "source_commit_worktree_clean": true,
+    "final_receipt_commit_requires_readback": true
+  },
+  "custody": {
+    "original_workspace_preserved": true,
+    "before_source_repair_local_and_remote_head_equal": true,
+    "source_tree_clean_before_edits": true,
+    "pending_git_operation_or_index_head_ref_lock_observed": false,
+    "exact_operation_process_matches_in_bounded_inspection": 0,
+    "global_writer_absence_claimed": false,
+    "publisher": "installed typed exact-HEAD-fenced same-operation publisher",
+    "failed_child_read_only_probe_used_as_writer_absence_evidence": false
+  },
+  "historical_evidence_retained": {
+    "path": "research/catalyst_intelligence/stock_context_r1/time_envelope_r8/README.md",
+    "source_admission_established": false,
+    "decision_availability_established": false,
+    "consumer_tests": 128,
+    "new_v3_tests": 40,
+    "actual_v3_cli_captures": 2,
+    "byte_identical_legacy_replays": 5,
+    "hosted_ci_run": 39385787266,
+    "rerun_claimed": false,
+    "consumer_test_fixture_clock_and_admission_code_unchanged": true
+  },
+  "review_and_release": {
+    "unchanged_consumer_semantic_acceptance_retained": true,
+    "whole_candidate_review_reuse_claimed": false,
+    "new_ci_owned_blob_integration_review": "PENDING",
+    "current_head_hosted_ci": "PENDING",
+    "source_hold_release": "NOT_GRANTED",
+    "native_activation": "CLOSED",
+    "source_rights_entitlement_publication_admission": "SEPARATE_UNPROVEN",
+    "production_deploy_or_migration_performed": false,
+    "whole_program_completion_claimed": false
+  }
+}
