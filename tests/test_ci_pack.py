@@ -5176,9 +5176,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_858),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_830),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_602),
+    ("templates/index.html", 136, 5_862),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_834),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_606),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5186,6 +5186,23 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 visual-evidence correction composes protected8c23f6 and
+    native-plan Brief coverage without removing any suite. Actual compiler
+    114.88s: index136/5862, free-content135/5834, Prophet128/5606, ten packs.
+    The retained incoming ticker-news-qbus native-plan suites add exactly
+    four units to the previously measured free-content5830 ceiling. Fund
+    only5834; every other job/weight/pack/time bound stays unchanged.
+
+    2026-10-22 Movers + missing-cap code coverage composes protected Treasury
+    main1f0b19fb without removing any existing suite. The existing code-gated
+    data-base-shim command adds three hermetic files (+6 estimator units):
+    Movers page-only plus intel/premium missing-cap regressions. Its incumbent
+    data-gated coverage remains. Actual compiler on this composed source:
+    index136/5862, free-content135/5830, Prophet128/5606; all ten packs.
+    Fund only measured excess5862/5830/5606; retain job ceilings136/136/130,
+    ten-pack limit, execution timeouts, selectors and every prior check.
+    The calculator job/closure is unchanged; no guessed free-probe arithmetic.
 
     2026-10-22 composition with protected 79e35150 retains its two
     Treasury suites and native-plan Brief coverage. Preserve all protected
@@ -6376,20 +6393,6 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Preserve the plan-book ceiling 5,600, every job-count and pack bound,
     all suites, selectors, scope/closure audits and duration overrides.
     These are deterministic planning weights, not execution timings.
-
-    2026-10-22 D04-A2 status source-clock projection (PR #10004; head = the merge of
-    main 0dc8ac5eeda1 into the PR branch, ddc27c5b77e8): the existing
-    prelaunch-hardening pytest command gains one suite,
-    tests/test_status_live_projection_wiring.py, and three main-side jobs
-    declare app/live_status_projection.py (no new jobs, no selection change).
-    Lane-measured contract-delta on that merge against base main 0dc8ac5eeda1:
-    3 introduced, newly selected none, 10 packs; weight-seconds:
-    - index: 136 jobs, base 5,856, head 5,858; ceiling 5,856 -> 5,858.
-    - free-content: 135 jobs, base 5,828, head 5,830; ceiling 5,829 -> 5,830.
-    - plan-book: 128 jobs, base 5,600, head 5,602; ceiling 5,600 -> 5,602.
-    Only a breached ceiling moves, to its measured head weight, no padding;
-    job-count ceilings, the pack limit, selectors and every prior suite stay
-    unchanged. Planning weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
