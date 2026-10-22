@@ -2345,6 +2345,7 @@ def test_outer_base_timeout_stops_replays_and_preserves_first_outcome(tmp_path, 
 
 
 def test_browser_setup_consumes_original_total_deadline(monkeypatch):
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ())
     job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
     ticks = iter([0.0, 0.0, 400.0])
     calls = []
@@ -2358,6 +2359,7 @@ def test_browser_setup_consumes_original_total_deadline(monkeypatch):
 
 
 def test_browser_setup_failure_is_blocking_infrastructure_not_product_pass(monkeypatch):
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ())
     job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
     calls = []
     monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
@@ -2985,3 +2987,114 @@ def test_review_pump_error_after_root_wait_blocks_all_dependent_effects(tmp_path
     assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
     evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
     assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
+
+
+def _capture_job_environment(monkeypatch):
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ("capture apt", "capture playwright"), raising=False)
+
+
+def test_capture_deducts_from_same_original_deadline_and_keeps_installer(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("browser", [_browser_setup_step(), {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 40.0, 100.0, 500.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("capture apt", 600), ("capture playwright", 560),
+                     ("python -m playwright install --with-deps chromium", 500), ("true", 100)]
+    assert [s["outcome"] for s in result.steps] == ["passed"]
+
+
+@pytest.mark.parametrize("outcome", ["timed_out", "failed"])
+def test_capture_uncertainty_blocks_original_installer_and_semantics(monkeypatch, outcome):
+    _capture_job_environment(monkeypatch)
+    job = _job("browser", [_browser_setup_step(), {"name": "assertion", "run": "true"}], timeout=10)
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        return PACK.CommandObservation(outcome=outcome, returncode=None, timeout_settlement="unknown", detail="original capture uncertainty")
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt"]
+    assert result.timeout_settlement == "unknown"
+    assert result.infrastructure["outcome"] == "unknown"
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+    assert outcome in result.infrastructure["detail"]
+
+
+def test_settled_capture_failure_does_not_replace_required_installation(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("browser", [_browser_setup_step(), {"name": "assertion", "run": "true"}], timeout=10)
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        return PACK.CommandObservation(outcome="failed" if len(calls) == 1 else "passed", returncode=1 if len(calls) == 1 else 0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt", "capture playwright", "python -m playwright install --with-deps chromium", "true"]
+    assert result.failure is None
+    assert result.steps[0]["outcome"] == "passed"
+
+
+def test_capture_cannot_launch_installer_after_total_budget_exhausted(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("browser", [_browser_setup_step(), {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 600.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **_k: calls.append(command) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt"]
+    assert result.failure is not None and result.timeout_settlement is None
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+def test_capture_commands_are_bound_only_to_declared_setup_jobs(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    setup = _job("browser", [_browser_setup_step(), {"run": "true"}], timeout=10)
+    ordinary = _job("ordinary", [{"run": "true"}], timeout=10)
+    before = PACK.semantic_job_digest(setup), PACK.semantic_job_digest(ordinary)
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ("different capture",))
+    after = PACK.semantic_job_digest(setup), PACK.semantic_job_digest(ordinary)
+    assert before[0] != after[0]
+    assert before[1] == after[1]
+
+
+def test_capture_helper_source_is_part_of_setup_digest(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    setup = _job("browser", [_browser_setup_step(), {"run": "true"}], timeout=10)
+    before = PACK.semantic_job_digest(setup)
+    original = Path.read_bytes
+
+    def changed_helper(path):
+        content = original(path)
+        return content + b"\n# changed capture input source\n" if path.name == "ci_browser_dependency_inputs.py" else content
+
+    monkeypatch.setattr(Path, "read_bytes", changed_helper)
+    assert PACK.semantic_job_digest(setup) != before
+
+
+def test_capture_shares_the_finite_setup_bound_as_well_as_the_job_deadline(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("browser", [_browser_setup_step(minutes=9), {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 300.0, 540.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs: calls.append((command, kwargs["timeout_seconds"])) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == [("capture apt", 540), ("capture playwright", 240)]
+    assert result.failure is not None
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
