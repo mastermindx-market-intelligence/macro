@@ -235,6 +235,85 @@ class TestOpenInterestParsing:
         assert (df["strike"] == 580.0).all()
 
 
+class TestGreekSourceClockProvenance:
+    """Synthetic source rows exercise real collector entrypoints, without I/O."""
+
+    @staticmethod
+    def _read(monkeypatch, rows, endpoint):
+        from collectors import thetadata as td
+
+        raw = pd.DataFrame(rows)
+        monkeypatch.setattr(td, "reachable", lambda: True)
+        monkeypatch.setattr(td, "_get_csv", lambda *args, **kwargs: raw.copy(deep=True))
+        if isinstance(endpoint, int):
+            return td.bulk_greeks("SPXW", 20261009, "20261008", "20261008", order=endpoint)
+        return td.snapshot_greeks("SPXW", order=endpoint)
+
+    @staticmethod
+    def _row():
+        return {
+            "symbol": "SPXW", "expiration": "2026-10-09", "strike": "6500",
+            "right": "CALL", "timestamp": "2026-10-08T15:45:00.123",
+            "underlying_timestamp": "2026-10-08T15:44:59.987",
+            "underlying_price": "6500", "bid": "12", "ask": "13",
+            "delta": ".5", "gamma": ".01", "implied_vol": ".2",
+        }
+
+    @pytest.mark.parametrize("endpoint", [1, 2, 3, "first", "second"])
+    @pytest.mark.parametrize("clock", ["timestamp", "underlying_timestamp"])
+    def test_clock_distinct_rows_are_not_collapsed_as_duplicates(self, monkeypatch, endpoint, clock):
+        first = self._row()
+        later = dict(first, **{clock: "2026-10-08T15:45:01.001"})
+        frame = self._read(monkeypatch, [first, later, first], endpoint)
+        assert frame is not None
+        assert len(frame) == 2  # exact source duplicate removed; distinct clocks retained
+        assert frame[clock].tolist() == [first[clock], later[clock]]
+        other = "underlying_timestamp" if clock == "timestamp" else "timestamp"
+        assert frame[other].tolist() == [first[other], first[other]]
+        assert set(frame["root"]) == {"SPXW"}
+        if endpoint != "second":
+            assert set(frame["delta"]) == {0.5}
+
+    @pytest.mark.parametrize("endpoint", [1, 2, 3, "first", "second"])
+    def test_missing_underlying_clock_is_not_fabricated(self, monkeypatch, endpoint):
+        row = self._row()
+        del row["underlying_timestamp"]
+        frame = self._read(monkeypatch, [row], endpoint)
+        assert frame is not None
+        assert "underlying_timestamp" not in frame.columns
+        assert frame.loc[0, "timestamp"] == row["timestamp"]
+        assert not {"received_at", "available_at", "consumer_available_at"} & set(frame.columns)
+
+    @pytest.mark.parametrize("endpoint", [1, "first", "second"])
+    @pytest.mark.parametrize("value", [None, "not-a-clock", "2026-10-08T16:15:00-04:00"])
+    def test_raw_underlying_clock_is_evidence_not_freshness_certification(self, monkeypatch, endpoint, value):
+        row = dict(self._row(), underlying_timestamp=value)
+        frame = self._read(monkeypatch, [row], endpoint)
+        assert frame is not None
+        actual = frame.loc[0, "underlying_timestamp"]
+        if value is None:
+            assert actual is None
+        else:
+            assert actual == value
+
+    def test_snapshot_clocks_survive_existing_poller_storage(self, monkeypatch, tmp_path):
+        from scripts.chain_snapshot_poller import append_day_parquet, join_orders
+
+        row = self._row()
+        first = self._read(monkeypatch, [row], "first")
+        second = self._read(monkeypatch, [row], "second")
+        joined = join_orders(first, second)
+        joined["snapshot_bucket"] = "15:45"
+        joined["source"] = "chain_snapshot"
+        path = tmp_path / "SPXW-2026-10-08.parquet"
+        append_day_parquet(path, joined)
+        stored = pd.read_parquet(path)
+        assert len(stored) == 1
+        assert stored.loc[0, "timestamp"] == row["timestamp"]
+        assert stored.loc[0, "underlying_timestamp"] == row["underlying_timestamp"]
+        assert stored.loc[0, "gamma"] == 0.01
+
+
 class TestGreeksParsing:
     """bulk_greeks: parses v3 greeks/eod CSV fixture (buffered, not streamed)."""
 

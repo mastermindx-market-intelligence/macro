@@ -1374,18 +1374,30 @@
   function methodMarkup(compare) {
     var method = compare.methodSpec;
     var fields = Array.isArray(method.fields) && method.fields.length ? method.fields : FIELDS;
+    var distances = compare.neighbors.filter(function (neighbor) { return neighbor.distanceQ18 !== null; });
     return '<dl class="mmr-coverage">' +
       '<div><dt>' + esc(copy('Registered method', '注册方法')) + '</dt><dd><code>' + esc(method.methodSpecId) + '</code></dd></div>' +
       '<div><dt>' + esc(copy('Compared fields', '比较字段')) + '</dt><dd>' + esc(fields.map(fieldLabel).join(copy(', ', '、'))) + '</dd></div>' +
       (method.exclusionDays === null ? '' : '<div><dt>' + esc(copy('Calendar-day exclusion', '自然日排除')) + '</dt><dd>' + esc(String(method.exclusionDays)) + '</dd></div>') +
       '</dl><p class="mmr-note">' + esc(copy(
         'Equal fixed rules over five house fields; two numeric score differences and three categorical equal/mismatch checks. No fitted probabilities, no trading verdict, and the returned count is a similarity selection — not independent trials.',
-        '五项内部字段按固定等权规则比较：两项数值评分差值与三项类别一致/不一致检查。无拟合概率、无交易结论；返回数量是相似度选择，不是独立试验次数。')) + '</p>';
+        '五项内部字段按固定等权规则比较：两项数值评分差值与三项类别一致/不一致检查。无拟合概率、无交易结论；返回数量是相似度选择，不是独立试验次数。')) + '</p>' +
+      (distances.length ? '<h3>' + esc(copy('Exact case distances', '案例的确切距离')) + '</h3><p class="mmr-note">' +
+        esc(copy('Smaller distances mean closer readings under this fixed comparison rule. They are not probabilities.',
+                 '按此固定比较规则，距离越小表示解读越接近。距离不是概率。')) + '</p><dl class="mmr-coverage">' +
+        distances.map(function (neighbor) {
+          return '<div><dt>' + esc(caseClock(neighbor)) + '</dt><dd><code>' +
+            esc(String(neighbor.distanceQ18)) + '</code></dd></div>';
+        }).join('') + '</dl>' : '');
+  }
+
+  function caseClock(neighbor) {
+    var entry = findEntry(neighbor.contextId);
+    return neighbor.sourceCard ? clockLabel(neighbor.sourceCard.eventTime) : (entry ? clockLabel(entry.eventTime) : neighbor.contextId);
   }
 
   function caseMarkup(neighbor, index) {
-    var entry = findEntry(neighbor.contextId);
-    var when = neighbor.sourceCard ? clockLabel(neighbor.sourceCard.eventTime) : (entry ? clockLabel(entry.eventTime) : neighbor.contextId);
+    var when = caseClock(neighbor);
     var rows = neighbor.differences && neighbor.differences.length
       ? neighbor.differences
       : (neighbor.state && state.committed.data.selectedState ? differenceRows(state.committed.data.selectedState, neighbor.state) : null);
@@ -1393,7 +1405,6 @@
     return '<article class="mmr-case" data-mmr-context="' + esc(neighbor.contextId) + '">' +
       '<div class="mmr-case-head"><h3>' + esc(when) + '</h3><span>' + esc(copy('Saved house output', '已保存的内部输出')) + '</span></div>' +
       '<p class="mmr-case-diff">' + summary + '</p>' +
-      (neighbor.distanceQ18 === null ? '' : '<p class="mmr-case-distance">' + esc(copy('Retrieval distance ', '检索距离 ')) + '<code>' + esc(String(neighbor.distanceQ18)) + '</code></p>') +
       '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="inspect" data-mmr-context="' + esc(neighbor.contextId) + '">' +
       esc(copy('Inspect source', '核对来源')) + '</button></article>';
   }
@@ -1430,7 +1441,7 @@
       body += compare.neighbors.map(function (neighbor, index) { return caseMarkup(neighbor, index); }).join('');
     }
     body += '<details class="mmr-disc"><summary>' + esc(copy('Coverage and exclusions — see what was left out', '覆盖与排除 — 查看未纳入的记录')) + '</summary>' + coverageMarkup(compare) + '</details>' +
-      '<details class="mmr-disc"><summary>' + esc(copy('Comparison method — five fields, fixed rules', '比较方法 — 五项字段、固定规则')) + '</summary>' + methodMarkup(compare) + '</details>' +
+      '<details class="mmr-disc"><summary>' + esc(copy('Comparison method & distances', '比较方法与距离')) + '</summary>' + methodMarkup(compare) + '</details>' +
       outcomeBlock();
     ui.resultBody.innerHTML = body;
 
