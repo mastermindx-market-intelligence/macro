@@ -98,9 +98,22 @@ def _load_rows() -> list[dict]:
 
 
 def _m1_edge(m1_run) -> dict:
+    """The SWKS->AAPL supplier_customer edge, selected by identity.
+
+    The extraction directory now spans every M2 leaf, so the count pin
+    (``len(edges) == 1``) became a selection: exactly one edge carries the M1
+    direction and species, and every pinned field assertion below runs on it.
+    """
     edges = m1_run["edges"]["edges"]
-    assert len(edges) == 1
-    return edges[0]
+    selected = [
+        edge
+        for edge in edges
+        if edge["species"] == "supplier_customer"
+        and edge["direction"]["from_issuer_id"] == SWKS
+        and edge["direction"]["to_issuer_id"] == AAPL
+    ]
+    assert len(selected) == 1
+    return selected[0]
 
 
 def _unknown_rights() -> dict:
@@ -274,7 +287,14 @@ def test_m1_edge_exact(m1_run):
         },
     ]
     assert edge["conflicts"] == []
-    assert m1_run["edges"]["non_edges"] == []
+    # The M1 slice of the non_edges: no non_edge cites an M1 filing (the
+    # M1-era whole-record pin, scoped to the M1 accessions).
+    m1_non_edges = [
+        non_edge
+        for non_edge in m1_run["edges"]["non_edges"]
+        if non_edge["accession"] in (ACC_24, ACC_25, ACC_26)
+    ]
+    assert m1_non_edges == []
     assert m1_run["edges"]["as_of"] == AS_OF
     assert m1_run["edges"]["adoption_state"] == "proposed"
     assert m1_run["edges"]["package_id"] == m1_run["package"]["package_id"]
@@ -357,9 +377,7 @@ def test_m1_correction_lineage_not_restated(m1_run):
 
 
 def test_m1_pit_2025_06_30(pit_run):
-    edges = pit_run["edges"]["edges"]
-    assert len(edges) == 1
-    edge = edges[0]
+    edge = _m1_edge(pit_run)
     seen = [
         (rev["period"]["label"], rev["value"], rev["revision_seq"])
         for rev in edge["magnitude_history"]
@@ -373,10 +391,10 @@ def test_m1_pit_2025_06_30(pit_run):
     assert edge["last_asserted_at"] == "2024-11-15T21:37:43Z"
     assert edge["freshness_state"] == "fresh"
     coverage = pit_run["edges"]["coverage"]
-    assert len(coverage) == 1
-    assert coverage[0]["issuer_id"] == SWKS
-    assert coverage[0]["state"] == "not_assessed"
-    assert coverage[0]["known_at"] is None
+    swks_coverage = [row for row in coverage if row["issuer_id"] == SWKS]
+    assert len(swks_coverage) == 1
+    assert swks_coverage[0]["state"] == "not_assessed"
+    assert swks_coverage[0]["known_at"] is None
     assert pit_run["package"]["counts"]["assessments"] == 0
     # Rows published after the as_of leave no trace anywhere.
     blob = json.dumps(pit_run["edges"]) + json.dumps(pit_run["package"])
@@ -613,31 +631,70 @@ def test_rights_ruling_malformed_fails_open_unknown(tmp_path, mutation):
 
 
 def test_extraction_directory_input_equals_file_input(tmp_path):
+    """Directory input == file input, compared on the M1 issuer slice.
+
+    The producer default reads the WHOLE extraction directory, which now spans
+    every M2 leaf on top of swks_aapl_m1.jsonl.  The "file input" side is a
+    temp dir holding ONLY swks_aapl_m1.jsonl; the "directory input" side is the
+    default run.  The two runs legitimately differ in package identity and
+    totals (different input sets), so the equality is on the rows of the M1
+    issuer (SWKS) -- the directory run's SWKS slice must equal the file-input
+    run's rows exactly: same edges, same non_edges, same coverage row, same
+    observations and assessments for the M1 filings.
+    """
     nested = tmp_path / "d" / "a"
     nested.mkdir(parents=True)
     (nested / "swks.jsonl").write_bytes(EXTRACTION_PATH.read_bytes())
     out_file = tmp_path / "out_file"
     out_dir = tmp_path / "out_dir"
-    proc_file = _run_producer("--as-of", AS_OF, "--out-dir", str(out_file))
-    proc_dir = _run_producer(
-        "--as-of", AS_OF, "--extraction", str(tmp_path / "d"), "--out-dir", str(out_dir)
+    proc_file = _run_producer(
+        "--as-of", AS_OF, "--extraction", str(tmp_path / "d"), "--out-dir", str(out_file)
     )
+    proc_dir = _run_producer("--as-of", AS_OF, "--out-dir", str(out_dir))
     assert proc_file.returncode == 0, proc_file.stdout + proc_file.stderr
     assert proc_dir.returncode == 0, proc_dir.stdout + proc_dir.stderr
     edges_file = json.loads((out_file / "relationship_edges.json").read_text("utf-8"))
     edges_dir = json.loads((out_dir / "relationship_edges.json").read_text("utf-8"))
-    assert edges_dir["edges"] == edges_file["edges"]
-    assert edges_dir["non_edges"] == edges_file["non_edges"]
-    assert edges_dir["coverage"] == edges_file["coverage"]
-    assert edges_dir["counts"] == edges_file["counts"]
     package_file = json.loads(
         (out_file / "observation_package.v2.json").read_text("utf-8")
     )
     package_dir = json.loads(
         (out_dir / "observation_package.v2.json").read_text("utf-8")
     )
-    assert package_dir["package_id"] == package_file["package_id"]
-    assert package_dir["counts"] == package_file["counts"]
+
+    def _swks_slice(doc: dict) -> dict:
+        return {
+            "edges": [
+                edge
+                for edge in doc["edges"]
+                if SWKS
+                in (edge["direction"]["from_issuer_id"], edge["direction"]["to_issuer_id"])
+            ],
+            "non_edges": [
+                non_edge
+                for non_edge in doc["non_edges"]
+                if non_edge["subject_issuer_id"] == SWKS
+            ],
+            "coverage": [
+                row for row in doc["coverage"] if row["issuer_id"] == SWKS
+            ],
+        }
+
+    assert _swks_slice(edges_dir) == _swks_slice(edges_file)
+
+    m1_accessions = (ACC_24, ACC_25, ACC_26)
+
+    def _m1_package_slice(package: dict) -> dict:
+        return {
+            "observations": [
+                o for o in package["observations"] if o["accession"] in m1_accessions
+            ],
+            "assessments": [
+                a for a in package["assessments"] if a["accession"] in m1_accessions
+            ],
+        }
+
+    assert _m1_package_slice(package_dir) == _m1_package_slice(package_file)
 
 
 def test_sources_duplicate_conflict_is_source_corrupt(tmp_path):

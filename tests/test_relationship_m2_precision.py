@@ -22,6 +22,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
@@ -748,6 +750,7 @@ def test_excerpt_missing_and_corrupt_counted(tmp_path):
     assert items[0]["excerpt"]["text"] == _excerpt(ACC_25)["span"]["normalized"]
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_population_real_m1_rows(tmp_path):
     salt = _salt_file(tmp_path, "salt.bin")
     out = tmp_path / "s"
@@ -764,17 +767,43 @@ def test_population_real_m1_rows(tmp_path):
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     manifest = json.loads((out / "manifest.json").read_text("utf-8"))
-    assert manifest["population_total"] == 2
-    assert manifest["population_below_target"] is True
+    # The population is computed from the REGENERATED committed package, never
+    # a literal: it is the sample tool's excerpt-backed observation set — every
+    # admitted (verified) observation row of the package, edge and non_edge
+    # alike — which the package's own observation list must reproduce exactly.
+    package = json.loads(
+        (
+            REPO_ROOT
+            / "data/company_intelligence/relationships/observation_package.v2.json"
+        ).read_text("utf-8")
+    )
+    admitted = [
+        o
+        for o in package["observations"]
+        if o["source_state"] == "verified"
+        and o["disposition"] in ("edge", "non_edge")
+    ]
+    assert manifest["population_total"] == len(admitted)
+    assert manifest["population_by_stratum"]["D1|supplier_customer"] >= 2
+    assert any(key.startswith("D2|") for key in manifest["population_by_stratum"])
+    assert manifest["population_below_target"] == (
+        manifest["population_total"] < manifest["n_target"]
+    )
     assert manifest["excluded"] == {"EXCERPT_MISSING": [], "EXCERPT_CORRUPT": []}
-    assert manifest["population_by_stratum"] == {"D1|supplier_customer": 2}
-    assert manifest["allocation"] == {"D1|supplier_customer": 2}
-    assert manifest["n_effective"] == 2
+    # The allocation is recomputable from the manifest's own stratum sizes
+    # under the tool's pinned floor, and n_effective is its sum.
+    alloc, below = prec.allocate(
+        manifest["population_by_stratum"], manifest["n_target"], manifest["floor"]
+    )
+    assert manifest["allocation"] == alloc
+    assert manifest["population_below_target"] == below
+    assert manifest["n_effective"] == sum(manifest["allocation"].values())
     assert manifest["n_target"] == 4
-    assert manifest["decoys_made"] == 0
+    assert manifest["decoys_requested"] == 2
+    assert manifest["decoys_made"] == 2
     assert LEAVES_PATH.relative_to(REPO_ROOT).as_posix() in manifest["inputs"]
-    # The two committed observation ids are the whole population and survive
-    # into the review-gated key.
+    # The review-gated key covers exactly the sampled items, every row mapped
+    # to an admitted observation of the regenerated package.
     verdicts = tmp_path / "v_empty"
     verdicts.mkdir()
     scored = _run_cli(
@@ -793,9 +822,24 @@ def test_population_real_m1_rows(tmp_path):
         for line in (out / "sample_key.jsonl").read_text("utf-8").splitlines()
         if line.strip()
     ]
-    assert {row["observation_id"] for row in key_rows} == {M1_ROW_24, M1_ROW_25}
-    assert all(row["stratum"] == "D1|supplier_customer" for row in key_rows)
-    assert all(row["is_decoy"] is False for row in key_rows)
+    assert len(key_rows) == manifest["items_total"]
+    assert {row["observation_id"] for row in key_rows} <= {
+        o["observation_id"] for o in admitted
+    }
+    assert {row["stratum"] for row in key_rows} <= set(
+        manifest["population_by_stratum"]
+    )
+    assert sum(1 for row in key_rows if row["is_decoy"]) == manifest["decoys_made"]
+    assert all(row["decoy_kind"] in prec.KINDS for row in key_rows if row["is_decoy"])
+    assert all(row["decoy_kind"] is None for row in key_rows if not row["is_decoy"])
+    # The M1 anchor survives integration: the two committed M1 observation ids
+    # are admitted edge observations of the regenerated package, so they stay
+    # in the sampling population.
+    assert {M1_ROW_24, M1_ROW_25} <= {
+        o["observation_id"]
+        for o in package["observations"]
+        if o["disposition"] == "edge"
+    }
 
 
 # --- Q9: scoring ------------------------------------------------------------------
