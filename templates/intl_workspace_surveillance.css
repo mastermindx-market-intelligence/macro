@@ -1,36 +1,22 @@
-/* === INTL-GS §5.3 TOKENS (seat ruling DEC:INTL-GS-R14-DESIGN-FREEZE (1)) === */
+/* === INTL-GS §5.3 TOKENS — amendment A1 (2026-10-22): pure theme derivations, no literals === */
 .intl-gs{
-  --r-panel:14px; --r-btn:10px; --r-pill:999px;
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px; --sp-8:44px;
-  /* chart series: Local, FX, Common, 4th series */
-  --ser-1:#5b9bf0; --ser-2:#d4a017; --ser-3:#0ea5e9; --ser-4:#e08b45;
-  /* returns heat — FILL ONLY, never text ink */
-  --returns-up-soft:#1a2325; --returns-up-mid:#1d2b29; --returns-up-strong:#213a31;
-  --returns-down-soft:#222025; --returns-down-mid:#302429; --returns-down-strong:#402a2f;
+  --r-panel:var(--r-card); --r-btn:var(--r-ctl);
+  --r-pill:calc(var(--r-card) * 100);   /* pill = any radius ≥ half-height; theme has no pill token */
+  --ser-1:var(--info); --ser-2:var(--q2); --ser-3:var(--ok); --ser-4:var(--orange);
+  --ink-tier:var(--ink-link);           /* tier_preview.css's own default outside the prophet gate */
 }
-html[data-theme="light"] .intl-gs{
-  --ser-1:#2f63c4; --ser-2:#8f6a04; --ser-3:#0284c7; --ser-4:#b06a25;
-  --returns-up-soft:#edf7f1; --returns-up-mid:#dbefe4; --returns-up-strong:#c0e3cf;
-  --returns-down-soft:#fbf0f0; --returns-down-mid:#f7e0e0; --returns-down-strong:#f2caca;
-}
-/* ZH: positive heat follows the red-up convention, exactly like --up/--down */
-html[data-lang="zh"] .intl-gs{
-  --returns-up-soft:#222025; --returns-up-mid:#302429; --returns-up-strong:#402a2f;
-  --returns-down-soft:#1a2325; --returns-down-mid:#1d2b29; --returns-down-strong:#213a31;
-}
-html[data-theme="light"][data-lang="zh"] .intl-gs{
-  --returns-up-soft:#fbf0f0; --returns-up-mid:#f7e0e0; --returns-up-strong:#f2caca;
-  --returns-down-soft:#edf7f1; --returns-down-mid:#dbefe4; --returns-down-strong:#c0e3cf;
-}
-html[data-lang="zh"] .intl-gs{
-  --font-zh:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei";
-  font-family:var(--font-zh),var(--font-ui);
-}
-/* T2 (W2F record gap G2): production --ink-tier exists only inside
-   .mx-tier-gate--prophet (templates/tier_preview.css), which intl.html does
-   not load; spec §4 values are re-declared scoped to .intl-gs. */
-.intl-gs{ --ink-tier:#9b86ff; }
-html[data-theme="light"] .intl-gs{ --ink-tier:#5b3fc4; }
+/* returns heat — FILL ONLY, never text ink; follows --up/--down so light theme and ZH red-up
+   hold BY CONSTRUCTION (theme.css L277 swaps --up/--down under html[data-lang="zh"]) */
+.intl-gs__heat--up-soft{fill:var(--up);fill-opacity:.14;}
+.intl-gs__heat--up-mid{fill:var(--up);fill-opacity:.26;}
+.intl-gs__heat--up-strong{fill:var(--up);fill-opacity:.42;}
+.intl-gs__heat--down-soft{fill:var(--down);fill-opacity:.14;}
+.intl-gs__heat--down-mid{fill:var(--down);fill-opacity:.26;}
+.intl-gs__heat--down-strong{fill:var(--down);fill-opacity:.42;}
+.intl-gs__heatbg{position:relative;isolation:isolate;}
+.intl-gs__heatbg::before{content:"";position:absolute;inset:0;background:var(--heat-ink);opacity:var(--heat-a);z-index:-1;pointer-events:none;}
+.intl-gs__heatbg--up-strong{--heat-ink:var(--up);--heat-a:.42;}
+.intl-gs__heatbg--down-strong{--heat-ink:var(--down);--heat-a:.42;}
 /* === END INTL-GS §5.3 TOKENS === */
 
 /* ==== INTL-GS shared primitives — spec R14 §7/§8/§9/§11 (DEC:INTL-GS-R14-DESIGN-FREEZE ruling 2) ====
@@ -91,18 +77,18 @@ html[data-lang="zh"] .intl-gs .intl-gs__eyebrow{text-transform:none;letter-spaci
 
 /* ---- buttons (h40, no filled primary) ---- */
 .intl-gs__btn,.intl-gs__seg__opt{font-family:var(--font-ui);}
-.intl-gs__btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-btn,10px);border:1px solid var(--line);background:transparent;color:var(--text);font-size:var(--fs-sm);font-weight:600;cursor:pointer;}
+.intl-gs__btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-btn);border:1px solid var(--line);background:transparent;color:var(--text);font-size:var(--fs-sm);font-weight:600;cursor:pointer;}
 .intl-gs__btn--primary{border-color:var(--link);color:var(--link);}
 .intl-gs__btn:disabled{color:var(--muted);border-style:dashed;cursor:not-allowed;}
 
 /* ---- segmented control (h32 desktop / h40 mobile) ---- */
-.intl-gs__seg{display:inline-flex;align-items:stretch;height:32px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);overflow:hidden;background:transparent;}
+.intl-gs__seg{display:inline-flex;align-items:stretch;height:32px;border:1px solid var(--line);border-radius:var(--r-ctl);overflow:hidden;background:transparent;}
 .intl-gs__seg__opt{display:inline-flex;align-items:center;padding:0 10px;border:none;background:transparent;color:var(--muted);font-size:var(--fs-sm);cursor:pointer;}
 .intl-gs__seg__opt.is-active{background:var(--panel2);color:var(--text);font-weight:600;}
 
 /* ---- six-question strip + card ---- */
 .intl-gs__qstrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;}
-.intl-gs__qcard{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel);text-align:start;}
+.intl-gs__qcard{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--panel);text-align:start;}
 .intl-gs__qcard__n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--line);border-radius:var(--r-pill);color:var(--muted);font-size:var(--fs-label);font-weight:700;}
 .intl-gs__qcard__body{min-width:0;display:flex;flex-direction:column;gap:2px;}
 .intl-gs__qcard__title{font-size:var(--fs-sm);font-weight:600;color:var(--text);line-height:1.4;}
@@ -147,7 +133,7 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
 
 /* ---- KPI card ---- */
 .intl-gs__kpirow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
-.intl-gs__kpi{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:14px 16px;}
+.intl-gs__kpi{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px;}
 /* VF11: label and tier chip share one header row — the chip keeps its place
    in flow, and at ≤900 the label takes the full first line so a long EN label
    never collides with a wide chip on a narrow card. */
@@ -164,7 +150,7 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
 .intl-gs__handoff__arrow{color:var(--muted);}
 
 /* ---- table (§8) ---- */
-.intl-gs__tablewrap{border:1px solid var(--line);border-radius:var(--r-card,12px);overflow:clip;background:var(--panel);}
+.intl-gs__tablewrap{border:1px solid var(--line);border-radius:var(--r-card);overflow:clip;background:var(--panel);}
 .intl-gs__table{width:100%;border-collapse:separate;border-spacing:0;font-size:var(--fs-body);color:var(--text);}
 .intl-gs__table th{background:var(--panel2);color:var(--muted);font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-align:left;height:36px;padding:0 16px;white-space:nowrap;}
 .intl-gs__table th.is-active{color:var(--text);}
@@ -200,13 +186,13 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
 .intl-gs__glyph--corrected circle{fill:none;stroke:var(--info);}
 
 /* ---- rights slot / skeleton ---- */
-.intl-gs__rights-slot{display:inline-block;width:72px;height:22px;border:1px dashed var(--line);border-radius:calc(var(--r-ctl,8px)*0.75);background:transparent;}
-.intl-gs__skel{display:block;height:10px;border-radius:calc(var(--r-ctl,8px)*0.5);background:var(--panel2);animation:intl-gs-skel-pulse 1200ms ease-in-out infinite;}
+.intl-gs__rights-slot{display:inline-block;width:72px;height:22px;border:1px dashed var(--line);border-radius:calc(var(--r-ctl)*0.75);background:transparent;}
+.intl-gs__skel{display:block;height:10px;border-radius:calc(var(--r-ctl)*0.5);background:var(--panel2);animation:intl-gs-skel-pulse 1200ms ease-in-out infinite;}
 .intl-gs__skel--sm{height:8px;width:70%;}
 @keyframes intl-gs-skel-pulse{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}
 
 /* ---- state cell (§7; VF2: exactly three rows) ---- */
-.intl-gs__statecell{display:flex;flex-direction:column;gap:4px;min-height:92px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);}
+.intl-gs__statecell{display:flex;flex-direction:column;gap:4px;min-height:92px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);}
 .intl-gs__statecell--qualified{border:1px dashed var(--warn);}
 .intl-gs__statecell--abstain{border:1px dashed var(--muted);}
 .intl-gs__statecell--corrected{outline:1px solid var(--info);}
@@ -229,16 +215,6 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
 
 /* ---- correction note ---- */
 .intl-gs__corr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:var(--fs-sm);color:var(--text);}
-
-/* ---- returns heat fills (fill only, never text ink; §5.3/§15) ---- */
-.intl-gs__heat--up-soft{fill:var(--returns-up-soft);}
-.intl-gs__heat--up-mid{fill:var(--returns-up-mid);}
-.intl-gs__heat--up-strong{fill:var(--returns-up-strong);}
-.intl-gs__heat--down-soft{fill:var(--returns-down-soft);}
-.intl-gs__heat--down-mid{fill:var(--returns-down-mid);}
-.intl-gs__heat--down-strong{fill:var(--returns-down-strong);}
-.intl-gs__heatbg--up-strong{background:var(--returns-up-strong);}
-.intl-gs__heatbg--down-strong{background:var(--returns-down-strong);}
 
 /* ---- coverage glyph rows (§7; VF7: 12×12 glyph + numeral 10 clock) ---- */
 .intl-gs__glyphwrap{display:inline-flex;align-items:center;gap:4px;min-width:0;}
@@ -281,7 +257,7 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
   .intl-gs__tablewrap{border:none;background:transparent;overflow:visible;}
   .intl-gs__table thead{display:none;}
   .intl-gs__table,.intl-gs__table tbody,.intl-gs__table tr,.intl-gs__table td{display:block;width:100%;}
-  .intl-gs__table tbody tr{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);padding:8px 0;margin-bottom:8px;}
+  .intl-gs__table tbody tr{border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel);padding:8px 0;margin-bottom:8px;}
   .intl-gs__table td{height:auto;padding:4px 14px;display:flex;justify-content:space-between;gap:12px;border-bottom:none;}
   .intl-gs__statematrix{grid-template-columns:1fr;}
 }

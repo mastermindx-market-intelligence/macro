@@ -32,7 +32,7 @@ SITE_ACCESS_PATH = REPO / "config/site_access.yml"
 CADDY_PATH = REPO / "app/deploy/Caddyfile"
 SPEC_PATH = REPO / "research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md"
 
-TOKEN_MARK_START = "/* === INTL-GS §5.3 TOKENS (seat ruling DEC:INTL-GS-R14-DESIGN-FREEZE (1)) === */"
+TOKEN_MARK_START = "/* === INTL-GS §5.3 TOKENS — amendment A1 (2026-10-22): pure theme derivations, no literals === */"
 TOKEN_MARK_END = "/* === END INTL-GS §5.3 TOKENS === */"
 
 GS_VIEWS = ("scanner", "dislocations", "transmission", "dossier", "scenario", "replay", "coverage")
@@ -45,32 +45,27 @@ ALL_VIEWS = LEGACY_VIEWS + GS_VIEWS
 
 # The §5.3 block exactly as frozen in the spec on main (blob 5d9c51dc…).
 SPEC_BLOCK = """.intl-gs{
-  --r-panel:14px; --r-btn:10px; --r-pill:999px;
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px; --sp-8:44px;
-  /* chart series: Local, FX, Common, 4th series */
-  --ser-1:#5b9bf0; --ser-2:#d4a017; --ser-3:#0ea5e9; --ser-4:#e08b45;
-  /* returns heat — FILL ONLY, never text ink */
-  --returns-up-soft:#1a2325; --returns-up-mid:#1d2b29; --returns-up-strong:#213a31;
-  --returns-down-soft:#222025; --returns-down-mid:#302429; --returns-down-strong:#402a2f;
+  --r-panel:var(--r-card); --r-btn:var(--r-ctl);
+  --r-pill:calc(var(--r-card) * 100);   /* pill = any radius ≥ half-height; theme has no pill token */
+  --ser-1:var(--info); --ser-2:var(--q2); --ser-3:var(--ok); --ser-4:var(--orange);
+  --ink-tier:var(--ink-link);           /* tier_preview.css's own default outside the prophet gate */
 }
-html[data-theme="light"] .intl-gs{
-  --ser-1:#2f63c4; --ser-2:#8f6a04; --ser-3:#0284c7; --ser-4:#b06a25;
-  --returns-up-soft:#edf7f1; --returns-up-mid:#dbefe4; --returns-up-strong:#c0e3cf;
-  --returns-down-soft:#fbf0f0; --returns-down-mid:#f7e0e0; --returns-down-strong:#f2caca;
-}
-/* ZH: positive heat follows the red-up convention, exactly like --up/--down */
-html[data-lang="zh"] .intl-gs{
-  --returns-up-soft:#222025; --returns-up-mid:#302429; --returns-up-strong:#402a2f;
-  --returns-down-soft:#1a2325; --returns-down-mid:#1d2b29; --returns-down-strong:#213a31;
-}
-html[data-theme="light"][data-lang="zh"] .intl-gs{
-  --returns-up-soft:#fbf0f0; --returns-up-mid:#f7e0e0; --returns-up-strong:#f2caca;
-  --returns-down-soft:#edf7f1; --returns-down-mid:#dbefe4; --returns-down-strong:#c0e3cf;
-}
-html[data-lang="zh"] .intl-gs{
-  --font-zh:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei";
-  font-family:var(--font-zh),var(--font-ui);
-}"""
+/* returns heat — FILL ONLY, never text ink; follows --up/--down so light theme and ZH red-up
+   hold BY CONSTRUCTION (theme.css L277 swaps --up/--down under html[data-lang="zh"]) */
+.intl-gs__heat--up-soft{fill:var(--up);fill-opacity:.14;}
+.intl-gs__heat--up-mid{fill:var(--up);fill-opacity:.26;}
+.intl-gs__heat--up-strong{fill:var(--up);fill-opacity:.42;}
+.intl-gs__heat--down-soft{fill:var(--down);fill-opacity:.14;}
+.intl-gs__heat--down-mid{fill:var(--down);fill-opacity:.26;}
+.intl-gs__heat--down-strong{fill:var(--down);fill-opacity:.42;}
+.intl-gs__heatbg{position:relative;isolation:isolate;}
+.intl-gs__heatbg::before{content:"";position:absolute;inset:0;background:var(--heat-ink);opacity:var(--heat-a);z-index:-1;pointer-events:none;}
+.intl-gs__heatbg--up-strong{--heat-ink:var(--up);--heat-a:.42;}
+.intl-gs__heatbg--down-strong{--heat-ink:var(--down);--heat-a:.42;}"""
+
+HEATBG_BEFORE_SELECTOR = ".intl-gs__heatbg::before"
+HEATBG_BEFORE_BODY = 'content:"";position:absolute;inset:0;background:var(--heat-ink);opacity:var(--heat-a);z-index:-1;pointer-events:none;'
+A1_SUPERSEDED = ("--" + "sp-", "--" + "returns-", "--" + "font-zh", "#" + "9b86ff", "#" + "5b3fc4")
 
 STATE_ORDER = ("restricted", "loading", "abstain", "stale", "suspended", "closed", "corrected",
                "qualified", "partial", "recovered", "empty", "complete")
@@ -165,12 +160,70 @@ def test_no_igs_token_anywhere_in_owned_templates():
         assert ".igs" not in text and "igs-" not in text and "-igs" not in text, path
 
 
+def test_a1_block_in_spec_amendment_verbatim():
+    spec = _require(SPEC_PATH)
+    head = "### 5.3 amendment A1 (2026-10-22)"
+    assert spec.count(head) == 1, "spec must carry the §5.3 amendment A1 subsection once"
+    start = spec.index(head)
+    section = spec[start:spec.index("\n## 6.", start)]
+    assert TOKEN_MARK_START + "\n" + SPEC_BLOCK in section
+
+
+def test_a1_token_block_is_pure_theme_derivation():
+    region = _strip_comments(_token_region(_css()))
+    assert not re.findall(r"#[0-9a-fA-F]{3,8}\b", region), "hex literal in the A1 block"
+    assert not re.findall(r"\d+(?:\.\d+)?px\b", region), "px literal in the A1 block"
+    assert not re.findall(r"\b(?:rgb|rgba|hsl|hsla|color-mix)\(", region), "colour function in the A1 block"
+    for name, value in re.findall(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;}\n]+)", region):
+        assert "var(--" in value or re.fullmatch(r"\.\d+", value.strip()), (name, value)
+
+
+def test_a1_heat_follows_direction_tokens():
+    rules = {sel.strip(): body.strip() for sel, body in _rules(_strip_comments(_css()))}
+    for side in ("up", "down"):
+        for step, alpha in (("soft", ".14"), ("mid", ".26"), ("strong", ".42")):
+            assert rules[f".intl-gs__heat--{side}-{step}"] == f"fill:var(--{side});fill-opacity:{alpha};"
+        assert rules[f".intl-gs__heatbg--{side}-strong"] == f"--heat-ink:var(--{side});--heat-a:.42;"
+
+
+def test_a1_superseded_tokens_and_literal_fallbacks_absent():
+    owned = [CSS_PATH, REPO / "site/intl_workspace_surveillance.css", MACROS_PATH, FIXTURE_PATH,
+             REPO / "tests/intl_gs_foundation_browser.test.cjs", REPO / "tests/intl_gs_fixture_site.py"]
+    for path in owned:
+        text = _require(path)
+        for needle in A1_SUPERSEDED:
+            assert needle not in text, (path.name, needle)
+    css = _strip_comments(_css())
+    assert not re.search(r"var\(--[A-Za-z0-9_-]+\s*,", css), "literal var() fallback survives"
+    assert not re.search(r"--[A-Za-z0-9_-]+::?(?:before|after)", css), "pseudo-element directly after a --modifier"
+
+
+def test_site_css_is_byte_identical_to_template():
+    assert (REPO / "site/intl_workspace_surveillance.css").read_bytes() == CSS_PATH.read_bytes()
+
+
 # ---------------------------------------------------------------- 2.2 L1 stripe
 
 
 def test_no_accent_stripe_l1():
     css = _strip_comments(_css())
+    sanctioned = 0
     for selector, body in _rules(css):
+        if selector.strip() == HEATBG_BEFORE_SELECTOR:
+            # A1 (2026-10-22): the ONE pseudo-element allowed to paint, the returns-heat
+            # background layer. It fills the whole box behind the content (inset:0) and can
+            # never become an edge: no size, offset, border, outline or shadow declarations.
+            assert body.strip() == HEATBG_BEFORE_BODY, body
+            props = {d.split(":", 1)[0].strip().lower() for d in body.split(";") if d.strip()}
+            assert "inset" in props, props
+            assert not props & {"width", "height", "min-width", "min-height", "max-width",
+                                "max-height", "left", "right", "top", "bottom", "inset-inline",
+                                "inset-block", "inset-inline-start", "inset-inline-end",
+                                "inset-block-start", "inset-block-end", "border", "border-width",
+                                "border-color", "border-style", "box-shadow", "outline",
+                                "transform", "clip-path"}, props
+            sanctioned += 1
+            continue
         for decl in body.split(";"):
             decl = decl.strip()
             prop = decl.split(":")[0].strip().lower()
@@ -186,6 +239,7 @@ def test_no_accent_stripe_l1():
             assert re.fullmatch(r"content:\s*none;?", body.strip()), (selector, body)
         else:
             assert "::before" not in selector and "::after" not in selector, selector
+    assert sanctioned == 1, "the heat background layer must be the one sanctioned pseudo-element"
 
 
 # ---------------------------------------------------------------- 2.3 L2 focus/ring
@@ -653,6 +707,30 @@ def test_fixture_not_referenced_by_production_templates():
 # ---------------------------------------------------------------- 2.13 frozen files
 
 
+def _frozen_base() -> str:
+    """merge-base(origin/main, HEAD); FAILS CLOSED when it cannot be resolved.
+
+    CI: the international-workspace-browser job fetches origin/<base> before pytest,
+    and its checkout requests fetch-depth: 0 so scripts/run_ci_pack.py deepens the
+    tested tree to the merge base. Locally: `git fetch origin main`. This helper
+    never touches the network.
+    """
+    ref = subprocess.run(["git", "rev-parse", "--verify", "--quiet", "origin/main^{commit}"],
+                         cwd=REPO, capture_output=True, text=True)
+    if ref.returncode != 0:
+        pytest.fail("FAIL CLOSED: origin/main does not resolve, so the frozen-file guard has "
+                    "no comparison base. CI must run the job's `git fetch origin <base>` step "
+                    "before pytest; locally run `git fetch origin main`.")
+    base = subprocess.run(["git", "merge-base", "origin/main", "HEAD"],
+                          cwd=REPO, capture_output=True, text=True)
+    sha = base.stdout.strip()
+    if base.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", sha):
+        pytest.fail("FAIL CLOSED: no merge base between origin/main and HEAD (shallow "
+                    "checkout?). The job's checkout must request fetch-depth: 0 so the pack "
+                    "runner deepens the tested tree; locally deepen or unshallow.")
+    return sha
+
+
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -661,9 +739,12 @@ def test_fixture_not_referenced_by_production_templates():
     "lib/intl_global_observation_adapter.py",
 ])
 def test_frozen_files_unchanged_vs_origin_main(path):
-    result = subprocess.run(["git", "diff", "--quiet", "origin/main", "--", path],
-                            cwd=REPO, capture_output=True)
-    assert result.returncode == 0, f"{path} changed vs origin/main"
+    base = _frozen_base()
+    result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
+                            cwd=REPO, capture_output=True, text=True)
+    if result.returncode not in (0, 1):
+        pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
+    assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
 
 
 # ---------------------------------------------------------------- 2.14 JS

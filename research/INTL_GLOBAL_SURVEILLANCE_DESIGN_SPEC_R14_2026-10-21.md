@@ -237,6 +237,55 @@ html[data-lang="zh"] .intl-gs{
 
 Series colours (`--ser-*`) do **not** swap in ZH. They encode decomposition components, not direction.
 
+### 5.3 amendment A1 (2026-10-22) — pure theme derivations, no literals
+
+Status: seat ruling A1 (2026-10-22). This amendment supersedes the §5.3 token block above for every consumer of `templates/intl_workspace_surveillance.css`. The block above stays as the R14 historical record.
+
+Why: the pack-3 design-governance forward-only ratchet (`scripts/check_design_system.py --mode enforce-added`, rules 4 and 1) refuses token values minted in a template. `templates/theme.css` is the sole token root and stays unchanged, so every A1 token is a derivation of an existing theme token.
+
+The surveillance stylesheet carries exactly this block, START marker included, before `/* === END INTL-GS §5.3 TOKENS === */`:
+
+```css
+/* === INTL-GS §5.3 TOKENS — amendment A1 (2026-10-22): pure theme derivations, no literals === */
+.intl-gs{
+  --r-panel:var(--r-card); --r-btn:var(--r-ctl);
+  --r-pill:calc(var(--r-card) * 100);   /* pill = any radius ≥ half-height; theme has no pill token */
+  --ser-1:var(--info); --ser-2:var(--q2); --ser-3:var(--ok); --ser-4:var(--orange);
+  --ink-tier:var(--ink-link);           /* tier_preview.css's own default outside the prophet gate */
+}
+/* returns heat — FILL ONLY, never text ink; follows --up/--down so light theme and ZH red-up
+   hold BY CONSTRUCTION (theme.css L277 swaps --up/--down under html[data-lang="zh"]) */
+.intl-gs__heat--up-soft{fill:var(--up);fill-opacity:.14;}
+.intl-gs__heat--up-mid{fill:var(--up);fill-opacity:.26;}
+.intl-gs__heat--up-strong{fill:var(--up);fill-opacity:.42;}
+.intl-gs__heat--down-soft{fill:var(--down);fill-opacity:.14;}
+.intl-gs__heat--down-mid{fill:var(--down);fill-opacity:.26;}
+.intl-gs__heat--down-strong{fill:var(--down);fill-opacity:.42;}
+.intl-gs__heatbg{position:relative;isolation:isolate;}
+.intl-gs__heatbg::before{content:"";position:absolute;inset:0;background:var(--heat-ink);opacity:var(--heat-a);z-index:-1;pointer-events:none;}
+.intl-gs__heatbg--up-strong{--heat-ink:var(--up);--heat-a:.42;}
+.intl-gs__heatbg--down-strong{--heat-ink:var(--down);--heat-a:.42;}
+```
+
+Deleted (not moved):
+- the `--sp-1…8` spacing scale;
+- every `--returns-*` property;
+- the light-theme `.intl-gs` override block;
+- all four ZH and light+ZH override blocks;
+- the `--font-zh` block;
+- the T2 `--ink-tier` hex pair.
+
+Literal `var()` fallbacks, such as `var(--r-btn,10px)` and its siblings, are dropped.
+
+Accepted visual deltas:
+- panel radius 14px → 12px (`--r-card`);
+- button radius 10px → 8px (`--r-ctl`);
+- series 3 → `--ok`;
+- tier ink → link ink (`--ink-link`, the `templates/tier_preview.css` default outside the prophet gate);
+- returns heat → opacity steps (.14 / .26 / .42) over `--up` / `--down`. The light theme and the ZH red-up convention therefore hold by construction, because theme.css swaps `--up`/`--down` under `html[data-lang="zh"]`.
+
+§15 re-run: `--ink-tier` (= `--ink-link`) text on `--panel`, measured in Chromium on the W2F fixture site, gives dark 6.92:1 and light 5.8:1 (the AA body-text threshold is 4.5:1).
+
 ## 6. Direction-ink rule (incl. ZH)
 
 1. `--up`/`--down` ink is used **only** for a standalone, return-like, signed value: a % move, a residual z, or a divergence. It is also used for the signed divergence bar fill.
