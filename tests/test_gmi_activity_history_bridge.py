@@ -186,8 +186,17 @@ def test_embedded_c01_row_carries_the_documented_subject():
 
 @pytest.mark.needs_full_checkout("data")
 def test_embedded_constant_is_the_committed_ledger_line():
-    real = probation.ACTIVITY_PROPOSALS_PATH.read_text(encoding="utf-8").rstrip("\n")
-    assert real == C01_LEDGER_LINE
+    lines = probation.ACTIVITY_PROPOSALS_PATH.read_text(encoding="utf-8").rstrip("\n").splitlines()
+    # Line 1 is the embedded PROPOSED row; line 2 is its RATIFIED row (acting
+    # curator, 2026-10-22, PR #10026) bound to the committed receipt by sha256.
+    assert lines[0] == C01_LEDGER_LINE
+    assert len(lines) == 2
+    ratified = json.loads(lines[1])
+    assert ratified["proposal_id"] == C01_PROPOSAL_ID and ratified["status"] == "RATIFIED"
+    receipt = bridge.curation_receipt_path(bridge.DEFAULT_RECEIPTS_DIR, C01_PROPOSAL_ID)
+    assert Path(receipt).exists()
+    assert ratified["curation"]["receipt_sha256"] == hashlib.sha256(
+        Path(receipt).read_bytes()).hexdigest()
 
 
 # ---------------------------------------------------------------------------
