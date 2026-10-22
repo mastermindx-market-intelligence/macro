@@ -128,3 +128,28 @@ The first CI run caught an unwired new test module. The eleven Fed/Policy cases
 were moved intact into the existing `tests/test_macro_glance.py` suite, which the
 dashboard-organs CI job already executes. Its 18 cases pass after consolidation;
 no waiver or CI-authority configuration change is involved.
+
+## Shared quote-asset evidence closure
+
+The second CI run identified the required P0B browser-receipt refresh for the
+bilingual unavailable-feed copy in `site/live.js`. The other eleven CI packs
+passed. The existing fixture renderer and stock-dashboard browser verifier were
+run against the final candidate assets for both Canada and Hong Kong, using the
+installed Playwright 1.63 package and Chromium 151.0.7922.34. Both verifier
+processes exited successfully. Their owner-projection matrices passed 96 primary
+cases and 32 degraded controls in total, with 16 freshly captured screenshots.
+The screenshots and rendered fixture remain byte-identical to their prior
+versions; the current receipts bind the actual loaded assets, including the new
+`live.js` digest and the observed favicon request.
+
+The P0B manifest extension was aggregated from the successful receipts and actual
+on-disk image digests. Every recorded construction input, loaded asset, verifier,
+fixture, and screenshot digest was checked. Its previous extension was preserved
+in history, bound to the prior manifest digest and source head `1a6fcf564bc7`.
+Historical targets and artifacts were retained. These remain reproducible browser
+fixture claims, not canonical-build or production evidence.
+
+The full `tests/test_stock_dashboard_first_frame.py` suite passed: **115 tests**.
+The P0B receipt-closure gate also passed against the complete PR changed-path
+inventory. This refresh changes only the three evidence JSON files and this
+record; it introduces no additional product-code edits.
