@@ -261,6 +261,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -2164,6 +2166,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -3128,6 +3132,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -9392,6 +9398,11 @@ jobs:
     # separate, larger cleanup outside this PR's scope.
     paths:
       - "app/prophet_lab.py"
+      # Same-box Treasury input reuses this module's internal and site-full guards.
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
+      - "tests/test_treasury_daily_history.py"
+      - "tests/test_treasury_history_api.py"
       - "engine/prophet_lab/**"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
@@ -9479,6 +9490,7 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
@@ -9847,6 +9859,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -23796,12 +23810,21 @@ jobs:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
+      - templates/calculators/cagr.html.j2
+      - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install copy feedback test dependency
+        run: pip install pytest
+      - name: CAGR truthful copy feedback
+        run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: node --test tests/js/calculator_input_integrity.test.mjs
 
@@ -23999,6 +24022,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -32874,6 +32899,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -35942,6 +35969,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
       - "engine/press/adjusted_baseline.py"
       - "templates/press/press_news.css"
