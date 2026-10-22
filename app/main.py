@@ -102,6 +102,7 @@ from lib import growth_registry  # noqa: E402
 # from /etc/macro-api.env or when sentry_sdk is not installed in the venv — it
 # can neither raise nor block startup (see app/observability.py).
 from app.observability import init_sentry  # noqa: E402
+from app.live_status_projection import flow_pulse_fields, intraday_quotes_fields  # noqa: E402
 
 init_sentry("macro-api")
 
@@ -706,6 +707,7 @@ def status() -> dict:
         ("quotes", "quotes.json"),
         ("basket_pulse", "basket_pulse.json"),
         ("flow_pulse", "flow_pulse.json"),
+        ("intraday_quotes", "intraday_quotes.json"),
         ("release_publications", "release_publications.json"),
         ("orchestrator", "orchestrator_status.json"),
         ("breadth", "breadth.json"),
@@ -731,18 +733,9 @@ def status() -> dict:
                         }
                     )
                 elif key == "flow_pulse":
-                    rows = data.get("tickers") or []
-                    checks[key].update(
-                        {
-                            "mode": data.get("mode"),
-                            "n_tickers": data.get("n_tickers"),
-                            "with_bars": sum(
-                                1 for row in rows
-                                if isinstance(row, dict)
-                                and int(row.get("bars_today") or 0) > 0
-                            ),
-                        }
-                    )
+                    checks[key].update(flow_pulse_fields(data))
+                elif key == "intraday_quotes":
+                    checks[key].update(intraday_quotes_fields(data))
                 elif key == "release_publications":
                     event_status: dict[str, int] = {}
                     max_lag_min = 0.0
@@ -2589,6 +2582,11 @@ app.include_router(medtech_router)
 # BioCatalyst above.
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
+
+# Same-box input only: public edge requests are denied before auth or file I/O.
+# Terminal retains holdings and computes derived risk metrics in its own compiler.
+from app.treasury_history import router as treasury_history_router  # noqa: E402
+app.include_router(treasury_history_router)
 
 # B03 reads the existing uncapped observation input only after site_full auth.
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402

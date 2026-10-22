@@ -634,3 +634,48 @@ mission-owned premerge hold remains in force; green CI cannot replace it.
 The earlier uncertain checkpoint writes, frozen review identities and source
 rights reservations retain their existing dispositions. No production
 acceptance is claimed.
+
+
+## Protected 59b37b integration and exact packing RED — 2026-10-22
+
+The original News root and managed branch continued from clean local
+`946720c0a8e75a84985933c163d34be58e1ef5c8`. The protected-main
+interval to `59b37b8f78bdf851bfefdc9b84efec12d1bf08e6` is 154
+commits since 7bb2 and includes automatic rendered/data changes plus
+accepted deployment and live-status source work. A read-only merge-tree
+check found five conflicting paths. The same original workspace
+performed the two-parent merge, preserving the current protected
+Plans artifact and retaining the redesigned News artifact exactly
+(SHA256 `d68b35719b9b94f7fe8c86332ff31d72d0d06bec85dcd268fd9f7da238c4f798`).
+The seven CI registry conflicts retain News history paths and the
+protected live-status path entries. The API restart regex retains
+both `intelligence_history` and `treasury_daily_history`; protected
+Caddy/deployment changes remain in the merge. The registry has 349
+uniquely keyed jobs. No duplicated job or removed test was introduced.
+
+Local verification on the uncommitted integrated index: News API/page
+152 Python tests passed; mounted and model News JS 47 passed, and
+deployment/live-status/marketing integration 418 Python passed.
+Shell syntax, generated News local asset references, YAML unique keys
+and candidate-owned diff check passed. A full-tree staged diff check
+flags unrelated inherited protected-main commodity/marketing generated
+whitespace, not changes made by News. Do not change those other owners
+to make a News-only receipt green.
+
+The exact canonical packing probe before ceiling correction returned
+index 136 / 5,880, free-content 135 / 5,852 and Prophet 128 / 5,624;
+the protected ceilings were 5,870 / 5,842 / 5,614. All three exceed
+by ten estimator units attributable to News collector-registry suites.
+The test ceilings now fund precisely those observed increments, without
+padding job counts, ten-pack bounds, command scopes or execution budgets.
+A separate full import-closure test fails locally on the preserved
+ignored `site/stockdata/AAPL.json` (SHA256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`);
+the cache remains untouched/untracked. Clean hosted CI and a lawful
+independent source review are still mandatory. The earlier f07 paid
+review retains terminal rc1/no verdict/no retry; this material source
+integration does not itself authorize review replay or replacement.
+
+At this checkpoint, no protected merge, deployed News render, real
+signed-in production acceptance, rights mutation, or reviewer approval
+has occurred. Source-rights holds #8697/#7982/#8057 remain.

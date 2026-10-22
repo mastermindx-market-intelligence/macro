@@ -41,4 +41,3 @@ async function captureNewsEvidence(spec) {
   await nodeRepl.write({news_evidence: {requested: spec, observed}});
   await nodeRepl.write(await newsStyleTab.screenshot({}));
 }
-
