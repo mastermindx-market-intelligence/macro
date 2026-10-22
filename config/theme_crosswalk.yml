@@ -3312,12 +3312,12 @@ hierarchy:
       nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
       note: "Sleeve gastrectomy, bypass and revision procedures plus surgical stapling devices for metabolic disease; procedural intervention distinct from pharmacotherapy and care programs."
       value_chain_position: "downstream"
-    - id: "theme:weight_management_nutrition"
+    - id: "theme:medical_nutrition_meal_replacement"
       name_en: "Weight-management nutrition & meal replacement"
       name_zh: "体重管理营养与代餐食品"
       asserted_on: "2026-10-21"
       nominated_from: "research:research/theme_graph/micro_expansion_20261021/C3_MICRO_RESEARCH.md"
-      note: "Meal replacements, very-low-calorie formulas and protein products used under supervision; a nutrition-product layer distinct from care services and from drugs."
+      note: "Renamed at ratification from theme:weight_management_nutrition (research id) because the id substring weight trips the classification-axes display-key fence. Meal replacements, very-low-calorie formulas and protein products used under supervision; a nutrition-product layer distinct from care services and from drugs."
       value_chain_position: "downstream"
     - id: "theme:compounded_peptide_supply"
       name_en: "Compounded & alternate peptide supply"
@@ -4236,7 +4236,7 @@ hierarchy:
     - {parent: "theme:glp1_obesity", child: "theme:pharma_cold_chain_logistics", asserted_on: "2026-10-21"}
     - {parent: "theme:glp1_obesity", child: "theme:obesity_care_programs", asserted_on: "2026-10-21"}
     - {parent: "theme:glp1_obesity", child: "theme:metabolic_bariatric_surgery", asserted_on: "2026-10-21"}
-    - {parent: "theme:glp1_obesity", child: "theme:weight_management_nutrition", asserted_on: "2026-10-21"}
+    - {parent: "theme:glp1_obesity", child: "theme:medical_nutrition_meal_replacement", asserted_on: "2026-10-21"}
     - {parent: "theme:glp1_obesity", child: "theme:compounded_peptide_supply", asserted_on: "2026-10-21"}
     - {parent: "theme:glp1_obesity", child: "theme:digital_titration_adherence", asserted_on: "2026-10-21"}
     - {parent: "theme:glp1_obesity", child: "theme:sharps_waste_services", asserted_on: "2026-10-21"}

@@ -39,3 +39,6 @@ membership, no issuer mapping, no evaluation authority, and does not alter the f
 - disposition: ACCEPT — RATIFIED (+39% over either variant). Supersedes #9985 and #9983 (closed).
 
 ## Totals ratified 2026-10-22: 121 + 97 + 85 = 303 new micro_themes, 53 new sub_themes, 612 parents rows — display-tier additive; frozen 68 unchanged.
+
+## Seat amendment at integration — one id renamed
+- `theme:weight_management_nutrition` (C3, research id) is ratified as `theme:medical_nutrition_meal_replacement`. Reason: `engine/classification_axes/cell.py` FORBIDDEN_VALUE_KEY_WORDS refuses any display payload key containing "weight", so the theme-tree detail cards degraded to the fallback tip for that card. The research record keeps the original id; the crosswalk row's `note` records the rename. Names, parent (`theme:glp1_obesity`), value_chain_position and sources are unchanged. No other expansion or frozen id contains a forbidden word (grep over all 371 ids).
