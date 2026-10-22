@@ -735,6 +735,13 @@ def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path)
     assert 'display' in fact['context_relevance']
     assert 'not executed prices or achieved returns' in fact['context_relevance']
     assert 'not an instruction to trade' in fact['context_relevance']
+    assert slot['native_plan_scope'] == fact['native_plan_scope']
+    assert slot['native_plan_scope']['recorded_at'] == '2026-10-01'
+    assert slot['native_plan_scope']['price_basis_date'] == '2026-09-30'
+    assert slot['native_plan_scope']['close_date'] == row['close_date']
+    assert slot['native_plan_scope']['entry_status'] == 'bounce_wait'
+    assert slot['native_plan_scope']['authority_tier'] == 'display'
+    assert slot['native_plan_scope']['confirmed_date'] is None
     assert slot['source_revisions']['artifact:site/prophet/plans/' + path.name] == (
         'sha256:' + hashlib.sha256(original).hexdigest())
     _, prompt = writer.build_prompt(slot, P.load_config(root))
