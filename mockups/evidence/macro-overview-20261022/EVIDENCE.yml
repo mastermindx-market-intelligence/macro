@@ -1,0 +1,12 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/_macro_overview.css.j2
+  - templates/_macro_overview.js.j2
+  - templates/live.js
+  - templates/risk_state_live.js
+  - site/macro.html
+  - site/assets/css/f401e8a0.css
+  - site/live.js
+  - site/risk_state_live.js
+manifest: mockups/evidence/macro-overview-20261022/manifest.json

@@ -79,12 +79,46 @@ Escape. Neither check sends a chat message or changes an account.
 An expanded regression run exposed three untouched baseline failures: two tests
 expect synthetic-timestamp quotes to splice into risk-state frames, and the chat
 asset detector flags the existing `stock.html#` navigation literal in `theme.js`.
-The corresponding implementation files are unchanged by this UI work. Intentional
-copy expectations were updated; generated-asset checks are run after the normal
-post-render transforms, not against the raw development render.
+The corresponding implementation files are unchanged by this UI work. The two
+quote tests now require rejection and intact nightly fallback, matching the
+existing validity owner. The asset detector exempts hrefs only for statically identifiable anchor
+assignments. It still rejects HTML-named stylesheet assets, reused link variables,
+script/CSS URLs, HTML src URLs, and indexed-node src URLs. Positive controls pin
+those distinctions.
+Intentional copy expectations were updated; generated-asset checks are run after
+the normal post-render transforms, not against the raw development render.
 
 The main-branch rebase retained upstream news translations, current data, and the
 complete unchanged detail-dialog region. It removed only the duplicated glance
 copy at the conflict sites. Canonical escaping and current asset hashes were
 retained after reconciling the generated page; measured score projection was not
 replaced with the raw market-state artifact.
+
+## Final local acceptance
+
+- The 14-file macro acceptance run passed: **252 tests, no deselections**.
+- The final asset-detector tightening passed its **17-test** launcher suite.
+- The canonical evidence matrix captured **32/32** states: eight resting
+  desktop/mobile × English/Chinese × light/dark cells, with real card hover,
+  factors-button focus, and assistant-button focus for each cell.
+- Existing W9 fixture evidence was refreshed: **74/74** states, including missing
+  data and empty-state cases. These are fixture renders, not live-data proof.
+- The evidence integrity gate, design-system ratchet (zero added blocking
+  findings), and runtime-style-injection guard pass. The canonical template/site
+  synchronization guard passes with the task's isolated rjsmin dependency.
+- Final keyboard checks open factors and the existing assistant, close them with
+  Escape, and return assistant focus to its launcher. The assistant focus ring
+  remains contained. Measured scroll widths equal the viewport at 390 and 1440.
+- The static preview has no page JavaScript exceptions. Its live/API/WebSocket
+  routes are unavailable by construction, and the visible stale/unavailable
+  states reflect that boundary; it does not establish production feed health.
+
+Cold-load measurement also observed layout movement during existing shared-shell
+hydration. The largest diagnostic shift involves the shared navigation search and
+control slots. This page-scoped delivery does not change the shared navigation
+owner or claim a Core Web Vitals certification. The final resting layouts and
+interaction states are the acceptance evidence above.
+
+The independent reviewer supplied visual critique and examined the semantics of
+the baseline test repairs. Source verification is root-owned; no independent
+source-code PASS is claimed.
