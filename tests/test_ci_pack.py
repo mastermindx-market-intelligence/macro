@@ -5176,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_851),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_824),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_829),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5187,6 +5187,10 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    Current-main d54f24d4 plus the two Treasury suites composes to
+    5,856/5,829 weight with 136 jobs in both probes. Preserve the new
+    CAGR handler coverage, Treasury coverage, and all pack limits.
+
     Current-main 9b48e798 also retains Prophet journey notifications (+3).
     Compose that accepted coverage with Treasury (+4 over main): index
     5,847 -> 5,851 and free-content 5,820 -> 5,824. No other bound changes.
@@ -5195,6 +5199,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     step below plus the two Treasury suites: +4 units on main, hence
     index 5,844 -> 5,848 and free-content 5,817 -> 5,821. Job counts,
     selectors, all suites, plan-book and ten-pack ceilings stay unchanged.
+    2026-10-22 CAGR truthful-copy integration adds the actual handler pytest
+    to calculator-input-integrity (+5 estimator units). It newly selects
+    that existing job on the free-content probe (135 -> 136 jobs); index
+    stays136. Actual measured weights5849/5822 fund only these +5 units.
+    Incoming protectedmain adds3 units independently; compose its5847/5820
+    with this exact+5 to5852/5825. Preserve prophet5600, ten packs,
+    execution timeouts and every check.
 
     2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
     pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
