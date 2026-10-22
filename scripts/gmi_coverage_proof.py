@@ -343,6 +343,16 @@ def read_store(store_dir: Path) -> dict:
     proposals_path = store_dir / "probation" / "proposals.jsonl"
     queue = (probation.read_proposals(proposals_path)
              if proposals_path.exists() else [])
+    # The activity ledger (scripts/propose_activity_membership.py's default,
+    # probation.ACTIVITY_PROPOSALS_PATH) lives beside the hierarchy queue. It is
+    # read by default so the proof's remainder reasons and the micro disposition
+    # ledger see real PROPOSED/RATIFIED rows without an operator remembering
+    # --activity-proposals (measured 2026-10-22: the M3 proof reported no
+    # proposals while one sat in the ledger). It never enters the numerator by
+    # itself: the same tiering and ratification owners judge every row.
+    activity_ledger_path = store_dir / "probation" / "activity_proposals.jsonl"
+    if activity_ledger_path.exists():
+        queue = list(queue) + list(probation.read_proposals(activity_ledger_path, strict=True))
     return {
         "nodes_raw": nodes,
         "lifecycle_latest": _latest_by_node(lifecycle),
@@ -358,6 +368,7 @@ def read_store(store_dir: Path) -> dict:
             "node_lifecycle": store_dir / "node_lifecycle.parquet",
             "meta": meta_path,
             "probation_proposals": proposals_path,
+            "probation_activity_proposals": activity_ledger_path,
         },
     }
 
@@ -1457,6 +1468,10 @@ def build(args) -> tuple[dict, dict]:
                        ("store_meta", store_view["files"]["meta"])):
         if Path(path).exists():
             loaded["inputs"].append(_input_record(role, Path(path), repo_root))
+    if store_view["files"]["probation_activity_proposals"].exists():
+        loaded["inputs"].append(_input_record(
+            "store_probation_activity_proposals",
+            store_view["files"]["probation_activity_proposals"], repo_root))
     if store_view["files"]["probation_proposals"].exists():
         loaded["inputs"].append(_input_record(
             "store_probation_proposals", store_view["files"]["probation_proposals"], repo_root))
