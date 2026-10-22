@@ -1163,6 +1163,10 @@ jobs:
       - "tests/test_bea_gvc_browser.py"
       - "tests/test_bea_gvc_current_descriptive.py"
       - "tests/test_bea_gvc_view_contract.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -3052,6 +3056,10 @@ jobs:
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
       - "tests/__init__.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -4007,6 +4015,10 @@ jobs:
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
       - "engine/fundamental_forensics/latency.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -6299,6 +6311,10 @@ jobs:
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
       - "engine/company_intelligence/rms_segment_profile.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10352,6 +10368,10 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -11934,6 +11954,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13062,6 +13083,10 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -16028,6 +16053,10 @@ jobs:
       - "tests/test_rotation_events_v2.py"
       - "tests/test_rotation_flow_pit.py"
       - "tests/test_rotation_role_retention.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18203,6 +18232,7 @@ jobs:
       - "tests/test_theme_state_owner_adapter.py"
       - "tests/test_theme_state_production.py"
       - "tests/test_build_thematic_state_shadow_graph_state.py"
+      - "tests/test_build_thematic_state_activity_mode.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/narrative_emergence.json"
       - "site/basketdata/radar.json"
@@ -18318,6 +18348,16 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      # Native activity proposal ledger writer (PIPE-PROPOSE 2026-10-21).
+      - "scripts/propose_activity_membership.py"
+      - "tests/test_gmi_activity_proposal_ledger.py"
+      - "data/theme_graph/probation/activity_proposals.jsonl"
+      # Curated activity proposal -> activity-history APPEND bridge (GMI M1 step 2).
+      - "engine/theme_graph/activity_history_bridge.py"
+      - "scripts/bridge_activity_history.py"
+      - "tests/test_gmi_activity_history_bridge.py"
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18332,11 +18372,11 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_build_thematic_state_activity_mode.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
@@ -19882,6 +19922,10 @@ jobs:
       - "site/neuralwebdata/bottom_sensors.json"
       - "site/neuralwebdata/theme_state.json"
       - "site/vol/regime.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20385,6 +20429,10 @@ jobs:
       - "tests/test_research_vault_source_layout.py"
       - "tests/test_research_vault_strict_store.py"
       - "tests/test_research_vault_subjects.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -22933,6 +22981,10 @@ jobs:
       - "site/marketdata/subsector_rotation.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -24231,6 +24283,10 @@ jobs:
       - "site/government-revenue-data/research-state.json"
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -24906,6 +24962,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_withdrawal.py -q
       - name: theme graph — W-C4 production hierarchy population (frozen R-C.3 table, PIT, rights, outputs unchanged)
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_population.py -q
+      - name: theme graph — ratified 2026-10-21 micro expansion (additive display tier; frozen 68 intact)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_micro_expansion_20261021.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
@@ -26579,6 +26637,36 @@ jobs:
       - name: page/render builders whose output ships to the site
         run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
 
+  macro-signals-conditions:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # Macro Signals reader repairs (W33-LA, 2026-10-21): recession probability printed in
+    # percent units, the withheld drawdown reason, and the conditions vintages tile. Three
+    # render suites (jinja2 + templates/; no data/ or site/ read). Own job, not a step in
+    # unrun-builders-render: that step moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes. scope: exclusive pins it to the
+    # page template, its two includes and the suites; the probe ceilings stay fixed.
+    paths:
+      - "templates/macro_signals.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/test_macro_signals_conditions_vintages.py"
+      - "tests/test_macro_signals_drawdown_withheld.py"
+      - "tests/test_macro_signals_recession_prob_units.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: Macro Signals — recession units, withheld drawdown, conditions vintages
+        run: python -m pytest tests/test_macro_signals_recession_prob_units.py tests/test_macro_signals_drawdown_withheld.py tests/test_macro_signals_conditions_vintages.py -q -p no:cacheprovider
   unrun-nav-chrome:
     # The two-family navigation law and the chrome around it: every product
     # page header must come from the ONE shared source (CLAUDE.md §Navigation
@@ -27951,6 +28039,7 @@ jobs:
       - "site/turn_watch/turn_watch.json"
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
+      - "templates/_prophet_receipts.html.j2"
       - "templates/_prophet_workspace.css.j2"
       - "templates/_prophet_setup_detail.html.j2"
       - "templates/_public_footer.html.j2"
@@ -27968,6 +28057,7 @@ jobs:
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "templates/theme.js"
+      - "templates/watchlist.html.j2"
       - "tests/test_build_live_quotes.py"
       - "tests/test_capture_prophet_b4_same_read.py"
       - "tests/test_catalyst_stock.py"
@@ -27991,10 +28081,12 @@ jobs:
       - "tests/test_prophet_daily_brief.py"
       - "tests/test_prophet_doors.py"
       - "tests/test_prophet_journey_reconcile.py"
+      - "tests/test_prophet_r7_wave_a_guards.py"
       - "tests/test_prophet_live_evaluator.py"
       - "tests/test_prophet_plan_clock.py"
       - "tests/test_prophet_plan_relation.py"
       - "tests/test_prophet_postmortem.py"
+      - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
@@ -28051,6 +28143,10 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       # Prophet B4 nightly capture (B4 same-read caller) import closure: the
       # capture script and the W3 helpers it imports for the store-root,
       # board-as-of and capture-target laws (w3 pulls the grades reader).
@@ -28114,8 +28210,12 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+      - name: Prophet R7 Wave A refusal receipts and design guards (A3)
+        run: python -m pytest tests/test_prophet_r7_wave_a_guards.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+      - name: Prophet R7 Wave A plan-card record states (A1)
+        run: python -m pytest tests/test_prophet_r7_wave_a_plan_cards.py -q
       - name: Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       # B4 same-read's first production-shaped caller: the capture-only nightly
@@ -29523,6 +29623,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -33094,6 +33197,10 @@ jobs:
       - scripts/tiingo_materialize.py
       - lib/dataos/tiingo_reader.py
       - lib/dataos/tiingo_views.py
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -36079,6 +36186,10 @@ jobs:
       - "site/factordata/attention.json"
       - "site/factordata/tech_confluence.json"
       - "site/marketdata/sp500_heatmap.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
       - "app/macro_command.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/macro_workspaces/__init__.py"
@@ -36927,6 +37038,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
