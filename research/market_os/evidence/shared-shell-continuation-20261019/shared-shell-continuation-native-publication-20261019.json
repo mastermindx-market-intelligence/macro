@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-10-19T09:02:08.780634+00:00",
+  "completed_at": "2026-10-19T09:03:31.537675+00:00",
+  "programme": "WS:MARKET-OS",
+  "root_operation": "market-os-shared-shell-design-20260924-sol-001",
+  "attended_parent": "shared-shell-production-20261018-c1",
+  "workspace": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "old_remote": "ad65b00bb0330ccdaa3042ce3a7697cc1cc85554",
+  "published_head": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "push_exit": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/mastermindx-market-intelligence/macro.git\n   ad65b00bb033..3261331f9537  HEAD -> sol/market-os-shared-shell-design-20260924\n",
+  "remote_after": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "pr_after": {
+    "autoMergeRequest": null,
+    "headRefName": "sol/market-os-shared-shell-design-20260924",
+    "headRefOid": "3261331f95371b96187ccbfd3fc055067d4a6945",
+    "labels": [],
+    "state": "OPEN"
+  },
+  "tracked_clean": true,
+  "armed_by_this_action": false,
+  "merge_claimed": false,
+  "visual_acceptance_claimed": false
+}
