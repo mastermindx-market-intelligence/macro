@@ -89,6 +89,9 @@ REASON_REJECTED = "ACTIVITY_REJECTED_BY_CURATOR"
 REASON_PROPOSED = "PROPOSED_NOT_ADMITTED"
 REASON_VENDOR_ONLY = "VENDOR_MEMBERSHIP_ONLY"
 REASON_NO_ACTIVITY = "NO_ACTIVITY_EVIDENCE"
+# A QUALIFIED issuer whose only current activity targets a display-expansion micro:
+# reported on the expansion line, never summed into the acceptance numerator.
+REASON_EXPANSION_TIER_ONLY = "ACTIVITY_EXPANSION_TIER_ONLY"
 REASON_CN_LISTED_COUNTS = "CN_LISTED_COUNTS_NOT_AVAILABLE"
 ACTIVITY_REASONS = (REASON_IDENTITY_NOT_QUALIFIED, REASON_SCOPE_STALE, REASON_REJECTED,
                     REASON_PROPOSED, REASON_VENDOR_ONLY, REASON_NO_ACTIVITY)
@@ -186,6 +189,10 @@ REASON_OWNER_ROWS = (
      ("engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
       "native fact -> build_activity_membership_evidence -> "
       "make_activity_membership_proposal -> named curator ratification")),
+    (REASON_EXPANSION_TIER_ONLY, "*",
+     ("GMI taxonomy seat (DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68)",
+      "display-tier activity only: a frozen-tier (asserted_on < 2026-10-21) "
+      "ratified activity row is needed to count for acceptance")),
     (REASON_REJECTED, "*",
      ("engine.company_intelligence.issuer_disclosure_owner + named GMI curator",
       "native fact -> build_activity_membership_evidence -> "
@@ -855,7 +862,7 @@ def _vendor_view(market: str, graph: _GraphContext, eligible_by_security: dict) 
 
 
 def _activity_view(market: str, entries: list[dict], activity: dict, graph: _GraphContext,
-                   repo_root: Path) -> dict:
+                   repo_root: Path, tier_by_micro: dict | None = None) -> dict:
     eligible = [entry for entry in entries if entry["eligibility"] == ELIGIBLE]
     by_security = {}
     for entry in eligible:
@@ -870,20 +877,33 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
     for security_id, info in sorted(by_security.items()):
         if info["issuer_state"] == "RESOLVED":
             slot = issuers.setdefault(info["issuer_id"], {
-                "qualified": False, "current": 0, "stale": 0, "rejected": 0, "proposed": 0})
+                "qualified": False, "current": 0, "stale": 0, "rejected": 0, "proposed": 0,
+                "expansion_current": 0})
             slot["qualified"] = slot["qualified"] or info["identity_status"] == ID_QUALIFIED
         else:
             unresolved.append(security_id)
     scope_stale = 0
+    expansion_rows_excluded = 0
     for row in activity["ratified"]:
         security_id = _row_security_id(row)
         info = by_security.get(security_id)
         if info is None or info["issuer_state"] != "RESOLVED":
             continue  # a row outside the eligible core denominator attributes to no slot
         theme_id = _row_target(row)
+        # An id the hierarchy does not hold stays FROZEN (fail-closed): a row can
+        # never leave the acceptance scope check by naming an unknown target.
+        tier = tier_by_micro.get(theme_id, FROZEN_TIER) if tier_by_micro is not None \
+            else FROZEN_TIER
         current = _current_scope(repo_root, theme_id)
         is_current = current is not None and current == _row_definition_hash(row)
         slot = issuers[info["issuer_id"]]
+        if tier == EXPANSION_TIER:
+            # Display-tier row: never touches the acceptance numerator, the stale
+            # counter or scope_stale; reported on the expansion line instead.
+            expansion_rows_excluded += 1
+            if is_current:
+                slot["expansion_current"] += 1
+            continue
         if is_current:
             slot["current"] += 1
         else:
@@ -911,6 +931,8 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
             continue
         elif slot["stale"] >= 1:
             reason = REASON_SCOPE_STALE
+        elif slot["expansion_current"] >= 1:
+            reason = REASON_EXPANSION_TIER_ONLY
         elif slot["rejected"] >= 1:
             reason = REASON_REJECTED
         elif slot["proposed"] >= 1:
@@ -927,8 +949,11 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
     m = len(unresolved)
     lower = n + (1 if m else 0)
     upper = n + m
+    expansion_issuers = sum(1 for slot in issuers.values()
+                            if slot["qualified"] and slot["expansion_current"] >= 1)
     seen = dict(activity["seen"])
     seen["scope_stale"] = scope_stale
+    seen["expansion_tier_rows_excluded"] = expansion_rows_excluded
     return {
         "numerator_issuers": numerator,
         "denominator": {"eligible_issuers_resolved": n,
@@ -938,6 +963,15 @@ def _activity_view(market: str, entries: list[dict], activity: dict, graph: _Gra
         "ratio_upper_bound_denominator": _ratio(numerator, lower),
         "remainder_by_reason": dict(sorted(remainder.items())),
         "proposals_seen": seen,
+        # Display tier only: never an acceptance numerator, denominator or gate input.
+        "expansion_tier": {
+            "label": "DISPLAY_TIER_NOT_ACCEPTANCE",
+            "tier_cutoff": FROZEN_TIER_CUTOFF,
+            "issuers_with_current_expansion_activity": expansion_issuers,
+            "ratio_lower_bound_denominator": _ratio(expansion_issuers, upper),
+            "ratio_upper_bound_denominator": _ratio(expansion_issuers, lower),
+            "ratified_rows_excluded_from_acceptance": expansion_rows_excluded,
+        },
     }
 
 
@@ -1277,6 +1311,19 @@ def render_markdown(report: dict, manifest: dict) -> str:
         lines.append(f"| {_cell(gate['dimension'])} | {_cell(gate['threshold'])} "
                      f"| {_cell(gate['measured'])} | {_cell(gate['verdict'])} |")
     lines.append("")
+    lines.append("## Expansion-tier coverage (display tier, not acceptance)")
+    lines.append("")
+    lines.append("| market | issuers with current expansion-tier activity "
+                 "| ratio (lower-bound denominator) "
+                 "| ratified rows excluded from the acceptance numerator |")
+    lines.append("| --- | --- | --- | --- |")
+    for market in CORE_MARKETS:
+        expansion = report["activity"][market]["expansion_tier"]
+        lines.append(f"| {_cell(market)} "
+                     f"| {_cell(expansion['issuers_with_current_expansion_activity'])} "
+                     f"| {_cell(expansion['ratio_lower_bound_denominator']['ratio'])} "
+                     f"| {_cell(expansion['ratified_rows_excluded_from_acceptance'])} |")
+    lines.append("")
     lines.append("## Remainders (every one has a named owner; no OTHER)")
     lines.append("")
     lines.append("| market | reason | count | owner | next step |")
@@ -1459,8 +1506,13 @@ def build(args) -> tuple[dict, dict]:
         proposal_rows.extend(probation.read_proposals(path, strict=True))
 
     activity_rows = _activity_market_rows(store_view["queue"], proposal_rows)
+    # The acceptance tier of each micro per the same hierarchy _taxonomy reads: a
+    # ratified row targeting a display-expansion micro never enters the numerator.
+    tier_by_micro = {micro_id: _micro_tier(entry)
+                     for micro_id, entry
+                     in _hierarchy(loaded["hierarchy_path"])["micros"].items()}
     activity_by_market = {market: _activity_view(market, core[market], activity_rows, graph,
-                                                 repo_root)
+                                                 repo_root, tier_by_micro=tier_by_micro)
                           for market in CORE_MARKETS}
 
     vendor_by_market = {market: _vendor_view(market, graph, eligible_by_security)

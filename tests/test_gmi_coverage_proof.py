@@ -668,3 +668,124 @@ def test_expansion_never_changes_the_taxonomy_gate_verdict(tmp_path):
     assert report_five["taxonomy"]["expansion_micro_count"] == 5
     assert gate_five["verdict"] == gate_zero["verdict"]
     assert report_five["taxonomy"]["micros"] == report_zero["taxonomy"]["micros"]
+
+
+# --- 16 (PIPE-M3N: display-expansion micros stay out of the activity numerator) --
+_EXPANSION_MICRO = "theme:fixture_expansion_micro"
+_EXPANSION_OWNER = ("GMI taxonomy seat "
+                    "(DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68)")
+
+
+def _tier_map(fixture: SimpleNamespace) -> dict:
+    """The same tier lookup build() feeds _activity_view: micro id -> tier."""
+    return {micro_id: gcp._micro_tier(entry)
+            for micro_id, entry in gcp._hierarchy(fixture.hierarchy)["micros"].items()}
+
+
+def _run_with_expansion_row(tmp_path: Path, *, asserted_on: str) -> tuple[dict, dict, str]:
+    """A base run, then the identical fixture carrying ONE extra RATIFIED row for
+    TXN targeting a micro asserted on ``asserted_on``. The crosswalk is rewritten
+    BEFORE the row is minted, so the row's definition hash is the CURRENT scope of
+    that micro at run time; every other input is byte-identical in shape."""
+    fixture = _build(tmp_path / "base")
+    base_report, _, _ = _run(fixture)
+    after = _build(tmp_path / "after")
+    _rewrite_hierarchy(after, [
+        ({"id": _EXPANSION_MICRO, "name_en": "Expansion", "name_zh": "Expansion",
+          "asserted_on": asserted_on}, "theme:fixture_cat_a")])
+    rows = [json.loads(line) for line
+            in (after.store / "probation" / "proposals.jsonl")
+            .read_text(encoding="utf-8").splitlines() if line]
+    rows.append(_curated(_a1_row(after.root, "co:us:TXN", "SEC:US-XNAS-TXN",
+                                 "ISS:US-XNAS-TXN", _EXPANSION_MICRO)))
+    _write_jsonl(after.store / "probation" / "proposals.jsonl", rows)
+    after_report, _, markdown = _run(after)
+    return base_report, after_report, markdown
+
+
+def test_expansion_tier_ratified_row_moves_only_the_expansion_line(tmp_path):
+    base_report, after_report, markdown = _run_with_expansion_row(
+        tmp_path, asserted_on="2026-10-21")
+    base_us = base_report["activity"]["us"]
+    after_us = after_report["activity"]["us"]
+    # The chosen issuer: co:us:TXN (base report read below) — QUALIFIED and eligible,
+    # and at base its issuer holds no activity row and no vendor edge, so its
+    # remainder is NO_ACTIVITY_EVIDENCE.
+    assert base_us["remainder_by_reason"]["NO_ACTIVITY_EVIDENCE"] == 1
+    # The acceptance numerator, denominator, both ratios and the gate are unchanged.
+    assert after_us["numerator_issuers"] == base_us["numerator_issuers"]
+    assert after_us["denominator"] == base_us["denominator"]
+    assert after_us["ratio_lower_bound_denominator"] == \
+        base_us["ratio_lower_bound_denominator"]
+    assert after_us["ratio_upper_bound_denominator"] == \
+        base_us["ratio_upper_bound_denominator"]
+    assert _gate(after_report, "Principal activity coverage", "us") == \
+        _gate(base_report, "Principal activity coverage", "us")
+    assert _gate(after_report, "Principal activity coverage", "cn") == \
+        _gate(base_report, "Principal activity coverage", "cn")
+    # The row is reported on the expansion line instead.
+    assert after_us["expansion_tier"]["issuers_with_current_expansion_activity"] == \
+        base_us["expansion_tier"]["issuers_with_current_expansion_activity"] + 1
+    assert after_us["expansion_tier"]["label"] == "DISPLAY_TIER_NOT_ACCEPTANCE"
+    assert after_us["expansion_tier"]["tier_cutoff"] == "2026-10-21"
+    assert after_us["expansion_tier"]["ratified_rows_excluded_from_acceptance"] == 1
+    assert after_us["proposals_seen"]["expansion_tier_rows_excluded"] == 1
+    assert after_report["activity"]["cn"]["expansion_tier"] == \
+        base_report["activity"]["cn"]["expansion_tier"]
+    # The chosen issuer's remainder moved to the named expansion reason.
+    assert after_us["remainder_by_reason"]["ACTIVITY_EXPANSION_TIER_ONLY"] == 1
+    assert after_us["remainder_by_reason"].get("NO_ACTIVITY_EVIDENCE", 0) == 0
+    remainder = next(row for row in after_report["remainders"]
+                     if row["market"] == "us"
+                     and row["reason"] == "ACTIVITY_EXPANSION_TIER_ONLY")
+    assert remainder["count"] == 1 and remainder["owner"] == _EXPANSION_OWNER
+    assert "## Expansion-tier coverage (display tier, not acceptance)" in markdown
+
+
+def test_expansion_filter_is_what_holds_the_numerator(tmp_path):
+    # The SAME row against a FROZEN-tier micro (asserted_on 2026-10-08) DOES raise
+    # the numerator by one: the invariance above comes from the tier filter alone,
+    # not from a broken fixture.
+    base_report, after_report, _ = _run_with_expansion_row(
+        tmp_path, asserted_on="2026-10-08")
+    base_us = base_report["activity"]["us"]
+    after_us = after_report["activity"]["us"]
+    assert after_us["numerator_issuers"] == base_us["numerator_issuers"] + 1
+    assert after_us["remainder_by_reason"].get("NO_ACTIVITY_EVIDENCE", 0) == 0
+    assert after_us["remainder_by_reason"].get("ACTIVITY_EXPANSION_TIER_ONLY", 0) == 0
+    assert after_us["expansion_tier"]["ratified_rows_excluded_from_acceptance"] == 0
+    assert after_us["proposals_seen"]["expansion_tier_rows_excluded"] == 0
+
+
+def test_unknown_target_never_counts_as_expansion(tmp_path):
+    fixture = _build(tmp_path)
+    base_report, _, _ = _run(fixture)
+    base_us = base_report["activity"]["us"]
+    # The owners refuse to mint evidence for a target that is not one current
+    # micro-theme definition, so the row is minted against a real fixture micro and
+    # re-targeted after minting (the same post-mint mutation the forbidden-label
+    # test uses), keeping its RATIFIED curation and recomputed proposal id.
+    rows = [json.loads(line) for line
+            in (fixture.store / "probation" / "proposals.jsonl")
+            .read_text(encoding="utf-8").splitlines() if line]
+    orphan = _curated(_a1_row(fixture.root, "co:us:TXN", "SEC:US-XNAS-TXN",
+                              "ISS:US-XNAS-TXN", MICROS[0]))
+    orphan["evidence"]["target_definition"]["theme_id"] = "theme:not_in_hierarchy"
+    orphan["evidence"]["endpoints"]["target_node_id"] = "theme:not_in_hierarchy"
+    orphan["proposal_id"] = probation.activity_proposal_id(orphan["evidence"])
+    assert probation.validate_activity_membership_proposal(orphan) == []
+    _write_jsonl(fixture.store / "probation" / "proposals.jsonl", rows + [orphan])
+    report, _, _ = _run(fixture, out=tmp_path / "out_orphan")
+    us = report["activity"]["us"]
+    # Fail-closed: an unknown target is judged exactly as before — stale, never
+    # expansion-tier.
+    assert us["numerator_issuers"] == base_us["numerator_issuers"]
+    assert us["remainder_by_reason"]["ADMITTED_SCOPE_STALE"] == \
+        base_us["remainder_by_reason"]["ADMITTED_SCOPE_STALE"] + 1
+    assert us["proposals_seen"]["scope_stale"] == base_us["proposals_seen"]["scope_stale"] + 1
+    assert us["expansion_tier"]["issuers_with_current_expansion_activity"] == 0
+    assert us["expansion_tier"]["ratified_rows_excluded_from_acceptance"] == 0
+    assert us["proposals_seen"]["expansion_tier_rows_excluded"] == 0
+    # The tier lookup itself is what keeps the unknown id in the frozen tier.
+    assert _tier_map(fixture).get("theme:not_in_hierarchy", gcp.FROZEN_TIER) \
+        == gcp.FROZEN_TIER
