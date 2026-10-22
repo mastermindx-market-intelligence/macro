@@ -2346,6 +2346,9 @@
 <style id="risk-envelope-band-css">
 {% include "_risk_envelope_band.css.j2" %}
 </style>
+<style id="macro-overview-css">
+{% include "_macro_overview.css.j2" %}
+</style>
 {% endif %}
 </head>
 <body class="{{ 'page-stocks' if mode == 'stocks' else 'page-macro mx4-grid' }}">
@@ -2358,7 +2361,22 @@
 {% endif %}
 {% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
-<div class="grid">
+{% if mode == 'macro' %}
+<header class="macro-page-heading">
+  <div>
+    <h1 id="macro-page-title"><span class="l-en">US market overview</span><span class="l-zh">美国市场总览</span></h1>
+    <p><span class="l-en">Market conditions, risk and the week ahead.</span><span class="l-zh">看清市场环境、风险与本周关键事件。</span></p>
+  </div>
+  <div class="macro-page-actions">
+    <nav class="macro-page-index" aria-label="Overview sections">
+      <a href="#sx-events-v2"><span class="l-en">Calendar</span><span class="l-zh">事件日历</span><span aria-hidden="true">&nbsp;↘</span></a>
+      <a href="#sx-deep-context"><span class="l-en">Explore signals</span><span class="l-zh">深入信号</span><span aria-hidden="true">&nbsp;↘</span></a>
+    </nav>
+    <div id="macro-assistant-slot" class="macro-assistant-slot"></div>
+  </div>
+</header>
+{% endif %}
+<div class="grid"{% if mode == 'macro' %} role="main" aria-labelledby="macro-page-title"{% endif %}>
 
   {% if mode == 'stocks' %}
   <!-- ===================== US STOCK DASHBOARD HEADER ===================== -->
@@ -8051,14 +8069,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
                 text-anchor="middle" font-family="Inter,-apple-system,sans-serif">/ 100</text>
         </svg>
 
-        {# Right of gauge: big score + verdict word (pill moved above the row) #}
-        <div>
+        {# The verdict leads; the live-patched score remains a supporting reading. #}
+        <div class="macro-verdict-block">
+          <h2 class="macro-eyebrow"><span class="l-en">Market backdrop</span><span class="l-zh">市场环境</span></h2>
           <div class="mx5-score-line">
-            <span class="mx5-big-score">{{ _mx5_score }}</span>
             <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
+            <span class="macro-score-reading"><span class="mx5-big-score">{{ _mx5_score }}</span><span class="macro-score-max">/100</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ _mx5_scope.get('subline_en') if (_mx5_scope and _mx5_scope.get('subline_en')) else ({'green':'GREEN — Risk-on backdrop','yellow':'YELLOW — Trade with caution','red':'RED — Defend capital first'}.get(MS.color,'—')) }}</span>
+            <span class="l-en">{{ _mx5_scope.get('subline_en') if (_mx5_scope and _mx5_scope.get('subline_en')) else ({'green':'Risk-on backdrop','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'—')) }}</span>
             <span class="l-zh">{{ _mx5_scope.get('subline_zh') if (_mx5_scope and _mx5_scope.get('subline_zh')) else ({'green':'偏多 — 风险偏好环境','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'')) }}</span>
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
@@ -8345,6 +8364,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {% set _flip_en = (MS.flip_en | trim) %}
       {% set _flip_en = _flip_en[1:] | trim if _flip_en.startswith('→') else _flip_en %}
       {% set _flip_en = _flip_en|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') %}
+      {% set _flip_en = _flip_en | replace('Green if ', 'Improves if ') | replace('Red if ', 'Worsens if ') %}
       {% set _flip_zh = (MS.flip_zh | trim) if MS.flip_zh else '' %}
       {% set _flip_zh = _flip_zh[1:] | trim if _flip_zh.startswith('→') else _flip_zh %}
       {% set _flip_zh = _flip_zh|regex_replace('（现\\s*\\d+/100）', '') %}
@@ -8463,10 +8483,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _mx5_mos_en = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
     <div class="mx5-sc-right">
       <div class="mx5-path-header">
-        <span class="mx5-path-title">
+        <h2 class="mx5-path-title">
           <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
           <span class="l-zh">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}近 {{ _mx5_hist_n }} 交易日走势{% else %}60 交易日走势{% endif %}</span>
-        </span>
+        </h2>
         {# The display path is ledger history plus the current settled measured endpoint
            when the ledger has not accrued that session yet. "Settled through" names the stable close explicitly and remains truthful
            if risk_state_live.js later appends a provisional intraday point beyond it. #}
@@ -8876,7 +8896,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {# Three-priority glance. Details stay in the Evidence dialog opened by the card.
        Priority order: stance, nearest event/weakest leg, active policy/risk radar. #}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-evidence')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-evidence');}">
-      <div class="mx5-card-title"><span class="l-en">What To Do Now</span><span class="l-zh">现在怎么做</span></div>
+      <h2 class="mx5-card-title"><span class="l-en">Today’s playbook</span><span class="l-zh">今日策略</span></h2>
       <div class="mx5-action-list">
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
@@ -9093,8 +9113,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% endif %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-events')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-events');}">
       <div class="mx5-card-title-row">
-        <div class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></div>
-        <div class="mx5-card-badge"><span class="l-en">This week</span><span class="l-zh">本周</span></div>
+        <h2 class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></h2>
+        <div class="mx5-card-badge"><span class="l-en">Upcoming</span><span class="l-zh">近期</span></div>
       </div>
       <div class="mx5-card-stance">
         <span class="l-en">{{ _ev_stance_en }}</span>
@@ -9106,8 +9126,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <span class="l-en mx5-ev-none-copy">Events feed is reconnecting — re-checked nightly. The rest of this page is unaffected.</span>
         <span class="l-zh mx5-ev-none-copy">事件数据源重连中——每晚重新检查。本页其余内容不受影响。</span>
         {% elif _ev_hi_cnt %}
-        <span class="l-en">{{ _ev_hi_cnt }} high-impact print{{ 's' if _ev_hi_cnt != 1 }} ahead</span>
-        <span class="l-zh">{{ _ev_hi_cnt }} 项高影响数据待发</span>
+        <span class="l-en">Next 5 trading days</span>
+        <span class="l-zh">未来5个交易日</span>
         {% else %}
         <span class="l-en">Next 5 trading days</span>
         <span class="l-zh">未来5个交易日</span>
@@ -9125,8 +9145,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% set _lbl_zh = c.get('label_zh') or c.label %}
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot {{ _dot_cls }}"></div></div>
-            <div class="mx5-tl-date">{{ _mos2[c.date[5:7]|int] }} {{ c.date[8:10]|int }}</div>
-            <div class="mx5-tl-name"><span class="l-en">{{ c.label[:16] }}{{ '…' if c.label|length > 16 }}</span><span class="l-zh">{{ _lbl_zh[:7] }}{{ '…' if _lbl_zh|length > 7 }}</span></div>
+            <div class="mx5-tl-date"><span class="l-en">{{ _mos2[c.date[5:7]|int] }} {{ c.date[8:10]|int }}</span><span class="l-zh">{{ c.date[5:7]|int }}月{{ c.date[8:10]|int }}日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">{{ c.label }}</span><span class="l-zh">{{ _lbl_zh }}</span></div>
             <div class="mx5-tl-badge {{ _bdg_cls }}">
               <span class="l-en">{{ c.impact | upper }}</span>
               <span class="l-zh">{{ {'high':'高','med':'中','low':'低'}.get(c.impact, c.impact) }}</span>
@@ -11594,7 +11614,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% set _rc_m3   = (_rc_fut.m3  if (_rc_fut and _rc_fut.m3  is not none) else none) %}
   {% set _rc_m6   = (_rc_fut.m6  if (_rc_fut and _rc_fut.m6  is not none) else none) %}
   {% set _rc_m12  = (_rc_fut.m12 if (_rc_fut and _rc_fut.m12 is not none) else none) %}
-  {% set _rc_spark_ok = (_rc_rate0 is not none and _rc_m1 is not none and _rc_m3 is not none and _rc_m6 is not none and _rc_m12 is not none) %}
+  {# Match the producer's basis-safe stance: a policy-to-futures comparison
+     needs a present rate basis AND an identified D1 comparison. I0 inflation
+     comparisons do not qualify. Reuse the producer's result, never recompute it. #}
+  {% set _rc_basis = _rc.board.rate_path_row.get('basis') if (_rc and _rc.board is defined and _rc.board.rate_path_row is defined) else none %}
+  {% set _rc_match = namespace(identified=false) %}
+  {% for comparison in ((_rc.get('qualified_comparisons') or []) if _rc else []) %}
+    {% if comparison.get('component') == 'd1' and comparison.get('status') in ('directly_comparable', 'comparable_after_transformation') %}
+      {% set _rc_match.identified = true %}
+    {% endif %}
+  {% endfor %}
+  {% set _rc_comparison_ok = (_rc_basis and _rc_basis.get('value_state') == 'present' and _rc_match.identified) %}
+  {% set _rc_spark_ok = (_rc_comparison_ok and _rc_rate0 is not none and _rc_m1 is not none and _rc_m3 is not none and _rc_m6 is not none and _rc_m12 is not none) %}
   {% if _rc_spark_ok %}
     {% set _rc_sp_vals = [_rc_rate0, _rc_m1, _rc_m3, _rc_m6, _rc_m12] %}
     {% set _rc_sp_min = _rc_sp_vals | min %}
@@ -11615,7 +11646,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% if _rc_sl_en %}
     <div class="plf-stance-row" style="margin-bottom:4px">
       <svg width="8" height="8" viewBox="0 0 8 8" style="flex-shrink:0;margin-top:2px"><circle cx="4" cy="4" r="4" fill="{{ 'var(--warn)' if _rc_ep.net_state == 'two_sided' else ('var(--up)' if _rc_ep.net_state in ('repricing_dovish','pressure_fading') else 'var(--down)') }}"/></svg>
-      <span style="font-size:12px;font-weight:600">
+      <span class="macro-driver-verdict">
         <span class="l-en">{{ _rc_sl_en }}</span>
         <span class="l-zh">{{ _rc_sl_zh }}</span>
       </span>
@@ -11623,7 +11654,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% endif %}
     {# One-line stance (short form, ≤14 words) #}
     {% if _rc_short_en %}
-    <div style="font-size:11px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.4;margin-bottom:6px">
+    <div class="macro-driver-copy">
       <span class="l-en">{{ _rc_short_en }}</span>
       <span class="l-zh">{{ _rc_short_zh }}</span>
     </div>
@@ -11643,8 +11674,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </svg>
     </div>
     {% endif %}
-    {# Footer market check line #}
-    {% if _rc_mc and _rc_mc.futures is defined %}
+    {# A legacy unqualified cut/hike count must not contradict the basis-safe stance. #}
+    {% if _rc_comparison_ok and _rc_mc and _rc_mc.futures is defined %}
     <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.4">
       <span class="l-en">{{ _rc_mc.futures.plain_read_en if _rc_mc.futures.plain_read_en is defined else 'Futures data pending.' }}</span>
       <span class="l-zh">{{ _rc_mc.futures.plain_read_zh if _rc_mc.futures.plain_read_zh is defined else '期货数据待更新。' }}</span>
@@ -11727,7 +11758,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-sentiment')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-sentiment');}">
     <div class="mx5-card-title"><span class="l-en">Market Sentiment</span><span class="l-zh">市场情绪</span></div>
     <div class="mx5-sentiment-dial-wrap">
-      <svg viewBox="0 0 380 212" style="width:100%;max-width:340px;height:190px;display:inline-block;overflow:visible">
+      <svg class="macro-sentiment-gauge" viewBox="0 0 380 212">
         <defs>
           <linearGradient id="sentGrad5" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%"   stop-color="#ef4444"/>
@@ -11854,31 +11885,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </div>
     </div>
     {% endif %}
-    {# Enlarged hero heat strip (Wave E): taller cells so the sector picture reads at a glance #}
-    {% set _shv5_all = ((sector_heat.get('heating') or []) + (sector_heat.get('cooling') or []))[:10] %}
-    {% if _shv5_all %}
-    <div class="mx5-sector-heat-divider hero">
-      <div class="mx5-sector-heat-label"><span class="l-en">Sector Heat</span><span class="l-zh">板块热图</span></div>
-      <div class="mx5-sector-heat-bars">
-        {% for s in _shv5_all %}
-        {% set _is_heat = s in (sector_heat.get('heating') or []) %}
-        {% set _rk = s.get('rank', loop.index) | int %}
-        {# bar height: rank 1=52px, ... decay to a 16px floor; color green for hot, red for cold #}
-        {% set _bar_h = ([52 - (_rk - 1) * 5, 16] | max) %}
-        {# hue via class (zh-mirrorable), rank-decay via opacity — visually identical to
-           the old per-bar rgba alpha since the bars sit on a flat card background #}
-        {% set _bar_op = ([0.78 - (_rk-1)*0.07, 0.28]|max) if _is_heat else ([0.7 - (_rk-1)*0.07, 0.22]|max) %}
-        {% set _s_name = s.get('name','') %}
-        {% set _s_name_zh = s.get('name_zh') or _s_name %}
-        <div class="mx5-sector-heat-col" data-tip-en="{{ _s_name }}{{ ' — heating' if _is_heat else ' — cooling' }}" data-tip-zh="{{ _s_name_zh }}{{ ' — 升温' if _is_heat else ' — 退潮' }}">
-          <div class="mx5-sector-heat-bar mx5-shb-{{ 'hot' if _is_heat else 'cool' }}" style="height:{{ _bar_h }}px;opacity:{{ _bar_op }};"></div>
-        </div>
-        {% endfor %}
-      </div>
-      <div class="mx5-sector-heat-legend">
-        <span class="heat-up"><span class="l-en">▲ Heating</span><span class="l-zh">▲ 升温</span></span>
-        <span class="heat-dn"><span class="l-en">Cooling ▼</span><span class="l-zh">退潮 ▼</span></span>
-      </div>
+    {# The named heating/cooling lists already carry the sector identities.
+       Their counts communicate participation without an anonymous rank-height chart. #}
+    {% if (sector_heat.get('heating') or []) or (sector_heat.get('cooling') or []) %}
+    <div class="macro-sector-counts">
+      <span class="heat-up"><strong>{{ (sector_heat.get('heating') or []) | length }}</strong> <span class="l-en">heating</span><span class="l-zh">升温</span></span>
+      <span class="heat-dn"><strong>{{ (sector_heat.get('cooling') or []) | length }}</strong> <span class="l-en">cooling</span><span class="l-zh">退潮</span></span>
     </div>
     {% endif %}
     {# Quiet open affordance (unified face anatomy) #}
@@ -11915,28 +11927,56 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {# Eyebrow hidden in v5 card face — card-title removed (1.1); aria-label carries accessible name #}
       <div class="mx5-mkt-grid">
         <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">ES</div>
-          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
+          <div class="mx5-mkt-ticker">ES <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P 500</span><span class="l-zh">标普500</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">NQ</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
+          <div class="mx5-mkt-ticker">NQ <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq 100</span><span class="l-zh">纳斯达克100</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">YM</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
+          <div class="mx5-mkt-ticker">YM <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Dow Jones</span><span class="l-zh">道琼斯</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">RTY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
+          <div class="mx5-mkt-ticker">RTY <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Russell 2000</span><span class="l-zh">罗素2000</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         {# ^TNX — Yahoo streams the 10-year yield as yield×10 (42.5 => 4.25%); the
            data-fmt="tnx" price tile divides by 10 + suffixes "%", and its delta renders
@@ -11947,12 +11987,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
           <div class="mx5-mkt-ticker">DXY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">US dollar</span><span class="l-zh">美元指数</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -12018,7 +12072,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
       </div>
       {# 4a-2: Mini rate-path sparkline (120×36) + headline; only when all 5 implied points present #}
-      {% if _fp_ok %}
+      {% if _fp_ok and _rc_comparison_ok | default(false) %}
       {% set _fp_vals = [_fp_impl.now, _fp_impl.m1, _fp_impl.m3, _fp_impl.m6, _fp_impl.m12] %}
       {% set _fp_min = _fp_vals | min %}
       {% set _fp_max = _fp_vals | max %}
@@ -12061,6 +12115,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
         </div>
       </div>
+      {% elif _fp_ok %}
+      <div class="macro-driver-copy"><span class="l-en">Rate-path comparison unavailable.</span><span class="l-zh">利率路径比较暂不可用。</span></div>
       {% endif %}
       {# 4a-3: Chip row — Fed stance · FOMC countdown · jawboning (11px) #}
       <div class="plf-chip-row">
@@ -12123,12 +12179,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <span class="l-en">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} High-Impact Items</span><br>
           {% if _abDomCh_clean %}Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean }}</span><br>{% endif %}
-          {{ _abHiCnt }} high-impact signals across channels
         </span>
         <span class="l-zh">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} 条高影响信息</span><br>
           {% if _abDomCh_clean_zh %}主线：<span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean_zh }}</span><br>{% endif %}
-          {{ _abHiCnt }} 条高影响信号
         </span>
         {% else %}
         <span class="l-en">Cross-asset synthesis</span>
@@ -15744,7 +15798,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      `mode != 'macro'` guard here was unreachable (the surrounding `mode == 'macro'`
      block opens at line 2622 and closes at line 16081 with no else), so the two-axis
      base-effect forward path rendered on no page. The reachable stocks-mode include
-     now sits below, just after `{% endif %}{# /market_state B4 #}`. #}
+     now sits below, just after the market_state B4 block closes. #}
 
 
   {# ==================== RELEASE RADAR (MRI PR-D / W11-H MRI-R39) ====================
@@ -21555,6 +21609,9 @@ if (document.readyState === 'loading') {
 })();
 </script>
 {% endif %}
+{% endif %}
+{% if mode == 'macro' %}
+<script id="macro-overview-script">{% include "_macro_overview.js.j2" %}</script>
 {% endif %}
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>

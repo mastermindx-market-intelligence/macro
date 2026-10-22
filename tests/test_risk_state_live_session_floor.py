@@ -542,7 +542,7 @@ def test_us_legacy_feed_keeps_safe_verdict_fallback_copy(js):
     assert out["thesis"].startswith(
         "Risk-on — the overall backdrop is supportive."
     )
-    assert out["subline"] == "GREEN — Risk-on backdrop"
+    assert out["subline"] == "Risk-on backdrop"
     assert out["action"] == "Stay selective. Add where setups confirm."
     assert "breadth and cross-asset signals line up" not in out["thesis"]
 
