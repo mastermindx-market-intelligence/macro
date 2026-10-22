@@ -683,3 +683,21 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
   `gh pr merge 10062 --squash --match-head-commit af255c2fd720da49c1432a7a2f0ee1132cf44301`
   → records → consume census lane → Stage 6 adjudication. FAIL → one fix lane
   on `pro-source-b21u5-fix-20261022-r1`.
+
+#### Addendum 09:1xZ — U5 review returned FAIL (F1 CSS specificity); #10062 stays draft
+
+- Reviewer aff4126aa3bc74480 COMPLETED: VERDICT FAIL. Filed at
+  reviews/U5_10062_REVIEW_af255c2f_2026-10-22.md. Drain half PASS (standards
+  1-4, 7; 87 passed; mutation runs catch each broken variant). F1: the added
+  `.wl-night-foot { display:none; }` (watchlist.html.j2:483) loses to
+  `.hold td { display:block; }` (:470) — footnote still visible <=720px.
+  Fix = `.hold .wl-night-foot { display:none; }` (or hide the tfoot). F2:
+  NOTES.md:107-109 becomes true only after F1. N1/N2/N3 record-only.
+- NEXT (seat-direct is cheaper than a lane: one selector change + NOTES line
+  check): on refs/pro/b21u5 amend the one CSS line, re-run
+  tests/test_prophet_r7_wave_a_watchlist.py + design guard, push the branch
+  (PR #10062 head moves — update the merge --match-head-commit sha), ask the
+  same reviewer BY MESSAGE for an F1/F2-only re-verdict (never re-spawn), then
+  the merge ladder. Reserved fix lane id `pro-source-b21u5-fix-20261022-r1`
+  remains unused.
+- Watcher bkjvr1scu / suites bbdrl0nf2 / census lane b907xbyh3 still in flight.
