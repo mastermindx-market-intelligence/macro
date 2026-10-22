@@ -11234,3 +11234,10 @@
 {"id":"ob-2026-10-22-8b03193fab","from":"approved","to":"posting","at":"2026-10-22T15:51:05Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-22-8b03193fab","from":"posting","to":"posted","at":"2026-10-22T15:51:06Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ada30eaf09f431dcae7a1a4","external_url":null,"at":"2026-10-22T15:50:59Z","booked_at":"2026-10-22T16:05:59Z"}}
 {"id":"ob-2026-10-22-172231cac7","from":"queued","to":"quarantined","at":"2026-10-22T17:56:48Z","actor":"press_wire_reap","note":"expired_stale_wire: breaking sat untouched 4.9h (ttl 3h) — the moment it was written about is gone","receipt":null}
+{"id":"ob-2026-10-22-172231cac7","from":"queued","to":"quarantined","at":"2026-10-22T18:06:54Z","actor":"wire_expiry","note":"expired_stale_wire: breaking sat untouched 5.0h (ttl 3h) — the moment it was written about is gone","receipt":null}
+{"id":"ob-2026-10-22-8787b4b83c","from":"queued","to":"approved","at":"2026-10-22T18:06:56Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-a55250c931","from":"queued","to":"approved","at":"2026-10-22T18:06:56Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-ead1494470","from":"queued","to":"approved","at":"2026-10-22T18:06:56Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-8787b4b83c","from":"approved","to":"quarantined","at":"2026-10-22T18:06:59Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-22-a55250c931","from":"approved","to":"quarantined","at":"2026-10-22T18:06:59Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-22-ead1494470","from":"approved","to":"quarantined","at":"2026-10-22T18:07:00Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
