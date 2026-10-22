@@ -13306,6 +13306,8 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright
       - name: install ontology browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
@@ -30608,6 +30610,8 @@ jobs:
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
       - name: install Brain browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
