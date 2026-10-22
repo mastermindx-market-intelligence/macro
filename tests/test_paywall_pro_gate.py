@@ -139,6 +139,79 @@ def test_expired_shared_cookie_recovers_with_canonical_auth_client(monkeypatch):
     assert "Your membership hasn't been classified as unpaid" in r.text
 
 
+@pytest.mark.parametrize("cookie_form", ["single", "chunked"])
+def test_real_shared_cookie_decoder_reaches_expired_session_recovery(monkeypatch, cookie_form):
+    """Use the actual app.main cookie reader, not a patched token accessor.
+
+    Parent-domain cookie values are the same base64url JSON shape written by
+    theme.js. Unverified exp only selects denied recovery; it never admits Pro.
+    """
+    from app import main as app_main
+
+    token = _jwt(time.time() - 180)
+    session = {"access_token": token, "refresh_token": "synthetic-not-functional"}
+    if cookie_form == "chunked":
+        session["non_auth_padding"] = "x" * 4100
+    raw = "base64-" + base64.urlsafe_b64encode(
+        json.dumps(session, separators=(",", ":")).encode()
+    ).decode().rstrip("=")
+    name = app_main._SB_STORAGE_KEY
+    cookies = ({name: raw} if cookie_form == "single" else {
+        f"{name}.{i // 3180}": raw[i:i + 3180]
+        for i in range(0, len(raw), 3180)
+    })
+    # A false-positive bypass of _mm_supabase_access_token would call upstream.
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda value: (_ for _ in ()).throw(AssertionError("expired JWT reached upstream")),
+    )
+    response = _check("/desk?symbol=AAPL", headers={"Sec-Fetch-Dest": "document"}, cookies=cookies)
+    assert response.status_code == 401
+    assert response.headers["x-paywall"] == "session-refresh"
+    assert response.headers["cache-control"] == "private, no-store"
+    assert 'name="mm-bot-renew" content="yes"' in response.text
+    assert "Mastermind Bot comes with Pro" not in response.text
+
+
+def test_legacy_null_stripe_feature_does_not_erase_verified_paid_entitlement(monkeypatch):
+    """text[] permits NULL elements even though the column is NOT NULL."""
+    from app import billing
+
+    _signed_in(monkeypatch)
+    monkeypatch.setattr(billing, "_pg", _pg_result([{
+        "tier": "pro", "status": "active",
+        "features": [None, paywall._PRO_FEATURE],
+    }]))
+    assert _check().status_code == 204
+    paywall._ENT_CACHE.clear()
+    monkeypatch.setattr(billing, "_pg", _pg_result([{
+        "tier": "pro", "status": "active", "features": [None],
+    }]))
+    assert _check().status_code == 403  # A null never grants a feature.
+
+
+def test_stripe_null_lookup_keys_are_filtered_before_storing_entitlement(monkeypatch):
+    """Exercise _compute_entitlement's actual Stripe-like object path."""
+    from types import SimpleNamespace as NS
+    from app import billing
+
+    provider = NS(
+        Subscription=NS(list=lambda **kw: NS(data=[NS(status="active")])),
+        entitlements=NS(ActiveEntitlement=NS(list=lambda **kw: NS(data=[
+            NS(lookup_key=None), NS(lookup_key=paywall._PRO_FEATURE),
+        ]))),
+    )
+    monkeypatch.setattr(billing, "_stripe", lambda: provider)
+    monkeypatch.setattr(billing, "_sub_tier", lambda sub: "pro")
+    monkeypatch.setattr(billing, "_sub_period_end", lambda sub: None)
+    monkeypatch.setattr(billing, "_sub_interval", lambda sub: "monthly")
+    row = billing._compute_entitlement("cus-synthetic")
+    assert row["features"] == [paywall._PRO_FEATURE]
+    _signed_in(monkeypatch)
+    monkeypatch.setattr(billing, "_pg", _pg_result([row]))
+    assert _check().status_code == 204
+
+
 def test_bot_renewal_csp_restricts_transitive_third_party_scripts(monkeypatch):
     """The shared Macro theme injects Umami; Bot's cookie-bearing 401 must block it."""
     monkeypatch.setattr(

@@ -55,7 +55,12 @@
   window.SUPABASE_CFG = {botRecoveryDisabled:true};
   var status = document.getElementById('mm-bot-renew-status');
   var retry = document.getElementById('mm-bot-renew-retry');
-  if (retry) retry.addEventListener('click', function () { location.reload(); });
+  if (retry) retry.addEventListener('click', function (event) {
+    // The replay fence blocks automatic loops, not a real user's explicit retry.
+    if (!event.isTrusted) return;
+    try { sessionStorage.removeItem('mm.bot.session-renew.v1'); } catch (e) {}
+    location.reload();
+  });
   function showUnavailable() {
     if (status) status.textContent =
       'We could not renew your session. Please sign in again. Your subscription has not been changed.';

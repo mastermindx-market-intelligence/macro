@@ -151,7 +151,8 @@ class Recovery:
             path = urlsplit(r.request.url).path
             if r.request.is_navigation_request() and urlsplit(r.request.url).hostname == "bot.mastermind-x.com":
                 self.documents.append(r.request.url)
-                r.fulfill(status=200, content_type="text/html", body=html if len(self.documents) == 1 else "<p>server gate revisited</p>")
+                allow_recovery = len(self.documents) == 1 or (case == "manual_retry" and len(self.documents) == 2)
+                r.fulfill(status=200, content_type="text/html", body=html if allow_recovery else "<p>server gate revisited</p>")
             elif path == "/theme.js":
                 if case == "late_theme":
                     self.held["theme"] = (r, theme)
@@ -287,6 +288,22 @@ def test_success_commits_canonical_cookie_then_revisits_original_server_gate(rec
     assert all(data["url"] == AUTH_URL + "/auth/v1/token?grant_type=refresh_token" for kind, data in r.events if kind == "fetch")
     if case == "pkce":
         assert any(c["name"] == SESSION_KEY + "-code-verifier" for c in r.context.cookies())
+
+
+def test_user_retry_after_failed_renewal_is_not_stopped_by_automatic_replay_fence(recovery):
+    r = recovery("manual_retry")
+    r.start()
+    r.release("invalid")
+    r.unavailable()
+    assert r.count("fetch") == 1
+    assert len(r.documents) == 1
+    r.page.get_by_role("button", name="Try Bot again · 重试").click()
+    r.page.wait_for_function("window.__MMBotSessionRecovery && window.__MMBotSessionRecovery.isOpen()")
+    r.start()
+    assert r.count("fetch") == 2, r.events
+    r.release("success")
+    r.page.wait_for_selector("text=server gate revisited")
+    assert r.documents == [r.url, r.url, r.url]
 
 
 def test_ordinary_page_retains_existing_automatic_auth_contract(recovery):

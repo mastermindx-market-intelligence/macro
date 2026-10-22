@@ -405,7 +405,10 @@ def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
         if (isinstance(row.get("tier"), str)
                 and isinstance(row.get("status"), str)
                 and isinstance(row.get("features"), list)
-                and all(isinstance(feature, str) for feature in row["features"])):
+                # PostgreSQL text[] allows NULL elements. Legacy Stripe rows
+                # may contain them; they never match a required feature.
+                and all(feature is None or isinstance(feature, str)
+                        for feature in row["features"])):
             return row, True
     raise _EntitlementStoreInvalid("entitlement store returned an invalid row envelope")
 

@@ -39402,11 +39402,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/__init__.py"
       - "app/paywall_pro_session_refresh.html"
       - "templates/theme.js"
       - "templates/terminal_overlay.js"
       - "templates/supabase.js"
       - "site/theme.js"
+      - "tests/__init__.py"
       - "tests/test_bot_session_recovery_browser.py"
     runs-on: ubuntu-latest
     steps:
