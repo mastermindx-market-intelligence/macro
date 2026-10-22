@@ -103,6 +103,15 @@ _GATE_KEYS = {
     "structural_invalidation",
 }
 _METRIC_KEYS = {"first_trigger_price", "anchor_price", "atr"}
+_METRIC_OUTPUT_KEYS = (
+    "distance_to_zone_pct", "risk_to_invalidation_pct",
+    "move_since_first_trigger_pct", "move_since_anchor_pct", "extension_atr",
+)
+_COMPARISON_BLOCKERS = frozenset({
+    "QUOTE_STALE", "QUOTE_FRESHNESS_UNKNOWN",
+    "CORPORATE_ACTION_BASIS_AMBIGUOUS", "CORPORATE_ACTION_BASIS_UNKNOWN",
+    "SOURCE_HEALTH_FAILED", "SOURCE_HEALTH_UNKNOWN",
+})
 
 
 class EntryAvailabilityContractError(ValueError):
@@ -310,16 +319,6 @@ def evaluate_entry_availability(
     )
     anchor = _finite_positive(metric_inputs.get("anchor_price"), "metric_inputs.anchor_price")
     atr = _finite_positive(metric_inputs.get("atr"), "metric_inputs.atr")
-    metrics = _metrics(
-        price=price,
-        zone_low=zone_low,
-        zone_high=zone_high,
-        invalidation=invalidation,
-        first_trigger=first_trigger,
-        anchor=anchor,
-        atr=atr,
-    )
-
     source_receipts = facts.get("source_receipts")
     if not isinstance(source_receipts, Sequence) or isinstance(source_receipts, (str, bytes)):
         raise EntryAvailabilityContractError("source_receipts must be a list")
@@ -346,6 +345,38 @@ def evaluate_entry_availability(
         ),
     }
 
+    # Qualify comparisons before arithmetic or numeric stop/chase decisions.
+    # Distinct price-family strings may be comparable when the basis owner proves
+    # their relation; string equality alone is not proof. Independent owner
+    # invalidations do not depend on this quote/geometry comparison.
+    comparison_blockers: list[str] = []
+    if quote_freshness != "FRESH":
+        comparison_blockers.append(
+            "QUOTE_STALE" if quote_freshness == "STALE" else "QUOTE_FRESHNESS_UNKNOWN"
+        )
+    if gate_values["corporate_action_basis"] != "RESOLVED":
+        comparison_blockers.append(
+            "CORPORATE_ACTION_BASIS_AMBIGUOUS"
+            if gate_values["corporate_action_basis"] == "AMBIGUOUS"
+            else "CORPORATE_ACTION_BASIS_UNKNOWN"
+        )
+    if gate_values["source_health"] != "PASS":
+        comparison_blockers.append(
+            "SOURCE_HEALTH_FAILED" if gate_values["source_health"] == "FAIL"
+            else "SOURCE_HEALTH_UNKNOWN"
+        )
+    metrics = (
+        _metrics(
+            price=price, zone_low=zone_low, zone_high=zone_high,
+            invalidation=invalidation, first_trigger=first_trigger, anchor=anchor, atr=atr,
+        )
+        if not comparison_blockers else {key: None for key in _METRIC_OUTPUT_KEYS}
+    )
+    chase_state = (
+        ("past_boundary" if price > chase_above else "within_boundary")
+        if not comparison_blockers else "unknown"
+    )
+
     blockers: list[str] = []
     reasons: list[str] = []
     lifecycle = row.get("episode_lifecycle")
@@ -358,30 +389,13 @@ def evaluate_entry_availability(
     elif gate_values["event_status"] == "RETRACTED":
         state = "INVALIDATED"
         blockers.append("EVENT_RETRACTED")
-    elif gate_values["structural_invalidation"] == "BREACHED" or price <= invalidation:
+    elif gate_values["structural_invalidation"] == "BREACHED" or (
+        not comparison_blockers and price <= invalidation
+    ):
         state = "INVALIDATED"
         blockers.append("STRUCTURAL_INVALIDATION_BREACHED")
     else:
-        unavailable: list[str] = []
-        if quote_freshness != "FRESH":
-            unavailable.append("QUOTE_STALE" if quote_freshness == "STALE" else "QUOTE_FRESHNESS_UNKNOWN")
-        # The incumbent live-price owner deliberately keeps two honest price
-        # families: raw vendor prints for the tape and split/dividend-adjusted
-        # levels for the armed geometry.  Equality is therefore NOT the resolution
-        # test.  The upstream basis owner must prove the two planes comparable
-        # (or fail closed) and reports that verdict through corporate_action_basis.
-        # Requiring literal equality here would dark every truthful live read and
-        # would pressure an adapter to fabricate an adjusted exchange print.
-        if gate_values["corporate_action_basis"] != "RESOLVED":
-            unavailable.append(
-                "CORPORATE_ACTION_BASIS_AMBIGUOUS"
-                if gate_values["corporate_action_basis"] == "AMBIGUOUS"
-                else "CORPORATE_ACTION_BASIS_UNKNOWN"
-            )
-        if gate_values["source_health"] != "PASS":
-            unavailable.append(
-                "SOURCE_HEALTH_FAILED" if gate_values["source_health"] == "FAIL" else "SOURCE_HEALTH_UNKNOWN"
-            )
+        unavailable: list[str] = list(comparison_blockers)
         for key in (
             "owner_confluence",
             "risk_ceiling",
@@ -395,7 +409,7 @@ def evaluate_entry_availability(
             unavailable.append("EVENT_STATUS_UNKNOWN")
         # The Early Leadership tactical policy already requires the incumbent
         # entry owner's numeric invalidation_price and hard-invalidates at or
-        # below it above.  ``structural_invalidation`` is a separate optional
+        # below it when the quote/geometry comparison is qualified above.  ``structural_invalidation`` is a separate optional
         # owner extension for a future entry-compatible thesis/falsifier fact:
         # BREACHED is non-waivable, but UNKNOWN must not deadlock the strategy
         # merely because no such additional owner contract exists yet.
@@ -448,6 +462,9 @@ def evaluate_entry_availability(
                 ]
             )
 
+    # Preserve every comparison defect even when an independent invalidation wins.
+    blockers.extend(comparison_blockers)
+
     if state not in AVAILABILITY_STATES:  # pragma: no cover - exhaustive branch guard
         raise EntryAvailabilityContractError("availability state is invalid")
 
@@ -475,7 +492,7 @@ def evaluate_entry_availability(
         "quote_age_seconds": quote_age_seconds,
         "invalidation": {"price": invalidation, "kind": "structural", "basis": geometry_basis},
         **metrics,
-        "chase_state": "past_boundary" if price > chase_above else "within_boundary",
+        "chase_state": chase_state,
         "owner_status": owner_status,
         "blockers": sorted(set(blockers)),
         "reasons": sorted(set(reasons)),
@@ -523,6 +540,40 @@ def validate_entry_availability(payload: Mapping[str, object]) -> None:
         raise EntryAvailabilityContractError("entry_open disagrees with availability state")
     if state == "ENTRY_OPEN" and payload.get("blockers"):
         raise EntryAvailabilityContractError("ENTRY_OPEN cannot carry blockers")
+    # Check the disclosed diagnostic combination, not the authenticity of input
+    # owner verdicts. Refuse invalid retained combinations without rewriting them.
+    blockers = payload.get("blockers")
+    # General presentation-list validation remains with the incumbent consumer.
+    # Only recognized comparison tokens govern this diagnostic consistency check.
+    withheld = bool(_COMPARISON_BLOCKERS.intersection(
+        item for item in blockers if isinstance(item, str)
+    )) if isinstance(blockers, list) else False
+    chase_state = payload.get("chase_state")
+    if withheld:
+        if (
+            state not in {"UNAVAILABLE_DATA", "INVALIDATED"}
+            or chase_state != "unknown"
+            or any(payload.get(key) is not None for key in _METRIC_OUTPUT_KEYS)
+        ):
+            raise EntryAvailabilityContractError(
+                "comparison diagnostics must be withheld with unavailable comparison evidence"
+            )
+    else:
+        if not isinstance(chase_state, str) or chase_state not in {"past_boundary", "within_boundary"}:
+            raise EntryAvailabilityContractError("comparison diagnostic chase state is invalid")
+        for key in _METRIC_OUTPUT_KEYS:
+            value = payload.get(key)
+            try:
+                valid = (
+                    not isinstance(value, bool) and isinstance(value, (int, float))
+                    and math.isfinite(float(value))
+                )
+            except (OverflowError, ValueError):
+                valid = False
+            if not valid:
+                raise EntryAvailabilityContractError(
+                    f"comparison diagnostic {key} must be finite numeric when qualified"
+                )
     material = {key: value for key, value in payload.items() if key != "availability_id"}
     expected_id = "pea:" + sha256(_canonical_json(material).encode("utf-8")).hexdigest()
     if payload.get("availability_id") != expected_id:
