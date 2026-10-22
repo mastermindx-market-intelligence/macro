@@ -21,6 +21,8 @@ class Node {
   querySelectorAll(selector){
     if(selector==='.mnv-path-details[open]')
       return this.walk().filter(n=>n.className==='mnv-path-details'&&n.open);
+    if(selector==='.mnv-lens[open]')
+      return this.walk().filter(n=>n.className==='mnv-lens'&&n.open);
     const cls=/^\.([\w-]+)$/.exec(selector);
     if(cls)return this.walk().filter(n=>n.className.split(' ').includes(cls[1]));
     throw Error('unsupported test locator '+selector);
@@ -49,6 +51,7 @@ function binding(overrides={}){return {
  assert.equal(await surface.activate(),true);
  assert.equal(reads,1);
  assert.equal(root.querySelectorAll('.mnv-path').length,3);
+ assert.equal(root.querySelectorAll('.mnv-lens').length,3);
  surface.setLanguage('zh');surface.setTheme('light');
  assert.equal(root.querySelector('.mnv').getAttribute('lang'),'zh');
  assert.equal(root.querySelector('.mnv').getAttribute('data-theme'),'light');

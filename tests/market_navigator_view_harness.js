@@ -39,6 +39,7 @@ class Node {
     // Purposefully narrow test-only selector engine: real Chromium proof covers
     // full selector semantics.
     if (selector==='.mnv-path-details[open]') return this.walk().filter(x=>x.className==='mnv-path-details'&&x.open);
+    if (selector==='.mnv-lens[open]') return this.walk().filter(x=>x.className==='mnv-lens'&&x.open);
     const attr=selector.match(/^\[aria-label="([^"]+)"\]$/);
     if (attr) return this.walk().filter(x=>x.attrs['aria-label']===attr[1]);
     const cls=selector.match(/^\.([a-z0-9-]+)$/i);
@@ -64,6 +65,15 @@ assert.equal(mount.querySelector('.mnv-empty-title').textContent,'No validated c
 view.render({status:'recorded_context',data});
 assert.equal(mount.querySelectorAll('.mnv-path').length,3);
 assert.equal(mount.querySelectorAll('.mnv-path-state').length,3);
+assert.equal(mount.querySelectorAll('.mnv-lens').length,3);
+assert.equal(mount.querySelectorAll('.mnv-lens-empty-family').length,5);
+assert.equal(mount.querySelectorAll('.mnv-lens-value').length,2);
+assert.equal(mount.querySelectorAll('.mnv-lens-absent').length,1);
+assert(mount.walk().some(x=>x.textContent==='100 USD'));
+const firstLens=mount.querySelectorAll('.mnv-lens')[0];
+assert.equal(firstLens.attrs['data-family'],'price');
+firstLens.open=true;
+
 assert.equal(mount.querySelectorAll('.mnv-path-diagnosis').length,3);
 const explanations=mount.querySelectorAll('.mnv-path-diagnosis').map(n=>n.textContent);
 assert(explanations.some(t=>t.includes('Defined trigger conditions hold')));
@@ -79,6 +89,9 @@ assert(!mount.walk().some(x=>x.textContent.includes('100% probable')));
 const first = mount.querySelectorAll('.mnv-path-details')[0];
 first.open=true;
 view.setLanguage('zh');
+assert.equal(mount.querySelectorAll('.mnv-lens[open]').length,1);
+assert(mount.walk().some(x=>x.textContent.includes('数据是否可用不代表市场方向')));
+
 assert.equal(mount.querySelector('.mnv').attrs.lang,'zh');
 assert.equal(mount.querySelectorAll('.mnv-path-details[open]').length,1);
 assert(mount.walk().some(x=>x.textContent.includes('仅供研究参考')));
@@ -89,6 +102,8 @@ assert.equal(mount.querySelector('.mnv').attrs['data-theme'],'light');
 assert.equal(mount.querySelectorAll('.mnv-path-details[open]').length,1);
 
 view.render({status:'loading',data:null});
+assert.equal(mount.querySelectorAll('.mnv-lens').length,0);
+
 assert.equal(mount.querySelectorAll('.mnv-path').length,0);
 assert(mount.querySelector('.mnv-empty-title').textContent.includes('正在检查'));
 view.render({status:'unavailable',data:null});

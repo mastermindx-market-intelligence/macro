@@ -192,3 +192,28 @@ canvas work can safely resume. No live source-use grant,
 authenticated Navigator HTTP route, signed-in production proof,
 Paper-native visual acceptance or forecast track record is
 present. The user outcome remains incomplete.
+
+
+## W3 evidence-family visibility (2026-10-22)
+On the existing W3 draft PR #10076, the request-bound view has added
+seven deterministic evidence-family lenses, empty-family aggregation,
+bilingual labels and preserved disclosure focus. The code/test suite
+passes 310 focused tests and eight synthetic-browser configurations;
+original source availability/entitlement remains unproven.
+
+The parent Foundation PR #10055 at `3b4d335` is open, not ready:
+its Navigator CI job passes, but the wider repository
+`ci-control-plane-contracts` test job fails two curated-scope assertions
+on paths outside Navigator. This is not clearance to modify unrelated
+protected CI ceilings. The exact-parent review attempt
+`market-navigator-review-3b4d335-20261022` returned rc=1 after a Qwen
+429 and `QWEN_FINAL_RESPONSE_UNCONFIRMED`; no independent review
+finding or acceptance was produced. Do not replay that call unchanged.
+
+Paper Studio inspected `paper-desktop` 0.5.14 but reports current
+write-catalog digest `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`,
+not accepted expected `ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9`,
+so `accepted_for_write=false`. The old shared Paper document also
+warns further edits risk data loss. No Paper edits were made.
+The legitimate same-carrier write-schema acceptance and new-file
+target grant must be demonstrated before design mutation.

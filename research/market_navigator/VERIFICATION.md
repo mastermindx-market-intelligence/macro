@@ -281,3 +281,18 @@ unresolved) in both languages and all eight Chromium layout/theme/view
 configurations. This is a readability improvement, not a source, probability,
 forecast, recommendation or live-user validation. It remains
 BUILT_NOT_PROVEN until authenticated real-path proof is obtained.
+
+
+## Evidence-family browser matrix (2026-10-22)
+The seven canonical evidence families are shown without interpreting
+missing evidence as bearish, bullish or a failed forecast. The browser
+matrix proves a rendered current price lane, unavailable breadth lane,
+and a collapsed disclosure for five wholly unsupplied families.
+Validated source values and clocks remain bounded and no new HTTP read
+or persistence was added. After adding outcome falsifiers to the
+*existing* Navigator CI job, the full focused run passed **310 tests**;
+the manifest still validates 350 jobs without creating a job or
+widening ordinary PR packing ceilings. Eight independent local Chromium
+combinations passed (1440/390, EN/ZH, dark/light) on synthetic data.
+The committed screenshots are design/DOM evidence, NOT a Paper-native
+file or authenticated production result.

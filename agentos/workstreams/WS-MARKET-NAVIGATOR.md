@@ -173,3 +173,15 @@ stack-base ancestry; a merge attempt was blocked before effect by
 platform safety checks and was not retried/failed-over. The
 existing Paper file warns of destructive oversize and remains
 unchanged. This is an incomplete product.
+
+## Evidence lenses and release status (2026-10-22)
+W3 now groups authenticated-consumer *already admitted* observations
+into seven bilingual evidence families, preserves source-availability
+vs no-record distinctions, and gives easy-to-open observation details
+without ranking or directional votes. 310 focused tests and eight
+synthetic-browser states pass in its current source tree.
+Foundation PR #10055 remains held by repository CI
+`ci-control-plane-contracts` and fresh independent review;
+the earlier Qwen return was 429/unconfirmed, not findings.
+Paper Studio reports `accepted_for_write=false` for its current
+catalog; no paper content mutated.

@@ -141,3 +141,20 @@ view, then create a new paired controller/view with the newly verified
 request. The label is immutable for that pair, so the host cannot relabel
 an older packet without withdrawing it. The presentation layer cannot
 authenticate this label on its own. No user-supplied label becomes market evidence.
+
+
+## Evidence-family overview (2026-10-22)
+The read-only view groups already admitted observations into the existing
+seven source families: price, volatility, positioning, breadth, macro,
+liquidity, and events. A family with observed source rows displays a
+current/total count and expands to show only the validated values and
+available-at clocks. Missing, stale and not-yet-available observations
+remain explicitly unavailable, without a numerical value or private source
+reference. Families for which the owner supplied no observations are
+combined into one small accessible disclosure, preserving the distinction
+between no source rows and a source row with unavailable evidence.
+
+The fixed taxonomy is not a weighting, confidence, confluence score,
+bull/bear vote, probability or ranking. Expanded states survive a theme
+or language toggle, but not an instrument/account rebind. Desktop/mobile,
+EN/ZH, dark/light browser fixtures use entirely synthetic source records.

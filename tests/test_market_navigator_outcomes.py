@@ -240,3 +240,15 @@ def test_grounded_research_ruler_join_is_diagnostic_only():
     with pytest.raises(ContractError,match="identity"):
         research_link_diagnostics(case=case,ruler=ruler,
                                  audited_claim=dict(row,claim_id="c"*64))
+
+def test_existing_navigator_ci_job_executes_outcome_falsifiers():
+    from pathlib import Path
+    import yaml
+    root=Path(__file__).resolve().parents[1]
+    job=yaml.safe_load((root/".github/ci/legacy-jobs.yml").read_text())["jobs"]["market-navigator-foundation"]
+    suite="tests/test_market_navigator_outcomes.py"
+    steps=" ".join(step.get("run","") for step in job["steps"])
+    assert suite in steps, "new outcome suite must execute in incumbent CI job"
+    assert "engine/market_navigator*.py" in job["paths"]
+    assert "tests/test_market_navigator*.py" in job["paths"]
+    assert job["scope"]=="exclusive"

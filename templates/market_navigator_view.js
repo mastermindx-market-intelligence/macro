@@ -13,6 +13,7 @@
   const STATE = ['empty', 'loading', 'unavailable', 'invalid_response', 'recorded_context'];
   const HORIZON = ['intraday', 'swing', 'position'];
   const VERDICTS = ['RISK_ON', 'MIXED', 'RISK_OFF'];
+  const LENSES = ['price','volatility','positioning','breadth','macro','liquidity','event'];
   const STATUSES = ['waiting', 'conditions_met', 'invalidated', 'unresolved', 'expired',
     'subject_mismatch', 'horizon_mismatch'];
   const CONDITIONS = ['gt', 'gte', 'lt', 'lte'];
@@ -50,6 +51,12 @@
         not_yet_available:'not yet available',unqualified:'not qualified',
         subject_mismatch:'instrument mismatch',horizon_mismatch:'horizon mismatch'},
       op: {gt:'>',gte:'≥',lt:'<',lte:'≤'},
+      lenses: 'Evidence lenses', lensCaveat: 'Readiness is not a market direction.',
+      lensInspect: 'Inspect observations', lensAvailable: 'available',
+      lensAbsent: 'Not supplied for this family', lensKnown: 'Available since',
+      lensEmptySuffix: 'evidence families without observations',
+      families: {price:'Price',volatility:'Volatility',positioning:'Positioning',
+        breadth:'Breadth',macro:'Macro',liquidity:'Liquidity',event:'Events'},
       horizons: {intraday:'Intraday',swing:'Swing',position:'Position'},
       diagnosis: 'Why this status',
       diagMatched: 'Defined trigger conditions hold at this cutoff; future movement is unknown.',
@@ -92,6 +99,12 @@
         not_yet_available:'当时尚不可用',unqualified:'未获认可',
         subject_mismatch:'标的不一致',horizon_mismatch:'周期不一致'},
       op: {gt:'>',gte:'≥',lt:'<',lte:'≤'},
+      lenses: '市场证据', lensCaveat: '数据是否可用不代表市场方向。',
+      lensInspect: '查看观察记录', lensAvailable: '条可用',
+      lensAbsent: '此类别尚未提供观察记录', lensKnown: '可用时间',
+      lensEmptySuffix: '个类别暂无观察记录',
+      families: {price:'价格',volatility:'波动率',positioning:'仓位与衍生品',
+        breadth:'市场广度',macro:'宏观',liquidity:'流动性',event:'事件'},
       horizons: {intraday:'日内',swing:'波段',position:'中期'},
       diagnosis: '当前状态原因',
       diagMatched: '截至该时点，既定触发条件成立；后续价格走势仍未知。',
@@ -247,6 +260,57 @@
         add(coverageCard,elem('span','mnv-kicker',t.eligibility),metrics,
           elem('p','mnv-muted',t.caveat));
         add(top,stateCard,coverageCard);add(body,top);
+        // Every family appears even when wholly unavailable. This is a coverage
+        // inventory, not confluence scoring or a directional/weighted vote.
+        const lensArea = elem('section','mnv-lenses',null,{'aria-label':t.lenses});
+        add(lensArea,add(elem('div','mnv-section-header'),
+          sectionTitle(t.lenses),elem('span','mnv-muted',t.lensCaveat)));
+        const lensGrid = elem('div','mnv-lens-grid');
+        const presentFamilies=LENSES.filter(family=>
+          data.observations.some(row=>row.family===family));
+        const absentFamilies=LENSES.filter(family=>!presentFamilies.includes(family));
+        presentFamilies.forEach(family=>{
+          const subset=data.observations.filter(row=>row.family===family);
+          const available=subset.filter(row=>row.status==='current').length;
+          const details=elem('details','mnv-lens',null,{'data-family':family});
+          if (openKeys && openKeys.has('lens:'+family)) details.open=true;
+          const heading=elem('summary','mnv-lens-head');
+          add(heading,add(elem('div','mnv-lens-label'),
+            elem('strong',null,t.families[family]),
+            elem('span','mnv-lens-inspect',t.lensInspect)),
+            elem('span','mnv-lens-ratio',String(available)+' / '+String(subset.length)));
+          add(details,heading);
+          const list=elem('ul','mnv-lens-rows');
+          if (!subset.length) add(list,elem('li','mnv-lens-absent',t.lensAbsent));
+          subset.forEach(row=>{
+            const current=row.status==='current';
+            const item=elem('li','mnv-lens-row');
+            add(item,elem('span','mnv-lens-key',prettyKey(row.key)),
+              elem('span',current?'mnv-lens-value':'mnv-lens-absent',
+                current ? String(row.value)+' '+row.unit : evidenceName(row.status,t)));
+            // Missing/stale and future-unavailable source clocks are not exposed.
+            if (current) add(item,elem('span','mnv-lens-clock',
+              t.lensKnown+': '+row.available_at));
+            add(list,item);
+          });
+          add(details,list);add(lensGrid,details);
+        });
+        // Group truly absent families in one compact disclosure; a missing
+        // observation WITH an owner-supplied record still has its own lane.
+        if (absentFamilies.length) {
+          const group=elem('details','mnv-lens mnv-lens-unprovided',null,{'data-family':'unprovided'});
+          if (openKeys && openKeys.has('lens:unprovided')) group.open=true;
+          const heading=elem('summary','mnv-lens-head');
+          add(heading,add(elem('div','mnv-lens-label'),
+            elem('strong',null,String(absentFamilies.length)+' '+t.lensEmptySuffix),
+            elem('span','mnv-lens-inspect',t.lensInspect)));
+          add(group,heading);
+          const names=elem('ul','mnv-lens-rows');
+          absentFamilies.forEach(family=>add(names,
+            elem('li','mnv-lens-empty-family',t.families[family])));
+          add(group,names);add(lensGrid,group);
+        }
+        add(lensArea,lensGrid);add(body,lensArea);
         const pathArea = elem('section','mnv-paths',null,{'aria-label':t.paths});
         const pathsHeader = elem('div','mnv-section-header');
         add(pathsHeader,sectionTitle(t.paths),elem('span','mnv-muted',t.noOdds));
@@ -310,6 +374,8 @@
       // A new data read or error does NOT inherit a previous scenario's open state.
       const openKeys = new Set(Array.from(mount.querySelectorAll('.mnv-path-details[open]'),
         item => item.parentElement.getAttribute('data-scenario-key')));
+      Array.from(mount.querySelectorAll('.mnv-lens[open]')).forEach(item=>
+        openKeys.add('lens:'+item.getAttribute('data-family')));
       renderContent(openKeys);
       if (fromControl) {
         const button=mount.querySelector(kind==='language'?'[aria-label="Switch to Chinese"], [aria-label="Switch to English"]':'button[aria-label="Toggle light and dark theme"],button[aria-label="切换深色／浅色"]');

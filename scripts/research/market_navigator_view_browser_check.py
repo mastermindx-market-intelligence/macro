@@ -146,6 +146,12 @@ def main() -> None:
                     assert not failures and not requests, (failures, requests)
                     assert page.locator(".mnv-path").count() == 3
                     assert page.locator(".mnv-path-state").count() == 3
+                    assert page.locator(".mnv-lens").count() == 3
+                    assert page.locator(".mnv-lens-empty-family").count() == 5
+                    assert page.locator(".mnv-lens-value:visible").count() == 0
+                    page.locator(".mnv-lens-head").first.click()
+                    assert page.locator(".mnv-lens-value:visible").count() >= 1
+
                     assert page.locator(".mnv-path-diagnosis").count() == 3
                     summaries=page.locator(".mnv-path-diagnosis").all_inner_texts()
                     assert all(summaries)
