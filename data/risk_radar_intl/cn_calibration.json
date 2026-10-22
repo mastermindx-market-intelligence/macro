@@ -1,0 +1,29 @@
+{
+  "prob_cal": {
+    "h5": {
+      "calm": 0.06,
+      "watch": 0.08,
+      "caution": 0.08,
+      "elevated": 0.12,
+      "risk-off": 0.146
+    },
+    "h10": {
+      "calm": 0.13,
+      "watch": 0.16,
+      "caution": 0.232,
+      "elevated": 0.232,
+      "risk-off": 0.27
+    },
+    "h21": {
+      "calm": 0.27,
+      "watch": 0.32,
+      "caution": 0.45,
+      "elevated": 0.45,
+      "risk-off": 0.45
+    }
+  },
+  "n_graded": 28,
+  "brier_before": 0.2528,
+  "brier_after": 0.2311,
+  "updated": "2026-10-21T12:18:45+00:00"
+}

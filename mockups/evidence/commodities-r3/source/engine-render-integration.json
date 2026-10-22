@@ -1,0 +1,60 @@
+{
+  "main": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+  "reviewed_head": "e0589370431dbbf440006c2099ececafbcbb67d5",
+  "component_without_payload_identical": false,
+  "canonical_theme_identical": true,
+  "stylesheet_links_identical": true,
+  "previous_fingerprint": "7f3e314860a53872b954dacd11a45e913026d679df448773fc8adeb353b3c186",
+  "workspace_fingerprint": "c1cda193c3a61bfe5928d4d9771ec6ee77da6f0464207ba6ed898a7673c7abb5",
+  "review_page_sha256": "b06e2f140134dfaf8405268bc0b79713103016fb45fc60e3651cf6946d7498ff",
+  "research_as_of": "2026-10-16",
+  "schema": "mmx.commodities.main_integration.v1",
+  "recorded_at": "2026-10-20T15:16:43.035213+00:00",
+  "visible_section_equivalence": {
+    "overview": {
+      "byte_identical": true,
+      "sha256": "c8f48a09874c14568b6294889b83ef9cdd24259a618e75a5b3f421906a5543b6"
+    },
+    "explore": {
+      "byte_identical": true,
+      "sha256": "fcd72f75fb03368976a61b2d31b246f7e2a3ab094fe37385962bcdbc93807d32"
+    },
+    "relationships": {
+      "byte_identical": true,
+      "sha256": "086973f2ea92a4ab0898b244632b3902118eb1bf505fc45f1ca21d3b37a98c2a"
+    },
+    "compare": {
+      "byte_identical": true,
+      "sha256": "d7cf02534e531098da94144d28450edec928644ac56f3b25a70aaf3ae0fad692"
+    }
+  },
+  "remaining_static_text_delta": "Exact full workspace fingerprint substitution inside the closed methodology disclosure. No other static workspace markup changes.",
+  "payload_delta_scope": "28 immutable source commit identities and 2 derived fingerprints; observation values, windows, source-file hashes and qualifications are unchanged.",
+  "payload_changed_leaf_count": 30,
+  "captures_retained": {
+    "overview": 24,
+    "explore": 16,
+    "relationships": 16
+  },
+  "capture_manifests": [
+    "mockups/evidence/commodities-r3/overview/manifest.json",
+    "mockups/evidence/commodities-r3/physical/manifest.json",
+    "mockups/evidence/commodities-r3/relationships/manifest.json"
+  ],
+  "retention_basis": "Exact captured-section HTML equality, identical styles and scripts, unchanged source CSS/JS; fresh DOM and Chromium journeys pass.",
+  "fresh_dom_passed": 27,
+  "fresh_chromium_checks": 26,
+  "independent_product_review": {
+    "verdict": "PASS; carry forward all 56 cells without recapture",
+    "legacy_inner_characters_preserved": 209029,
+    "usgs_source_references_preserved": 6,
+    "permitted_legacy_transformations": [
+      "H1 to H2 with detailed-analytics label",
+      "catalyst anchor insertion",
+      "whitespace-only normalization"
+    ],
+    "legacy_build_time_change": "12:02 UTC to 13:48 UTC inside advanced content",
+    "review_scope": "Independent read-only source equivalence; no new screenshot or runtime claim."
+  },
+  "production_acceptance": false
+}

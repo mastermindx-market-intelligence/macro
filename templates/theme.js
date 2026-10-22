@@ -323,12 +323,31 @@
     };
     document.head.appendChild(_mmOverlayScript);
   }
-  function openTerminal(t, trigger, requestedUrl) {
+  function openTerminal(t, trigger, requestedUrl, returnFocus) {
     if (!mmTerminalOn()) return false;
     var directUrl = requestedUrl ? terminalExistingUrl(requestedUrl, false) : terminalUrl(t);
     var embedUrl = requestedUrl ? terminalExistingUrl(requestedUrl, true) : terminalEmbedUrl(t);
     loadTerminalOverlay(function (loaded) {
       if (loaded === false || !window.MDXTerminalOverlay) {
+        var _ss = window.MMXSharedShell;
+        if (_ss) {
+          // The controller is unavailable: offer only checked native presentation
+          // state, retaining a page-only return without transient query or hash data.
+          try {
+            var _tu = new URL(directUrl, location.href);
+            if (_tu.origin !== 'https://app.mastermind-x.com' || _tu.username || _tu.password ||
+                (_tu.pathname !== '/terminal' && _tu.pathname !== '/')) return;
+            var _tp = new URLSearchParams();
+            var _sym = String(t || _tu.searchParams.get('symbol') || _tu.searchParams.get('sym') || '').slice(0, 64);
+            if (_sym) _tp.set('symbol', _sym);
+            if (_tu.searchParams.get('ai') === '1') _tp.set('ai', '1');
+            _tp.set('from', 'macro');
+            if (location.origin === 'https://www.mastermind-x.com' || location.origin === 'https://mastermind-x.com')
+              _tp.set('ret', location.origin + location.pathname);
+            _ss.navigate('/terminal?' + _tp.toString(), 'push');
+          } catch (e) {}
+          return;
+        }
         location.href = directUrl;
         return;
       }
@@ -337,7 +356,8 @@
         url: embedUrl,
         directUrl: directUrl,
         targetOrigin: MM_TERMINAL_ORIGIN,
-        trigger: trigger || null
+        trigger: trigger || null,
+        returnFocus: returnFocus || trigger || null
       });
     });
     return true;
@@ -446,6 +466,9 @@
   document.addEventListener('click', function (e) {
     if (!mmTerminalOn() || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    // In particular, the overlay's "Open separately" link must escape this router.
+    var browsingTarget = a && a.getAttribute('target');
+    if (browsingTarget && browsingTarget.toLowerCase() !== '_self') return;
     var target = terminalTarget(a);
     if (!target) return;
     e.preventDefault(); e.stopPropagation();
@@ -462,7 +485,7 @@
     if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     var href = chip.getAttribute('data-href');
-    if (href) { location.href = href; }
+    if (href) { var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(href, 'push'); return; } location.href = href; }
   }, true);
 
   /* ---- account / profile panel loader -------------------------------------
@@ -471,25 +494,55 @@
      window.MMAccount.open(), which the settings-gear signed-in row calls. Identity
      rides the shared .mastermind-x.com cookie (credentials:include) — so it never
      loads a Supabase SDK here (jsdelivr is GFW-blocked). Path-depth aware; idempotent. */
-  (function loadAccount() {
-    if (window.__mmAccountLoading) return;
-    window.__mmAccountLoading = true;
+/* Account singleton loader -- drop-in replacement for the original loadAccount
+   IIFE (same scope, same net effect).  On every ordinary page this behaves
+   exactly as before and runs synchronously.  The single addition is a bounded
+   opt-in deferral: when the gov page publishes window.MDX_PROGRESSIVE_BOOT
+   carrying a ready.then promise, the SAME original loader below is deferred
+   until whichever comes first -- ready resolution, ready rejection, a 1500ms
+   fallback timer, or the first pointerdown/keydown input.  The original loader
+   body is unchanged: the __mmAccountLoading singleton guard is claimed
+   synchronously at execution (so a duplicate boot can never double-load), and
+   the MM_API default, the _mmSharedAssetRoot source prefix and the account.js
+   release key are all retained.  The deferral arms (timer + both listeners)
+   are removed on release and the loader fires exactly once.  No scheduler,
+   storage, auth, session or entitlement access is added. */
+(function loadAccount() {
+  if (window.__mmAccountLoading) return;
+  window.__mmAccountLoading = true;
+  var done = false;
+  function run() {
+    if (done) return;
+    done = true;
     window.MM_API = window.MM_API || 'https://app.mastermind-x.com';
-    /* Derive the shared-asset root from this script's own URL.  The previous
-       pathname special-case only knew about /sectors/, so every other nested
-       estate (/basket_canada/, /basket/, /rotation/, …) requested account.js
-       from its page folder.  That 404 also prevented account.js from loading
-       nav_market.js, leaving those pages on the legacy dropdown.  The rendered
-       theme.js reference already carries the correct ../ depth, so reuse it as
-       the single source of truth for every current and future nested page. */
+    /* Shared-asset root comes from this script's own URL context via
+       _mmSharedAssetRoot (the rendered theme.js reference already carries the
+       correct ../ depth); the explicit release key below keeps a year-cached
+       account.js from pinning an older navigation loader. */
     var pfx = _mmSharedAssetRoot;
     var s = document.createElement('script');
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20260913-account-actions'; s.async = true;
+    s.src = pfx + 'account.js?v=20261018-shared-shell-source-join'; s.async = true;
     document.head.appendChild(s);
-  })();
+  }
+  var boot = window.MDX_PROGRESSIVE_BOOT;
+  var ready = (boot && boot.ready && typeof boot.ready.then === 'function') ? boot.ready : null;
+  if (!ready) { run(); return; }
+  var timer = setTimeout(release, 1500);
+  document.addEventListener('pointerdown', release, true);
+  document.addEventListener('keydown', release, true);
+  ready.then(release, release);
+  function release() {
+    if (done) return;
+    clearTimeout(timer);
+    document.removeEventListener('pointerdown', release, true);
+    document.removeEventListener('keydown', release, true);
+    run();
+  }
+})();
+
 
   /* ---- Plotly charts: re-theme to the active theme -------------------------
      Charts are built transparent with neutral-grey axes (build_site.py); here we
@@ -516,13 +569,62 @@
   }
 
   /* ---- theme (dark default) ------------------------------------------------ */
+  /* ---- Shared Shell bridge: presentation/auth ownership helpers -------------
+     window.MMXSharedShell exists only in the exact qualified embed context: the
+     first-party child bridge installs it behind parent/frame-generation/referrer
+     guards and deletes it on teardown, so candidate EXISTENCE is itself the
+     qualification signal. There is deliberately no presented-state prerequisite
+     in these helpers. The bridge applies the parent's INITIAL context
+     synchronously BEFORE it marks itself presenting (handleInit -> applyContext
+     runs before the state flip), and applyingContext is a frozen, read-only
+     getter that is true for the synchronous duration of every bridge invocation
+     of the incumbent setTheme/setLang — the initial apply and later setter
+     calls alike. Gating applyingContext on the presented flag loses the initial
+     apply and leaks legacy preference writes during the first INIT (the
+     integration defect this repair removes). We read the getters at call time,
+     inside the synchronous dispatch; nothing is mirrored into a locally-lifted
+     flag an async boundary could race. No bridge => every helper is falsy =>
+     legacy behavior, byte for byte. */
+  function _mmShellBridge() {
+    try {
+      var s = window.MMXSharedShell;
+      return (s && typeof s.openAuth === 'function') ? s : null;
+    } catch (e) { return null; }
+  }
+  function _mmShellApplying() {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { return !!s.applyingContext; } catch (e) { return false; }
+  }
+  // Auth handoff: the parent renders identity UI; this frame must never open a
+  // duplicate sheet/modal, and a single user action must never emit a duplicate
+  // bridge intent — every auth entry point funnels through exactly one guarded
+  // seam (see _mmOpenOnboard / _openSDash). Candidate existence claims the
+  // handoff even before the first apply, because bridge.openAuth is queue-safe
+  // pre-INIT (the bridge enqueues and drains after INIT). Only fixed intent
+  // tokens cross — never mode options, sections, targets, credentials, or
+  // arbitrary caller params.
+  function _mmShellAuthHandoff(intent) {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { s.openAuth(intent); } catch (e) {}
+    return true;
+  }
   function curTheme() { return docEl.getAttribute('data-theme') || 'dark'; }
   // Hour-derived theme for Auto mode: 7-19 local = light, else dark
   function _hourTheme() { var h = new Date().getHours(); return (h >= 7 && h < 19) ? 'light' : 'dark'; }
   function setTheme(tm) {
+    // Shared Shell bridge apply: repaint + emit only. The parent owns storage
+    // and Auto mode; nothing persists for the duration of the bridge call. The
+    // getter is read at call time inside the synchronous dispatch, which covers
+    // the INITIAL bridge apply that happens before the bridge marks itself
+    // presenting.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-theme', tm);
     // an explicit choice ends time-of-day auto mode (see each page's no-flash init)
-    try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    if (!shellApply) {
+      try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    }
     document.querySelectorAll('.theme-btn').forEach(function (b) {
       b.innerHTML = tm === 'light'
         ? '<span class="l-en">🌙 Dark</span><span class="l-zh">🌙 深色</span>'
@@ -531,7 +633,7 @@
     if (window.hydrateMTF) window.hydrateMTF();
     themeCharts();
     document.dispatchEvent(new CustomEvent('themechange', { detail: tm }));
-    skyToggleFx(tm);
+    if (!shellApply) skyToggleFx(tm);   // the user-choice flourish is legacy-only
     _syncThemeSegment();
   }
   /* Sitewide theme-toggle flourish: a luminous sun (→ light) or a crescent moon
@@ -632,10 +734,14 @@
   /* ---- language (en default) ----------------------------------------------- */
   function curLang() { return docEl.getAttribute('data-lang') || 'en'; }
   function setLang(lg) {
+    // Shared Shell bridge apply: repaint + emit only; no localStorage
+    // persistence. Read at call time so the initial bridge apply — which runs
+    // before the bridge marks itself presenting — is covered too.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-lang', lg);
     // WCAG 3.1.1: keep document.documentElement.lang in sync with the active language
     docEl.lang = lg === 'zh' ? 'zh-CN' : 'en';
-    try { localStorage.setItem('lang', lg); } catch (e) {}
+    if (!shellApply) { try { localStorage.setItem('lang', lg); } catch (e) {} }
     document.querySelectorAll('.lang-btn').forEach(function (b) {
       // label advertises the OTHER language (what a click switches you to)
       b.textContent = lg === 'zh' ? 'EN' : '中文';
@@ -1085,8 +1191,8 @@
           meta: { market: x._mk, source: 'animated_nav_search', to_terminal: !!(mmTerminalOn() && TERMINAL_PAGES[x._tgt]) }
         });
       } catch (e) {}
-      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box); return; }
-      location.href = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t);
+      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box, null, trigger); return; }
+      var _d = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d;
     }
 
     /* A search-only Chinese alias: broad-but-noisy (mixed Simplified/Traditional,
@@ -3591,8 +3697,24 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
+    // Shared Shell: ONE central handoff at the single auth entry point. Every
+    // estate auth trigger funnels through this seam — MDXAuth.open, the gear
+    // popover sign-in/sign-up rows, the hub sign-in link, the settings
+    // dashboard CTAs (_sdWireCta), tier_preview's locked-container CTA, the
+    // Brain 401 path, plans.html — so guarding here means no per-caller guards,
+    // no duplicated bridge intents, and no in-frame sheet. The whitelist value
+    // is already one of the fixed tokens; nothing else about the caller travels.
+    // Claiming pre-INIT is safe: bridge.openAuth queues until INIT drains it.
+    if (_mmShellAuthHandoff(m === 'upgrade' ? 'billing' : m)) return;
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
     var pfx = _mmSharedAssetRoot;
     if (window.__mmOnboardLoading) return;    // second click while loading — first one will open
@@ -3600,7 +3722,18 @@
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
-    var fallback = function () { location.href = pfx + 'index.html?' + fbQ; };
+    var fallbackTarget = pfx + 'index.html?' + fbQ;
+    try {
+      var returnParams = new URL(location.href).searchParams;
+      var returnPath = returnParams.get('ret');
+      var returnUrl = new URL(returnPath || '', location.origin);
+      if (returnParams.getAll('ret').length === 1 && returnPath && returnPath.length <= 4096
+          && returnPath.charAt(0) === '/' && returnPath.slice(0, 2) !== '//'
+          && returnUrl.origin === location.origin) {
+        fallbackTarget += '&ret=' + encodeURIComponent(returnUrl.pathname + returnUrl.search + returnUrl.hash);
+      }
+    } catch (e) { /* Invalid or ambiguous return state cannot choose a destination. */ }
+    var fallback = function () { location.href = fallbackTarget; };
     var t = setTimeout(function () { if (!window.MMOnboard) fallback(); }, 4000);
     s.onload = function () {
       clearTimeout(t); window.__mmOnboardLoading = false;
@@ -3905,6 +4038,14 @@
 
   /* ---- open / close ------------------------------------------------------- */
   function _openSDash(section) {
+    // Shared Shell: the native identity/Settings surface owns the presentation
+    // and preference UI, so the legacy dashboard must never be built or opened
+    // inside the frame. This is the single settings seam — window.MMSettings.open
+    // delegates here, and so does any future internal caller — hence exactly one
+    // 'settings' intent per entry with no per-export guard and no duplicate
+    // modal. The legacy `section` ('account'|'prefs') is NOT forwarded as a
+    // bridge param; only the fixed token crosses.
+    if (_mmShellAuthHandoff('settings')) return;
     _buildSDash();
     _renderSDash();
     // pick the section: honour the request, but default account->prefs when auth off
@@ -3987,7 +4128,15 @@
      (not per blob), so an account that has only ever had `prefs`, and one that is
      half migrated, both read correctly. Nothing writes the nested blob any more;
      it survives as a read-only fallback. The Terminal half of this change is
-     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch). */
+     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch).
+
+     Single owner (site-20 S1 follow-up): account.js owns the `theme` and `lang`
+     writes whenever its panel is mounted with a loaded signed-in account — it
+     posts them to /api/account/prefs with its own queued/sent/acked/failed state.
+     _savePrefToServer asks MMAccount.claimsPref(key) and skips a claimed key, so
+     one request owns each key and a failed save is never masked by a second
+     silent writer. `theme_auto` is browser-only and stays here; a page without
+     the account panel (no MMAccount) keeps this path as the writer. */
   var _prefSyncing = false, _prefSaveTimer = null, _prefSavePending = null;
 
   /* v2 atomic if valid, else the legacy nested sibling. Per FIELD. */
@@ -4000,9 +4149,26 @@
   function _isTheme(v) { return v === 'light' || v === 'dark'; }
   function _isFlag(v) { return v === '1' || v === '0'; }
   function _isLang(v) { return v === 'en' || v === 'zh'; }
+  /* True when the mounted account panel owns the write for this key (single-owner
+     note above). Any error reads as "not claimed": this path keeps writing rather
+     than dropping the pref. */
+  function _acctOwnsPref(which) {
+    try {
+      var acc = window.MMAccount;
+      return !!(acc && typeof acc.claimsPref === 'function' && acc.claimsPref(which));
+    } catch (e) { return false; }
+  }
 
   function _applyServerPrefs(user) {
     if (!user) return;
+    // Shared Shell candidate exists: the native identity/Settings surface is
+    // the authoritative owner of the presented theme/locale, so late legacy
+    // server-pref application (theme/themeAuto/lang, incl. setThemeAuto and the
+    // MarketMemoryIntent.applyProfileLanguage path) must never fight it —
+    // including in the pre-INIT window, where the parent context owns the frame
+    // before the first apply has been acknowledged. The parent repaints this
+    // frame through the bridge's applyingContext setTheme/setLang instead.
+    if (_mmShellBridge()) return;
     var meta = user.user_metadata || {};
     var theme = _sharedPref(meta, 'theme', 'theme', _isTheme);
     var themeAuto = _sharedPref(meta, 'theme_auto', 'themeAuto', _isFlag);
@@ -4013,7 +4179,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
@@ -4022,13 +4192,25 @@
      carry a theme along with it — that restraint is the whole point. Coalesced
      over the 800 ms debounce, so a burst still costs one request. */
   function _savePrefToServer(which) {
-    if (_prefSyncing || !_curUser || !_authEnabled) return;
+    // _mmShellApplying(): a bridge applyingContext repaint fires the same
+    // themechange/langchange events, and the _hookPrefSync listeners run
+    // synchronously inside the dispatch, so the getter is still true when this
+    // is entered — during the INITIAL bridge apply (before the bridge marks
+    // itself presenting) exactly as during later CONTEXT applies. A bridge
+    // repaint is not a user preference edit: it must never reach
+    // sb.auth.updateUser writes (or the debounce queue).
+    if (_prefSyncing || _mmShellApplying() || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
+    // account.js owns theme/lang while its panel holds a signed-in account; this path
+    // then carries only the browser-only theme_auto flag, which is never claimed.
+    var owned = _acctOwnsPref(which);
     if (which === 'theme') {
-      try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      if (!owned) {
+        try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      }
       try { patch.theme_auto = localStorage.getItem('themeAuto') || '0'; } catch (e) { patch.theme_auto = '0'; }
     } else if (which === 'lang') {
-      patch.lang = curLang();
+      if (!owned) patch.lang = curLang();
     }
     if (!Object.keys(patch).length) return;
     _prefSavePending = patch;
@@ -5849,6 +6031,8 @@
     });
   }, true);
   window.addEventListener('resize', function () { if (isOpen()) hide(); });
+  // Fragment navigation ends a transient explanation, including a pending hover.
+  window.addEventListener('hashchange', hide);
 
   /* Upgrade the legacy help() icons site-wide to this same popover system.
      The old help() macro renders EXACTLY
@@ -5928,6 +6112,14 @@
   if (window.__pvSetupBound || typeof HTMLDialogElement === 'undefined') return;
   window.__pvSetupBound = true;
   var dialog = null, active = null;
+  /* PR 8801 follow-up — ONE transient, in-memory context for the most recent
+     candidate→Plan journey. It is not a router, a store, a history or a second
+     navigation surface: it holds only the live nodes of the origin this owner has
+     just released, so the reader can come back to the SAME row with the SAME view.
+     It is dropped on source replacement/removal/recycling, a published generation
+     change, loss of access, any unrelated navigation, a second journey, or removal
+     of the exact Plan target. */
+  var journey = null, journeyBtn = null, journeyPass = null, journeyCheckQueued = false;
   function node(tag, cls, text) {
     var x = document.createElement(tag); if (cls) x.className = cls;
     if (text !== undefined) x.textContent = text; return x;
@@ -5986,10 +6178,12 @@
       if (fallback) fallback.focus({preventScroll: true});
     }
     window.scrollTo({left:old.x, top:old.y, behavior:'instant'});
+    if (journey) mountJourney();   // the Plan detail closed: the one action is still usable, outside it
   }
   function dismiss(restoreFocus) {
-    release(restoreFocus);
+    // End native modal inertness before restoring focus to the source row.
     if (dialog && dialog.open) dialog.close();
+    release(restoreFocus);
   }
   // Copy only the already-painted publisher geometry, not markup strings or live quote overlays.
   // This bounded display guard is not a data sanitizer service or a new chart engine.
@@ -6020,6 +6214,99 @@
   function sourceStamp(row) {
     var scope = row.closest('#us-candidate-pool,#us-standouts');
     return scope ? ['data-source-digest','data-as-of','data-board-asof'].map(function (k) {return scope.getAttribute(k) || '';}).join('|') : '';
+  }
+  function journeyNative(row) {
+    var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
+    return link ? link.getAttribute('href') : null;
+  }
+  /* The origin is only serviceable while it is the SAME live source: exact nodes,
+     the same published generation digest/as-of, the same native identity/link, the
+     exact Plan target still in the page, and no access/withhold marker. Zero rects
+     alone is NOT access loss — while Plans is selected the candidate population is
+     hidden by the source-mode rule, which is why `reachable` is only demanded at the
+     moment of return, after the source mode and view have been restored. */
+  function journeyUsable(j, reachable) {
+    if (!j || !j.row.isConnected || !j.details.isConnected || !j.trigger.isConnected ||
+        !j.row.contains(j.details) || !j.details.contains(j.trigger)) return false;
+    if (sourceStamp(j.row) !== j.stamp) return false;
+    if (journeyNative(j.row) !== j.href) return false;
+    if ((j.details.dataset.setupTicker || j.row.dataset.ticker || '') !== j.ticker) return false;
+    if (!j.planCard.isConnected || j.planCard.getAttribute('id') !== j.targetId) return false;
+    if (j.row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+    if (reachable && (!j.row.getClientRects().length || !j.trigger.getClientRects().length)) return false;
+    return true;
+  }
+  function journeyState(on) {
+    if (document.body && document.body.dataset) document.body.dataset.pvsCandidateReturn = on ? 'available' : 'clear';
+  }
+  /* One canonical bilingual action, existing header link-button styling, no new
+     component and no duplicated Today/Screener/Plans navigation. */
+  function journeyButton() {
+    if (journeyBtn) return journeyBtn;
+    journeyBtn = bilingual(node('button', 'gbtn mx-sec-link'), 'Return to candidate', '返回候选');
+    journeyBtn.type = 'button';
+    journeyBtn.setAttribute('data-pvs-return', 'candidate');
+    journeyBtn.addEventListener('click', function (e) { if (e && e.preventDefault) e.preventDefault(); returnToCandidate(); });
+    return journeyBtn;
+  }
+  /* Existing owner rendering only: the action lives in the source owner's own panel
+     header row, or — while THAT journey's Plan detail is open — in this dialog's own
+     footer. The same single node is re-hosted, never duplicated. */
+  function mountJourney() {
+    var parent = null;
+    if (dialog && dialog.open && active && journey && active.row === journey.planCard) {
+      parent = dialog.querySelector('.pvs-dialog-foot');
+    }
+    if (!parent) {
+      var owner = window.USProphetSource;
+      parent = owner && owner.returnHost ? owner.returnHost() : null;
+    }
+    if (!journey || !parent || !parent.append) {
+      if (journeyBtn) journeyBtn.remove();
+      journeyState(false);
+      return;
+    }
+    var btn = journeyButton();
+    if (btn.parentNode !== parent) { btn.remove(); parent.append(btn); }
+    journeyState(true);
+  }
+  function clearJourney() {
+    journey = null; journeyPass = null;
+    if (journeyBtn) journeyBtn.remove();
+    journeyState(false);
+  }
+  /* Live quote ticks mutate this page constantly; the browser already coalesces
+     MutationObserver delivery into a microtask, so one revalidation per turn is both
+     prompt (before the next paint) and bounded. */
+  function queueJourneyCheck() {
+    if (journeyCheckQueued) return;
+    journeyCheckQueued = true;
+    Promise.resolve().then(function () {
+      journeyCheckQueued = false;
+      if (journey && !journeyUsable(journey, false)) clearJourney();
+    });
+  }
+  function returnToCandidate() {
+    if (!journey || !journeyUsable(journey, false)) { clearJourney(); return false; }
+    var j = journey, want = j.mode || 'candidates';
+    // Release the Plan dialog before restoring the origin scroll. Its close owner
+    // otherwise restores the Plan scroll while the candidate is being reopened.
+    if (active) dismiss(false);
+    journeyPass = want;                       // the return hop is the journey's own
+    if (window.USProphetSource && window.USProphetSource.set) {
+      try { window.USProphetSource.set(want); } catch (e) {}
+    }
+    journeyPass = null;
+    /* Existing view owner: applyView only re-arms classes/aria, so the exact source
+       row is never re-rendered away. */
+    if (j.view && window.USStockTable && window.USStockTable._setView) {
+      try { window.USStockTable._setView(j.view); } catch (e) {}
+    }
+    window.scrollTo({left: j.x, top: j.y, behavior: 'instant'});
+    if (!journeyUsable(j, true)) { clearJourney(); return false; }
+    if (open(j.trigger, j.details, j.row) !== true) { clearJourney(); return false; }
+    clearJourney();                           // home again: nothing left to return from
+    return true;
   }
   function open(trigger, details, row) {
     if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
@@ -6065,8 +6352,12 @@
       if (svg) slot.append(svg);
       slot.append(bilingual(node('p'), svg ? 'Published mini-chart · no new price series' : 'Chart unavailable for this source row', svg ? '来源迷你图 · 不新增价格序列' : '此来源记录未提供可用图表'));
     }
+    /* Any detail opened for another source is an explicit navigation away from the
+       journey in flight; only that journey's own exact Plan keeps it alive. */
+    if (journey && row !== journey.planCard) clearJourney();
     active = {trigger: trigger, row: row, details: details, moved: [], x: window.scrollX, y: window.scrollY,
-      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row)};
+      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row),
+      href: nativeHref, ticker: details.dataset.setupTicker || row.dataset.ticker || ''};
     var title = details.dataset.setupTicker || row.dataset.ticker || '';
     if (row.dataset.recordOnly === '1') title += ' · ' + (row.id || '').replace(/^pv-/, '');
     dialog.querySelector('#pvs-dialog-title').textContent = title;
@@ -6075,6 +6366,7 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    mountJourney();
     return true;
   }
   document.addEventListener('click', function (e) {
@@ -6086,16 +6378,60 @@
     if (open(trigger, details, row) === true) e.preventDefault();
   });
   // Existing owner events. The detail never decides entitlement or fetches a missing row.
-  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); }, true);
+  /* Hydration replaces the current board, and an auth/tier turn can take
+     entitlement away with it: both end any journey. A language turn does not — the
+     action carries its own EN/ZH pair — but the open detail still returns to its row. */
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
   document.addEventListener('langchange', function () { dismiss(true); });
-  window.addEventListener('mdx-auth', function () { dismiss(true); });
-  window.addEventListener('mmx-access-tier', function () { dismiss(true); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); });
   new MutationObserver(function () {
+    if (journey) queueJourneyCheck();
     if (!active) return;
     if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
         sourceStamp(active.row) !== active.sourceStamp ||
         !active.row.contains(active.details) ||
         active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
           !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
-  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  /* The plan-link owner in dashboard.html.j2 is the only caller: it snapshots while
+     this owner still holds the live candidate source (before its own .pvs-close),
+     and only claims the journey after USProphetLife.selectPlan confirmed the target. */
+  window.PVSetupReturn = {
+    snapshot: function (origin) {
+      if (active && !active.row.closest('#us-plan-block,#us-life-grid')) {
+        journeyPass = 'plans';                // armed for this journey's own Plans hop
+        return {trigger: active.trigger, details: active.details, row: active.row,
+          stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
+          x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view};
+      }
+      // Re-clicking the same candidate's link (a double click, or coming back for the
+      // same record) has no live detail to snapshot; the bound origin has not changed,
+      // so this hop must not cost the reader the return they already have.
+      if (journey) journeyPass = 'plans';
+      return null;
+    },
+    claim: function (mode) {
+      if (journeyPass === mode) { journeyPass = null; return true; }
+      return false;
+    },
+    establish: function (snap, targetId, planCard) {
+      journeyPass = null;
+      if (!snap) {
+        if (journey && journey.targetId === targetId && journey.planCard === planCard) return true;
+        clearJourney();
+        return false;
+      }
+      if (!targetId || !planCard || (snap.stamp !== sourceStamp(snap.row))) { clearJourney(); return false; }
+      journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
+        href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
+        mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard};
+      mountJourney();
+      return true;
+    },
+    abandon: function () { clearJourney(); },
+    clear: function () { clearJourney(); },
+    available: function () { return !!journey && journeyUsable(journey, false); },
+    run: function () { return returnToCandidate(); }
+  };
 })();

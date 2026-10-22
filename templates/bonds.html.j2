@@ -438,13 +438,6 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
   border:1px solid var(--line);background:transparent;color:var(--muted);
   font-size:11px;font-weight:700;cursor:help;line-height:1;position:relative}
 .wrap .band-chip .lens-q{color:inherit;border-color:color-mix(in srgb,currentColor 45%,transparent)}
-.wrap .lens-q::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
-  z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-sm);font-size:12px;font-weight:500;
-  line-height:1.45;letter-spacing:0;text-transform:none;color:var(--text);background:var(--panel);
-  border:1px solid var(--line);box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 18%,transparent);
-  white-space:normal;text-align:left}
-html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
-.wrap .lens-q.cnx-tip-open::after,.wrap .lens-q:focus-visible::after{display:block}
 @media(max-width:640px){.wrap .lens-q{width:32px;height:32px;font-size:13px}}
 
 /* Focus-visible rings on interactive hosts. */
@@ -584,7 +577,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
           {% endif %}
         </div>
         {% if vm.curve.tax_en %}<p class="tax-note" style="margin-top:10px"><span class="l-en">{{ vm.curve.tax_en }}</span><span class="l-zh">{{ vm.curve.tax_zh }}</span></p>{% endif %}
-        <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Term-premium-adjusted slope ' ~ vm.curve.curve_tp_adj ~ 'pp — the slope with low-term-premium noise removed.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。期限溢价调整斜率 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
+        <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Legacy TP10 curve heuristic ' ~ vm.curve.curve_tp_adj ~ 'pp — 2s10s plus the 10y term-premium model estimate; context only, not a matched-maturity expectations-only curve.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。TP10曲线启发式 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
 
@@ -800,12 +793,12 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
       <div class="sub" style="margin-top:12px"><b><span class="l-en">{{ compass.verdict_en }}</span><span class="l-zh">{{ compass.verdict_zh }}</span></b></div>
     </div>
     <div class="card" style="margin-top:14px">
-      <h2>{{ t('Recession spreads & TP-adjusted slope', '衰退利差与期限溢价调整斜率') }}</h2>
+      <h2>{{ t('Recession spreads & TP10 heuristic', '衰退利差与TP10启发式') }}</h2>
     <div class="kpis">
       {{ kpi('10y−3m (NY Fed)', '10年−3月（纽约联储）', vm.curve.spread_10y3m, 'pp') }}
       {{ kpi('Near-term fwd spread', '近端远期利差', vm.curve.ntfs, 'pp') }}
       {{ kpi('2s10s', '2年/10年', vm.curve.spread_2s10s, 'pp') }}
-      {{ kpi('TP-adjusted slope', '期限溢价调整斜率', vm.curve.curve_tp_adj, 'pp') }}
+      {{ kpi('TP10 curve heuristic', 'TP10曲线启发式', vm.curve.curve_tp_adj, 'pp') }}
       {{ kpi('NY Fed recession prob', '纽约联储衰退概率', vm.curve.nyfed_prob, '%') }}
     </div>
     <div style="margin-top:14px">
@@ -817,13 +810,13 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
     {% elif vm.curve.uninversion %}
     <div class="flag warn">⚑ {{ t('Curve un-inverted after a prior inversion — the dis-inversion, not the inversion, tends to lead recession.', '曲线在此前倒挂后解除 — 引领衰退的往往是解除倒挂而非倒挂本身。') }}</div>
     {% elif vm.curve.tp_adj_inverted %}
-    <div class="flag warn">⚑ {{ t('Term-premium-adjusted curve is inverted (a "real" inversion, not a low-term-premium artifact).', '期限溢价调整后的曲线倒挂（“真实”倒挂，非低期限溢价造成的假象）。') }}</div>
+    <div class="flag warn">⚑ {{ t('Legacy TP10 curve heuristic is below zero. This is context only; it does not prove an expectations-only or "real" inversion.', '旧版TP10曲线启发式低于零。该读数仅作背景，并不能证明纯预期或“真实”倒挂。') }}</div>
     {% endif %}
     <div style="margin-top:16px">
-      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP-adjusted slope over time — zero = flat, below zero = inverted', '衰退利差与期限溢价调整斜率走势 · 0=平坦，负值=倒挂') }}</div>
+      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP10 heuristic over time — zero = flat heuristic, below zero = negative heuristic', '衰退利差与TP10启发式走势 · 0=启发式为平，负值=启发式为负') }}</div>
       {{ charts.spreads | safe }}
     </div>
-    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP-adjusted slope removes low-term-premium noise.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。期限溢价调整斜率剔除低期限溢价噪音。') }}</div>
+    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP10 curve heuristic combines 2s10s with the 10y term-premium model estimate; it does not isolate expectations.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。TP10曲线启发式把2年/10年利差与10年期限溢价模型估计相加；它并不分离纯预期成分。') }}</div>
     </div>
   </section>
   {% endif %}
@@ -1046,6 +1039,18 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     <span class="l-en">Company bonds — credit watch</span><span class="l-zh">公司债 · 信用观察</span>
   </div>
 
+  {% if cc_vm.source_available is defined and not cc_vm.source_available %}
+  <div class="card cs-card cs-neutral" data-card="credit-source-unavailable">
+    <h2>{{ t('Credit reading unavailable', '信用读数不可用') }}</h2>
+    <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
+  </div>
+  {% elif cc_vm.producer_current is defined and not cc_vm.producer_current %}
+  <div class="card cs-card cs-neutral" data-card="credit-currentness-unconfirmed">
+    <h2>{{ t('Current credit reading unconfirmed', '当前信用读数未确认') }}</h2>
+    <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
+    <div class="cc-as-of">{{ t('Source date', '数据源日期') }}: {{ cc_vm.as_of if cc_vm.as_of else t('Unavailable', '不可用') }}</div>
+  </div>
+  {% else %}
   {# 2. HERO STANCE CARD #}
   <div class="card cs-card {{ cc_vm.hero.hero_cs }}">
     <h2>{{ t('Overall read', '整体研判') }}</h2>
@@ -1275,6 +1280,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
   </div>
 {% endif %}
+{% endif %}
 {# END CCW-W4 corporate credit desk #}
 
   <!-- ===================== STRESS + CROSS-ASSET ===================== -->
@@ -1396,9 +1402,9 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% set gc = 'var(--down)' if (r.gap or 0) >= 10 else '#d9a03c' if (r.gap or 0) >= 2 else 'var(--up)' if (r.gap or 0) <= -2 else 'var(--muted)' %}
       <tr>
         <td style="padding:5px 8px;border-bottom:1px solid var(--line)"><b>{{ t(r.label_en, r.label_zh) }}</b></td>
-        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }};font-weight:700">{{ '%+.1f'|format(r.gap) }}pp{% if r.gap_chg_1y is not none %} <span class="sub faint" style="font-weight:400">{{ '%+.1f'|format(r.gap_chg_1y) }}/yr</span>{% endif %}</td>
+        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }};font-weight:700">{% if r.gap is none %}<span class="faint">—</span>{% else %}{{ '%+.1f'|format(r.gap) }}pp{% if r.gap_chg_1y is not none %} <span class="sub faint" style="font-weight:400">{{ '%+.1f'|format(r.gap_chg_1y) }}/yr</span>{% endif %}{% endif %}</td>
         <td style="padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }}">{{ t(r.gap_state, {'elevated risk':'风险偏高','building':'累积中','deleveraging':'去杠杆','neutral':'中性'}.get(r.gap_state, r.gap_state)) }}</td>
-        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)">{{ r.dsr }}%{% if r.dsr_chg_1y is not none %} <span class="sub faint">{{ '%+.1f'|format(r.dsr_chg_1y) }}/yr</span>{% endif %}</td>
+        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)">{% if r.dsr is none %}<span class="faint">—</span>{% else %}{{ r.dsr }}%{% if r.dsr_chg_1y is not none %} <span class="sub faint">{{ '%+.1f'|format(r.dsr_chg_1y) }}/yr</span>{% endif %}{% endif %}</td>
       </tr>
       {% endfor %}
     </table>
@@ -1533,27 +1539,15 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 (function(){var els=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion:reduce)').matches){els.forEach(function(e){e.classList.add('in');});return;}
 var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
 els.forEach(function(e){io.observe(e);});})();
-/* LENS `?` — pointerdown toggle so tap at 390 does not flash-and-vanish (S1). */
+/* Keep pointer focus from opening Lens before its click-toggle runs.
+   Shared theme.js owns all tooltip rendering, activation and dismissal. */
 (function(){
   document.addEventListener('pointerdown', function(e){
     var q = e.target && e.target.closest && e.target.closest('.wrap .lens-q');
     if(!q) return;
     e.preventDefault();
     e.stopPropagation();
-    var was = q.classList.contains('cnx-tip-open');
-    document.querySelectorAll('.wrap .lens-q.cnx-tip-open').forEach(function(el){
-      el.classList.remove('cnx-tip-open');
-    });
-    if(!was) q.classList.add('cnx-tip-open');
   }, true);
-  document.addEventListener('keydown', function(e){
-    var t = e.target;
-    if(!t || !t.classList || !t.classList.contains('lens-q')) return;
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      t.classList.toggle('cnx-tip-open');
-    }
-  });
 })();
 </script>
 <footer class="site-footer">

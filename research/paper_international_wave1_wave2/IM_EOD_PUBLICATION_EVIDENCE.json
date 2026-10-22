@@ -1,0 +1,385 @@
+{
+  "schema": "intl_eod_publication_evidence.v1",
+  "state": "INTEGRATED_SOURCE_TESTED_RELEASE_PENDING",
+  "parent_pr": 8527,
+  "implementation_pr": 8715,
+  "protected_source": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "mode": {
+    "user_requested": "Pro",
+    "served_mode": "UNATTESTED"
+  },
+  "authority": "Current Chairman continuation; user-facing redistribution confirmed 2026-10-09",
+  "custody": {
+    "operation_id": "intl-r10-qualified-publisher-20261009",
+    "lane": "web",
+    "repository": "macro",
+    "workspace_path": "/Volumes/Mastermind/agent-workspaces/macro/web/intl-r10-qualified-publisher-20261009",
+    "acquired_base": "1bb3ed402536538765089d19e7b64f401e29bc33",
+    "legacy_workspace_preserved": true
+  },
+  "validation": {
+    "source_foundation": 1306,
+    "publisher_render": 339,
+    "result": "PASS",
+    "runtime": "Python 3.12, M2 Studio",
+    "scope": "local; no hosted-green or served acceptance",
+    "ci_import_closure": {
+      "passed": 1,
+      "seconds": 128.83,
+      "scope": "All curated exclusive import closures at the current local candidate"
+    },
+    "existing_browser_suite": {
+      "passed": 178,
+      "failed": 0,
+      "skipped": 0,
+      "runtime": "Node 26 / Chrome; fixed existing tests, separate from 72 real-EOD view checks"
+    },
+    "focused_review_and_continuity": 49,
+    "integrated_main": "ea7fa5bbb44be1c3938abd03b9fbf9f378c42b2b",
+    "closure_local_after_main": "UNVERIFIED_TIMEOUT_360_SECONDS; previous pre-integration head pass retained, do not treat timeout as test failure or a new pass; hosted CI authoritative"
+  },
+  "reproduced_and_repaired": [
+    "Jinja-dependent tests were placed in the numerical-only CI job",
+    "History AST fixture omitted the new optional production_inputs argument and config/path context",
+    "intelligence-registry and browser scopes omitted the new import",
+    "fresh aggregate collector status admitted older index/FX tails",
+    "source hash prefix incorrectly implied delayed data policy",
+    "per-panel EOD notice disappeared outside Overview",
+    "non-string collector clocks raised AttributeError"
+  ],
+  "source_sha256": {
+    "lib/intl_eod_publication.py": "93257964d6c1bb968777ceee9b4c1250f7f912d7a6c65f84b95a098540254bc6",
+    "scripts/build_intl.py": "85ba198dc741a0986a8e2e1ff17bb5945f5821421bbbcbcdded211cb98043c8a",
+    "templates/intl_workspace/shell.html.j2": "98e1765678aa16481f0bc630ecdc1884c2b52e26788f47c3e3b16c33641a1d93",
+    "tests/test_intl_eod_publication.py": "d50ccfe377460dc463b394fba0af53c823310fc050da5192a974fee2ca3aeee1",
+    "tests/test_intl_eod_publisher_integration.py": "b84b1d65b54ce613b4b4680c733b6af8ed595a0526d588d6d269e30bd13fa59f",
+    "tests/test_intl_history_publication_independent.py": "3c82c0548b5a418c39b5dc12f2d773f5f48c79c11b2fffd564cb7af61d1a4873",
+    "config.yml": "02fd7d94a0cb553105a76de3dd34bccb244cb555ac0cca0baec774fa7cbfad62",
+    "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md": "b3d90aecbede865ad2dd5879bc7a7181df1686434b9b4e46d453b45ea16e139a",
+    "tests/test_intl_eod_publication_review.py": "27a0030212c0674dec8988dc27b1f8fa1f140c885bc7a8c4cd9d33d394c2cb09"
+  },
+  "remaining": [
+    "independent exact-source review",
+    "CI scope/contract verification and all required hosted checks",
+    "dual-theme EN/ZH actual-browser evidence",
+    "ordinary publication and authenticated served verification",
+    "IM02 chart/benchmark and IM08/09 incumbent Saved dependencies"
+  ],
+  "do_not_redo": [
+    "Do not resubmit the already completed #8715 initial CI run",
+    "Do not overwrite the preserved legacy source workspace",
+    "Do not reopen the Chairman-confirmed redistribution gate"
+  ],
+  "effect_state": "NO_UNRESOLVED_WRITES",
+  "next_action": "Commit and push the current integrated source+weekend fix on PR8715; consume exact-head hosted CI, obtain independent review of final delta, then merge/publication/browser evidence under release protections. Saved/Chart parity remain parent work.",
+  "real_source_validation": {
+    "candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
+    "evaluated_at": "2026-10-09T23:53:14.372894+00:00",
+    "data_source_commit": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+    "series": 14,
+    "snapshot": {
+      "as_of": "2026-10-07",
+      "policy": "intl-conservative-observed-eod-tplus2-v1"
+    },
+    "html_sha256": "cad38f881af0f6c80dd17bfb1ff1200f30fbcff12cf1b2c6f5967cbd23ae6d67",
+    "html_bytes": 2669587,
+    "delayed_notices": 1,
+    "results": [
+      {
+        "horizon": "1m",
+        "basis": "usd_unhedged",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "IN",
+          "AU"
+        ]
+      },
+      {
+        "horizon": "1m",
+        "basis": "local",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "IN",
+          "AU"
+        ]
+      },
+      {
+        "horizon": "3m",
+        "basis": "usd_unhedged",
+        "qualified": 6,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "KR"
+        ]
+      },
+      {
+        "horizon": "3m",
+        "basis": "local",
+        "qualified": 6,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "KR"
+        ]
+      },
+      {
+        "horizon": "6m",
+        "basis": "usd_unhedged",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "KR",
+          "GB"
+        ]
+      },
+      {
+        "horizon": "6m",
+        "basis": "local",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "withheld_markets": [
+          "KR",
+          "GB"
+        ]
+      },
+      {
+        "horizon": "12m",
+        "basis": "usd_unhedged",
+        "qualified": 7,
+        "ranking_status": "unavailable",
+        "withheld_markets": []
+      },
+      {
+        "horizon": "12m",
+        "basis": "local",
+        "qualified": 7,
+        "ranking_status": "unavailable",
+        "withheld_markets": []
+      },
+      {
+        "horizon": "ytd",
+        "basis": "usd_unhedged",
+        "qualified": 4,
+        "ranking_status": "available",
+        "withheld_markets": [
+          "JP",
+          "KR",
+          "EZ"
+        ]
+      },
+      {
+        "horizon": "ytd",
+        "basis": "local",
+        "qualified": 4,
+        "ranking_status": "available",
+        "withheld_markets": [
+          "JP",
+          "KR",
+          "EZ"
+        ]
+      }
+    ],
+    "limits": "Real committed index/FX series and current EOD publisher/template; synthetic legacy outer VM. Not authenticated or deployed evidence."
+  },
+  "browser_validation": {
+    "cases": 72,
+    "viewport_widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "views": [
+      "overview",
+      "compare",
+      "macro",
+      "risk",
+      "history",
+      "library"
+    ],
+    "uncaught_javascript_errors": [],
+    "missing_resources": [],
+    "external_requests_deliberately_blocked": [
+      "cloud.umami.is/script.js"
+    ],
+    "keyboard": "horizon-to-basis focus visible",
+    "limits": "Isolated browser profile. Real EOD index/FX page with synthetic legacy outer VM; not authenticated production.",
+    "artifact_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_PROOF_5370",
+    "captures": {
+      "compare-1440-dark-en.png": {
+        "sha256": "de44f41288b8d5c7dd52f6ced1f69e422d3055ac386fd4f2724300651e5809bc",
+        "bytes": 355030
+      },
+      "compare-1440-dark-zh.png": {
+        "sha256": "7e0351c923e142ee659018bdba51e470007c7b52d93cbd4fc8de0034122f9ab2",
+        "bytes": 350367
+      },
+      "compare-1440-light-en.png": {
+        "sha256": "39dc82d0eb102e26fde74452a74662e268aa2e23e44102f797b1198dfda353be",
+        "bytes": 359031
+      },
+      "compare-1440-light-zh.png": {
+        "sha256": "8bc8739234fbf39f39304c73f4007e40f8ecc2fd8d15899c24bf9e9058de50cc",
+        "bytes": 353777
+      },
+      "compare-390-dark-en.png": {
+        "sha256": "372a63188aa7239717b2ff499275d4928db786532ba4798227bafc7076474e2b",
+        "bytes": 324621
+      },
+      "compare-390-dark-zh.png": {
+        "sha256": "f4bbc70d6637dcb7f0928a6eeca541210626edf4b59b6de6a77175afee1b5309",
+        "bytes": 304659
+      },
+      "compare-390-light-en.png": {
+        "sha256": "bd904a3f97e7d3869aaeb9645a84a7783e1f7ee3ade8315c00cbbda7dd60352b",
+        "bytes": 320750
+      },
+      "compare-390-light-zh.png": {
+        "sha256": "25d429c1a411b3b2064f976c7271a2869dece88c1142f601f5a5ea151197ecfe",
+        "bytes": 300774
+      },
+      "overview-1440-dark-en.png": {
+        "sha256": "7420733c938db5362da35d079fbb18f4c568afb714216bc236d763c86992cc94",
+        "bytes": 304482
+      },
+      "overview-1440-dark-zh.png": {
+        "sha256": "9efc36f0b8d407794be539f709e434ead74a0a6afdcea8f865665f91b5fc216e",
+        "bytes": 299691
+      },
+      "overview-1440-light-en.png": {
+        "sha256": "b5214967b84f5a191b83f6cea42436d7d98b75bb5b1bc85c65575de09f607961",
+        "bytes": 324635
+      },
+      "overview-1440-light-zh.png": {
+        "sha256": "28188d5cee43ee53b1174431e6e53c89669b905ab760c479d830a30a4c6e6f7a",
+        "bytes": 316862
+      },
+      "overview-390-dark-en.png": {
+        "sha256": "efe65c52cdc350f57cb0319d3f34097cf74bc683f9ecab7407da2165ff967eca",
+        "bytes": 179310
+      },
+      "overview-390-dark-zh.png": {
+        "sha256": "b7fc893b4aceadea600499d4e91958c08cf12ee7b2738e1e09d79c6d41178ae2",
+        "bytes": 171644
+      },
+      "overview-390-light-en.png": {
+        "sha256": "95fca68d9ddf89cea1de9d4ef49f2b717bfd77241209193073e6a6fc317b5a79",
+        "bytes": 186591
+      },
+      "overview-390-light-zh.png": {
+        "sha256": "d313cf1e16abb979c7298ef4a137cedd818418eee1c02825068a08d2dcb70e5e",
+        "bytes": 178762
+      }
+    }
+  },
+  "independent_review": {
+    "run_id": "intl-r10-eod-review-5370-r1",
+    "candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
+    "task_complexity": "C2_COMPLEX_BOUNDED",
+    "admitted_pool": "grok",
+    "requested_model": "grok-4.6",
+    "served_model": "UNATTESTED",
+    "host": "ubuntu2",
+    "dispatch": "Completed: RC=0, NATIVE_SETTLED, transport cleaned; STOP ruling delivered to original capsule.",
+    "observed_native_pid": 2340910,
+    "terminal_result_consumed": true,
+    "return_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_INDEPENDENT_REVIEW_R1/REVIEW_RETURN.txt",
+    "limits": "Independent exact-source review in a frozen capsule; remote PyArrow dependency absent, so numerical countercases may require parent reproduction. No release approval claimed."
+  },
+  "initial_hosted_ci": {
+    "run_id": 37990755306,
+    "head": "1bb3ed402536538765089d19e7b64f401e29bc33",
+    "state": "FAILED",
+    "repaired_scoped_failures": [
+      "Numerical job imported Jinja-dependent publisher tests",
+      "History fixture did not accept production_inputs",
+      "New helper missing from consumer import-closure path lists"
+    ],
+    "other_failure_not_suppressed": [
+      "US stock-board live-quote display cap 320 vs 342 emitted symbols; two test_build_live_quotes failures. Producer/test and named committed page/payload inputs are byte-identical to base3d90; full required checks remain a release gate."
+    ],
+    "base_quote_failure_reproduced": true,
+    "quote_baseline_evidence": "Existing owner proof /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_QUOTE_CAP_BASELINE/BASELINE_RESULT.json; both unchanged test functions fail against exact base3d90 site inputs.",
+    "inactive_pilot_context": "ci-authority/codex/merge-queue-pilot is explicitly inactive for base main; ci-authority/main allowed the source change. Do not treat the inactive context as a main authority denial."
+  },
+  "review_result": {
+    "run_id": "intl-r10-eod-review-5370-r1",
+    "verdict": "CHANGES_REQUIRED",
+    "result_consumed": true,
+    "worker_terminal": true,
+    "parent_ruling": "STOP; optional adapter finding repaired; strict-validator and ArrowInvalid claims corrected with runtime proof",
+    "original_return_sha256": "0c377491590580251ba0479e91f46daf37718828eb54e13445b0133cfe62c223",
+    "parent_ruling_sha256": "cc7369fe9411b4df63b74329646a184376e4dd9672fd39eb4461eac8d8a76054",
+    "frozen_reproduction": {
+      "owner_tests": 18,
+      "original_countercases_passed": 2,
+      "original_countercases_failed": 9
+    },
+    "corrected_retained_countercases": 11,
+    "unmodified_core": "engine/intl_workspace_overview.py",
+    "final_derivative_independent_approval": false
+  },
+  "midnight_continuity_repair": {
+    "policy": "Expected snapshot uses min(evaluated_at, verified collector checked_at) minus 48 hours, then preceding weekday. Per-series equality and collector age remain mandatory.",
+    "red": "UTC midnight removed a still-current bound snapshot before next collection.",
+    "green": "Same receipt retains its disclosed snapshot; a new receipt advances the obligation and missing data remains withheld."
+  },
+  "weekend_freshness": {
+    "checked_at": "2026-10-09T04:42:46.994186+00:00",
+    "observed_at": "2026-10-11T08:43:56.732573+00:00",
+    "wall_hours": 52.02,
+    "weekday_hours": 19.29,
+    "policy": "48 weekday-elapsed UTC hours, at most 96 wall hours; no invented foreign-market holiday exemptions",
+    "tdd": "October 11 weekend previously refused by 48h wall clock; new positive and Tuesday-expiry cases pass",
+    "actual_main_qualified": {
+      "1m": 5,
+      "3m": 6,
+      "6m": 5,
+      "12m": 7,
+      "ytd": 4
+    }
+  },
+  "post_integration_real_data": {
+    "parent_source_main": "ea7fa5bbb44be1c3938abd03b9fbf9f378c42b2b",
+    "rendered_at": "2026-10-11T08:46:24.971812+00:00",
+    "series": 14,
+    "snapshot": {
+      "as_of": "2026-10-07",
+      "policy": "intl-conservative-observed-eod-tplus2-v1"
+    },
+    "html_bytes": 2669587,
+    "html_sha256": "999b2e8a739bc7a3e24b363e8197eb8291792751db70392b6d161adfcd9545d3",
+    "qualified_1m": 5,
+    "markets": 7,
+    "panels": 10,
+    "disclosure_count": 1,
+    "limits": "Real committed index and FX parquet data and source status; synthetic legacy outer VM; neither production deploy nor authenticated browser claim."
+  },
+  "post_integration_browser": {
+    "passed_combinations": 72,
+    "errors": [],
+    "missing_assets": [],
+    "external_telemetry_blocked": [
+      "cloud.umami.is/script.js"
+    ],
+    "limits": "Isolated browser profile. Real EOD index/FX page with synthetic legacy outer VM; not authenticated production.",
+    "proof_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_PROOF_WEEKEND_20261011"
+  },
+  "public_site_baseline_20261011": {
+    "status": "SERVING_OLD",
+    "date": "2026-10-09",
+    "qualified_1m": 0,
+    "total_markets": 7,
+    "eod_notice": false,
+    "checked": "2026-10-11",
+    "not_release_proof": true
+  }
+}

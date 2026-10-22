@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IREN-BULL-20260810",
-  "asof": "2026-10-03",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 40.1,
-  "raw_confidence": 40.0,
-  "delta_vs_base": -19.9,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-10-22",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.7,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.3,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 76.0,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 22.0,
+    "pace": 0.0,
     "retention": 0.0,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.816,
+    "dist_to_stop_r": -0.036,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 113.3,
-    "p1": -0.1225,
-    "p2": -0.0612,
+    "horizon_pct_used": 155.6,
+    "p1": -0.6908,
+    "p2": -0.3454,
     "p3": null,
-    "move_r": -0.184,
+    "move_r": -1.036,
     "mfe_r": 0.259,
-    "mae_r": -0.57
+    "mae_r": -1.111
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.234201660156252,
-  "_mae": -9.309999237060545,
+  "_mae": -18.1399991607666,
   "_max_p1": 0.17285983507476024,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 51,
-  "tau": 1.1333
+  "days_elapsed": 70,
+  "tau": 1.5556
 }

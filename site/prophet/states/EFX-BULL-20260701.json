@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EFX-BULL-20260701",
-  "asof": "2026-10-03",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.1,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.9,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-22",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 28.2,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -31.8,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
-    "progress": 0.0,
+    "validity": 100.0,
+    "progress": 10.1,
     "pace": 0.0,
-    "retention": 0.0,
-    "overlay": 56.0
+    "retention": 13.5,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.292,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -0.8614,
-    "p2": -0.4307,
+    "dist_to_stop_r": 1.118,
+    "dist_to_t1_r": 1.382,
+    "dist_to_t2_r": 2.882,
+    "horizon_pct_used": 222.2,
+    "p1": 0.0785,
+    "p2": 0.0392,
     "p3": null,
-    "move_r": -1.292,
+    "move_r": 0.118,
     "mfe_r": 0.873,
     "mae_r": -1.402
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8
+  "days_elapsed": 100,
+  "tau": 2.2222
 }

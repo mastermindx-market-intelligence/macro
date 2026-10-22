@@ -227,7 +227,7 @@ def test_explanation_view_is_one_object_for_page_and_machine_snapshot(tmp_path) 
     for row in view["mechanisms"]:
         assert row["label"]["en"] in html
 
-    source = (ROOT / "scripts" / "build_bonds.py").read_text(encoding="utf-8")
+    source = Path(BB.__file__).read_text(encoding="utf-8")
     assert source.count("build_bonds_explanation_vm(snap, fed_path)") == 1
     assert "explanation_view=explanation_view" in source
     assert 'snap["explanation"] = explanation_view' in source

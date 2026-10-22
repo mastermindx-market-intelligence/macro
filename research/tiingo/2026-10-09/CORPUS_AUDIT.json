@@ -1,0 +1,50 @@
+{
+  "all_receipts_inspected": true,
+  "archive_exists": false,
+  "backtest_admission": "NOT_GRANTED",
+  "by_source": {
+    "eod-bars": {
+      "NOT_FOUND": 162
+    },
+    "fund-daily": {
+      "NOT_FOUND": 6
+    },
+    "fund-statements": {
+      "NOT_FOUND": 6
+    }
+  },
+  "canonical_identity_admitted": false,
+  "caveat": "Checks stored bytes/context only. NOT_FOUND under a partial scan is inconclusive; captured date bounds do not prove gap-free sessions or as-of availability.",
+  "complete_history_proven": false,
+  "detail_limit": 2,
+  "execution_authorized": false,
+  "expected_requests": 174,
+  "network": false,
+  "observed_before_utc": "2026-10-09T20:59:39.677788+00:00",
+  "plan_sha256": "1401e2a5e0e3acf6f34fd7bca2687bf5993bdba5989032208ab88d38fb979c63",
+  "request_status_counts": {
+    "NOT_FOUND": 174
+  },
+  "requests": [
+    {
+      "latest_capture": null,
+      "request_path": "/tiingo/daily/AMD/prices?endDate=2000-12-31&startDate=2000-01-01",
+      "source": "eod-bars",
+      "status": "NOT_FOUND",
+      "stored_response_count": 0,
+      "symbol": "AMD"
+    },
+    {
+      "latest_capture": null,
+      "request_path": "/tiingo/daily/AMD/prices?endDate=2002-01-01&startDate=2001-01-01",
+      "source": "eod-bars",
+      "status": "NOT_FOUND",
+      "stored_response_count": 0,
+      "symbol": "AMD"
+    }
+  ],
+  "scan": {},
+  "schema": "mastermind.tiingo.corpus_audit.v1",
+  "source_authenticity_proven": false,
+  "writes": false
+}

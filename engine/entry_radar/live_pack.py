@@ -1813,7 +1813,6 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
         substrate_flat = _substrate_frame(pack)
 
     root = pack_root(state_dir)
-    root.mkdir(parents=True, exist_ok=True)
     final = root / pack.as_of
 
     pack_hash = compute_pack_hash(
@@ -1824,6 +1823,7 @@ def save_pack(pack: LivePack, state_dir: Path | str, *,
     stored_hash = str(pack.pack_hash or "")
     if stored_hash and stored_hash != pack_hash:
         raise LivePackError(f"pack_hash_mismatch_on_save:{stored_hash}:{pack_hash}")
+    root.mkdir(parents=True, exist_ok=True)
     manifest = pack.manifest()
     manifest["pack_hash"] = pack_hash
     staging = Path(tempfile.mkdtemp(prefix=f".{pack.as_of}.", dir=root))

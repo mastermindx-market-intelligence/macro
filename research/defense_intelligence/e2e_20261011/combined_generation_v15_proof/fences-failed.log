@@ -1,0 +1,35 @@
+fence-pack	fail pack when any fence failed	﻿2026-10-14T11:57:09.0455671Z ##[group]Run set -euo pipefail
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0456017Z ^[[36;1mset -euo pipefail^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0456269Z ^[[36;1mfor outcome in \^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0456591Z ^[[36;1m  "$SELF_MOD_SELFTEST" "$SELF_MOD_LIVE" "$SELF_MOD_TESTS" \^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0456965Z ^[[36;1m  "$AGENT_OS_RECORD_CONTRACT" \^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0457295Z ^[[36;1m  "$CAPABILITY_SELFTEST" "$CAPABILITY_LIVE" \^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0457626Z ^[[36;1m  "$GRADER_SELFTEST" "$GRADER_LIVE" \^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0457978Z ^[[36;1m  "$CHAT_NAV_SELFTEST" "$CHAT_NAV_LIVE" "$PUBLISH"; do^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0458319Z ^[[36;1m  case "$outcome" in^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0458575Z ^[[36;1m    success|skipped) ;;^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0458906Z ^[[36;1m    *) echo "::error::fence pack failed ($outcome)"; exit 1 ;;^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0459236Z ^[[36;1m  esac^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0459443Z ^[[36;1mdone^[[0m
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0501125Z shell: /usr/bin/bash -e {0}
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0501551Z env:
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0501843Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0502326Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0502739Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0503111Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0503480Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0503846Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0504169Z   SELF_MOD_SELFTEST: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0504427Z   SELF_MOD_LIVE: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0504658Z   SELF_MOD_TESTS: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0504898Z   AGENT_OS_RECORD_CONTRACT: failure
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0505168Z   CAPABILITY_SELFTEST: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0505415Z   CAPABILITY_LIVE: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0505644Z   GRADER_SELFTEST: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0505868Z   GRADER_LIVE: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0506092Z   CHAT_NAV_SELFTEST: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0506323Z   CHAT_NAV_LIVE: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0506544Z   PUBLISH: success
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0506753Z ##[endgroup]
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0568641Z ##[error]fence pack failed (failure)
+fence-pack	fail pack when any fence failed	2026-10-14T11:57:09.0570436Z ##[error]Process completed with exit code 1.

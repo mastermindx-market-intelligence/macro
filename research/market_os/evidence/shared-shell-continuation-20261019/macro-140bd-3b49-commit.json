@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-10-20T14:55:34.146495+00:00",
+  "head_before": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "expected_tree": "5ffad38270d85abe5e7ace03f3c291ce405145a4",
+  "remote_before": "e2d10f933587f58be8716505529a37f8839901f7",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "pr_precondition": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7949"
+  },
+  "operation": "ordinary original-worktree merge completion; no push or arm",
+  "commit_attempted": true,
+  "exit": 0,
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-commit.log",
+    "bytes": 114,
+    "sha256": "084af71a65fd6251edcb16e053833019095e3536c773ab841a34a02a9071085a"
+  },
+  "head_after": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "parents": [
+    "140bd1ee79a44859915595fdf12c958c07a60e2b",
+    "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387"
+  ],
+  "tree_after": "5ffad38270d85abe5e7ace03f3c291ce405145a4",
+  "finished_at": "2026-10-20T14:55:44.551574+00:00",
+  "status": "COMMITTED_NOT_PUSHED",
+  "clean": true
+}

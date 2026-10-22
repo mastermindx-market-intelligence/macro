@@ -12,7 +12,7 @@ objective: >
 status: blocked
 program: earnings-intelligence
 repos: [macro]
-owner: fable-integration-principal
+owner: fable-meta-ceo
 class: build
 blast_radius: reversible
 ambiguity: specified
@@ -26,6 +26,8 @@ owns_paths:
 decisions:
   - "DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
   - "DEC:CONSUMER-CYCLICAL-REFUSES-FACTS-IT-CANNOT-PUBLISH"
+  - "DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11"
+  - "DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE"
 discoveries:
   - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
   - "DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES"
@@ -228,6 +230,11 @@ do_not_redo:
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
+  2026-10-11 CONSOLIDATION: owner is now fable-meta-ceo (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11). Of the four
+  blockers below, the #7870 one is on the critical path (WS:GMI-SEMICONDUCTORS SB-W1) and the
+  #7780 profile/dispatch/mount ruling is folded into Option A (SB-W2, DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE).
+  Status stays blocked; no WIRING lane opens before both land.
+  .
   No ungated WIRING lane exists and none has appeared: all four blockers below
   are still OPEN or DRAFT, V1-CORE has zero runtime callers on main (git grep
   for consumer_cyclical_projection outside its own suite returns nothing - it is

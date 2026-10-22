@@ -571,13 +571,15 @@ def _ilx(series, accent, *, kind="line", height=190, baseline=None, reference=No
                        value_fmt=value_fmt, aria_en=aria_en or f"{kind} chart")
 
 
-def _multi(series_list, *, height=190, baseline=None, value_fmt="{:,.2f}", aria_en=""):
+def _multi(series_list, *, height=190, baseline=None, value_fmt="{:,.2f}", aria_en="",
+           ordinal_domain=None):
     """Bridge a list of _mser dicts to an ilx multi fragment; '' when < 2 valid series."""
     valid = [s for s in series_list if s]
     if len(valid) < 2:
         return ""
     return illus.illus(valid, kind="multi", height=height, baseline=baseline,
-                       value_fmt=value_fmt, aria_en=aria_en or "comparison chart")
+                       value_fmt=value_fmt, aria_en=aria_en or "comparison chart",
+                       ordinal_domain=ordinal_domain)
 
 
 def _band(hi, lo, tint_var, pct, label_en, label_zh, pos):
@@ -598,8 +600,8 @@ def chart_health(fr, years=8):
 
 def chart_curve_now(f):
     """THE signature: the US Treasury yield curve, today vs ~3 months and ~1 year ago.
-    ilx plots by index with the tenor labels as the corner captions, so the shape reads
-    as a real term structure (3m -> 30y)."""
+    The shared ordinal tenor domain preserves each observed maturity position,
+    including missing tenors. The spacing is categorical, not elapsed maturity."""
     tenors = [("us3m", "3m"), ("us6m", "6m"), ("us1y", "1y"), ("us2y", "2y"),
               ("us3y", "3y"), ("us5y", "5y"), ("us7y", "7y"), ("us10y", "10y"),
               ("us30y", "30y")]
@@ -619,16 +621,16 @@ def chart_curve_now(f):
     series = [s for s in (snap(-1, "Today", "当前", "var(--warn)"),
                           snap(-64, "3 mo ago", "3月前", "var(--info)"),
                           snap(-252, "1 yr ago", "1年前", "var(--muted)")) if s]
-    return _multi(series, height=230, value_fmt="{:,.2f}",
+    return _multi(series, height=230, value_fmt="{:,.2f}", ordinal_domain=labels,
                   aria_en="US Treasury yield curve now versus three months and one year ago")
 
 
 def chart_spreads(fr, years=12):
-    """Curve slope over time (10y-3m, 2s10s, term-premium-adjusted); zero = flat."""
+    """Curve slope over time (10y-3m, 2s10s, legacy TP10 heuristic); zero = flat."""
     return _multi([
         _mser("10y-3m", "10年-3月", "var(--info)", _col(fr, "spread_10y3m"), years),
         _mser("2s10s", "2年/10年", "var(--warn)", _col(fr, "spread_2s10s"), years),
-        _mser("TP-adjusted", "期限溢价调整", "var(--muted)", _col(fr, "curve_tp_adj"), years),
+        _mser("TP10 heuristic", "TP10启发式", "var(--muted)", _col(fr, "curve_tp_adj"), years),
     ], height=190, baseline=0, value_fmt="{:+,.2f}",
        aria_en="Yield curve slope measures over time")
 
@@ -922,12 +924,13 @@ def _build_maturity_wall(cm_path: Path | None) -> list[dict]:
     return rows
 
 
-def build_corp_credit_vm(data_root: Path | None = None) -> dict:
+def build_corp_credit_vm(data_root: Path | None = None, *, now: datetime | None = None) -> dict:
     """Build the vm.corp_credit dict for the bonds template.
 
-    Null-safe: when credit_momentum.json is missing or any sub-key is absent,
-    renders accruing states with plain-word 'building history' copy.
-    Never raises.
+    An unreadable or invalid root artifact is unavailable, not a low-stress
+    reading. Readable snapshots must also pass the incumbent producer-currentness
+    contract before they can present a current assessment. Source dates remain
+    visible when currentness cannot be confirmed. Never raises.
 
     Returns a dict that the template can reference as vm.corp_credit.
     """
@@ -935,18 +938,22 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
 
     _ACCRUING_AS_OF = "building history"
     empty = {
+        "source_available": False,
+        "producer_current": False,
+        "currentness": None,
+        "currentness_error": None,
         "accruing": True,
-        "as_of": _ACCRUING_AS_OF,
+        "as_of": None,
         "authority": {"rank": False, "size": False, "gate": False, "escalate": False},
         "hero": {
-            "state_en": "Credit stress: low",
-            "state_zh": "信用压力：低",
-            "pill_en": "Watch — don't chase",
-            "pill_zh": "观望 · 勿追",
+            "state_en": "Credit reading unavailable",
+            "state_zh": "信用读数不可用",
+            "pill_en": "Source unavailable",
+            "pill_zh": "数据源不可用",
             "pill_css": "stance-amber",
-            "hero_cs": "cs-amber",
-            "subtitle_en": "Company-bond stress is low; AI borrowing costs bear watching.",
-            "subtitle_zh": "整体压力仍低；AI公司的借贷成本值得关注。",
+            "hero_cs": "cs-neutral",
+            "subtitle_en": "The credit source could not be read. A credit assessment is unavailable.",
+            "subtitle_zh": "无法读取信用数据源，当前无法提供信用状况研判。",
         },
         "gauges": [],
         "themes": [],
@@ -957,7 +964,7 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
         "divergence_ready": False,
         "divergence_ready_date": None,
         "divergence_last_obs": None,
-        "footer_as_of": _ACCRUING_AS_OF,
+        "footer_as_of": None,
     }
 
     # locate credit_momentum.json
@@ -975,6 +982,57 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     try:
         cm = json.loads(cm_path.read_text(encoding="utf-8"))
     except Exception:  # noqa: BLE001
+        return empty
+
+    if not isinstance(cm, dict) or not cm:
+        return empty
+
+    # Reuse the existing declared policy. Reading one artifact's producer axis
+    # does not claim complete estate/dependency/reader health.
+    currentness = None
+    currentness_error = None
+    try:
+        from engine.neuralweb.synapse import load_registry
+        from engine.output_health import assess_producer_freshness, governing_watermark_field
+        from lib import config as _cfg
+
+        registry = load_registry(root=_cfg.ROOT)
+        entry = registry["artifacts"]["ccw-credit-momentum-json"]
+        if not isinstance(entry, dict) or entry.get("path") != "data/corp_bonds/credit_momentum.json":
+            raise ValueError("credit currentness contract does not match its artifact")
+        field = governing_watermark_field(entry)
+        currentness = assess_producer_freshness(
+            entry=entry,
+            obs={
+                "content_asof_raw": cm.get(field) if field else None,
+                "asof_field_present": field in cm if field else False,
+                "watermark_field_used": field,
+            },
+            now=now if now is not None else datetime.now(timezone.utc),
+        )
+    except Exception as exc:  # noqa: BLE001 — readable is not confirmed current
+        currentness_error = type(exc).__name__
+        _log.warning("credit currentness assessment unavailable (%s)", currentness_error)
+
+    if currentness is None or currentness.get("verdict") != "current":
+        source_as_of = cm.get("as_of") if isinstance(cm.get("as_of"), str) else None
+        empty.update({
+            "source_available": True,
+            "as_of": source_as_of,
+            "footer_as_of": source_as_of,
+            "currentness": currentness,
+            "currentness_error": currentness_error,
+            "hero": {
+                "state_en": "Current credit reading unconfirmed",
+                "state_zh": "当前信用读数未确认",
+                "pill_en": "Currentness unconfirmed",
+                "pill_zh": "时效未确认",
+                "pill_css": "stance-amber",
+                "hero_cs": "cs-neutral",
+                "subtitle_en": "The credit source is readable, but a current credit assessment has not been confirmed.",
+                "subtitle_zh": "信用数据源可读取，但当前信用状况研判尚未确认。",
+            },
+        })
         return empty
 
     as_of = cm.get("as_of") or _ACCRUING_AS_OF
@@ -1031,6 +1089,10 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     divergence_last_obs = _series_last_obs(cm_path)
 
     return {
+        "source_available": True,
+        "producer_current": True,
+        "currentness": currentness,
+        "currentness_error": None,
         "accruing": accruing_flag,
         "as_of": as_of,
         "authority": authority,
@@ -1548,7 +1610,12 @@ def _build_corp_credit_bond_health(cc_vm: dict) -> dict:
     return {
         "as_of": cc_vm.get("as_of"),
         "authority": cc_vm.get("authority") or {"rank": False, "size": False, "gate": False, "escalate": False},
-        "market_state": cc_vm.get("hero", {}).get("state_en"),
+        "producer_current": cc_vm.get("producer_current"),
+        "currentness": cc_vm.get("currentness"),
+        "currentness_error": cc_vm.get("currentness_error"),
+        "market_state": (None if (cc_vm.get("source_available") is False
+                                  or cc_vm.get("producer_current") is False)
+                         else cc_vm.get("hero", {}).get("state_en")),
         "themes": themes_out,
         "breadth": {
             # Both shares use _share suffix semantics (fractions, not percentages).
@@ -1566,6 +1633,26 @@ def _build_corp_credit_bond_health(cc_vm: dict) -> dict:
         "divergence_accruing": cc_vm.get("divergence_accruing", True),
         "display_only": True,
     }
+
+
+def _attach_yield_curve_contract(snap: dict, f: pd.DataFrame) -> dict | None:
+    """Attach the canonical yield-curve snapshot without re-deriving its science.
+
+    The yield-curve engine remains the sole owner of curve shape, momentum, regime,
+    recession context, forwards, sector/factor channels and market-tendency labels.
+    Absence or an engine error remains absence: this adapter never writes a
+    placeholder that could be mistaken for a flat/neutral curve.
+    """
+    try:
+        from engine import yield_curve as _yield_curve
+
+        curve = _yield_curve.snapshot(f)
+    except Exception as exc:  # noqa: BLE001 — additive contract; Bonds still renders
+        log.warning("yield_curve contract unavailable (%s); omitting block", exc)
+        return None
+    if curve is not None:
+        snap["yield_curve"] = curve
+    return curve
 
 
 def _xasset_vm(xasset: dict | None) -> dict | None:
@@ -1720,14 +1807,12 @@ def _glance(vm: dict) -> list[dict]:
     g: list[dict] = []
 
     prob = cu.get("nyfed_prob")
-    if cu.get("tp_adj_inverted") or cu.get("inverted"):
-        c_state = ("Inverted", "倒挂")
-    elif (cu.get("spread_2s10s") or 0) >= 1.0:
-        c_state = ("Steep", "陡峭")
-    elif (cu.get("spread_2s10s") or 0) <= 0.15:
-        c_state = ("Flat", "平坦")
-    else:
-        c_state = ("Normal", "正常")
+    # Share the hero's classifier: absent observations are not a flat curve.
+    # Inversion precedence, observed zero and existing thresholds stay unchanged.
+    c_state = {
+        "inverted": ("Inverted", "倒挂"), "steep": ("Steep", "陡峭"),
+        "flat": ("Flat", "平坦"), "normal": ("Normal", "正常"),
+    }.get(_curve_clause_key(cu), ("Unavailable", "暂不可用"))
     g.append({"name_en": "Curve", "name_zh": "曲线", "href": "#curve",
               "state_en": c_state[0], "state_zh": c_state[1],
               "mean_en": (f"recession odds ~{prob:.0f}%" if prob is not None else "growth signal"),
@@ -1907,7 +1992,8 @@ def main() -> int:
     recent = bonds_alerts.recent(events, acfg["timeline_days"])
     timeline = _group_timeline(recent)
 
-    built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    built_at = datetime.now(timezone.utc)
+    built = built_at.strftime("%Y-%m-%d %H:%M UTC")
     last_valid = fr.dropna(how="all").index.max()
     as_of = snap.get("as_of") or (last_valid.strftime("%Y-%m-%d") if pd.notna(last_valid) else built[:10])
     as_of_disp = pd.Timestamp(as_of).strftime("%b %d, %Y")
@@ -2003,10 +2089,10 @@ def main() -> int:
     # is never decorated, so __wrapped__ never existed.  The function itself is null-safe
     # (returns the empty accruing dict on any error), so we just call it directly.
     try:
-        cc_vm = build_corp_credit_vm()
+        cc_vm = build_corp_credit_vm(now=built_at)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("corp_credit vm build failed (%s); using empty accruing state", e)
-        cc_vm = build_corp_credit_vm(data_root=None)
+        cc_vm = build_corp_credit_vm(data_root=None, now=built_at)
 
     explanation_view = build_bonds_explanation_vm(snap, fed_path)
 
@@ -2054,6 +2140,9 @@ def main() -> int:
         snap["bond_cross_asset"] = xasset      # measured bond→asset transmission betas
     if explanation_view is not None:
         snap["explanation"] = explanation_view  # same display-only evidence object used by the page
+
+    # R19: reuse the existing owner output without re-deriving curve science.
+    _attach_yield_curve_contract(snap, f)
 
     # IRD-W2: additive `intl` namespace — fail-open; existing keys untouched when absent
     try:

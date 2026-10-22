@@ -216,6 +216,10 @@ PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt c
                        # retries burn only ~2 min, so the raised budget above would never bind
 push_retry_init "engine outputs"
 while push_attempt; do
+  # Classify native pending work before the shared helper can clean or rebase.
+  qledger_before_rebase=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+  push_qledger_guard pre-rebase --candidate "$qledger_before_rebase" \
+    --target-ref refs/heads/main || exit $?
   # Fetch the exact named ref before rebasing. The shared helper sees normal
   # AND ignored untracked collisions, quarantines only paths tracked by that
   # exact target under RUNNER_TEMP, and never removes unrelated runner data.
@@ -230,6 +234,9 @@ while push_attempt; do
   # both sides' hashed files (next externalize_css prunes the orphan) and
   # finishes the rebase; anything else is left for the abort+retry below.
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+    # A nightly may have rendered before a newer accepted workspace landed.
+    COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can
     # resurrect this run's checkout-time template copies over a reword that merged
     # mid-nightly (2026-07-07: engine-render commit 2ae709f9f0 reverted #1793's
@@ -284,7 +291,10 @@ while push_attempt; do
         echo "::warning title=render-sync skipped::post-rebase site/templates scanned dirty (conflict markers) — follow-up commit skipped and offenders restored from HEAD; pushing the guarded engine commit only"
       fi
     fi
-    if push_do; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    # This is the actual final candidate, including any render-sync commit.
+    qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi
   push_abort_rebase
   push_backoff

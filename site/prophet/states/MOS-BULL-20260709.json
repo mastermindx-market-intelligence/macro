@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MOS-BULL-20260709",
-  "asof": "2026-10-03",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 34.4,
-  "raw_confidence": 31.3,
-  "delta_vs_base": -25.6,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-10-22",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.8,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.2,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 49.9,
+    "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.597,
+    "dist_to_stop_r": -0.503,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -0.2684,
-    "p2": -0.1342,
+    "horizon_pct_used": 222.2,
+    "p1": -1.0022,
+    "p2": -0.5011,
     "p3": null,
-    "move_r": -0.403,
+    "move_r": -1.503,
     "mfe_r": 1.37,
-    "mae_r": -0.403
+    "mae_r": -1.503
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.220000686645509,
-  "_mae": -1.24000030517578,
+  "_mae": -4.6299996948242175,
   "_max_p1": 0.9134200620444823,
   "_first_trigger_ts": "2026-07-28",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8
+  "days_elapsed": 100,
+  "tau": 2.2222
 }
