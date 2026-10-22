@@ -1347,16 +1347,18 @@ def test_r2_not_after_anchors_on_the_transition_session_and_stale_never_mints():
     plan = _plan(ledger, calendar_rows=_calendar_rows(), now_utc=None)
     assert plan.rows == [] and plan.suppressed["stale_transition_at_mint"] == 1
 
-    # a transition known on a Saturday takes Friday's next-session end
+    # a transition known on a Saturday has no calendar row of its own: the
+    # neighbouring Friday row is never borrowed (seat ruling, F28 follow-up),
+    # so the fact is typed unresolvable rather than minted against a session
+    # that did not observe it
     saturday = [_open_envelope(), _transition_envelope("EXPIRED", recorded_at="2026-08-29T15:00:00Z")]
     plan = _plan(
         saturday,
         calendar_rows=_calendar_rows("2026-08-28", "2026-08-31T20:00:00Z"),
         now_utc="2026-08-30T12:00:00Z",
     )
-    assert len(plan.rows) == 1
-    assert plan.rows[0]["payload"]["not_after"] == "2026-08-31T20:00:00Z"
-    assert plan.rows[0]["payload"]["market_session"] == "2026-08-29"
+    assert plan.rows == []
+    assert plan.suppressed["not_after_unresolvable"] == 1
     # a weekday with no row (holiday or calendar gap) never borrows one
     wednesday = [_open_envelope(), _transition_envelope("EXPIRED", recorded_at="2026-08-26T15:00:00Z")]
     plan = _plan(
