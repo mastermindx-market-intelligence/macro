@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-16T22:59:22Z",
+ "accession": "0001770450-26-000009",
+ "cik": "0001770450",
+ "doc_byte_length": 7185231,
+ "doc_sha256": "2ae680a2eb7a1c98c12fd381a5139d992b05623af0a62a0c582759345a08842c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-17",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "xrx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2011842,
+  "byte_start": 2011255,
+  "normalized": "We purchased products, including parts and supplies, from FUJIFILM Business Innovation Corp. totaling $811 million, $886 million, and $933 million in 2025, 2024 and 2023, respectively. Our product supply agreements with FUJIFILM Business Innovation Corp. are designed to support the entire product lifecycle, end-to-end, including the availability of spare parts, consumables and technical support throughout the time such products are with our customers. Our purchase orders under such agreements are made in the normal course of business and typically have a lead time of three months.",
+  "normalized_sha256": "31e1dd2959718e9cc9126d09c4b5dc46e161950a72a43930efa10ebf6ec99e39",
+  "raw": "We purchased products, including parts and supplies, from FUJIFILM Business Innovation Corp. totaling $811 million, $886 million, and $933 million in 2025, 2024 and 2023, respectively. Our product supply agreements with FUJIFILM Business Innovation Corp. are designed to support the entire product lifecycle, end-to-end, including the availability of spare parts, consumables and technical support throughout the time such products are with our customers. Our purchase orders under such agreements are made in the normal course of business and typically have a lead time of three months.",
+  "raw_sha256": "31e1dd2959718e9cc9126d09c4b5dc46e161950a72a43930efa10ebf6ec99e39"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1770450/000177045026000009/xrx-20251231.htm",
+ "xbrl_contexts": []
+}

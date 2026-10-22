@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-05-21T12:24:32Z",
+ "accession": "0001193125-26-233537",
+ "cik": "0000866291",
+ "doc_byte_length": 4981774,
+ "doc_sha256": "9bfce73a4ff3ec58c3821089b8cb487ea67ec44d612c8db96567e4ebe0d95b48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-27",
+ "primary_document": "algm-20260327.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2847464,
+  "byte_start": 2846672,
+  "normalized": "For the fiscal year ended March 29, 2024, Sanken Electric Co., Ltd. (“Sanken”) accounted for 0.6% of total net sales.",
+  "normalized_sha256": "e0486503707a94fc445177ae07bf66ec9c38a7320c11636e6a0c3839007b69b6",
+  "raw": "For the fiscal year ended March 29, 2024, Sanken Electric Co., Ltd. (&#8220;Sanken&#8221;) accounted for </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_fbb0f12d-59c2-4157-bcc6-08b132faf81e\" contextRef=\"C_4d7084a2-c781-48c1-b36e-8a84045afc24\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"3\" format=\"ixt:num-dot-decimal\">0.6</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">%</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> of total net sales.",
+  "raw_sha256": "8860b64cea24687640751e100320b0117ec54fa00197e2e3a26d0818a49a79ba"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/866291/000119312526233537/algm-20260327.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 152531,
+   "byte_start": 151840,
+   "context_ref": "C_4d7084a2-c781-48c1-b36e-8a84045afc24",
+   "raw": "<xbrli:context id=\"C_4d7084a2-c781-48c1-b36e-8a84045afc24\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000866291</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">algm:SankenMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-04-01</xbrli:startDate><xbrli:endDate>2024-03-29</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4fa4a660778fbf9035b015c04cf7bc4cac535ae2c1e4164bf9125c1e6cd0fbc7"
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-14T23:42:43Z",
+ "accession": "0001193125-26-352872",
+ "cik": "0001078271",
+ "doc_byte_length": 4467003,
+ "doc_sha256": "d050741aeba7f096fdadadf3705d146475cb50d91a1db5fe56a2821d12f9bbca",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "extr-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2423035,
+  "byte_start": 2421302,
+  "normalized": "Ericsson, Inc. * 11%",
+  "normalized_sha256": "e329496f5a49f79d6ffbf08429d515001fa732185f96a65c7c1dcd8dce1e75f1",
+  "raw": "Ericsson, Inc.</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;border-bottom:0.5pt solid #ffffff03;padding-right:0in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">*</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_f51c9a6b-619f-4c2f-8ab3-4413d0242d3c\" contextRef=\"C_33d05e43-156d-428e-a46c-98166317d341\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">11</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "0172f07bca7596e2ab96795b31dcccd95025ddd1b9dfd6170095e1d4adf57d0a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1078271/000119312526352872/extr-20260630.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 119645,
+   "byte_start": 118946,
+   "context_ref": "C_33d05e43-156d-428e-a46c-98166317d341",
+   "raw": "<xbrli:context id=\"C_33d05e43-156d-428e-a46c-98166317d341\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001078271</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">extr:EricssonIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-07-01</xbrli:startDate><xbrli:endDate>2025-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "09a51e02fc551e03ea167640d27367767f1275dd3385adaa64f6755ca4a5a733"
+  }
+ ]
+}

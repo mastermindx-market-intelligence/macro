@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-18T21:05:10Z",
+ "accession": "0001049521-26-000045",
+ "cik": "0001049521",
+ "doc_byte_length": 2182366,
+ "doc_sha256": "763b48fcf45a9a588a2eabc819e67c38a19dabe746b4eb1c914b6bdb97a9bb2e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "mrcy-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 324744,
+  "byte_start": 324425,
+  "normalized": "In fiscal 2026, RTX Corporation accounted for 15% of our total net revenues, Lockheed Martin accounted for 11% of our total net revenues, and Northrop Grumman accounted for 10% of our total net revenues. In fiscal 2025, RTX Corporation accounted for 13% of our total net revenues and both Lockheed Martin and the U. S.",
+  "normalized_sha256": "a4a12aa041c6dca9d31c030271b422cb24a150925b83586cb78e1281be14fe72",
+  "raw": " In fiscal 2026, RTX Corporation accounted for 15% of our total net revenues, Lockheed Martin accounted for 11% of our total net revenues, and Northrop Grumman accounted for 10% of our total net revenues. In fiscal 2025, RTX Corporation accounted for 13% of our total net revenues and both Lockheed Martin and the U. S.",
+  "raw_sha256": "eb1935df28e2f88016a1aa0f1c5e807c3bb6e7291ce506bc87699e56f1cc83e7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1049521/000104952126000045/mrcy-20260703.htm",
+ "xbrl_contexts": []
+}

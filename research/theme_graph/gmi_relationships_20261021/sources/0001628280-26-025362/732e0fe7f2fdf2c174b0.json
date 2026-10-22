@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-16T10:05:49Z",
+ "accession": "0001628280-26-025362",
+ "cik": "0001046179",
+ "doc_byte_length": 10355931,
+ "doc_sha256": "8ad4d7163bf308c22e92617be162c5bc7718e4e0debabb2cd021d306542df366",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-16",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tsm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2849510,
+  "byte_start": 2847542,
+  "normalized": "In 2025, we had total sales of NT$31,094 million (US$991 million) to GUC, representing 0.8% of our total revenue.",
+  "normalized_sha256": "616fe3786a67440be64247264a28d375710ca95766f5160e113ea4ad83d3f697",
+  "raw": "In </span></span><span style=\"font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:93.81pt;position:var(--position);text-decoration:none;white-space:pre\">2025</span><span style=\"background-color:#ffffff;font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:113.81pt;position:var(--position);text-decoration:none;white-space:pre\"><span style=\"background-color:inherit\">, we had total sales of NT</span></span><span style=\"font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:216.19pt;position:var(--position);text-decoration:none;white-space:pre\">$31,094</span><span style=\"background-color:#ffffff;font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:248.69pt;position:var(--position);text-decoration:none;white-space:pre\"><span style=\"background-color:inherit\"> million (US</span></span><span style=\"font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:298.65pt;position:var(--position);text-decoration:none;white-space:pre\">$991</span><span style=\"background-color:#ffffff;font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:318.65pt;position:var(--position);text-decoration:none;white-space:pre\"><span style=\"background-color:inherit\"> million) to GUC, representing </span></span><span style=\"background-color:#ffffff;font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:444.08000000000004pt;position:var(--position);text-decoration:none;white-space:pre\"><span style=\"background-color:inherit\">0.8%</span></span><span style=\"background-color:#ffffff;font-family:'Times New Roman', serif;font-size:10pt;font-style:normal;font-weight:normal;left:464.91pt;position:var(--position);text-decoration:none;white-space:pre\"><span style=\"background-color:inherit\"> of our total revenue. ",
+  "raw_sha256": "732e0fe7f2fdf2c174b0e766bdd5ae91eab75da607f89907201344325df010ce"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+ "xbrl_contexts": []
+}

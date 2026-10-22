@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-15T21:09:27Z",
+ "accession": "0001628280-26-043303",
+ "cik": "0001807794",
+ "doc_byte_length": 1712551,
+ "doc_sha256": "d4896817099c692f1d1d25678807cb8ef76df37ab45e96915cdab183cb1c6955",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-05-02",
+ "primary_document": "crdo-20260502.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 348577,
+  "byte_start": 348015,
+  "normalized": "Minor deviations in the manufacturing process can cause substantial decreases in yields and, in some cases, cause production to be suspended. Our IC foundry vendor, TSMC, other manufacturers with which we contract and any foundries we may employ in the future may experience manufacturing defects and reduced manufacturing yields from time to time. If these vendors were to extend lead times, limit supplies or the types of capacity we require or increase prices due to capacity constraints or other factors, our revenue and gross margin may materially decline.",
+  "normalized_sha256": "384a581753efd756f9b180a2c70c7365459244672569afb29e6a2557a821e7dd",
+  "raw": " Minor deviations in the manufacturing process can cause substantial decreases in yields and, in some cases, cause production to be suspended. Our IC foundry vendor, TSMC, other manufacturers with which we contract and any foundries we may employ in the future may experience manufacturing defects and reduced manufacturing yields from time to time. If these vendors were to extend lead times, limit supplies or the types of capacity we require or increase prices due to capacity constraints or other factors, our revenue and gross margin may materially decline.",
+  "raw_sha256": "4beae69e0800ba784788b134a6143e29125b7102f72ea837ea2482583ff92036"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
+ "xbrl_contexts": []
+}

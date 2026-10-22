@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-12-12T18:42:26Z",
+ "accession": "0001628280-25-056698",
+ "cik": "0000936395",
+ "doc_byte_length": 2736484,
+ "doc_sha256": "f34ffc6cb142b1a34f8cee5101271d0e59f2548237c511913169dcdb83ba1abd",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-12",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "cien-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2693448,
+  "byte_start": 2693312,
+  "normalized": "Intellectual Property License Agreement dated as of March 19, 2010 between Ciena Luxembourg S.a.r.l. and Nortel Networks Limited++#",
+  "normalized_sha256": "a92ea65f047896cb532d15c228d80b0fb0b45e7e6016df724d8a68ce3114453d",
+  "raw": "Intellectual Property License Agreement dated as of March&#160;19, 2010 between Ciena Luxembourg S.a.r.l. and Nortel Networks Limited++#",
+  "raw_sha256": "f8361f103190ac979a78ddef7f7599a40d08c48f8fe94f2cfe00412617cd14a0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/936395/000162828025056698/cien-20251101.htm",
+ "xbrl_contexts": []
+}

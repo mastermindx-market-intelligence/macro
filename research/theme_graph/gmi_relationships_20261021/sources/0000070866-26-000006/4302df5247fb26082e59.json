@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T12:32:05Z",
+ "accession": "0000070866-26-000006",
+ "cik": "0000070866",
+ "doc_byte_length": 3392138,
+ "doc_sha256": "a325b79339a4fe6f86d996161118da6268e95490acfaabad3b658b760c461931",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ncr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 400573,
+  "byte_start": 399489,
+  "normalized": "We may be held liable to NCR Atleos if we fail to perform under our agreements with NCR Atleos, and the performance of such services may negatively affect our business and operations. In connection with the Spin-Off, we and NCR Atleos entered into a separation and distribution agreement and various other agreements (including a transition services agreement, tax matters agreement, employee matters agreement, patent and technology cross-license agreement, trademark license and use agreement, master services agreement) that provide for the performance of certain services by each company for the benefit of the other for a period of time after the Spin-Off. While many of the performance obligations of the Company and NCR Atleos have been satisfied or have otherwise expired, if we do not satisfactorily perform our remaining obligations under these agreements, we may be held liable for any resulting losses suffered by NCR Atleos, subject to certain limits.",
+  "normalized_sha256": "de02a731ccb51d68ed33049c7db59f4a28447b92a87159e13c40bc44a58ef908",
+  "raw": "We may be held liable to NCR Atleos if we fail to perform under our agreements with NCR Atleos, and the performance of such services may negatively affect our business and operations</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">. In connection with the Spin-Off, we and NCR Atleos entered into a separation and distribution agreement and various other agreements (including a transition services agreement, tax matters agreement, employee matters agreement, patent and technology cross-license agreement, trademark license and use agreement, master services agreement) that provide for the performance of certain services by each company for the benefit of the other for a period of time after the Spin-Off. While many of the performance obligations of the Company and NCR Atleos have been satisfied or have otherwise expired, if we do not satisfactorily perform our remaining obligations under these agreements, we may be held liable for any resulting losses suffered by NCR Atleos, subject to certain limits. ",
+  "raw_sha256": "4302df5247fb26082e590dd544bfad2fc0e10b912916b39562adf8953a2fa8b7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/70866/000007086626000006/ncr-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-10-16T14:29:32Z",
+ "accession": "0000022444-26-000065",
+ "cik": "0000022444",
+ "doc_byte_length": 2785744,
+ "doc_sha256": "89a6a8e89f8b7cbcad180927f007b852ca1ce5e7adc41bd9e2d00e77c4339acd",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-10-16",
+ "form": "10-K",
+ "period_of_report": "2026-08-31",
+ "primary_document": "cmc-20260831.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1270955,
+  "byte_start": 1270463,
+  "normalized": "•Through the Company's licensing agreement with InQuik Inc., CMC Bridge Systems is the authorized provider of InQuik Bridges in the U.S. CMC Bridges are a patented prefabricated and modular system for constructing reinforced concrete bridge components off-site, which are then installed on-site with poured concrete for a cast-in-place structure.",
+  "normalized_sha256": "ce2b1fd6e8ff075fc1dca61e9a413821e9a4e226172c2a624d0bf51570931b48",
+  "raw": "&#8226;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;padding-left:14.5pt\">Through the Company's licensing agreement with InQuik Inc., CMC Bridge Systems is the authorized provider of InQuik Bridges in the U.S. CMC Bridges are a patented prefabricated and modular system for constructing reinforced concrete bridge components off-site, which are then installed on-site with poured concrete for a cast-in-place structure. ",
+  "raw_sha256": "182ff66d7d8740e25a542e5f9dbf4baff7398b00262a6a57fff87c0bb3bd05cf"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/22444/000002244426000065/cmc-20260831.htm",
+ "xbrl_contexts": []
+}

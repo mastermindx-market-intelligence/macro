@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:20:36Z",
+ "accession": "0001193125-26-057101",
+ "cik": "0000917273",
+ "doc_byte_length": 4723143,
+ "doc_sha256": "705cadc7853c287c94d1db5ec5fe4aa5cb9924d6938183c64b0b18803a29584b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "rmbs-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 777064,
+  "byte_start": 776717,
+  "normalized": "Our memory interface chips are sold to major DRAM manufacturers, Micron, Samsung and SK hynix, as well as directly to system manufacturers and cloud providers, for integration into server memory modules. Product revenue accounted for 49%, 44% and 49% of our consolidated revenue for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "normalized_sha256": "167fe7d205cf882873eef6f36c721539037f6dda13a9b2a97985d4003cacf3c1",
+  "raw": " Our memory interface chips are sold to major DRAM manufacturers, Micron, Samsung and SK hynix, as well as directly to system manufacturers and cloud providers, for integration into server memory modules. Product revenue accounted for 49%, 44% and 49% of our consolidated revenue for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "raw_sha256": "127e82463de33709f67a6d927a459e5efc04f05a891f2a238604d7306ce5401c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/917273/000119312526057101/rmbs-20251231.htm",
+ "xbrl_contexts": []
+}

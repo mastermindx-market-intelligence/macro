@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1240938,
+  "byte_start": 1240699,
+  "normalized": "¹At the end of 2024, the Company terminated its distribution agreement with Distributor A.",
+  "normalized_sha256": "e3a519363ae305f8f096c9add945356cac086638be344cf70848705d3dd3f158",
+  "raw": "&#185;</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:139%\">At the end of 2024, the Company terminated its distribution agreement with Distributor A.",
+  "raw_sha256": "ae7fd58cb583e8a81dff1da2fe82c347ff97f50c77a94760caa63e6500714f69"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

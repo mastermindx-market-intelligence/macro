@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T11:04:33Z",
+ "accession": "0001413447-26-000008",
+ "cik": "0001413447",
+ "doc_byte_length": 2585048,
+ "doc_sha256": "bd63a1a7ae40fc4dc3587208358674eb79b7a653177e7155254a36c3caabd135",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nxpi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 371575,
+  "byte_start": 371359,
+  "normalized": "Our revenue is primarily the sum of our direct sales plus our sales to distributors. Avnet accounted for 23% of our revenue in 2025 and 22% in 2024. No other distributor accounted for greater than 10% of our revenue.",
+  "normalized_sha256": "86de21bfbe4f95e6b422af167274ae5b1017f934d847d97462d093ee2d14bfcb",
+  "raw": "Our revenue is primarily the sum of our direct sales plus our sales to distributors. Avnet accounted for 23% of our revenue in 2025 and 22% in 2024. No other distributor accounted for greater than 10% of our revenue.",
+  "raw_sha256": "86de21bfbe4f95e6b422af167274ae5b1017f934d847d97462d093ee2d14bfcb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000008/nxpi-20251231.htm",
+ "xbrl_contexts": []
+}

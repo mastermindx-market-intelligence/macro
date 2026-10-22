@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:29:28Z",
+ "accession": "0001292814-26-001908",
+ "cik": "0001848309",
+ "doc_byte_length": 451321,
+ "doc_sha256": "91c61c19aed2f985c641ab964659c099c8f830d2876fda38eaafcb9cafdb0b5d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ex99-2.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 115440,
+  "byte_start": 115293,
+  "normalized": "ii.) A royalty (currently held by LRC LP I, an unrelated party) of 1% of Net Revenues from sales of minerals extracted from the Lithium Properties.",
+  "normalized_sha256": "730e4df590a29178e15deab61b74ce50b88eb3d5c1ba2ec781e89dc06d56ce4c",
+  "raw": "ii.) A royalty (currently held by LRC LP I, an unrelated party)\nof 1% of Net Revenues from sales of minerals extracted from the Lithium Properties.",
+  "raw_sha256": "14bf8a4e5aab11f538fb5b1db1b6b67c1c6be8b80d1c316334899b2222ed50ac"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1848309/000129281426001908/ex99-2.htm",
+ "xbrl_contexts": []
+}

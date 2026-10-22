@@ -1,19 +1,22 @@
 {
  "assessments": 10,
- "candidates_total": 120,
+ "candidates_total": 641,
  "codes": {
+  "DUPLICATE_SPAN_BYTES": 6,
+  "MAGNITUDE_PARSE_AMBIGUOUS": 7,
+  "MAGNITUDE_UNIT_KIND_MISMATCH": 7,
   "MAGNITUDE_XBRL_AVAILABLE": 4
  },
  "counters": {
-  "duplicate_span_bytes": 0,
+  "duplicate_span_bytes": 6,
   "excerpt_self_check_failed": 0,
   "sources_reused": 52,
-  "sources_written": 0,
+  "sources_written": 87,
   "subject_name_from_sec_name": 0
  },
  "coverage_by_state": {
-  "assessed": 14,
-  "no_supported_result": 51
+  "assessed": 34,
+  "no_supported_result": 31
  },
  "dirname": "D2a",
  "edges": [
@@ -33,9 +36,24 @@
    "subject_issuer_id": "ISS:US-XNYS-CNR"
   },
   {
+   "object_issuer_id": "ISS:US-XNYS-PSX",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-COP"
+  },
+  {
    "object_issuer_id": "ISS:US-XNYS-WPM",
    "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XASE-BTG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-CC",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XASE-UUUU"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AEP",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-ARLP"
   },
   {
    "object_issuer_id": "ISS:US-XNYS-PSX",
@@ -43,9 +61,34 @@
    "subject_issuer_id": "ISS:US-XNAS-CHRD"
   },
   {
+   "object_issuer_id": "ISS:US-XNYS-PSX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-CLMT"
+  },
+  {
    "object_issuer_id": "ISS:US-XNYS-SHEL",
    "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XNAS-FANG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-F",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-IPX"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-RGLD",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-AG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-WPM",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-AG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-BA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-ATI"
   },
   {
    "object_issuer_id": "ISS:US-XNYS-FNV",
@@ -64,50 +107,76 @@
   }
  ],
  "inputs": {
-  "D2a/candidates.jsonl": "e23bf2e64df656e2367c71267e0a1df29afa32b000ca6f06c1ec5a69da6e2dca",
+  "D2a/candidates.jsonl": "b47b4adcb50d4d5eba72d260b81fbb4ad904d184b8b4a112d923ac10236a7504",
   "D2a/fetch_ledger.jsonl": "31b21ca523f769eeda7775410c7ff12eec711b9b87e16cf0bfcde6afd666e3bd",
-  "D2a/harvest_report.json": "1dbe5881724c3e955aa67c8ad3a15abf70d8c33f884e18e963b33570b9df7e7e",
-  "D2a/packs/index.json": "d2830212d6afaef825aad2d45541eb2c5a85f92c870606bff2712527f87f831e",
+  "D2a/harvest_report.json": "e1bf15b4fb3ae7f68096473e5aea5021c6d193cd8510a748b0512e56682aaf46",
+  "D2a/packs/index.json": "4de858a7b1052de5ed948553838ecb18b45709e9e0f642bfb07d745235789347",
   "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json": "5977c20a3bfde6280f9835d403579469d2c1252c5deb341f419c89125ca5fbd4",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
  },
- "judged": 120,
+ "judged": 641,
  "leaf": "D2a",
  "non_edge_reason": {
-  "ANONYMOUS_ALIAS": 13,
-  "OUT_OF_CORE_MARKET": 1,
-  "UNRESOLVED_COUNTERPARTY": 33
+  "ANONYMOUS_ALIAS": 18,
+  "OUT_OF_CORE_MARKET": 3,
+  "UNRESOLVED_COUNTERPARTY": 109
  },
- "observations": 60,
+ "observations": 166,
  "outcomes": {
-  "admitted": 52,
-  "no_relationship": 68
+  "admitted": 139,
+  "no_relationship": 478,
+  "refused": 18,
+  "unclear": 6
  },
  "rows_by_species": {
   "component_dependency": 5,
-  "licensing": 2,
-  "supplier_customer": 53
+  "licensing": 16,
+  "supplier_customer": 145
  },
  "schema": "gmi_rel_m2.materialize_report/v1",
  "unresolved_names": [
   {
-   "count": 3,
+   "count": 6,
    "name": "Citadel Energy Marketing LLC"
+  },
+  {
+   "count": 6,
+   "name": "Gunvor USA LLC"
+  },
+  {
+   "count": 6,
+   "name": "NRG Business Marketing LLC"
+  },
+  {
+   "count": 5,
+   "name": "Wheaton Precious Metals International Ltd."
+  },
+  {
+   "count": 4,
+   "name": "Mitsui & Co., Ltd."
+  },
+  {
+   "count": 4,
+   "name": "Wheaton Precious Metals International Ltd"
   },
   {
    "count": 3,
    "name": "Diamondback"
   },
   {
-   "count": 3,
-   "name": "NRG Business Marketing LLC"
+   "count": 2,
+   "name": "CONSOL Energy Inc."
   },
   {
    "count": 2,
    "name": "DK Trading & Supply LLC"
+  },
+  {
+   "count": 2,
+   "name": "DTE Energy Trading, Inc"
   },
   {
    "count": 2,
@@ -123,7 +192,27 @@
   },
   {
    "count": 2,
-   "name": "Gunvor USA LLC"
+   "name": "FCA"
+  },
+  {
+   "count": 2,
+   "name": "First Mining"
+  },
+  {
+   "count": 2,
+   "name": "Hiller Carbon"
+  },
+  {
+   "count": 2,
+   "name": "InQuik Inc."
+  },
+  {
+   "count": 2,
+   "name": "LRC LP I"
+  },
+  {
+   "count": 2,
+   "name": "Louisville Gas and Electric Company"
   },
   {
    "count": 2,
@@ -131,7 +220,23 @@
   },
   {
    "count": 2,
+   "name": "MarkWest"
+  },
+  {
+   "count": 2,
+   "name": "Messer LLC"
+  },
+  {
+   "count": 2,
    "name": "Pioneer Natural Resources"
+  },
+  {
+   "count": 2,
+   "name": "SK On"
+  },
+  {
+   "count": 2,
+   "name": "SeAH M&S Corp."
   },
   {
    "count": 2,
@@ -139,7 +244,39 @@
   },
   {
    "count": 2,
+   "name": "Sheng Wei Zhi Yuan International Limited"
+  },
+  {
+   "count": 2,
+   "name": "ThyssenKrupp Metallurgical Products GmbH"
+  },
+  {
+   "count": 2,
    "name": "Vitol Inc."
+  },
+  {
+   "count": 2,
+   "name": "Yahua International Investment and Development Co., Ltd."
+  },
+  {
+   "count": 1,
+   "name": "American Rheinmetall"
+  },
+  {
+   "count": 1,
+   "name": "Antero Midstream Partners LP"
+  },
+  {
+   "count": 1,
+   "name": "BMW AG"
+  },
+  {
+   "count": 1,
+   "name": "CMC Cometals"
+  },
+  {
+   "count": 1,
+   "name": "Carver Pump"
   },
   {
    "count": 1,
@@ -147,11 +284,19 @@
   },
   {
    "count": 1,
-   "name": "DTE Energy Trading, Inc"
+   "name": "Enterprise"
   },
   {
    "count": 1,
-   "name": "Enterprise"
+   "name": "Enterprise Products Operating"
+  },
+  {
+   "count": 1,
+   "name": "FCA US LLC"
+  },
+  {
+   "count": 1,
+   "name": "First Mining Gold Corp."
   },
   {
    "count": 1,
@@ -159,11 +304,31 @@
   },
   {
    "count": 1,
+   "name": "GTP"
+  },
+  {
+   "count": 1,
    "name": "Glencore plc"
   },
   {
    "count": 1,
-   "name": "MarkWest"
+   "name": "Global Tungsten & Powders Corp."
+  },
+  {
+   "count": 1,
+   "name": "Gold Canyon Resources Inc."
+  },
+  {
+   "count": 1,
+   "name": "H2O NV Investments LLC"
+  },
+  {
+   "count": 1,
+   "name": "Hiller Carbon, LLC"
+  },
+  {
+   "count": 1,
+   "name": "Kenergy"
   },
   {
    "count": 1,
@@ -171,15 +336,7 @@
   },
   {
    "count": 1,
-   "name": "Shell Trading US Company"
-  },
-  {
-   "count": 1,
-   "name": "Vitol"
-  },
-  {
-   "count": 1,
-   "name": "Wheaton Precious Metals International Ltd."
+   "name": "Nomad Royalty Company Ltd"
   }
  ]
 }

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 523709,
+  "byte_start": 522974,
+  "normalized": "Microsoft has a significant share of the market for touch-enabled console gaming computer peripherals and is pursuing other consumer markets such as mobile devices, tablets, personal computers, and VR and augmented reality (“AR”). Microsoft has significantly greater financial, sales, and marketing resources, as well as greater name recognition and a larger customer base than some of our other licensees from whom, unlike with respect to Microsoft, we are able to collect royalty payments. In the event that Microsoft increases its share of these markets relative to companies from whom we are not precluded from collecting royalty payments, our royalty revenue from other licensees in these market segments may decline.",
+  "normalized_sha256": "5eab6b683ba2f43c8ce82e2206dd550a75cf63aa12c44f3d10c0a7397571fcda",
+  "raw": " Microsoft has a significant share of the market for touch-enabled console gaming computer peripherals and is pursuing other consumer markets such as mobile devices, tablets, personal computers, and VR and augmented reality (&#8220;AR&#8221;). Microsoft has significantly greater financial, sales, and marketing resources, as well as greater name recognition and a larger customer base than some of our other licensees from whom, unlike with respect to Microsoft, we are able to collect royalty payments. In the event that Microsoft increases its share of these markets relative to companies from whom we are not precluded from collecting royalty payments, our royalty revenue from other licensees in these market segments may decline.",
+  "raw_sha256": "76c919425ba1318ea55fc987e52e3461d096ea105597ddaab29a302137e342a6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T20:06:01Z",
+ "accession": "0001628280-26-010140",
+ "cik": "0001018963",
+ "doc_byte_length": 3246117,
+ "doc_sha256": "f1e5822c504b59c1bae304b06cfe7c15310396c7cb6d4fc50ee68cd587efd4b0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-28",
+ "primary_document": "ati-20251228.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 855658,
+  "byte_start": 855136,
+  "normalized": "These LTAs cover sales of ATI’s specialty materials, precision forgings, components, and machined parts that are used in both next-generation and legacy aircraft platforms, including jet engines. Our LTAs include a titanium products supply agreement for aircraft airframes and structural components with Boeing. This LTA covers value-added titanium products and provides opportunities for greater use of ATI’s next generation and advanced titanium alloys in both long product and flat-rolled product forms.",
+  "normalized_sha256": "cad82dd18ff65588d437fac36fea75eccd662e7dc6ab75d1653cb2d4d10df3a7",
+  "raw": "  These LTAs cover sales of ATI&#8217;s specialty materials, precision forgings, components, and machined parts that are used in both next-generation and legacy aircraft platforms, including jet engines.  Our LTAs include a titanium products supply agreement for aircraft airframes and structural components with Boeing.  This LTA covers value-added titanium products and provides opportunities for greater use of ATI&#8217;s next generation and advanced titanium alloys in both long product and flat-rolled product forms.",
+  "raw_sha256": "c70f800779afa992db37862b0e7f4cc5573cfa4e5381b245b88e7e151c9d6346"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1018963/000162828026010140/ati-20251228.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-13T12:11:22Z",
+ "accession": "0000103730-26-000019",
+ "cik": "0000103730",
+ "doc_byte_length": 4764187,
+ "doc_sha256": "7f080cef37797bf9c426e8df0ad9a403cf8e0134dfee96aeb2a0dc20562b3857",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "form10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1665905,
+  "byte_start": 1665642,
+  "normalized": "Trademark License Agreement, dated July 6, 2010, between Vishay Precision Group, Inc. and Vishay Intertechnology, Inc. Incorporated by reference to Exhibit 10.2 to Vishay Precision Group, Inc.’s current report on Form 8-K filed July 7, 2010.",
+  "normalized_sha256": "d91864f053391da3e9b2324131e7be6f985b809bb5bf03254c23b4e13d49cc5e",
+  "raw": "Trademark\n                License Agreement, dated July 6, 2010, between Vishay Precision Group, Inc. and Vishay Intertechnology, Inc. Incorporated by reference to Exhibit 10.2 to Vishay Precision Group, Inc.&#8217;s current report on Form 8-K filed July 7, 2010.",
+  "raw_sha256": "cc84d319147ecc393616a16bed0c1a47c33f9b074c43e22954d1f7c54ef7aa6f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/103730/000010373026000019/form10k.htm",
+ "xbrl_contexts": []
+}

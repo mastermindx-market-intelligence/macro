@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:24:05Z",
+ "accession": "0001097864-26-000006",
+ "cik": "0001097864",
+ "doc_byte_length": 2781990,
+ "doc_sha256": "28b760672ffe0b798bc137892d3a5c7e3acc0d5c4d6e23339916756738ea0cd9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "on-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 396073,
+  "byte_start": 395651,
+  "normalized": "We had one distributor whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December 31, 2025 and 2024, respectively. There were no distributors whose revenue accounted for more than 10% of total revenue for the year ended December 31, 2023. Our distributors provide fulfillment services and resell our products to OEMs, contract manufacturers, and other end-customers.",
+  "normalized_sha256": "f3a030dcea6b8a0a3843111cc200d564a464123cf10ff1e780a753aec418d2da",
+  "raw": " We had one distributor whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December&#160;31, 2025 and 2024, respectively. There were no distributors whose revenue accounted for more than 10% of total revenue for the year ended December&#160;31, 2023. Our distributors provide fulfillment services and resell our products to OEMs, contract manufacturers, and other end-customers.",
+  "raw_sha256": "49021a636b0ef7338d9d1535c85b5cef381cfb1dac1e2960229e17c318ebf496"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000006/on-20251231.htm",
+ "xbrl_contexts": []
+}

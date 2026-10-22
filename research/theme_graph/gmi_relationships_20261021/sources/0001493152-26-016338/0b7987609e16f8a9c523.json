@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 399057,
+  "byte_start": 398555,
+  "normalized": "On January 5, 2023, the Company entered into a Technology License Agreement and an Asset Purchase Agreement (the “LST Agreements”) with Lightning Silicon Technology, Inc (“LST”). Pursuant to the LST Agreements, the Company issued a license to LST for certain technology associated with our Organic Light Emitting Technology, transferred in-process development contracts with two customers and accounts receivables that the Company had previously determined were not collectible.",
+  "normalized_sha256": "9ca42334838f86cdf6bc8ee50784af0da268803a05b82127d8c41bb05a8af05b",
+  "raw": "On\nJanuary 5, 2023, the Company entered into a Technology License Agreement and an Asset Purchase Agreement (the &#8220;LST Agreements&#8221;)\nwith Lightning Silicon Technology, Inc (&#8220;LST&#8221;). Pursuant to the LST Agreements, the Company issued a license to LST for certain\ntechnology associated with our Organic Light Emitting Technology, transferred in-process development contracts with two customers and\naccounts receivables that the Company had previously determined were not collectible.",
+  "raw_sha256": "0b7987609e16f8a9c5235c7a2fcf66e526dbd3c952c0faafea873bbd96dd5278"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": []
+}

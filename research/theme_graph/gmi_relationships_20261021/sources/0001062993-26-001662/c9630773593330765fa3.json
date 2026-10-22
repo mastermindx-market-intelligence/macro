@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-27T23:58:14Z",
+ "accession": "0001062993-26-001662",
+ "cik": "0001277866",
+ "doc_byte_length": 968411,
+ "doc_sha256": "ac076cc061738fa1980a9ea09506724fd378fcb9e16978b6588d8c3ced2101cb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 104047,
+  "byte_start": 103554,
+  "normalized": "Concurrently with the acquisition of Minera Kolpa on May 1, 2025, the Company entered into a ten-year Copper Stream agreement on copper produced from Kolpa with Versamet Royalties Corporation, who provided a $35.0 million prepayment used to finance the cash consideration of the Kolpa acquisition. In exchange the Company will provide refined copper LME Warrants or copper credits in the amount greater of: (i) 95.8% of produced copper or (ii) 0.03 pounds of copper per pound of lead produced.",
+  "normalized_sha256": "c9630773593330765fa35d2be4038f26517ec303a987b116e232ae32caf7fb0d",
+  "raw": "Concurrently with the acquisition of Minera Kolpa on May 1, 2025, the Company entered into a ten-year Copper Stream agreement on copper produced from Kolpa with Versamet Royalties Corporation, who provided a $35.0 million prepayment used to finance the cash consideration of the Kolpa acquisition. In exchange the Company will provide refined copper LME Warrants or copper credits in the amount greater of: (i) 95.8% of produced copper or (ii) 0.03 pounds of copper per pound of lead produced.",
+  "raw_sha256": "c9630773593330765fa35d2be4038f26517ec303a987b116e232ae32caf7fb0d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1277866/000106299326001662/exhibit99-1.htm",
+ "xbrl_contexts": []
+}

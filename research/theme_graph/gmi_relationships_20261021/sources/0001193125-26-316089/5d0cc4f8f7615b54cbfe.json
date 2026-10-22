@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 521067,
+  "byte_start": 520734,
+  "normalized": "Under the terms of our present agreement with Microsoft, Microsoft receives a royalty-free, perpetual, irrevocable license (including sublicense rights) to our worldwide portfolio of patents. This license permits Microsoft to make, use, and sell hardware, software, and services, excluding specified products, covered by our patents.",
+  "normalized_sha256": "5d0cc4f8f7615b54cbfee58d5126bc94422f9a833563b4dbaef74835a43a4d6f",
+  "raw": "Under the terms of our present agreement with Microsoft, Microsoft receives a royalty-free, perpetual, irrevocable license (including sublicense rights) to our worldwide portfolio of patents. This license permits Microsoft to make, use, and sell hardware, software, and services, excluding specified products, covered by our patents.",
+  "raw_sha256": "5d0cc4f8f7615b54cbfee58d5126bc94422f9a833563b4dbaef74835a43a4d6f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

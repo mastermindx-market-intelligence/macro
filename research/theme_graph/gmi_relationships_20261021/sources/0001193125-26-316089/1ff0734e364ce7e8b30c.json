@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4807090,
+  "byte_start": 4806962,
+  "normalized": "Settlement and License Agreement, dated as of May 12, 2019, by and between Immersion Corporation and Samsung Electronics Co. Ltd",
+  "normalized_sha256": "1ff0734e364ce7e8b30c9d3d0866ddda36bcfea59fc6c9f0eade8e1d24273f3f",
+  "raw": "Settlement and License Agreement, dated as of May 12, 2019, by and between Immersion Corporation and Samsung Electronics Co. Ltd",
+  "raw_sha256": "1ff0734e364ce7e8b30c9d3d0866ddda36bcfea59fc6c9f0eade8e1d24273f3f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

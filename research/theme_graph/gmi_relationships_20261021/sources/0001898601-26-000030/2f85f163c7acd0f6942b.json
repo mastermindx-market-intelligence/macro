@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-29T20:10:02Z",
+ "accession": "0001898601-26-000030",
+ "cik": "0001898601",
+ "doc_byte_length": 3708021,
+ "doc_sha256": "70668efaea5c983f1e08b1a2bedffd3877ab9957d66645085f19a48ed9397e55",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "ipx-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2442639,
+  "byte_start": 2441623,
+  "normalized": "Beyond these contracted sources, IperionX has a number of potential sources of liquidity: Customer receipts are expected to grow as the Virginia facility moves from prototype and qualification work into low-rate production; IperionX has purchase orders and supply arrangements with the U.S. Army (DEVCOM Ground Vehicle Systems Center), American Rheinmetall, Ford Motor Company and Carver Pump, among others. The remaining $79.2 million of ceiling under the SBIR Phase III task order awarded and other awards referred to above may be accessed through further task orders at the Government's discretion.",
+  "normalized_sha256": "e0747878eef0b217a70c3aa4b8f6e7811c8a6d7f312a427ca708dc0343713d70",
+  "raw": "Beyond these contracted sources, IperionX has a number of potential sources of liquidity: Customer receipts are expected to grow as the Virginia facility moves from prototype and qualification work into low-rate production; IperionX has purchase orders and supply arrangements with the U.S. Army (DEVCOM Ground Vehicle Systems Center), American Rheinmetall, Ford Motor Company and Carver Pump, among others. The remaining </span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">$<ix:nonFraction unitRef=\"usd\" contextRef=\"c-35\" decimals=\"-5\" name=\"ipx:GovernmentGrantsRemainingAvailableAmount\" scale=\"6\" id=\"f-329\">79.2</ix:nonFraction> million</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> of ceiling under the SBIR Phase III task order awarded and other awards referred to above may be accessed through further task orders at the Government's discretion.",
+  "raw_sha256": "2f85f163c7acd0f6942b688281ac2bbf5ba4ef9ee325428b5370d8ec24c2dc52"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1898601/000189860126000030/ipx-20260630.htm",
+ "xbrl_contexts": []
+}

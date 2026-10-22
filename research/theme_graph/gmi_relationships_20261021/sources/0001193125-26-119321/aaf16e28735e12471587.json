@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 569008,
+  "byte_start": 568473,
+  "normalized": "Converting or transferring manufacturing from a primary location or supplier to a backup provider could be expensive and would likely take at least two or more quarters. There are only a few foundries, including Samsung and Taiwan Semiconductor Manufacturing Co., Ltd., or TSMC, that are currently available for certain advanced process technologies that we utilize or may utilize, such as 4 nm or 2 nm. Accordingly, as we continue to develop solutions in advanced process nodes, we will be increasingly dependent upon such foundries.",
+  "normalized_sha256": "82efd035d8f5323385997849ab9195d302df61fa3acc13fcc768a5c5f3330de6",
+  "raw": " Converting or transferring manufacturing from a primary location or supplier to a backup provider could be expensive and would likely take at least two or more quarters. There are only a few foundries, including Samsung and Taiwan Semiconductor Manufacturing Co., Ltd., or TSMC, that are currently available for certain advanced process technologies that we utilize or may utilize, such as 4 nm or 2 nm. Accordingly, as we continue to develop solutions in advanced process nodes, we will be increasingly dependent upon such foundries.",
+  "raw_sha256": "aaf16e28735e1247158700eb292bd726999cef6b420346c3e96550631044a5b2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}

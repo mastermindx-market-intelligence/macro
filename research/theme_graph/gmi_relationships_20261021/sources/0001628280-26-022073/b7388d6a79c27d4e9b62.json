@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1791786,
+ "doc_sha256": "96a6017ee5a37c24991450e68b7e9a2434ad8892ddd9ab7a832bdc57230428f8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ero-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1487515,
+  "byte_start": 1485950,
+  "normalized": "(2) During the year ended December 31, 2025, the Company delivered 9,692 ounces of gold (year ended December 31, 2024 - 15,917 ounces of gold) under a precious metals purchase agreement with Royal Gold (note 12) for average cash consideration of $1,213 per ounce (year ended December 31, 2024 - $473 per ounces) and recognized $14.0 million in amortization of deferred revenue (year ended December 31, 2024 - $18.3 million).",
+  "normalized_sha256": "95cf3a1072b181c158240798dfb258eddd8d2e4cb019ae3fd383b397fac0c8eb",
+  "raw": "(2)&#160;&#160;&#160;&#160;<ix:continuation id=\"f-1081-1\" continuedAt=\"f-1081-2\"><ix:continuation id=\"f-1080-2\" continuedAt=\"f-1080-3\">During the year ended December 31, 2025, the Company delivered <ix:nonFraction unitRef=\"oz\" contextRef=\"c-242\" decimals=\"0\" name=\"ero:RevenueFromContractsWithCustomerQuantitySold\" format=\"ixt:num-dot-decimal\" scale=\"0\" id=\"f-1104\">9,692</ix:nonFraction> ounces of gold (year ended December 31, 2024 - <ix:nonFraction unitRef=\"oz\" contextRef=\"c-328\" decimals=\"0\" name=\"ero:RevenueFromContractsWithCustomerQuantitySold\" format=\"ixt:num-dot-decimal\" scale=\"0\" id=\"f-1105\">15,917</ix:nonFraction> ounces of gold) under a precious metals purchase agreement with Royal Gold (note 12) for average cash consideration of $<ix:nonFraction unitRef=\"usdPerOunce\" contextRef=\"c-242\" decimals=\"0\" name=\"ero:RevenueAverageCashConsideration\" format=\"ixt:num-dot-decimal\" scale=\"0\" id=\"f-1106\">1,213</ix:nonFraction> per ounce (year ended December 31, 2024 - $<ix:nonFraction unitRef=\"usdPerOunce\" contextRef=\"c-328\" decimals=\"0\" name=\"ero:RevenueAverageCashConsideration\" scale=\"0\" id=\"f-1107\">473</ix:nonFraction>  per ounces) and recognized $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-242\" decimals=\"-5\" name=\"ero:AmortizationOfContractLiabilities\" scale=\"6\" id=\"f-1108\">14.0</ix:nonFraction>&#160;million in amortization of deferred revenue (year ended December 31, 2024  -  $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-328\" decimals=\"-5\" name=\"ero:AmortizationOfContractLiabilities\" scale=\"6\" id=\"f-1109\">18.3</ix:nonFraction>&#160;million).",
+  "raw_sha256": "b7388d6a79c27d4e9b62a182b7cd32907d3550ec885e1e191b7d3f5bbbf72d25"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/ero-20251231.htm",
+ "xbrl_contexts": []
+}

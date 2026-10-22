@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 628341,
+  "byte_start": 628156,
+  "normalized": "One of SEALSQ’s largest customers is CISCO Systems International (“Cisco”). SEALSQ operates under the terms of a Master Purchase Agreement, dated August 14, 2014.",
+  "normalized_sha256": "a236bb01166b57889bdf578b681ad74c4afbf8153c9d790b294cb469e22de216",
+  "raw": "One of SEALSQ&#8217;s largest customers is CISCO Systems International (&#8220;Cisco&#8221;). SEALSQ operates under the terms of a Master Purchase Agreement, dated August&#160;14, 2014.",
+  "raw_sha256": "4079c376df739230b3f7026bff17fb06e077c8ffed8c3d0ad4df050d21cf6c25"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": []
+}

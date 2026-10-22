@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4801591,
+  "byte_start": 4801476,
+  "normalized": "Settlement and License Agreement, dated as of January 26, 2018, by and between Immersion Corporation and Apple Inc.",
+  "normalized_sha256": "4f9f6de2e120a513a75e3c60ff6dd32b55afc62f7984c086c7ec461be808a0b3",
+  "raw": "Settlement and License Agreement, dated as of January 26, 2018, by and between Immersion Corporation and Apple Inc.",
+  "raw_sha256": "4f9f6de2e120a513a75e3c60ff6dd32b55afc62f7984c086c7ec461be808a0b3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

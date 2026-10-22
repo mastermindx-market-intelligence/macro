@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-10T20:09:34Z",
+ "accession": "0001805385-26-000012",
+ "cik": "0001805385",
+ "doc_byte_length": 2165388,
+ "doc_sha256": "7d2d30d352dcf560b0a1c9c3691edecc8a71e88e827392b865c4822ea1846e0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "evlv-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 618795,
+  "byte_start": 618374,
+  "normalized": "As described under Supply Chain Strategy section, we entered into a non-exclusive contract manufacturing agreement with Plexus, which is expected to enhance manufacturing scalability and operational efficiency. While the onboarding may temporarily affect working capital due to dual production activities and other onboarding costs, the Company does not anticipate a material impact on overall liquidity in the near term.",
+  "normalized_sha256": "7c16081747267852164c60060c01c40673d2921a00e05050909446701c724f8d",
+  "raw": "As described under Supply Chain Strategy section, we entered into a non-exclusive contract manufacturing agreement with Plexus, which is expected to enhance manufacturing scalability and operational efficiency. While the onboarding may temporarily affect working capital due to dual production activities and other onboarding costs, the Company does not anticipate a material impact on overall liquidity in the near term.",
+  "raw_sha256": "7c16081747267852164c60060c01c40673d2921a00e05050909446701c724f8d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1805385/000180538526000012/evlv-20251231.htm",
+ "xbrl_contexts": []
+}

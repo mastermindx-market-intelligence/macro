@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-25T20:02:38Z",
+ "accession": "0001193125-26-402806",
+ "cik": "0001512228",
+ "doc_byte_length": 4172254,
+ "doc_sha256": "8916b4f70a3c6d89f22b7b29bb1ba5d865c08503ac0d0e9de433ec06bf1f1527",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-25",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "nb-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4059336,
+  "byte_start": 4059215,
+  "normalized": "Amendment No. 1 to Offtake Agreement, dated April 13, 2020, between the Company and Traxys North America LLC, as assignee",
+  "normalized_sha256": "5c6d468a6e6aaf95bfae404a3482402a5da038cd784f6bd8ab5830f1cb10a230",
+  "raw": "Amendment No. 1 to Offtake Agreement, dated April 13, 2020, between the Company and Traxys North America LLC, as assignee",
+  "raw_sha256": "5c6d468a6e6aaf95bfae404a3482402a5da038cd784f6bd8ab5830f1cb10a230"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1512228/000119312526402806/nb-20260630.htm",
+ "xbrl_contexts": []
+}

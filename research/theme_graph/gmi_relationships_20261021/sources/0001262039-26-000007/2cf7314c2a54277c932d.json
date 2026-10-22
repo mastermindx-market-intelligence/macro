@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T00:25:18Z",
+ "accession": "0001262039-26-000007",
+ "cik": "0001262039",
+ "doc_byte_length": 2693210,
+ "doc_sha256": "bef9b7bdac3aa28a765d311540862082ccf7ceabb34e60686605c2d814ea3f50",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ftnt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 583651,
+  "byte_start": 583065,
+  "normalized": "Our proprietary ASIC, which are key to the performance of our appliances, are built by contract manufacturers including Renesas and Toshiba America. These contract manufacturers use foundries operated by TSMC or Renesas on a purchase-order basis, and these foundries do not guarantee their capacity and could delay orders or increase their pricing. Accordingly, the foundries are not obligated to continue to fulfill our supply requirements, and due to the long lead time that a new foundry would require, we could suffer inventory shortages of our ASIC as well as increased costs.",
+  "normalized_sha256": "704d21dbe9310222e84338be5499caaf546cae2d97e11f419807593affd34a3b",
+  "raw": "Our proprietary ASIC, which are key to the performance of our appliances, are built by contract manufacturers including Renesas and Toshiba America.&#160;These contract manufacturers use foundries operated by TSMC or Renesas on a purchase-order basis, and these foundries do not guarantee their capacity and could delay orders or increase their pricing. Accordingly, the foundries are not obligated to continue to fulfill our supply requirements, and due to the long lead time that a new foundry would require, we could suffer inventory shortages of our ASIC as well as increased costs.",
+  "raw_sha256": "2cf7314c2a54277c932d89896ac158a9f59213191a10f6726392873d6b682162"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1262039/000126203926000007/ftnt-20251231.htm",
+ "xbrl_contexts": []
+}

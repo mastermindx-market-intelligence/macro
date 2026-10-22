@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T12:10:05Z",
+ "accession": "0000820318-26-000020",
+ "cik": "0000820318",
+ "doc_byte_length": 2679044,
+ "doc_sha256": "c4a5db6385dc9af4db2370b88953515e9e8f00162ed60b0f30d10331a453f087",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-14",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "iivi-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 315857,
+  "byte_start": 315476,
+  "normalized": "During fiscal 2026, we announced the expansion of our Sherman, Texas, manufacturing facility, entered into a strategic multi-year supply agreement with NVIDIA for advanced lasers and optical networking products supporting next-generation AI infrastructure, and received a $50 million preliminary memorandum of terms under the CHIPS and Science Act to support the Sherman expansion.",
+  "normalized_sha256": "f4ded185ac7a9572839f6c0b7ff9fa949d2265871d2ebaae77aa4be93ea35ede",
+  "raw": "During fiscal 2026, we announced the expansion of our Sherman, Texas, manufacturing facility, entered into a strategic multi-year supply agreement with NVIDIA for advanced lasers and optical networking products supporting next-generation AI infrastructure, and received a $50 million preliminary memorandum of terms under the CHIPS and Science Act to support the Sherman expansion.",
+  "raw_sha256": "f4ded185ac7a9572839f6c0b7ff9fa949d2265871d2ebaae77aa4be93ea35ede"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/820318/000082031826000020/iivi-20260630.htm",
+ "xbrl_contexts": []
+}

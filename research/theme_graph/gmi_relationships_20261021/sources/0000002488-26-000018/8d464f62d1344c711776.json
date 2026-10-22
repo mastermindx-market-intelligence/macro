@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-03T23:14:52Z",
+ "accession": "0000002488-26-000018",
+ "cik": "0000002488",
+ "doc_byte_length": 2174707,
+ "doc_sha256": "38bc381563ff1c70d8f75186075eeb4b4f215b0b6cdd8000737bce06870910c8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 432661,
+  "byte_start": 432266,
+  "normalized": "Moreover, we rely on TSMC, UMC and our other foundries to produce wafers with competitive performance attributes for our IC products. Therefore, the foundries, particularly TSMC which manufactures our newest IC products, must be able to transition to advanced manufacturing process technologies and increased wafer sizes, produce wafers at acceptable yields and deliver them in a timely manner.",
+  "normalized_sha256": "e4f199e68f58392827853b404595628b956970b3f6d8f69f05a3fa445fff66f4",
+  "raw": " Moreover, we rely on TSMC, UMC and our other foundries to produce wafers with competitive performance attributes for our IC products. Therefore, the foundries, particularly TSMC which manufactures our newest IC products, must be able to transition to advanced manufacturing process technologies and increased wafer sizes, produce wafers at acceptable yields and deliver them in a timely manner.",
+  "raw_sha256": "8d464f62d1344c711776d1f58164941d19735937f142eb7c1609acdec5b38888"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+ "xbrl_contexts": []
+}

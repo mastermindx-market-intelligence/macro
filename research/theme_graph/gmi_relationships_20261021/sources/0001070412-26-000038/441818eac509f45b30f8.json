@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-10T19:00:16Z",
+ "accession": "0001070412-26-000038",
+ "cik": "0001070412",
+ "doc_byte_length": 3388540,
+ "doc_sha256": "e7ed4b7df1c9c022d89e8933072d1ce4bd1b6aa1030355fd8a5326189a7f8485",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cnx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3260767,
+  "byte_start": 3260507,
+  "normalized": "CONSOL Energy Inc. to CNX Resources Corporation Trademark License Agreement, dated as of November 28, 2017, by and between the Company and CONSOL Energy Inc., incorporated by reference to Exhibit 10.3 to Form 8-K (file no. 001-14901) filed on December 4, 2017.",
+  "normalized_sha256": "441818eac509f45b30f804233173aa7f54c078c50ff9d20dedf56bb6a58a5064",
+  "raw": "CONSOL Energy Inc. to CNX Resources Corporation Trademark License Agreement, dated as of November 28, 2017, by and between the Company and CONSOL Energy Inc., incorporated by reference to Exhibit 10.3 to Form 8-K (file no. 001-14901) filed on December 4, 2017.",
+  "raw_sha256": "441818eac509f45b30f804233173aa7f54c078c50ff9d20dedf56bb6a58a5064"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1070412/000107041226000038/cnx-20251231.htm",
+ "xbrl_contexts": []
+}

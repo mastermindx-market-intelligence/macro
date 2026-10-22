@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T20:48:26Z",
+ "accession": "0001104659-26-020461",
+ "cik": "0001113232",
+ "doc_byte_length": 3058722,
+ "doc_sha256": "caea13eedcaba102752e926f81061705b9e0adef717069d67faf34d3378c0211",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "acls-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 272146,
+  "byte_start": 271704,
+  "normalized": "U.S. export controls on shipments to Chinese customers have been notably increasing since 2020. Since the placement of SMIC on the U.S. Entity List in 2020, we are required to obtain export control licenses to ship to mature process SMIC fabs, which to date, we have been able to obtain. Other chipmakers have been placed on the Entity List, some with, and some without, a similar policy allowing licensed shipments on specified conditions.",
+  "normalized_sha256": "5e38f578d078f4ee4cac5c342810bd8413fa5a1699007f3d8901bb1d94b47801",
+  "raw": "U.S. export controls on shipments to Chinese customers have been notably increasing since 2020.  Since the placement of SMIC on the U.S. Entity List in 2020, we are required to obtain export control licenses to ship to mature process SMIC fabs, which to date, we have been able to obtain.  Other chipmakers have been placed on the Entity List, some with, and some without, a similar policy allowing licensed shipments on specified conditions.",
+  "raw_sha256": "77bd51851a309a98364a3c5178d357b0b10e7714ec4e733542eb1644a6e9d804"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1113232/000110465926020461/acls-20251231x10k.htm",
+ "xbrl_contexts": []
+}

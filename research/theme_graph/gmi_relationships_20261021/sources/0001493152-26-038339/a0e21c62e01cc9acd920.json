@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-14T20:07:52Z",
+ "accession": "0001493152-26-038339",
+ "cik": "0001540684",
+ "doc_byte_length": 2045275,
+ "doc_sha256": "9b47a17d724efd2ed05a5d34903d4d94e102b1760d4c6932127f0da64812fbd4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-14",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "form10-ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 385593,
+  "byte_start": 384196,
+  "normalized": "Management’s plan is to fund our capital requirements and ongoing operations through the generation of revenue from our mining operations and projects, and until such time that we generate such revenue, to fund operations by selling our equity securities, including our common stock, or common stock in Atlas Critical Minerals that we own, entering into royalty agreements for the future sales of minerals or off-take agreements related to future sales of negotiated quantities of minerals, and obtaining debt financing. For example, on March 28, 2024, we entered into a Securities Purchase Agreement with Mitsui & Co., Ltd. (“Mitsui”), pursuant to which we agreed to sell to Mitsui 1,871,250 shares of our common stock for aggregate net proceeds of $29.6 million. In connection with such agreement, our subsidiary Atlas Litio Brasil Ltda (“Atlas Brazil”) entered into an Offtake and Sales Agreement pursuant to which Atlas Brazil agreed to sell and deliver to the Investor, and the Investor agreed to purchase and take delivery of, (i) the spot quantity of fifteen thousand (15,000) dry metric tons of Atlas Brazil’s product, and, subject to the fulfillment of certain conditions precedent, (ii) up to sixty thousand (60,000) dry metric tons of Atlas Brazil’s product for each year, up to a total of three hundred thousand (300,000) dry metric tons.",
+  "normalized_sha256": "033a25c19fb32c82f700717b0a177d3df1c6336e8a25e526aebafec976c756a1",
+  "raw": " Management&#8217;s plan is to fund our capital requirements and ongoing operations through the generation of revenue from\nour mining operations and projects, and until such time that we generate such revenue, to fund operations by selling our equity securities,\nincluding our common stock, or common stock in Atlas Critical Minerals that we own, entering into royalty agreements for the future sales\nof minerals or off-take agreements related to future sales of negotiated quantities of minerals, and obtaining debt financing. For example,\non March 28, 2024, we entered into a Securities Purchase Agreement with Mitsui &amp; Co., Ltd. (&#8220;Mitsui&#8221;), pursuant to which\nwe agreed to sell to Mitsui 1,871,250 shares of our common stock for aggregate net proceeds of $29.6 million. In connection with such\nagreement, our subsidiary Atlas Litio Brasil Ltda (&#8220;Atlas Brazil&#8221;) entered into an Offtake and Sales Agreement pursuant to\nwhich Atlas Brazil agreed to sell and deliver to the Investor, and the Investor agreed to purchase and take delivery of, (i) the spot\nquantity of fifteen thousand (15,000) dry metric tons of Atlas Brazil&#8217;s product, and, subject to the fulfillment of certain conditions\nprecedent, (ii) up to sixty thousand (60,000) dry metric tons of Atlas Brazil&#8217;s product for each year, up to a total of three hundred\nthousand (300,000) dry metric tons.",
+  "raw_sha256": "a0e21c62e01cc9acd920e107adfb47bce219fa96e5ff2de94c70302945b6ff16"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1540684/000149315226038339/form10-ka.htm",
+ "xbrl_contexts": []
+}

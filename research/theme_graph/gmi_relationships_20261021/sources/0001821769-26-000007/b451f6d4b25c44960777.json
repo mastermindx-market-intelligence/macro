@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1245629,
+  "byte_start": 1245198,
+  "normalized": "committing to purchase buffer inventory from TSMC, expanding our collaboration with Powerchip Semiconductor Manufacturing Corporation and in November 2025, we announced a long-term strategic partnership with GlobalFoundries to develop and deliver advanced GaN solutions for critical applications in high power markets, including AI data centers, energy and grid infrastructure, performance computing and industrial electrification.",
+  "normalized_sha256": "b451f6d4b25c449607772bf56c77bb25a1be1a12ccb631ee7a33f30e2074b579",
+  "raw": "committing to purchase buffer inventory from TSMC, expanding our collaboration with Powerchip Semiconductor Manufacturing Corporation and in November 2025, we announced a long-term strategic partnership with GlobalFoundries to develop and deliver advanced GaN solutions for critical applications in high power markets, including AI data centers, energy and grid infrastructure, performance computing and industrial electrification.",
+  "raw_sha256": "b451f6d4b25c449607772bf56c77bb25a1be1a12ccb631ee7a33f30e2074b579"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

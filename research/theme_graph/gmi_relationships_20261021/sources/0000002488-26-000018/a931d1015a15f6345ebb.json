@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-03T23:14:52Z",
+ "accession": "0000002488-26-000018",
+ "cik": "0000002488",
+ "doc_byte_length": 2174707,
+ "doc_sha256": "38bc381563ff1c70d8f75186075eeb4b4f215b0b6cdd8000737bce06870910c8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "amd-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 265854,
+  "byte_start": 265478,
+  "normalized": "In October 2025, we entered into a product purchase agreement with OpenAI OpCo, LLC, (OpenAI) to deploy 6 gigawatts of AMD GPUs, with the deployment of the first gigawatt of capacity powered by our AMD Instinct MI450 series products. This multiyear strategic partnership with OpenAI demonstrates our continued execution of hardware, software and full-stack solutions roadmaps.",
+  "normalized_sha256": "a931d1015a15f6345ebbbce7684d1ff1fc62cdcd42facff296e9f658872c8d69",
+  "raw": "In October 2025, we entered into a product purchase agreement with OpenAI OpCo, LLC, (OpenAI) to deploy 6 gigawatts of AMD GPUs, with the deployment of the first gigawatt of capacity powered by our AMD Instinct MI450 series products. This multiyear strategic partnership with OpenAI demonstrates our continued execution of hardware, software and full-stack solutions roadmaps.",
+  "raw_sha256": "a931d1015a15f6345ebbbce7684d1ff1fc62cdcd42facff296e9f658872c8d69"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:39:08Z",
+ "accession": "0002058873-26-000010",
+ "cik": "0002058873",
+ "doc_byte_length": 2657938,
+ "doc_sha256": "93b15f7f6a7cf497a0f6275893ac3d4774138d7cae2203edb727f28378332db5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "q-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 894736,
+  "byte_start": 894396,
+  "normalized": "Intellectual Property Cross-License Agreement, effective as of November 1, 2025, by and among DuPont de Nemours, Inc., Qnity Electronics, Inc. and certain of their respective affiliates (Incorporated by reference to Exhibit 10.4 to the Company’s Current Report on Form 8-K (File No. 001-42619) filed with the SEC on November 3, 2025).",
+  "normalized_sha256": "5008e89328466548ac88b96e001002b45854205652e11b8960a40aeabe2e6101",
+  "raw": "Intellectual Property Cross-License Agreement, effective as of November 1, 2025, by and among DuPont de Nemours, Inc., Qnity Electronics, Inc. and certain of their respective affiliates (Incorporated by reference to Exhibit 10.4 to the Company&#8217;s Current Report on Form 8-K (File No. 001-42619) filed with the SEC on November 3, 2025).",
+  "raw_sha256": "61f2197ccf4831ecb21d8aaf7bb6df789cae669473aa98a166ed01b98bc6ae72"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2058873/000205887326000010/q-20251231.htm",
+ "xbrl_contexts": []
+}

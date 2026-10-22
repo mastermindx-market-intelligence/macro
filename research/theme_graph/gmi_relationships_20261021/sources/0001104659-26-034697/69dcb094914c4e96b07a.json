@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 1622055,
+ "doc_sha256": "3d935d1d878c18a1384040e4daa11959c4fb8876a4b5efec11218b3f9edd471d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 249978,
+  "byte_start": 248878,
+  "normalized": "The Corporation’s wholly owned subsidiary, NMG Matawinie, entered into binding supply (the “Supply Term Sheet”) and marketing term sheets (the “Marketing Term Sheet”) with His Majesty the King in Right of Canada as represented by the Minister of Public Works and GoC providing for an aggregate 15 ktpy of graphite concentrate to be purchased by the GoC on a take-or-pay basis and a potential additional 15 ktpy to be purchased by allied countries for strategic applications, with a seven year offtake term. NMG Matawinie also agreed on the final terms of a binding amended and restated joint marketing and offtake agreement with Traxys North America LLC (“Traxys”), the execution of which is subject to the approval of Traxys’ board of directors, for 20 ktpy of graphite concentrate over seven years, including a 10 ktpy take-or-pay component (the “A&R Offtake and Joint Marketing Agreement”).",
+  "normalized_sha256": "9f254649482398bf87614f4705c831ccb2a008c8d8dfcdc40cd5982b5df6e462",
+  "raw": " The Corporation&#8217;s wholly owned subsidiary, NMG Matawinie, entered into binding supply (the &#8220;<b style=\"font-weight:bold;\">Supply Term Sheet</b>&#8221;) and marketing term sheets (the &#8220;<b style=\"font-weight:bold;\">Marketing Term Sheet</b>&#8221;) with His Majesty the King in Right of Canada as represented by the Minister of Public Works and GoC providing for an aggregate 15 ktpy of graphite concentrate to be purchased by the GoC on a take-or-pay basis and a potential additional 15 ktpy to be purchased by allied countries for strategic applications, with a seven&#160;year offtake term. NMG Matawinie also agreed on the final terms of a binding amended and restated joint marketing and offtake agreement with Traxys North America LLC (&#8220;<b style=\"font-weight:bold;\">Traxys</b>&#8221;), the execution of which is subject to the approval of Traxys&#8217; board of directors, for 20 ktpy of graphite concentrate over seven&#160;years, including a 10 ktpy take-or-pay component (the &#8220;<b style=\"font-weight:bold;\">A&amp;R Offtake and Joint Marketing Agreement</b>&#8221;).",
+  "raw_sha256": "69dcb094914c4e96b07a36b3a8ce203880f53f49fe788146e2cf320f3ce4e36f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

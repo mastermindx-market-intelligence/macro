@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-18T21:05:10Z",
+ "accession": "0001049521-26-000045",
+ "cik": "0001049521",
+ "doc_byte_length": 2182366,
+ "doc_sha256": "763b48fcf45a9a588a2eabc819e67c38a19dabe746b4eb1c914b6bdb97a9bb2e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "mrcy-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 316030,
+  "byte_start": 315605,
+  "normalized": "Sales of our products and services, primarily as a subcontractor or team member with defense prime contractors, and in some cases directly, to the U.S. government, as well as foreign governments, accounted for approximately 97%, 97% and 95% of our total net revenues in fiscal years 2026, 2025 and 2024, respectively. Our products and services are incorporated into many different domestic and international defense programs.",
+  "normalized_sha256": "26c19005bdab00d52031605fe2d2b401f86682ed787b7d2ee3f92754373c7fd5",
+  "raw": "Sales of our products and services, primarily as a subcontractor or team member with defense prime contractors, and in some cases directly, to the U.S. government, as well as foreign governments, accounted for approximately 97%, 97% and 95% of our total net revenues in fiscal years 2026, 2025 and 2024, respectively. Our products and services are incorporated into many different domestic and international defense programs.",
+  "raw_sha256": "26c19005bdab00d52031605fe2d2b401f86682ed787b7d2ee3f92754373c7fd5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1049521/000104952126000045/mrcy-20260703.htm",
+ "xbrl_contexts": []
+}

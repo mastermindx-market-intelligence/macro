@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-01T10:05:49Z",
+ "accession": "0001193125-26-135585",
+ "cik": "0001122411",
+ "doc_byte_length": 10672453,
+ "doc_sha256": "54e7a8d18f45ee907ceb168aeb47634502dd81e9059e41b4ceb5ffac768280af",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-01",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d50802d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1452279,
+  "byte_start": 1451773,
+  "normalized": "Since 1997, we have maintained a strategic alliance with TSMC, which designates us as their non-exclusive preferred provider of packaging and testing services for semiconductors manufactured by TSMC. Through our strategic alliance with and close geographic proximity to TSMC, we are able to offer our customers a total semiconductor manufacturing solution that includes access to foundry services in addition to our packaging, testing, and direct shipment services.",
+  "normalized_sha256": "1c6bc587f816f8fef93944e97b2dff46df53a4b9a37e063271762b89da8524b4",
+  "raw": "Since 1997, we have maintained a strategic alliance with TSMC, which designates us as their <span style=\"white-space:nowrap\">non-exclusive</span> preferred provider of packaging and testing services for semiconductors manufactured by TSMC. Through our strategic alliance with and close geographic proximity to TSMC, we are able to offer our customers a total semiconductor manufacturing solution that includes access to foundry services in addition to our packaging, testing, and direct shipment services. ",
+  "raw_sha256": "a58eb301a42d90d0ed604bb4e519d48366964bb7e3759358a77e9957dab2d5cf"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122411/000119312526135585/d50802d20f.htm",
+ "xbrl_contexts": []
+}

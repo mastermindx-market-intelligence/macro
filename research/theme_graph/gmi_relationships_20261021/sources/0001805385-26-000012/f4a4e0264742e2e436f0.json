@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-10T20:09:34Z",
+ "accession": "0001805385-26-000012",
+ "cik": "0001805385",
+ "doc_byte_length": 2165388,
+ "doc_sha256": "7d2d30d352dcf560b0a1c9c3691edecc8a71e88e827392b865c4822ea1846e0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "evlv-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 263004,
+  "byte_start": 262187,
+  "normalized": "to purchase our hardware, we offer the option of purchasing our hardware outright directly from us through our “purchase subscription” model, which is coupled with a multi-year security-as-a-service subscription with us to operate the hardware. In addition to our two primary sales models, we previously offered our “distributor licensing” model based on the Distribution and License Agreement we entered into with Columbia Electrical Contractors, Inc. (“Columbia Tech”) in March of 2023, which subsequently expired on December 31, 2025. Under that arrangement, we granted a license of our intellectual property to Columbia Tech, which contracted directly with certain of our resellers to fulfill sales demand where the end-user customer prefers to purchase the hardware equipment.",
+  "normalized_sha256": "b82bafc209bea7a8129dd24611248cd4e16956f0d735117008902dcb78cc6566",
+  "raw": "to purchase our hardware, we offer the option of purchasing our hardware outright directly from us through our &#8220;purchase subscription&#8221; model, which is coupled with a multi-year security-as-a-service subscription with us to operate the hardware. In addition to our two primary sales models, we previously offered our &#8220;distributor licensing&#8221; model based on the Distribution and License Agreement we entered into with Columbia Electrical Contractors, Inc. (&#8220;Columbia Tech&#8221;) in March of 2023, which subsequently expired on December 31, 2025. Under that arrangement, we granted a license of our intellectual property to Columbia Tech, which contracted directly with certain of our resellers to fulfill sales demand where the end-user customer prefers to purchase the hardware equipment.",
+  "raw_sha256": "f4a4e0264742e2e436f068dbd1e0ad120c90d902f27ed6ebc9a7cdeabfa1db04"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1805385/000180538526000012/evlv-20251231.htm",
+ "xbrl_contexts": []
+}

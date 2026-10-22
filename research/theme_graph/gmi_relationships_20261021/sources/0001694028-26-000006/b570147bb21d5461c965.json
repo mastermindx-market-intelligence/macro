@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-02T21:17:46Z",
+ "accession": "0001694028-26-000006",
+ "cik": "0001694028",
+ "doc_byte_length": 1696137,
+ "doc_sha256": "71468c15584c32a177b843a021a81eff3fc17047e16fae72b5a46a4c2f485ea6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-02",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lbrt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 269492,
+  "byte_start": 268744,
+  "normalized": "Our sales and marketing activities typically are performed through our local sales representatives in each geographic region and are supported by our corporate headquarters. For the years ended December 31, 2025, 2024 and 2023, our top five customers collectively accounted for approximately 39%, 43%, and 34% of our revenues, respectively. For the year ended December 31, 2025, Occidental Petroleum Corporation and XTO Energy Inc. accounted for more than 10% of consolidated revenues.",
+  "normalized_sha256": "f2f90665af5674adac98ce5ee452a15b576ae1c7ca71c413da83efef2fd558b7",
+  "raw": "Our sales and marketing activities typically are performed through our local sales representatives in each geographic region and are supported by our corporate headquarters. For the years ended December 31, 2025, 2024 and 2023, our top five customers collectively accounted for approximatel</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">y 39%</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">, 43%, and 34% of our revenues, respectively. For the year ended December 31, 2025, Occidental Petroleum Corporation and XTO Energy Inc. accounted for more than 10% of consolidated revenues.",
+  "raw_sha256": "b570147bb21d5461c965a107bd7aa0cc8a51aa3fcd59eb282182e69f731e67f8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1694028/000169402826000006/lbrt-20251231.htm",
+ "xbrl_contexts": []
+}
