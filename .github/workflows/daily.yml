@@ -2375,46 +2375,57 @@ jobs:
         # truth shared verbatim with the charting app. Runs BEFORE the regime engine so a clean,
         # freshly written leaf is what engine.run loads into latest["mtf_signals"].
         #
-        # ABORT-THE-WRITE, NOT-THE-DEPLOY: a contract drift/malformed write must NOT ship, but —
-        # like every other builder here — must NOT 404 the dashboard either. So on a validation
-        # failure we QUARANTINE the bad write (restore the last-good committed leaf; drop the
-        # untracked per-ticker files so the chart safe-degrades to no-markers) and surface a loud
-        # red ::error:: annotation + run-summary, then exit 0 so the deploy continues. The bad
-        # write never reaches main (leaf reverted, per-ticker files gone) and the violation is
-        # recorded in the committed data/quality/signals_audit.json. The HARD red gate for
-        # contract-breaking PRs lives in ci.yml (signal-contract job) where blocking is safe.
+        # A failed/partial candidate cannot reach consumers or any unconditional sink.
+        # Availability fallback requires commit restoration, cleanup and revalidation;
+        # its original dates remain intact. Unproved fallback fails the step closed.
         # Compute is cheap (reads the committed data/stocks/*.parquet deep-history panel).
+        id: signal_gate
+        shell: bash
+        # Only an affirmative completed gate admits candidate consumers below.
         run: |
-          set +e
+          echo "accepted=false" >> "$GITHUB_OUTPUT"
+          # Capture the immutable committed source BEFORE the builder can change files/index.
+          fallback_ref="$(git rev-parse --verify 'HEAD^{commit}')"
           echo "::group::build + validate MTF signals"
-          python -m scripts.build_signal_quality > "$RUNNER_TEMP/sigq.log" 2>&1; bq=$?
+          bq=0
+          python -m scripts.build_signal_quality > "$RUNNER_TEMP/sigq.log" 2>&1 || bq=$?
           cat "$RUNNER_TEMP/sigq.log"
-          if [ "$bq" -ne 0 ]; then
-            echo "::error title=build_signal_quality failed (rc=$bq)::signal compute failed — leaf left at last-good"
+          vrc=0
+          if [ "$bq" -eq 0 ]; then
+            python -m scripts.validate_signals > "$RUNNER_TEMP/sigv.log" 2>&1 || vrc=$?
+            cat "$RUNNER_TEMP/sigv.log"
           fi
-          python -m scripts.validate_signals > "$RUNNER_TEMP/sigv.log" 2>&1; vrc=$?
-          cat "$RUNNER_TEMP/sigv.log"
           echo "::endgroup::"
-          if [ "$vrc" -ne 0 ]; then
-            # Discard the drifted/malformed write so neither the commit-to-main nor the Pages
-            # artifact can ship it. Leaf AND per-ticker files are tracked on main (per-ticker
-            # tracked since 2026-06-28 via the render lane) -> restore last-good committed
-            # copies; git clean sweeps only untracked strays (e.g. a new ticker's first write).
-            # NEVER `rm` the tracked per-ticker files here: the 226 staged deletions ride the
-            # broad `git add site/` into the engine commit and modify/delete-conflict with the
-            # intraday render lane's signal commits — the rebase-push then fails every retry
-            # and the WHOLE nightly engine commit (regime update + forward ledgers) is dropped
-            # (2026-07-12 incident: pick-lab ledgers lost).
-            git checkout -- data/signal_archive/mtf_signals_latest.json 2>/dev/null || true
-            git checkout -- site/signals/ 2>/dev/null || true
-            git clean -fq -- site/signals/ 2>/dev/null || true
-            echo "::error title=signal §7 contract gate FAILED::malformed/drifted signal write discarded (leaf + per-ticker files restored to last-good committed copies); see data/quality/signals_audit.json"
-            { echo "### ❌ signal §7 contract gate failed — bad write discarded";
-              echo '<details><summary>validator output</summary>'; echo; echo '```';
-              tail -n 40 "$RUNNER_TEMP/sigv.log"; echo '```'; echo '</details>'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$bq" -ne 0 ] || [ "$vrc" -ne 0 ]; then
+            echo "::error title=signal candidate rejected::build rc=$bq / validation rc=$vrc; trying committed fallback"
+            # Restore BOTH tracked shapes from the captured commit, never a contaminated index.
+            # Only this signal corpus is touched; all unrelated nightly data/ledgers stay owned.
+            if ! git restore --source="$fallback_ref" --staged --worktree -- \
+                data/signal_archive/mtf_signals_latest.json site/signals/; then
+              echo "::error title=signal fallback restore failed::refusing consumers and publication"
+              echo "### ❌ signal fallback restoration failed" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            # Include ignored/untracked candidate files, but never delete tracked signals.
+            if ! git clean -fdx -- site/signals/; then
+              echo "::error title=signal fallback cleanup failed::refusing consumers and publication"
+              echo "### ❌ signal fallback cleanup failed" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            fallback_rc=0
+            python -m scripts.validate_signals > "$RUNNER_TEMP/sigv2.log" 2>&1 || fallback_rc=$?
+            cat "$RUNNER_TEMP/sigv2.log"
+            if [ "$fallback_rc" -ne 0 ]; then
+              echo "::error title=signal fallback invalid::restored corpus failed validation; refusing consumers and publication"
+              echo "### ❌ restored signal fallback failed validation (rc=$fallback_rc)" >> "$GITHUB_STEP_SUMMARY"
+              exit "$fallback_rc"
+            fi
+            echo "::warning title=validated signal fallback::using committed signals from $fallback_ref with their original dates"
+            echo "### ⚠️ validated signal fallback from $fallback_ref; original dates retained (build rc=$bq / validation rc=$vrc)" >> "$GITHUB_STEP_SUMMARY"
           fi
-          exit 0
+          echo "accepted=true" >> "$GITHUB_OUTPUT"
       - name: build signal track-record ledger (w0-stageB)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Incremental + cheap (reads site/signals/ + data/stocks/ — both already
         # written by the step above). Runs AFTER build_signal_quality so both
         # site/signals/*.json and mtf_signals_latest.json are fresh. Resilient:
@@ -2429,6 +2440,7 @@ jobs:
           python -m scripts.audit_sizes || echo "::warning::track_record size tripwire fired �� check data/quality/sizes_audit.json"
           exit 0
       - name: export cross-repo signal contracts (golden_signals + artifact_manifest)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Writes site/factordata/contracts/golden_signals.json + artifact_manifest.json --
         # the oracle the Terminal's golden_gate.py + artifact_conformance.py consume as a
         # conformance check (audit #7 #9). Runs after build_signal_quality (engine.canon is
@@ -2438,6 +2450,7 @@ jobs:
           python -m scripts.export_signal_contracts \
             || echo "::warning::export_signal_contracts failed (non-fatal) -- keeping last committed contract"
       - name: S&P 500 heatmap real-cap reference (weekly Polygon refresh; committed)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # (Re)builds data/sp500_heatmap/reference.parquet (~503 rows: ticker → shares +
         # SIC) so build_site's S&P heatmap sizes tiles by REAL market cap (shares × latest
         # close) on EVERY lane. Since site/stockdata left git for R2, the render /
@@ -2462,6 +2475,7 @@ jobs:
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
       - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
         # organ's per-name state over the graded universe, evaluated on a run-wide PIT
         # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
@@ -2493,6 +2507,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
           exit 0
       - name: checkpoint leader-pullback source to main (durable before engine tail)
+        if: steps.signal_gate.outputs.accepted == 'true'
         id: leader_checkpoint
         # Same publisher, same artifact, same main branch: this is an early durability
         # checkpoint for the source build above, not a second source/store/control plane.
@@ -2543,7 +2558,7 @@ jobs:
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
-        if: steps.leader_accepted_source.outputs.ready == 'true'
+        if: steps.leader_accepted_source.outputs.ready == 'true' && steps.signal_gate.outputs.accepted == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
         # public check-runs API) AND appended to the run Summary with its traceback,
@@ -2579,6 +2594,7 @@ jobs:
         # Body extracted verbatim to scripts/ci/daily_engine_regime_dashboard.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regime_dashboard.sh
       - name: publish the provisional → nightly confirmation delta (R2 artifact)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # W-L1. Runs HERE, after the build step, because that is the first moment
         # site/factordata/us_standouts.json is tonight's board of record — the same
         # document build_site just graded in-process for the render. Same function
@@ -2596,6 +2612,7 @@ jobs:
         run: python -m scripts.close_pass_reconcile
 
       - name: publish Filing Forensics private state
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Publish only after the full workbench build returned. The publisher validates
         # gzip/schema, writes the existing PRIVATE Research Vault bucket, reads it back,
         # and byte-verifies it. Failure is loud but retains the last-good private object;
@@ -2611,6 +2628,7 @@ jobs:
           R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.build_fundamental_forensics --publish-only
       - name: backfill regime stamps (nw-macro-rail R5)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Calls engine.qledger.backfill_regime_stamps() — stamps regime columns onto qledger
         # rows that have as_of within regime_vector.parquet coverage.  Near-term yield ≈ 2 rows
         # (coverage starts 2026-07-01).  Non-fatal: if the function does not yet exist in
@@ -2623,6 +2641,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=backfill_regime_stamps::rc=$rc (non-fatal)"; fi
           exit 0  # PR-2 fix: missing exit 0 caused [ "$rc" -ne 0 ] to exit 1 when rc=0, skipping all downstream kernel steps
       - name: Sector-flip confirmation lens (Policy-Shock W1-C)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Detects violent defensive/offense spread flips (|z| >= 2.5 vs 252d), appends the
         # keep-first event ledger at data/flip_confirmation/events.jsonl, registers one
         # CRAWL_BOUNDED (gradeable) qledger claim per CONFIRMED/FADED event at horizon_d=21
@@ -2638,6 +2657,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_flip_confirmation::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # The Prophet hold-leash's earnings arm reads EquityDesk's native
         # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
         # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet
@@ -2665,7 +2685,7 @@ jobs:
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
-        if: steps.leader_accepted_source.outputs.ready == 'true'
+        if: steps.leader_accepted_source.outputs.ready == 'true' && steps.signal_gate.outputs.accepted == 'true'
         # AFTER build_site: reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
@@ -2696,7 +2716,7 @@ jobs:
         run: bash scripts/ci/daily_engine_prophet_nightly.sh
       - name: prophet-board-acceptance (post-publish alarm, never a gate)
         id: prophet_board_acceptance
-        if: steps.leader_accepted_source.outputs.ready == 'true'
+        if: steps.leader_accepted_source.outputs.ready == 'true' && steps.signal_gate.outputs.accepted == 'true'
         # Same job, same runner, same bytes as the "Prophet nightly" step just
         # above — placed immediately after it and BEFORE the checkpoint commit
         # below so there is no cross-job pull race and no window where a later
@@ -2718,7 +2738,7 @@ jobs:
           python3 -m scripts.prophet_board_acceptance --run-id "${GITHUB_RUN_ID}"
       - name: checkpoint Prophet outputs to main (durable before engine tail)
         id: prophet_checkpoint
-        if: steps.prophet_nightly.outputs.succeeded == 'true'
+        if: steps.prophet_nightly.outputs.succeeded == 'true' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 12
         continue-on-error: true
         env:
@@ -2731,7 +2751,7 @@ jobs:
         # aborts the checkpoint rather than being conflict-resolved away.
         run: bash scripts/ci/daily_engine_prophet_checkpoint.sh
       - name: publish Prophet public health receipt to R2
-        if: steps.prophet_checkpoint.outputs.r2_ready == 'true'
+        if: steps.prophet_checkpoint.outputs.r2_ready == 'true' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 5
         continue-on-error: true
         env:
@@ -3062,7 +3082,7 @@ jobs:
           echo "accepted_sha=$ACCEPTED_PROPHET_SHA" >> "$GITHUB_OUTPUT"
       - name: Prophet × Stage forward-shadow (tag actual entries + nightly grade advance)
         id: prophet_stage_shadow
-        if: steps.prophet_accepted_source.outputs.ready == 'true'
+        if: steps.prophet_accepted_source.outputs.ready == 'true' && steps.signal_gate.outputs.accepted == 'true'
         # AFTER the accepted-source restore: reads site/prophet/{index.json,plans/*.json}
         # + data/prophet/ledger.jsonl from current origin/main. That is this run's
         # checkpoint when it landed, or the prior/newer accepted projection when the
@@ -3222,7 +3242,7 @@ jobs:
           exit 0
       - name: checkpoint Prophet Stage-shadow accrual to main
         id: prophet_stage_checkpoint
-        if: steps.prophet_stage_shadow.outputs.succeeded == 'true'
+        if: steps.prophet_stage_shadow.outputs.succeeded == 'true' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 10
         continue-on-error: true
         env:
@@ -3372,6 +3392,7 @@ jobs:
           echo "::error title=Prophet Stage checkpoint NOT pushed::$PUSH_ATTEMPT attempts failed ($PUSH_STOP); the broad engine commit is fenced from these unaccepted bytes"
           exit 1
       - name: Prophet Live arming pass (provisional-close trigger pack -> R2)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER build_site (same close stores the board was built from). Probes the
         # SAME close-only admission gate (engine/signal_gate.py) with candidate
         # provisional closes and publishes per-name trigger/fade levels to R2 key
@@ -3416,6 +3437,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_prophet_live_pack::rc=$rc (non-fatal — the intraday lane darks on a missing pack)"; fi
           exit 0
       - name: Prophet Live reconciler (intraday event spool -> forward ledger)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER the arming pass, which is what supplies tonight's verdict set. VINTAGE
         # IS ENFORCED, not assumed: `confirmed` is written only from a verdict whose
         # basis IS the row's own session — tonight's pack when its as_of matches, else
@@ -3452,6 +3474,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=reconcile_prophet_live::rc=$rc (non-fatal — the R2 spool is durable, tomorrow picks the day back up)"; fi
           exit 0
       - name: TURN WATCH desk (early-surfacing deck — display tier)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # ANTICIPATION §6.9 R8. Rebuilds the capped public
         # site/turn_watch/turn_watch.json deck and writes the private, uncapped B1 intake
         # sidecar at data/us_prophet_rank/episode_inputs/turn_watch/<session>.json from the
@@ -3484,6 +3507,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        if: steps.signal_gate.outputs.accepted == 'true'
         id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
@@ -3555,7 +3579,7 @@ jobs:
       # cap before the sole broad publisher. Persist the core public tree here;
       # the existing final publisher remains the second cut for later tail outputs.
       - name: checkpoint core engine outputs to main (durable before tail desks)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 25
         continue-on-error: true
         run: bash scripts/ci/daily_engine_commit_outputs.sh
@@ -3567,8 +3591,10 @@ jobs:
       # weeks while its nightly step ran green ~35 nights running. Advisory (exit 0):
       # a cold membership plane must not red a nightly that landed every other store.
       - name: membership snapshot freshness tripwire (advisory)
+        if: steps.signal_gate.outputs.accepted == 'true'
         run: python3 scripts/check_membership_snapshot_freshness.py
       - name: builder fail-streak escalation (consecutive-night freeze detector)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # brun() (above) BY DESIGN never aborts on a broken builder — but that makes a
         # builder failing MANY CONSECUTIVE nightlies look identical to a one-off at a
         # glance (2026-07-16/17: build_cycle aborted two nights running, cycle.html
@@ -3621,11 +3647,12 @@ jobs:
         # lane skipped, which would be silent non-production — the precise failure
         # class this work exists to end. If you flipped the variable and still see
         # this notice, activation did not take.
-        if: vars.AD1_M1_LANE != 'on'
+        if: vars.AD1_M1_LANE != 'on' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           echo "::notice title=ad1-producer::in-engine (M2, store-less) producer is LIVE — AD1_M1_LANE='${{ vars.AD1_M1_LANE }}' (must be exactly 'on' to hand over to the M1 lane)"
           python -m scripts.build_options_intel_brief || echo "::warning::build_options_intel_brief non-fatal failure"
       - name: OEU M-CMD — the Options workspace (build_options_command)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # OEU M-CMD: options.html, the canonical options surface (4 modes). It is a
         # pure re-serialisation of stores four OTHER builders write, and those deps
         # straddle both phases — build_market_structure and build_flow_leaders are
@@ -3637,6 +3664,7 @@ jobs:
         # last committed options.html stands and the deploy is never broken.
         run: python -m scripts.build_options_command || echo "::warning::build_options_command non-fatal failure"
       - name: OIP E1 — session digest, the Terminal→EOD bridge (build_session_digest)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # OIP E1: digests the intraday options plane's R2 archives
         # (live_flow/surface/{ROOT}/{DATE}/ per-minute stamps + the dated tide/dte archives)
         # into one settled per-root session record — data only, ZERO UI.
@@ -3693,7 +3721,7 @@ jobs:
         # Serial after session digest while the restored intraday cache is present.
         # This is the sole nightly advancer and its independent inputs remain valid
         # when an unrelated earlier renderer fails.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 10
         continue-on-error: true
         env:
@@ -3707,13 +3735,13 @@ jobs:
         # Consumes only the immutable episode/outcome prefixes produced above. It
         # owns a separate revision/outcome/checkpoint namespace, preserves the legacy
         # v1 cohort bytes, and grants no selector, training, or trading authority.
-        if: always() && steps.options_signal_episode.outcome == 'success'
+        if: always() && steps.options_signal_episode.outcome == 'success' && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 10
         continue-on-error: true
         run: python -m scripts.build_options_signal_campaign
       - name: OIP PIT — checkpoint the five durable episode ledgers
         id: options_signal_episode_publish
-        if: always() && steps.options_signal_episode.outcome == 'success'
+        if: always() && steps.options_signal_episode.outcome == 'success' && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 10
         continue-on-error: true
         # This checkpoint is deliberately immediate and success-only. The broad
@@ -3728,7 +3756,7 @@ jobs:
         run: bash scripts/ci/options_signal_nightly.sh publish-episode
       - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)
         id: options_catalyst_links
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         continue-on-error: true
         timeout-minutes: 5
         env:
@@ -3743,10 +3771,7 @@ jobs:
         run: python -m scripts.build_options_catalyst_links || echo "::warning::build_options_catalyst_links non-fatal failure"
       - name: OIP campaign v2 — checkpoint the exact three canonical ledgers
         id: options_signal_campaign_publish
-        if: >-
-          always() &&
-          steps.options_signal_episode_publish.outcome == 'success' &&
-          steps.options_signal_campaign.outcome == 'success'
+        if: always() && steps.options_signal_episode_publish.outcome == 'success' && steps.options_signal_campaign.outcome == 'success' && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 10
         continue-on-error: true
         # Campaign publication is interruption-safe and exact-path: the helper
@@ -3756,12 +3781,7 @@ jobs:
         id: options_alpha_candidate_feed
         # Existing candidate composer/publisher only; no Git or broad publication path.
         # A missing activation receipt is a structured inactive success with zero R2 writes.
-        if: >-
-          always() &&
-          steps.options_signal_episode.outcome == 'success' &&
-          steps.options_signal_campaign.outcome == 'success' &&
-          steps.options_signal_episode_publish.outcome == 'success' &&
-          steps.options_signal_campaign_publish.outcome == 'success'
+        if: always() && steps.options_signal_episode.outcome == 'success' && steps.options_signal_campaign.outcome == 'success' && steps.options_signal_episode_publish.outcome == 'success' && steps.options_signal_campaign_publish.outcome == 'success' && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 5
         continue-on-error: true
         env:
@@ -3773,6 +3793,7 @@ jobs:
           python -m scripts.build_options_alpha_candidate_feed
           --publication-lock "$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock"
       - name: XSR W1 — US fast-sector rotation lens (build_us_sector_rotation)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # XSR W1 (XSR-R2): display-tier fast rotation score for the 11 SPDR sector ETFs and
         # named US thematic baskets. Ported from China #2634. Reads sector_cycles
         # forward_log.parquet (written by build_sector_cycles in the parallel band above) so
@@ -3782,6 +3803,7 @@ jobs:
         # Additive (always exits 0 — never breaks the deploy).
         run: python -m scripts.build_us_sector_rotation || echo "::warning::build_us_sector_rotation non-fatal failure"
       - name: US sector central intelligence (build_sector_central)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # The US Sector Central hub fuses the cycle spine + baskets + narrative rotation + heatmap.
         # It reads baskets.json (cl_baskets) + sector_cycles_data.js (cl_misc → sectorcyc) + the
         # heatmap json (build_site spine) — those deps live in DIFFERENT parallel clusters, so this
@@ -3790,6 +3812,7 @@ jobs:
         # Additive (the builder returns 0 on any failure), so it can never break the deploy.
         run: python -m scripts.build_sector_central
       - name: Portfolio-Aware context artifact (build_portfolio_ctx)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Portfolio-Aware Intelligence W1 (charter:
         # research/PORTFOLIO_BRIEF_MASTERPLAN_BY_FABLE.md §2). Bakes the full-universe
         # per-ticker context blob site/data/portfolio_ctx.json that the mastermind-terminal
@@ -3804,6 +3827,7 @@ jobs:
         # Additive — never breaks the deploy.
         run: python -m scripts.build_portfolio_ctx || echo "::warning::build_portfolio_ctx failed (non-fatal — last committed portfolio_ctx.json stands)"
       - name: MLC W2b stance matrix (build_stance_matrix)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # MLC-W2b coherence layer: per-basket stance matrix collecting sector/theme/confluence/
         # allocation/m7c verdicts mapped to a signed tier scale (-2..+2). Reads
         # baskets.json (build_baskets), sector_central.json (build_sector_central above),
@@ -3812,6 +3836,7 @@ jobs:
         # Additive (always exits 0 — never breaks the deploy).
         run: python -m scripts.build_stance_matrix || echo "::warning::build_stance_matrix non-fatal failure"
       - name: FTR W9 grading pack (basket_turn.v1 cohort claims + tape_disagreement.v1)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # basket_turn.v1: one qledger claim per IGNITION-day cohort (equal-weight basket EW vs
         # SPY, 21d horizon, expected-NULL forward meter per FT-R9). Reads
         # data/basket_turn/ledger.jsonl (written by basket_turn_watch in cl_baskets → build_baskets).
@@ -3829,6 +3854,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_basket_turn_grading::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Polygon reference-universe cache (GICS sector + market cap for heatmap manifest)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Builds data/polygon_universe/reference.parquet — ticker → GICS sector + USD market cap.
         # Consumed by the charting-app's ingest/build_universe.py when it rebuilds the
         # heatmap manifest (~8.7k rows); enriches US names with real sector + cap sizing.
@@ -3846,6 +3872,7 @@ jobs:
         run: |
           python -m scripts.build_polygon_universe || echo "::warning::build_polygon_universe failed (non-fatal — previous cache remains)"
       - name: flow_idx R2 mirror (heatmap flow layer freshness)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Mirror site/flow/index.json → R2 key live_flow/flow_idx.json so the live
         # options-flow heatmap layer can read a fresh manifest without a full site deploy.
         # Runs AFTER the parallel band (cl_gex → build_options_flow produced the file).
@@ -3866,6 +3893,7 @@ jobs:
           python -m scripts.mirror_flow_idx --options-prophet --strict || echo "::warning::options prophet R2 mirror failed (non-fatal)"
           python -m scripts.mirror_terminal_context_r2 || echo "::warning::terminal-context R2 mirror failed (non-fatal)"
       - name: flow-signal ledger harvest + outcome grader (FS-0)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # FS-0 (FLOW_SIGNAL_ML_MASTERPLAN_BY_FABLE §5): append-only per-event
         # flow ledger (collectors/flow_signals.py) + outcome grader
         # (engine/flow_signals_grade.py). Runs AFTER the flow_idx mirror steps
@@ -3887,6 +3915,7 @@ jobs:
         run: |
           python -m scripts.build_flow_signals || echo "::warning::build_flow_signals failed (non-fatal — keeping last committed ledger)"
       - name: build canada dashboard (S&P/TSX)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # FIRST-CLASS STEP (2026-07-27) — build_canada used to run ONLY as a swallowed
         # try/except inside build_vector (a workaround from PR #81, whose PAT lacked
         # `workflow` scope). Two defects came with that: the failure went through
@@ -3916,6 +3945,7 @@ jobs:
           fi
           exit 0
       - name: build bitcoin vector + landing hub
+        if: steps.signal_gate.outputs.accepted == 'true'
         # installs the landing hub at index.html (rendered from stored engine
         # state, so ordering vs build_site no longer matters — build_site writes
         # the macro dashboard straight to macro.html). Self-sufficient (recomputes
@@ -3923,11 +3953,13 @@ jobs:
         # break the macro site.
         run: python -m scripts.build_vector
       - name: build crypto intelligence cockpit
+        if: steps.signal_gate.outputs.accepted == 'true'
         # FIRST-CLASS W2 STEP — load-bearing order: build_vector emits the E0
         # BTC authority contract consumed by H6, then this class-level hub reads
         # it alongside the additive universe and market-state engines.
         run: python -m scripts.build_crypto
       - name: master brain scorer (durability loop; deterministic, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Grades the brain's own past-due cross-asset leans in data/master_brain/theses.jsonl
         # against realized closes (reuses engine.desk_scorer) -> data/master_brain/
         # {scored.jsonl,track_record.json}. Runs BEFORE the master_brain generator so today's
@@ -3939,6 +3971,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain_scorer::rc=$rc (non-fatal)"; fi
           exit 0
       - name: master brain (multi-lens LLM synthesis; default-off, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Runs LAST among the builders — it reads EVERY dashboard's latest.json
         # (macro/china/hk/commodity/forex + BTC) plus the catalyst digest, and writes
         # one brief per configured lens (master_brain.lenses, default macro+china+btc):
@@ -3974,6 +4007,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain::rc=$rc (non-fatal)"; fi
           exit 0
       - name: AI desk scorer (durability loop; deterministic, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Grades past-due theses in data/ai_desk/theses.jsonl against realized closes,
         # appends data/ai_desk/scored.jsonl, and writes data/ai_desk/track_record.json
         # which the desk step below reads back to calibrate conviction. Deterministic
@@ -3985,6 +4019,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=ai_desk_scorer::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Demand-chain ledger (Demand Desk Phase 2; deterministic, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Appends falsifiable demand-chain divergence theses (data/demand_chain/theses.jsonl)
         # and scores past-due ones vs SPY into data/demand_chain/{scored.jsonl,track_record.json},
         # which the Demand Context panel reads back as its accountability line. Rule-derived
@@ -3997,6 +4032,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=demand_ledger::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Demand-chain Phase-0 validation (forward placebo test; resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the demand_chain ledger and, once enough theses are DECIDED, tests the
         # hit-rate vs a coin flip (exact binomial) → data/demand_chain/phase0.json.
         # Honest by design: the signal is NOT historically back-testable (annual cadence,
@@ -4009,12 +4045,14 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=demand_chain_phase0::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Demand Desk page (build_demand)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # market-wide view of the L2 demand layer (site/demand.html): the ranked
         # ahead-of-consensus / at-risk names across all chains + chain signals + the
         # scored-ledger track record + Phase-0 verdict. Runs AFTER the ledger/phase0
         # steps (fresh track_record/phase0) and build_site (rpo dripped). Resilient.
         run: python -m scripts.build_demand
       - name: AI desk (accountable analyst layer; context-only, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Runs right after master_brain (shares the keyed LLM step family). Reads the
         # TRUST-GRADED detectors — site/basketdata/flow.json (from build_baskets) +
         # data/regime/regime_snap.json (when Engine-2 is present) — and writes a
@@ -4047,6 +4085,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=ai_desk::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Narrative Brain (Claude radar-reasoning desk; context-only, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the deterministic radar (site/basketdata/radar.json from build_baskets) as an
         # evidence pack and writes a FALSIFIABLE durability + rotation read (site/basketdata/
         # narrative_brain.json) + appends data/narrative_brain/theses.jsonl. Claude via the
@@ -4075,6 +4114,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=narrative_brain::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Risk Brain (Claude/Opus daily drawdown-risk officer; context-only, resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the engine's own deterministic risk stack (data/regime/latest.json.risk_state,
         # site/riskdata/mtf_monitor.json, GEX, baskets, narrative rotation, standouts) and writes
         # a FALSIFIABLE risk read + a CODE-clamped de-risk DIRECTIVE (site/riskdata/risk_brain.json)
@@ -4101,6 +4141,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=risk_brain::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Risk Radar self-correction (Opus reviews graded mistakes -> bounded recalibration)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the radar's realized forward-outcome scorecard (data/risk_radar/forward_log.jsonl),
         # lets Opus propose calibration nudges to cut false positives + catch misses, CLAMPS them and
         # applies ONLY if a do-no-harm backtest confirms F1 improves (full + 2020) without breaking the
@@ -4124,6 +4165,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=risk_radar_review::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Radar + Brain ledger scorer (grade the falsifiable theses vs SPY; context-only)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Grades data/{radar,narrative_brain}/theses.jsonl once each check_by passes (reuses
         # engine.ai_desk_scorer) -> track_record.json + a site copy. Idempotent; context-only
         # (never feeds a score); needs no key. Runs after the brain so fresh theses are logged.
@@ -4134,6 +4176,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=radar_scorer::rc=$rc (non-fatal)"; fi
           exit 0
       - name: US Buy Board ledger (snapshot today + retro-grade matured boards vs SPY/sector)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Appends today's committed us_standouts.json to data/us_board_ledger/snapshots.jsonl,
         # then reconstructs every past board from git history + snapshots and grades every
         # matured row (5/10/21d, next-bar entry) vs SPY and the name's sector ETF -> writes
@@ -4157,6 +4200,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=grade_us_board::rc=$rc (non-fatal)"; fi
           exit 0
       - name: ETF consensus board ledger (snapshot tonight's board + grade matured windows vs SPY)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # ETF page masterplan §3 W3. Recomputes the etfs.html consensus board from the
         # committed holdings snapshots (engine.holdings_signals -> engine.etf_consensus,
         # no network calls), appends its top-20 to data/etf_board_ledger/snapshots.jsonl
@@ -4186,6 +4230,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=grade_etf_board::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Opportunity timeline (durable Prophet candidate receipts for Terminal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Pure projection over the four committed track_ledger/v1 artifacts.  It runs
         # after grade_us_board so tonight's US episode marks are present; CN/HK are
         # refreshed by asia-close.yml before this nightly checkout.  The builder
@@ -4203,6 +4248,7 @@ jobs:
       # 31056495943: the doors + miss-audit succeeded at 04:48Z, "commit engine outputs"
       # never ran, the whole night's Prophet accrual was lost). See that job's comment.
       - name: Bottom Ledger (accrue bottom-class flags + mature at H=60; policy-free instrument)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Bottom Ledger P1: the policy-free bottom-calling learning instrument (design PR #3182).
         # Sole forward advancer of this ledger (nightly-only). Accrues board buy-lane +
         # washout WAIT + Prophet-plan flags from snapshots.jsonl (runs AFTER grade_us_board so
@@ -4227,6 +4273,7 @@ jobs:
             echo "::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED — no flag was accrued and no grade was frozen tonight. data/bottom_ledger/rows.parquet is unchanged and site/factordata/us_bottom_ledger.json carries advance.status=failed. Non-fatal to the nightly by design; fix scripts/grade_bottom_calls.py."
           }
       - name: Options-state stamp on board ledger (Options Alpha W1.3; context-only)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Stamps the freshly-graded + accumulated retro_grades.parquet with the eight nullable
         # opt_* options-state columns (PIT: only positioning data with as-of ≤ each fire's as_of).
         # Sources pinned per ruling A6 (polygon_gex summary + chains). NEVER touches grading
@@ -4235,6 +4282,7 @@ jobs:
         # by the "commit engine outputs" step's `git add data/` below. Idempotent. Resilient.
         run: python -m scripts.stamp_options_state || true
       - name: Options entry-quality gate (Options Alpha W1.3; pre-registered, scored=false)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reduces the horizon ledger to canonical buy-lane fires, then recomputes the registered
         # options-entry diagnostics in data/options_entry/gate.json (ledger primitives only, A10).
         # Descriptive maturity requires ≥30 fires, ≥30 dates in each bucket, and ≥30 shared
@@ -4243,11 +4291,13 @@ jobs:
         # required. scored=false / weight=0 remain hard-frozen. Cheap and resilient.
         run: python -m scripts.validate_options_entry || true
       - name: Calibration Hub (unified self-improvement observability; display-only)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Consolidates every Phase-C desk's track_record + the Trial Ledger into one
         # surface (data/calibration/summary.json + site/calibration.html). Runs after the
         # deterministic scorers so it reads fresh track records; never feeds a score.
         run: python -m scripts.build_calibration || true
       - name: build macro snapshot (nw-macro-rail R5)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Writes data/macro_snapshots/latest.json + ledger.parquet + transitions.jsonl from
         # the day's regime, transmission, forex, bonds, commodity, china, hk, canada, and
         # dispersion sources.  Fail-open per source; missing sources produce gap notes rather
@@ -4260,6 +4310,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_macro_snapshot::rc=$rc (non-fatal)"; fi
           exit 0
       - name: build macro context page (nw-macro-rail R5)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Renders site/macro_context.html (Macro Weather Station) from world_state +
         # macro_snapshots/latest.json + transitions.jsonl.  Fail-open: all three sources
         # are read gracefully; missing files produce empty-state sections.  Also writes
@@ -4279,7 +4330,7 @@ jobs:
         # if: always() — PR-2 fix: backfill_regime_stamps had a shell bug that caused it to
         # exit 1 silently, skipping all downstream kernel steps; add guard so these run
         # even if an upstream optional step fails.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           set +e
           python -m scripts.build_spine_index > "$RUNNER_TEMP/spine_index.log" 2>&1; rc=$?
@@ -4297,7 +4348,7 @@ jobs:
         # Display-first: zero behavior-changing consumers; the quarterly FDR batch (PR2)
         # is the only path to behavior. Input: spine_index.parquet (only dependency).
         # Resilient wrapper: exits 0 on empty/thin data; 1 only on write failure.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           set +e
           python -m scripts.build_kernel_estimates > "$RUNNER_TEMP/kernel_estimates.log" 2>&1; rc=$?
@@ -4310,7 +4361,7 @@ jobs:
         # and NW engine firing independence. Display-only; four independently-guarded
         # blocks; always exits 0. Writes data/neuralweb/covariance_spine.json +
         # site/neuralwebdata/covariance_spine.json + history parquet.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           set +e
           python -m scripts.build_covariance_spine > "$RUNNER_TEMP/covariance_spine.log" 2>&1; rc=$?
@@ -4322,7 +4373,7 @@ jobs:
         # (lagging_signals.json). Both are display-only diagnostics; zero behavior-changing
         # consumers. Runs AFTER build_kernel_estimates (kernel_families reads its parquet).
         # Resilient wrapper: each sub-step fail-open; exits 0 unless both steps fail.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           set +e
           python -m scripts.build_kernel_diagnostics > "$RUNNER_TEMP/kernel_diagnostics.log" 2>&1; rc=$?
@@ -4339,7 +4390,7 @@ jobs:
         # so a crashed job is distinguishable from a successful all-null result.
         # Expected honest outcome: all families null (track_record IC rises;
         # radar/us_board have <3 graded horizons).  Resilient wrapper (exit 0).
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           set +e
           python -m scripts.build_kernel_half_lives > "$RUNNER_TEMP/kernel_half_lives.log" 2>&1; rc=$?
@@ -4347,6 +4398,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_kernel_half_lives::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Confluence Graph (Neural Web W4 — display-only typed graph)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Builds data/neuralweb/confluence_graph.json — typed nodes (engine/sector/regime/
         # thesis/episode) and five edge families (feeds/stable/leads/contradicts/confirms).
         # Contradiction detector covers 6 typed pairs; all edges display_only=True.
@@ -4359,6 +4411,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_confluence_graph::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Confluence Strength + Sequence + Discovery (Neural Web W4 "the eye" — R-V4-6/7/8)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Runs three deterministic display-only steps after build_confluence_graph:
         # 1. confluence_strength  → data/neuralweb/confluence_strength.json (R-V4-6)
         #    Per-(subject,as_of,direction,horizon) confirming engine count with redundancy
@@ -4381,6 +4434,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_confluence_strength::rc=$rc (non-fatal)"; fi
           exit 0
       - name: Alt-Data Brain (Claude-Opus convergence analyst; actionable + falsifiable)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the deterministic weighted-convergence substrate + influence graph (written by
         # build_alt_data above) as an evidence pack and writes an ACTIONABLE scored read
         # (action/conviction/direction + a falsifiable thesis graded vs SPY) -> site/altdata/
@@ -4415,6 +4469,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=altdata_brain::rc=$rc (non-fatal)"; fi
           exit 0
       - name: radar upgrade (build_radar_plus + IC)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # ADDITIVE Phase-2 radar: enrich site/basketdata/radar.json with edge_score +
         # cross-source confirmation legs (alt/flows/options) + regime + decay (no edits to
         # the radar kernel), emit site/basketdata/radar_ticker.json (per-name divergence),
@@ -4428,6 +4483,7 @@ jobs:
           python -m scripts.build_radar_page  > "$RUNNER_TEMP/radarpage.log" 2>&1; tail -1 "$RUNNER_TEMP/radarpage.log"
           exit 0
       - name: unified intelligence bundle (build_intelligence)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER build_news (news/by_ticker.json) + build_alt_data + the Alt-Data Brain re-emit
         # (altdata/mastermind.json) + build_radar_plus (radar_ticker.json): merges all per-ticker
         # facets — news flow + alt-data signal + radar divergence + factor buy-board — into ONE
@@ -4435,12 +4491,14 @@ jobs:
         # never pre-blended. No keys needed; pure JSON merge; never aborts.
         run: python -m scripts.build_intelligence || echo "intelligence skipped (additive)"
       - name: brain briefing tunnel (build_briefing)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER build_intelligence: reduces the per-ticker bundle to a RANKED, brain-facing
         # triage — site/intelligence/briefing.json — that the Mastermind brain (Claude Opus)
         # pulls once per cycle: priority queue (confidence × strength), the demand-vs-supply
         # divergence subset, and a regime/catalyst macro frame. Pure; resilient; never aborts.
         run: python -m scripts.build_briefing || echo "briefing skipped (additive)"
       - name: Intelligence Hub (build_intel_hub)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER build_intelligence + build_briefing + build_policy_watch + build_radar_plus:
         # fuses ALL FIVE desks (news · alt-data · radar · buy-board · policy) into one central
         # command — site/intel_hub/hub.json + site/intelligence_hub.html — with cross-source
@@ -4449,15 +4507,18 @@ jobs:
         # The US analogue of the China intel hub; pure, resilient, never aborts.
         run: python -m scripts.build_intel_hub || echo "intel hub skipped (additive)"
       - name: AI Daily Brief page (build_aibrief)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # consolidated page (site/aibrief.html) surfacing the three client-fetched AI
         # briefs (master/china/btc) as toggle tabs. Pure render — order-independent;
         # resilient (returns 0). Replaces the retired deterministic daily_brief.
         run: python -m scripts.build_aibrief
       - name: AM Edition producer (build_am_edition)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Deterministic since-prior-close artifact (site/am_edition.json) with
         # per-source clocks. Reads committed artifacts only; never breaks the run.
         run: python -m scripts.build_am_edition
       - name: Mastermind snapshot page (build_mastermind)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # static page (site/mastermind.html) that renders a daily snapshot of the LOCAL
         # Mastermind AI paper-trading desk. Pure chrome — the data (site/mastermind/
         # mastermind_snapshot.json) is pushed out-of-band twice a day by the local
@@ -4466,11 +4527,13 @@ jobs:
         # resilient (returns 0).
         run: python -m scripts.build_mastermind
       - name: AI Desk page (build_ai_desk_page)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # static page (site/ai_desk.html) surfacing the accountable analyst desk
         # (site/ai_desk.json: falsifiable leans + dissent + falsifier + track record +
         # the analyst panel). Pure render — order-independent; resilient (returns 0).
         run: python -m scripts.build_ai_desk_page
       - name: rebuild stock-search libraries (resilient — guarantees the analyzers ship)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # build_china/build_hk/build_canada (and build_intl via a build_vector hook)
         # render their dashboards but SWALLOW errors (return 0), so a failure there
         # silently 404s the per-stock search. This rebuilds the search JSON
@@ -4508,6 +4571,7 @@ jobs:
           done
           exit 0
       - name: watchlist buy-zone sentinel (B6 — fail-soft; skips when creds absent)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # B6: reads operator Supabase watchlist (two-table schema: watchlists + watchlist_symbols),
         # diffs vs yesterday's per-ticker state, emits buy-zone-enter alerts to
         # data/alerts/watchlist_alerts.jsonl + Discord.
@@ -4524,6 +4588,7 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python -m scripts.run_watchlist_sentinel || echo "::warning::watchlist sentinel failed (non-fatal)"
       - name: thesis condition monitor (F11 — enqueues plain-language alerts; never sends)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reads the committed data/cycle_ontology/falsifiers.json (AUTHORED input, not
         # render-produced) and data/cycle_ontology/tripwire_state.json (the latch state
         # that IS produced on the render lane, .github/workflows/render.yml:946 ->
@@ -4537,6 +4602,7 @@ jobs:
           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}
         run: python -m scripts.run_thesis_condition_monitor || echo "::warning::thesis condition monitor failed (non-fatal)"
       - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis
         # condition monitor (the step whose comment names public.alert_outbox).
         # Slot = site/intelligence/briefing.json field as_of. Writes
@@ -4551,12 +4617,14 @@ jobs:
           RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
         run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: notify (telegram/discord; skips when secrets absent)
+        if: steps.signal_gate.outputs.accepted == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python -m scripts.notify
       - name: push priority alerts (W6b — ops-tier push spine ENABLED; operator Article-2 event 2026-07-04)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Neural Web W6b: push high-priority alerts above `alert_push.threshold` (default 60)
         # through Telegram/Discord with a dedup window (`alert_push.window_hours`).
         # Gate: `alert_push.enabled: true` in config.yml (W6b operator decision — see comment
@@ -4576,6 +4644,7 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python -m scripts.push_alerts || echo "::warning::push_alerts failed (non-fatal)"
       - name: archive signal layer (append-only point-in-time model outputs; resilient)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # LAST data-producing step: append today's latest.json / bond_health.json /
         # regime_snap.json / forex + commodity reads to data/signal_archive/<label>.parquet
         # (keep-first per as-of date). A clean, queryable, point-in-time record of what
@@ -4585,6 +4654,7 @@ jobs:
         # only, never read back into a score; the script always exits 0.
         run: python -m scripts.archive_signals || true
       - name: archive context snapshots (context PIT history — non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Appends flattened context-regime state (quad, liquidity, cycle_tag,
         # transition_state, regime_confidence, market_state verdict/score,
         # vol_regime verdict, fear-greed composite) to
@@ -4593,6 +4663,7 @@ jobs:
         # Every source is absent-safe; always exits 0.
         run: python -m scripts.archive_context_snapshots || true
       - name: CPI net-liquidity artifact (data infrastructure — non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Deterministic full rebuild of data/macro/fed_net_liquidity.parquet (+ the
         # fed_net_liquidity_meta.json sidecar) from the three component parquets the
         # collect job refreshed tonight (data/fred/WALCL + RRPONTSYD, data/treasury/tga)
@@ -4605,6 +4676,7 @@ jobs:
         # 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_netliq_daily || echo "::warning::build_netliq_daily failed (non-fatal — last committed artifact stands)"
       - name: Neural Web liquidity-plumbing lobe (shadow-tier, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Pure aggregation, no network calls. Runs AFTER build_netliq_daily so
         # data/macro/fed_net_liquidity.parquet is fresh. Reads regime/latest.json,
         # treasury/{net_issuance,tga}.parquet, treasury_auctions/auctions.parquet.
@@ -4614,6 +4686,7 @@ jobs:
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
       - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # The frozen v1 producer (#6296) had NO production caller: no workflow ran
         # it, it was absent from config/dag.yml, and its only .github reference was
         # the `paths:` filter of the pack-executed CI test lane
@@ -4635,6 +4708,7 @@ jobs:
         # own evidence clock then ages it stale in every reader.
         run: python -m scripts.build_global_liquidity_transmission || echo "::warning::build_global_liquidity_transmission failed (non-fatal — last committed artifact stands)"
       - name: Price Pressure lobe (DRL W1, display-tier, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Single-name residual shocks: the Dislocation & Recovery lobe's nightly
         # increment. Pure aggregation over committed stores, NO network calls.
         # Rebuilds the wide panel in memory (~45-60s measured, no cache is
@@ -4700,6 +4774,7 @@ jobs:
             echo "::warning::price_pressure R2 publish SKIPPED (restore=$PP_RESTORE build=$PP_BUILD) — a failed restore or build must never overwrite the canonical ledger"
           fi
       - name: Entry Radar nightly reconcile (W5 forward evidence)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # The SOLE durable writer of data/entry_radar/** (W5 prereg §8,
         # research/live_entry_radar/W5_FORWARD_EVIDENCE_PREREG.md). The W4
         # intraday lane spools events and writes nothing durable; this step is
@@ -4728,6 +4803,7 @@ jobs:
         timeout-minutes: 10
         run: python3 scripts/reconcile_entry_radar.py --nightly --verbose
       - name: Release Radar coherent-target vintage stores (truth substrate, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Full ALFRED output_type=2 matrices let the target engine select current
         # and prior levels from ONE release-date vintage.  They are additive to
         # the broad output_type=4 PIT feature store and never replace it.
@@ -4736,6 +4812,7 @@ jobs:
         timeout-minutes: 20
         run: python -m scripts.collect_release_target_vintages || echo "::warning::release target vintage collection failed (non-fatal — completion authority remains withheld until a full cohort succeeds)"
       - name: Release Radar official CPI Table 1 receipts (truth substrate, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Collects the frozen preregistered BLS Supplemental Table 1 panel into
         # immutable content-addressed source documents and source-bound receipts.
         # The batch is resumable and validates retained bytes before reuse; a
@@ -4743,6 +4820,7 @@ jobs:
         timeout-minutes: 20
         run: python -m scripts.collect_release_cpi_official_truth || echo "::warning::official CPI Table 1 collection failed (non-fatal — completion authority remains withheld if publication began)"
       - name: Release Radar coherent CPI target parity (truth substrate, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Reconstructs headline/core CPI targets from one ALFRED release vintage
         # and publishes a completion receipt only after the preregistered BLS
         # parity panel passes exactly.  This is a shadow truth gate: it does not
@@ -4750,11 +4828,13 @@ jobs:
         timeout-minutes: 10
         run: python -m scripts.build_release_cpi_truth_parity || echo "::warning::coherent CPI truth parity failed (non-fatal — no new completion boundary published)"
       - name: Release Radar official-actual reconciliation (truth substrate, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # Converts verified BLS/BEA/DOL publication facts from the VPS live
         # sidecar into keep-first, source-hashed actual receipts.  No forecast is
         # originated here; the following producer prefers these receipts when grading.
         run: python -m scripts.reconcile_release_actuals || echo "::warning::official release actual reconciliation failed (non-fatal — same-vintage fallback remains)"
       - name: MRI release forecast producer (display-only, non-fatal)
+        if: steps.signal_gate.outputs.accepted == 'true'
         # MRI PR-C: nightly projection for CPI (headline + core) and NFP.
         # Emits data/release_forecast/latest.json (schema release_forecast.v2),
         # site/macrodata/release_forecast.json (display copy),
@@ -4765,14 +4845,14 @@ jobs:
         # Outputs covered by 'git add data/' and 'git add site/' below.
         run: python -m scripts.build_release_forecast || echo "::warning::build_release_forecast failed (non-fatal — last committed artifact stands)"
       - name: Inflation intelligence lobe (context-only, non-fatal)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Separates the latest released CPI state, the next BLS-print forecast,
         # and current-month proxy pressure.  It is a deterministic adapter over
         # persisted inputs: display_only=true, authority=false, and no Prophet,
         # ranking, gating, sizing, or trading consumer.
         run: python -m scripts.build_inflation_intelligence || echo "::warning::build_inflation_intelligence failed (non-fatal — last committed artifact stands)"
       - name: forward path board (RIC W7 P5, display-only, non-fatal)
-        if: always()   # deterministic join over committed artifacts — build whatever exists
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # RIC W7 P5: deterministic Forward Path board (rates_command.v1). Deliberately
         # placed AFTER build_release_forecast AND after the market clusters
         # (bonds/transmission/commodities) so every input it joins — fed_path, curve
@@ -4794,6 +4874,7 @@ jobs:
         # trips) is a deliberate follow-up — keep the daily commit unconditional for now.
         run: python -m scripts.signal_sanity || true
       - name: White House Watch — re-render page + inject site-wide alert banner
+        if: steps.signal_gate.outputs.accepted == 'true'
         # PAGE-ONLY here: re-render site/wh_banner.json + site/whitehouse.html from the
         # already-committed ledger (no feed poll, no Opus call, no ledger/state writes) — the
         # hourly `whitehouse-sentinel` workflow is the SOLE brain-caller / ledger-writer, so
@@ -4818,7 +4899,7 @@ jobs:
           # (#3617/#3624). See render.yml for the full rationale.
           python -m scripts.optimize_assets || echo "::warning::asset optimize FAILED — ?v= stamps may be stale"
       - name: fetch oracle panels from R2 (PR-C1 sponsorship shim)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # PR-C1 (RUL-7): oracle panel_s.parquet + panel_m.parquet are built off-render
         # on the Mac (scripts/oracle_nightly.py + publish_oracle_panels.py) and published
         # to R2 under the oracle/ prefix.  Downloaded here for TWO consumers below —
@@ -4846,7 +4927,7 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_oracle_panels || echo "::warning::fetch_oracle_panels failed (non-fatal — sponsorship_state will be unavailable)"
       - name: oracle nightly (state + alerts + directive + ledger + banner)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Oracle O4 live-wiring: reads committed panel/episode/graph artifacts (heavy
         # re-builds run off-render via scripts/build_oracle_panel.py etc.), emits:
         #   data/oracle/oracle_alerts.jsonl      alert event log (git add data/ covers)
@@ -4866,7 +4947,7 @@ jobs:
         # Non-fatal: missing panel degrades gracefully; later builds use cached state.
         run: python -m scripts.oracle_nightly --skip-panel --skip-graph --skip-episodes --skip-timemachine || echo "::warning::oracle_nightly failed (non-fatal — state and alerts degrade gracefully)"
       - name: build world state (neural-web W1)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Neural Web N1: compose data/neuralweb/world_state.json from all fresh
         # stores (market_state/latest.json, regime/latest.json, breadth.parquet,
         # oracle_state.json, run_status.json, alerts_triage.json).  All inputs
@@ -4878,7 +4959,7 @@ jobs:
         # recompute would otherwise drift ahead of the committed world_state copies.
         run: python -m scripts.build_world_state || echo "::warning::build_world_state failed (non-fatal) — keeping last committed world_state"
       - name: build bottom-sensor envelope (NW Rails B0)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Display-only (no ranking/gating/money-path) — assembles the bottom-sensor
         # envelope for the US board (labels_v2 decision table, Amendment 1 Lane B0).
         # Reads site/factordata/signal_gate.json + us_standouts.json (written by
@@ -4889,7 +4970,7 @@ jobs:
         # Fail-soft: missing optional inputs degrade gracefully; never blocks the commit.
         run: python -m scripts.build_bottom_sensors || echo "::warning::build_bottom_sensors failed (non-fatal - keeping last committed bottom sensors)"
       - name: mature bottom sensors shadow (Amendment-3 forward audit — display-only)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # PR-2 wiring: grades elapsable decline_geometry/underwater_state descriptor snapshots
         # against realized forward returns (Amendment 3 structural shadow, RUL-28).
         # Runs AFTER build_bottom_sensors so today's snapshot is available.
@@ -4898,10 +4979,10 @@ jobs:
         # Fail-soft: empty until ~1-3 months of snapshots mature; always exits 0.
         run: python -m scripts.mature_bottom_sensors_shadow || echo "::warning::mature_bottom_sensors_shadow failed (non-fatal)"
       - name: mature shadow book (stock-score forward audit; see config/dag.yml)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: python -m scripts.mature_shadow_book || echo "::warning::mature_shadow_book failed (non-fatal)"
       - name: LT-4 thesis funnel history append (PR-A2 — nightly longitudinal store)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # LT-4 thesis funnel longitudinal history — append-only per (ticker, snapshot_date).
         # Runs build_thesis_funnel_snapshot with --write-history (sole-advancer law: this flag
         # is ONLY passed from this step). Reads data/edgar/{statements,fundamentals_panel,
@@ -4913,7 +4994,7 @@ jobs:
         # Benchmark: ~15s (per LT4_FUNNEL_SHADOW_REPORT.md); well under 30s threshold.
         run: python -m scripts.research.build_thesis_funnel_snapshot --write-history || echo "::warning::build_thesis_funnel_history failed (non-fatal — keeping last committed history)"
       - name: Winner Autopsy nightly watch + panel (long-hold top-down department)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Winner Autopsy Lab (WA-R1..R10). Default mode computes current breakaway watch
         # states + winner_autopsy_panel.json (admin Long-Hold Lobe surface). --write-history
         # appends keep-FIRST rows (ticker, snapshot_date) to the watch history parquet
@@ -4926,7 +5007,7 @@ jobs:
         # scored_path_surfaces; FIREWALL WA-R5. Output covered by 'git add data/' below.
         run: python -m scripts.research.build_winner_autopsy --write-history || echo "::warning::build_winner_autopsy failed (non-fatal — keeping last committed winner-autopsy artifacts)"
       - name: entity/thesis/mechanism registry (neural-web — display-only crosswalk)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Wave B2 ETM crosswalk: builds data/neuralweb/entity_thesis_mechanism_registry.json
         # from existing local artifacts (species, candidates, governance, reflexivity, config).
         # Display-only; no authority to gate, rank, size, or originate signals (ETM-R1..R8).
@@ -4938,7 +5019,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_entity_thesis_mechanism_registry::rc=$rc (non-fatal)"; fi
           exit 0
       - name: build mechanism pathways (NW core-cognition W1 — MPC v1)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # MPC v1 (RUL-CC-1..13): deterministic display-only pathway compiler.
         # Reads emitted artifacts only: data/regime/latest.json (market_drivers),
         # data/transmission/latest.json (chains), data/neuralweb/factor_intelligence_state.json.
@@ -4953,7 +5034,7 @@ jobs:
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_mechanism_pathways::rc=$rc (non-fatal)"; fi
           exit 0
       - name: build thematic state (TIL W0 — display/context only)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # TIL W0 (PR-A): composition organ — reads foresight_cascade, baskets, radar/radar_enriched,
         # narrative_emergence, subsector_rotation, divergence_log. Adapter-cheap; no network calls.
         # Runs AFTER build_foresight + build_baskets (foresight_cascade.json and baskets.json must
@@ -4963,7 +5044,7 @@ jobs:
         # Outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.build_thematic_state || echo "::warning::build_thematic_state failed (non-fatal — last committed artifact stands)"
       - name: grade thematic (TIL W6 — grading pack)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # TIL W6 (PR-H) grading pack — AFTER build_thematic_state.
         # Stage 1: append attention rows → data/foresight/earliness_log.jsonl (sole nightly
         # advancer of the log), then crowd-arrival lead-lag grader → data/foresight/earliness_grades.json.
@@ -4973,7 +5054,7 @@ jobs:
         # Outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.grade_thematic || echo "::warning::grade_thematic failed (non-fatal — last committed artifacts stand)"
       - name: Chronicle — market context timeline spine
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         continue-on-error: true
         # if: always() is load-bearing, NOT decoration (M12): this step sits deep
         # in the job's tail, and ~19 upstream steps here can still hard-fail
@@ -5004,7 +5085,7 @@ jobs:
       - name: timings band — commit-publish (W2)
         run: python3 scripts/nightly_timings.py mark --band commit-publish || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit chronicle artifacts
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # always() for the same reason as the build step above — and it matters
         # more here: a build that ran but whose commit was skipped leaves the
         # appended state_log row on the runner's disk only, so the capture is
@@ -5065,7 +5146,7 @@ jobs:
           push_lost
           echo "::warning::could not push chronicle artifacts after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal — the local chronicle commit still rides the engine push loop below)"
       - name: build mastermind context (NW bridge)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # NW → Mastermind bridge W1: compile data/neuralweb/mastermind_context.json and
         # site/neuralwebdata/mastermind_context.json from committed NW outputs.
         # Must run AFTER build world state so world_state.json is fresh.
@@ -5073,21 +5154,21 @@ jobs:
         # Both outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.build_nw_mastermind_context || echo "::warning::build_nw_mastermind_context failed (non-fatal) — keeping last committed mastermind_context"
       - name: build mastermind feedback summary (reverse bridge)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Mastermind → NW reverse bridge W2 (FB-R7/R8/R14): reads site/mastermind/nw_feedback.json
         # (pushed by Mastermind twice daily) and writes data/governance/mastermind_feedback_summary.json.
         # Fail-open: absent/stale source writes state:"absent"/"stale" artifact (never fabricated zeros).
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_mastermind_feedback_summary || echo "::warning::build_mastermind_feedback_summary failed (non-fatal) — keeping last committed summary"
       - name: build neuralweb health (PR-C — NW lobe-status surface)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # PR-C two-phase health: engine job builds lobe records with cortex_source='previous_run'
         # (last committed cortex memo). Cortex job runs --refresh-cortex after cortex deliberation.
         # Fail-open: per-lobe exceptions produce status='unknown'; missing synapse.yml exits 0.
         # Both outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.build_neuralweb_health || echo "::warning::build_neuralweb_health failed (non-fatal) — keeping last committed health.json"
       - name: check nw health escalation (M3 — persistent degradation detector)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # M3 escalation organ: reads health.json + its own run-date-keyed ledger
         # data/neuralweb/nw_health_run_history.jsonl (NOT daily_brief_history —
         # that is as_of-keyed and collapses when upstream data freezes as_of).
@@ -5109,14 +5190,14 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python -m scripts.check_nw_health_escalation || echo "::warning::check_nw_health_escalation failed (non-fatal)"
       - name: build neuralweb daily brief (PR-D — NW daily brief surface, engine phase)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # PR-D two-phase brief: engine job writes phase='engine' after health.json is ready.
         # Cortex job runs --finalize after --refresh-cortex to write phase='final' + history row.
         # Fail-open: any missing input → brief with explicit gap notes, exit 0.
         # Both outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.build_neuralweb_brief || echo "::warning::build_neuralweb_brief failed (non-fatal) — keeping last committed daily_brief.json"
       - name: build attention_deterministic (PR-4 M2 — deterministic operator-attention items)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # PR-4 M2: zero-LLM deterministic attention items from world_state + health + daily_brief.
         # Five pre-registered rules: contradiction tension, lobe SLA breach, regime indeterminate,
         # evidence clock overdue, cortex degraded. Fail-open: any missing input → empty-items artifact.
@@ -5124,7 +5205,7 @@ jobs:
         # Both outputs covered by 'git add data/ site/' in 'commit engine outputs' below.
         run: python -m scripts.build_attention_deterministic || echo "::warning::build_attention_deterministic failed (non-fatal) — keeping last committed attention_deterministic.json"
       - name: research_factory_monitor (W6 — paper monitor + nightly ledger)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Research Factory W6 (RF-8/RF-9/RF-10): paper monitor over all 'paper',
         # 'awaiting_data', and 'deferred' candidates.  Appends to
         # data/research_factory/paper_monitor.jsonl (keep-first per candidate_id+as_of),
@@ -5138,7 +5219,7 @@ jobs:
         # Non-fatal: a failed monitor never kills the nightly build.
         run: python -m scripts.research_factory_monitor --write || echo "::warning::research_factory_monitor failed (non-fatal)"
       - name: build_evidence_clock (Global Evidence Clock v1)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Global Evidence Clock (EC-R1..R8): read-only display-only aggregator.
         # Reads every review-clock source (experiments, qledger, research_factory,
         # trial_ledger, governance, rule_experiments, cycle_pattern, species, freshness)
@@ -5146,7 +5227,7 @@ jobs:
         # No LLM, no mutations, always exits 0. Covered by 'git add data/' below.
         run: python -m scripts.build_evidence_clock || echo "::warning::evidence clock build failed"
       - name: options_flow_attention reflex trigger (W-D — nightly EOD fold)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Neural Web W-D (RO-8): direction-free reflex that fires when an on-board
         # name shows a vol>OI magnitude burst (z-score ≥ 2.0 on fresh_contracts /
         # premium_mn) or is within 1% of a GEX wall/flip.  Reads EOD parquets from
@@ -5159,17 +5240,17 @@ jobs:
         # never kills the nightly.
         run: python -m scripts.build_options_flow_attention || echo "::warning::build_options_flow_attention failed (non-fatal — reflex dormant this run)"
       - name: commit engine outputs
-        if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         run: bash scripts/ci/daily_engine_commit_outputs.sh
       - name: assemble machine-consumable feeds (site/feeds -> R2)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation
         # logs, group_flow meta, RRG rotation, event calendar, intl spillover,
         # per-sector breadth — one flat dir whose _manifest.json bulk consumers
         # (Mastermind bot) sync against. Never fatal; missing sources are skipped.
         run: python -m scripts.build_feeds || echo "::warning::build_feeds failed (non-fatal)"
       - name: publish heavy per-ticker stores to R2 (additive; no-op without creds)
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -5246,7 +5327,7 @@ jobs:
         # timeout-minutes + continue-on-error are load-bearing: a timeout
         # kill is a step FAILURE the `||` shape cannot absorb, so
         # continue-on-error is what keeps it non-fatal.
-        if: always()
+        if: always() && steps.signal_gate.outcome == 'success' && steps.signal_gate.outputs.accepted == 'true'
         timeout-minutes: 3
         continue-on-error: true
         env:

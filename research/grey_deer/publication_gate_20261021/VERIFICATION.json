@@ -1,0 +1,190 @@
+{
+  "schema": "mas258.publication_integrity.source_verification.v1",
+  "recorded_at_utc": "2026-10-22T09:11:00.416849+00:00",
+  "root_id": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+  "parent_source_operation": "census-signal-publication-gate-20261021",
+  "procedure_pin": "c9cbee5569ba50e30e28715d930809061a169517",
+  "branch": "sol/web-census-signal-publication-gate-20261021",
+  "recorded_base": "c70d4735b0002099a57b8dffe1796fa8be8efe00",
+  "observed_main": "2e73187730af5352543ca23bea40250563f48d6c",
+  "disposition": "SOURCE_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "mission_complete": false,
+  "source_manifest": {
+    ".github/workflows/closing-bell.yml": {
+      "sha256": "8cf4ee63f45c4c1d4a51adb56ea32152bb1a9c2b120d35990e7229f3175e1f7b",
+      "git_blob": "b5ee985950f47edb8c783393fb1f92d60288a812",
+      "bytes": 45738,
+      "base_sha256": "8dfd739f60fb0ce73db6b556a0aaf280cc44ea9b457baa8a12ab4db7ebac7476"
+    },
+    ".github/workflows/daily.yml": {
+      "sha256": "50390df5419f3944fd4715d717e421f5627ae0941c09126c33accba8f30a0047",
+      "git_blob": "148be5d9df9a42726ec54d6d95448de049f5ae0f",
+      "bytes": 485807,
+      "base_sha256": "6f2bc6cf5180f422960b05c9672ae62b12d4dfef6f9d02562186074767fc367d"
+    },
+    ".github/workflows/earlyclose.yml": {
+      "sha256": "abde5b2f99c2130dd566f48d45574f1b07530091410f4e42234b8b62dc95277d",
+      "git_blob": "50d570ee69d5794222bfc1d52472e4938f7d40c2",
+      "bytes": 31439,
+      "base_sha256": "0d38b547cc06d65e7ddd40b6e5a0b6f89b1345a4fbf6c872a224a4d03c797087"
+    },
+    ".github/workflows/engine-render.yml": {
+      "sha256": "6bf870d8b8b1392d4fb7bc70425d27b3df0673d236403084990d94e85ca60428",
+      "git_blob": "1b3b5e7e0865021924efb337390b781c425cb7c5",
+      "bytes": 77401,
+      "base_sha256": "41fa350aa79c9375d3a17e1da9783a77e74c79a18b6e8c16461829d52f4a7775"
+    },
+    "tests/test_fif_x2_ownership_guards.py": {
+      "sha256": "8002760dd60ce91153ee58b90ca74721d42a00ba5caf2ba0543653ab12de0b59",
+      "git_blob": "c35f35f90df6330a46cf3f89115ce9c5c8f4d9c0",
+      "bytes": 16225,
+      "base_sha256": "838565f84f6f31b0a927293ce72089601bbb8afc0585bdd50909b53b1095137e"
+    },
+    "tests/test_prophet_durable_checkpoint.py": {
+      "sha256": "74423f2af3102dd471d5e50f576f85b5f5bcbaa47c563567dbf37ddf32dc03a1",
+      "git_blob": "516e5d0f44a2dd03895ac8fc1953f70df0204940",
+      "bytes": 39590,
+      "base_sha256": "d8c691397c120d6ee16756dd6a5b32709e050d69950ee8a19e05629637b26eea"
+    },
+    "tests/test_push_retry.py": {
+      "sha256": "5215e2e4e7cbead20c53095c73c6511a490b5872fea59f97798d8d4cc62cd6e6",
+      "git_blob": "3fa52acd5f3a1155538aa4dabca6cdb77dda9049",
+      "bytes": 121893,
+      "base_sha256": "c666ec013e2848159f6e478c8267f6793d2b5466a55176ef5ba77b7324aac13f"
+    },
+    "tests/test_validate_signals.py": {
+      "sha256": "166a05bc253a8a8809efa96cc5a6cc55b8d1a1ee47d9cc40a1aecf4facc7309c",
+      "git_blob": "9690dd601de199306f05ee747240f579c56fbba8",
+      "bytes": 31713,
+      "base_sha256": "ce44b73ff4eccd65922522ce463113eb7af985ac41fe3735637529f3b1623bde"
+    }
+  },
+  "main_composition": {
+    ".github/workflows/closing-bell.yml": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 45738
+    },
+    ".github/workflows/daily.yml": {
+      "clean_three_way": true,
+      "integrated_bytes": 486291,
+      "sha256": "a8ffacd3e4a65365e07a0e28f9e303b9043ee12dd5a46b9560c9166a1a1b07a4",
+      "main_delta_bytes": 484
+    },
+    ".github/workflows/earlyclose.yml": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 31439
+    },
+    ".github/workflows/engine-render.yml": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 77401
+    },
+    "tests/test_fif_x2_ownership_guards.py": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 16225
+    },
+    "tests/test_prophet_durable_checkpoint.py": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 39590
+    },
+    "tests/test_push_retry.py": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 121893
+    },
+    "tests/test_validate_signals.py": {
+      "unchanged_on_observed_main": true,
+      "integrated_bytes": 31713
+    }
+  },
+  "publication_guards": {
+    "closing-bell": {
+      "candidate_consumers": 13,
+      "explicit_status_consumers": 0,
+      "other_yaml_fields_unchanged": true
+    },
+    "daily": {
+      "candidate_consumers": 128,
+      "explicit_status_consumers": 41,
+      "other_yaml_fields_unchanged": true
+    },
+    "earlyclose": {
+      "candidate_consumers": 10,
+      "explicit_status_consumers": 0,
+      "other_yaml_fields_unchanged": true
+    },
+    "engine-render": {
+      "candidate_consumers": 14,
+      "explicit_status_consumers": 5,
+      "other_yaml_fields_unchanged": true
+    }
+  },
+  "verification": {
+    "process_pid": 5786,
+    "exit_code": 0,
+    "result": "........................................................................ [ 67%]\n...................................                                      [100%]\n107 passed in 30.16s",
+    "log_sha256": "62595163b28022b6a09ed123dc3c7e65ab73b7992fb5db87b0f657bd6f034143",
+    "suites": "test_validate_signals (93), workflow size (3), 11 selected existing delivery/checkpoint/options shape tests",
+    "baseline": {
+      "source_base": "c70d4735b0002099a57b8dffe1796fa8be8efe00",
+      "result": "52 failed, 1 passed, 36 deselected",
+      "log_sha256": "ba3a40161faba7d21a9dbbdcaf66af50dfd483de92128b5f430e8535bfca8849",
+      "qualification": "Corrected valid synthetic corpus. Before four positive eligibility cases and workflow-variable/default-success evaluator refinement."
+    },
+    "execution_boundary": "Actual YAML run blocks under bash --noprofile --norc -eo pipefail; inert Python producer/engine shims; real Git only in disposable synthetic repos; actual validate_signals.run only on synthetic fixtures and fixture audit paths. No repository market data was executed or mutated.",
+    "cases": [
+      "partial-but-valid builder failure",
+      "validator failure",
+      "engine failure",
+      "successful signal chain",
+      "immutable commit fallback over contaminated index",
+      "untracked and ignored candidate cleanup",
+      "partial leaf/chart restore failures",
+      "cleanup failure",
+      "invalid restored fallback",
+      "prebuild ref failure",
+      "output-write failure",
+      "missing/skipped/false admission",
+      "ordinary default success",
+      "accepted unconditional delivery after later unrelated failure",
+      "diagnostics and security cleanup preserved"
+    ],
+    "diff_check": 0,
+    "legacy_test_compatibility": "Three CI-owned suites now require the added signal gate without changing publisher bodies, timeouts, or continue-on-error behavior; no CI packing/trigger changes."
+  },
+  "existing_evidence_sha256": {
+    "REPAIR_CONTRACT.md": "9a2c7705b5bb3130f0d7f548f946b3bfc2a6ae463f242e5b80114a36cb177135",
+    "PATCH_RETURN_ADJUDICATION.md": "40b058d1d1aebf0dab5de210fd2ddc32b211e099285a39044d3daf16ca81f5b6",
+    "RESTORE_SOURCE_WITNESS.json": "608349b640ad9465983f36f4c608fd9312cf31bdbbd7440fc84fbff7109b7ab0",
+    "BASELINE_GATE_WITNESS.json": "23eca19c7f67ce3bdbdab66bbaae2c627e81c732f53b738aaad3af620e98ee29"
+  },
+  "original_result": {
+    "run_id": "mas258-publish-gate-patch-20261021-01",
+    "controller_pid": 79685,
+    "terminal_rc": 0,
+    "response_bytes": 14346,
+    "response_sha256": "0dea08963c30d3692f352d7d0432d4e2b33fcdf836cc0b90cc631070335fa3cd",
+    "disposition": "NOT_ACCEPTED",
+    "reason": "Fail-open early true/missing outputs; swallowed express failures; daily errexit defeats fallback; index-based restore; uncovered unconditional sinks. Claimed scratch test body absent from result and unverified."
+  },
+  "correction_admission": {
+    "run_id": "mas258-publish-gate-correction-20261022-01",
+    "controller_pid": 98423,
+    "terminal_rc": 78,
+    "reason": "canonical_source_unreadable / object_root_config_or_promisor",
+    "response_bytes": 191,
+    "response_sha256": "a801eede8f27859cff90d47564adcc41b02a0d5ba5873a7e68e96561da4bb3b3",
+    "disposition": "NOT_ACCEPTED; no replay or forced route"
+  },
+  "custody": {
+    "direct_parent_work_reason": "NO_ELIGIBLE_PRE_EFFECT_WORKER / CRITICAL_PATH_SHORTCUT; original isolated worktree, no conflicting modifying worker",
+    "mixed_sink_tradeoff": "Unrecoverable signal failure holds the mixed engine commit and can delay unrelated outputs bundled with it; no second writer or zero-loss claim.",
+    "downstream_jobs": "Existing fresh-main checkout jobs retain their conditions/custody. No dirty-engine artifact transfer; the inspected external input is massive_stock_day, and existing stockdata R2 publication remains under its separate writer. No new signal-candidate transfer introduced.",
+    "holds": {
+      "9957": "26f60b69a5c929f2a5a4316add623d01ccbc7eac",
+      "9980": "03080d24a2ea3723386959bb0e6343eccbd56784"
+    },
+    "previous_merged_pr": "9932 accepted landing preserved; no admission redo or merged-branch reuse",
+    "restrictions": "532 B0/B1 fits NOT_ADMITTED / zero executed. No producer, production workflow, fit, backfill, ledger synchronization, market-data/historical repair, numerical-policy/schema relaxation, live release, deployment, merge, or review-hold acceptance.",
+    "blocked_writes": "Prior Linear comment and GitHub checkpoint-edit safety denials preserved; no replay or alternate write route.",
+    "release_owner": "Existing separate release owner retains release authority; source verification is not release acceptance."
+  }
+}

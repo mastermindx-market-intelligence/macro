@@ -7,7 +7,18 @@ the validator agree on the §7 contract.
 """
 from __future__ import annotations
 
+import ast
+from functools import lru_cache
 import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+
+import pytest
+import yaml
 
 from scripts import validate_signals as vs
 
@@ -385,3 +396,305 @@ def test_run_fails_when_leaf_missing(tmp_path):
     audit = tmp_path / "audit.json"
     rc = vs.run(signals_dir=sigdir, leaf_path=tmp_path / "nope.json", audit_path=audit)
     assert rc == 1
+
+
+# ---- workflow publication boundary (MAS-258; synthetic data only) ----------
+
+@lru_cache(maxsize=4)
+def _signal_workflow(name):
+    root = Path(__file__).resolve().parents[1]
+    return yaml.safe_load((root / ".github/workflows" / f"{name}.yml").read_text())
+
+
+def _signal_steps(name):
+    jobs = _signal_workflow(name)["jobs"]
+    steps = jobs["engine" if name == "daily" else
+                 "closingbell" if name == "closing-bell" else name]["steps"]
+    gates = [i for i, step in enumerate(steps)
+             if "scripts.build_signal_quality" in step.get("run", "")]
+    assert len(gates) == 1
+    return steps, gates[0]
+
+
+_SIGNAL_STUB = r'''
+import json, os, pathlib, subprocess, sys
+P = pathlib.Path
+args = sys.argv[1:]
+kind = P(sys.argv[0]).name
+with open(os.environ["CALLS"], "a") as stream:
+    stream.write(json.dumps([kind, *args]) + "\n")
+scenario = os.environ["SCENARIO"]
+if kind == "git":
+    if args[0] == "rev-parse" and scenario == "ref_failure":
+        sys.exit(23)
+    if args[0] in {"restore", "checkout"} and scenario in {"restore_leaf", "restore_charts"}:
+        # Model a real partial restore: one path changes before the other fails.
+        restored = "site/signals/" if scenario == "restore_leaf" else "data/signal_archive/mtf_signals_latest.json"
+        split = args.index("--")
+        subprocess.run([os.environ["REAL_GIT"], *args[:split + 1], restored], check=True)
+        sys.exit(24)
+    if args[0] == "clean" and scenario == "cleanup_failure":
+        sys.exit(25)
+    result = subprocess.run([os.environ["REAL_GIT"], *args])
+    if result.returncode == 0 and args[0] == "clean" and scenario == "invalid_fallback":
+        P("data/signal_archive/mtf_signals_latest.json").write_text("{}")
+    sys.exit(result.returncode)
+module = args[1]
+if module == "scripts.build_signal_quality":
+    doc = json.loads(P("site/signals/AAPL.json").read_text())
+    doc["asof"] = "2026-06-19"
+    P("site/signals/AAPL.json").write_text(json.dumps(doc))
+    # Valid but unaccepted bytes must not be salvaged after a partial build.
+    for filename in ("STRAY.json", "ignored-STRAY.json"):
+        P("site/signals", filename).write_text(json.dumps(doc))
+    if scenario not in {"success", "validator_failure", "engine_failure"}:
+        sys.exit(21)
+elif module == "scripts.validate_signals":
+    count_path = P("validator_count")
+    count = int(count_path.read_text()) + 1 if count_path.exists() else 1
+    count_path.write_text(str(count))
+    if scenario == "validator_failure" and count == 1:
+        sys.exit(22)
+    sys.path.insert(0, os.environ["PROJECT_ROOT"])
+    from scripts import validate_signals as validator
+    # Real validator, with every mutable/data path redirected into this fixture.
+    sys.exit(validator.run(P("site/signals").resolve(),
+                          P("data/signal_archive/mtf_signals_latest.json").resolve(),
+                          P("audit.json").resolve()))
+elif module == "engine.run":
+    sys.exit(26 if scenario == "engine_failure" else 0)
+else:
+    raise AssertionError("Unexpected producer: " + module)
+'''
+
+
+def _exercise_signal_gate(tmp_path, workflow, scenario="success", *, bad_output=False):
+    """Run the actual YAML Bash with an inert builder and isolated real Git/validator."""
+    real_git = shutil.which("git")
+    assert real_git, "git is required for the isolated restoration proof"
+    env = dict(os.environ, GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull)
+    for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY",
+                "GIT_ALTERNATE_OBJECT_DIRECTORIES"):
+        env.pop(key, None)
+    def git(*args):
+        return subprocess.run([real_git, *args], cwd=tmp_path, env=env,
+                              check=True, capture_output=True, text=True)
+    sigdir = tmp_path / "site/signals"
+    sigdir.mkdir(parents=True)
+    leaf = tmp_path / "data/signal_archive/mtf_signals_latest.json"
+    leaf.parent.mkdir(parents=True)
+    ticker = sigdir / "AAPL.json"
+    ticker.write_text(json.dumps(_valid_ticker()))
+    leaf_doc = _valid_leaf()
+    leaf_doc["signals"] = leaf_doc["signals"][:1]
+    leaf.write_text(json.dumps(leaf_doc))
+    assert vs.run(sigdir, leaf, tmp_path / "fixture-audit.json") == 0
+    baseline = {path: path.read_bytes() for path in (ticker, leaf)}
+    ledger = tmp_path / "data/unrelated-ledger.txt"
+    ledger.write_text("committed nightly ledger\n")
+    (tmp_path / ".gitignore").write_text("site/signals/ignored-*.json\n")
+    git("init", "-q")
+    git("add", ".")
+    git("-c", "user.name=Inert fixture", "-c", "user.email=fixture@example.invalid",
+        "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null",
+        "commit", "-qm", "synthetic baseline")
+    baseline_sha = git("rev-parse", "HEAD").stdout.strip()
+    # Stage a distinct, schema-valid unaccepted signal candidate. Index checkout is wrong.
+    for path in (ticker, leaf):
+        doc = json.loads(path.read_text())
+        doc["asof"] = "2026-06-20"
+        path.write_text(json.dumps(doc))
+    git("add", "site/signals", "data/signal_archive")
+    for path, content in baseline.items():
+        path.write_bytes(content)
+    ledger.write_text("uncommitted nightly ledger must survive\n")
+    git("add", "data/unrelated-ledger.txt")
+    ledger_index = git("show", ":data/unrelated-ledger.txt").stdout
+    bindir = tmp_path / "stub-bin"
+    bindir.mkdir()
+    for name in ("python", "git"):
+        stub = bindir / name
+        stub.write_text(f"#!{sys.executable}\n" + _SIGNAL_STUB)
+        stub.chmod(0o755)
+    calls = tmp_path / "calls.jsonl"
+    output = tmp_path / "outputs"
+    if bad_output:
+        output.mkdir()
+    env.update(PATH=str(bindir) + os.pathsep + os.defpath, CALLS=str(calls),
+               REAL_GIT=real_git, SCENARIO=scenario, PROJECT_ROOT=str(vs.ROOT),
+               RUNNER_TEMP=str(tmp_path), GITHUB_OUTPUT=str(output),
+               GITHUB_STEP_SUMMARY=str(tmp_path / "summary"))
+    steps, index = _signal_steps(workflow)
+    script = tmp_path / "gate.sh"
+    script.write_text(steps[index]["run"])
+    result = subprocess.run(["bash", "--noprofile", "--norc", "-eo", "pipefail", str(script)],
+                            cwd=tmp_path, env=env, capture_output=True, text=True, timeout=20)
+    trace = [json.loads(line) for line in calls.read_text().splitlines()] if calls.exists() else []
+    outputs = dict(line.split("=", 1) for line in output.read_text().splitlines()
+                   if "=" in line) if output.is_file() else {}
+    assert ledger.read_text() == "uncommitted nightly ledger must survive\n"
+    assert git("show", ":data/unrelated-ledger.txt").stdout == ledger_index
+    return result, trace, outputs, baseline, baseline_sha
+
+
+@pytest.mark.parametrize("workflow", ["engine-render", "closing-bell", "earlyclose"])
+@pytest.mark.parametrize("scenario", ["builder_failure", "validator_failure", "engine_failure"])
+def test_signal_workflow_stops_before_rejected_consumption(tmp_path, workflow, scenario):
+    result, trace, outputs, _, _ = _exercise_signal_gate(tmp_path, workflow, scenario)
+    assert result.returncode != 0, result.stdout + result.stderr
+    modules = [call[2] for call in trace if call[0] == "python"]
+    assert modules == {
+        "builder_failure": ["scripts.build_signal_quality"],
+        "validator_failure": ["scripts.build_signal_quality", "scripts.validate_signals"],
+        "engine_failure": ["scripts.build_signal_quality", "scripts.validate_signals", "engine.run"],
+    }[scenario]
+    assert outputs.get("accepted") != "true"
+
+
+@pytest.mark.parametrize("workflow", ["engine-render", "closing-bell", "earlyclose", "daily"])
+def test_signal_workflow_success_is_affirmatively_admitted(tmp_path, workflow):
+    result, trace, outputs, _, _ = _exercise_signal_gate(tmp_path, workflow)
+    assert result.returncode == 0, result.stdout + result.stderr
+    modules = [call[2] for call in trace if call[0] == "python"]
+    assert modules[:2] == ["scripts.build_signal_quality", "scripts.validate_signals"]
+    assert ("engine.run" in modules) == (workflow != "daily")
+    assert not any(call[0] == "git" and call[1] in {"restore", "checkout", "clean"} for call in trace)
+    assert outputs.get("accepted") == "true"
+
+
+@pytest.mark.parametrize("scenario", ["builder_failure", "validator_failure"])
+def test_signal_daily_fallback_restores_commit_not_index_then_revalidates(tmp_path, scenario):
+    result, trace, outputs, baseline, sha = _exercise_signal_gate(tmp_path, "daily", scenario)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outputs.get("accepted") == "true"
+    for path, content in baseline.items():
+        assert path.read_bytes() == content
+    assert not (tmp_path / "site/signals/STRAY.json").exists()
+    assert not (tmp_path / "site/signals/ignored-STRAY.json").exists()
+    restore = next(i for i, call in enumerate(trace) if call[:2] == ["git", "restore"])
+    assert f"--source={sha}" in trace[restore]
+    assert {"--staged", "--worktree"}.issubset(trace[restore])
+    clean = next(i for i, call in enumerate(trace) if call[:2] == ["git", "clean"])
+    validations = [i for i, call in enumerate(trace) if call[:3] == ["python", "-m", "scripts.validate_signals"]]
+    assert restore < clean < validations[-1]
+    assert len(validations) == (2 if scenario == "validator_failure" else 1)
+
+
+@pytest.mark.parametrize("scenario", ["restore_leaf", "restore_charts", "cleanup_failure", "invalid_fallback", "ref_failure"])
+def test_signal_daily_unproved_fallback_is_rejected(tmp_path, scenario):
+    result, trace, outputs, _, _ = _exercise_signal_gate(tmp_path, "daily", scenario)
+    assert result.returncode != 0, result.stdout + result.stderr
+    assert outputs.get("accepted") != "true"
+    assert not any(call[:3] == ["python", "-m", "engine.run"] for call in trace)
+    if scenario in {"restore_leaf", "restore_charts", "cleanup_failure", "ref_failure"}:
+        assert not any(call[:3] == ["python", "-m", "scripts.validate_signals"] for call in trace)
+
+
+@pytest.mark.parametrize("workflow", ["engine-render", "closing-bell", "earlyclose", "daily"])
+def test_signal_output_failure_cannot_admit_a_candidate(tmp_path, workflow):
+    result, trace, outputs, _, _ = _exercise_signal_gate(tmp_path, workflow, bad_output=True)
+    assert result.returncode != 0
+    assert not trace
+    assert not outputs
+
+
+# These paths cannot publish candidate signal bytes. Security tombstone cleanup and
+# diagnostics deliberately remain available on failure. Other producers are not exceptions.
+_SIGNAL_FAILURE_SAFE = {
+    "guard — market-state board coherence (ui.ms_board_coherence)",
+    "restore accepted leader source for downstream consumers",
+    "enforce Prophet R2 index tombstone (unconditional)",
+    "restore accepted Prophet source for downstream derivations",
+    "retain this run's Theme Graph generation witness (advisory)",
+    "signal sanity (correctness tripwire — warn mode)",
+    "verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)",
+    "OIP PIT — fail closed after unrelated rendering completes",
+    "timings ledger + 85% budget tripwire (W2)",
+    "timings band — engine-core (W2)",
+    "timings band — prophet (W2)",
+    "timings band — builders-parallel (W2)",
+    "timings band — tail-desks (W2)",
+    "timings band — commit-publish (W2)",
+}
+
+
+def _signal_step_eligible(condition, *, outcome, accepted, job_success, lane="off"):
+    """Small evaluator for this frozen workflow's scalar conditions, not an Actions runner."""
+    expression = str(condition or "success()").strip()
+    if expression.startswith("${{"):
+        assert expression.endswith("}}")
+        expression = expression[3:-2].strip()
+    assert "${{" not in expression and "}}" not in expression
+    # The gate has no continue-on-error: its failure also makes job success false.
+    job_success = job_success and outcome not in {"failure", "cancelled"}
+    status = {"always": True, "success": job_success, "failure": not job_success, "cancelled": False}
+    if not re.search(r"\b(?:always|success|failure|cancelled)\s*\(", expression):
+        if not job_success:
+            return False
+    for name, value in status.items():
+        expression = re.sub(r"\b" + name + r"\s*\(\s*\)", str(value), expression)
+    def value(match):
+        field = match.group(0)
+        if field == "steps.signal_gate.outcome":
+            return repr(outcome)
+        if field == "steps.signal_gate.outputs.accepted":
+            return repr(accepted)
+        if field.endswith(".outcome"):
+            return repr("success")
+        if field.endswith(".theme_graph_witness"):
+            return repr("retained-witness")
+        if field.endswith((".ready", ".r2_ready", ".succeeded")):
+            return repr("true")
+        if field == "vars.AD1_M1_LANE":
+            return repr(lane)
+        return repr("")
+    expression = re.sub(r"\b(?:steps|vars)\.[\w.-]+", value, expression)
+    expression = re.sub(r"!(?!=)", " not ", expression).replace("&&", " and ").replace("||", " or ")
+    tree = ast.parse(expression.strip(), mode="eval")
+    allowed = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not,
+               ast.Compare, ast.Eq, ast.NotEq, ast.Constant)
+    assert all(isinstance(node, allowed) for node in ast.walk(tree)), expression
+    return bool(eval(compile(tree, "<inert-step-if>", "eval"), {"__builtins__": {}}))
+
+
+@pytest.mark.parametrize("workflow", ["engine-render", "closing-bell", "earlyclose", "daily"])
+@pytest.mark.parametrize("outcome,accepted", [
+    ("failure", "false"), ("failure", "true"), ("cancelled", ""),
+    ("skipped", ""), ("", ""), ("success", ""), ("success", "false"),
+])
+def test_signal_unconditional_sinks_require_complete_gate(workflow, outcome, accepted):
+    steps, index = _signal_steps(workflow)
+    assert steps[index].get("id") == "signal_gate"
+    assert not steps[index].get("continue-on-error", False)
+    # Successful earlier steps plus a skipped/missing gate must also fail closed.
+    for job_success in (False, True):
+        effects = [step.get("name", step.get("uses")) for step in steps[index + 1:]
+                   if step.get("name") not in _SIGNAL_FAILURE_SAFE
+                   and _signal_step_eligible(step.get("if"), outcome=outcome,
+                                             accepted=accepted, job_success=job_success)]
+        assert not effects, effects
+
+
+@pytest.mark.parametrize("workflow", ["engine-render", "closing-bell", "earlyclose", "daily"])
+def test_signal_accepted_consumers_keep_normal_success_path(workflow):
+    steps, index = _signal_steps(workflow)
+    for step in steps[index + 1:]:
+        if step.get("name") in _SIGNAL_FAILURE_SAFE:
+            continue
+        assert _signal_step_eligible(step.get("if"), outcome="success", accepted="true", job_success=True), step.get("name")
+        if not re.search(r"\b(?:always|success|failure|cancelled)\s*\(", str(step.get("if", ""))):
+            assert not _signal_step_eligible(step.get("if"), outcome="success", accepted="true", job_success=False), step.get("name")
+
+
+def test_signal_daily_diagnostics_survive_and_later_unrelated_failure_does_not_erase_acceptance():
+    steps, index = _signal_steps("daily")
+    by_name = {step.get("name"): step for step in steps[index + 1:]}
+    for name in ["enforce Prophet R2 index tombstone (unconditional)",
+                 "verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)",
+                 "timings ledger + 85% budget tripwire (W2)"]:
+        assert _signal_step_eligible(by_name[name].get("if"), outcome="failure", accepted="false", job_success=False)
+    for name in ["checkpoint core engine outputs to main (durable before tail desks)",
+                 "commit engine outputs", "commit chronicle artifacts",
+                 "assemble machine-consumable feeds (site/feeds -> R2)",
+                 "publish heavy per-ticker stores to R2 (additive; no-op without creds)"]:
+        assert _signal_step_eligible(by_name[name].get("if"), outcome="success", accepted="true", job_success=False)

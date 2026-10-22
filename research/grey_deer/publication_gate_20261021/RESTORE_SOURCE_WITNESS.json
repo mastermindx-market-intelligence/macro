@@ -1,0 +1,22 @@
+{
+  "source_base": "c70d4735b0002099a57b8dffe1796fa8be8efe00",
+  "observed_at_utc": "2026-10-21T22:43:46.734249+00:00",
+  "scope": "isolated disposable Git repository with two synthetic JSON fixtures only; no remote configured; no real signal data",
+  "original_command": "git checkout -- <brain-leaf> site/signals/",
+  "original_result": "restored unaccepted staged/index values, not the pinned committed baseline",
+  "original_both_files_matched_index": [
+    true,
+    true
+  ],
+  "qualified_command": "git restore --source=<captured-full-HEAD> --staged --worktree -- <brain-leaf> site/signals/",
+  "qualified_both_files_matched_baseline": [
+    true,
+    true
+  ],
+  "fixture_clean_after": true,
+  "limits": [
+    "This qualifies restoration source selection only",
+    "Fallback still needs successful cleanup and actual schema/brain validation",
+    "No production fallback executed"
+  ]
+}

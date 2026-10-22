@@ -1,0 +1,16 @@
+# Returned patch adjudication
+
+Operation: census-signal-publication-gate-20261021. Root: 6ad8240e-707c-83ea-babc-1ceaae3669e0.
+Procedure pin: Mastermind c9cbee5569ba50e30e28715d930809061a169517.
+
+The exact original Fabric result mas258-publish-gate-patch-20261021-01 was consumed via fabric_result. The complete response is 14,346 bytes, SHA256 0dea08963c30d3692f352d7d0432d4e2b33fcdf836cc0b90cc631070335fa3cd. Canonical status is TERMINAL, rc=0, root verified, controller return RECORDED, NOT_ACCEPTED. The original run was not respawned. Its returned inline diff is rejected: early ok=true and !=false guards fail open; express failure exits0 leave consumers/publishers eligible; daily standalone command status capture is unsafe under bash -e; restore reads the index, not the immutable pre-build commit; both daily commit steps and other always() sinks remain eligible. The 21-test file is referenced in remote scratch but absent from the retained response and is not independently verified.
+
+Original workspace reconciled on M2 at /Volumes/Mastermind 2/agent-workspaces/macro/web/census-signal-publication-gate-20261021, branch sol/web-census-signal-publication-gate-20261021, HEAD c70d4735b0002099a57b8dffe1796fa8be8efe00. It is locked by the original workspace owner for this operation. Prior dirt consists only of REPAIR_CONTRACT.md, BASELINE_GATE_WITNESS.json and RESTORE_SOURCE_WITNESS.json. No returned patch had been applied; no remote branch or PR existed at readback.
+
+A new, explicitly bounded correction commission mas258-publish-gate-correction-20261022-01 used the same root and actual parent, controller PID98423. It is TERMINAL rc78, root verified, controller return RECORDED/continuation_evidence_unqualified, NOT_ACCEPTED. Response191bytes SHA256 a801eede8f27859cff90d47564adcc41b02a0d5ba5873a7e68e96561da4bb3b3: slot.py pool=minimax admission_denied reason=canonical_source_unreadable; subreason=object_root_config_or_promisor. No substantive worker artifact or started-worker proof was returned. No replay, alternate pool/host selection, or native implementation child follows this admission refusal.
+
+Direct bounded source repair is retained under the existing assignment (NO_ELIGIBLE_PRE_EFFECT_WORKER / CRITICAL_PATH_SHORTCUT). The parent has the original nonconflicting source workspace and successful source read capability; the Fabric admission failure is held on its exact operation. A separate independent reviewer is still required on the actual candidate. A native principal adviser supplied only boundary judgment, no implementation/tests or release review.
+
+At fresh read, #9957 is unchanged Draft at26f60b69a5c929f2a5a4316add623d01ccbc7eac and #9980 unchanged Draft at03080d24a2ea3723386959bb0e6343eccbd56784, labels empty, auto-merge null. Their original reviews and holds are not retried or waived. #9932 landing is accepted and not redone. #7690/#6842 retain their recorded heads and hunk custody. The Linear comment and GitHub checkpoint-edit safety blocks remain respected; this file records new source-artifact adjudication, not a retry of either write.
+
+No production workflow, market producer, real repository-data validator CLI, ledger synchronization, historical repair, fit, restart, publish or release has run. All532 B0/B1 fits remain NOT_ADMITTED. MISSION_COMPLETE=false.

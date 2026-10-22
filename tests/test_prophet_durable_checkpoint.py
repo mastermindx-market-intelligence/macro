@@ -215,7 +215,10 @@ def test_stage_shadow_has_its_own_immediate_atomic_checkpoint() -> None:
     assert checkpoint_i == stage_i + 1
     assert checkpoint_i < names.index(ENGINE_BARRIER_STEP)
     assert checkpoint_i < names.index("commit engine outputs")
-    assert checkpoint["if"] == "steps.prophet_stage_shadow.outputs.succeeded == 'true'"
+    assert checkpoint["if"] == (
+        "steps.prophet_stage_shadow.outputs.succeeded == 'true' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
     assert checkpoint["continue-on-error"] is True
     assert checkpoint["timeout-minutes"] == 10
 
@@ -229,7 +232,10 @@ def test_failed_prophet_build_cannot_publish_a_checkpoint() -> None:
     assert 'echo "succeeded=true" >> "$GITHUB_OUTPUT"' in run
     assert 'echo "succeeded=false" >> "$GITHUB_OUTPUT"' in run
     assert 'echo "delta_manifest=$PROPHET_DELTA" >> "$GITHUB_OUTPUT"' in run
-    assert checkpoint["if"] == "steps.prophet_nightly.outputs.succeeded == 'true'"
+    assert checkpoint["if"] == (
+        "steps.prophet_nightly.outputs.succeeded == 'true' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
     assert checkpoint["env"]["PROPHET_DELTA_MANIFEST"].endswith(
         "steps.prophet_nightly.outputs.delta_manifest }}"
     )
@@ -274,7 +280,10 @@ def test_r2_publisher_reconstructs_and_hashes_the_checkpointed_git_blob() -> Non
     publish = _step(R2_PUBLISH_STEP)
     run = publish["run"]
 
-    assert publish["if"] == "steps.prophet_checkpoint.outputs.r2_ready == 'true'"
+    assert publish["if"] == (
+        "steps.prophet_checkpoint.outputs.r2_ready == 'true' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
     assert publish["continue-on-error"] is True
     assert publish["timeout-minutes"] == 5
     assert publish["env"]["PROPHET_CHECKPOINT_SHA"].endswith(
@@ -385,7 +394,10 @@ def test_stage_shadow_reads_only_a_current_main_prophet_projection() -> None:
         assert root in clean_block
     assert "git clean -fd -- data/prophet" not in run
     assert "git ls-files --others --exclude-standard -- data/prophet" in run
-    assert stage["if"] == "steps.prophet_accepted_source.outputs.ready == 'true'"
+    assert stage["if"] == (
+        "steps.prophet_accepted_source.outputs.ready == 'true' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
 
 
 def test_accepted_source_restore_handles_new_paths_over_a_stale_head(
