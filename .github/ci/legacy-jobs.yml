@@ -22031,6 +22031,15 @@ jobs:
     # with the repository's deploy invariants.  It was previously co-run here;
     # giving it its own bounded command keeps that coverage without borrowing
     # time from evidence replay.
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "tests/test_deploy_update_self_heal.py"
+      - "tests/test_caddy_autosave_driver.py"
+      - "tests/test_macro_caddy_overlay.py"
+      - "tests/test_macro_caddy_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22043,7 +22052,10 @@ jobs:
       - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_caddy_autosave_driver.py
+          tests/test_macro_caddy_overlay.py
+          tests/test_macro_caddy_publication.py -q
 
   deploy-git-history:
     if: ${{ false }}
