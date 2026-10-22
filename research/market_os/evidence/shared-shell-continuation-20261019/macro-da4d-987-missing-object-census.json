@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-20T18:18:37.013039+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "scope": "Read-only reachable-object census using --missing=print; no lazy hydration, source/index mutation, or retry.",
+  "exit": 0,
+  "stderr": "",
+  "stdout_bytes": 2077476,
+  "stdout_sha256": "0f6f1065e4936956a4a5bd5afea67383f904e6ebe9ea5cf7ed335c985035a072",
+  "all_reachable_missing_count": 0,
+  "incoming_head_missing_objects": [],
+  "incoming_head_missing_count": 0,
+  "bad30d_present_in_missing_set": false,
+  "finished_at": "2026-10-20T18:18:38.313832+00:00"
+}

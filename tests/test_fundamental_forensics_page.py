@@ -174,6 +174,45 @@ def _render_into(tmp_path: Path, root: Path, *, summary=None) -> str:
     return render_shell(tmp_path, state_summary=summary).read_text(encoding="utf-8")
 
 
+def test_public_shell_build_copies_the_reported_holding_client_without_private_rows(tmp_path: Path):
+    root = Path(__file__).resolve().parents[1]
+    html = _render_into(tmp_path, root)
+    for name in ("institutional_holding_research.css", "institutional_holding_research.js"):
+        assert (tmp_path / "site" / name).read_bytes() == (root / "templates" / name).read_bytes()
+    assert 'id="ff-holding-result" hidden' in html
+    assert not (tmp_path / "data" / "fundamental_forensics" / "private").exists()
+    assert not (tmp_path / "site" / "data" / "fundamental_forensics" / "private").exists()
+
+
+def test_reported_holding_asset_urls_follow_bytes_for_returning_visitors(tmp_path: Path):
+    """An immutable cached URL must change when the copied client changes."""
+    import hashlib
+    import re
+    import shutil
+
+    root = Path(__file__).resolve().parents[1]
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    names = ("institutional_holding_research.js", "institutional_holding_research.css")
+    for source in (root / "templates").iterdir():
+        if source.name in names:
+            shutil.copyfile(source, templates / source.name)
+        else:
+            (templates / source.name).symlink_to(source, target_is_directory=source.is_dir())
+
+    before = render_shell(tmp_path).read_text(encoding="utf-8")
+    for name in names:
+        original = (templates / name).read_bytes()
+        first_url = re.search(re.escape(name) + r'\?v=([^"\s]+)', before).group(0)
+        assert first_url == name + "?v=" + hashlib.sha256(original).hexdigest()[:8]
+        (templates / name).write_bytes(original + b"\n/* new client generation */\n")
+        after = render_shell(tmp_path).read_text(encoding="utf-8")
+        second_url = re.search(re.escape(name) + r'\?v=([^"\s]+)', after).group(0)
+        assert second_url != first_url
+        assert second_url == name + "?v=" + hashlib.sha256((tmp_path / "site" / name).read_bytes()).hexdigest()[:8]
+        assert render_shell(tmp_path).read_text(encoding="utf-8") == after
+
+
 # ---------------------------------------------------------------------------
 # FIF P1-b state data contract (items I1, I2, I4, I5)
 # ---------------------------------------------------------------------------

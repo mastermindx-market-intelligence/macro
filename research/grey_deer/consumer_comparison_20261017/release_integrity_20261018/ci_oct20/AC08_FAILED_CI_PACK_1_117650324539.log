@@ -1,0 +1,1078 @@
+﻿2026-10-18T10:21:26.5363476Z Current runner version: '2.337.0'
+2026-10-18T10:21:26.5384678Z ##[group]Runner Image Provisioner
+2026-10-18T10:21:26.5385454Z Hosted Compute Agent
+2026-10-18T10:21:26.5386240Z Version: 20261012.601
+2026-10-18T10:21:26.5386767Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-18T10:21:26.5387365Z Build Date: 2026-10-12T17:48:21Z
+2026-10-18T10:21:26.5388006Z Worker ID: {d1fad873-ae1f-478a-812f-168957d5446a}
+2026-10-18T10:21:26.5388620Z Region: eastus
+2026-10-18T10:21:26.5389098Z Cloud: Azure
+2026-10-18T10:21:26.5389557Z ##[endgroup]
+2026-10-18T10:21:26.5391165Z ##[group]Operating System
+2026-10-18T10:21:26.5391757Z Ubuntu
+2026-10-18T10:21:26.5392263Z 24.04.5
+2026-10-18T10:21:26.5392741Z LTS
+2026-10-18T10:21:26.5393203Z ##[endgroup]
+2026-10-18T10:21:26.5393667Z ##[group]Runner Image
+2026-10-18T10:21:26.5394244Z Image: ubuntu-24.04
+2026-10-18T10:21:26.5394762Z Version: 20261012.334.1
+2026-10-18T10:21:26.5395849Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-18T10:21:26.5397381Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-18T10:21:26.5398281Z ##[endgroup]
+2026-10-18T10:21:26.5399187Z ##[group]GITHUB_TOKEN Permissions
+2026-10-18T10:21:26.5401129Z Contents: read
+2026-10-18T10:21:26.5401628Z Metadata: read
+2026-10-18T10:21:26.5402183Z ##[endgroup]
+2026-10-18T10:21:26.5404243Z Secret source: Actions
+2026-10-18T10:21:26.5405098Z Cache mode: write
+2026-10-18T10:21:26.5405807Z Prepare workflow directory
+2026-10-18T10:21:26.5664162Z Prepare all required actions
+2026-10-18T10:21:26.5703262Z Getting action download info
+2026-10-18T10:21:26.7857396Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-18T10:21:26.8986071Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-18T10:21:27.0951928Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-18T10:21:27.2214172Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-10-18T10:21:27.4043078Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-10-18T10:21:27.5791962Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-18T10:21:27.8479008Z Complete job name: ci-pack-1
+2026-10-18T10:21:27.9273994Z ##[group]Run actions/checkout@v4
+2026-10-18T10:21:27.9274739Z with:
+2026-10-18T10:21:27.9275159Z   ref: 3d1a4e0df8faa6719edd8a59c467646516faf1c7
+2026-10-18T10:21:27.9275697Z   fetch-depth: 1
+2026-10-18T10:21:27.9276308Z   repository: mastermindx-market-intelligence/macro
+2026-10-18T10:21:27.9280114Z   token: ***
+2026-10-18T10:21:27.9280498Z   ssh-strict: true
+2026-10-18T10:21:27.9280881Z   ssh-user: git
+2026-10-18T10:21:27.9281282Z   persist-credentials: true
+2026-10-18T10:21:27.9281735Z   clean: true
+2026-10-18T10:21:27.9282117Z   sparse-checkout-cone-mode: true
+2026-10-18T10:21:27.9282582Z   fetch-tags: false
+2026-10-18T10:21:27.9282977Z   show-progress: true
+2026-10-18T10:21:27.9283377Z   lfs: false
+2026-10-18T10:21:27.9283734Z   submodules: false
+2026-10-18T10:21:27.9284122Z   set-safe-directory: true
+2026-10-18T10:21:27.9284561Z   allow-unsafe-pr-checkout: false
+2026-10-18T10:21:27.9285177Z ##[endgroup]
+2026-10-18T10:21:28.0127383Z Syncing repository: mastermindx-market-intelligence/macro
+2026-10-18T10:21:28.0129195Z ##[group]Getting Git version info
+2026-10-18T10:21:28.0129865Z Working directory is '/home/runner/work/macro/macro'
+2026-10-18T10:21:28.0130736Z [command]/usr/bin/git version
+2026-10-18T10:21:28.0213357Z git version 2.55.0
+2026-10-18T10:21:28.0232125Z ##[endgroup]
+2026-10-18T10:21:28.0246415Z Temporarily overriding HOME='/home/runner/work/_temp/af0cd5a0-6a2a-480e-9ff8-145197bf1068' before making global git config changes
+2026-10-18T10:21:28.0248976Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-18T10:21:28.0250849Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+2026-10-18T10:21:28.0308241Z Deleting the contents of '/home/runner/work/macro/macro'
+2026-10-18T10:21:28.0316353Z ##[group]Initializing the repository
+2026-10-18T10:21:28.0317401Z [command]/usr/bin/git init /home/runner/work/macro/macro
+2026-10-18T10:21:28.0418396Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-18T10:21:28.0420391Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-18T10:21:28.0423799Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-18T10:21:28.0425184Z hint: call:
+2026-10-18T10:21:28.0426320Z hint:
+2026-10-18T10:21:28.0427129Z hint: 	git config --global init.defaultBranch <name>
+2026-10-18T10:21:28.0428017Z hint:
+2026-10-18T10:21:28.0428867Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-18T10:21:28.0430004Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-18T10:21:28.0430738Z hint:
+2026-10-18T10:21:28.0431123Z hint: 	git branch -m <name>
+2026-10-18T10:21:28.0431563Z hint:
+2026-10-18T10:21:28.0432159Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-18T10:21:28.0433116Z Initialized empty Git repository in /home/runner/work/macro/macro/.git/
+2026-10-18T10:21:28.0437078Z [command]/usr/bin/git remote add origin https://github.com/mastermindx-market-intelligence/macro
+2026-10-18T10:21:28.0487999Z ##[endgroup]
+2026-10-18T10:21:28.0489164Z ##[group]Disabling automatic garbage collection
+2026-10-18T10:21:28.0491689Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-18T10:21:28.0525376Z ##[endgroup]
+2026-10-18T10:21:28.0526928Z ##[group]Setting up auth
+2026-10-18T10:21:28.0533660Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T10:21:28.0567841Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T10:21:28.0971570Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T10:21:28.1006605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T10:21:28.1196807Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T10:21:28.1229746Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T10:21:28.1428386Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-18T10:21:28.1467297Z ##[endgroup]
+2026-10-18T10:21:28.1468457Z ##[group]Fetching the repository
+2026-10-18T10:21:28.1476321Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 3d1a4e0df8faa6719edd8a59c467646516faf1c7
+2026-10-18T10:23:30.6278757Z From https://github.com/mastermindx-market-intelligence/macro
+2026-10-18T10:23:30.6279603Z  * branch                3d1a4e0df8faa6719edd8a59c467646516faf1c7 -> FETCH_HEAD
+2026-10-18T10:23:30.6281296Z ##[endgroup]
+2026-10-18T10:23:30.6281813Z ##[group]Determining the checkout info
+2026-10-18T10:23:30.6286575Z ##[endgroup]
+2026-10-18T10:23:30.6302272Z [command]/usr/bin/git sparse-checkout disable
+2026-10-18T10:23:30.6345242Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-18T10:23:30.6371798Z ##[group]Checking out the ref
+2026-10-18T10:23:30.6375316Z [command]/usr/bin/git checkout --progress --force 3d1a4e0df8faa6719edd8a59c467646516faf1c7
+2026-10-18T10:23:31.8053396Z Updating files:   3% (4911/127489)
+2026-10-18T10:23:32.3700756Z Updating files:   4% (5100/127489)
+2026-10-18T10:23:32.7793496Z Updating files:   5% (6375/127489)
+2026-10-18T10:23:33.7155594Z Updating files:   5% (6449/127489)
+2026-10-18T10:23:33.8086959Z Updating files:   5% (7524/127489)
+2026-10-18T10:23:34.6310066Z Updating files:   6% (7650/127489)
+2026-10-18T10:23:34.7156931Z Updating files:   7% (8925/127489)
+2026-10-18T10:23:35.3292914Z Updating files:   7% (9156/127489)
+2026-10-18T10:23:35.7245404Z Updating files:   8% (10200/127489)
+2026-10-18T10:23:36.0196776Z Updating files:   8% (11001/127489)
+2026-10-18T10:23:36.2794778Z Updating files:   9% (11475/127489)
+2026-10-18T10:23:36.4321870Z Updating files:  10% (12749/127489)
+2026-10-18T10:23:36.6129064Z Updating files:  11% (14024/127489)
+2026-10-18T10:23:36.6753409Z Updating files:  12% (15299/127489)
+2026-10-18T10:23:36.7149565Z Updating files:  13% (16574/127489)
+2026-10-18T10:23:36.7376385Z Updating files:  13% (17358/127489)
+2026-10-18T10:23:36.7935429Z Updating files:  14% (17849/127489)
+2026-10-18T10:23:36.8480380Z Updating files:  15% (19124/127489)
+2026-10-18T10:23:36.9032128Z Updating files:  16% (20399/127489)
+2026-10-18T10:23:37.7153223Z Updating files:  17% (21674/127489)
+2026-10-18T10:23:38.1482533Z Updating files:  17% (22279/127489)
+2026-10-18T10:23:38.7156275Z Updating files:  18% (22949/127489)
+2026-10-18T10:23:38.8628198Z Updating files:  18% (23980/127489)
+2026-10-18T10:23:39.3908801Z Updating files:  19% (24223/127489)
+2026-10-18T10:23:39.4508769Z Updating files:  20% (25498/127489)
+2026-10-18T10:23:39.6343649Z Updating files:  21% (26773/127489)
+2026-10-18T10:23:39.7149692Z Updating files:  22% (28048/127489)
+2026-10-18T10:23:39.9755228Z Updating files:  22% (28464/127489)
+2026-10-18T10:23:40.2617186Z Updating files:  23% (29323/127489)
+2026-10-18T10:23:40.4191043Z Updating files:  24% (30598/127489)
+2026-10-18T10:23:40.4573514Z Updating files:  25% (31873/127489)
+2026-10-18T10:23:40.4953970Z Updating files:  26% (33148/127489)
+2026-10-18T10:23:40.5340216Z Updating files:  27% (34423/127489)
+2026-10-18T10:23:40.5719965Z Updating files:  28% (35697/127489)
+2026-10-18T10:23:40.8256080Z Updating files:  29% (36972/127489)
+2026-10-18T10:23:41.9197607Z Updating files:  29% (37637/127489)
+2026-10-18T10:23:42.8433765Z Updating files:  29% (37642/127489)
+2026-10-18T10:23:43.8785854Z Updating files:  29% (37646/127489)
+2026-10-18T10:23:44.7279395Z Updating files:  29% (37650/127489)
+2026-10-18T10:23:45.1612850Z Updating files:  29% (37742/127489)
+2026-10-18T10:23:45.9494511Z Updating files:  30% (38247/127489)
+2026-10-18T10:23:46.7413541Z Updating files:  30% (38369/127489)
+2026-10-18T10:23:47.7333727Z Updating files:  30% (38487/127489)
+2026-10-18T10:23:47.7756828Z Updating files:  30% (39244/127489)
+2026-10-18T10:23:47.9470414Z Updating files:  31% (39522/127489)
+2026-10-18T10:23:48.3234699Z Updating files:  32% (40797/127489)
+2026-10-18T10:23:48.7571420Z Updating files:  33% (42072/127489)
+2026-10-18T10:23:48.8722249Z Updating files:  33% (42181/127489)
+2026-10-18T10:23:48.9149116Z Updating files:  34% (43347/127489)
+2026-10-18T10:23:48.9578325Z Updating files:  35% (44622/127489)
+2026-10-18T10:23:49.1349552Z Updating files:  36% (45897/127489)
+2026-10-18T10:23:49.1777911Z Updating files:  37% (47171/127489)
+2026-10-18T10:23:49.2216695Z Updating files:  38% (48446/127489)
+2026-10-18T10:23:49.2658270Z Updating files:  39% (49721/127489)
+2026-10-18T10:23:49.3086486Z Updating files:  40% (50996/127489)
+2026-10-18T10:23:49.3530812Z Updating files:  41% (52271/127489)
+2026-10-18T10:23:49.3962136Z Updating files:  42% (53546/127489)
+2026-10-18T10:23:49.4402868Z Updating files:  43% (54821/127489)
+2026-10-18T10:23:49.4849498Z Updating files:  44% (56096/127489)
+2026-10-18T10:23:49.5292123Z Updating files:  45% (57371/127489)
+2026-10-18T10:23:49.5721882Z Updating files:  46% (58645/127489)
+2026-10-18T10:23:49.6172302Z Updating files:  47% (59920/127489)
+2026-10-18T10:23:49.6600948Z Updating files:  48% (61195/127489)
+2026-10-18T10:23:49.7035312Z Updating files:  49% (62470/127489)
+2026-10-18T10:23:49.7148336Z Updating files:  50% (63745/127489)
+2026-10-18T10:23:49.7482174Z Updating files:  50% (64074/127489)
+2026-10-18T10:23:49.7919148Z Updating files:  51% (65020/127489)
+2026-10-18T10:23:49.8367817Z Updating files:  52% (66295/127489)
+2026-10-18T10:23:49.8807000Z Updating files:  53% (67570/127489)
+2026-10-18T10:23:50.5022162Z Updating files:  54% (68845/127489)
+2026-10-18T10:23:50.7165455Z Updating files:  55% (70119/127489)
+2026-10-18T10:23:51.7206812Z Updating files:  55% (70459/127489)
+2026-10-18T10:23:52.8068930Z Updating files:  55% (70851/127489)
+2026-10-18T10:23:53.7182201Z Updating files:  55% (70901/127489)
+2026-10-18T10:23:54.7831848Z Updating files:  55% (70942/127489)
+2026-10-18T10:23:55.7240227Z Updating files:  55% (70989/127489)
+2026-10-18T10:23:55.7389577Z Updating files:  55% (71191/127489)
+2026-10-18T10:23:56.2623586Z Updating files:  56% (71394/127489)
+2026-10-18T10:23:56.7151207Z Updating files:  57% (72669/127489)
+2026-10-18T10:23:56.8594456Z Updating files:  57% (73598/127489)
+2026-10-18T10:23:57.4242255Z Updating files:  58% (73944/127489)
+2026-10-18T10:23:57.7156227Z Updating files:  59% (75219/127489)
+2026-10-18T10:23:57.9445388Z Updating files:  59% (75922/127489)
+2026-10-18T10:23:58.5040815Z Updating files:  60% (76494/127489)
+2026-10-18T10:23:58.7152110Z Updating files:  61% (77769/127489)
+2026-10-18T10:23:58.8443445Z Updating files:  61% (78272/127489)
+2026-10-18T10:23:59.0028396Z Updating files:  62% (79044/127489)
+2026-10-18T10:23:59.4548714Z Updating files:  63% (80319/127489)
+2026-10-18T10:23:59.7159938Z Updating files:  64% (81593/127489)
+2026-10-18T10:24:00.7150135Z Updating files:  64% (82081/127489)
+2026-10-18T10:24:01.0823173Z Updating files:  64% (82694/127489)
+2026-10-18T10:24:01.7172035Z Updating files:  65% (82868/127489)
+2026-10-18T10:24:02.7164507Z Updating files:  65% (83030/127489)
+2026-10-18T10:24:03.6368852Z Updating files:  65% (83636/127489)
+2026-10-18T10:24:03.7153491Z Updating files:  66% (84143/127489)
+2026-10-18T10:24:04.7150232Z Updating files:  66% (84237/127489)
+2026-10-18T10:24:05.6010488Z Updating files:  66% (85190/127489)
+2026-10-18T10:24:05.8059249Z Updating files:  67% (85418/127489)
+2026-10-18T10:24:07.0114238Z Updating files:  67% (85534/127489)
+2026-10-18T10:24:07.2474252Z Updating files:  67% (86242/127489)
+2026-10-18T10:24:07.7244431Z Updating files:  68% (86693/127489)
+2026-10-18T10:24:08.7302021Z Updating files:  68% (87119/127489)
+2026-10-18T10:24:09.4994220Z Updating files:  68% (87350/127489)
+2026-10-18T10:24:09.7629788Z Updating files:  69% (87968/127489)
+2026-10-18T10:24:10.7228948Z Updating files:  69% (88169/127489)
+2026-10-18T10:24:11.8181674Z Updating files:  69% (88743/127489)
+2026-10-18T10:24:12.5591647Z Updating files:  69% (89218/127489)
+2026-10-18T10:24:12.7350754Z Updating files:  70% (89243/127489)
+2026-10-18T10:24:13.7222206Z Updating files:  70% (89247/127489)
+2026-10-18T10:24:14.7189420Z Updating files:  70% (89268/127489)
+2026-10-18T10:24:15.7355385Z Updating files:  70% (89321/127489)
+2026-10-18T10:24:16.7320947Z Updating files:  70% (89462/127489)
+2026-10-18T10:24:17.7219709Z Updating files:  70% (89603/127489)
+2026-10-18T10:24:18.8456495Z Updating files:  70% (89693/127489)
+2026-10-18T10:24:19.8157854Z Updating files:  70% (89758/127489)
+2026-10-18T10:24:20.8226049Z Updating files:  70% (89791/127489)
+2026-10-18T10:24:21.9570726Z Updating files:  70% (89808/127489)
+2026-10-18T10:24:22.7229340Z Updating files:  70% (89828/127489)
+2026-10-18T10:24:23.7296878Z Updating files:  70% (89850/127489)
+2026-10-18T10:24:24.7473104Z Updating files:  70% (89951/127489)
+2026-10-18T10:24:24.9948471Z Updating files:  70% (90033/127489)
+2026-10-18T10:24:25.1460509Z Updating files:  71% (90518/127489)
+2026-10-18T10:24:25.4823734Z Updating files:  72% (91793/127489)
+2026-10-18T10:24:25.7153683Z Updating files:  73% (93067/127489)
+2026-10-18T10:24:26.8083404Z Updating files:  73% (93114/127489)
+2026-10-18T10:24:26.9875022Z Updating files:  73% (94279/127489)
+2026-10-18T10:24:27.5706673Z Updating files:  74% (94342/127489)
+2026-10-18T10:24:27.7153303Z Updating files:  75% (95617/127489)
+2026-10-18T10:24:27.9160598Z Updating files:  75% (96002/127489)
+2026-10-18T10:24:28.1717989Z Updating files:  76% (96892/127489)
+2026-10-18T10:24:28.7149236Z Updating files:  77% (98167/127489)
+2026-10-18T10:24:28.7877631Z Updating files:  77% (98840/127489)
+2026-10-18T10:24:29.8977860Z Updating files:  78% (99442/127489)
+2026-10-18T10:24:29.9198501Z Updating files:  78% (100708/127489)
+2026-10-18T10:24:30.7768215Z Updating files:  79% (100717/127489)
+2026-10-18T10:24:30.8097591Z Updating files:  79% (101859/127489)
+2026-10-18T10:24:31.7149550Z Updating files:  80% (101992/127489)
+2026-10-18T10:24:32.5923054Z Updating files:  80% (102456/127489)
+2026-10-18T10:24:32.7149308Z Updating files:  81% (103267/127489)
+2026-10-18T10:24:32.7372111Z Updating files:  81% (104330/127489)
+2026-10-18T10:24:33.0220285Z Updating files:  82% (104541/127489)
+2026-10-18T10:24:33.5155417Z Updating files:  83% (105816/127489)
+2026-10-18T10:24:33.7462616Z Updating files:  84% (107091/127489)
+2026-10-18T10:24:34.1706593Z Updating files:  84% (107563/127489)
+2026-10-18T10:24:34.7153377Z Updating files:  85% (108366/127489)
+2026-10-18T10:24:34.8659822Z Updating files:  85% (108923/127489)
+2026-10-18T10:24:35.5144512Z Updating files:  86% (109641/127489)
+2026-10-18T10:24:35.7310298Z Updating files:  87% (110916/127489)
+2026-10-18T10:24:36.4169077Z Updating files:  87% (111064/127489)
+2026-10-18T10:24:36.8885590Z Updating files:  88% (112191/127489)
+2026-10-18T10:24:37.4399796Z Updating files:  88% (112636/127489)
+2026-10-18T10:24:37.7598518Z Updating files:  89% (113466/127489)
+2026-10-18T10:24:38.6880649Z Updating files:  89% (113804/127489)
+2026-10-18T10:24:38.7173864Z Updating files:  90% (114741/127489)
+2026-10-18T10:24:38.9052567Z Updating files:  90% (115078/127489)
+2026-10-18T10:24:39.1083094Z Updating files:  91% (116015/127489)
+2026-10-18T10:24:39.5590723Z Updating files:  92% (117290/127489)
+2026-10-18T10:24:39.6918179Z Updating files:  93% (118565/127489)
+2026-10-18T10:24:39.7988564Z Updating files:  94% (119840/127489)
+2026-10-18T10:24:40.0488983Z Updating files:  94% (120208/127489)
+2026-10-18T10:24:40.7176785Z Updating files:  95% (121115/127489)
+2026-10-18T10:24:41.1167930Z Updating files:  95% (121980/127489)
+2026-10-18T10:24:41.7162669Z Updating files:  96% (122390/127489)
+2026-10-18T10:24:41.7479725Z Updating files:  96% (123376/127489)
+2026-10-18T10:24:42.1364082Z Updating files:  97% (123665/127489)
+2026-10-18T10:24:42.5609589Z Updating files:  98% (124940/127489)
+2026-10-18T10:24:42.7195196Z Updating files:  99% (126215/127489)
+2026-10-18T10:24:43.7164164Z Updating files:  99% (126717/127489)
+2026-10-18T10:24:44.7327889Z Updating files:  99% (126831/127489)
+2026-10-18T10:24:45.7669121Z Updating files:  99% (126983/127489)
+2026-10-18T10:24:46.7285145Z Updating files:  99% (127286/127489)
+2026-10-18T10:24:47.6352836Z Updating files:  99% (127435/127489)
+2026-10-18T10:24:47.6353134Z Updating files: 100% (127489/127489)
+2026-10-18T10:24:47.6353443Z Updating files: 100% (127489/127489), done.
+2026-10-18T10:24:47.7329582Z Note: switching to '3d1a4e0df8faa6719edd8a59c467646516faf1c7'.
+2026-10-18T10:24:47.7330200Z 
+2026-10-18T10:24:47.7330771Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-18T10:24:47.7331362Z changes and commit them, and you can discard any commits you make in this
+2026-10-18T10:24:47.8143296Z state without impacting any branches by switching back to a branch.
+2026-10-18T10:24:47.8143638Z 
+2026-10-18T10:24:47.8143902Z If you want to create a new branch to retain commits you create, you may
+2026-10-18T10:24:47.8144310Z do so (now or later) by using -c with the switch command. Example:
+2026-10-18T10:24:47.8144589Z 
+2026-10-18T10:24:47.8144710Z   git switch -c <new-branch-name>
+2026-10-18T10:24:47.8144892Z 
+2026-10-18T10:24:47.8145015Z Or undo this operation with:
+2026-10-18T10:24:47.8145187Z 
+2026-10-18T10:24:47.8145285Z   git switch -
+2026-10-18T10:24:47.8145434Z 
+2026-10-18T10:24:47.8145659Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-18T10:24:47.8146468Z 
+2026-10-18T10:24:47.8146832Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:24:47.9430034Z ##[endgroup]
+2026-10-18T10:24:48.7321322Z [command]/usr/bin/git log -1 --format=%H
+2026-10-18T10:24:48.7345643Z 3d1a4e0df8faa6719edd8a59c467646516faf1c7
+2026-10-18T10:24:48.9621002Z ##[group]Run actions/setup-python@v5
+2026-10-18T10:24:48.9621239Z with:
+2026-10-18T10:24:48.9621419Z   python-version: 3.12.13
+2026-10-18T10:24:48.9621621Z   check-latest: false
+2026-10-18T10:24:48.9623617Z   token: ***
+2026-10-18T10:24:48.9623801Z   update-environment: true
+2026-10-18T10:24:48.9624005Z   allow-prereleases: false
+2026-10-18T10:24:48.9624190Z   freethreaded: false
+2026-10-18T10:24:48.9624377Z ##[endgroup]
+2026-10-18T10:24:51.2557490Z ##[group]Installed versions
+2026-10-18T10:24:51.6394849Z Version 3.12.13 was not found in the local cache
+2026-10-18T10:24:51.8662773Z (node:2131) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T10:24:51.8663744Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T10:24:52.5871864Z Version 3.12.13 is available for downloading
+2026-10-18T10:24:52.5873497Z Download from "https://github.com/actions/python-versions/releases/download/3.12.13-27650778726/python-3.12.13-linux-24.04-x64.tar.gz"
+2026-10-18T10:24:53.7947444Z Extract downloaded archive
+2026-10-18T10:24:53.8109212Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/7b4385bc-ea2f-4fc5-82ad-039a6d59260d -f /home/runner/work/_temp/cba3e1d0-3713-449c-b1f1-6e40f002d95a
+2026-10-18T10:24:55.5651545Z Execute installation script
+2026-10-18T10:24:55.5773538Z Check if Python hostedtoolcache folder exist...
+2026-10-18T10:24:55.5774191Z Create Python 3.12.13 folder
+2026-10-18T10:24:55.5784668Z Copy Python binaries to hostedtoolcache folder
+2026-10-18T10:24:55.9436554Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-10-18T10:24:55.9470022Z Upgrading pip...
+2026-10-18T10:24:59.8943570Z Collecting pip
+2026-10-18T10:24:59.9311814Z Downloading pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+2026-10-18T10:24:59.9374184Z Downloading pip-26.2.1-py3-none-any.whl (1.8 MB)
+2026-10-18T10:25:00.0025676Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 34.2 MB/s eta 0:00:00
+2026-10-18T10:25:00.0026194Z 
+2026-10-18T10:25:00.0177450Z Installing collected packages: pip
+2026-10-18T10:25:00.0178372Z Attempting uninstall: pip
+2026-10-18T10:25:00.0194210Z Found existing installation: pip 25.0.1
+2026-10-18T10:25:00.0450058Z Uninstalling pip-25.0.1:
+2026-10-18T10:25:00.0493651Z Successfully uninstalled pip-25.0.1
+2026-10-18T10:25:01.2572156Z Successfully installed pip-26.2.1
+2026-10-18T10:25:01.2984607Z Create complete file
+2026-10-18T10:25:01.3020397Z Successfully set up CPython (3.12.13)
+2026-10-18T10:25:01.3021536Z ##[endgroup]
+2026-10-18T10:25:01.3247020Z ##[group]Run actions/setup-node@v4
+2026-10-18T10:25:01.3247236Z with:
+2026-10-18T10:25:01.3247397Z   node-version: 20
+2026-10-18T10:25:01.3247565Z   always-auth: false
+2026-10-18T10:25:01.3247732Z   check-latest: false
+2026-10-18T10:25:01.3249700Z   token: ***
+2026-10-18T10:25:01.3249860Z env:
+2026-10-18T10:25:01.3250063Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:01.3250406Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:01.3250730Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:01.3251025Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:01.3251307Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:01.3251605Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:01.3251859Z ##[endgroup]
+2026-10-18T10:25:01.7134575Z Attempting to download 20...
+2026-10-18T10:25:01.7256005Z (node:2188) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T10:25:01.7256839Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T10:25:02.1656174Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+2026-10-18T10:25:02.4307100Z Extracting ...
+2026-10-18T10:25:02.4413996Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/94933a06-1d88-496f-ba3d-6f3551fccf1e -f /home/runner/work/_temp/51d8da35-5be6-4ee6-86b8-6cef36bd0841
+2026-10-18T10:25:03.2987999Z Adding to the cache ...
+2026-10-18T10:25:05.0262854Z ##[group]Environment details
+2026-10-18T10:25:05.4209883Z node: v20.20.2
+2026-10-18T10:25:05.4210210Z npm: 10.8.2
+2026-10-18T10:25:05.4210451Z yarn: 1.22.22
+2026-10-18T10:25:05.4211016Z ##[endgroup]
+2026-10-18T10:25:05.4373285Z ##[group]Run python -m venv "$RUNNER_TEMP/ci-pack-runner"
+2026-10-18T10:25:05.4373688Z [36;1mpython -m venv "$RUNNER_TEMP/ci-pack-runner"[0m
+2026-10-18T10:25:05.4374005Z [36;1m"$RUNNER_TEMP/ci-pack-runner/bin/pip" install pyyaml[0m
+2026-10-18T10:25:05.5480786Z shell: /usr/bin/bash -e {0}
+2026-10-18T10:25:05.5481020Z env:
+2026-10-18T10:25:05.5481252Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:05.5481604Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:05.5481942Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:05.5482241Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:05.5482534Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:05.5482828Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:05.5483081Z ##[endgroup]
+2026-10-18T10:25:08.8715783Z Collecting pyyaml
+2026-10-18T10:25:08.8972222Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:25:08.9033359Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:25:08.9254000Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 58.0 MB/s eta 0:00:00
+2026-10-18T10:25:08.9314557Z Installing collected packages: pyyaml
+2026-10-18T10:25:08.9787092Z Successfully installed pyyaml-6.0.3
+2026-10-18T10:25:09.2357810Z 
+2026-10-18T10:25:09.2358749Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:25:09.2359241Z [notice] To update, run: python -m pip install --upgrade pip
+2026-10-18T10:25:09.2842683Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+2026-10-18T10:25:09.2843006Z with:
+2026-10-18T10:25:09.2843184Z   name: ci-semantic-plan-39118765804-1
+2026-10-18T10:25:09.2843425Z   path: /home/runner/work/_temp/ci-semantic-plan
+2026-10-18T10:25:09.2843664Z   merge-multiple: false
+2026-10-18T10:25:09.2843877Z   repository: mastermindx-market-intelligence/macro
+2026-10-18T10:25:09.2844136Z   run-id: 39118765804
+2026-10-18T10:25:09.2844301Z env:
+2026-10-18T10:25:09.2844503Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.2844828Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:09.2845151Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.2845435Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.2845724Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.2846227Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:09.2846494Z ##[endgroup]
+2026-10-18T10:25:09.4577184Z Downloading single artifact
+2026-10-18T10:25:09.4688249Z (node:2274) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T10:25:09.4689577Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T10:25:09.5444133Z Preparing to download the following artifacts:
+2026-10-18T10:25:09.5445768Z - ci-semantic-plan-39118765804-1 (ID: 12133127686, Size: 23635, Expected Digest: sha256:c015f5e9587e6cfcfbf642e6bbc7a757713f39134ddbc76f40be018002d92523)
+2026-10-18T10:25:09.6628615Z Redirecting to blob download url: https://productionresultssa10.blob.core.windows.net/actions-results/82628b5f-2afd-83e7-a4cb-0e5064dec915/workflow-job-run-6c03fadf-abdd-526d-aabb-01d2cd5311ad/artifacts/1c4c272237422377ceb321fea60c3f6ea67b8fae29c736416b4dbab392c235ff.zip
+2026-10-18T10:25:09.6630711Z Starting download of artifact to: /home/runner/work/_temp/ci-semantic-plan
+2026-10-18T10:25:09.7006449Z (node:2274) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-18T10:25:09.7040197Z SHA256 digest of downloaded artifact is c015f5e9587e6cfcfbf642e6bbc7a757713f39134ddbc76f40be018002d92523
+2026-10-18T10:25:09.7041157Z Artifact download completed successfully.
+2026-10-18T10:25:09.7041696Z Total of 1 artifact(s) downloaded
+2026-10-18T10:25:09.7054484Z Download artifact has finished successfully
+2026-10-18T10:25:09.7568254Z ##[group]Run actions/download-artifact@v4
+2026-10-18T10:25:09.7568517Z with:
+2026-10-18T10:25:09.7568697Z   name: ci-changed-files
+2026-10-18T10:25:09.7568924Z   path: /home/runner/work/_temp/ci-changed-files
+2026-10-18T10:25:09.7569187Z   merge-multiple: false
+2026-10-18T10:25:09.7569419Z   repository: mastermindx-market-intelligence/macro
+2026-10-18T10:25:09.7569675Z   run-id: 39118765804
+2026-10-18T10:25:09.7569847Z env:
+2026-10-18T10:25:09.7570058Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.7570403Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:09.7570745Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.7571053Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.7571369Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:09.7571670Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:09.7571968Z ##[endgroup]
+2026-10-18T10:25:09.8816294Z Downloading single artifact
+2026-10-18T10:25:09.8926722Z (node:2286) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T10:25:09.8927456Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T10:25:09.9834509Z Preparing to download the following artifacts:
+2026-10-18T10:25:09.9835585Z - ci-changed-files (ID: 12133237260, Size: 1573, Expected Digest: sha256:1a1c074ee1e568fc6166fb9bbe60a3dfb79c68b874c2b519c581d5cb1f653f41)
+2026-10-18T10:25:10.1115045Z Redirecting to blob download url: https://productionresultssa10.blob.core.windows.net/actions-results/82628b5f-2afd-83e7-a4cb-0e5064dec915/workflow-job-run-6c03fadf-abdd-526d-aabb-01d2cd5311ad/artifacts/82bbc9a636800aec207501fe8bb88360b3f7d4be82a22c14c0ac4672e3ff8486.zip
+2026-10-18T10:25:10.1117114Z Starting download of artifact to: /home/runner/work/_temp/ci-changed-files
+2026-10-18T10:25:10.1338606Z (node:2286) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-18T10:25:10.1364400Z SHA256 digest of downloaded artifact is 1a1c074ee1e568fc6166fb9bbe60a3dfb79c68b874c2b519c581d5cb1f653f41
+2026-10-18T10:25:10.1365189Z Artifact download completed successfully.
+2026-10-18T10:25:10.1365633Z Total of 1 artifact(s) downloaded
+2026-10-18T10:25:10.1369527Z Download artifact has finished successfully
+2026-10-18T10:25:10.1478375Z ##[group]Run echo "CI_CHANGED_FILES_FILE=$RUNNER_TEMP/ci-changed-files/changed-files.json" >> "$GITHUB_ENV"
+2026-10-18T10:25:10.1478970Z [36;1mecho "CI_CHANGED_FILES_FILE=$RUNNER_TEMP/ci-changed-files/changed-files.json" >> "$GITHUB_ENV"[0m
+2026-10-18T10:25:10.1536635Z shell: /usr/bin/bash -e {0}
+2026-10-18T10:25:10.1536856Z env:
+2026-10-18T10:25:10.1537083Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1537428Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:10.1537770Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1538067Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1538369Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1538682Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:10.1538948Z ##[endgroup]
+2026-10-18T10:25:10.1648375Z ##[group]Run set -euo pipefail
+2026-10-18T10:25:10.1648646Z [36;1mset -euo pipefail[0m
+2026-10-18T10:25:10.1648903Z [36;1mmkdir -p "$RUNNER_TEMP/ci-semantic-fragments"[0m
+2026-10-18T10:25:10.1649252Z [36;1m"$RUNNER_TEMP/ci-pack-runner/bin/python" scripts/run_ci_pack.py \[0m
+2026-10-18T10:25:10.1649595Z [36;1m  --workflow .github/ci/legacy-jobs.yml \[0m
+2026-10-18T10:25:10.1649855Z [36;1m  --gate code \[0m
+2026-10-18T10:25:10.1650121Z [36;1m  --plan-json "$RUNNER_TEMP/ci-semantic-plan/ci-plan.json" \[0m
+2026-10-18T10:25:10.1650458Z [36;1m  --changed-files-file "$CI_CHANGED_FILES_FILE" \[0m
+2026-10-18T10:25:10.1650747Z [36;1m  --expect-plan-sha "$EXPECTED_PLAN_SHA" \[0m
+2026-10-18T10:25:10.1651024Z [36;1m  --expect-tested-tree-sha "$TESTED_TREE_SHA" \[0m
+2026-10-18T10:25:10.1651361Z [36;1m  --expect-subject-head-sha "$SUBJECT_HEAD_SHA" \[0m
+2026-10-18T10:25:10.1651643Z [36;1m  --expect-base-sha "$TESTED_BASE_SHA" \[0m
+2026-10-18T10:25:10.1651942Z [36;1m  --pack-index 1 \[0m
+2026-10-18T10:25:10.1652152Z [36;1m  --pack-count 12 \[0m
+2026-10-18T10:25:10.1652383Z [36;1m  --base-replay-budget-seconds 900 \[0m
+2026-10-18T10:25:10.1652740Z [36;1m  --emit-semantic-fragment "$RUNNER_TEMP/ci-semantic-fragments/pack-1.json" \[0m
+2026-10-18T10:25:10.1653072Z [36;1m  --execute[0m
+2026-10-18T10:25:10.1702831Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-18T10:25:10.1703120Z env:
+2026-10-18T10:25:10.1703344Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1703677Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:25:10.1704012Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1704312Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1704615Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:25:10.1704915Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:25:10.1705287Z   CI_CHANGED_FILES_FILE: /home/runner/work/_temp/ci-changed-files/changed-files.json
+2026-10-18T10:25:10.1705604Z   CI_BASE_REF: main
+2026-10-18T10:25:10.1706051Z   CI_HEAD_REF: sol/web-risk-radar-release-qualification-20261018-0304
+2026-10-18T10:25:10.1706521Z   EXPECTED_PLAN_SHA: efe4726fe4c23103c63ea572178e695e2265ee8314f08c06642fd3ed42093b6f
+2026-10-18T10:25:10.1706901Z   TESTED_TREE_SHA: 3d1a4e0df8faa6719edd8a59c467646516faf1c7
+2026-10-18T10:25:10.1707219Z   SUBJECT_HEAD_SHA: ac08d5bd630d480a97fcbd0d9814946724250011
+2026-10-18T10:25:10.1707518Z   TESTED_BASE_SHA: b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:25:10.1707772Z ##[endgroup]
+2026-10-18T10:25:11.9083255Z ##[notice]scoped to 101 changed file(s): 75/254 jobs (2 unscoped always-on, 73 scoped matches); derived scopes for 142/254 jobs; 110 declared exclusive
+2026-10-18T10:25:11.9090246Z ##[notice]179 legacy job(s) out of scope for this diff; main's baseline still runs all 254
+2026-10-18T10:25:14.1598745Z Validated 254 legacy jobs; 75 in scope (scoped to 101 changed file(s): 75/254 jobs (2 unscoped always-on, 73 scoped matches)); pack weights=[131, 130, 130, 131, 129, 130, 131, 130, 129, 127, 129, 127]; selected pack 1 (6 jobs).
+2026-10-18T10:25:14.1600044Z Selected jobs: admin-live-runs, public-render-fastlane, unrun-brain-desks, unrun-dark-guards, reference-integrity, ric-f0-a10-canonical-calendar
+2026-10-18T10:25:14.1601401Z ##[group]dependency environment attempt 1 — pip install pytest pandas numpy pyarrow pyyaml
+2026-10-18T10:25:14.5019904Z Collecting pytest
+2026-10-18T10:25:14.5234306Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:25:14.7486865Z Collecting pandas
+2026-10-18T10:25:14.7514645Z   Downloading pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+2026-10-18T10:25:15.0326592Z Collecting numpy
+2026-10-18T10:25:15.0356585Z   Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-10-18T10:25:15.1191221Z Collecting pyarrow
+2026-10-18T10:25:15.1217984Z   Downloading pyarrow-26.0.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+2026-10-18T10:25:15.2588880Z Collecting pyyaml
+2026-10-18T10:25:15.2597786Z   Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:25:15.2662548Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:25:15.2691615Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:25:15.2807766Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:25:15.2834276Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:25:15.2929456Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:25:15.2956404Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:25:15.3097776Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:25:15.3123487Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:25:15.5731051Z Collecting python-dateutil>=2.8.2 (from pandas)
+2026-10-18T10:25:15.5759276Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-10-18T10:25:15.5905307Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas)
+2026-10-18T10:25:15.5930508Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-18T10:25:15.5997242Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:25:15.6084146Z Downloading pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.8 MB)
+2026-10-18T10:25:15.7272074Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.8/10.8 MB 92.1 MB/s eta 0:00:00
+2026-10-18T10:25:15.7308287Z Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-10-18T10:25:15.8510942Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 139.6 MB/s eta 0:00:00
+2026-10-18T10:25:15.8540365Z Downloading pyarrow-26.0.0-cp312-cp312-manylinux_2_28_x86_64.whl (53.9 MB)
+2026-10-18T10:25:16.2184044Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.9/53.9 MB 148.2 MB/s eta 0:00:00
+2026-10-18T10:25:16.2194874Z Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:25:16.2227210Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:25:16.2266641Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:25:16.4090619Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:25:16.4722315Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:25:16.4777555Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 290.8 MB/s eta 0:00:00
+2026-10-18T10:25:16.4802488Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-10-18T10:25:16.4845351Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-18T10:25:16.5933730Z Installing collected packages: six, pyyaml, pygments, pyarrow, pluggy, packaging, numpy, iniconfig, python-dateutil, pytest, pandas
+2026-10-18T10:25:24.7518805Z Successfully installed iniconfig-2.3.1 numpy-2.5.4 packaging-26.3 pandas-3.0.6 pluggy-1.7.0 pyarrow-26.0.0 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 pyyaml-6.0.3 six-1.17.0
+2026-10-18T10:25:24.8699204Z 
+2026-10-18T10:25:24.8699932Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:25:24.8700408Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:25:24.9494275Z ##[endgroup]
+2026-10-18T10:25:25.6890676Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:25:26.0557668Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:25:26.1651153Z Removing scripts/__pycache__/
+2026-10-18T10:25:26.1677881Z ##[group]ric-f0-a10-canonical-calendar — ric-f0-a10-canonical-calendar
+2026-10-18T10:25:28.3262352Z .....................                                                    [100%]
+2026-10-18T10:25:28.3262900Z 21 passed in 1.73s
+2026-10-18T10:25:28.3954631Z ##[endgroup]
+2026-10-18T10:25:30.9158245Z ##[group]dependency environment attempt 1 — pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+2026-10-18T10:25:31.2454266Z Collecting pytest
+2026-10-18T10:25:31.2463976Z   Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:25:31.3318009Z Collecting pandas
+2026-10-18T10:25:31.3327952Z   Using cached pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+2026-10-18T10:25:31.4752003Z Collecting numpy
+2026-10-18T10:25:31.4762781Z   Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-10-18T10:25:31.5245151Z Collecting pyarrow
+2026-10-18T10:25:31.5254204Z   Using cached pyarrow-26.0.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+2026-10-18T10:25:31.5453927Z Collecting pyyaml
+2026-10-18T10:25:31.5463435Z   Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:25:31.5562318Z Collecting jinja2
+2026-10-18T10:25:31.5779824Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-10-18T10:25:31.6058352Z Collecting plotly
+2026-10-18T10:25:31.6087817Z   Downloading plotly-7.1.0-py3-none-any.whl.metadata (8.8 kB)
+2026-10-18T10:25:31.6335294Z Collecting requests
+2026-10-18T10:25:31.6364229Z   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-10-18T10:25:31.6483648Z Collecting beautifulsoup4
+2026-10-18T10:25:31.6510628Z   Downloading beautifulsoup4-4.15.0-py3-none-any.whl.metadata (3.8 kB)
+2026-10-18T10:25:31.6634352Z Collecting openpyxl
+2026-10-18T10:25:31.6662675Z   Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:25:31.7170853Z Collecting scikit-learn
+2026-10-18T10:25:31.7200665Z   Downloading scikit_learn-1.9.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.3 kB)
+2026-10-18T10:25:31.7722367Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:25:31.7732336Z   Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:25:31.7838482Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:25:31.7846698Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:25:31.7926941Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:25:31.7935645Z   Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:25:31.8075208Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:25:31.8083756Z   Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:25:31.8226406Z Collecting python-dateutil>=2.8.2 (from pandas)
+2026-10-18T10:25:31.8234907Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-10-18T10:25:31.8584048Z Collecting MarkupSafe>=2.0 (from jinja2)
+2026-10-18T10:25:31.8612631Z   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-10-18T10:25:31.8959000Z Collecting narwhals>=1.15.1 (from plotly)
+2026-10-18T10:25:31.8987117Z   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+2026-10-18T10:25:31.9983436Z Collecting charset_normalizer<4,>=2 (from requests)
+2026-10-18T10:25:32.0014061Z   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-10-18T10:25:32.0158205Z Collecting idna<4,>=2.5 (from requests)
+2026-10-18T10:25:32.0188406Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-10-18T10:25:32.0393738Z Collecting urllib3<3,>=1.26 (from requests)
+2026-10-18T10:25:32.0421492Z   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-10-18T10:25:32.0578750Z Collecting certifi>=2023.5.7 (from requests)
+2026-10-18T10:25:32.0606710Z   Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:25:32.0755294Z Collecting soupsieve>=1.6.1 (from beautifulsoup4)
+2026-10-18T10:25:32.0854735Z   Downloading soupsieve-3.0.3-py3-none-any.whl.metadata (4.4 kB)
+2026-10-18T10:25:32.1248774Z Collecting typing-extensions>=4.0.0 (from beautifulsoup4)
+2026-10-18T10:25:32.1277888Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-10-18T10:25:32.1353674Z Collecting et-xmlfile (from openpyxl)
+2026-10-18T10:25:32.1381292Z   Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+2026-10-18T10:25:32.2230759Z Collecting scipy>=1.10.0 (from scikit-learn)
+2026-10-18T10:25:32.2261644Z   Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-18T10:25:32.2516172Z Collecting joblib>=1.4.0 (from scikit-learn)
+2026-10-18T10:25:32.2546673Z   Downloading joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+2026-10-18T10:25:32.2758112Z Collecting threadpoolctl>=3.5.0 (from scikit-learn)
+2026-10-18T10:25:32.2786030Z   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+2026-10-18T10:25:32.2927962Z Collecting cloudpickle>=3.0 (from joblib>=1.4.0->scikit-learn)
+2026-10-18T10:25:32.2955536Z   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+2026-10-18T10:25:32.3086155Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas)
+2026-10-18T10:25:32.3094846Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-18T10:25:32.3250599Z Using cached pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:25:32.3260552Z Using cached pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.8 MB)
+2026-10-18T10:25:32.3300182Z Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-10-18T10:25:32.3353335Z Using cached pyarrow-26.0.0-cp312-cp312-manylinux_2_28_x86_64.whl (53.9 MB)
+2026-10-18T10:25:32.3514880Z Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:25:32.3545506Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-18T10:25:32.3604106Z Downloading plotly-7.1.0-py3-none-any.whl (9.7 MB)
+2026-10-18T10:25:32.4170554Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.7/9.7 MB 178.5 MB/s eta 0:00:00
+2026-10-18T10:25:32.4199759Z Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+2026-10-18T10:25:32.4244145Z Downloading beautifulsoup4-4.15.0-py3-none-any.whl (109 kB)
+2026-10-18T10:25:32.4286564Z Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+2026-10-18T10:25:32.4332506Z Downloading scikit_learn-1.9.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (9.2 MB)
+2026-10-18T10:25:32.4765600Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.2/9.2 MB 215.7 MB/s eta 0:00:00
+2026-10-18T10:25:32.4794319Z Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+2026-10-18T10:25:32.4838750Z Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+2026-10-18T10:25:32.4883813Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-10-18T10:25:32.4907736Z Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:25:32.4935169Z Downloading joblib-1.6.0-py3-none-any.whl (306 kB)
+2026-10-18T10:25:32.4982639Z Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-10-18T10:25:32.5026666Z Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+2026-10-18T10:25:32.5083948Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:25:32.5093077Z Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:25:32.5101804Z Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:25:32.5113754Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-10-18T10:25:32.5142505Z Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+2026-10-18T10:25:32.7093466Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 182.0 MB/s eta 0:00:00
+2026-10-18T10:25:32.7125179Z Downloading soupsieve-3.0.3-py3-none-any.whl (41 kB)
+2026-10-18T10:25:32.7168104Z Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+2026-10-18T10:25:32.7208560Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-18T10:25:32.7250934Z Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-10-18T10:25:32.7302390Z Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+2026-10-18T10:25:32.7346576Z Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+2026-10-18T10:25:32.7368018Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-18T10:25:32.9484604Z Installing collected packages: urllib3, typing-extensions, threadpoolctl, soupsieve, six, pyyaml, pygments, pyarrow, pluggy, packaging, numpy, narwhals, MarkupSafe, iniconfig, idna, et-xmlfile, cloudpickle, charset_normalizer, certifi, scipy, requests, python-dateutil, pytest, plotly, openpyxl, joblib, jinja2, beautifulsoup4, scikit-learn, pandas
+2026-10-18T10:25:48.2327529Z Successfully installed MarkupSafe-3.0.4 beautifulsoup4-4.15.0 certifi-2026.7.22 charset_normalizer-3.5.2 cloudpickle-3.1.2 et-xmlfile-2.0.0 idna-3.20 iniconfig-2.3.1 jinja2-3.1.6 joblib-1.6.0 narwhals-2.27.1 numpy-2.5.4 openpyxl-3.1.5 packaging-26.3 pandas-3.0.6 plotly-7.1.0 pluggy-1.7.0 pyarrow-26.0.0 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 pyyaml-6.0.3 requests-2.34.2 scikit-learn-1.9.1 scipy-1.18.1 six-1.17.0 soupsieve-3.0.3 threadpoolctl-3.7.0 typing-extensions-4.16.0 urllib3-2.8.0
+2026-10-18T10:25:48.2527241Z 
+2026-10-18T10:25:48.2527790Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:25:48.2530656Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:25:48.3391229Z ##[endgroup]
+2026-10-18T10:25:48.6169179Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:25:48.9650051Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:25:49.0675168Z Removing engine/__pycache__/
+2026-10-18T10:25:49.0675524Z Removing engine/marketing/__pycache__/
+2026-10-18T10:25:49.0675816Z Removing lib/__pycache__/
+2026-10-18T10:25:49.0676286Z Removing scripts/__pycache__/
+2026-10-18T10:25:49.0676566Z Removing tests/__pycache__/
+2026-10-18T10:25:49.0702682Z ##[group]unrun-brain-desks — master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
+2026-10-18T10:26:07.6326443Z ........................................................................ [ 20%]
+2026-10-18T10:26:17.0890130Z ........................................................................ [ 41%]
+2026-10-18T10:26:18.9052826Z ........................................................................ [ 62%]
+2026-10-18T10:26:20.7386858Z ........................................................................ [ 83%]
+2026-10-18T10:26:22.2493326Z ........................................................                 [100%]
+2026-10-18T10:26:22.2493748Z 344 passed in 32.77s
+2026-10-18T10:26:22.4771704Z ##[endgroup]
+2026-10-18T10:26:22.4862879Z ##[group]unrun-brain-desks — china_intel_hub institutional-visit dossier block (P1)
+2026-10-18T10:26:31.3607203Z ..............................................................           [100%]
+2026-10-18T10:26:31.3607701Z 62 passed in 8.46s
+2026-10-18T10:26:31.5359398Z ##[endgroup]
+2026-10-18T10:26:31.5450502Z ##[group]unrun-brain-desks — China Intelligence visit-discovery metadata context (CIE-07)
+2026-10-18T10:26:38.7548502Z ........................................................................ [ 96%]
+2026-10-18T10:26:42.2241642Z ...                                                                      [100%]
+2026-10-18T10:26:42.2242637Z 75 passed in 10.27s
+2026-10-18T10:26:42.3959821Z ##[endgroup]
+2026-10-18T10:26:42.4048716Z ##[group]unrun-brain-desks — Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
+2026-10-18T10:26:48.5305730Z ........................................................................ [ 57%]
+2026-10-18T10:26:50.6570067Z ......................................................                   [100%]
+2026-10-18T10:26:50.6570579Z 126 passed in 7.87s
+2026-10-18T10:26:50.8505523Z ##[endgroup]
+2026-10-18T10:26:50.8596750Z ##[group]unrun-brain-desks — Intelligence Hub market pulse roster/markup + controller contract
+2026-10-18T10:26:54.4506615Z ........................................................................ [ 82%]
+2026-10-18T10:27:27.0570136Z ...............                                                          [100%]
+2026-10-18T10:27:27.0570563Z 87 passed in 35.83s
+2026-10-18T10:27:27.1504708Z ##[endgroup]
+2026-10-18T10:27:27.4369425Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:27:27.7880473Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:27:27.9323488Z Removing .pytest_cache/
+2026-10-18T10:27:27.9323896Z Removing collectors/__pycache__/
+2026-10-18T10:27:27.9324273Z Removing data/macro/auction_cache/
+2026-10-18T10:27:27.9324601Z Removing engine/__pycache__/
+2026-10-18T10:27:27.9324981Z Removing engine/codex_lane/__pycache__/
+2026-10-18T10:27:27.9325360Z Removing engine/influence/__pycache__/
+2026-10-18T10:27:27.9325746Z Removing engine/marketing/__pycache__/
+2026-10-18T10:27:27.9326374Z Removing engine/neuralweb/__pycache__/
+2026-10-18T10:27:27.9326747Z Removing engine/oracle/__pycache__/
+2026-10-18T10:27:27.9327075Z Removing lib/__pycache__/
+2026-10-18T10:27:27.9327451Z Removing lib/dataos/__pycache__/
+2026-10-18T10:27:27.9327831Z Removing scripts/__pycache__/
+2026-10-18T10:27:27.9328226Z Removing scripts/research/__pycache__/
+2026-10-18T10:27:27.9328594Z Removing tests/__pycache__/
+2026-10-18T10:27:27.9355410Z ##[group]unrun-dark-guards — signup email gate — format validator + it runs BEFORE supabase signUp
+2026-10-18T10:27:29.3577233Z ...                                                                      [100%]
+2026-10-18T10:27:29.3577711Z 3 passed in 1.09s
+2026-10-18T10:27:29.4635107Z ##[endgroup]
+2026-10-18T10:27:29.4721208Z ##[group]unrun-dark-guards — shared-GitHub-quota hook — the guard that keeps polling loops off the REST pool
+2026-10-18T10:27:34.0407693Z ........................................................................ [ 66%]
+2026-10-18T10:27:35.9760666Z .....................................                                    [100%]
+2026-10-18T10:27:35.9761042Z 109 passed in 6.19s
+2026-10-18T10:27:36.0664502Z ##[endgroup]
+2026-10-18T10:27:36.0751546Z ##[group]unrun-dark-guards — prophet rescue lane — pure decide() matrix + the four dispatch-safety pins
+2026-10-18T10:27:42.1267512Z ........................................................................ [ 18%]
+2026-10-18T10:27:42.4857592Z ........................................................................ [ 37%]
+2026-10-18T10:28:10.5674247Z ........................................................................ [ 56%]
+2026-10-18T10:28:11.7111815Z ........................................................................ [ 75%]
+2026-10-18T10:28:12.1560031Z ........................................................................ [ 94%]
+2026-10-18T10:28:12.4900758Z ...................                                                      [100%]
+2026-10-18T10:28:12.4901311Z 379 passed, 1 skipped in 36.06s
+2026-10-18T10:28:12.6438199Z ##[endgroup]
+2026-10-18T10:28:16.8721138Z ##[group]dependency environment attempt 1 — pip install pytest pyyaml jinja2
+2026-10-18T10:28:17.2655372Z Collecting pytest
+2026-10-18T10:28:17.2666745Z   Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:28:17.2906919Z Collecting pyyaml
+2026-10-18T10:28:17.2918165Z   Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:28:17.3029587Z Collecting jinja2
+2026-10-18T10:28:17.3038945Z   Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-10-18T10:28:17.3119578Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:28:17.3128670Z   Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:28:17.3237422Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:28:17.3246624Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:28:17.3334694Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:28:17.3343925Z   Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:28:17.3475724Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:28:17.3485338Z   Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:28:17.3976439Z Collecting MarkupSafe>=2.0 (from jinja2)
+2026-10-18T10:28:17.3986989Z   Using cached markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-10-18T10:28:17.4022389Z Using cached pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:28:17.4032824Z Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:28:17.4043025Z Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-18T10:28:17.4051835Z Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:28:17.4060596Z Using cached markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-10-18T10:28:17.4068680Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:28:17.4077286Z Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:28:17.4085481Z Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:28:17.4285085Z Installing collected packages: pyyaml, pygments, pluggy, packaging, MarkupSafe, iniconfig, pytest, jinja2
+2026-10-18T10:28:18.5241067Z Successfully installed MarkupSafe-3.0.4 iniconfig-2.3.1 jinja2-3.1.6 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-9.1.1 pyyaml-6.0.3
+2026-10-18T10:28:18.5442328Z 
+2026-10-18T10:28:18.5443015Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:28:18.5443443Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:28:18.6090171Z ##[endgroup]
+2026-10-18T10:28:18.8790556Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:19.2314309Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:19.3630260Z Removing .claude/hooks/__pycache__/
+2026-10-18T10:28:19.3630755Z Removing .pytest_cache/
+2026-10-18T10:28:19.3631070Z Removing collectors/__pycache__/
+2026-10-18T10:28:19.3631330Z Removing engine/__pycache__/
+2026-10-18T10:28:19.3631626Z Removing engine/government_revenue/__pycache__/
+2026-10-18T10:28:19.3631940Z Removing engine/marketing/__pycache__/
+2026-10-18T10:28:19.3632237Z Removing engine/prophet_live/__pycache__/
+2026-10-18T10:28:19.3632496Z Removing lib/__pycache__/
+2026-10-18T10:28:19.3632733Z Removing scripts/__pycache__/
+2026-10-18T10:28:19.3632969Z Removing tests/__pycache__/
+2026-10-18T10:28:19.3661018Z ##[group]public-render-fastlane — public fastlane split + rendered pricing copy pins
+2026-10-18T10:28:19.3698929Z v20.20.2
+2026-10-18T10:28:29.9705771Z ........................................................................ [ 60%]
+2026-10-18T10:28:31.0171750Z ...............................................                          [100%]
+2026-10-18T10:28:31.0172366Z 119 passed, 1 deselected in 11.32s
+2026-10-18T10:28:31.0733724Z ##[endgroup]
+2026-10-18T10:28:33.2288358Z ##[group]dependency environment attempt 1 — pip install pytest requests pyyaml pandas numpy
+2026-10-18T10:28:33.5847649Z Collecting pytest
+2026-10-18T10:28:33.5859318Z   Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:28:33.6062231Z Collecting requests
+2026-10-18T10:28:33.6073142Z   Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-10-18T10:28:33.6304104Z Collecting pyyaml
+2026-10-18T10:28:33.6314697Z   Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:28:33.7223523Z Collecting pandas
+2026-10-18T10:28:33.7234894Z   Using cached pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+2026-10-18T10:28:33.8744675Z Collecting numpy
+2026-10-18T10:28:33.8755527Z   Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-10-18T10:28:33.8848108Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:28:33.8856770Z   Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:28:33.8970880Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:28:33.8980481Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:28:33.9068914Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:28:33.9077959Z   Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:28:33.9218606Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:28:33.9228479Z   Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:28:34.0052887Z Collecting charset_normalizer<4,>=2 (from requests)
+2026-10-18T10:28:34.0063337Z   Using cached charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-10-18T10:28:34.0205141Z Collecting idna<4,>=2.5 (from requests)
+2026-10-18T10:28:34.0214243Z   Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-10-18T10:28:34.0425498Z Collecting urllib3<3,>=1.26 (from requests)
+2026-10-18T10:28:34.0435488Z   Using cached urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-10-18T10:28:34.0588162Z Collecting certifi>=2023.5.7 (from requests)
+2026-10-18T10:28:34.0597917Z   Using cached certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:28:34.0790871Z Collecting python-dateutil>=2.8.2 (from pandas)
+2026-10-18T10:28:34.0800773Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-10-18T10:28:34.0927517Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas)
+2026-10-18T10:28:34.0937560Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-18T10:28:34.0975573Z Using cached pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:28:34.0985606Z Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+2026-10-18T10:28:34.0994766Z Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:28:34.1005659Z Using cached pandas-3.0.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.8 MB)
+2026-10-18T10:28:34.1048167Z Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-10-18T10:28:34.1104293Z Using cached certifi-2026.7.22-py3-none-any.whl (136 kB)
+2026-10-18T10:28:34.1113643Z Using cached charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+2026-10-18T10:28:34.1122465Z Using cached idna-3.20-py3-none-any.whl (69 kB)
+2026-10-18T10:28:34.1131049Z Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:28:34.1139302Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:28:34.1148050Z Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:28:34.1156331Z Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:28:34.1168052Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-10-18T10:28:34.1177300Z Using cached urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-10-18T10:28:34.1185562Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-18T10:28:34.1980147Z Installing collected packages: urllib3, six, pyyaml, pygments, pluggy, packaging, numpy, iniconfig, idna, charset_normalizer, certifi, requests, python-dateutil, pytest, pandas
+2026-10-18T10:28:41.5400332Z Successfully installed certifi-2026.7.22 charset_normalizer-3.5.2 idna-3.20 iniconfig-2.3.1 numpy-2.5.4 packaging-26.3 pandas-3.0.6 pluggy-1.7.0 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 pyyaml-6.0.3 requests-2.34.2 six-1.17.0 urllib3-2.8.0
+2026-10-18T10:28:41.5626059Z 
+2026-10-18T10:28:41.5626978Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:28:41.5627420Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:28:41.6423590Z ##[endgroup]
+2026-10-18T10:28:42.1549922Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:42.5120086Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:42.6600339Z Removing .pytest_cache/
+2026-10-18T10:28:42.6600814Z Removing engine/__pycache__/
+2026-10-18T10:28:42.6601245Z Removing engine/marketing/__pycache__/
+2026-10-18T10:28:42.6601642Z Removing lib/__pycache__/
+2026-10-18T10:28:42.6601990Z Removing scripts/__pycache__/
+2026-10-18T10:28:42.6602341Z Removing tests/__pycache__/
+2026-10-18T10:28:42.6629134Z ##[group]admin-live-runs — admin live-runs snapshot tests
+2026-10-18T10:28:44.6066834Z .........................................................                [100%]
+2026-10-18T10:28:44.6067420Z 57 passed in 1.55s
+2026-10-18T10:28:44.7073540Z ##[endgroup]
+2026-10-18T10:28:47.1266900Z ##[group]dependency environment attempt 1 — pip install pyyaml pytest jinja2
+2026-10-18T10:28:47.4914675Z Collecting pyyaml
+2026-10-18T10:28:47.4926364Z   Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:28:47.5153505Z Collecting pytest
+2026-10-18T10:28:47.5163064Z   Using cached pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:28:47.5273625Z Collecting jinja2
+2026-10-18T10:28:47.5282453Z   Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-10-18T10:28:47.5355606Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:28:47.5364246Z   Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:28:47.5511224Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:28:47.5520225Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:28:47.5606633Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:28:47.5614892Z   Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:28:47.5739905Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:28:47.5748985Z   Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:28:47.6229704Z Collecting MarkupSafe>=2.0 (from jinja2)
+2026-10-18T10:28:47.6240326Z   Using cached markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-10-18T10:28:47.6275689Z Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:28:47.6285594Z Using cached pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:28:47.6294735Z Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-18T10:28:47.6303109Z Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:28:47.6311603Z Using cached markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-10-18T10:28:47.6319227Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:28:47.6327486Z Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:28:47.6335327Z Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:28:47.6534635Z Installing collected packages: pyyaml, pygments, pluggy, packaging, MarkupSafe, iniconfig, pytest, jinja2
+2026-10-18T10:28:48.7256994Z Successfully installed MarkupSafe-3.0.4 iniconfig-2.3.1 jinja2-3.1.6 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-9.1.1 pyyaml-6.0.3
+2026-10-18T10:28:48.7453385Z 
+2026-10-18T10:28:48.7453834Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:28:48.7454417Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:28:48.7945506Z ##[endgroup]
+2026-10-18T10:28:49.0591050Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:49.4141357Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:49.5346256Z Removing .pytest_cache/
+2026-10-18T10:28:49.5346690Z Removing admin/__pycache__/
+2026-10-18T10:28:49.5347035Z Removing app/__pycache__/
+2026-10-18T10:28:49.5347365Z Removing engine/__pycache__/
+2026-10-18T10:28:49.5347743Z Removing engine/marketing/__pycache__/
+2026-10-18T10:28:49.5348200Z Removing engine/neuralweb/__pycache__/
+2026-10-18T10:28:49.5348559Z Removing lib/__pycache__/
+2026-10-18T10:28:49.5348894Z Removing scripts/__pycache__/
+2026-10-18T10:28:49.5349143Z Removing tests/__pycache__/
+2026-10-18T10:28:49.5374928Z ##[group]reference-integrity — reference-integrity selftest (gate fires on synthetic violations)
+2026-10-18T10:28:49.6262029Z SELFTEST ok   valid approved set passes
+2026-10-18T10:28:49.6436874Z SELFTEST ok   missing-disposition fires
+2026-10-18T10:28:49.6609205Z SELFTEST ok   blocked-data-as-removal fires
+2026-10-18T10:28:49.6778833Z SELFTEST ok   approved-with-unresolved-block fires
+2026-10-18T10:28:49.6949483Z SELFTEST ok   approved-with-unresolved-block fires
+2026-10-18T10:28:49.7121470Z SELFTEST ok   reviewer-not-independent fires
+2026-10-18T10:28:49.7291374Z SELFTEST ok   missing-verdict-question fires
+2026-10-18T10:28:49.7463495Z SELFTEST ok   stale-review-receipt fires
+2026-10-18T10:28:49.7633250Z SELFTEST ok   missing-baseline-evidence fires
+2026-10-18T10:28:49.7805522Z SELFTEST ok   dangling-disposition fires
+2026-10-18T10:28:49.7979901Z SELFTEST ok   duplicate-capability-id fires
+2026-10-18T10:28:49.8152848Z SELFTEST ok   worse-core-task-unadjudicated fires
+2026-10-18T10:28:49.8318681Z SELFTEST ok   remove-without-rationale fires
+2026-10-18T10:28:49.8488717Z SELFTEST ok   blocked-data-without-dependency fires
+2026-10-18T10:28:49.8659554Z SELFTEST ok   invalid-disposition fires
+2026-10-18T10:28:49.8810262Z SELFTEST ok   missing-review-receipt fires
+2026-10-18T10:28:49.8981431Z SELFTEST ok   missing-quarantine-attestation fires
+2026-10-18T10:28:49.9150621Z SELFTEST ok   second-pass-before-freeze fires
+2026-10-18T10:28:49.9309183Z SELFTEST ok   approved-without-receipt fires
+2026-10-18T10:28:49.9481413Z SELFTEST ok   approved-with-wrong-verdict fires
+2026-10-18T10:28:49.9654636Z SELFTEST ok   invalid-status fires
+2026-10-18T10:28:50.0070775Z SELFTEST ok   a complete closure fires nothing
+2026-10-18T10:28:50.0471568Z SELFTEST ok   continuity-item-missing fires at in_review with no receipts (the r2→r3 case)
+2026-10-18T10:28:50.0754357Z SELFTEST ok   continuity-missing fires
+2026-10-18T10:28:50.1167664Z SELFTEST ok   continuity-item-duplicated fires
+2026-10-18T10:28:50.1574164Z SELFTEST ok   continuity-invalid-disposition fires
+2026-10-18T10:28:50.1977892Z SELFTEST ok   continuity-resolved-without-evidence fires
+2026-10-18T10:28:50.2384205Z SELFTEST ok   continuity-renamed-without-linkage fires
+2026-10-18T10:28:50.2787320Z SELFTEST ok   continuity-superseded-without-linkage fires
+2026-10-18T10:28:50.3198047Z SELFTEST ok   continuity-overridden-without-authority fires
+2026-10-18T10:28:50.3662339Z SELFTEST ok   continuity-carried-block-approved fires
+2026-10-18T10:28:50.4070156Z SELFTEST ok   continuity-carried-block-without-note fires
+2026-10-18T10:28:50.4478566Z SELFTEST ok   continuity-carried-block-without-note fires on a whitespace-only note
+2026-10-18T10:28:50.4945187Z SELFTEST ok   a note-less CARRIED_BLOCK at approved fires BOTH codes, neither masking the other
+2026-10-18T10:28:50.5354825Z SELFTEST ok   continuity-invalid-source fires
+2026-10-18T10:28:50.5774045Z SELFTEST ok   continuity-invalid-source fires on a MISSING source
+2026-10-18T10:28:50.6169359Z SELFTEST ok   continuity-source-mismatch fires (snapshot declared, predecessor IS present)
+2026-10-18T10:28:50.6320382Z SELFTEST ok   continuity-source-mismatch fires (on_disk declared, predecessor is ABSENT)
+2026-10-18T10:28:50.6462537Z SELFTEST ok   continuity-snapshot-without-source fires
+2026-10-18T10:28:50.6604792Z SELFTEST ok   a correct snapshot declaration fires no source finding
+2026-10-18T10:28:50.7010110Z SELFTEST ok   mandate-incomplete fires
+2026-10-18T10:28:50.7395158Z SELFTEST ok   condition-without-id fires
+2026-10-18T10:28:50.7619315Z SELFTEST ok   condition-without-id does NOT fire on an unsucceeded verdict
+2026-10-18T10:28:50.8088655Z SELFTEST ok   undeclared-predecessor fires
+2026-10-18T10:28:50.8301403Z SELFTEST ok   --mandate derives every open item
+2026-10-18T10:28:50.8421501Z SELFTEST ok   --mandate exits 4 on an unresolvable predecessor
+2026-10-18T10:28:50.8432234Z SELFTEST ok   annotation starts the line
+2026-10-18T10:28:51.4350574Z SELFTEST ok   unclaimed-reference-file fires
+2026-10-18T10:28:51.4353864Z SELFTEST ok   packet-without-rig-receipt fires
+2026-10-18T10:28:51.4363229Z SELFTEST ok   compliant-row-without-approved-reference fires
+2026-10-18T10:28:51.4498813Z ##[notice]reference-integrity selftest passed — every rule fires on its targeted corruption
+2026-10-18T10:28:51.4619653Z ##[endgroup]
+2026-10-18T10:28:51.4708189Z ##[group]reference-integrity — RIG artifact integrity across the checkout (hard gate)
+2026-10-18T10:28:53.5964379Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:28:53.5967277Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:28:53.5969433Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:28:53.5970546Z reference-integrity: 3 finding(s) across 10 artifact set(s)
+2026-10-18T10:28:53.6071586Z ##[endgroup]
+2026-10-18T10:28:53.6106874Z ##[error]reference-integrity: step 'RIG artifact integrity across the checkout (hard gate)' exited 1
+2026-10-18T10:28:53.8847180Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:28:54.2380433Z HEAD is now at 3d1a4e0df Merge ac08d5bd630d480a97fcbd0d9814946724250011 into b912fd97827cca925a7123aa2012e9765077f3f7
+2026-10-18T10:34:04.4566869Z ##[group]dependency environment attempt 1 — pip install pyyaml pytest jinja2
+2026-10-18T10:34:04.8177075Z Collecting pyyaml
+2026-10-18T10:34:04.8438007Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-18T10:34:04.8683844Z Collecting pytest
+2026-10-18T10:34:04.8719979Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-18T10:34:04.8852011Z Collecting jinja2
+2026-10-18T10:34:04.8880691Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-10-18T10:34:05.0139889Z Collecting iniconfig>=1.0.1 (from pytest)
+2026-10-18T10:34:05.0172107Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-18T10:34:05.0314206Z Collecting packaging>=22 (from pytest)
+2026-10-18T10:34:05.0344537Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-18T10:34:05.0450957Z Collecting pluggy<2,>=1.5 (from pytest)
+2026-10-18T10:34:05.0480508Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-18T10:34:05.0640216Z Collecting pygments>=2.7.2 (from pytest)
+2026-10-18T10:34:05.0675058Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-18T10:34:05.3034080Z Collecting MarkupSafe>=2.0 (from jinja2)
+2026-10-18T10:34:05.3066602Z   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-10-18T10:34:05.3141554Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-18T10:34:05.3261914Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 94.9 MB/s eta 0:00:00
+2026-10-18T10:34:05.3296567Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-18T10:34:05.3351669Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-10-18T10:34:05.4346269Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-18T10:34:05.4391137Z Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-10-18T10:34:05.4435041Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-18T10:34:05.4483820Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-18T10:34:05.4528961Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-18T10:34:05.4605618Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 178.5 MB/s eta 0:00:00
+2026-10-18T10:34:05.4804172Z Installing collected packages: pyyaml, pygments, pluggy, packaging, MarkupSafe, iniconfig, pytest, jinja2
+2026-10-18T10:34:06.6111024Z Successfully installed MarkupSafe-3.0.4 iniconfig-2.3.1 jinja2-3.1.6 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-9.1.1 pyyaml-6.0.3
+2026-10-18T10:34:06.6798429Z 
+2026-10-18T10:34:06.6799344Z [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+2026-10-18T10:34:06.6799792Z [notice] To update, run: pip install --upgrade pip
+2026-10-18T10:34:06.7525092Z ##[endgroup]
+2026-10-18T10:34:07.6490357Z HEAD is now at b912fd978 earnings-wire: publish current verified records [skip ci]
+2026-10-18T10:34:08.0532397Z HEAD is now at b912fd978 earnings-wire: publish current verified records [skip ci]
+2026-10-18T10:34:08.1885740Z Removing scripts/__pycache__/
+2026-10-18T10:34:08.1913220Z ##[group]reference-integrity — reference-integrity selftest (gate fires on synthetic violations)
+2026-10-18T10:34:08.4285756Z SELFTEST ok   valid approved set passes
+2026-10-18T10:34:08.4461750Z SELFTEST ok   missing-disposition fires
+2026-10-18T10:34:08.4637672Z SELFTEST ok   blocked-data-as-removal fires
+2026-10-18T10:34:08.4809348Z SELFTEST ok   approved-with-unresolved-block fires
+2026-10-18T10:34:08.4981804Z SELFTEST ok   approved-with-unresolved-block fires
+2026-10-18T10:34:08.5154078Z SELFTEST ok   reviewer-not-independent fires
+2026-10-18T10:34:08.5324961Z SELFTEST ok   missing-verdict-question fires
+2026-10-18T10:34:08.5497164Z SELFTEST ok   stale-review-receipt fires
+2026-10-18T10:34:08.5665606Z SELFTEST ok   missing-baseline-evidence fires
+2026-10-18T10:34:08.5835625Z SELFTEST ok   dangling-disposition fires
+2026-10-18T10:34:08.6010107Z SELFTEST ok   duplicate-capability-id fires
+2026-10-18T10:34:08.6181196Z SELFTEST ok   worse-core-task-unadjudicated fires
+2026-10-18T10:34:08.6347178Z SELFTEST ok   remove-without-rationale fires
+2026-10-18T10:34:08.6512471Z SELFTEST ok   blocked-data-without-dependency fires
+2026-10-18T10:34:08.6680460Z SELFTEST ok   invalid-disposition fires
+2026-10-18T10:34:08.6828883Z SELFTEST ok   missing-review-receipt fires
+2026-10-18T10:34:08.6997615Z SELFTEST ok   missing-quarantine-attestation fires
+2026-10-18T10:34:08.7165997Z SELFTEST ok   second-pass-before-freeze fires
+2026-10-18T10:34:08.7321206Z SELFTEST ok   approved-without-receipt fires
+2026-10-18T10:34:08.7489544Z SELFTEST ok   approved-with-wrong-verdict fires
+2026-10-18T10:34:08.7657359Z SELFTEST ok   invalid-status fires
+2026-10-18T10:34:08.8059891Z SELFTEST ok   a complete closure fires nothing
+2026-10-18T10:34:08.8447470Z SELFTEST ok   continuity-item-missing fires at in_review with no receipts (the r2→r3 case)
+2026-10-18T10:34:08.8726175Z SELFTEST ok   continuity-missing fires
+2026-10-18T10:34:08.9131855Z SELFTEST ok   continuity-item-duplicated fires
+2026-10-18T10:34:08.9538195Z SELFTEST ok   continuity-invalid-disposition fires
+2026-10-18T10:34:08.9945753Z SELFTEST ok   continuity-resolved-without-evidence fires
+2026-10-18T10:34:09.0356108Z SELFTEST ok   continuity-renamed-without-linkage fires
+2026-10-18T10:34:09.0766185Z SELFTEST ok   continuity-superseded-without-linkage fires
+2026-10-18T10:34:09.1172904Z SELFTEST ok   continuity-overridden-without-authority fires
+2026-10-18T10:34:09.1627164Z SELFTEST ok   continuity-carried-block-approved fires
+2026-10-18T10:34:09.2030747Z SELFTEST ok   continuity-carried-block-without-note fires
+2026-10-18T10:34:09.2437901Z SELFTEST ok   continuity-carried-block-without-note fires on a whitespace-only note
+2026-10-18T10:34:09.2897182Z SELFTEST ok   a note-less CARRIED_BLOCK at approved fires BOTH codes, neither masking the other
+2026-10-18T10:34:09.3300712Z SELFTEST ok   continuity-invalid-source fires
+2026-10-18T10:34:09.3705095Z SELFTEST ok   continuity-invalid-source fires on a MISSING source
+2026-10-18T10:34:09.4110736Z SELFTEST ok   continuity-source-mismatch fires (snapshot declared, predecessor IS present)
+2026-10-18T10:34:09.4259945Z SELFTEST ok   continuity-source-mismatch fires (on_disk declared, predecessor is ABSENT)
+2026-10-18T10:34:09.4420366Z SELFTEST ok   continuity-snapshot-without-source fires
+2026-10-18T10:34:09.4567541Z SELFTEST ok   a correct snapshot declaration fires no source finding
+2026-10-18T10:34:09.4968850Z SELFTEST ok   mandate-incomplete fires
+2026-10-18T10:34:09.5353449Z SELFTEST ok   condition-without-id fires
+2026-10-18T10:34:09.5576934Z SELFTEST ok   condition-without-id does NOT fire on an unsucceeded verdict
+2026-10-18T10:34:09.6039240Z SELFTEST ok   undeclared-predecessor fires
+2026-10-18T10:34:09.6247689Z SELFTEST ok   --mandate derives every open item
+2026-10-18T10:34:09.6369419Z SELFTEST ok   --mandate exits 4 on an unresolvable predecessor
+2026-10-18T10:34:09.6379699Z SELFTEST ok   annotation starts the line
+2026-10-18T10:34:10.2204332Z SELFTEST ok   unclaimed-reference-file fires
+2026-10-18T10:34:10.2207874Z SELFTEST ok   packet-without-rig-receipt fires
+2026-10-18T10:34:10.2218423Z SELFTEST ok   compliant-row-without-approved-reference fires
+2026-10-18T10:34:10.2364286Z ##[notice]reference-integrity selftest passed — every rule fires on its targeted corruption
+2026-10-18T10:34:10.2488282Z ##[endgroup]
+2026-10-18T10:34:10.2574716Z ##[group]reference-integrity — RIG artifact integrity across the checkout (hard gate)
+2026-10-18T10:34:12.5077915Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:34:12.5081579Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:34:12.5084605Z ##[error]packet-without-rig-receipt: research/migration_packets/MP-20261018-sector-central.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+2026-10-18T10:34:12.5086295Z reference-integrity: 3 finding(s) across 10 artifact set(s)
+2026-10-18T10:34:12.5201041Z ##[endgroup]
+2026-10-18T10:34:12.5235189Z ##[error]reference-integrity: step 'RIG artifact integrity across the checkout (hard gate)' exited 1
+2026-10-18T10:34:12.8564239Z HEAD is now at b912fd978 earnings-wire: publish current verified records [skip ci]
+2026-10-18T10:34:13.2367357Z HEAD is now at b912fd978 earnings-wire: publish current verified records [skip ci]
+2026-10-18T10:34:13.3649598Z 
+2026-10-18T10:34:13.3650028Z Legacy CI failures:
+2026-10-18T10:34:13.3650520Z   - reference-integrity: step 'RIG artifact integrity across the checkout (hard gate)' exited 1
+2026-10-18T10:34:13.3650992Z CI_PACK_FAILED_JOBS=["reference-integrity"]
+2026-10-18T10:34:30.7216722Z 
+2026-10-18T10:34:30.7217182Z Legacy CI failures:
+2026-10-18T10:34:30.7217652Z   - reference-integrity: step 'RIG artifact integrity across the checkout (hard gate)' exited 1
+2026-10-18T10:34:30.7218126Z CI_PACK_FAILED_JOBS=["reference-integrity"]
+2026-10-18T10:34:30.7365014Z ##[error]Process completed with exit code 1.
+2026-10-18T10:34:30.7703713Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-18T10:34:30.7704036Z with:
+2026-10-18T10:34:30.7704222Z   name: ci-semantic-pack-39118765804-1
+2026-10-18T10:34:30.7704517Z   path: /home/runner/work/_temp/ci-semantic-fragments/pack-1.json
+2026-10-18T10:34:30.7704797Z   if-no-files-found: warn
+2026-10-18T10:34:30.7704989Z   overwrite: true
+2026-10-18T10:34:30.7705161Z   retention-days: 14
+2026-10-18T10:34:30.7705340Z   compression-level: 6
+2026-10-18T10:34:30.7705533Z   include-hidden-files: false
+2026-10-18T10:34:30.7705727Z env:
+2026-10-18T10:34:30.7706051Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:34:30.7706407Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib/pkgconfig
+2026-10-18T10:34:30.7706739Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:34:30.7707046Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:34:30.7707380Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.13/x64
+2026-10-18T10:34:30.7707678Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.13/x64/lib
+2026-10-18T10:34:30.7708042Z   CI_CHANGED_FILES_FILE: /home/runner/work/_temp/ci-changed-files/changed-files.json
+2026-10-18T10:34:30.7708359Z ##[endgroup]
+2026-10-18T10:34:30.9069704Z (node:5158) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T10:34:30.9070370Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T10:34:30.9104965Z With the provided path, there will be 1 file uploaded
+2026-10-18T10:34:30.9876036Z Artifact name is valid!
+2026-10-18T10:34:30.9876816Z Root directory input is valid!
+2026-10-18T10:34:31.2391615Z Beginning upload of artifact content to blob storage
+2026-10-18T10:34:31.2530160Z (node:5158) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-18T10:34:31.2983739Z Uploaded bytes 2337
+2026-10-18T10:34:31.3110086Z Finished uploading artifact content to blob storage!
+2026-10-18T10:34:31.3110962Z SHA256 digest of uploaded artifact zip is cda2a62d162f9040c9ec6c8b6a22723cb2d50ee14311c33f8a5162d550408973
+2026-10-18T10:34:31.3111678Z Finalizing artifact upload
+2026-10-18T10:34:31.5196466Z Artifact ci-semantic-pack-39118765804-1.zip successfully finalized. Artifact ID 12134105409
+2026-10-18T10:34:31.5197764Z Artifact ci-semantic-pack-39118765804-1 has been successfully uploaded! Final size is 2337 bytes. Artifact ID is 12134105409
+2026-10-18T10:34:31.5202821Z Artifact download URL: https://github.com/mastermindx-market-intelligence/macro/actions/runs/39118765804/artifacts/12134105409
+2026-10-18T10:34:31.5377682Z Post job cleanup.
+2026-10-18T10:34:31.7791026Z [command]/usr/bin/git version
+2026-10-18T10:34:31.7826359Z git version 2.55.0
+2026-10-18T10:34:31.7857686Z Temporarily overriding HOME='/home/runner/work/_temp/eca32b92-7de0-4c71-b86f-819685f28c3d' before making global git config changes
+2026-10-18T10:34:31.7858494Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-18T10:34:31.7861999Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+2026-10-18T10:34:31.7894443Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T10:34:31.7923729Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T10:34:31.8401390Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T10:34:31.8428561Z http.https://github.com/.extraheader
+2026-10-18T10:34:31.8438332Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-18T10:34:31.8481289Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T10:34:31.8749642Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T10:34:31.8785584Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T10:34:31.9176540Z Cleaning up orphan processes
+2026-10-18T10:34:32.1761232Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/download-artifact@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 import json
 import math
 import sqlite3
+import stat
 import sys
 import time
 from pathlib import Path
@@ -182,17 +183,16 @@ def build_inventory(
     known_at = _zulu(current)
     path = Path(database)
     try:
-        # Stat before deciding whether the file is absent. In Python 3.14+
-        # Path.exists() hides EACCES as False, incorrectly downgrading an
-        # unreadable state directory to a missing database.
-        metadata = path.stat()
-        if not path.is_file():
+        # Use stat directly: recent Python versions make exists()/is_file()
+        # suppress permission errors, which would mislabel an unreadable store.
+        info = path.stat()
+        if not stat.S_ISREG(info.st_mode):
             raise InventoryError("database_unreadable")
-    except FileNotFoundError as exc:
+        size = info.st_size
+    except (FileNotFoundError, NotADirectoryError) as exc:
         raise InventoryError("database_missing") from exc
     except OSError as exc:
         raise InventoryError("database_unreadable") from exc
-    size = metadata.st_size
 
     try:
         store = NewsStore.open_readonly(path, source_key="ticker-news-inventory")

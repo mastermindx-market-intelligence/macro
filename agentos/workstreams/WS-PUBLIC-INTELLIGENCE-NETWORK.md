@@ -21,8 +21,12 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: 9209 protected663dbf1f installed bffaa414 fully accepted. SAME follow-on pushed2a807b258328;922checks,45groups,26sources,contract0/0,282release files with235historical snapshots retained by tag/on disk.14:33capacity9+0/cap8 so noPR. Next eligible admission create one follow-onPR then protected install.9455/9464 green but controller-stale. Preserve44refs/five drafts/Chrome/Fabric001/publication0of10.
+next_action: Original root recovered interrupted child;9696 actualprotected3e392265 installed/public/browser PASS.9650 exactCI39341951816 allgreen, but currentDIRTY; twoownedknowledge conflicts resolved against protectedmain7777 preserving9pins/7nativefiles. Finish SAMEbranch realconflictrepair push after head/lease/capacity fence, new exactCI/protectedinstall/recovery/native-rowreplay. No emitter/TerminalOP replay.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1075
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9696
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9648
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9650
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334

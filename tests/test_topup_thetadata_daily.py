@@ -26,6 +26,63 @@ ET = nc.ET
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SENTINEL_SH = REPO_ROOT / "scripts" / "launchd" / "theta_staleness_sentinel.sh"
 
+
+@pytest.mark.parametrize("forced,hour,partial,expected", [
+    (False, 16, False, True), (True, 16, False, False),
+    (False, 9, False, False), (False, 16, True, False),
+])
+def test_baseline_refresh_only_follows_healthy_natural_source(store, monkeypatch,
+                                                           forced, hour, partial, expected):
+    _wire_daily(monkeypatch, store, t1=["SPY"], ad=["SPY"])
+    plan = {("greeks", "SPY", S_MID): _empty_df()} if partial else {}
+    _install_fake_td(monkeypatch, FakeTd(plan=plan))
+    calls = []
+    runtime = Path("/existing/liveflow")
+    monkeypatch.setattr(topup, "_refresh_live_flow_baselines",
+                        lambda *a: calls.append(a) or {"status": "complete"})
+    topup._daily_main(workers=1, deadline_min=20, forced=forced,
+                     now_fn=lambda: _et(2026, 8, 19, hour, 30), baseline_runtime=runtime)
+    assert calls == ([(runtime, store, S_MID)] if expected else [])
+
+
+def test_failed_baseline_does_not_relabel_healthy_source_or_hold_writer_lock(store, monkeypatch):
+    _wire_daily(monkeypatch, store, t1=["SPY"], ad=["SPY"])
+    _install_fake_td(monkeypatch, FakeTd())
+    def failed(*args):
+        with topup._writer_lock(store) as acquired:
+            assert acquired is False  # stable source throughout the child read
+        return {"status": "failed", "reason": "timeout"}
+    monkeypatch.setattr(topup, "_refresh_live_flow_baselines", failed)
+    rc = topup._daily_main(workers=1, deadline_min=20, forced=False,
+                           now_fn=lambda: _et(2026, 8, 19, 16, 30),
+                           baseline_runtime=Path("/existing/liveflow"))
+    receipt = json.loads((store / "_manifest.json").read_text())["daily_refresh"]
+    assert rc == 1
+    assert receipt["status"] == "healthy"
+    assert receipt["live_flow_baselines"]["status"] == "failed"
+    with topup._writer_lock(store) as acquired:
+        assert acquired is True
+
+
+@pytest.mark.parametrize("outcome", ["success", "nonzero", "timeout", "launch"])
+def test_refresh_uses_exact_consumer_environment_and_bounded_builder(tmp_path, monkeypatch, outcome):
+    runtime = tmp_path / "liveflow"
+    wrapper = runtime / "ops/launchd/run_with_env.sh"
+    wrapper.parent.mkdir(parents=True)
+    wrapper.touch()
+    (runtime / ".env").touch()
+    def launch(argv, **kw):
+        assert argv[:4] == [str(wrapper), str(runtime / ".env"), topup.sys.executable, "-m"]
+        assert argv[4:] == ["scripts.build_live_flow_baselines", "--poll-universe", "--chunk-size", "1",
+                           "--require-source-session", "2026-08-18", "--expected-store", str(tmp_path.resolve())]
+        assert kw == {"cwd": runtime, "timeout": 600, "check": False}
+        if outcome == "timeout": raise subprocess.TimeoutExpired(argv, 600)
+        if outcome == "launch": raise PermissionError("test")
+        return subprocess.CompletedProcess(argv, 0 if outcome == "success" else 1)
+    monkeypatch.setattr(topup.subprocess, "run", launch)
+    result = topup._refresh_live_flow_baselines(runtime, tmp_path, S_MID)
+    assert result["status"] == ("complete" if outcome == "success" else "failed")
+
 # A known midweek session day with a resolvable prior session.
 D_MID = date(2026, 8, 19)          # Wednesday
 S_MID = date(2026, 8, 18)          # Tuesday
@@ -901,8 +958,7 @@ def test_f15_writer_lock_excluded_from_uploadable(tmp_path):
 
 
 def test_f15_writer_lock_gitignored():
-    text = open("/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/"
-               "worktrees/thetadata-canonical-options-source-da82b6/.gitignore").read()
+    text = (REPO_ROOT / ".gitignore").read_text()
     assert "data/thetadata_eod/_writer.lock" in text
 
 
@@ -1047,6 +1103,21 @@ def test_denominator_has_no_hardcoded_universe_size():
     src = inspect.getsource(topup)
     for lit in ("375", "378"):
         assert lit not in src, f"found hard-coded universe literal {lit!r} in topup module"
+
+
+# ── Live-flow anchor retention (native resolver regression) ─────────────────
+def test_daily_universe_keeps_live_flow_anchor_etfs_exactly_once(monkeypatch):
+    """Live-flow commodity/rate anchors survive the native daily resolver,
+    including case-normalized duplicates from the independently owned basket.
+    Existing index and basket members retain their first-seen ordering.
+    """
+    monkeypatch.setattr("engine.options_universe.gex_symbols",
+                        lambda: ["gld", "AAPL", "MSFT", "SPY"])
+    roots = topup._daily_universe()
+    for root in ("GLD", "SLV", "TLT", "HYG", "SPY", "SPX", "SPXW", "AAPL", "MSFT"):
+        assert roots.count(root) == 1
+    assert roots.index("HYG") < roots.index("SPX") < roots.index("SPXW")
+    assert roots.index("SPXW") < roots.index("AAPL") < roots.index("MSFT")
 
 
 # ═════════════════════════ DEADLINE (F2) ════════════════════════════════════
@@ -1766,3 +1837,28 @@ def test_hardening_backfill_oserror_opening_lock_is_failed_not_traceback(tmp_pat
     monkeypatch.setattr(topup, "open", _boom, raising=False)
     rc = bf.main()
     assert rc == 1
+
+
+@pytest.mark.parametrize('setting,root,expected',[
+ ('','SPY',{}),('SPY','SPY',{'version':'1'}),('SPY','QQQ',{}),
+ ('SPY, QQQ','QQQ',{'version':'1'}),('SPY,QQQ','AAPL',{})])
+def test_dated_version_opt_in_keeps_other_roots_and_default_unchanged(monkeypatch,setting,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS',setting)
+ assert topup._dated_greek_request_options(root)==expected
+
+
+def test_invalid_dated_version_root_config_stops_before_source_work(monkeypatch):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,AAPL')
+ monkeypatch.setattr(topup,'_daily_main',lambda **kw:pytest.fail('Invalid config reached acquisition'))
+ with pytest.raises(SystemExit):topup.main(['--daily'])
+
+
+@pytest.mark.parametrize('root,expected',[('SPY',{'version':'1'}),('QQQ',{'version':'1'}),('AAPL',{})])
+def test_daily_owner_forwards_version_only_for_explicit_opt_in(store,monkeypatch,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,QQQ')
+ fake=FakeTd();calls=[]
+ def greeks(r,exp,start,end,order=3,**kwargs):
+  calls.append(kwargs);return fake._get('greeks',r,start)
+ fake.bulk_greeks=greeks
+ result=topup._ensure_daily_root(store,root,S_MID,D_MID,fake)
+ assert result.state=='complete' and calls==[expected]

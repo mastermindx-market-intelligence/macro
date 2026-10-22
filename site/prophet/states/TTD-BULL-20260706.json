@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTD-BULL-20260706",
-  "asof": "2026-10-16",
+  "asof": "2026-10-21",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.429,
+    "dist_to_stop_r": -1.284,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 108.9,
-    "p1": -0.286,
-    "p2": -0.143,
+    "horizon_pct_used": 120.0,
+    "p1": -0.1893,
+    "p2": -0.0947,
     "p3": null,
-    "move_r": -0.429,
+    "move_r": -0.284,
     "mfe_r": 0.441,
     "mae_r": -0.509
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 54,
+  "tau": 1.2
 }

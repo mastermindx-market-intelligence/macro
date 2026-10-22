@@ -327,6 +327,8 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Today contract validator caches the source schema across requests.
+    "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
@@ -500,6 +502,7 @@ MUST_RESTART = [
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.
 MUST_NOT_RESTART = [
+    "site/macrodata/workspaces/manifest.json",
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
     # rendered site + data artifacts are read from disk per request
@@ -920,6 +923,19 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
         "Add them (or, if a path is genuinely content read per request, document "
         "the exemption in the comment above the regex)."
     )
+
+
+def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
+    """Only the GMI API's actual import-cached modules need the API restart."""
+    for path in (
+        "engine/market_ontology/__init__.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/bea_gvc_current.py",
+    ):
+        assert _triggers_restart(path), path
+    # Other ontology research modules are not imported by macro-api on startup.
+    # Adding a blanket directory regex would restart on research-only changes.
+    assert not _triggers_restart("engine/market_ontology/mining_theme_research.py")
 
 
 def test_load_time_closure_probe_is_not_vacuous():

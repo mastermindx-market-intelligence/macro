@@ -577,6 +577,11 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "scripts.audit_china_gold_premium",
             ["--strict-render"],
         ),
+        (
+            "checkpoint_core_commodity_recovery",
+            "scripts.check_commodity_publication",
+            ["--heal-from", "$COMMODITY_ACCEPTED"],
+        ),
         ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
         ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
         ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
@@ -584,6 +589,11 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "checkpoint_core_postrebase_check_template_site_sync",
             "scripts.check_template_site_sync",
             ["--fix"],
+        ),
+        (
+            "checkpoint_core_commodity_candidate",
+            "scripts.check_commodity_publication",
+            ["--accepted-ref", "$COMMODITY_ACCEPTED", "--candidate-ref", "$qledger_push_candidate"],
         ),
     ]
 
@@ -601,6 +611,38 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
     ]
     assert [step.get("module") for step in declared] == actual_modules
     assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
+
+
+
+@pytest.mark.parametrize(
+    ("workflow", "job", "expected_count"),
+    [
+        ("daily.yml", "engine", 4),
+        ("engine-render.yml", "engine-render", 2),
+        ("render.yml", "render", 3),
+    ],
+)
+def test_each_commodity_publication_guard_is_declared(workflow, job, expected_count):
+    """The general DAG parser caps repeated modules; these guards must be exact."""
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    lane = next(
+        lane for lane in dag["lanes"]
+        if lane["workflow"] == f".github/workflows/{workflow}" and lane["job"] == job
+    )
+    declared = [
+        step for step in lane["steps"]
+        if step.get("module") == "scripts.check_commodity_publication"
+    ]
+    workflow_doc = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / workflow).read_text()
+    )
+    actual = [
+        call for step in workflow_doc["jobs"][job]["steps"]
+        for call in _extract_steps_from_run(resolve_run_source(step.get("run", ""), REPO_ROOT))
+        if call.module == "scripts.check_commodity_publication"
+    ]
+    assert len(declared) == len(actual) == expected_count
+    assert len({step["id"] for step in declared}) == expected_count
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
@@ -1922,6 +1964,58 @@ def _run_lane(
     # no real sleeping: the backoff ladder is unit-tested above
     return subprocess.run(["bash", "-eo", "pipefail", "-c", "sleep() { :; }\n" + block],
                           cwd=str(lane), capture_output=True, text=True, env=env)
+
+
+@pytest.mark.parametrize("rejects, expected_attempts, succeeds", [(0, 1, True), (1, 2, True), (5, 2, False)])
+def test_options_intel_publication_result(tmp_path, rejects, expected_attempts, succeeds):
+    """Execute the shipped shell: an unpublished brief must not produce a green job."""
+    block = _lane_block(
+        "options-intel.yml", "commit the options intelligence brief + workspace", {}
+    )
+    bare, lane, stub, _ = _lane_fixture(tmp_path, rejects=rejects)
+    brief = '{"as_of_session": "2026-10-14"}'
+    (lane / "site/options_intel_brief.json").write_text(brief)
+    (lane / "site/options.html").write_text("<html>fresh options workspace</html>")
+    before = _git_output(bare, "rev-parse", "main")
+    summary = tmp_path / "summary.md"
+    summary.touch()
+    # The shared retry helper and actual fetch/rebase/push remain in use. Only
+    # contention and Python publication preflights use the existing fixture seams.
+    r = _run_lane("PUSH_MAX_ATTEMPTS=2\n" + block, lane, stub, summary, render_ok=True)
+    output = r.stdout + r.stderr
+    assert (r.returncode == 0) is succeeds, output
+    if rejects:
+        assert int((tmp_path / "n").read_text()) == expected_attempts
+    if succeeds:
+        assert f"pushed options intelligence brief on attempt {expected_attempts}" in output
+        assert _git_output(bare, "show", "main:site/options_intel_brief.json") == brief
+        assert _git_output(bare, "show", "main:site/options.html") == "<html>fresh options workspace</html>"
+        assert "other.txt" in _git_output(bare, "ls-tree", "--name-only", "main")
+    else:
+        assert "::error title=options intelligence brief NOT pushed::" in output
+        assert "attempt budget exhausted (2 attempts)" in output
+        assert "NOT pushed" in summary.read_text()
+        assert _git_output(bare, "rev-parse", "main") == before
+    assert _git_output(bare, "show", "main:data/ledger.json") == '{"canonical": true}'
+
+
+def test_options_intel_semantic_noop_does_not_push(tmp_path):
+    block = _lane_block(
+        "options-intel.yml", "commit the options intelligence brief + workspace", {}
+    )
+    bare, lane, stub, _ = _lane_fixture(tmp_path, rejects=5)
+    (lane / "site/options_intel_brief.json").write_text("{}")
+    (lane / "site/options.html").write_text("<html>unchanged</html>")
+    _git_output(lane, "add", "site/options_intel_brief.json", "site/options.html")
+    _git_output(lane, "commit", "-m", "fixture already contains brief")
+    before = _git_output(bare, "rev-parse", "main")
+    summary = tmp_path / "summary.md"
+    summary.touch()
+    r = _run_lane(block, lane, stub, summary, render_ok=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "semantic no-op" in r.stdout
+    assert (tmp_path / "n").read_text() == "0"
+    assert _git_output(bare, "rev-parse", "main") == before
 
 
 def test_render_lane_block_lands_the_render_over_a_racing_commit(tmp_path):
