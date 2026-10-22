@@ -5027,6 +5027,21 @@ def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:
     return inferred_as_if_not_exclusive(MANIFEST)
 
 
+def test_market_navigator_fixture_only_edits_still_select_its_exclusive_job() -> None:
+    """Prevent fixture-only contract drift from skipping the owning tests."""
+    jobs = [job for job in PACK.load_legacy_jobs(MANIFEST)
+            if job.job_id == "market-navigator-foundation"]
+    assert len(jobs) == 1 and jobs[0].exclusive
+    for name in ("owner_context", "owner_snapshot", "raw_regime"):
+        path = f"tests/fixtures/market_navigator/{name}.synthetic.json"
+        selected, _reason = PACK.select_jobs(jobs, [path])
+        assert [job.job_id for job in selected] == ["market-navigator-foundation"], path
+    for path in ("templates/index.html", "site/theme.css",
+                 "engine/prophet/plan_book.py", "scripts/build_free_content.py"):
+        selected, _reason = PACK.select_jobs(jobs, [path])
+        assert selected == [], path
+
+
 def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}

@@ -1306,6 +1306,7 @@ jobs:
       - "scripts/research/market_navigator_*.py"
       - "templates/market_navigator_client.js"
       - "tests/__init__.py"
+      - "tests/fixtures/market_navigator/**"
       - "tests/market_navigator_client_harness.js"
       - "tests/test_market_navigator*.py"
     timeout-minutes: 5
