@@ -610,7 +610,7 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
 3. Landing order unchanged: A2 #9956 at exactly `31a61ba8` (F32, watcher `b3h3zcqz4`), then U2 #9999 at exactly `feb86035c339e8eb992a9636bfcc90d871e5e0ba` — each after reviewDecision read + merge-tree vs the MAIN captured in that operation + fence read. Both merge-trees re-checked clean vs `61f82f58` (`$S/a2_mt5.txt`, `$S/u2_mt5.txt`).
 4. Lesson recorded in memory as a trap (`github-pr-base-sha-stale-after-two-parent-rehome-inflates-changed-files`); the compare endpoint is the truth for a PR's real diff; retarget-and-back is the metadata-only fix.
 
-### CP 2026-10-22 08:1xZ — checkpoint (READ THIS ONE FIRST)
+### CP 2026-10-22 08:1xZ — checkpoint (superseded by CP 08:3xZ)
 
 - **Seat:** 69eb9a1c, worktree `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-end-to-end-dbeaec-7e88fffefdd61737`, branch `claude/ssd-prophet-end-to-end-dbeaec-7e88fffefdd61737`. Fence last read `6306863736 mastermindxryan 2026-10-21T02:54:39Z` (unchanged).
 - **MERGED (DO_NOT_REDO):** B4 #9959, #9940, #9947, #9945, B01 #9951, A3 #9955 → `a81ef7ae`, A1 #9954 → `2ebafe80`.
@@ -632,3 +632,13 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
 #### F34 — seat ruling: U4/U5 note dispositions (N-A / N-B / N-C) and the U5 lane (08:2xZ)
 - Contract §12 Addendum F34 written (seat-owned source doc; the seat first took main's copy of the contract, which carries U2's 6-line edit, then appended). N-A accepted as implemented; **N-B: §5 item 2 amended to `now_utc >= not_after` ⇒ `mandatory_fact_stale`** (equality is stale, matching the producer's `<=`); a present-but-unparsable `not_after` ⇒ `unevaluable` / `not_after_unparsable` (incumbent malformed-input pattern); N-C: the landed 13-key `SUPPRESSION_KEYS` tuple is the contract's closed set.
 - **U4 is split:** its pure half LANDED in U2 (DO_NOT_REDO); its IO read extends U3 and waits on U1 (#9774). **U5 is independent** and builds now: lane `pro-source-b21u4u5-20261022-r1` (id kept as reserved; scope = U5 drain guard + A2-N3 mobile footnote + NOTES nits), packet `$S/pk/pro-source-b21u4u5-20261022.md`, BASE main `790990a2` (A2 + U2 on main). No CI line (both suites already registered). Then one Opus reviewer (READ_ONLY), then PR → watcher → merge at exact head.
+
+### CP 2026-10-22 08:3xZ — checkpoint (READ THIS ONE FIRST)
+- **Seat:** Fable Meta-CEO 69eb9a1c · seat branch `claude/ssd-prophet-end-to-end-dbeaec-7e88fffefdd61737` · fence `6306863736 mastermindxryan 2026-10-21T02:54:39Z` (unchanged through 08:2xZ).
+- **ON MAIN (DO_NOT_REDO):** Wave A complete — B4 #9959, #9940, #9947, #9945, B01 #9951, A3 #9955 → a81ef7ae, A1 #9954 → 2ebafe80, **A2 #9956 → 790990a2 (08:12:59Z at 31a61ba8)**; **B21 U2 #9999 → aad27efd (08:07:57Z at feb86035)**. Main ≥ `790990a2`.
+- **Wave B ROUTED (posted ONCE, never re-post):** #9495 comment `6336170406`, #8444 comment `6336170762` (B-5 only), packet at seat commit `1194207a`. No label, no arm. The closing report states the Today-surface design proof as DEPENDENT on the custodians absorbing it.
+- **F34 rulings** in contract §12 (N-A accepted; N-B `>=`; N-C 13 keys closed set; U4 pure half landed in U2, U4 IO waits on U3→U1).
+- **U5 lane RUNNING:** `pro-source-b21u4u5-20261022-r1` (id now USED; never relaunch), packet `$S/pk/pro-source-b21u4u5-20261022.md`, BASE `790990a2`, launcher task `bayv2rrcs` → `$S/lane_b21u4u5_r1.out`. On return: inspect the lane diff (4 owned files, 8 new tests, append-only test file, ≤3-line CSS change) → one native Opus reviewer (READ_ONLY, ROUTE: review) → PR from the lane branch → checks watcher (180 s interval, background) → merge `--match-head-commit` at the reviewed head → records.
+- **Blocked lanes (owned, not the seat's):** U1 → #9774 custody (`lib/user_prefs.py`); U3 after U1+U2; U8 human-only `ALERT_DRAIN_ENABLE` (asked once in F24, never re-ask). #9495/#8444 custodians own Wave B absorption.
+- **Orchestrators/reviewers:** ALL COMPLETED — never re-spawn; message by id only if a return asks.
+- **Then:** after U5 merges → Stage 6 adjudication: DONE_WHEN §14.4 dispositions (B00–B28, Q01–Q24, D01–D12) assembled from the filed returns; report each rung at the evidence it reaches (Today-surface = DEPENDENT on Wave B absorption; U1/U3/U8 = BLOCKED-CUSTODY / HUMAN GATE).
