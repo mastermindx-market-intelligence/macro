@@ -105,3 +105,23 @@ def test_standalone_explains_withheld_history_evidence(standalone):
     expect(page.locator(".mmb-visual-notice .l-zh")).to_be_visible()
     page.evaluate("window.__onAuth({id:'user-B'})")
     expect(page.locator(".mmb-visual-notice")).to_have_count(0)
+
+
+@pytest.mark.parametrize("width,height,min_card_width",[(390,844,300),(1440,900,650)])
+def test_short_answer_financial_card_uses_available_reading_width(standalone,width,height,min_card_width):
+    page,state=standalone
+    page.set_viewport_size({"width":width,"height":height})
+    if page.locator("#chat-history-toggle").is_visible():
+        page.locator("#chat-history-toggle").click()
+    page.get_by_text("Retained statement",exact=True).click()
+    card=page.locator(".mmb-f-card")
+    expect(card).to_have_count(1)
+    expect(card).to_be_visible()
+    box=card.bounding_box()
+    assert box and box["width"]>=min_card_width
+    assert box["x"]>=0 and box["x"]+box["width"]<=width
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    if width>540:
+        expect(card.locator("table")).to_be_visible()
+    else:
+        expect(card.locator(".mmb-f-period-detail")).to_be_visible()

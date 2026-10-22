@@ -8408,6 +8408,16 @@ def main() -> int:
     except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
         log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
 
+    # Expectation Surface — Information→Price wave 1 descriptive consensus page
+    # (schema expectation_surface.page.v1, financial_influence=false everywhere).
+    # Degrade-safe: an import or render fault skips the page, never the build.
+    try:
+        from scripts.build_expectation_surface import build as _build_es
+        _es_summary = _build_es(write=True)
+        log.info("wrote site/expectation_surface.html (%s)", _es_summary.get("state"))
+    except Exception as _es_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("expectation_surface render failed (%s); page skipped", _es_e)
+
     # Consumer Cyclical PLNT synthetic display card — one static card mounting
     # display_packet over the committed synthetic fixture. It writes no data,
     # fetches nothing, and a native-admitted refusal raises before any page

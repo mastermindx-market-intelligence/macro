@@ -64,7 +64,7 @@ body { background: var(--bg); color: var(--text);
 @media (min-width: 900px) { #msg-list { padding: 30px max(24px, calc((100% - 748px) / 2)) 10px; } }
 .msg { display: flex; flex-direction: column; gap: 4px; max-width: 86%; }
 .msg.user { align-self: flex-end; align-items: flex-end; }
-.msg.assistant { align-self: flex-start; align-items: flex-start; max-width: 100%; }
+.msg.assistant { align-self: flex-start; align-items: flex-start; width:100%; min-width:0; max-width:100%; }
 .msg-bubble { padding: 12px 16px; border-radius: 16px; font-size: 14.5px; line-height: 1.62; word-break: break-word; }
 .msg.user .msg-bubble { background: linear-gradient(180deg, color-mix(in srgb, var(--info) 92%, #fff), var(--info)); color: #fff; border-bottom-right-radius: 5px;
   box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--info) 70%, transparent); }
@@ -211,7 +211,7 @@ html[data-lang="zh"] .prompt-btn .prompt-zh { display: block; }
 
 
 /* Native output uses the chat's theme and keeps wide data inside its own scroll area. */
-.msg-bubble.mmb-visual-surface { min-width:0; --mmb-card:var(--panel); --mmb-panel:var(--panel);
+.msg-bubble.mmb-visual-surface { width:100%; min-width:0; box-sizing:border-box; --mmb-card:var(--panel); --mmb-panel:var(--panel);
   --mmb-line:var(--line); --mmb-text:var(--text); --mmb-muted:var(--muted);
   --mmb-font:var(--font-ui); --mmb-mono:var(--font-mono); --mmb-panel2:var(--panel2); --mmb-info:var(--info); --mmb-hi:var(--info);
   --mmb-violet:var(--info); --mmb-shadow-pop:none; --mmb-glow:transparent; }
