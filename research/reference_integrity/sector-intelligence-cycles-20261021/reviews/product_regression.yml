@@ -1,13 +1,13 @@
 schema: mastermind.rig_review.v1
 reference_id: sector-intelligence-cycles-20261021
 role: product_regression
-artifact_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
-review_round: 2
+artifact_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
+review_round: 3
 supersedes:
-  artifact_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
-  receipt: reviews/round1_508539c0/product_regression.yml
+  artifact_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
+  receipt: reviews/round2_ab1e71ac/product_regression.yml
 reviewer:
-  identity: opus-auditor-product-regression-sic-20261021-r2
+  identity: opus-auditor-product-regression-sic-20261021-r3
   model: 'claude-opus-5-5 (native reviewer agent a29cc1ceb621c5201, ROUTE: review, MODE: READ_ONLY)'
   independent_of_author: true
   prior_design_participation: false
@@ -16,275 +16,260 @@ quarantine:
   first_pass_inputs:
   - user/business job (baseline.yml user_job)
   - production-before artifact (16 served-site captures + production source paths)
-  - proposed-after artifact (32 frozen boards 0-31 incl. HTML specimen boards 23-31 + design_refs/sector-paper-20261021)
-  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-1 receipt
-  first_pass_path: critic_return/round2_first_pass_product_regression.md
+  - proposed-after artifact (38 frozen boards 0-37 incl. HTML specimen boards 23-37 + design_refs/sector-paper-20261021
+    at 5432d5a0)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-2 receipt
+  first_pass_path: critic_return/first_pass_product_regression.md
   rationale_received_after_first_pass: true
 first_pass:
-  frozen_at: '2026-10-22T04:37:43Z'
+  frozen_at: '2026-10-22T07:49:35Z'
   verdict: BLOCK
-  round1_dispositions:
-  - finding: PRC-001
-    status: partially_cured
-    evidence: Boards 23-26 restore the lanes with counts, score, 20d, the locked fold and Bottoming Watch (brief_repair/build_brief.py:28
-      LANE_STANCE); but the production per-row gate chips in Bottoming Watch are not drawn, board 27 shows GAP cells
-      (ZH desktop, EN-dark mobile), and the defective R3 Brief boards 12/22 stay in the frozen set claiming the
-      same R3A-19/24/27/28/92 coverage with no supersession note (boards_manifest.yml:362-381, :583-605 vs :606-631)
-  - finding: PRC-002
-    status: partially_cured
-    evidence: Board 23/24 Track record panel carries an honest denominator caption that matches engine/sector_central_grader.py:34-45
-      (Neutral included) and links out, and board 28 grader_caption carries no number; there is still no drawn record
-      or number where production renders grader output
-  - finding: PRC-003
-    status: partially_cured
-    evidence: 'Boards 28-31 cure it: PARITY_FAILS chip, model_cell_current_claim parity_failed, unavailable non_monotone_cdf
-      cells drawn as gaps with no zero-cross row (cycles_repair/example_dataset.json XLK/XLC); board 01 is byte-unchanged,
-      still carries the Cycle crosses zero row and still claims C01-C24 (boards_manifest.yml:46-68), with no supersession'
-  - finding: PRC-004
-    status: partially_cured
-    evidence: Cured on board 28 (no invented number; hazard .3511/.4/.5882 match the producer, MODEL PASS); board
-      01 unchanged and not superseded (boards_manifest.yml:46-68)
-  - finding: PRC-005
-    status: partially_cured
-    evidence: Board 28 drops Tighten risk and shows the producer resolved stance HOLD/HIGH-RISK BOUNCE/SELL, matching
-      production Resolved stance · engine (templates/sector_cycles.js:155); board 01 unchanged
-  - finding: PRC-006
-    status: partially_cured
-    evidence: Board 28/29 render At least N sessions in this phase (history starts ...), lower_bound, forward_log_replay.v2;
-      boards 12/14/16/22 keep unqualified ages and are not superseded
-  - finding: PRC-007
-    status: partially_cured
-    evidence: Board 28/29 rhythm chip reads Own rhythm, descriptive. Not a model. with Overdue; board 16 still renders
-      Slow cycle MODEL and remains frozen (boards_manifest.yml:453-468 trims only C10-C12)
-  - finding: PRC-008
-    status: partially_cured
-    evidence: Boards 23-31 use the canonical _site_nav family (brief_repair/README.md declares nav_static.html non-normative);
-      boards 01/16 unchanged, and an unstyled Brief Explore Research Watches underlined link row sits under the
-      header on 23-31 (board 29 top)
-  - finding: PRC-009
+  round2_dispositions:
+  - finding: PRC-024
     status: cured
-    evidence: 'Board 28/29 timing panel: size_mult Position sizing none, multiplier held at 1.0 (engine/sector_central.py:453)
-      and lead_lag W5.1 STOP no claim'
-  - finding: PRC-010
-    status: not_cured
-    evidence: No round-2 board draws Time Machine; boards 00-22 unchanged (git diff 508539c0..ab1e71ac touches only
-      23-31 PNGs)
-  - finding: PRC-011
-    status: not_cured
-    evidence: No round-2 board draws Narratives; boards 00-22 unchanged
-  - finding: PRC-012
-    status: not_cured
-    evidence: No round-2 board draws the desk-watch surface; boards 09-11 unchanged
-  - finding: PRC-013
-    status: not_cured
-    evidence: Moving / Money panels not drawn on 23-31; boards 12/22 unchanged
-  - finding: PRC-014
-    status: not_cured
-    evidence: Confluence not drawn on 23-31; no new dossier board
-  - finding: PRC-015
+    evidence: Boards 28/34 face carries plain labels only; field paths, codes, epoch, parity verdict strings and
+      the Built table sit in closed How this was measured drawers (cycles_repair/build_cycles.py:10-12, :178, :200);
+      residual lowercase producer enums down · trough / up · peak on the EN face are acceptable
+  - finding: PRC-025
     status: partially_cured
-    evidence: Boards 23/24 restore the handoff line and Leadership is holding. headline from brief_repair/example_dataset.json
-      handoff_raw; What changed chips remain a link only
-  - finding: PRC-016
-    status: not_cured
-    evidence: Reco tags / conviction board not drawn on 23-31; brief_repair/README.md keeps the conviction sort
-      because rotation was incompatible_generation
-  - finding: PRC-017
+    evidence: Legacy numerals and projected dates are stripped from the face (build_cycles.py:59-61, :124-127),
+      but the XLC face read still says Communication Services is in a Bottoming phase beside the phase_v2 chip Rolling
+      over (board 28; board 34 shows 筑底阶段 beside 回落中), which violates baseline C14 (the read must agree with fields
+      displayed beside it)
+  - finding: PRC-026
     status: cured
-    evidence: Board 21 marked superseded by boards_manifest.yml + routing_contract, retained as reviewer index only
-      (boards_manifest.yml:577)
-  - finding: PRC-018
+    evidence: copy_deck.json:226 adds stance_act (Act / 行动) with an honest source note that no production t('Act')
+      stance string exists
+  - finding: PRC-027
     status: partially_cured
-    evidence: copy_deck.json now carries the brief and cycles keys (246 keys, 0 missing EN/ZH), but the README lane-to-stance
-      mapping names stance_act which has no deck key (brief_repair/build_brief.py:28) and the boards draw production
-      lane labels straight from the dataset
-  - finding: PRC-019
+    evidence: Board 27 shows 14 of 16 Brief+Cycles cells drawn (boards 32/33/34/35/36/37 added); two gaps (Brief
+      mobile light ZH, Cycles mobile dark EN) are declared GAP and not claimed as covered
+  - finding: PRC-028
     status: cured
-    evidence: read_provenance plus the read · legacy family label and Narrative, written from the cycle record.
-      Not a measurement. (cycles_repair/build_cycles.py:109; board 28/29)
-  - finding: PRC-020
+    evidence: 'brief_repair/README.md:85-88 declares that the captured dataset carries chips: [] for every Bottoming
+      Watch row, so none are drawn, which is data-faithful; no board demonstrates the chip state (I could not locate
+      a chips/gates key in brief_repair/example_dataset.json, so this rests on the README)'
+  - finding: PRC-029
     status: cured
-    evidence: Capability lists trimmed with notes (boards_manifest.yml:376 board 12, :468 board 16)
-  - finding: PRC-021
+    evidence: Scoped superseded_by notes on R3 boards 1-8 (boards_manifest.yml:64, :89, :115, :141, :168, :209,
+      :249, :280), Brief 12/13/22 (:379, :404, :608) and Dossier 16 (:474); board 1 capabilities_covered trimmed
+      to C01-C13, C22, C26, C28 (:59-63); board 27 states that Paper boards 12/13/22 are layout provenance only
+  - finding: PRC-030
     status: cured
-    evidence: Board 20 marked superseded by board 27 + state_matrix.csv, reviewer index only (boards_manifest.yml:559)
-  - finding: PRC-022
-    status: not_cured
-    evidence: Boards 01 and 06 are unchanged in the frozen set and carry no supersession note
-  - finding: PRC-023
-    status: withdrawn
-    evidence: Withdrawn in round 1; nothing in the round-2 delta revives it
+    evidence: boards_manifest.yml:1080-1108 capability_boards names one board per C01-C28 (instrument rows on boards
+      1/5/6, semantics on 28/34); the scoped notes on boards 1/5/6 explicitly retain the chart instrument, mobile
+      picker and keyboard, so no instrument capability is orphaned
+  - finding: PRC-031
+    status: partially_cured
+    evidence: 'Board 34 localizes the nav search placeholder (搜索任意股票 ...), but the ZH face still shows English producer
+      text: the read on board 34 begins Financials下行阶段 and Communication Services筑底阶段, and the as-of line reads
+      截至 2026-10-20 · Sector Cycles'
+  - finding: PRC-032
+    status: cured
+    evidence: proj is drawer-only under cycles.proj_label (build_cycles.py:16, :141); the face footnote binds rhythm.window
+      (board 28 XLF Projected next peak ≈ 2026-07 (2026-05–2027-02) matches rhythm, not proj 2026-06)
   findings:
-  - id: PRC-029
+  - id: PRC-033
     severity: blocker
-    finding: 'The frozen reference contradicts itself: R3 boards 01-08, 12, 16 and 22 are byte-unchanged and carry
-      no supersession note, unlike boards 20/21 (boards_manifest.yml:559, :577); board 01 still claims C01-C24 coverage
-      (boards_manifest.yml:46-68) and still draws the invented Cycle crosses zero hazard row, unqualified phase
-      ages and Slow cycle MODEL (board 16); boards 28-31 claim overlapping C14-C24. An implementer has no rule in
-      the manifest to prefer R4 over R3, so the round-1 stronger claims remain normative.'
-  - id: PRC-030
-    severity: major
-    finding: 'The capability ledger loses its only clean home for most Cycles capabilities: boards 28-31 cover C14-C21,
-      C23, C24 and C27 (boards_manifest.yml:728-760, :789-830), while C01-C13, C22, C25, C26 and C28 (chart, series
-      picker, zoom, touch sheet; cycles_repair/README.md limits) live only on the defective, unsuperseded R3 boards
-      01-05.'
-  - id: PRC-025
-    severity: major
-    finding: 'Board 28 manifest states_shown claims pos_v2 + phase_v2 only (legacy families retired from display)
-      (boards_manifest.yml:736), yet every card''s The read block narrates the legacy family: XLF cycle position
-      47/100 under a 73/100 pos_v2 headline, XLK 53 vs 99, and XLC in a Bottoming phase under a Rolling over phase_v2
-      chip (board 29; cycles_repair/build_cycles.py:109; cycles_repair/README.md producer finding 1). The label
-      is honest, but the manifest claim is false and the card shows contradictory number pairs.'
-  - id: PRC-024
-    severity: major
-    finding: 'Boards 28-31 put raw engineering identifiers and repo paths on the user tier: phase_v2, pos_v2, inside_window_past_central
-      · n_confirmed_halves · elapsed_half_cycle_ratio, model_cell_current_claim parity_failed, epoch price_c4414dcb,
-      clocks.ladder RALLY ON, engine/sector_central.py:453 and research/sector_completion_20261021/... citations,
-      and a 20-row Built meta table. These persist untranslated on the ZH board 30, whereas production uses plain
-      wording.'
-  - id: PRC-027
-    severity: major
-    finding: 'Dual-theme/locale evidence is incomplete: the board 27 coverage matrix shows GAP cells for Brief (ZH
-      desktop both themes, EN dark mobile), and Cycles R4 has no ZH desktop and no light ZH board (boards 28-31
-      are EN light desktop, EN dark desktop, ZH dark mobile and EN light mobile).'
-  - id: PRC-031
+    finding: STANCE_MAP (cycles_repair/build_cycles.py:55-58) replaces the engine's resolved stance on the face
+      with a different action and ink, and moves the engine word and tone into a closed drawer. Engine HOLD (tone
+      bullish, 持有, engine/cycle_ontology.py:113-123) is drawn as Watch, don't chase / 观察，别追 in warn ink, on the
+      same XLF card whose producer note reads Hold, but trim into strength (board 28; board 34). Engine SELL (bearish)
+      is drawn as Protect gains for XLC, which holds no gains narrative, and COUNTERTREND ONLY is collapsed into
+      Stand aside. Production renders the engine stance verbatim with its tone class (templates/sector_cycles.js:157-162,
+      Resolved stance · engine), so the critical what-do-I-do task now shows an action the producer did not issue.
+  - id: PRC-034
     severity: minor
-    finding: Board 30 (ZH) keeps the English nav search placeholder Search any stock — US, China, HK, Canada & more...
-      and the English mono labels read · legacy family and phase_v2, so EN/ZH parity is partial.
-  - id: PRC-028
+    finding: cycles_repair/enum_zh.json _source claims 向上/向下 and 已对齐 come from the templates/sector_cycles.js L('up'/'down')
+      family, but a grep of templates/sector_cycles.js finds none of 向上, 向下 or 已对齐, so these ZH enum forms are unsourced
+      coinages (plausible but not production wording).
+  - id: PRC-035
     severity: minor
-    finding: Brief Bottoming Watch on boards 23-26 drops the production per-row gate chips; only the count and rows
-      are drawn.
-  - id: PRC-026
-    severity: minor
-    finding: brief_repair/README.md and build_brief.py:28 map ab-buy-fold to stance_act, but copy_deck.json has
-      no stance_act key and no Buy now string, while brief_repair/example_dataset.json:41 carries name_en Buy now.
-      The deck/dataset contract is undocumented.
-  - id: PRC-032
-    severity: minor
-    finding: Board 28/29 timing cards still draw the producer proj window (low/central/high months) beside the descriptive
-      rhythm. The README admits proj disagrees with rhythm.window (producer finding 2; production draws proj at
-      templates/sector_cycles.js:1420), so two timing numbers can disagree on one card.
+    finding: 'The grader panel eyebrow on boards 28/34 reads CONVICTION-CALL GRADER: MEASURED HIT RATE / 判断评分器：已衡量命中率
+      over a panel that honestly draws no number, so the label claims a measurement the panel does not show; a no-data
+      wording would match the producer state.'
   strengths:
-  - Hazard cells match the producer exactly (XLF .3511/.4/.5882 MODEL PASS) and unavailable non_monotone_cdf cells
-    are drawn as gaps, never zero
-  - Phase age is shown as a lower_bound with its observed_from date and forward_log_replay.v2 method, so unknown
-    duration is not overstated
-  - Live hazard parity PARITY_FAILS is surfaced with 15 features and measured_on, and MODEL cells are muted as model_cell_current_claim
-    parity_failed
-  - Sizing inert (size_mult 1.0) and lead-lag W5.1 STOP are stated as no-claim methods instead of being drawn as
-    signals
-  - The incompatible_generation board 31 state is labelled as a FIXTURE with its query and basis (cycles_repair/build_cycles.py:154-161)
-  - The grader caption carries an honest denominator (Neutral included), matching engine/sector_central_grader.py:34-45,
-    and invents no number
-  - Brief lanes, counts, locked fold and Bottoming Watch are restored from the render tree, with no invented grader
-    number
-  - Boards 20/21 are explicitly superseded and the PRC-020 capability trims are annotated in the manifest
+  - The scoped supersession plus the capability_boards index resolves the round-2 normative contradiction without
+    orphaning any instrument capability
+  - Provenance drawers move every field path, code and verdict string off the face while keeping them falsifiable
+  - proj is moved to the drawer and the face timing binds the versioned descriptive rhythm.window, removing the
+    two-window disagreement
+  - 'Board 27 coverage matrix is honest: 14 drawn, 2 declared GAP cells never claimed as covered'
+  - Hazard numbers equal the producer, unavailable cells are gaps never zero, and phase age stays a lower bound
+  - stance_act carries a truthful source note admitting that no production Act string exists
+  round1_residuals:
+  - finding: PRC-001
+    status: cured
+    evidence: Brief lanes, counts, score, 20d, locked fold and Bottoming Watch on boards 23-26/32/33/37; boards
+      12/13/22 superseded (boards_manifest.yml:379, :404, :608); gate chips declared as a data gap (brief_repair/README.md:85)
+  - finding: PRC-003
+    status: cured
+    evidence: Board 1 hazard semantics superseded by 28-31/34-36 (boards_manifest.yml:64-65); boards 28/34 draw
+      unavailable cells as gaps, never zero
+  - finding: PRC-004
+    status: cured
+    evidence: Board 1 semantics superseded; board 28 XLF hazard 35/40/59% MODEL equals example_dataset .3511/.4/.5882
+  - finding: PRC-005
+    status: cured
+    evidence: Tighten risk is gone with board 1 semantics superseded; the replacement stance rendering raises a
+      new defect, filed as PRC-033
+  - finding: PRC-008
+    status: cured
+    evidence: Boards 28/34/37 draw the canonical _site_nav header with styled sub-tabs Brief/Explore/Dossier/Research/Watches/Cycles
+      from si_shell.css (= templates/_sector_central_paper.css.j2); the round-2 unstyled link row is gone
+  - finding: PRC-022
+    status: partially_cured
+    evidence: 'Boards 1/6 carry scoped supersession (boards_manifest.yml:64, :209), but the evidence is incomplete:
+      the round-1 text of PRC-022 was not re-opened this round'
+  capability_index_check:
+  - capability: C01
+    board: 1
+    draws_it: true
+    note: Eleven-sector chart and records are the R3 instrument, retained under the scoped note at boards_manifest.yml:64-65
+  - capability: C14
+    board: 28
+    draws_it: true
+    note: EN/ZH engine read drawn (board 28/34), but the XLC read (Bottoming) disagrees with the phase_v2 chip (Rolling
+      over) displayed beside it, contrary to the C14 user_job; see PRC-025
+  - capability: C19
+    board: 28
+    draws_it: true
+    note: MODEL cells, horizons and unavailable gaps are drawn; the epoch and cell_verdict moved to the drawer;
+      no captured row carries a KM PRIOR cell, so the PRIOR state is never demonstrated on any board
+  - capability: C23
+    board: 28
+    draws_it: true
+    note: Grader panel draws the denominator caption with no number, which is honest because the captured sector_central.json
+      has no grader key; the eyebrow MEASURED HIT RATE over a numberless panel is filed as PRC-035
+  - capability: C25
+    board: 5
+    draws_it: true
+    note: Mobile picker, sheet and touch selection stay homed on R3 board 5 under the scoped note that retains the
+      instrument (boards_manifest.yml:141-168)
+  - capability: C27
+    board: 34
+    draws_it: true
+    note: Bilingual face and light theme drawn; semantic tone is broken for the stance (engine HOLD tone bullish
+      drawn in warn ink), see PRC-033; English producer residue on the ZH face, see PRC-031
+  - capability: C28
+    board: 6
+    draws_it: true
+    note: States board retained for lazy hydration under the scoped note (boards_manifest.yml:209)
   user_tasks:
   - task: task.brief
     verdict: EQUIVALENT
-    reason: Lanes, counts, handoff and headline are restored to production parity on 23-26, but there is no grader
-      number, no per-row gate chips, and ZH desktop is a GAP
+    reason: Production lanes, counts, score, 20d, handoff, locked fold and Bottoming Watch are drawn in 7 of 8 locale/theme
+      cells with doctrine stance headers over the production lane labels (board 37); no grader number, matching
+      the producer
   - task: task.cycles
     verdict: WORSE
-    reason: The R4 boards 28-31 are better than production's loading shell, but the unsuperseded R3 board 01 keeps
-      the invented zero-cross hazard row normative, and the chart/zoom capabilities live only there
+    reason: Hazard, parity, phase age, rhythm and provenance are now better than production, but the Tier-1 stance
+      shows an action the engine did not issue (PRC-033) and the XLC read contradicts its phase chip (PRC-025)
   - task: task.dossier
     verdict: WORSE
-    reason: Board 16 is unchanged with Slow cycle MODEL and unqualified ages, and Confluence is still missing
+    reason: Board 16's stance and hazard semantics are superseded, but its phase ages and Slow cycle MODEL rhythm
+      label are outside the scoped note (boards_manifest.yml:474) and Confluence is still undrawn
   - task: task.rotation
     verdict: EQUIVALENT
-    reason: Board 14/15 unchanged; the rotation incompatible_generation is honestly labelled on board 31 as a fixture
+    reason: Boards 14/15 unchanged; the incompatible_generation state is labelled as a fixture on board 31
   - task: task.stock-prophet
     verdict: UNKNOWN
-    reason: No round-2 board addresses it; the round-1 boards are unchanged
+    reason: No round-3 board addresses it
   - task: task.research
     verdict: UNKNOWN
-    reason: Boards 18/19 are unchanged and Narratives/Time Machine are still undrawn
+    reason: Boards 18/19 are unchanged; Narratives and Time Machine are still undrawn
   - task: task.watches
     verdict: UNKNOWN
-    reason: Boards 09-11 are unchanged and the desk-watch surface is still missing
+    reason: Boards 09-11 are unchanged; the desk-watch surface is still missing
   - task: task.return
     verdict: UNKNOWN
-    reason: What changed is still a link only, and the static specimens prove no return-visit state
+    reason: What changed is still a link; the static specimens prove no return-visit state
   - task: task.keyboard
     verdict: UNKNOWN
-    reason: The HTML specimens are static captures with no keyboard proof (cycles_repair/README.md limits)
+    reason: Static captures; keyboard stays homed on R3 instrument boards with no proof
   quarantine_breaches: []
 second_pass:
-  amended_at: '2026-10-22T04:41:41Z'
+  amended_at: '2026-10-22T08:04:22Z'
   rationale_received: true
   amendments:
-  - finding: PRC-024
+  - finding: PRC-033
     action: upheld
-    note: The author accepts that the raw identifiers (phase_v2, pos_v2, inside_window_past_central, model_cell_current_claim
-      parity_failed, epoch price_c4414dcb, repo paths, Built meta table) belong in a provenance drawer, and boards
-      28-31 at this sha still put them on the user face in EN and ZH, so this remains major until a re-freeze shows
-      plain labels on the face.
+    note: 'Upheld as a blocker at 5432d5a0: the cure is only promised, and boards 28/34 still draw HOLD as Watch,
+      don''t chase in warn ink and SELL as Protect gains, with the engine word in a closed drawer. On the author''s
+      question, yes: a frontend-mapped doctrine chip in warn ink beside a visible bullish engine HOLD still regresses
+      baseline C15 (research/reference_integrity/sector-intelligence-cycles-20261021/baseline.yml:275, "do not calculate
+      a competing stance in the frontend") and C17 (keep stance and entry suitability separate). The engine-first
+      line cures the hiding, but a second, frontend-derived action with contradicting ink is exactly a competing
+      stance. I will accept either (a) the engine stance line alone (now.stance/stance_zh with the tone class, as
+      templates/sector_cycles.js:157-162), with the doctrine vocabulary given only as a non-chip legend gloss; or
+      (b) a doctrine chip whose value is a producer-stamped field (an engine-owned mapping emitted in the artifact
+      and cited by file:line), whose ink never contradicts now.tone, and which is labeled as the engine''s mapping,
+      never as a separate call.'
+  - finding: PRC-034
+    action: upheld
+    note: Minor; still present at 5432d5a0. It is cured when every enum_zh.json value carries a real origin (a production
+      file:line containing that exact string, or the literal tag deck copy) and grep confirms each cited string
+      exists at its cited line.
+  - finding: PRC-035
+    action: upheld
+    note: Minor; still present at 5432d5a0. The proposed eyebrow is acceptable, provided no grader label on boards
+      28-36 implies a measured value where no number is drawn and the Neutral-included caption is labeled as a definition.
   - finding: PRC-025
     action: upheld
-    note: The author concedes that boards_manifest.yml:736 claims legacy families retired from display while board
-      28/29 draws legacy positions 47/53/19 and Bottoming beside pos_v2 73/99/48 and Rolling over; the verbatim
-      producer narrative and its label make the read honest, but the manifest claim is still false and the card
-      still shows a contradictory number pair, so this stays major.
-  - finding: PRC-026
-    action: upheld
-    note: Not contested; it stays minor.
+    note: 'Still partially cured at 5432d5a0 (XLC Bottoming vs Rolling over on boards 28/34). The family-match test
+      is the right cure: the face read appears only when its phase word belongs to the phase_v2 family, otherwise
+      the read is withheld to the drawer and the face shows a labeled state naming both values. This should be checked
+      on XLC in a re-capture, with the test function cited by file:line, and the engine-side cure stays a producer
+      finding.'
   - finding: PRC-027
     action: upheld
-    note: Board 27 does record the gaps as PAPER_CAPACITY_LIMITED, and the author intends to render them in wave
-      2; but recorded gaps are still missing dual-theme/locale evidence, so this is still major at this sha (it
-      is not a blocker, because the gaps are declared rather than hidden).
-  - finding: PRC-028
-    action: upheld
-    note: Not contested; it stays minor.
-  - finding: PRC-029
-    action: upheld
-    note: The author accepts the contradiction. proposal.yml revision_mandate VTC-007 declares that the contradicting
-      Paper pixels on boards 01/08/12/14 are PAPER_CAPACITY_LIMITED, but that declaration lives in the rationale
-      file and not in the reference index, and boards 01-08, 12/13/16/22 still carry no supersession note while
-      board 01 still claims C01-C24 with the invented zero-cross hazard row, so it stays a blocker at this sha.
-  - finding: PRC-030
-    action: upheld
-    note: The author confirms C01-C13, C22, C25, C26 and C28 deliberately keep their homes on R3 boards 01-08, which
-      are the boards carrying the uncured round-1 claims, and the manifest does not declare the correct-not-retire
-      split, so this stays major until the manifest declares per-capability which board is normative or a composite
-      board is drawn.
+    note: Still partially cured at 5432d5a0 (14/16, gaps declared honestly). It is cured when the two gap cells
+      are frozen as boards with manifest rows and board 27 cites them as drawn, 16/16.
   - finding: PRC-031
     action: upheld
-    note: Not contested; it stays minor.
-  - finding: PRC-032
-    action: upheld
-    note: proj is production parity (templates/sector_cycles.js:1420), so drawing it is not a regression; the finding
-      is the unlabelled disagreement with the rhythm window on one card, which the author intends to label or drop,
-      so it stays minor.
-  disposition_notes:
-  - finding: PRC-010
-    note: The deliberate wave deferral is acknowledged; the status not_cured stands as fact, and these are capability-ledger
-      holes the next freeze must still home.
+    note: Still partially cured at 5432d5a0. It is cured when the ZH face of every ZH board carries no English sector
+      names or page/source labels outside code/drawer elements, sector names come from a cited production ZH source
+      or are tagged deck copy, and verbatim read_zh appears only in the drawer.
   - finding: PRC-022
-    note: Deferred with boards 01/06; cured only when the supersession notes required by PRC-029 land.
-  - finding: PRC-001
-    note: proposal.yml marks this resolved_by_change; that is correct for boards 23-26, but board 12/22 supersession
-      is still missing, so it stays partially_cured.
+    action: upheld
+    note: Still partially cured at 5432d5a0. A scoped manifest note on the frozen Paper boards that names the up/3m
+      PRIOR 33% cell (and the 38%-of-41 Abstained card) as illustrative and superseded by the R4 hazard cells is
+      an acceptable cure, because the normative home moves to R4; the Paper pixels need not change.
+  disposition_notes: 'Judged as frozen at 5432d5a0; no promised cure changes a status. The round-2 cures stand:
+    PRC-024, 026, 028, 029, 030 and 032 cured. The re-freeze commit 793b1aab touches only research manifest.yml/proposal.yml
+    and does not alter design_refs/ or mockups/. Dossier: extending the board-16 note to name the placeholder phase
+    ages and the Slow cycle MODEL rhythm label as superseded by boards 28/34 is an acceptable cure (it would move
+    dossier to EQUIVALENT only once Confluence is homed; until then it stays WORSE). C19: one explicitly labeled
+    FIXTURE state card showing the KM PRIOR cell is admissible as the C19 state home, because the 2026-10-19 capture
+    carries no PRIOR cell; it must use the producer field shape (source PRIOR, cell_verdict, epoch in the drawer),
+    print the fixture label on the face, and never sit in a live card. C23: the declared data gap plus the PRC-035
+    eyebrow is acceptable. The five journey tasks stay UNKNOWN in this RIG; they are recorded as outside the drawn
+    scope, which is not a cure.'
   verdict: BLOCK
   conditions:
-  - boards_manifest.yml carries a supersession or correction note on every R3 board that an R4/specimen board replaces
-    (01-08 phase/position/hazard/age families, 12/13/22 Brief, 16 ages), and board 01's capabilities_covered no
-    longer claims capabilities whose normative home is boards 28-31.
-  - For each Cycles capability C01-C28, the manifest names exactly one normative board, or a composite board is
-    drawn; no normative home may carry the invented Cycle crosses zero row, unqualified phase ages, Tighten risk,
-    or Slow cycle MODEL.
-  - Boards 28-31 put plain-language labels on the face, with engineering identifiers, repo paths and the Built meta
-    table in a provenance drawer, in EN and ZH.
-  - The legacy-family read either has its legacy numbers stripped or is visually separated so that no card shows
-    two conflicting cycle positions or phases without explicit reconciliation, and the states_shown claim at boards_manifest.yml:736
-    matches what is drawn.
-  - proj is labelled as production's projection, distinct from the descriptive rhythm window, or is dropped.
-  - The Brief ZH desktop cells, the Cycles ZH desktop cells and a light ZH Cycles board are rendered from the same
-    specimens, or each gap carries a recorded evidence cell; board 30 localizes the nav search placeholder.
-  - The stance_act deck/dataset contract is documented, or the key exists in copy_deck.json; Bottoming Watch gate
-    chips are drawn or explicitly declared out of scope.
-  amended_at_reviewer_estimate: '2026-10-22T04:45:00Z'
-  amended_at_note: reviewer wrote an estimated clock; amended_at replaced by the receipt file mtime (UTC) by the
-    seat
+  - 'SIC-V3 stance: on every Cycles card (boards 28-31, 34-36 and the new boards), the engine stance is drawn on
+    the face from now.stance / now.stance_zh with the tone class from now.tone, matching templates/sector_cycles.js:157-162;
+    a missing stance renders Stance unavailable with no chip; no frontend-derived stance chip is drawn unless its
+    value is a producer-stamped field cited by file:line, and no stance ink contradicts now.tone.'
+  - 'SIC-V3 read: the face read appears only when its phase word belongs to the phase_v2 family of the card''s chip
+    (test cited by file:line); otherwise the read is drawer-only and the face shows a labeled state; the XLC row
+    demonstrates this on a captured board.'
+  - 'SIC-V3 coverage: board 27 cites 16/16 drawn cells with manifest rows and png_px for the two new boards.'
+  - 'SIC-V3 ZH face: no English sector names or page/source labels on the ZH face outside code/drawer elements on
+    boards 30, 34, 35, 36 and the new ZH boards; every ZH string is tagged with a production file:line or deck copy.'
+  - 'SIC-V3 enum provenance: every enum_zh.json value names a real origin (an existing production file:line containing
+    the exact string, or deck copy), verified by grep.'
+  - 'SIC-V3 grader: no grader label implies a measured value where no number is drawn; the Neutral-included caption
+    is labeled as a definition.'
+  - 'SIC-V3 supersession: the board 1/6 notes name the PRIOR 33% cell and the Abstained card as illustrative and
+    superseded; the board 16 note names the placeholder phase ages and the Slow cycle MODEL label as superseded
+    by boards 28/34.'
+  - 'SIC-V3 PRIOR home: exactly one labeled FIXTURE state card shows a KM PRIOR cell in the producer field shape,
+    with the fixture label printed on the face, outside any live sector card, and the capability_boards C19 row
+    cites it.'
+  user_tasks_after_rationale:
+    brief: EQUIVALENT
+    cycles: WORSE
+    dossier: WORSE
+    rotation: EQUIVALENT
+  second_pass_path: critic_return/second_pass_product_regression.md

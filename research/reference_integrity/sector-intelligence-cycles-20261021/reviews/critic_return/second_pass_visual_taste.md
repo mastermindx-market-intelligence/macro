@@ -1,76 +1,61 @@
-STATUS: BLOCKED
-
-RESULT:
-Pass 2 is complete and the verdict is still BLOCK. All 12 pass-1 findings are upheld. The rationale shows none of them was factually wrong: it explains why some gaps exist (board chronology, mock chrome, lane board carried over undrawn), but it does not cure any of them. The pass-1 receipt is unchanged; its sha256 matches f0a7b4af…c980.
-
-```
------BEGIN RIG RECEIPT-----
+-----BEGIN RIG AMENDMENT-----
 role: visual_taste
-reviewer_identity: opus-auditor-visual-taste-sic-20261021-r1
+reviewer_identity: opus-auditor-visual-taste-sic-20261021-r3
+artifact_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
 pass: 2
-artifact_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
-amended_at: 2026-10-21T09:32:12Z
-rationale_received_after_first_pass: true
+amended_at: "2026-10-22T08:03:57Z"
+rationale_received: true
 amendments:
-  - finding: VTC-001
+  - finding: VTC-021
     action: upheld
-    note: "proposal.yml:168-191 marks SC-001..SC-008 RETAIN, with 'no dedicated R3 board: the production view markup is carried unchanged inside the shell's Explore workflow'. task.brief at :678 records 'degraded cluster undrawn'. So the author keeps the lane board but never draws it, and the target names both the Brief and Explore as its home. Boards 12, 13 and 22 remain the only drawn Brief and show a different main object, so the blocker stands until the lane board and Bottoming Watch are drawn on the Brief in both themes."
-  - finding: VTC-002
+    note: 'The author accepts the defect, and boards 28/34/36 still draw the legacy read beside the phase_v2 chip. The cure I will accept: on every Cycles cell the face names exactly one phase (the phase_v2 chip); legacy read/read_zh appears only inside the provenance drawer; where the producer phase family differs from phase_v2 (XLC, XLF) the face shows the deck "Clocks disagree" state naming both clocks as clocks, decided by the family-match test, not clocks.agree.'
+  - finding: VTC-022
     action: upheld
-    note: "Every pass-1 fact stands: five header variants are drawn and none is the product family. The board chrome also contradicts the proposal's own 'canonical nav family only' line (proposal.yml:770). The claim that the PR #9917 implementation uses _site_nav is an implementation fact; this review judges the board set as reference law. baseline.yml:136 rejected R2 board 6LQ6-0 for the same defect, so consistency keeps this a blocker. It is cheap to cure: re-export the boards with canonical chrome, or mark the chrome as non-normative inside the reference."
-  - finding: VTC-003
+    note: 'Blocker stands at the frozen sha: boards 23/37 draw "Buy now", "Take profits" and "Hold what you own · no new buying" under the doctrine titles, and the hero draws "Leadership steady — stay with the leaders." as a chip. The cure I will accept: .brf-lane-qual is absent from every Brief cell (23-26, 32, 33, 37 and any new cell); lane subtitles are non-imperative membership criteria; the hero shows regime state plus dataset participation facts. On the question asked: the production regime read may sit inside the hero provenance drawer as a labeled "Production regime read" text line, in body ink with no chip idiom, closed in captures; it must not appear in Tier-1 or chip styling.'
+  - finding: VTC-023
     action: upheld
-    note: "The rationale confirms the gaps: board 20 is described as '36 drawn, 18 gap, 6 not-on-page' (proposal.yml:671). Board 22 fills only Brief desktop dark, which pass 1 had already excluded from the gap list. No rationale supplies the missing dark/light or ZH desktop cells."
-  - finding: VTC-004
+    note: 'Upheld. The proposed cure is accepted only in part. Accepted: None/missing renders a muted "Stance unavailable" with no doctrine chip, and the map table with per-row rationale goes into cycles_ia.md and COMPONENTS.md. Rejected: an "Engine stance" line (HOLD/SELL/HIGH-RISK BOUNCE) on the card face. That is the round-2 VTC-013 blocker ("Resolved stance · engine" row) again, and it contradicts the VTC-022 cure that removes legacy action words from the Brief face. On the question asked: the doctrine chip only on the face. The engine word plus tone goes as the first line inside the card provenance drawer, which keeps SELL vs TRIM and AVOID vs WAIT distinguishable without a second action vocabulary on Tier 1.'
+  - finding: VTC-024
     action: upheld
-    note: "The rationale does not address the Tier-1 glance vocabulary or the headline and subtitle budgets. words_per_card is admitted as unmeasured (proposal.yml:760-762), which is consistent with the finding, not a rebuttal."
-  - finding: VTC-005
+    note: 'Accepted cure: no Latin-script words on ZH faces except tickers, SPY, MODEL/PRIOR badges and numerals. Specifically: the ZH as-of and page labels come from bilingual deck pairs; ZH sector names appear in the ZH read and identity lines; the lead-lag and rank-IC labels are bilingual plain words. Checkable by a text grep of the rendered ZH documents outside drawers and nav.'
+  - finding: VTC-025
     action: upheld
-    note: "If the production markup is carried over unchanged, the regime headline and handoff may survive somewhere in the build. But they are absent from every drawn board and from the Brief, which is where the identity lived. The finding concerns the drawn reference, so it stands as major."
-  - finding: VTC-006
+    note: 'The cure is mechanical and accepted: the README Boards table equals boards_manifest png_px for 28-31, 34-36 and every new board, and capture.log carries a data-w/data-ovf probe line for every mobile cell (25, 26, 30, 31, 36, 37 and new).'
+  - finding: VTC-026
     action: upheld
-    note: "Board 22 is a seat export added after ORCH-PAPER's PLATFORM_FAILURE (proposal.yml:166). That explains its origin but not its flat single-plane dark composition."
-  - finding: VTC-007
+    note: 'Accepted cure: the hero carries no repeated title, and its copy claims only what the board draws; the context card is either filled with as-of, generation state and hazard epoch or removed; the grader eyebrow promises no rate. A composite desk using a capture of the production chart is acceptable only if the capture is labeled as a production capture with its render source and as-of. Because 2026-10-19 differs from the specimen as-of 2026-10-20, the board must state that difference on its face; it must not silently mix two as-of dates on one desk.'
+  - finding: VTC-027
     action: upheld
-    note: "The rationale does not address the cross-board fixture contradictions. Declaring the Prophet labels on 16-17 as placeholders (proposal.yml:757) does not cover the phase, oscillator and date conflicts on boards 01, 08, 12 and 14."
+    note: 'Accepted cure: at 390px each lane row is two lines (identity, then one horizontal metric row) with no metric label wrapping past two lines. The overflow probe shows data-w="390" data-ovf="" for 25/26/37 and the new ZH-light mobile cell.'
   - finding: VTC-008
+    action: withdrawn
+    note: 'Re-disposed as declared out of scope: boards 20/21 are reviewer indexes, not presentation cells, and Paper is write-frozen; boards_manifest rows 20/21 already scope them as superseded. Withdrawal holds only while no review, coverage matrix or README cites board 21 contents as evidence.'
+  - finding: VTC-017
     action: upheld
-    note: "The chronology confirms the finding: boards 20 and 21 were exported before board 22 was added and were not re-exported. The cause is explained, but the boards are still stale, so it remains minor."
-  - finding: VTC-009
+    note: 'Stays partially_cured at the frozen sha. It is cured when the labeled composite desk under VTC-026 exists and the 28/34 hero copy no longer promises an undrawn chart.'
+  - finding: VTC-019
     action: upheld
-    note: "The rationale says MODEL/PRIOR disclosure increases (proposal.yml:738). That makes the small size of those tags more important, not less."
-  - finding: VTC-010
+    note: 'Stays partially_cured. It is cured by the VTC-021 cure: no legacy numeral or legacy phase word on any face.'
+  - finding: VTC-020
     action: upheld
-    note: "C14 'engine-owned EN/ZH read' (RELOCATE) explains why the card has its own language control. It does not resolve two competing language controls on one page, so it remains minor."
-  - finding: VTC-011
-    action: upheld
-    note: "The rationale does not address the chart's unnamed subject."
-  - finding: VTC-012
-    action: upheld
-    note: "The rationale does not address the clipped rails, the heavy light-theme track or the inconsistent primary button."
-verdict: BLOCK
-conditions: []
+    note: 'Stays partially_cured. It is cured when the duplicated qualifiers leave with VTC-022 and the coverage card carries a true title that does not say "unavailable" while printing counts. The producer em dashes remain a declared producer finding and do not block.'
+disposition_notes: 'Every new finding is upheld because none was shown factually wrong; each cure is a plan, not a drawn change, at 5432d5a0. VTC-016 stays partially_cured until VTC-024 is cured. VTC-002 is already cured (pass 1). Do not re-introduce engine action words on any face: the round-2 condition (engine strings only in the provenance drawer) still binds, and it is the reason the VTC-023 face engine line is rejected. I did not open proposal.yml or verdict.yml in this pass; the amendment rests on the rationale text in the coordinator message plus the pass-1 evidence.'
 production_preferable_for_after_rationale:
-  - "The cross-sector glance on the Brief: 36 sectors and themes in five graded lanes, each with a score and its 20d move vs market, plus the Bottoming Watch. Production draws this; the reference only claims to carry it over (proposal.yml:170) and never draws it."
-  - "The regime headline and the weekly leadership handoff (losing the lead / taking the lead) as the page's identity."
-  - "Themes on the first screen."
-  - "Global chrome identity (MASTERMINDX wordmark, flags, Other Assets, settings, Ask Mastermind, Terminal on mobile), as judged against the drawn boards only. If the implementation's _site_nav claim holds, this item applies to the reference and not to the build."
-  - "Plain Tier-1 wording ('20d vs market') vs '21-session relative wealth versus SPY'."
------END RIG RECEIPT-----
-```
-
-EVIDENCE:
-- `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/sector-intelligence-macro-7646-82cb8b-35c697a089b670b0/research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml`:
-  - lines 160–191: the board 22 note and the SC-001..SC-008 RETAIN targets ("no dedicated R3 board … carried unchanged inside the shell's Explore workflow").
-  - grep of targets around 194–227.
-  - lines 650–771: additions, user_tasks (task.brief at 678 "degraded cluster undrawn"), authority_delta, and information_economics (preserved "canonical nav family only" at 770).
-- `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/sector-intelligence-macro-7646-82cb8b-35c697a089b670b0/research/reference_integrity/sector-intelligence-cycles-20261021/continuity.yml`, lines 1–62: five CARRIED_BLOCK conditions, none claimed resolved.
-- `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/sector-intelligence-macro-7646-82cb8b-35c697a089b670b0/research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_visual_taste.md`: sha256 only (f0a7b4afbc204742edf213b7fa491d817d3a7a8c6ca7b44d4d24aaa3a052c980, matches); content not reopened.
-- `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/sector-intelligence-macro-7646-82cb8b-35c697a089b670b0/research/reference_integrity/sector-intelligence-cycles-20261021/baseline.yml`: a grep for SC capability names returned no matches, so I relied on the coordinator's summary of `design_lineage.rulings`.
-
-GAPS:
-- I did not open the PR #9917 templates, so the claim that the implementation uses `_site_nav` is unverified here. It does not change VTC-002, which judges the board set.
-- I did not read the internal review sic-p-rev. Its finding 4 and major 8 are known only through how proposal.yml cites them.
-
-DEVIATIONS:
-- Beyond the pass-1 command list I ran `grep`, `shasum` and `date -u`, all read-only. Nothing was written.
+  - 'Chart instrument (series, scale, zoom, touch): production only, until the labeled composite desk exists.'
+  - 'Tinted Brief hero material (VTC-005 deferral).'
+verdict: BLOCK
+conditions:
+  - 'No Brief cell (23-26, 32, 33, 37, new) renders .brf-lane-qual or any legacy fold label (Buy now, Almost ready, In favour, Take profits, Stand aside as qualifier, Hold what you own) on the face; lane subtitles contain no imperative verb.'
+  - 'The Brief hero face contains no chip or line with instruction idiom; "Leadership steady — stay with the leaders." appears, if at all, only as a labeled "Production regime read" text line inside the closed hero provenance drawer.'
+  - 'Every Cycles card face names one phase only (the phase_v2 chip); legacy read/read_zh is drawer-only; a card whose producer phase family differs from phase_v2 shows the "Clocks disagree" state with both clocks named, never a second narrative (XLC and XLF on 28/29/30/31/34/35/36).'
+  - 'Every Cycles card face shows one doctrine chip from the documented map in doctrine ink, and no engine stance word (HOLD, SELL, TRIM, BUY, WAIT, AVOID, GET READY, COUNTERTREND ONLY, HIGH-RISK BOUNCE) outside the provenance drawer.'
+  - 'A missing engine stance renders a muted "Stance unavailable" with no doctrine chip; STANCE_MAP has no None to stance entry; the map with per-row rationale exists in cycles_ia.md and components/COMPONENTS.md.'
+  - 'ZH faces (25, 30, 32-36, new) contain no Latin-script words outside drawers and nav except tickers, SPY, MODEL/PRIOR badges and numerals; as-of source labels and sector names are bilingual pairs.'
+  - 'The Cycles hero does not repeat the page title and does not describe an undrawn chart; the context card carries real content or is removed; the grader eyebrow promises no rate.'
+  - 'If a composite desk uses a production chart capture, the capture is labeled as production with its render source and as-of, and any as-of difference from the specimen dataset is stated on the board face.'
+  - 'At 390px, Brief lane rows are two-line cards with no metric label wrapping past two lines; data-w="390" data-ovf="" is recorded in capture.log for every mobile cell (25, 26, 30, 31, 36, 37, new).'
+  - 'The cycles_repair/README.md Boards table equals boards_manifest.yml png_px for every Cycles board.'
+  - 'The coverage card title does not say "unavailable" while it prints captured counts.'
+  - 'Board 21 contents are cited as evidence by no review, coverage matrix or README.'
+  - 'Light and dark full-canvas pixel samples (247,248,250)/(15,17,21) and the six-link switcher with the correct current item hold on every new or re-rendered board.'
+-----END RIG AMENDMENT-----

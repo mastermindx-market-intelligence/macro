@@ -1,213 +1,340 @@
-# Design-authority verdict packet (RIG V1 §7) — forced comparison at frozen_sha ab1e71ac (round 2; supersedes the
-# round-1 packet at 508539c0, whose receipts are archived under reviews/round1_508539c0/).
-# Written 2026-10-22 04:5xZ after the round-2 dual pass: Reviewer B visual_taste BLOCK/BLOCK (new blockers VTC-013/014;
-# VTC-015..018 major; VTC-019/020 minor; all upheld after rationale) and Reviewer A product_regression BLOCK/BLOCK
-# (new blocker PRC-029; PRC-024/025/027/030 major; PRC-026/028/031/032 minor; all upheld). Round-1 dispositions:
-# PRC-009/017/019/020/021 cured; PRC-023 withdrawn; the rest partially_cured or not_cured (deferred, declared).
-# Reviewer A's user-task read: Brief EQUIVALENT, Cycles WORSE (board 01 still normative), Dossier WORSE, Rotation
-# EQUIVALENT, the rest UNKNOWN. Verdict: REVISE → repair wave 2 → re-freeze → round 3.
+# Design-authority verdict packet (RIG V1 §7) — forced comparison at frozen_sha 5432d5a0 (round 3; supersedes the
+# round-2 packet at ab1e71ac, whose receipts are archived under reviews/round2_ab1e71ac/, and the round-1 packet at
+# 508539c0 under reviews/round1_508539c0/).
+# Written 2026-10-22 08:3xZ after the round-3 dual pass: Reviewer B visual_taste BLOCK/BLOCK (VTC-021/022/023 blockers,
+# VTC-024..027 major/minor, all upheld after rationale; VTC-008 withdrawn) and Reviewer A product_regression BLOCK/BLOCK
+# (PRC-033 blocker upheld; PRC-034/035 minor; PRC-025/027/031/022 partially cured). The two critics' stance cures conflict
+# (engine word on the face vs doctrine chip only); the authority adjudicates in SIC-ADJ-01 (notes on VTC-023 / PRC-033).
+# Reviewer A's user-task read: Brief EQUIVALENT, Cycles WORSE, Dossier WORSE, Rotation EQUIVALENT, the rest UNKNOWN.
+# Verdict: REVISE → repair wave 3 → re-freeze → round 4.
 schema: mastermind.rig_verdict.v1
 reference_id: sector-intelligence-cycles-20261021
 authority:
   identity: Fable Meta-CEO seat 1a26b044 (macro#7646) — design authority; not a critic; not the Chairman
   role: design_authority
 packet:
-  materially_improved: At ab1e71ac the repair boards 23-31 (HTML specimens built by checked-in builders from the
-    producer's own dataset) restore the Act-Now lane board with five producer-named lanes, per-row score and 20d
-    vs market, the Bottoming Watch as its own object, the regime headline and weekly handoff, a Neutral-inclusive
-    track-record denominator, lower-bound phase ages ('At least N sessions'), the descriptive rhythm labelled 'Not
-    a model' with Overdue, hazard cells matching the producer (.3511/.4/.5882) with the PARITY_FAILS chip, inert
-    sizing (1.0) and the lead-lag STOP stated on the face, and the canonical _site_nav capture as the only normative
-    chrome. Both critics disposition PRC-009/017/019/020/021 cured and VTC-001..007/009/011/012 and PRC-001..008/015/018
-    partially cured.
-  materially_worsened: The Cycles face now draws the producer's resolved_stance strings (HOLD / HIGH-RISK BOUNCE
-    / SELL, 持有) as the stance chip, outside the six doctrine stances, with SELL inked red like an instruction (VTC-013)
-    — production's regression copied into the reference. The specimens do not link the shell stylesheet, so the
-    page title and workflow switcher are unstyled and the desktop dark boards 24/29 sit on a white canvas (VTC-014);
-    the switcher lists four of six workflows and marks Brief current on Cycles boards (VTC-015). Engineering identifiers
-    (phase_v2, pos_v2, epoch hashes, n_confirmed_halves) sit on the user tier (VTC-016/PRC-024).
-  disappeared: Nothing from production disappears at this freeze that had not already disappeared at 508539c0; the
-    round-1 disappearances (Time Machine, Narratives, desk watches, Moving/Money, Confluence, Reco tags — PRC-010..016)
-    remain undrawn and are deferred, not cured. Board 01's chart, picker, zoom and touch sheet (C01-C13, C22, C25,
-    C26, C28) keep their only home on the unsuperseded R3 boards 01-08 (PRC-030).
-  behavior_harder: Reading one Cycles card now means reconciling two positions (73/100 pos_v2 beside legacy 'cycle
-    position 47/100'; XLK 99 vs 53; XLC 'Rolling over' vs 'Bottoming') (VTC-019/PRC-025); the Cycles reference is
-    split between boards 01-08 (chart, retired families) and 28-31 (corrected states, no chart) (VTC-017); the board-31
-    fixture banner overflows under chips that say 'aligned' (VTC-018); proj is drawn beside the rhythm window without
-    a label (PRC-032).
-  stronger_claims: 'The frozen set contradicts itself: boards 01-08, 12, 13, 16 and 22 are byte-unchanged with no
-    supersession note (only 20/21 carry one), board 01 still claims C01-C24 coverage and still draws the invented
-    ''Cycle crosses zero'' row (PRC-029); boards_manifest.yml:736 claims ''legacy families retired from display''
-    while every card narrates the legacy family (PRC-025); board 21 still says ''22 boards'' against a 32-board
-    set (VTC-008). No new quantitative or predictive claim is made: hazards stay MODEL/PRIOR, sizing inert, lead-lag
-    STOP.'
-  intent_vs_convenience: 'Product intent: the lane board, Bottoming Watch, handoff, honest phase-age/rhythm/parity
-    vocabulary, one normative chrome. Convenience: the engine stance strings drawn because production draws them;
-    identifiers on the face because the deck had no plain label; corrections drawn as additive boards without superseding
-    the R3 boards they contradict, because Paper writes are frozen at the file-size limit; ZH desktop and light-ZH
-    cells left as recorded gaps rather than rendered from the same specimens.'
-  production_preferable_for: 'The mobile header (wordmark, menu entry, settings, Terminal) and the styled icon sub-nav;
-    the full-page dark canvas and surface hierarchy; the styled page header and workflow switcher (Reviewer B after
-    rationale). Production''s stance chip is NOT preferable: it draws the same engine strings the reference must
-    now map to doctrine.'
-  strongest_argument_against: A reference whose Cycles face draws a non-doctrine stance in instruction red, whose
-    dark theme does not reach the canvas, and whose frozen set still carries unsuperseded boards making stronger
-    claims than the repair boards, cannot be the canonical reference. Both critics BLOCK at ab1e71ac after rationale;
-    the honest verdict is REVISE with a bounded wave 2 and a third dual review.
+  materially_improved: At 5432d5a0 the wave-2 boards 32-37 and the re-rendered 23-31 share one shell (si_shell.py/css)
+    with the production page head, a six-link switcher with the correct current item and true full-canvas light/dark
+    proven by pixel samples; Cycles faces carry a doctrine stance chip, the v2 phase, a lower-bound phase age and
+    an 11px MODEL badge with identifiers behind closed 'How this was measured' drawers; proj moved to the drawer
+    and the face timing binds the versioned descriptive rhythm window; board 27 declares 14/16 cells honestly; ZH
+    parity is drawn on desktop and mobile for both surfaces; the scoped supersession plus the capability_boards
+    index resolves the round-2 normative contradiction. Both critics disposition VTC-013/014/015/018 and PRC-024/026/028/029/030/032
+    cured; VTC-002 cured.
+  materially_worsened: 'Nothing drawn at 5432d5a0 is worse than ab1e71ac, but the stance cure split the critics:
+    the doctrine chip''s value is a frontend map (STANCE_MAP in build_cycles.py), so Reviewer A reads a warn-ink
+    chip beside a bullish engine HOLD as a competing stance (PRC-033, baseline C15/C17), while Reviewer B holds
+    that no engine action word may sit on the face (VTC-023). The Brief face kept legacy fold labels as qualifiers
+    under the doctrine titles and drew the production regime read as a chip (VTC-022). The authority adjudicates
+    the stance conflict in SIC-ADJ-01 (blocking_findings VTC-023 / PRC-033).'
+  disappeared: 'Unchanged from ab1e71ac: the round-1 disappearances (Time Machine, Narratives, desk watches, Moving/Money,
+    Confluence, Reco tags) remain deferred and declared; the chart instrument (series, scale, zoom, touch) keeps
+    its only home in production until the labeled composite desk exists (Reviewer B after rationale); Dossier stays
+    WORSE until Confluence is homed (Reviewer A).'
+  behavior_harder: Cycles faces on 28/34/36 still name two phases (legacy read beside the phase_v2 chip; XLC Bottoming
+    vs Rolling over) (VTC-021/PRC-025); ZH faces carry English sector names and page/source labels (VTC-024/PRC-031);
+    390px Brief lane rows wrap metric labels (VTC-027); the Cycles hero describes an undrawn chart and the context
+    card is empty (VTC-026).
+  stronger_claims: 'The Cycles hero promises a chart the board does not draw; the coverage card title says ''unavailable''
+    while printing counts (VTC-020); the grader eyebrow implies a rate (PRC-035); the board 1/6/16 notes do not
+    yet name the up/3m PRIOR 33% cell, the Abstained card, the placeholder phase ages and the ''Slow cycle MODEL''
+    label as superseded (PRC-022); enum_zh.json values lack verified origins (PRC-034). No new quantitative or predictive
+    claim: hazards stay MODEL/PRIOR, sizing inert, lead-lag STOP.'
+  intent_vs_convenience: 'Product intent: one stance vocabulary on the face, owned by the producer; one phase per
+    face; bilingual ZH faces; honest coverage. Convenience: the stance map placed in the specimen builder instead
+    of the engine (so the frontend derived it); legacy fold labels kept as a bridge under the doctrine titles; the
+    legacy read kept on the face for continuity; the composite desk and the two gap cells not built.'
+  production_preferable_for: 'The chart instrument (series, scale, zoom, touch) until the labeled composite desk
+    exists; tinted Brief hero material (VTC-005 deferral) (Reviewer B after rationale). Production''s stance chip
+    is NOT preferable: it draws the engine strings the reference maps to doctrine via the engine-stamped doctrine_stance.'
+  strongest_argument_against: Two critics BLOCK at 5432d5a0 with conflicting cures on the stance face; a reference
+    whose doctrine chip is a frontend-derived competing stance and whose faces still carry legacy phase and action
+    words is not canonical. The honest verdict is REVISE with the stance adjudication recorded, a bounded wave 3
+    (engine-stamped doctrine_stance first) and a fourth dual review.
 blocking_findings:
-- finding: VTC-001
+- finding: VTC-021
   resolution: upheld_revise
-  note: 'round-2 disposition partially_cured — Boards 23/24/25/26 now draw the Act-Now board: Buy now 3, Almost
-    ready 2, In favour 2, Take profits 3, Stand aside 26 and Bottoming watch 7, each row with a score and 20d vs
-    market, plus the regime headline and the handoff; ''Check entry signals'' is gone (brief'
-- finding: VTC-002
+  note: 'Boards 28/34/36 draw the legacy read beside the phase_v2 chip. Wave-3 cure: the face names one phase only
+    (the phase_v2 chip); legacy read/read_zh is drawer-only; a family-match test (cited file:line) decides, not
+    clocks.agree; XLC and XLF show the ''Clocks disagree'' state naming both clocks. Reconciled with PRC-025 as
+    SIC-V3-C03.'
+- finding: VTC-022
   resolution: upheld_revise
-  note: round-2 disposition partially_cured — Boards 23-31 all carry one static capture of the product family (MASTERMINDX,
-    flags, Other Assets, Research, Terminal, theme, EN/中文), which satisfies 'canonical family, no third header'
-    at desktop; nav_static.html is declared non-normative (brief_repair/README
-- finding: VTC-003
+  note: 'Boards 23/37 draw legacy fold labels (.brf-lane-qual) as qualifiers under the doctrine titles and the hero
+    draws the production regime read as a chip. Wave-3 cure: no .brf-lane-qual on any Brief cell; lane subtitles
+    are non-imperative membership criteria; the hero shows regime state plus dataset participation facts; the production
+    regime read sits only as a labeled ''Production regime read'' body-ink line inside the closed hero drawer (SIC-V3-C04,
+    SIC-V3-C05).'
+- finding: VTC-023
   resolution: upheld_revise
-  note: round-2 disposition partially_cured — The Brief gains desktop dark (24) and mobile light (26). Board 27
-    still marks 4 of 8 Brief cells as GAP, including both desktop ZH cells. No new board covers Explore, Dossier,
-    Research or Watches, so those board-20 gaps are untouched, and ZH desktop outside Cy
-- finding: PRC-001
+  note: 'Upheld; the authority''s proposed ''Engine stance'' face line is withdrawn. The critic accepts: None renders
+    a muted ''Stance unavailable'' with no chip, and the map with per-row rationale goes into cycles_ia.md and COMPONENTS.md;
+    the doctrine chip only on the face; engine word plus tone as the first line of the provenance drawer. Adjudication
+    SIC-ADJ-01 (authority, 2026-10-22): Reviewer A''s option (a) — engine stance words drawn on the card face —
+    is rejected because it conflicts with Reviewer B''s VTC-023 cure (no engine action word outside the drawer),
+    with doctrine Law 1''s fixed six-stance vocabulary (docs/DESIGN_DOCTRINE.md:44, Chairman design law) and with
+    the brief''s mandatory gap ''competing action language''. Reviewer A''s option (b) is adopted and satisfies
+    both critics literally: the Cycles face draws exactly one doctrine chip whose value is a producer-stamped field
+    — DOCTRINE_STANCE lives in engine/cycle_ontology.py beside STANCES with a per-row rationale, resolve_state()
+    and the flat crosswalk emit doctrine_stance, and a module assertion plus a unit test bind the chip''s ink group
+    to the engine tone (bullish -> ok or warn, never muted; anticipatory -> ok; caution -> warn; bearish -> warn
+    or muted, never ok; neutral -> muted), so no chip ink contradicts now.tone. The chip is labeled as the engine''s
+    mapping by its source eyebrow (Sector Cycles / 板块周期), the engine word plus tone (en/zh) is the first line of
+    the closed provenance drawer, None renders a muted ''Stance unavailable'' with no chip and no None entry in
+    the map, and the frontend computes nothing (baseline C15). Map: BUY -> Act; GET READY -> Get ready; HOLD ->
+    Watch — don''t chase (the engine''s own HOLD cells are commented ''don''t-chase'' at cycle_ontology.py:188 and
+    ''don''t-chase / extended'' at :972); HIGH-RISK BOUNCE and COUNTERTREND ONLY -> Watch — don''t chase (caution
+    tone, warn ink); TRIM and SELL -> Protect gains; WAIT and AVOID -> Stand aside; Ignore unused by the engine.
+    Chip ink follows components/COMPONENTS.md:121-123 and is never --up/--down (stance is not direction; direction
+    stays in the direction-delta). The specimen stamps doctrine_stance from the engine module (cycles_repair/stamp_doctrine.py,
+    recorded in capture.log with the engine file:line); STANCE_MAP leaves build_cycles.py. If Reviewer A still blocks
+    on ink-vs-tone after this cure, the round-4 packet records that finding as overridden with this rationale. (SIC-V3-C01,
+    SIC-V3-C02)'
+- finding: VTC-024
   resolution: upheld_revise
-  note: round-2 disposition partially_cured — Boards 23-26 restore the lanes with counts, score, 20d, the locked
-    fold and Bottoming Watch (brief_repair/build_brief.py:28 LANE_STANCE); but the production per-row gate chips
-    in Bottoming Watch are not drawn, board 27 shows GAP cells (ZH desktop, EN-dark mobi
-- finding: PRC-002
+  note: 'ZH faces carry Latin-script words. Wave-3 cure: no Latin-script words on ZH faces outside drawers and nav
+    except tickers, SPY, MODEL/PRIOR badges and numerals; as-of, page and source labels from bilingual deck pairs;
+    ZH sector names in the read and identity lines; lead-lag and rank-IC labels bilingual; checked by a text grep
+    of the rendered ZH documents. Reconciled with PRC-031 as SIC-V3-C06.'
+- finding: VTC-025
   resolution: upheld_revise
-  note: round-2 disposition partially_cured — Board 23/24 Track record panel carries an honest denominator caption
-    that matches engine/sector_central_grader.py:34-45 (Neutral included) and links out, and board 28 grader_caption
-    carries no number; there is still no drawn record or number where production r
-- finding: PRC-003
+  note: 'Mechanical: cycles_repair/README.md Boards table equals boards_manifest.yml png_px for every Cycles board,
+    and capture.log carries a data-w/data-ovf probe line for every mobile cell (SIC-V3-C10, SIC-V3-C11).'
+- finding: VTC-026
   resolution: upheld_revise
-  note: 'round-2 disposition partially_cured — Boards 28-31 cure it: PARITY_FAILS chip, model_cell_current_claim
-    parity_failed, unavailable non_monotone_cdf cells drawn as gaps with no zero-cross row (cycles_repair/example_dataset.json
-    XLK/XLC); board 01 is byte-unchanged, still carries the Cycle crosses z'
-- finding: PRC-006
+  note: 'The Cycles hero repeats the title and describes an undrawn chart; the context card is empty; the grader
+    eyebrow promises a rate. Wave-3 cure: hero copy claims only what the board draws; context card filled (as-of,
+    generation state, hazard epoch) or removed; grader eyebrow promises no rate; a composite desk may use a production
+    chart capture only when labeled as production with its render source and as-of, and the 2026-10-19 vs 2026-10-20
+    as-of difference is stated on the board face (SIC-V3-C08, SIC-V3-C09).'
+- finding: VTC-027
   resolution: upheld_revise
-  note: round-2 disposition partially_cured — Board 28/29 render At least N sessions in this phase (history starts
-    ...), lower_bound, forward_log_replay.v2; boards 12/14/16/22 keep unqualified ages and are not superseded
-- finding: PRC-008
-  resolution: upheld_revise
-  note: round-2 disposition partially_cured — Boards 23-31 use the canonical _site_nav family (brief_repair/README.md
-    declares nav_static.html non-normative); boards 01/16 unchanged, and an unstyled Brief Explore Research Watches
-    underlined link row sits under the header on 23-31 (board 29 top)
-- finding: PRC-004
-  resolution: upheld_revise
-  note: round-2 disposition partially_cured — Cured on board 28 (no invented number; hazard .3511/.4/.5882 match
-    the producer, MODEL PASS); board 01 unchanged and not superseded (boards_manifest.yml:46-68)
-- finding: PRC-005
-  resolution: upheld_revise
-  note: round-2 disposition partially_cured — Board 28 drops Tighten risk and shows the producer resolved stance
-    HOLD/HIGH-RISK BOUNCE/SELL, matching production Resolved stance · engine (templates/sector_cycles.js:155); board
-    01 unchanged
-- finding: PRC-007
-  resolution: upheld_revise
-  note: round-2 disposition partially_cured — Board 28/29 rhythm chip reads Own rhythm, descriptive. Not a model.
-    with Overdue; board 16 still renders Slow cycle MODEL and remains frozen (boards_manifest.yml:453-468 trims
-    only C10-C12)
-- finding: PRC-009
+  note: 'At 390px Brief lane rows wrap metric labels. Wave-3 cure: two-line lane cards (identity, then one horizontal
+    metric row); the overflow probe records data-w="390" data-ovf="" for 25/26/37 and the new ZH-light mobile cell
+    (SIC-V3-C10).'
+- finding: VTC-008
   resolution: resolved_by_change
-  note: 'round-2 disposition cured — Board 28/29 timing panel: size_mult Position sizing none, multiplier held at
-    1.0 (engine/sector_central.py:453) and lead_lag W5.1 STOP no claim — Reviewer A dispositions PRC-009 cured at
-    ab1e71ac (engine/sector_central.py:453 size_mult 1.0; MASTERPLAN W5.1 lead-lag STOP drawn on board 28).'
-- finding: VTC-013
+  note: 'Withdrawn by the critic after rationale: boards 20/21 are reviewer indexes scoped as superseded in boards_manifest.yml
+    rows 20/21, and Paper is write-frozen. The withdrawal holds only while no review, coverage matrix or README
+    cites board 21 contents as evidence (SIC-V3-C14).'
+- finding: VTC-017
   resolution: upheld_revise
-  note: 'NEW round-2 blocker (Reviewer B, upheld after rationale): engine resolved_stance strings drawn as the stance
-    chip outside the six doctrine stances; cure = documented resolved_stance→stance mapping on the face, engine
-    string only in the provenance drawer (SIC-V2-C01).'
-- finding: VTC-014
+  note: Stays partially_cured at 5432d5a0; cured when the labeled composite desk under VTC-026 exists and the 28/34
+    hero copy no longer promises an undrawn chart (SIC-V3-C08, SIC-V3-C09).
+- finding: VTC-019
   resolution: upheld_revise
-  note: 'NEW round-2 blocker (Reviewer B, upheld; seat-verified by pixel sampling: boards 24/29 (255,255,255) at
-    (30,300)/(30,h/2)/(w-40,h-60)): specimens do not link templates/_sector_central_paper.css.j2, shell head + switcher
-    unstyled, desktop dark canvas white; cure = link the shell stylesheet and prove full-canvas pixels in both themes,
-    desktop and mobile (SIC-V2-C02).'
-- finding: PRC-029
+  note: Stays partially_cured; cured by the VTC-021 cure — no legacy numeral or legacy phase word on any face (SIC-V3-C03).
+- finding: VTC-020
   resolution: upheld_revise
-  note: 'NEW round-2 blocker (Reviewer A, upheld after rationale): frozen set contradicts itself — R3 boards 01-08/12/13/16/22
-    byte-unchanged with no supersession note, board 01 still claims C01-C24 and draws the invented zero row; cure
-    = supersession/correction notes on every replaced R3 board + board 01 capabilities reconciled (SIC-V2-C05).'
+  note: Stays partially_cured; cured when the duplicated qualifiers leave with VTC-022 and the coverage card carries
+    a true title that does not say 'unavailable' while printing counts (SIC-V3-C04, SIC-V3-C12). The producer em
+    dashes remain a declared producer finding and do not block.
+- finding: PRC-033
+  resolution: upheld_revise
+  note: 'Upheld as a blocker: at 5432d5a0 the doctrine chip is a frontend map (STANCE_MAP in cycles_repair/build_cycles.py:55-58)
+    whose warn ink beside a bullish engine HOLD is a competing stance under baseline C15 (baseline.yml:275) and
+    C17. Adjudication SIC-ADJ-01 (authority, 2026-10-22): Reviewer A''s option (a) — engine stance words drawn on
+    the card face — is rejected because it conflicts with Reviewer B''s VTC-023 cure (no engine action word outside
+    the drawer), with doctrine Law 1''s fixed six-stance vocabulary (docs/DESIGN_DOCTRINE.md:44, Chairman design
+    law) and with the brief''s mandatory gap ''competing action language''. Reviewer A''s option (b) is adopted
+    and satisfies both critics literally: the Cycles face draws exactly one doctrine chip whose value is a producer-stamped
+    field — DOCTRINE_STANCE lives in engine/cycle_ontology.py beside STANCES with a per-row rationale, resolve_state()
+    and the flat crosswalk emit doctrine_stance, and a module assertion plus a unit test bind the chip''s ink group
+    to the engine tone (bullish -> ok or warn, never muted; anticipatory -> ok; caution -> warn; bearish -> warn
+    or muted, never ok; neutral -> muted), so no chip ink contradicts now.tone. The chip is labeled as the engine''s
+    mapping by its source eyebrow (Sector Cycles / 板块周期), the engine word plus tone (en/zh) is the first line of
+    the closed provenance drawer, None renders a muted ''Stance unavailable'' with no chip and no None entry in
+    the map, and the frontend computes nothing (baseline C15). Map: BUY -> Act; GET READY -> Get ready; HOLD ->
+    Watch — don''t chase (the engine''s own HOLD cells are commented ''don''t-chase'' at cycle_ontology.py:188 and
+    ''don''t-chase / extended'' at :972); HIGH-RISK BOUNCE and COUNTERTREND ONLY -> Watch — don''t chase (caution
+    tone, warn ink); TRIM and SELL -> Protect gains; WAIT and AVOID -> Stand aside; Ignore unused by the engine.
+    Chip ink follows components/COMPONENTS.md:121-123 and is never --up/--down (stance is not direction; direction
+    stays in the direction-delta). The specimen stamps doctrine_stance from the engine module (cycles_repair/stamp_doctrine.py,
+    recorded in capture.log with the engine file:line); STANCE_MAP leaves build_cycles.py. If Reviewer A still blocks
+    on ink-vs-tone after this cure, the round-4 packet records that finding as overridden with this rationale. (SIC-V3-C01)'
+- finding: PRC-034
+  resolution: upheld_revise
+  note: 'Minor, still present: enum_zh.json values lack a real origin. Cure: every value names an existing production
+    file:line containing the exact string, or deck copy, verified by grep (SIC-V3-C07).'
+- finding: PRC-035
+  resolution: upheld_revise
+  note: 'Minor, still present: the grader eyebrow. Cure: no grader label on boards 28-36 implies a measured value
+    where no number is drawn; the Neutral-included caption is labeled as a definition (SIC-V3-C08).'
+- finding: PRC-025
+  resolution: upheld_revise
+  note: 'Still partially cured (XLC Bottoming vs Rolling over on 28/34). Cure: the face read appears only when its
+    phase word belongs to the phase_v2 family of the card''s chip (test cited file:line); otherwise drawer-only
+    with a labeled state naming both values; XLC demonstrated on a captured board (SIC-V3-C03).'
+- finding: PRC-027
+  resolution: upheld_revise
+  note: 'Still partially cured (14/16, gaps declared). Cure: the two gap cells (Brief mobile/light/ZH, Cycles mobile/dark/EN)
+    frozen as boards with manifest rows and png_px; board 27 cites 16/16 (SIC-V3-C13).'
+- finding: PRC-031
+  resolution: upheld_revise
+  note: 'Still partially cured. Cure: no English sector names or page/source labels on the ZH face outside code/drawer
+    elements on boards 30, 34, 35, 36 and the new ZH boards; every ZH string tagged with a production file:line
+    or deck copy (SIC-V3-C06).'
+- finding: PRC-022
+  resolution: upheld_revise
+  note: 'Still partially cured. Cure: scoped boards_manifest notes on boards 1/6 naming the up/3m PRIOR 33% cell
+    and the 38%-of-41 Abstained card as illustrative and superseded by the R4 hazard cells; the board 16 note extended
+    to name the placeholder phase ages and the ''Slow cycle MODEL'' label as superseded by boards 28/34 (SIC-V3-C16).'
 overrides: []
 verdict: REVISE
 conditions:
-- id: SIC-V2-C01
-  text: 'VTC-013: the Cycles card face draws only the six doctrine stances via a documented resolved_stance→stance
-    mapping (cycles_ia.md + copy deck); engine strings HOLD/HIGH-RISK BOUNCE/SELL appear only in the provenance
-    drawer; no red instruction ink (Reviewer B cond 1).'
-- id: SIC-V2-C02
-  text: 'VTC-014/VTC-006: specimens link the shell stylesheet (templates/_sector_central_paper.css.j2 rendered,
-    or an equivalent normative sheet) so .si-page-title/.si-workflow render styled; each theme paints the full canvas,
-    proven by pixel samples in dark and light on desktop and mobile, recorded in the capture log (Reviewer B cond
-    2).'
-- id: SIC-V2-C03
-  text: 'VTC-015: the workflow switcher lists all six workflows with the correct aria-current per board — Cycles
-    current on Cycles boards (Reviewer B cond 3).'
-- id: SIC-V2-C04
-  text: 'VTC-016/PRC-024/PRC-031: identifiers, hashes, repo paths and the Built meta table move to a provenance
-    drawer; the face carries plain EN/ZH labels; ZH boards contain no stray English, including the nav search placeholder
-    (Reviewer B cond 4; Reviewer A cond 3, cond 6 second clause).'
-- id: SIC-V2-C05
-  text: 'VTC-017/PRC-029/PRC-030/PRC-022: boards_manifest.yml carries a supersession or correction note on every
-    R3 board a specimen board replaces (01-08 families, 12/13/22 Brief, 16 ages) naming the replacing board; board
-    01''s capabilities_covered is reconciled; for each C01-C28 the manifest names exactly one normative board, or
-    one composite corrected Cycles board (chart + corrected states) is drawn (Reviewer B cond 5; Reviewer A cond
-    1, 2).'
-- id: SIC-V2-C06
-  text: 'VTC-018: the board-31 fixture banner fits its container; chips are muted or reconciled under the incompatible_generation
-    fixture (Reviewer B cond 6).'
-- id: SIC-V2-C07
-  text: 'VTC-019/PRC-025: the legacy number is stripped from ''The read'' so one card shows one position and one
-    phase, and the boards_manifest states_shown claim matches what is drawn (Reviewer B cond 7; Reviewer A cond
-    4).'
-- id: SIC-V2-C08
-  text: 'VTC-008/VTC-001: boards 12/13/22 are marked superseded and removed from board 27 DRAWN evidence; boards
-    20/21 are refreshed or visibly marked stale (Reviewer B cond 8).'
-- id: SIC-V2-C09
-  text: 'VTC-002/VTC-005: the mobile chrome capture shows the canonical mobile header (wordmark, menu entry, settings)
-    from templates/_site_nav.html.j2 (Reviewer B cond 9).'
-- id: SIC-V2-C10
-  text: 'VTC-009: .spc-model-prior-badge font size >= 11px in components.css, matching COMPONENTS.md (Reviewer B
-    cond 10).'
-- id: SIC-V2-C11
-  text: 'PRC-032: proj is labelled as production''s projection, distinct from the descriptive rhythm window, or
-    dropped (Reviewer A cond 5).'
-- id: SIC-V2-C12
-  text: 'PRC-027/VTC-003: Brief ZH desktop (both themes), Cycles ZH desktop and a light ZH Cycles board are rendered
-    from the same specimens and added to boards_manifest + board 27, or each remaining gap carries a recorded evidence
-    cell (Reviewer A cond 6).'
-- id: SIC-V2-C13
-  text: 'PRC-026/PRC-028/PRC-018: the stance_act deck/dataset contract is documented or the key exists in copy_deck.json;
-    Bottoming Watch per-row gate chips are drawn or explicitly declared out of scope (Reviewer A cond 7).'
-- id: SIC-V2-C14
-  text: 'VTC-020: minor polish — ''1 days'' plural, typed em dashes in lane subtitles, unlabeled row glyphs, orphan
-    half-width coverage card, lane grid alignment (Reviewer B cond 11).'
-- id: SIC-V2-C15
-  text: Re-freeze at the wave-2 commit under a new frozen_sha; Reviewer A and Reviewer B re-run (round 3) with first-pass
-    rationale quarantine; no approval.yml before both second-pass verdicts are PASS or PASS_WITH_CONDITIONS.
-- id: SIC-V2-C16
-  text: 'Deferrals stay declared, never silently dropped: PRC-010..016 (Time Machine, Narratives, desk watches,
-    Moving/Money, Confluence, Reco tags/conviction) and VTC-010 (per-card language switch on Paper boards 01/02)
-    remain PAPER_CAPACITY_LIMITED in boards_manifest/proposal coverage_matrix with the P14-P18 rendered-proof cell
-    each must show; Paper writes stay frozen at the file-size limit.'
+- id: SIC-V3-C01
+  text: 'Stance (SIC-ADJ-01; VTC-023 + PRC-033): every Cycles card face (boards 28-31, 34-36 and every new board)
+    draws exactly one doctrine chip whose value is the producer-stamped field doctrine_stance emitted by engine/cycle_ontology.py
+    (DOCTRINE_STANCE beside STANCES; resolve_state() and the flat crosswalk emit it; unit test cited file:line);
+    the chip is labeled as the engine''s mapping by its source eyebrow, its ink is the doctrine ink of the stamped
+    stance and never contradicts now.tone (asserted in the engine), and no engine stance word (HOLD, SELL, TRIM,
+    BUY, WAIT, AVOID, GET READY, COUNTERTREND ONLY, HIGH-RISK BOUNCE) appears outside the provenance drawer, whose
+    first line is the engine stance plus tone (en/zh) verbatim. No frontend computes a stance.'
+- id: SIC-V3-C02
+  text: 'Unavailable stance (VTC-023): a missing engine stance renders a muted ''Stance unavailable'' with no chip;
+    the map has no None entry; the map with per-row rationale exists in engine/cycle_ontology.py, design_refs/sector-paper-20261021/cycles_ia.md
+    and components/COMPONENTS.md.'
+- id: SIC-V3-C03
+  text: 'One phase per face (VTC-021 + PRC-025 + VTC-019): every Cycles card face names one phase only (the phase_v2
+    chip); legacy read/read_zh is drawer-only; the face read appears only when its phase word belongs to the phase_v2
+    family of the card''s chip (family-match test cited file:line, not clocks.agree); otherwise the face shows the
+    labeled ''Clocks disagree'' state naming both clocks; XLC and XLF demonstrate it on captured boards (28/29/30/31/34/35/36).'
+- id: SIC-V3-C04
+  text: 'Brief lanes (VTC-022 + VTC-020): no Brief cell (23-26, 32, 33, 37, new) renders .brf-lane-qual or any legacy
+    fold label (Buy now, Almost ready, In favour, Take profits, Stand aside as qualifier, Hold what you own) on
+    the face; lane subtitles are non-imperative membership criteria containing no imperative verb.'
+- id: SIC-V3-C05
+  text: 'Brief hero (VTC-022): the hero face contains no chip or line with instruction idiom; it shows regime state
+    plus dataset participation facts; ''Leadership steady — stay with the leaders.'' appears, if at all, only as
+    a labeled ''Production regime read'' body-ink line inside the closed hero provenance drawer.'
+- id: SIC-V3-C06
+  text: 'ZH faces (VTC-024 + PRC-031): ZH faces (25, 30, 32-36, new) contain no Latin-script words outside drawers
+    and nav except tickers, SPY, MODEL/PRIOR badges and numerals; as-of, page and source labels and sector names
+    are bilingual pairs; no English sector names or page/source labels outside code/drawer elements; every ZH string
+    is tagged with a production file:line or deck copy; checked by a text grep of the rendered ZH documents.'
+- id: SIC-V3-C07
+  text: 'enum provenance (PRC-034): every enum_zh.json value names a real origin (an existing production file:line
+    containing the exact string, or deck copy), verified by grep and recorded.'
+- id: SIC-V3-C08
+  text: 'Cycles hero, context card and grader (VTC-026 + PRC-035 + VTC-017): the hero does not repeat the page title
+    and does not describe an undrawn chart; the context card carries real content (as-of, generation state, hazard
+    epoch) or is removed; no grader label implies a measured value where no number is drawn; the grader eyebrow
+    promises no rate; the Neutral-included caption is labeled as a definition.'
+- id: SIC-V3-C09
+  text: 'Composite desk (VTC-026 + VTC-017): if a composite desk uses a production chart capture, the capture is
+    labeled as production with its render source and as-of, and the as-of difference from the specimen dataset (2026-10-19
+    vs 2026-10-20) is stated on the board face; no desk silently mixes two as-of dates.'
+- id: SIC-V3-C10
+  text: '390px lanes and probes (VTC-027 + VTC-025): at 390px Brief lane rows are two-line cards with no metric
+    label wrapping past two lines; capture.log records data-w="390" data-ovf="" for every mobile cell (25, 26, 30,
+    31, 36, 37, new).'
+- id: SIC-V3-C11
+  text: 'README parity (VTC-025): the cycles_repair/README.md Boards table equals boards_manifest.yml png_px for
+    every Cycles board.'
+- id: SIC-V3-C12
+  text: 'Coverage card (VTC-020): the coverage card title does not say ''unavailable'' while it prints captured
+    counts.'
+- id: SIC-V3-C13
+  text: 'Coverage (PRC-027): the two gap cells are frozen as boards with manifest rows and png_px; board 27 cites
+    16/16 drawn cells.'
+- id: SIC-V3-C14
+  text: 'Board 21 (VTC-008 withdrawal condition): board 21 contents are cited as evidence by no review, coverage
+    matrix or README.'
+- id: SIC-V3-C15
+  text: 'Shell proof: light and dark full-canvas pixel samples (247,248,250)/(15,17,21) and the six-link switcher
+    with the correct current item hold on every new or re-rendered board, recorded in capture.log.'
+- id: SIC-V3-C16
+  text: 'Supersession (PRC-022): the board 1/6 notes name the PRIOR 33% cell and the Abstained card as illustrative
+    and superseded; the board 16 note names the placeholder phase ages and the ''Slow cycle MODEL'' label as superseded
+    by boards 28/34.'
+- id: SIC-V3-C17
+  text: 'PRIOR home (Reviewer A A08): exactly one labeled FIXTURE state card shows a KM PRIOR cell in the producer
+    field shape (source PRIOR, cell_verdict, epoch in the drawer), with the fixture label printed on the face, outside
+    any live sector card; the capability_boards C19 row cites it; never in a live card.'
 preserved_strengths:
-- Cycles boards 01-05 drawn end to end, far ahead of production's empty loading shell.
-- Even neutral borders everywhere; the colored edge accents production still carries are gone; focus outlines complete.
-- Bottoming Watch rows read as one plain sentence each (09, 10).
-- 'Honest degradation design: state cards 06/07/11 and edge cases 08 say what still works and how each state is
-  announced.'
-- ZH red-up / green-down applied to direction deltas only; stance and status ink do not flip.
-- Rotation map and accessible list share one selection; dot positions match list values (14).
-- List-first mobile with half/full sheets, focus return and the docked landscape scrub readout (05).
-- Board 00 defines dark and light as two separate art directions over one component vocabulary.
-- Specimen boards 23-31 are built by checked-in builders (brief_repair/build_brief.py, cycles_repair/build_cycles.py)
-  from the producer's own dataset, so every drawn number is traceable to engine output and fixtures are labelled.
-- 'Phase age as a lower bound, rhythm as descriptive (''Not a model'', Overdue), PARITY_FAILS and unavailable hazard
-  cells drawn as gaps, Neutral-inclusive track-record denominator, inert sizing and the lead-lag STOP stated on
-  the face (Reviewer A: PRC-002/003/006/007/009).'
-- 'One normative chrome (templates/_site_nav.html.j2) captured on 23-31; drawn Paper headers declared non-normative
-  (Reviewer B: VTC-002 route accepted).'
+- One shared shell (si_shell.py/css) gives every specimen the production page head, a six-link switcher with the
+  correct current item, and true full-canvas light/dark, proven by pixel samples on every board. (Reviewer B)
+- 'Cycles card faces are now plain: doctrine stance chip, v2 phase, measured-lower-bound phase age, MODEL badge
+  at 11px, gap cells never zero, all identifiers behind closed ''How this was measured'' drawers. (Reviewer B)'
+- Brief lanes are titled by doctrine stance with stance ink only, and direction ink follows the locale; the bottoming
+  strip carries a Watch chip. (Reviewer B)
+- The incompatible_generation fixture is labeled, chips are muted and carry a dated qualifier; stale is never presented
+  as live. (Reviewer B)
+- ZH parity is now drawn on desktop and mobile for both surfaces (boards 32-36), with producer enums glossed. (Reviewer
+  B)
+- The scoped supersession plus the capability_boards index resolves the round-2 normative contradiction without
+  orphaning any instrument capability (Reviewer A)
+- Provenance drawers move every field path, code and verdict string off the face while keeping them falsifiable
+  (Reviewer A)
+- proj is moved to the drawer and the face timing binds the versioned descriptive rhythm.window, removing the two-window
+  disagreement (Reviewer A)
+- 'Board 27 coverage matrix is honest: 14 drawn, 2 declared GAP cells never claimed as covered (Reviewer A)'
+- Hazard numbers equal the producer, unavailable cells are gaps never zero, and phase age stays a lower bound (Reviewer
+  A)
+- stance_act carries a truthful source note admitting that no production Act string exists (Reviewer A)
+conditions_round2_ab1e71ac:
+  note: Round-2 authority conditions (REVISE at ab1e71ac). Their status at 5432d5a0 is the per-finding round-3 disposition
+    in reviews/<role>.yml first_pass.round2_dispositions; every surviving item is carried into SIC-V3-C01..C17 above.
+  conditions:
+  - id: SIC-V2-C01
+    text: 'VTC-013: the Cycles card face draws only the six doctrine stances via a documented resolved_stance→stance
+      mapping (cycles_ia.md + copy deck); engine strings HOLD/HIGH-RISK BOUNCE/SELL appear only in the provenance
+      drawer; no red instruction ink (Reviewer B cond 1).'
+  - id: SIC-V2-C02
+    text: 'VTC-014/VTC-006: specimens link the shell stylesheet (templates/_sector_central_paper.css.j2 rendered,
+      or an equivalent normative sheet) so .si-page-title/.si-workflow render styled; each theme paints the full
+      canvas, proven by pixel samples in dark and light on desktop and mobile, recorded in the capture log (Reviewer
+      B cond 2).'
+  - id: SIC-V2-C03
+    text: 'VTC-015: the workflow switcher lists all six workflows with the correct aria-current per board — Cycles
+      current on Cycles boards (Reviewer B cond 3).'
+  - id: SIC-V2-C04
+    text: 'VTC-016/PRC-024/PRC-031: identifiers, hashes, repo paths and the Built meta table move to a provenance
+      drawer; the face carries plain EN/ZH labels; ZH boards contain no stray English, including the nav search
+      placeholder (Reviewer B cond 4; Reviewer A cond 3, cond 6 second clause).'
+  - id: SIC-V2-C05
+    text: 'VTC-017/PRC-029/PRC-030/PRC-022: boards_manifest.yml carries a supersession or correction note on every
+      R3 board a specimen board replaces (01-08 families, 12/13/22 Brief, 16 ages) naming the replacing board; board
+      01''s capabilities_covered is reconciled; for each C01-C28 the manifest names exactly one normative board,
+      or one composite corrected Cycles board (chart + corrected states) is drawn (Reviewer B cond 5; Reviewer A
+      cond 1, 2).'
+  - id: SIC-V2-C06
+    text: 'VTC-018: the board-31 fixture banner fits its container; chips are muted or reconciled under the incompatible_generation
+      fixture (Reviewer B cond 6).'
+  - id: SIC-V2-C07
+    text: 'VTC-019/PRC-025: the legacy number is stripped from ''The read'' so one card shows one position and one
+      phase, and the boards_manifest states_shown claim matches what is drawn (Reviewer B cond 7; Reviewer A cond
+      4).'
+  - id: SIC-V2-C08
+    text: 'VTC-008/VTC-001: boards 12/13/22 are marked superseded and removed from board 27 DRAWN evidence; boards
+      20/21 are refreshed or visibly marked stale (Reviewer B cond 8).'
+  - id: SIC-V2-C09
+    text: 'VTC-002/VTC-005: the mobile chrome capture shows the canonical mobile header (wordmark, menu entry, settings)
+      from templates/_site_nav.html.j2 (Reviewer B cond 9).'
+  - id: SIC-V2-C10
+    text: 'VTC-009: .spc-model-prior-badge font size >= 11px in components.css, matching COMPONENTS.md (Reviewer
+      B cond 10).'
+  - id: SIC-V2-C11
+    text: 'PRC-032: proj is labelled as production''s projection, distinct from the descriptive rhythm window, or
+      dropped (Reviewer A cond 5).'
+  - id: SIC-V2-C12
+    text: 'PRC-027/VTC-003: Brief ZH desktop (both themes), Cycles ZH desktop and a light ZH Cycles board are rendered
+      from the same specimens and added to boards_manifest + board 27, or each remaining gap carries a recorded
+      evidence cell (Reviewer A cond 6).'
+  - id: SIC-V2-C13
+    text: 'PRC-026/PRC-028/PRC-018: the stance_act deck/dataset contract is documented or the key exists in copy_deck.json;
+      Bottoming Watch per-row gate chips are drawn or explicitly declared out of scope (Reviewer A cond 7).'
+  - id: SIC-V2-C14
+    text: 'VTC-020: minor polish — ''1 days'' plural, typed em dashes in lane subtitles, unlabeled row glyphs, orphan
+      half-width coverage card, lane grid alignment (Reviewer B cond 11).'
+  - id: SIC-V2-C15
+    text: Re-freeze at the wave-2 commit under a new frozen_sha; Reviewer A and Reviewer B re-run (round 3) with
+      first-pass rationale quarantine; no approval.yml before both second-pass verdicts are PASS or PASS_WITH_CONDITIONS.
+  - id: SIC-V2-C16
+    text: 'Deferrals stay declared, never silently dropped: PRC-010..016 (Time Machine, Narratives, desk watches,
+      Moving/Money, Confluence, Reco tags/conviction) and VTC-010 (per-card language switch on Paper boards 01/02)
+      remain PAPER_CAPACITY_LIMITED in boards_manifest/proposal coverage_matrix with the P14-P18 rendered-proof
+      cell each must show; Paper writes stay frozen at the file-size limit.'
 conditions_round1_508539c0:
   note: Round-1 authority conditions (REVISE at 508539c0). Their status at ab1e71ac is the per-finding round-2 disposition
     in reviews/<role>.yml first_pass.round1_dispositions (cured / partially_cured / not_cured / withdrawn); none

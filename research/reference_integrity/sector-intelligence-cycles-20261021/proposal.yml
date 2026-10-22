@@ -6,6 +6,8 @@
 # Re-frozen 2026-10-21 at 508539c0 (board 22 / node 6W1R-0 added by seat export); the earlier freeze 76d0fb0e held boards 0-21 only.
 # Re-frozen 2026-10-22 at ab1e71ac (repair wave 1, boards 23-31) and again at 5432d5a0 (repair wave 2: boards 32-37, shared shell,
 # one stance vocabulary, provenance drawers, scoped supersession + capability_boards index; round 3 dual review).
+# Round 3 at 5432d5a0: BLOCK/BLOCK (Reviewer B VTC-021..027, Reviewer A PRC-033/034/035) → verdict REVISE round 3 with
+# SIC-V3-C01..C17 and the stance adjudication SIC-ADJ-01 (revision_mandate_round3); repair wave 3 → re-freeze → round 4.
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
@@ -1678,3 +1680,147 @@ revision_mandate_round2:
   condition: SIC-V2-C16
   disposition: deferred_declared
   cure: not a wave-2 cure — Time Machine, Narratives, desk watches, Moving/Money, Confluence, Reco tags, per-card language switch and the rules-only boards stay PAPER_CAPACITY_LIMITED with their P14-P18 rendered-proof cells.
+revision_mandate_round3:
+- id: VTC-021
+  severity: blocker
+  condition: SIC-V3-C03
+  disposition: cure_in_repair_commit
+  cure: 'Boards 28/34/36 draw the legacy read beside the phase_v2 chip. Wave-3 cure: the face names one phase only
+    (the phase_v2 chip); legacy read/read_zh is drawer-only; a family-match test (cited file:line) decides, not
+    clocks.agree; XLC and XLF show the ''Clocks disagree'' state naming both clocks. Reconciled with PRC-025 as
+    SIC-V3-C03.'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-022
+  severity: blocker
+  condition: SIC-V3-C04
+  disposition: cure_in_repair_commit
+  cure: 'Boards 23/37 draw legacy fold labels (.brf-lane-qual) as qualifiers under the doctrine titles and the hero
+    draws the production regime read as a chip. Wave-3 cure: no .brf-lane-qual on any Brief cell; lane subtitles
+    are non-imperative membership criteria; the hero shows regime state plus dataset participation facts; the production
+    regime read sits only as a labeled ''Production regime read'' body-ink line inside the closed hero drawer (SIC-V3-C04,
+    SIC-V3-C05).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-023
+  severity: blocker
+  condition: SIC-V3-C01
+  disposition: cure_in_repair_commit
+  cure: 'Upheld; the authority''s proposed ''Engine stance'' face line is withdrawn. The critic accepts: None renders
+    a muted ''Stance unavailable'' with no chip, and the map with per-row rationale goes into cycles_ia.md and COMPONENTS.md;
+    the doctrine chip only on the face; engine word plus tone as the first line of the provenance drawer.'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-024
+  severity: major
+  condition: SIC-V3-C06
+  disposition: cure_in_repair_commit
+  cure: 'ZH faces carry Latin-script words. Wave-3 cure: no Latin-script words on ZH faces outside drawers and nav
+    except tickers, SPY, MODEL/PRIOR badges and numerals; as-of, page and source labels from bilingual deck pairs;
+    ZH sector names in the read and identity lines; lead-lag and rank-IC labels bilingual; checked by a text grep
+    of the rendered ZH documents. Reconciled with PRC-031 as SIC-V3-C06.'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-025
+  severity: minor
+  condition: SIC-V3-C10
+  disposition: cure_in_repair_commit
+  cure: 'Mechanical: cycles_repair/README.md Boards table equals boards_manifest.yml png_px for every Cycles board,
+    and capture.log carries a data-w/data-ovf probe line for every mobile cell (SIC-V3-C10, SIC-V3-C11).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-026
+  severity: major
+  condition: SIC-V3-C08
+  disposition: cure_in_repair_commit
+  cure: 'The Cycles hero repeats the title and describes an undrawn chart; the context card is empty; the grader
+    eyebrow promises a rate. Wave-3 cure: hero copy claims only what the board draws; context card filled (as-of,
+    generation state, hazard epoch) or removed; grader eyebrow promises no rate; a composite desk may use a production
+    chart capture only when labeled as production with its render source and as-of, and the 2026-10-19 vs 2026-10-20
+    as-of difference is stated on the board face (SIC-V3-C08, SIC-V3-C09).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-027
+  severity: minor
+  condition: SIC-V3-C10
+  disposition: cure_in_repair_commit
+  cure: 'At 390px Brief lane rows wrap metric labels. Wave-3 cure: two-line lane cards (identity, then one horizontal
+    metric row); the overflow probe records data-w="390" data-ovf="" for 25/26/37 and the new ZH-light mobile cell
+    (SIC-V3-C10).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-008
+  severity: withdrawn
+  condition: SIC-V3-C14
+  disposition: withdrawn_by_critic
+  cure: 'Withdrawn by the critic after rationale: boards 20/21 are reviewer indexes scoped as superseded in boards_manifest.yml
+    rows 20/21, and Paper is write-frozen. The withdrawal holds only while no review, coverage matrix or README
+    cites board 21 contents as evidence (SIC-V3-C14).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-017
+  severity: major
+  condition: SIC-V3-C08
+  disposition: cure_in_repair_commit
+  cure: Stays partially_cured at 5432d5a0; cured when the labeled composite desk under VTC-026 exists and the 28/34
+    hero copy no longer promises an undrawn chart (SIC-V3-C08, SIC-V3-C09).
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-019
+  severity: minor
+  condition: SIC-V3-C03
+  disposition: cure_in_repair_commit
+  cure: Stays partially_cured; cured by the VTC-021 cure — no legacy numeral or legacy phase word on any face (SIC-V3-C03).
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: VTC-020
+  severity: minor
+  condition: SIC-V3-C04
+  disposition: cure_in_repair_commit
+  cure: Stays partially_cured; cured when the duplicated qualifiers leave with VTC-022 and the coverage card carries
+    a true title that does not say 'unavailable' while printing counts (SIC-V3-C04, SIC-V3-C12). The producer em
+    dashes remain a declared producer finding and do not block.
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-033
+  severity: blocker
+  condition: SIC-V3-C01
+  disposition: cure_in_repair_commit
+  cure: 'Upheld as a blocker: at 5432d5a0 the doctrine chip is a frontend map (STANCE_MAP in cycles_repair/build_cycles.py:55-58)
+    whose warn ink beside a bullish engine HOLD is a competing stance under baseline C15 (baseline.yml:275) and
+    C17.'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-034
+  severity: minor
+  condition: SIC-V3-C07
+  disposition: cure_in_repair_commit
+  cure: 'Minor, still present: enum_zh.json values lack a real origin. Cure: every value names an existing production
+    file:line containing the exact string, or deck copy, verified by grep (SIC-V3-C07).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-035
+  severity: minor
+  condition: SIC-V3-C08
+  disposition: cure_in_repair_commit
+  cure: 'Minor, still present: the grader eyebrow. Cure: no grader label on boards 28-36 implies a measured value
+    where no number is drawn; the Neutral-included caption is labeled as a definition (SIC-V3-C08).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-025
+  severity: major
+  condition: SIC-V3-C03
+  disposition: cure_in_repair_commit
+  cure: 'Still partially cured (XLC Bottoming vs Rolling over on 28/34). Cure: the face read appears only when its
+    phase word belongs to the phase_v2 family of the card''s chip (test cited file:line); otherwise drawer-only
+    with a labeled state naming both values; XLC demonstrated on a captured board (SIC-V3-C03).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-027
+  severity: major
+  condition: SIC-V3-C13
+  disposition: cure_in_repair_commit
+  cure: 'Still partially cured (14/16, gaps declared). Cure: the two gap cells (Brief mobile/light/ZH, Cycles mobile/dark/EN)
+    frozen as boards with manifest rows and png_px; board 27 cites 16/16 (SIC-V3-C13).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-031
+  severity: minor
+  condition: SIC-V3-C06
+  disposition: cure_in_repair_commit
+  cure: 'Still partially cured. Cure: no English sector names or page/source labels on the ZH face outside code/drawer
+    elements on boards 30, 34, 35, 36 and the new ZH boards; every ZH string tagged with a production file:line
+    or deck copy (SIC-V3-C06).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
+- id: PRC-022
+  severity: major
+  condition: SIC-V3-C16
+  disposition: cure_in_repair_commit
+  cure: 'Still partially cured. Cure: scoped boards_manifest notes on boards 1/6 naming the up/3m PRIOR 33% cell
+    and the 38%-of-41 Abstained card as illustrative and superseded by the R4 hazard cells; the board 16 note extended
+    to name the placeholder phase ages and the ''Slow cycle MODEL'' label as superseded by boards 28/34 (SIC-V3-C16).'
+  proof: pending — repair wave 3 (seat-direct), re-freeze r4, round-4 dual review
