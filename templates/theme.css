@@ -188,6 +188,21 @@
   --mc-stance-bad: transparent;
   --mc-stance-neutral: transparent;
   --mc-stance-fill: var(--mc-stance-neutral);
+  /* Expectation Surface page tokens (templates/expectation_surface.html.j2 aliases them under body.page-es) */
+  --esurf-hair: color-mix(in srgb, var(--line) 78%, transparent);
+  --esurf-hair-soft: color-mix(in srgb, var(--line) 44%, transparent);
+  --esurf-ser1: var(--info);
+  --esurf-ser2: #d4a017;
+  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 15%, transparent);
+  --esurf-flat: #5f6879;
+  --esurf-skel: #22262f;
+  --esurf-neutral-soft: color-mix(in srgb, var(--muted) 14%, transparent);
+  --esurf-warn-soft: color-mix(in srgb, var(--warn) 13%, transparent);
+  --esurf-warn-line: color-mix(in srgb, var(--warn) 40%, transparent);
+  --esurf-ok-soft: color-mix(in srgb, var(--ok) 13%, transparent);
+  --esurf-btn-hover: color-mix(in srgb, var(--panel2) 72%, var(--line));
+  --esurf-chip-warn-hover: color-mix(in srgb, var(--warn) 18%, transparent);
+  --esurf-mv-hover: color-mix(in srgb, var(--panel2) 60%, transparent);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -207,6 +222,15 @@ html[data-theme="light"] {
   --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
   --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
   --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
+  --esurf-ser1: #2f63c4;
+  --esurf-ser2: #8f6a04;
+  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 11%, transparent);
+  --esurf-flat: #8a93a1;
+  --esurf-skel: #e9ecf1;
+  --esurf-neutral-soft: var(--panel2);
+  --esurf-warn-soft: color-mix(in srgb, var(--warn) 12%, var(--panel));
+  --esurf-warn-line: color-mix(in srgb, var(--warn) 45%, transparent);
+  --esurf-ok-soft: color-mix(in srgb, var(--ok) 10%, var(--panel));
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA

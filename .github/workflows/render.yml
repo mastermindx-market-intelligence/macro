@@ -138,6 +138,7 @@ on:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_demand.py"
       - "scripts/build_discovery.py"
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_flow_desk.py"
       - "scripts/build_flow_leaders.py"
       - "scripts/build_foresight.py"

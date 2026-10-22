@@ -411,7 +411,7 @@ _UI_TOKENS = [
 ]
 _COLOR_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b|rgb\(|hsl\(")
 _CUSTOM_PROPS_RE = re.compile(
-    r'^--[a-z0-9\-]+:[^;"]+(?:;\s*--[a-z0-9\-]+:[^;"]+)*$', re.I)
+    r'^--[a-z0-9\-]+:[^;"]+(?:;\s*--[a-z0-9\-]+:[^;"]+)*;?$', re.I)
 
 
 def _style_split(src: str) -> tuple[str, str]:
