@@ -966,5 +966,161 @@
     "commit_intent_and_result_absent": true,
     "source_unchanged": true,
     "recovery": "check only the new documentation delta against qualified source tree; preserve inherited main and all qualified source bytes"
+  },
+  "current_main_composition": {
+    "recorded_at_utc": "2026-10-22T12:37:25.792477+00:00",
+    "parents": [
+      "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+      "ce93903889ea50056e9f4890422dad044c31c65a"
+    ],
+    "qualified_source_tree": "9f4cc4f9faa83bb35ee9ba453a2a121578115d91",
+    "retained_prior_artifact_sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626",
+    "new_native_build_claimed": false,
+    "initial_guard_result": {
+      "passed": 4,
+      "failed": 1,
+      "failure": "plan_book packing5602>5600"
+    },
+    "affected_guard_result": {
+      "passed": 4,
+      "pytest_seconds": 180.61
+    },
+    "records": {
+      "current-main-merge-intent.json": {
+        "schema": "bonds.r11.current_main_composition.v1",
+        "at": "2026-10-22T12:19:45.770071+00:00",
+        "head": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+        "incoming": "ce93903889ea50056e9f4890422dad044c31c65a",
+        "source_equivalent_to_main": "8c23f6b26a36ce20f5842590e41bb9d78bff1bac",
+        "ce939_increment": "data subtree only; no extra source/site/CI delta",
+        "preview_conflicts": [
+          "CONFLICT (content): Merge conflict in site/bonds.html"
+        ],
+        "generated_conflict_resolution": "retain prior qualified R11 native HTML bytes; prior main artifact remains in parent history",
+        "runtime_sha256": {
+          "scripts/build_bonds.py": "8670ba795e4e0338a364a9d6d816721fbba258824c4a503d05a6b0ff791bcd10",
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "engine/credit_cycle.py": "a8bfd156c1df92916c3bfb3f86275485a0f177dc70661952ca46d900792771e3",
+          "engine/output_health.py": "f89acffc543de39093d1d2a1dc79cbf9e4b7be8118d249e66387c55413b33323",
+          "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+          "templates/_bonds_duration.html.j2": "dba8f0ff6d972db808cecccbd72ae35c1c68484880809a05ce0db6a7ea909a96",
+          "templates/_bonds_duration.mjs.j2": "3d44053d71710a53d3af00cc89f69084286a3b21098eaf1e4e20c9adff7433ec"
+        },
+        "effect_state": "NOT_YET_ATTEMPTED"
+      },
+      "current-main-merge-result.json": {
+        "schema": "bonds.r11.current_main_composition.v1",
+        "at": "2026-10-22T12:19:45.770071+00:00",
+        "head": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+        "incoming": "ce93903889ea50056e9f4890422dad044c31c65a",
+        "source_equivalent_to_main": "8c23f6b26a36ce20f5842590e41bb9d78bff1bac",
+        "ce939_increment": "data subtree only; no extra source/site/CI delta",
+        "preview_conflicts": [
+          "CONFLICT (content): Merge conflict in site/bonds.html"
+        ],
+        "generated_conflict_resolution": "retain prior qualified R11 native HTML bytes; prior main artifact remains in parent history",
+        "runtime_sha256": {
+          "scripts/build_bonds.py": "8670ba795e4e0338a364a9d6d816721fbba258824c4a503d05a6b0ff791bcd10",
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "engine/credit_cycle.py": "a8bfd156c1df92916c3bfb3f86275485a0f177dc70661952ca46d900792771e3",
+          "engine/output_health.py": "f89acffc543de39093d1d2a1dc79cbf9e4b7be8118d249e66387c55413b33323",
+          "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+          "templates/_bonds_duration.html.j2": "dba8f0ff6d972db808cecccbd72ae35c1c68484880809a05ce0db6a7ea909a96",
+          "templates/_bonds_duration.mjs.j2": "3d44053d71710a53d3af00cc89f69084286a3b21098eaf1e4e20c9adff7433ec"
+        },
+        "effect_state": "APPLIED_PENDING_QUALIFICATION",
+        "head_after": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+        "merge_head": "ce93903889ea50056e9f4890422dad044c31c65a",
+        "tree": "3a9658eb7e57af6ab41dd78fdfb518762179a579",
+        "runtime_unchanged": true,
+        "unmerged_after": [],
+        "prior_pid73179": "merge applied; sparse generated directory absent during resolution; no merge replay",
+        "resumed_at_utc": "2026-10-22T12:21:37.725450+00:00",
+        "artifact_resolution_sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626"
+      },
+      "current-main-curation-guards.json": {
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+          "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "tests/test_bonds_duration_workflow.py::test_explanation_view_is_one_object_for_page_and_machine_snapshot",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "seconds": 204.406,
+        "completed_at_utc": "2026-10-22T12:25:02.131237+00:00",
+        "source_tree": "3a9658eb7e57af6ab41dd78fdfb518762179a579",
+        "source_unchanged": true,
+        "log_sha256": "990e5c24b403789dc99cd32cd0567b0fc3d895fec874cd4a896045ab8f9355f7"
+      },
+      "current-main-credit-cycle-placement-intent.json": {
+        "schema": "bonds.r11.current_main_credit_cycle_placement.v1",
+        "at": "2026-10-22T12:32:38.943678+00:00",
+        "head": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+        "incoming": "ce93903889ea50056e9f4890422dad044c31c65a",
+        "tree_before": "3a9658eb7e57af6ab41dd78fdfb518762179a579",
+        "failed_guard": "plan_book weight5602>5600; four other guards passed",
+        "failure_log_sha256": "990e5c24b403789dc99cd32cd0567b0fc3d895fec874cd4a896045ab8f9355f7",
+        "moved_whole_suite": "tests/test_credit_cycle.py",
+        "from": "ccw-w3-credit-momentum",
+        "to": "dashboard-render-contract",
+        "same_suite_multiset": true,
+        "ceilings_selectors_timeouts_scope_modes_dependencies_unchanged": true,
+        "manifest_before_sha256": "bae5c7b52a5558a177ef9eac182cc9bde30386a5a11e1e8a0cfd5244c5fadbbb",
+        "manifest_after_sha256": "0cd689f8024bd2b7727b22ce21aed3ff54c39e76469b937a38b719089d420917"
+      },
+      "current-main-placement-guards.json": {
+        "schema": "bonds.r11.current_main_credit_cycle_placement.v1",
+        "at": "2026-10-22T12:32:38.943678+00:00",
+        "head": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+        "incoming": "ce93903889ea50056e9f4890422dad044c31c65a",
+        "tree_before": "3a9658eb7e57af6ab41dd78fdfb518762179a579",
+        "failed_guard": "plan_book weight5602>5600; four other guards passed",
+        "failure_log_sha256": "990e5c24b403789dc99cd32cd0567b0fc3d895fec874cd4a896045ab8f9355f7",
+        "moved_whole_suite": "tests/test_credit_cycle.py",
+        "from": "ccw-w3-credit-momentum",
+        "to": "dashboard-render-contract",
+        "same_suite_multiset": true,
+        "ceilings_selectors_timeouts_scope_modes_dependencies_unchanged": true,
+        "manifest_before_sha256": "bae5c7b52a5558a177ef9eac182cc9bde30386a5a11e1e8a0cfd5244c5fadbbb",
+        "manifest_after_sha256": "0cd689f8024bd2b7727b22ce21aed3ff54c39e76469b937a38b719089d420917",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+          "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 0,
+        "seconds": 181.537,
+        "completed_at_utc": "2026-10-22T12:35:44.083815+00:00",
+        "source_tree": "9f4cc4f9faa83bb35ee9ba453a2a121578115d91",
+        "source_unchanged": true,
+        "log_sha256": "4a6c095afb6965a6ba2f67595eb619f5a5cf72d2cce5e984f566f8795317bcd5"
+      }
+    },
+    "receipt_sha256": {
+      "current-main-merge-intent.json": "ef7fe604b8cbafe85b77885f6b2fdde773091f5c03f6b1a89df2414387182606",
+      "current-main-merge-result.json": "0151ddbb4f364ae943446b12c0b19ce65f7182f296cacb30774c1f48e06f10e0",
+      "current-main-curation-guards.json": "a3a6351cd22476252b4fa538b7db80339bfa13a8a7d17b24ee9389f45767966c",
+      "current-main-credit-cycle-placement-intent.json": "4909288c61479714d9e50d13424b0a209c8b7e885e3f792e62963de080b5fb56",
+      "current-main-placement-guards.json": "62f406056c8cadbcd79f5ead40b5d5c445bcafe722e06cf41ae9a315ad7cb9bd"
+    },
+    "next": "samePRpush; exactCI; merge intoCDIc1b, twoTreasurypaths, actualcombinednative",
+    "draft_hold": true,
+    "browser_and_production_accepted": false
   }
 }

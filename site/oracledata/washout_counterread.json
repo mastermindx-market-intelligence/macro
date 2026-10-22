@@ -1,9 +1,9 @@
 {
  "schema": "washout_counterread.v1",
- "as_of": "2026-10-20",
+ "as_of": "2026-10-21",
  "show": false,
- "growth_score": 79.8,
- "growth_band": "elevated",
+ "growth_score": 76.4,
+ "growth_band": "caution",
  "growth_extreme": false,
  "price_depths": [
   {

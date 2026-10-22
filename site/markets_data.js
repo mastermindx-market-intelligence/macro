@@ -6,7 +6,7 @@
 (function(){
   "use strict";
   window.MARKET_META = {
-  "asOf": "2026-10-21",
+  "asOf": "2026-10-22",
   "today": 2026.48,
   "xDomain": [
     2000,
