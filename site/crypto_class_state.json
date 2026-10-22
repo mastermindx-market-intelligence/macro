@@ -41,14 +41,6 @@
         "reason": "OLDER_SNAPSHOT"
       },
       {
-        "file": "market_m.parquet",
-        "symbol": "M",
-        "id": "memecore",
-        "source": "CoinGecko",
-        "as_of": "2026-10-09",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
         "file": "market_mnt.parquet",
         "symbol": "MNT",
         "id": "mantle",
@@ -468,14 +460,14 @@
     ]
   },
   "flows": {
-    "etf": "Unavailable",
+    "etf": "Rising",
     "stablecoins": "Steady",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "stale",
+      "observation": "zero",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
@@ -492,7 +484,7 @@
   "heat": {
     "funding": "Unavailable",
     "open_interest": "Leverage light",
-    "volatility": "Volatility compressed",
+    "volatility": "Volatility normal",
     "altseason": "Mixed relative trend"
   },
   "assets": {

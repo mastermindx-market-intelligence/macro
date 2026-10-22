@@ -17,20 +17,20 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.004,
+    "dist_to_stop_r": -0.133,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 168.9,
-    "p1": -0.6691,
-    "p2": -0.3345,
+    "p1": -0.7551,
+    "p2": -0.3775,
     "p3": null,
-    "move_r": -1.004,
+    "move_r": -1.133,
     "mfe_r": 0.393,
-    "mae_r": -1.004
+    "mae_r": -1.133
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 25.279995727539074,
-  "_mae": -64.53000183105468,
+  "_mae": -72.82499999999999,
   "_max_p1": 0.26210467317303343,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
