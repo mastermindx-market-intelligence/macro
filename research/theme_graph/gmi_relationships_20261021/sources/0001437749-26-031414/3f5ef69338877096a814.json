@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-09-29T01:39:19Z",
+ "accession": "0001437749-26-031414",
+ "cik": "0001334933",
+ "doc_byte_length": 5612639,
+ "doc_sha256": "ee6141c9e996561acc71f6e400ab462b98008008a489c0903bdd8d5f4ff28bed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "uec20260731_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4921649,
+  "byte_start": 4920789,
+  "normalized": "Customer D​​0",
+  "normalized_sha256": "887f91232c8edffdcc3c3a83dabe584169a2d536a712e1630267dd23e05e2846",
+  "raw": "Customer D</p></td><td style=\"font-family:Times New Roman;font-size:10pt;padding:0;width:1%;\"><p style=\"font-family:Times New Roman;font-size:10pt;margin:0pt;\">&#8203;</p></td><td style=\"font-family:Times New Roman;font-size:10pt;padding:0;width:1%;\"><p style=\"font-family:Times New Roman;font-size:10pt;margin:0pt;\">&#8203;</p></td><td style=\"font-family:Times New Roman;font-size:10pt;padding:0;width:12%;\"><p style=\"font-family:Times New Roman;font-size:10pt;margin-left:0pt;margin:0pt;text-align:right;\"><b><ix:nonFraction id=\"c151402968\" contextRef=\"d_2025-08-01_2026-07-31_ConcentrationRiskByBenchmarkAxis-RevenueFromContractWithCustomerMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-CustomerDMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"-3\">0",
+  "raw_sha256": "3f5ef69338877096a814aed87f0064ee729f516648709477a51b4915d3a25eb5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1334933/000143774926031414/uec20260731_10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 151184,
+   "byte_start": 150324,
+   "context_ref": "d_2025-08-01_2026-07-31_ConcentrationRiskByBenchmarkAxis-RevenueFromContractWithCustomerMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-CustomerDMember",
+   "raw": "<xbrli:context id=\"d_2025-08-01_2026-07-31_ConcentrationRiskByBenchmarkAxis-RevenueFromContractWithCustomerMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-CustomerDMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001334933</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">uec:CustomerDMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-08-01</xbrli:startDate><xbrli:endDate>2026-07-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "207e0b79293376fbfb478ceffc325d078e09185131fda2f694ca3686d088dc67"
+  }
+ ]
+}

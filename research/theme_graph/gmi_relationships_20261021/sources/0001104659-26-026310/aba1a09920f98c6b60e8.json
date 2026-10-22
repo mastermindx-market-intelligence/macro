@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-11T18:00:34Z",
+ "accession": "0001104659-26-026310",
+ "cik": "0001429937",
+ "doc_byte_length": 984323,
+ "doc_sha256": "dfad52933fd26a75ec223721a9f9f32c901ccfda2249b2cdc323e001a18b0de9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-11",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tm266740d1_ex99-3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 280323,
+  "byte_start": 280170,
+  "normalized": "The Company has a gold stream arrangement with Wheaton Precious Metals Corp. with a deposit amount of $84 million. The delivery obligation is as follows:",
+  "normalized_sha256": "b35b566fbfc1c10bf1450f507d528a79fd5f594a1d6ca4817b59645eefdf336f",
+  "raw": "The Company has a gold stream arrangement with\nWheaton Precious Metals Corp. with a deposit amount of $84 million. The delivery obligation is as follows:",
+  "raw_sha256": "aba1a09920f98c6b60e82d94dd35455142c15a03dfa0bd5a4f9b3f7c2e0041d8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1429937/000110465926026310/tm266740d1_ex99-3.htm",
+ "xbrl_contexts": []
+}
