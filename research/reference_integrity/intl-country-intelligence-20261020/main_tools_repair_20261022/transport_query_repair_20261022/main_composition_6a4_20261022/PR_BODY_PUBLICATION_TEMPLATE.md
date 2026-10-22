@@ -38,7 +38,7 @@ Composed template/site theme SHA256: `d7be48a71598c3c806deb271f346c996dc5136e103
 | Canonical P0B tests |136 passed in 101.94s; no warnings |
 | Screener regression suite |51 passed in12.38s; exact command and receipt retained |
 | Access-boundary suite |31 passed in125.41s on48b5c33; all access source/assertion bindings unchanged through the new composition |
-| Repository gates |All seven pass on `__GUARD_HEAD__`; subsequent publication delta contains verification records only |
+| Repository gates |All seven pass on `de5e3125484ea20f715e242d73fd53a1164c8860`; subsequent publication delta contains verification records only |
 | Owner image inspection |Two new desktop/narrow country captures inspected; no full visual-matrix or production claim |
 
 Ordinary build HTML SHA256: `bf8066967a885bd226ccc1abe622e626349e431d11c38cda6e19331751d9edae`.

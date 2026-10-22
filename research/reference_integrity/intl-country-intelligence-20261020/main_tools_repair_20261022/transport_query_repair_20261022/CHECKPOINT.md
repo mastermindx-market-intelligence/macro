@@ -67,3 +67,7 @@ After current-head CI, recover the held query operation through its existing own
 RELEASE-INTL-FX-CUSTODY requires actual protected-main adoption, full-history acquisition into the seven canonical stores, real endpoint receipts/run/source custody and renderer consumption. RELEASE-INTL-SERVED requires normal acceptance, covering render, updater adoption and actual served journeys. Existing staged FX preparation is complete. India/Taiwan observed-GDP follow-up is a separate extension, not a missing current-release gate.
 
 No Ready transition, protected-main merge, deployment, production acquisition or complete-build claim. No Slack/email/checkpoint comment was sent.
+
+## Final gate receipt
+
+All seven required repository gates passed on evidence head de5e3125484ea20f715e242d73fd53a1164c8860, completed 2026-10-22 09:15:35 UTC. The exact receipt is `main_composition_6a4_20261022/guards_evidence/receipt.json`; it compares against incorporated main6a4. Remaining local changes are verification records only. Current publisher status and PR metadata govern the final receipt commit, push and subsequent exact-head CI; reconcile those instead of rerunning completed guards or replaying a publication action.
