@@ -1648,6 +1648,64 @@
     return urlPath(location.pathname) + '?' + query + anchorHash(location, controller.config.anchor_ids);
   }
 
+  /* ---- external query ownership ----
+   * Inside a shared-shell frame the child URL carries two transport pairs the page's
+   * own strict query vocabulary does not contain. Handing location.search straight to
+   * the parser therefore refuses a perfectly good transport-only URL as an invalid
+   * business query: it reports "Invalid URL state restored" and silently discards the
+   * requested nondefault state. The shell bridge already owns the byte-preserving
+   * removal of exactly those two pairs, so the page asks it for a projection of its
+   * own current query rather than reproducing - or loosening - that filter here.
+   *
+   * The provider is BOUND once, at mount, and is never re-acquired. A later
+   * replacement, a swapped API object or a cleanup is the loss of a capability, not
+   * an invitation to fall back to raw standalone parsing, which would silently accept
+   * a query this frame is no longer entitled to project. Identity is re-checked on
+   * every read, so a cached method whose instance was retired refuses.
+   *
+   * "Unavailable" is never an empty query. An empty query is a genuine answer and is
+   * returned as "". A bridge that is installed but older, refusing, throwing or
+   * returning a non-string is unavailable, not empty; only a page with no bridge at
+   * all keeps the ordinary standalone raw validation.
+   */
+  function bindQuerySource(win) {
+    try {
+      // Only a genuinely absent namespace without an installation marker is
+      // standalone. Cleanup retains the marker; an occupied unusable namespace
+      // must not silently grant the page ownership of the shell's raw query.
+      if (!('MMXSharedShell' in win) && !win.__MMX_SHARED_BRIDGE_INSTALLED__) {
+        return { standalone: true, shell: null, reader: null };
+      }
+      var shell = win.MMXSharedShell;
+      if (!shell || shell.__mmxBridge !== 'mmx.shared-shell.v1') return null;
+      var reader = shell.readPageSearch;
+      return { standalone: false, shell: shell, reader: typeof reader === 'function' ? reader : null };
+    } catch (_) { return null; }
+  }
+
+  function externalQuery(controller) {
+    try {
+      var source = controller.querySource;
+      if (!source) return { available: false, query: null };
+      var win = controller.environment.window;
+      var value;
+      if (source.standalone) {
+        value = win.location.search;
+      } else {
+        if (!source.reader || win.MMXSharedShell !== source.shell ||
+            source.shell.readPageSearch !== source.reader) {
+          return { available: false, query: null };
+        }
+        value = source.reader.call(source.shell);
+      }
+      return typeof value === 'string' ? { available: true, query: value } : { available: false, query: null };
+    } catch (_) {
+      // Property access can throw as well as invocation. Keep the whole read
+      // inside this boundary so live popstate can report a status-only refusal.
+      return { available: false, query: null };
+    }
+  }
+
   function stageAndCommit(controller, state, issues, actionType) {
     var previous = controller.state;
     var snapshot = snapshotRoot(controller.root);
@@ -1698,9 +1756,22 @@
 
   function popstate(controller) {
     if (!controller.live) return;
+    // The external read is obtained and its capability verified BEFORE any state,
+    // history, inspector, scenario or focus mutation. A refused capability reports
+    // the refusal and stops: validated state, serializedQuery, inspector attachment
+    // and mode, the scenario draft and pending proposal, the return stack, the
+    // baseline and the current focus are all left exactly as they were. The browser
+    // has already moved its own location and that location stays as received - this
+    // path never sanitizes the URL, commits a history entry or focuses a heading.
+    var external = externalQuery(controller);
+    if (!external.available) {
+      controller.issues = [{ code: 'UI_UPDATE_FAILED', field: 'url' }];
+      repaintIssues(controller);
+      return;
+    }
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
+    var parsed = controller.reducer.parseQuery(external.query);
     var committed = commitResearch(controller, parsed, 'popstate');
     if (controller.pendingScenario) {
       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
@@ -1850,7 +1921,7 @@
     };
     var controller = {
       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
+      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null, querySource:null
     };
     controller.library = prepareLibrary(root,config);
     controller.inspectorHost = prepareInspector(controller);
@@ -1861,7 +1932,20 @@
       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
-      var parsed = reducer.parseQuery(window.location.search);
+      // The shell query provider is bound here, once, and the initial read runs
+      // inside the existing mount rollback boundary: an unavailable capability
+      // throws into the catch below, which tears the half-installed controller down,
+      // restores the pristine snapshot and lets the entry script present its readable
+      // fallback. A returned business query is NOT re-interpreted here - the strict
+      // parser still owns genuine invalid queries, length bounds and vocabulary.
+      controller.querySource = bindQuerySource(window);
+      var external = externalQuery(controller);
+      if (!external.available) {
+        var refusal = new TypeError('International workspace query source is unavailable');
+        refusal.code = 'UNAVAILABLE_QUERY_SOURCE';
+        throw refusal;
+      }
+      var parsed = reducer.parseQuery(external.query);
       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
       controller.live = true;

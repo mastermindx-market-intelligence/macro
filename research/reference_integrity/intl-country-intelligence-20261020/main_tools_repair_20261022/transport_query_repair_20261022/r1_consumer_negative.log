@@ -1,0 +1,290 @@
+TAP version 13
+# Subtest: query source: unavailable mount rolls back installed-deleted
+not ok 1 - query source: unavailable mount rolls back installed-deleted
+  ---
+  duration_ms: 2403.677375
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    installed-deleted
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processImmediate (node:internal/timers:502:9)
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: query source: unavailable mount rolls back installed-null
+not ok 2 - query source: unavailable mount rolls back installed-null
+  ---
+  duration_ms: 2420.386916
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    installed-null
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: unavailable mount rolls back installed-foreign
+not ok 3 - query source: unavailable mount rolls back installed-foreign
+  ---
+  duration_ms: 2438.799042
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    installed-foreign
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processImmediate (node:internal/timers:502:9)
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: unavailable mount rolls back occupied-undefined
+not ok 4 - query source: unavailable mount rolls back occupied-undefined
+  ---
+  duration_ms: 2142.470958
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    occupied-undefined
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processImmediate (node:internal/timers:502:9)
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: unavailable mount rolls back occupied-null
+not ok 5 - query source: unavailable mount rolls back occupied-null
+  ---
+  duration_ms: 2135.946125
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    occupied-null
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: unavailable mount rolls back foreign
+not ok 6 - query source: unavailable mount rolls back foreign
+  ---
+  duration_ms: 2295.931917
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2053:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    foreign
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2071:14
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processImmediate (node:internal/timers:502:9)
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2054:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: actual bridge cleanup before entry leaves the readable fallback
+not ok 7 - query source: actual bridge cleanup before entry leaves the readable fallback
+  ---
+  duration_ms: 2159.810708
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2079:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2091:12
+    async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1961:9)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2080:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for provider-getter
+not ok 8 - query source: native popstate refusal is atomic with an open inspector for provider-getter
+  ---
+  duration_ms: 2464.762083
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2100:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + ''
+    - 'Workspace state unavailable'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Workspace state unavailable'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2159:14
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2101:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: native popstate refusal is atomic with an open inspector for reader-getter
+not ok 9 - query source: native popstate refusal is atomic with an open inspector for reader-getter
+  ---
+  duration_ms: 2544.0135
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2100:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + ''
+    - 'Workspace state unavailable'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Workspace state unavailable'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2159:14
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2101:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: refused native popstate preserves the pending scenario and its original draft
+not ok 10 - query source: refused native popstate preserves the pending scenario and its original draft
+  ---
+  duration_ms: 3611.684917
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2165:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + ''
+    - 'Workspace state unavailable'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Workspace state unavailable'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2200:12
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2167:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: query source: standalone search getter failure stays inside the live refusal boundary
+not ok 11 - query source: standalone search getter failure stays inside the live refusal boundary
+  ---
+  duration_ms: 2455.361666
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2212:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + ''
+    - 'Workspace state unavailable'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Workspace state unavailable'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2259:12
+    async withPage (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:152:5)
+    async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2213:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 0
+# fail 11
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 27293.287167

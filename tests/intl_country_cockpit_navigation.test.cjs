@@ -672,11 +672,11 @@ test('E protocol, version and admission are unchanged by the repair', async () =
     assert.equal(await frame.evaluate(() => window.MMXSharedShell.active), true);
     assert.equal(typeof (await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort().join(','))),
       'string');
-    // The helper is the only addition to the published surface.
+    // The additive fragment helper and query reader preserve the frozen protocol surface.
     assert.equal(await frame.evaluate(() => typeof window.MMXSharedShell.sameDocumentFragment), 'function');
     assert.equal(await frame.evaluate(() => Object.isFrozen(window.MMXSharedShell)), true);
     assert.deepEqual(await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort()),
-      ['__mmxBridge', 'active', 'applyingContext', 'navigate', 'openAuth', 'sameDocumentFragment']);
+      ['__mmxBridge', 'active', 'applyingContext', 'navigate', 'openAuth', 'readPageSearch', 'sameDocumentFragment']);
   } finally { await context.close(); }
 });
 

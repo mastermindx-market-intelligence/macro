@@ -1896,3 +1896,77 @@ test('D the helper is pure: no location, history, message, attribute, focus or s
   assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lead-rotation');
   assert.strictEqual(a.getAttribute('href'), snapshot.href, 'the helper never rewrites the anchor');
 });
+
+
+// The page query is a pure projection, not a navigation or admission signal.
+function queryReadSnapshot(ctx) {
+  return JSON.stringify({
+    href: ctx.location().href, active: ctx.api() && ctx.api().active,
+    sent: ctx.sent, sequence: ctx.seq, dispatched: ctx.dispatched.length,
+    pushes: ctx.pushCalls, replacements: ctx.replaceCalls,
+    scrolls: ctx.calls.scrollTo.length, focuses: ctx.calls.focus.length,
+    cssReads: ctx.calls.cssReads, styles: ctx.styles.length,
+    attributes: ctx.nodes.map(node => node.__attrs),
+    observers: ctx.docEl.__observers.map(observer => observer.__active),
+    windowListeners: Object.fromEntries(Object.entries(ctx.winL).map(([key, value]) => [key, value.length])),
+    documentListeners: Object.fromEntries(Object.entries(ctx.docL).map(([key, value]) => [key, value.length]))
+  });
+}
+
+test('page search: exact decoded transport keys are removed without changing other bytes', () => {
+  const cases = [
+    ['?mmx_shell=1&mmx_generation=g1', ''],
+    ['?view=library&market=TW&mmx_shell=1&horizon=3m&basis=local&mmx_generation=g1', '?view=library&market=TW&horizon=3m&basis=local'],
+    ['?mmx_shell=1&%6Dmx_generation=g1&%6Dmx_shell=other&mmx_generation=g1&q=A%20B&q=A+B&set=1%2c2', '?q=A%20B&q=A+B&set=1%2c2'],
+    ['?mmx_shell=1&&view=library&&mmx_generation=g1&', '?&view=library&&'],
+    ['?mmx_shell=1&mmx_generation=g1&mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag', '?mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag'],
+    ['?mmx_shell=1&mmx_generation=g1&q=' + 'x'.repeat(9000), '?q=' + 'x'.repeat(9000)]
+  ];
+  for (const [query, expected] of cases) {
+    const ctx = harness({ childUrl: 'https://www.mastermind-x.com/tools' + query });
+    const api = ctx.api();
+    assert.equal(api.active, false);
+    assert.equal(api.readPageSearch(), expected);
+    assert.ok(Object.keys(api).includes('readPageSearch'));
+    assert.equal(Object.isFrozen(api), true);
+  }
+});
+
+test('page search: repeated pre and post INIT reads have no effects or queued work', () => {
+  const ctx = harness();
+  let timerCalls = 0;
+  const timer = ctx.sandbox.setTimeout;
+  ctx.sandbox.setTimeout = function () { timerCalls++; return timer.apply(this, arguments); };
+  for (const active of [false, true]) {
+    if (active) ctx.activate();
+    const before = queryReadSnapshot(ctx);
+    const timersBefore = timerCalls;
+    for (let i = 0; i < 100; i++) assert.equal(ctx.api().readPageSearch(), '?q=alpha');
+    assert.equal(queryReadSnapshot(ctx), before);
+    assert.equal(timerCalls, timersBefore);
+    assert.equal(ctx.api().active, active);
+  }
+  assert.equal(ctx.activeCount('NAVIGATE'), 0);
+  assert.equal(ctx.activeCount('READY'), 1);
+});
+
+test('page search: actual cleanup retires cached reader while persisted pagehide preserves it', () => {
+  const ctx = activated();
+  const reader = ctx.api().readPageSearch;
+  ctx.fireWin('pagehide', { persisted: true });
+  assert.equal(reader(), '?q=alpha');
+  ctx.fireWin('pagehide', { persisted: false });
+  assert.equal(ctx.sandbox.__MMX_SHARED_BRIDGE_INSTALLED__, true);
+  assert.equal(reader(), null);
+});
+
+test('page search: replacement and throwing current capability or location refuse without throwing', () => {
+  for (const failure of ['replacement', 'provider getter', 'location getter']) {
+    const ctx = harness();
+    const reader = ctx.api().readPageSearch;
+    if (failure === 'replacement') ctx.sandbox.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1' };
+    if (failure === 'provider getter') Object.defineProperty(ctx.sandbox, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider unavailable'); } });
+    if (failure === 'location getter') Object.defineProperty(ctx.sandbox, 'location', { configurable: true, get() { throw new Error('location unavailable'); } });
+    assert.equal(reader(), null, failure);
+  }
+});

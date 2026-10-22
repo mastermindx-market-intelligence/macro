@@ -133,6 +133,9 @@
 
   var installed = true;
   w.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
+  // Instance liveness for the public API. cleanup() retires this candidate; a
+  // persisted pagehide never calls cleanup, so a BFCache document stays live.
+  var apiLive = true;
 
   var state = { active: false, chrome: false, anchors: false, runtime: false };
   var admitted = null;
@@ -1077,6 +1080,7 @@
       correctionCancelers.length = 0;
     } catch (e) {}
     try { if (anchorObserver) { anchorObserver.disconnect(); anchorObserver = null; } } catch (e) {}
+    apiLive = false;
     domReadyWaiters = null;
     domReadyListener = null;
     domReadyHandlerRef = null;
@@ -1138,6 +1142,42 @@
         if (cls.kind !== CLASS_LOCAL) return null;
         if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
         return fragmentOf(cls.canonical);
+      } catch (e) { return null; }
+    },
+    /* Read-only projection of the query of the page this document is already
+     * showing, with the two transport pairs removed by the SAME byte-preserving
+     * filter the canonical projection uses. Those two pairs belong to the shell
+     * frame rather than to the page's own query vocabulary, so a child that reads
+     * location.search itself sees them as foreign keys; the page that needs the
+     * business query asks here instead of re-implementing - or loosely
+     * approximating - that filter.
+     *
+     * Every other byte survives exactly: encoding, order, duplicates and empty
+     * segments are returned unchanged, so the caller's own strict validation still
+     * decides what is acceptable and no wildcard, normalization, serialization,
+     * truncation or parser relaxation is introduced here.
+     *
+     * A projection of the CURRENT page is not evidence of parent admission, of an
+     * accepted destination or of LOCATION_ACCEPTED, and it carries no navigation
+     * authority: a caller that needs any of those must go through navigate() and the
+     * parent's acknowledgment. It returns a value; it never navigates. No message,
+     * error or request id, nothing queued for a later INIT, and no history, DOM,
+     * attribute, scroll, focus or observer effect.
+     *
+     * It is available before INIT - the API is installed by the blocking head script
+     * ahead of every page script - because a fresh document has to know its own query
+     * before any parent context arrives. It is NOT available after cleanup(): the
+     * retired flag plus the exact-instance identity check make a cached reference to a
+     * cleaned-up bridge refuse, exactly like any other dead capability. A persisted
+     * pagehide performs no cleanup, so a BFCache document keeps its live reader.
+     */
+    readPageSearch: function () {
+      try {
+        if (!apiLive) return null;
+        if (w.MMXSharedShell !== api) return null;
+        var raw = null;
+        try { raw = String(w.location.search || ""); } catch (e) { return null; }
+        return filterTransport(raw);
       } catch (e) { return null; }
     }
   };

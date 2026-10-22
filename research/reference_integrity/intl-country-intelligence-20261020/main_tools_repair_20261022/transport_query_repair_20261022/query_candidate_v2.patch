@@ -1,0 +1,861 @@
+diff --git a/site/intl_workspace.js b/site/intl_workspace.js
+index 0ac7bb2009f1..2fefa80750e7 100644
+--- a/site/intl_workspace.js
++++ b/site/intl_workspace.js
+@@ -1648,6 +1648,64 @@
+     return urlPath(location.pathname) + '?' + query + anchorHash(location, controller.config.anchor_ids);
+   }
+ 
++  /* ---- external query ownership ----
++   * Inside a shared-shell frame the child URL carries two transport pairs the page's
++   * own strict query vocabulary does not contain. Handing location.search straight to
++   * the parser therefore refuses a perfectly good transport-only URL as an invalid
++   * business query: it reports "Invalid URL state restored" and silently discards the
++   * requested nondefault state. The shell bridge already owns the byte-preserving
++   * removal of exactly those two pairs, so the page asks it for a projection of its
++   * own current query rather than reproducing - or loosening - that filter here.
++   *
++   * The provider is BOUND once, at mount, and is never re-acquired. A later
++   * replacement, a swapped API object or a cleanup is the loss of a capability, not
++   * an invitation to fall back to raw standalone parsing, which would silently accept
++   * a query this frame is no longer entitled to project. Identity is re-checked on
++   * every read, so a cached method whose instance was retired refuses.
++   *
++   * "Unavailable" is never an empty query. An empty query is a genuine answer and is
++   * returned as "". A bridge that is installed but older, refusing, throwing or
++   * returning a non-string is unavailable, not empty; only a page with no bridge at
++   * all keeps the ordinary standalone raw validation.
++   */
++  function bindQuerySource(win) {
++    try {
++      // Only a genuinely absent namespace without an installation marker is
++      // standalone. Cleanup retains the marker; an occupied unusable namespace
++      // must not silently grant the page ownership of the shell's raw query.
++      if (!('MMXSharedShell' in win) && !win.__MMX_SHARED_BRIDGE_INSTALLED__) {
++        return { standalone: true, shell: null, reader: null };
++      }
++      var shell = win.MMXSharedShell;
++      if (!shell || shell.__mmxBridge !== 'mmx.shared-shell.v1') return null;
++      var reader = shell.readPageSearch;
++      return { standalone: false, shell: shell, reader: typeof reader === 'function' ? reader : null };
++    } catch (_) { return null; }
++  }
++
++  function externalQuery(controller) {
++    try {
++      var source = controller.querySource;
++      if (!source) return { available: false, query: null };
++      var win = controller.environment.window;
++      var value;
++      if (source.standalone) {
++        value = win.location.search;
++      } else {
++        if (!source.reader || win.MMXSharedShell !== source.shell ||
++            source.shell.readPageSearch !== source.reader) {
++          return { available: false, query: null };
++        }
++        value = source.reader.call(source.shell);
++      }
++      return typeof value === 'string' ? { available: true, query: value } : { available: false, query: null };
++    } catch (_) {
++      // Property access can throw as well as invocation. Keep the whole read
++      // inside this boundary so live popstate can report a status-only refusal.
++      return { available: false, query: null };
++    }
++  }
++
+   function stageAndCommit(controller, state, issues, actionType) {
+     var previous = controller.state;
+     var snapshot = snapshotRoot(controller.root);
+@@ -1698,9 +1756,22 @@
+ 
+   function popstate(controller) {
+     if (!controller.live) return;
++    // The external read is obtained and its capability verified BEFORE any state,
++    // history, inspector, scenario or focus mutation. A refused capability reports
++    // the refusal and stops: validated state, serializedQuery, inspector attachment
++    // and mode, the scenario draft and pending proposal, the return stack, the
++    // baseline and the current focus are all left exactly as they were. The browser
++    // has already moved its own location and that location stays as received - this
++    // path never sanitizes the URL, commits a history entry or focuses a heading.
++    var external = externalQuery(controller);
++    if (!external.available) {
++      controller.issues = [{ code: 'UI_UPDATE_FAILED', field: 'url' }];
++      repaintIssues(controller);
++      return;
++    }
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
++    var parsed = controller.reducer.parseQuery(external.query);
+     var committed = commitResearch(controller, parsed, 'popstate');
+     if (controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+@@ -1850,7 +1921,7 @@
+     };
+     var controller = {
+       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
+-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
++      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null, querySource:null
+     };
+     controller.library = prepareLibrary(root,config);
+     controller.inspectorHost = prepareInspector(controller);
+@@ -1861,7 +1932,20 @@
+       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
+       required(root, '[data-im-issues]').setAttribute('role', 'status');
+       required(root, '[data-im-unavailable]');
+-      var parsed = reducer.parseQuery(window.location.search);
++      // The shell query provider is bound here, once, and the initial read runs
++      // inside the existing mount rollback boundary: an unavailable capability
++      // throws into the catch below, which tears the half-installed controller down,
++      // restores the pristine snapshot and lets the entry script present its readable
++      // fallback. A returned business query is NOT re-interpreted here - the strict
++      // parser still owns genuine invalid queries, length bounds and vocabulary.
++      controller.querySource = bindQuerySource(window);
++      var external = externalQuery(controller);
++      if (!external.available) {
++        var refusal = new TypeError('International workspace query source is unavailable');
++        refusal.code = 'UNAVAILABLE_QUERY_SOURCE';
++        throw refusal;
++      }
++      var parsed = reducer.parseQuery(external.query);
+       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
+       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
+       controller.live = true;
+diff --git a/site/shared_shell_bridge.js b/site/shared_shell_bridge.js
+index 235e77e5657c..ad4f146867ad 100644
+--- a/site/shared_shell_bridge.js
++++ b/site/shared_shell_bridge.js
+@@ -133,6 +133,9 @@
+ 
+   var installed = true;
+   w.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
++  // Instance liveness for the public API. cleanup() retires this candidate; a
++  // persisted pagehide never calls cleanup, so a BFCache document stays live.
++  var apiLive = true;
+ 
+   var state = { active: false, chrome: false, anchors: false, runtime: false };
+   var admitted = null;
+@@ -1077,6 +1080,7 @@
+       correctionCancelers.length = 0;
+     } catch (e) {}
+     try { if (anchorObserver) { anchorObserver.disconnect(); anchorObserver = null; } } catch (e) {}
++    apiLive = false;
+     domReadyWaiters = null;
+     domReadyListener = null;
+     domReadyHandlerRef = null;
+@@ -1139,6 +1143,42 @@
+         if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
+         return fragmentOf(cls.canonical);
+       } catch (e) { return null; }
++    },
++    /* Read-only projection of the query of the page this document is already
++     * showing, with the two transport pairs removed by the SAME byte-preserving
++     * filter the canonical projection uses. Those two pairs belong to the shell
++     * frame rather than to the page's own query vocabulary, so a child that reads
++     * location.search itself sees them as foreign keys; the page that needs the
++     * business query asks here instead of re-implementing - or loosely
++     * approximating - that filter.
++     *
++     * Every other byte survives exactly: encoding, order, duplicates and empty
++     * segments are returned unchanged, so the caller's own strict validation still
++     * decides what is acceptable and no wildcard, normalization, serialization,
++     * truncation or parser relaxation is introduced here.
++     *
++     * A projection of the CURRENT page is not evidence of parent admission, of an
++     * accepted destination or of LOCATION_ACCEPTED, and it carries no navigation
++     * authority: a caller that needs any of those must go through navigate() and the
++     * parent's acknowledgment. It returns a value; it never navigates. No message,
++     * error or request id, nothing queued for a later INIT, and no history, DOM,
++     * attribute, scroll, focus or observer effect.
++     *
++     * It is available before INIT - the API is installed by the blocking head script
++     * ahead of every page script - because a fresh document has to know its own query
++     * before any parent context arrives. It is NOT available after cleanup(): the
++     * retired flag plus the exact-instance identity check make a cached reference to a
++     * cleaned-up bridge refuse, exactly like any other dead capability. A persisted
++     * pagehide performs no cleanup, so a BFCache document keeps its live reader.
++     */
++    readPageSearch: function () {
++      try {
++        if (!apiLive) return null;
++        if (w.MMXSharedShell !== api) return null;
++        var raw = null;
++        try { raw = String(w.location.search || ""); } catch (e) { return null; }
++        return filterTransport(raw);
++      } catch (e) { return null; }
+     }
+   };
+   try {
+diff --git a/templates/intl_workspace.js b/templates/intl_workspace.js
+index 0ac7bb2009f1..2fefa80750e7 100644
+--- a/templates/intl_workspace.js
++++ b/templates/intl_workspace.js
+@@ -1648,6 +1648,64 @@
+     return urlPath(location.pathname) + '?' + query + anchorHash(location, controller.config.anchor_ids);
+   }
+ 
++  /* ---- external query ownership ----
++   * Inside a shared-shell frame the child URL carries two transport pairs the page's
++   * own strict query vocabulary does not contain. Handing location.search straight to
++   * the parser therefore refuses a perfectly good transport-only URL as an invalid
++   * business query: it reports "Invalid URL state restored" and silently discards the
++   * requested nondefault state. The shell bridge already owns the byte-preserving
++   * removal of exactly those two pairs, so the page asks it for a projection of its
++   * own current query rather than reproducing - or loosening - that filter here.
++   *
++   * The provider is BOUND once, at mount, and is never re-acquired. A later
++   * replacement, a swapped API object or a cleanup is the loss of a capability, not
++   * an invitation to fall back to raw standalone parsing, which would silently accept
++   * a query this frame is no longer entitled to project. Identity is re-checked on
++   * every read, so a cached method whose instance was retired refuses.
++   *
++   * "Unavailable" is never an empty query. An empty query is a genuine answer and is
++   * returned as "". A bridge that is installed but older, refusing, throwing or
++   * returning a non-string is unavailable, not empty; only a page with no bridge at
++   * all keeps the ordinary standalone raw validation.
++   */
++  function bindQuerySource(win) {
++    try {
++      // Only a genuinely absent namespace without an installation marker is
++      // standalone. Cleanup retains the marker; an occupied unusable namespace
++      // must not silently grant the page ownership of the shell's raw query.
++      if (!('MMXSharedShell' in win) && !win.__MMX_SHARED_BRIDGE_INSTALLED__) {
++        return { standalone: true, shell: null, reader: null };
++      }
++      var shell = win.MMXSharedShell;
++      if (!shell || shell.__mmxBridge !== 'mmx.shared-shell.v1') return null;
++      var reader = shell.readPageSearch;
++      return { standalone: false, shell: shell, reader: typeof reader === 'function' ? reader : null };
++    } catch (_) { return null; }
++  }
++
++  function externalQuery(controller) {
++    try {
++      var source = controller.querySource;
++      if (!source) return { available: false, query: null };
++      var win = controller.environment.window;
++      var value;
++      if (source.standalone) {
++        value = win.location.search;
++      } else {
++        if (!source.reader || win.MMXSharedShell !== source.shell ||
++            source.shell.readPageSearch !== source.reader) {
++          return { available: false, query: null };
++        }
++        value = source.reader.call(source.shell);
++      }
++      return typeof value === 'string' ? { available: true, query: value } : { available: false, query: null };
++    } catch (_) {
++      // Property access can throw as well as invocation. Keep the whole read
++      // inside this boundary so live popstate can report a status-only refusal.
++      return { available: false, query: null };
++    }
++  }
++
+   function stageAndCommit(controller, state, issues, actionType) {
+     var previous = controller.state;
+     var snapshot = snapshotRoot(controller.root);
+@@ -1698,9 +1756,22 @@
+ 
+   function popstate(controller) {
+     if (!controller.live) return;
++    // The external read is obtained and its capability verified BEFORE any state,
++    // history, inspector, scenario or focus mutation. A refused capability reports
++    // the refusal and stops: validated state, serializedQuery, inspector attachment
++    // and mode, the scenario draft and pending proposal, the return stack, the
++    // baseline and the current focus are all left exactly as they were. The browser
++    // has already moved its own location and that location stays as received - this
++    // path never sanitizes the URL, commits a history entry or focuses a heading.
++    var external = externalQuery(controller);
++    if (!external.available) {
++      controller.issues = [{ code: 'UI_UPDATE_FAILED', field: 'url' }];
++      repaintIssues(controller);
++      return;
++    }
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
++    var parsed = controller.reducer.parseQuery(external.query);
+     var committed = commitResearch(controller, parsed, 'popstate');
+     if (controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+@@ -1850,7 +1921,7 @@
+     };
+     var controller = {
+       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
+-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
++      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null, querySource:null
+     };
+     controller.library = prepareLibrary(root,config);
+     controller.inspectorHost = prepareInspector(controller);
+@@ -1861,7 +1932,20 @@
+       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
+       required(root, '[data-im-issues]').setAttribute('role', 'status');
+       required(root, '[data-im-unavailable]');
+-      var parsed = reducer.parseQuery(window.location.search);
++      // The shell query provider is bound here, once, and the initial read runs
++      // inside the existing mount rollback boundary: an unavailable capability
++      // throws into the catch below, which tears the half-installed controller down,
++      // restores the pristine snapshot and lets the entry script present its readable
++      // fallback. A returned business query is NOT re-interpreted here - the strict
++      // parser still owns genuine invalid queries, length bounds and vocabulary.
++      controller.querySource = bindQuerySource(window);
++      var external = externalQuery(controller);
++      if (!external.available) {
++        var refusal = new TypeError('International workspace query source is unavailable');
++        refusal.code = 'UNAVAILABLE_QUERY_SOURCE';
++        throw refusal;
++      }
++      var parsed = reducer.parseQuery(external.query);
+       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
+       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
+       controller.live = true;
+diff --git a/templates/shared_shell_bridge.js b/templates/shared_shell_bridge.js
+index 235e77e5657c..ad4f146867ad 100644
+--- a/templates/shared_shell_bridge.js
++++ b/templates/shared_shell_bridge.js
+@@ -133,6 +133,9 @@
+ 
+   var installed = true;
+   w.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
++  // Instance liveness for the public API. cleanup() retires this candidate; a
++  // persisted pagehide never calls cleanup, so a BFCache document stays live.
++  var apiLive = true;
+ 
+   var state = { active: false, chrome: false, anchors: false, runtime: false };
+   var admitted = null;
+@@ -1077,6 +1080,7 @@
+       correctionCancelers.length = 0;
+     } catch (e) {}
+     try { if (anchorObserver) { anchorObserver.disconnect(); anchorObserver = null; } } catch (e) {}
++    apiLive = false;
+     domReadyWaiters = null;
+     domReadyListener = null;
+     domReadyHandlerRef = null;
+@@ -1139,6 +1143,42 @@
+         if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
+         return fragmentOf(cls.canonical);
+       } catch (e) { return null; }
++    },
++    /* Read-only projection of the query of the page this document is already
++     * showing, with the two transport pairs removed by the SAME byte-preserving
++     * filter the canonical projection uses. Those two pairs belong to the shell
++     * frame rather than to the page's own query vocabulary, so a child that reads
++     * location.search itself sees them as foreign keys; the page that needs the
++     * business query asks here instead of re-implementing - or loosely
++     * approximating - that filter.
++     *
++     * Every other byte survives exactly: encoding, order, duplicates and empty
++     * segments are returned unchanged, so the caller's own strict validation still
++     * decides what is acceptable and no wildcard, normalization, serialization,
++     * truncation or parser relaxation is introduced here.
++     *
++     * A projection of the CURRENT page is not evidence of parent admission, of an
++     * accepted destination or of LOCATION_ACCEPTED, and it carries no navigation
++     * authority: a caller that needs any of those must go through navigate() and the
++     * parent's acknowledgment. It returns a value; it never navigates. No message,
++     * error or request id, nothing queued for a later INIT, and no history, DOM,
++     * attribute, scroll, focus or observer effect.
++     *
++     * It is available before INIT - the API is installed by the blocking head script
++     * ahead of every page script - because a fresh document has to know its own query
++     * before any parent context arrives. It is NOT available after cleanup(): the
++     * retired flag plus the exact-instance identity check make a cached reference to a
++     * cleaned-up bridge refuse, exactly like any other dead capability. A persisted
++     * pagehide performs no cleanup, so a BFCache document keeps its live reader.
++     */
++    readPageSearch: function () {
++      try {
++        if (!apiLive) return null;
++        if (w.MMXSharedShell !== api) return null;
++        var raw = null;
++        try { raw = String(w.location.search || ""); } catch (e) { return null; }
++        return filterTransport(raw);
++      } catch (e) { return null; }
+     }
+   };
+   try {
+diff --git a/tests/intl_country_cockpit_navigation.test.cjs b/tests/intl_country_cockpit_navigation.test.cjs
+index 4d89697fdd16..bd55cee36dff 100644
+--- a/tests/intl_country_cockpit_navigation.test.cjs
++++ b/tests/intl_country_cockpit_navigation.test.cjs
+@@ -672,11 +672,11 @@ test('E protocol, version and admission are unchanged by the repair', async () =
+     assert.equal(await frame.evaluate(() => window.MMXSharedShell.active), true);
+     assert.equal(typeof (await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort().join(','))),
+       'string');
+-    // The helper is the only addition to the published surface.
++    // The additive fragment helper and query reader preserve the frozen protocol surface.
+     assert.equal(await frame.evaluate(() => typeof window.MMXSharedShell.sameDocumentFragment), 'function');
+     assert.equal(await frame.evaluate(() => Object.isFrozen(window.MMXSharedShell)), true);
+     assert.deepEqual(await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort()),
+-      ['__mmxBridge', 'active', 'applyingContext', 'navigate', 'openAuth', 'sameDocumentFragment']);
++      ['__mmxBridge', 'active', 'applyingContext', 'navigate', 'openAuth', 'readPageSearch', 'sameDocumentFragment']);
+   } finally { await context.close(); }
+ });
+ 
+diff --git a/tests/intl_workspace_controller.test.cjs b/tests/intl_workspace_controller.test.cjs
+index 1d677d8d0acd..003dcf778801 100644
+--- a/tests/intl_workspace_controller.test.cjs
++++ b/tests/intl_workspace_controller.test.cjs
+@@ -1911,3 +1911,352 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
+   assert.equal(result.state.view,'overview');
+   assert.equal(await page.locator('#macro-panel').isHidden(),true);
+ }));
++
++
++// A routed cross-origin child runs the real blocking bridge, controller and entry.
++// The modelled parent deliberately withholds INIT until the test asks for it.
++async function withQueryFrames(run) {
++  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL } : {}) });
++  const bridge = fs.readFileSync(path.join(__dirname, '../templates/shared_shell_bridge.js'), 'utf8');
++  const entry = fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_entry.js'), 'utf8');
++  const css = fs.readFileSync(path.join(__dirname, '../templates/shared_shell.css'), 'utf8');
++  const script = source => '<script>' + source.replace(/<\/script/gi, '<\\/script') + '</script>';
++  let markup = workspaceMarkup().replace('</select>', option('TW') + '</select>');
++  markup = markup.replace('<p data-im-unavailable>', '<article data-im-panel data-view="library" data-horizon="3m" data-basis="local" data-source="fixture:v1"><input id="query-library-search" type="search"></article><article data-im-panel data-view="history" data-horizon="3m" data-basis="local" data-source="fixture:v1">Taiwan history</article><p data-im-unavailable>');
++  markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(config) + '</script><fieldset data-im-controls disabled><h1');
++  markup = markup.replace('</section>', '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
++  async function open(query, beforeEntry = '') {
++    const page = await browser.newPage();
++    const errors = [];
++    page.on('pageerror', error => errors.push(error.message));
++    const childUrl = 'http://127.0.0.1:3102/intl.html' + query;
++    await page.route('http://127.0.0.1:3100/query-parent', route => route.fulfill({
++      contentType: 'text/html',
++      body: '<!doctype html><iframe id="child"></iframe>' + script('window.queryMessages=[];addEventListener("message",e=>queryMessages.push(e.data));document.getElementById("child").src=' + JSON.stringify(childUrl) + ';')
++    }));
++    await page.route('http://127.0.0.1:3102/**', route => route.fulfill({
++      contentType: 'text/html',
++      body: '<!doctype html><html lang="en"><head><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><style>' + css + '</style>' + script(bridge) + '</head><body>' + markup + script(reducerSource) + script(adapterSource) + script(beforeEntry) + script(
++        'window.queryBoot={href:location.href,length:history.length};window.queryMounts=0;window.queryRootBefore=document.querySelector("[data-im-workspace]").outerHTML;' +
++        'const originalMount=IntlWorkspace.mountIntlWorkspace;IntlWorkspace.mountIntlWorkspace=function(){queryMounts++;const handle=originalMount.apply(this,arguments);window.queryHandle=handle;return handle;};'
++      ) + script(entry) + '</body></html>'
++    }));
++    await page.goto('http://127.0.0.1:3100/query-parent');
++    const frame = page.frames().find(candidate => candidate.url().startsWith('http://127.0.0.1:3102/'));
++    assert.ok(frame, 'real cross-origin child loaded');
++    await frame.waitForFunction(() => document.readyState === 'complete');
++    return {
++      page, frame, errors,
++      async init() {
++        await page.evaluate(() => document.getElementById('child').contentWindow.postMessage({
++          protocol: 'mmx.shared-shell.v1', type: 'INIT', frameGeneration: 'query-g1',
++          theme: 'light', locale: 'en', contextRevision: 1, canonicalPath: '/intl.html',
++          catalog: { legacyPaths: ['/intl.html'], nativePaths: [] }, restore: null
++        }, 'http://127.0.0.1:3102'));
++        await frame.waitForFunction(() => MMXSharedShell.active);
++      },
++      close: () => page.close()
++    };
++  }
++  try { await run(open); } finally { await browser.close(); }
++}
++
++test('query source: real bridge and entry restore actual state before INIT without remount or warning', async () => {
++  await withQueryFrames(async open => {
++    for (const business of ['', 'view=library&market=TW&pins=JP&horizon=3m&basis=local&return_basis=price&group=leaders']) {
++      const child = await open('?' + (business ? business + '&' : '') + 'mmx_shell=1&mmx_generation=query-g1');
++      const before = await child.frame.evaluate(() => ({
++        enhanced: document.querySelector('[data-im-workspace]').getAttribute('data-im-enhanced'),
++        disabled: document.querySelector('[data-im-controls]').disabled,
++        issues: document.querySelector('[data-im-issues]').textContent,
++        state: queryHandle.getState(), active: MMXSharedShell.active,
++        unchanged: location.href === queryBoot.href && history.length === queryBoot.length,
++        marketControl: document.querySelector('[data-im-action="select_market"]').value,
++        libraryVisible: !!document.getElementById('query-library-search').getClientRects().length,
++        libraryEnabled: !document.getElementById('query-library-search').matches(':disabled')
++      }));
++      assert.equal(before.enhanced, 'true');
++      assert.equal(before.disabled, false);
++      assert.equal(before.issues, '');
++      assert.equal(before.active, false, 'pre-INIT projection grants no admission');
++      assert.equal(before.unchanged, true);
++      if (business) {
++        assert.equal(before.state.view, 'library');
++        assert.equal(before.state.selected_market, 'TW');
++        assert.equal(before.state.horizon, '3m');
++        assert.equal(before.state.currency_basis, 'local');
++        assert.equal(before.state.library_group, 'leaders');
++        assert.equal(before.marketControl, 'TW');
++        assert.equal(before.libraryVisible, true);
++        assert.equal(before.libraryEnabled, true);
++      } else {
++        assert.equal(before.state.view, 'overview');
++        assert.equal(before.state.selected_market, null);
++        assert.equal(before.state.horizon, '1m');
++      }
++      await child.init();
++      const after = await child.frame.evaluate(() => ({ state: queryHandle.getState(), mounts: queryMounts, issues: document.querySelector('[data-im-issues]').textContent }));
++      assert.deepEqual(after.state, before.state);
++      assert.equal(after.mounts, 1);
++      assert.equal(after.issues, '');
++      assert.deepEqual(child.errors, []);
++      await child.close();
++    }
++  });
++});
++
++test('query source: real native history reads the current projected query before INIT', async () => {
++  await withQueryFrames(async open => {
++    const child = await open('?mmx_shell=1&mmx_generation=query-g1');
++    await child.frame.evaluate(() => {
++      const original = location.href;
++      History.prototype.pushState.call(history, null, '', '?view=history&market=TW&horizon=3m&basis=local&return_basis=price&mmx_shell=1&mmx_generation=query-g1');
++      History.prototype.pushState.call(history, null, '', original);
++      window.queryPopDone = false;
++      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
++      history.back();
++    });
++    await child.frame.waitForFunction(() => queryPopDone);
++    const out = await child.frame.evaluate(() => ({ state: queryHandle.getState(), issues: document.querySelector('[data-im-issues]').textContent, mounts: queryMounts, url: location.search }));
++    assert.equal(out.state.view, 'history');
++    assert.equal(out.state.selected_market, 'TW');
++    assert.equal(out.state.horizon, '3m');
++    assert.equal(out.state.currency_basis, 'local');
++    assert.equal(out.issues, '');
++    assert.equal(out.mounts, 1);
++    assert.match(out.url, /mmx_generation=query-g1/);
++    assert.deepEqual(child.errors, []);
++  });
++});
++
++test('query source: invalid business strings retain standalone issue text, state and untouched URL', async () => {
++  const queries = ['bad=x', 'mmx_feature=x', 'mmx_shell_extra=1', 'MMX_SHELL=1', 'view=%zz', 'view=overview&%76iew=history', 'view=unknown', 'view', 'view=' + 'x'.repeat(2100), 'view=overview&&market=TW', 'view=overview&'];
++  await withQueryFrames(async open => withPage(async page => {
++    for (const business of queries) {
++      const handle = await mount(page, '?' + business);
++      const standalone = await page.evaluate(h => ({ state: h.getState(), issues: document.querySelector('[data-im-issues]').textContent, query: location.search }), handle);
++      assert.notEqual(standalone.issues, '', business);
++      assert.equal(standalone.query, '?' + business);
++      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1');
++      const shell = await child.frame.evaluate(() => ({ state: queryHandle.getState(), issues: document.querySelector('[data-im-issues]').textContent, unchanged: location.href === queryBoot.href }));
++      assert.deepEqual(shell.state, standalone.state, business);
++      assert.equal(shell.issues, standalone.issues, business);
++      assert.equal(shell.unchanged, true);
++      assert.deepEqual(child.errors, []);
++      await page.evaluate(h => h.destroy(), handle);
++      await child.close();
++    }
++  }));
++});
++
++for (const kind of ['installed-deleted', 'installed-null', 'installed-foreign', 'occupied-undefined', 'occupied-null', 'foreign', 'older', 'provider-getter', 'reader-getter']) {
++  test('query source: unavailable mount rolls back ' + kind, async () => {
++    await withPage(async page => {
++      await bootstrapPage(page, workspaceWithInspector());
++      const out = await page.evaluate(kind => {
++        if (kind.startsWith('installed')) window.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
++        if (kind === 'installed-null' || kind === 'occupied-null') window.MMXSharedShell = null;
++        if (kind === 'occupied-undefined') window.MMXSharedShell = undefined;
++        if (kind === 'installed-foreign' || kind === 'foreign') window.MMXSharedShell = { other: true };
++        if (kind === 'older') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1' };
++        if (kind === 'provider-getter') Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider getter'); } });
++        if (kind === 'reader-getter') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', get readPageSearch() { throw new Error('reader getter'); } };
++        const root = document.querySelector('[data-im-workspace]');
++        const article = root.querySelector('[data-im-inspector-payload]');
++        const html = root.outerHTML;
++        let error = null;
++        try { IntlWorkspace.mountIntlWorkspace(root, window.config); } catch (caught) { error = caught.code || caught.message; }
++        return { failed: !!error, html: html === root.outerHTML, same: article === root.querySelector('[data-im-inspector-payload]'), enhanced: root.hasAttribute('data-im-enhanced') };
++      }, kind);
++      assert.equal(out.failed, true, kind);
++      assert.equal(out.html, true, kind);
++      assert.equal(out.same, true, kind);
++      assert.equal(out.enhanced, false, kind);
++    });
++  });
++}
++
++test('query source: actual bridge cleanup before entry leaves the readable fallback', async () => {
++  await withQueryFrames(async open => {
++    const child = await open('?mmx_shell=1&mmx_generation=query-g1', 'window.retiredReader=MMXSharedShell.readPageSearch;dispatchEvent(new PageTransitionEvent("pagehide",{persisted:false}));');
++    const out = await child.frame.evaluate(() => ({
++      installed: __MMX_SHARED_BRIDGE_INSTALLED__, retired: retiredReader ? retiredReader() : null,
++      disabled: document.querySelector('[data-im-controls]').disabled,
++      legacy: document.getElementById('intl-legacy-research').open,
++      enhanced: document.querySelector('[data-im-workspace]').hasAttribute('data-im-enhanced'),
++      restored: document.querySelector('[data-im-workspace]').outerHTML === queryRootBefore
++    }));
++    assert.equal(out.installed, true);
++    assert.equal(out.retired, null);
++    assert.equal(out.disabled, true);
++    assert.equal(out.legacy, true);
++    assert.equal(out.enhanced, false);
++    assert.equal(out.restored, true);
++    assert.deepEqual(child.errors, []);
++  });
++});
++
++for (const fault of ['provider-getter', 'reader-getter', 'replacement', 'deleted', 'method-throw', 'null', 'nonstring']) {
++  test('query source: native popstate refusal is atomic with an open inspector for ' + fault, async () => {
++    await withPage(async page => {
++      const errors = [];
++      page.on('pageerror', error => errors.push(error.message));
++      await page.evaluate(() => {
++        window.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
++        window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() {
++          if (window.queryFault === 'method-throw') throw new Error('reader call unavailable');
++          if (window.queryFault === 'null') return null;
++          if (window.queryFault === 'nonstring') return {};
++          return location.search;
++        } };
++      });
++      const handle = await mount(page, '', workspaceWithInspector());
++      await page.evaluate(({ h, fault }) => {
++        h.dispatch({ type: 'capture_baseline' });
++        h.dispatch({ type: 'push_return', anchor_id: 'research-origin' });
++        h.openInspector({ market_id: 'JP', expected_source: 'fixture:v1' });
++        document.querySelector('[data-im-inspector-action="evidence"]').click();
++        const article = document.querySelector('[data-im-inspector-payload]');
++        const shell = document.querySelector('[data-im-inspector-shell]');
++        const original = location.href;
++        history.pushState(null, '', '?view=history&market=TW&horizon=3m&basis=local&return_basis=price');
++        const expectedHref = location.href;
++        history.pushState(null, '', original);
++        window.queryBefore = { state: h.getState(), article, shell, parent: article.parentNode, focus: document.activeElement, html: article.outerHTML, length: history.length, expectedHref, modal: shell.matches(':modal'), ledger: !article.querySelector('[data-im-inspector-ledger]').hidden };
++        window.queryHistoryCalls = [];
++        for (const method of ['pushState', 'replaceState']) {
++          const originalMethod = history[method];
++          history[method] = function () { queryHistoryCalls.push(method); return originalMethod.apply(this, arguments); };
++        }
++        if (fault === 'provider-getter') Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider getter unavailable'); } });
++        else if (fault === 'reader-getter') Object.defineProperty(MMXSharedShell, 'readPageSearch', { configurable: true, get() { throw new Error('reader getter unavailable'); } });
++        else if (fault === 'replacement') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() { return ''; } };
++        else if (fault === 'deleted') delete window.MMXSharedShell;
++        else window.queryFault = fault;
++        window.queryPopDone = false;
++        addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
++        history.back();
++      }, { h: handle, fault });
++      await page.waitForFunction(() => queryPopDone);
++      const out = await page.evaluate(h => ({
++        state: h.getState(), before: queryBefore.state, beforeModal: queryBefore.modal, beforeLedger: queryBefore.ledger,
++        same: document.querySelector('[data-im-inspector-payload]') === queryBefore.article,
++        attached: queryBefore.article.parentNode === queryBefore.parent,
++        modal: queryBefore.shell.matches(':modal'),
++        html: queryBefore.article.outerHTML === queryBefore.html,
++        focus: document.activeElement === queryBefore.focus,
++        history: history.length === queryBefore.length && location.href === queryBefore.expectedHref,
++        historyCalls: queryHistoryCalls,
++        issues: document.querySelector('[data-im-issues]').textContent
++      }), handle);
++      assert.ok(out.before.baseline);
++      assert.equal(out.beforeModal, true);
++      assert.equal(out.beforeLedger, true);
++      assert.equal(out.before.return_stack.length, 1);
++      assert.deepEqual(out.state, out.before);
++      for (const key of ['same', 'attached', 'modal', 'html', 'focus', 'history']) assert.equal(out[key], true, key);
++      assert.deepEqual(out.historyCalls, []);
++      assert.equal(out.issues, 'Workspace state unavailable');
++      assert.deepEqual(errors, []);
++    });
++  });
++}
++
++test('query source: refused native popstate preserves the pending scenario and its original draft', async () => {
++  const fixture = JSON.parse(require('node:child_process').execFileSync('python3', ['-m', 'tests.history_browser_fixture'], { cwd: path.resolve(__dirname, '..'), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
++  await withPage(async page => {
++    const errors = [];
++    page.on('pageerror', error => errors.push(error.message));
++    await bootstrapPage(page, fixture.html, '?view=history&market=JP&horizon=1m&basis=usd_unhedged&return_basis=price');
++    await page.addScriptTag({ content: fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_scenario.js'), 'utf8') });
++    await page.addScriptTag({ content: adapterSource });
++    await page.evaluate(c => {
++      window.queryProvider = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() { return location.search; } };
++      window.MMXSharedShell = queryProvider;
++      window.scenarioHandle = IntlWorkspace.mountIntlWorkspace(document.querySelector('[data-im-workspace]'), c);
++    }, fixture.config);
++    await page.locator('#im-scenario-local').fill('5');
++    await page.locator('#im-scenario-fx').fill('-3');
++    await page.locator('[data-im-scenario-action="calculate"]').click();
++    await page.locator('[data-im-action="set_horizon"]').selectOption('3m');
++    await page.locator('#im-scenario-local').fill('10');
++    const before = await page.evaluate(() => ({ state: scenarioHandle.getState(), local: document.getElementById('im-scenario-local').value, fx: document.getElementById('im-scenario-fx').value, pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden, focus: document.activeElement.id }));
++    assert.equal(before.pending, true);
++    assert.equal(before.state.horizon, '1m');
++    await page.evaluate(() => {
++      const original = location.href;
++      history.pushState(null, '', '?view=overview');
++      window.queryExpectedHref = location.href;
++      history.pushState(null, '', original);
++      Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider unavailable'); } });
++      window.queryPopDone = false;
++      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
++      history.back();
++    });
++    await page.waitForFunction(() => queryPopDone);
++    const after = await page.evaluate(() => ({ state: scenarioHandle.getState(), local: document.getElementById('im-scenario-local').value, fx: document.getElementById('im-scenario-fx').value, pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden, focus: document.activeElement.id }));
++    assert.deepEqual(after, before);
++    assert.equal(await page.evaluate(() => location.href === queryExpectedHref), true);
++    assert.equal(await page.locator('[data-im-issues]').textContent(), 'Workspace state unavailable');
++    assert.deepEqual(errors, []);
++    await page.evaluate(() => Object.defineProperty(window, 'MMXSharedShell', { configurable: true, writable: true, value: queryProvider }));
++    await page.locator('[data-im-scenario-action="cancel_context"]').click();
++    assert.equal(await page.locator('#im-scenario-local').inputValue(), '5');
++    assert.equal(await page.locator('#im-scenario-fx').inputValue(), '-3');
++    assert.match(await page.locator('[data-im-scenario-usd]').innerText(), /1\.85/);
++    assert.equal((await page.evaluate(() => scenarioHandle.getState())).horizon, '1m');
++  });
++});
++
++
++test('query source: standalone search getter failure stays inside the live refusal boundary', async () => {
++  await withPage(async page => {
++    const errors = [];
++    page.on('pageerror', error => errors.push(error.message));
++    await bootstrapPage(page, workspaceMarkup());
++    const handle = await page.evaluateHandle(c => {
++      // The public environment parameter lets this test exercise an otherwise
++      // unforgeable browser Location read without changing production code.
++      const environmentWindow = {
++        document, history, MutationObserver,
++        getComputedStyle: window.getComputedStyle.bind(window),
++        addEventListener: window.addEventListener.bind(window),
++        removeEventListener: window.removeEventListener.bind(window),
++        location: {
++          get search() { if (window.failStandaloneRead) throw new Error('location search unavailable'); return location.search; },
++          get pathname() { return location.pathname; },
++          get hash() { return location.hash; }
++        }
++      };
++      return IntlWorkspace.mountIntlWorkspace(document.querySelector('[data-im-workspace]'), c, { window: environmentWindow });
++    }, config);
++    await page.evaluate(h => {
++      h.dispatch({ type: 'capture_baseline' });
++      h.dispatch({ type: 'push_return', anchor_id: 'research-origin' });
++      document.getElementById('research-origin').focus();
++      const original = location.href;
++      history.pushState(null, '', '?view=history&market=TW&horizon=3m&basis=local');
++      const target = location.href;
++      history.pushState(null, '', original);
++      window.queryBefore = { state: h.getState(), target, focus: document.activeElement, length: history.length };
++      window.failStandaloneRead = true;
++      window.queryPopDone = false;
++      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
++      history.back();
++    }, handle);
++    await page.waitForFunction(() => queryPopDone);
++    const out = await page.evaluate(h => ({
++      state: h.getState(), before: queryBefore.state,
++      sameFocus: document.activeElement === queryBefore.focus,
++      sameHistory: location.href === queryBefore.target && history.length === queryBefore.length,
++      issues: document.querySelector('[data-im-issues]').textContent
++    }), handle);
++    assert.ok(out.before.baseline);
++    assert.equal(out.before.return_stack.length, 1);
++    assert.deepEqual(out.state, out.before);
++    assert.equal(out.sameFocus, true);
++    assert.equal(out.sameHistory, true);
++    assert.equal(out.issues, 'Workspace state unavailable');
++    assert.deepEqual(errors, []);
++  });
++});
+diff --git a/tests/intl_workspace_state.test.cjs b/tests/intl_workspace_state.test.cjs
+index edd799214304..d2547982d985 100644
+--- a/tests/intl_workspace_state.test.cjs
++++ b/tests/intl_workspace_state.test.cjs
+@@ -345,3 +345,21 @@ test('20. factories remain independent and forged prior-source return contexts r
+   saved.return_stack[0].context.source_reference='src-2';
+   const bad=a.reduce(saved,{type:'back'});assert.equal(bad.ok,false);assert.equal(bad.state,null);assert.equal(bad.issues[0].code,'INVALID_STATE');
+ });
++
++
++test('query source contract: business parser never exempts shell-looking keys or malformed bytes', () => {
++  const core = coreModule.createIntlWorkspaceState(makeConfig());
++  for (const key of ['mmx_shell', 'mmx_generation', 'mmx_feature', 'mmx_shell_extra', 'MMX_SHELL', '%6Dmx_shell']) {
++    const result = core.parseQuery(key + '=1');
++    assert.equal(result.ok, false, key);
++    assert.equal(result.issues[0].code, 'INVALID_QUERY', key);
++    assert.deepEqual(result.state, core.initialState);
++    assert.equal(typeof result.issues[0].field, 'string');
++  }
++  for (const query of ['view', 'view=%zz', 'view=overview&%76iew=history', 'view=overview&&market=us-tech', 'view=overview&']) {
++    const result = core.parseQuery(query);
++    assert.equal(result.ok, false, query);
++    assert.equal(result.issues[0].code, 'INVALID_QUERY', query);
++    assert.deepEqual(result.state, core.initialState);
++  }
++});
+diff --git a/tests/js/shared_shell_bridge.test.cjs b/tests/js/shared_shell_bridge.test.cjs
+index 7fbc3fd338a0..0a5468108425 100644
+--- a/tests/js/shared_shell_bridge.test.cjs
++++ b/tests/js/shared_shell_bridge.test.cjs
+@@ -1896,3 +1896,77 @@ test('D the helper is pure: no location, history, message, attribute, focus or s
+   assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lead-rotation');
+   assert.strictEqual(a.getAttribute('href'), snapshot.href, 'the helper never rewrites the anchor');
+ });
++
++
++// The page query is a pure projection, not a navigation or admission signal.
++function queryReadSnapshot(ctx) {
++  return JSON.stringify({
++    href: ctx.location().href, active: ctx.api() && ctx.api().active,
++    sent: ctx.sent, sequence: ctx.seq, dispatched: ctx.dispatched.length,
++    pushes: ctx.pushCalls, replacements: ctx.replaceCalls,
++    scrolls: ctx.calls.scrollTo.length, focuses: ctx.calls.focus.length,
++    cssReads: ctx.calls.cssReads, styles: ctx.styles.length,
++    attributes: ctx.nodes.map(node => node.__attrs),
++    observers: ctx.docEl.__observers.map(observer => observer.__active),
++    windowListeners: Object.fromEntries(Object.entries(ctx.winL).map(([key, value]) => [key, value.length])),
++    documentListeners: Object.fromEntries(Object.entries(ctx.docL).map(([key, value]) => [key, value.length]))
++  });
++}
++
++test('page search: exact decoded transport keys are removed without changing other bytes', () => {
++  const cases = [
++    ['?mmx_shell=1&mmx_generation=g1', ''],
++    ['?view=library&market=TW&mmx_shell=1&horizon=3m&basis=local&mmx_generation=g1', '?view=library&market=TW&horizon=3m&basis=local'],
++    ['?mmx_shell=1&%6Dmx_generation=g1&%6Dmx_shell=other&mmx_generation=g1&q=A%20B&q=A+B&set=1%2c2', '?q=A%20B&q=A+B&set=1%2c2'],
++    ['?mmx_shell=1&&view=library&&mmx_generation=g1&', '?&view=library&&'],
++    ['?mmx_shell=1&mmx_generation=g1&mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag', '?mmx_feature=x&mmx_shell_extra=1&MMX_SHELL=1&bad%zz=x&flag'],
++    ['?mmx_shell=1&mmx_generation=g1&q=' + 'x'.repeat(9000), '?q=' + 'x'.repeat(9000)]
++  ];
++  for (const [query, expected] of cases) {
++    const ctx = harness({ childUrl: 'https://www.mastermind-x.com/tools' + query });
++    const api = ctx.api();
++    assert.equal(api.active, false);
++    assert.equal(api.readPageSearch(), expected);
++    assert.ok(Object.keys(api).includes('readPageSearch'));
++    assert.equal(Object.isFrozen(api), true);
++  }
++});
++
++test('page search: repeated pre and post INIT reads have no effects or queued work', () => {
++  const ctx = harness();
++  let timerCalls = 0;
++  const timer = ctx.sandbox.setTimeout;
++  ctx.sandbox.setTimeout = function () { timerCalls++; return timer.apply(this, arguments); };
++  for (const active of [false, true]) {
++    if (active) ctx.activate();
++    const before = queryReadSnapshot(ctx);
++    const timersBefore = timerCalls;
++    for (let i = 0; i < 100; i++) assert.equal(ctx.api().readPageSearch(), '?q=alpha');
++    assert.equal(queryReadSnapshot(ctx), before);
++    assert.equal(timerCalls, timersBefore);
++    assert.equal(ctx.api().active, active);
++  }
++  assert.equal(ctx.activeCount('NAVIGATE'), 0);
++  assert.equal(ctx.activeCount('READY'), 1);
++});
++
++test('page search: actual cleanup retires cached reader while persisted pagehide preserves it', () => {
++  const ctx = activated();
++  const reader = ctx.api().readPageSearch;
++  ctx.fireWin('pagehide', { persisted: true });
++  assert.equal(reader(), '?q=alpha');
++  ctx.fireWin('pagehide', { persisted: false });
++  assert.equal(ctx.sandbox.__MMX_SHARED_BRIDGE_INSTALLED__, true);
++  assert.equal(reader(), null);
++});
++
++test('page search: replacement and throwing current capability or location refuse without throwing', () => {
++  for (const failure of ['replacement', 'provider getter', 'location getter']) {
++    const ctx = harness();
++    const reader = ctx.api().readPageSearch;
++    if (failure === 'replacement') ctx.sandbox.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1' };
++    if (failure === 'provider getter') Object.defineProperty(ctx.sandbox, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider unavailable'); } });
++    if (failure === 'location getter') Object.defineProperty(ctx.sandbox, 'location', { configurable: true, get() { throw new Error('location unavailable'); } });
++    assert.equal(reader(), null, failure);
++  }
++});

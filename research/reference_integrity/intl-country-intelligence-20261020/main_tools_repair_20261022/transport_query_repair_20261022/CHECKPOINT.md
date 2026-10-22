@@ -1,73 +1,47 @@
 # International Markets — current continuation
 
-Recorded 2026-10-22 09:13:18 UTC. Continue original operation `intl-country-cockpit-20261018`, branch `sol/web-intl-country-cockpit-20261018`, [Draft PR #9596](https://github.com/mastermindx-market-intelligence/macro/pull/9596). This session is the sole original-workspace integrator on C2 Personal. The user has authorized continuation, repair and Draft publication.
+Recorded 2026-10-22T18:45:55.856938+00:00. Original operation intl-country-cockpit-20261018, original branch sol/web-intl-country-cockpit-20261018, Draft PR9596. Original C2 Personal integrator resumed under the user's current continuation instruction; same registered workspace and source custody. No alternate writer or Fabric replay.
 
-## Source and publication
+## Current source frontier
 
-- Final product source: **b380435c7d0f6d9bfc117dc7f6424b3309478fb7**. Typed source commit action `6b0d456abefc81294403efb59c6d93785c11f88e806eb8b918dc9d294a57f602` returned APPLIED, clean and index-synced.
-- It follows normal two-parent merge **51b217b3eb1ee211d54706d2673ab183de9452b3**, with ordered parents 20d22192613f1f5eb062d85e9aca1b2bb3e48036 and main 6a4c0079d1aec13b08cb554f6f7424b775165d09. Earlier main 90df integration and all prior evidence remain in ancestry.
-- At this checkpoint preparation the remote remains14ed4f12f31b71c63bbabd969aebbf9c4305ccaa. Pending changes contain evidence and checkpoint updates only.
-- **Current PR metadata and registered publication status own all subsequent commit/push/CI state. Reconcile them before acting. Do not replay an old pending-push instruction.**
-- Typed commit/push must fence the exact expected head. No force, reset, rebase, raw push or alternate carrier. The normal merge capability and its provenance remain documented in `OWNER_CAPTURED_LOCAL_MERGE_CAPABILITY.md`.
-- Mastermind procedure pin c9cbee5569ba50e30e28715d930809061a169517 remains the compatible mission pin.
+Published/local underlying HEAD at preparation is df1aa0c587bd1fef7a6b20fb69ca2e22afd423fd. The complete query-only repair is locally applied and independently accepted. The next typed local commit preserves it before an ordinary current-main composition. Reconcile actual publisher status instead of replaying this instruction. No Ready, protected-main merge, deployment or production acceptance.
 
-Current evidence directory: **main_composition_6a4_20261022/**. Older main 90df/790 records remain historical and must not be relabelled as current-source executions.
+Changed pairs: bridge24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf; workspace2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd. Tests cover pure pre-INIT reading, strict business queries, installed-provider/refusal behavior and atomic history/Inspector/Scenario handling. Canonical Screener bake changes bridge cache key only; 51 tests pass, payload unchanged. R1 remains NOT_ACCEPTED; this is original-integrator completion of two retained proposals with finite corrections and independent tests.
 
-## Completed and accepted
+## Verified query-only evidence
 
-| Area | Current result |
-|---|---|
-| CI coverage | Existing12-test International build suite enrolled. Foundation375 paths retained. All 349 job objects checked; five overlaps preserve both path changes and incoming commands. |
-| Theme composition | Both copies equal d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419: exact incoming theme plus five accepted International lines. Incoming23 Expectation Surface declarations preserved. |
-| P0B capture | Actual source 51b217b3, 128 passing cases,16 screenshots. Exact21-object full-history union preserves both parents and the incoming provenance wrapper. Independent ACCEPT. |
-| P0B validation | Receipt closure0;136 canonical tests passed in101.94s, no warnings. Explicit argv retained; completed09:03:30 UTC. |
-| Screener repair | Canonical bake changes only bridge/theme tokens. Payload and assets unchanged, watchstoredd730491 retained, zero banner.51 tests passed in12.38s; independent ACCEPT. |
-| Ordinary International build | Exact b380435c, no overlays,510 verified retained inputs and43 retained assets. HTML SHA256 bf8066967a885bd226ccc1abe622e626349e431d11c38cda6e19331751d9edae. |
-| Requested fragment/country rerun |22/22 fragment and Tools landings;28/28 country/history checks. All seven country sections byte-identical to the frozen approval. Completed09:10:32 UTC. |
-| Visual spot review | Root inspected actual desktop English/light and320px Chinese/dark Japan images. Clear landings and readable content; no full visual-matrix or production claim. |
-| Data/access applicability |21 original reviewed hashes remain exact;23 of24 equal the prior composition. Current CI exception has separate ACCEPT. Access source/assertions unchanged; prior31-test access result retained at its actual48b5 source. |
+- regressions_candidate/receipt.json:220 International browser,192 bridge/adapters,21 state,34 injection tests pass; template/site sync and CI manifest pass. Root reverified all11 source hashes and6 log hashes against actual working bytes.
+- query_negative_control_receipt.json: published base2/2 expected semantic failures; rejected R1 consumer11/11 expected failures; corrected targeted native/standalone2/2 pass. Earlier v1 fixture failure is retained and superseded, not relabelled.
+- OWNER_CAPTURED_QUERY_ONLY_REVIEW_20261022.md: independent ACCEPT, specifically excluding GS composition and actual-parent/production.
+- QUERY_ONLY_SOURCE_BINDING_20261022.json:59 actual P0B capture dependencies remain unchanged by this query-only delta. Existing fixture capture identity51b217b is preserved. Reassess after incoming main.
+- HOSTED_DF1_CI_ACCEPTANCE_20261022.json: final hosted CI39754420313 accepted for published df1, all12packs,136logicaljobs,394proofs,0infra. This is not candidate-head CI.
 
-P0B execution receipt SHA256:9b19e0d2a016024b5636ff1599a62af12a50f76c5f07326fdbb2a1ec773fb172. Current manifest:ba006303b4701dcd21a4cae7dc8e194ba125bd32ee67738ae34a5b5ff0d406ac. Capture identity remains51b217b3; browser fixture reproducible, canonical build unavailable, production none.
+## R2 historical adjudication
 
-The four named data findings were independently accepted at14ed in `../PRINCIPAL_DATA_CONTRACT_REVIEW.md`. This accepts FX custody logic, forecast lifecycle, BIS comparability and optional-stock handling, not genuine production acquisition. Current applicability is in `main_composition_6a4_20261022/DATA_REVIEW_SOURCE_APPLICABILITY.json`.
+R2_HISTORICAL_PROVIDER_EFFECT_REVIEW_20261022.json binds retained request/launch/return/support/process evidence to exact historical controller/executor/sub/slot bytes. The provider task did not start: the actual refusal branch returns78 before lease/payload execution. Controller/remote executor/preparation/refusal-ledger effects did occur. Root and independent reviewer accepted this narrow source-control-flow conclusion. No Fabric status, acceptance, retry, host re-enrollment or provider replacement is performed. C0 read-only artifact-return hold stays separate. The original source integrator's correction is PRINCIPAL_JUDGMENT plus UNIQUE_APPROVED_ACCESS, not a fabricated R2 return. Preserve current canonical Fabric terminal/nonretryable fields. Existing host fix is done and must not be repeated.
 
-## Latest observed main compatibility
+## New material current-main integration
 
-Main2e73187730af5352543ca23bea40250563f48d6c contains later public rendering, Cycle work and records. Its 12,959 changed paths have zero overlap with this branch's changes since incorporated6a4. Exact-object merge-tree with b380435c is clean at5885e44b2be2babd5b69c322cbc1811b57582e59.
+Observed main2d33475adef502ab6b00b8003356c1b0ad1673c0 includes GS foundation9949 and changes both workspace copies plus state/GS view validity. Preserve both incoming GS and query behavior. Exact later checkpoint comments6341822013,6347519378 and6347855023 were consumed read-only. They corroborate the same incumbent dirty candidate; their separate receiver could not address this original session and made no source edits.
 
-All 42 non-HTML build assets and59 P0B dependency bindings match the prospective tree. See `LATEST_MAIN_CHECK.json` and `LATEST_MAIN_APPLICABILITY.json` under the current evidence directory. This is input applicability, not a new runtime or production claim. No ancestry-only merge is needed.
+Compose two mount/popstate regions using guarded external.query, then pure GS clamp and one intentional market-only alignment. Null-to-null, absent market key, unchanged market, transport-only differences and rejected queries must not rewrite history. Preserve unrelated raw business query bytes. This semantic obligation is not satisfied by syntax-only conflict resolution. Run GS browser/Python suites plus relevant existing International/Shell tests; obtain independent composed-source acceptance.
 
-## Hosted CI and publication boundary
+The previously compatible main968 check is historical and does not cover this new overlapping GS source. Use normal two-parent merge in the existing workspace; no fake ancestry, wholesale side choice or alternate carrier. OWNER_CAPTURED_LOCAL_MERGE_CAPABILITY.md records why the single-parent typed commit cannot finish a true merge and ordinary local merge is available. Typed fenced publication remains mandatory.
 
-The preceding14ed run 39735499640 completed with one candidate regression: stale Screener output. Eleven packs passed;136 logical jobs yielded387 passed proof steps and no infrastructure findings. Exact-base replay passed51 Screener tests. The active main authority check passed; pilot context was inactive. The generated defect is repaired, but old CI does not cover the new publication head.
+## Exact next work
 
-Run the seven repository guards on the evidence commit using `main_composition_6a4_20261022/run_final_repository_guards.py --label evidence`. Its base is the exact incorporated6a4 commit. Commit only resulting verification records after that run, publish the original Draft through the registered typed operation, replace every PR-template placeholder from actual receipts, and consume exact-head hosted CI.
+1. Preserve this accepted query-only source via typed local commit at expected df1, then inspect/compose actual fetched main2d334 with normal merge. Keep all source/test evidence.
+2. Validate GS semantics and changed dependency applicability; update/review source, canonical generated cache output and affected evidence.
+3. Produce immutable source commit and ordinary non-overlay build using build_query_candidate.py. Reconcile reserved artifact path first.
+4. Execute approved actual Terminal parent v11 query matrix; reassess saved Library focus. Existing actual parent e45bde2 and old query baseline73/14 plus v9 full816/1 remain historical failures until fresh proof. Retained snapshots show false query rejection hid/disabled the Library input; do not introduce a speculative parent focus fix.
+5. Rerun fragment22/country28 and seven-country frozen equality on the fresh normal artifact, then repository gates, independent acceptance, exact-head draft publication and new CI.
 
-## Query repair: preserve both held attempts
+Frozen artifact883a1e48efdf9c334c08665262efa0961b1997a0, source442042e591d255dd24b540ff240edb4c0410c297, HTMLad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0 and144 historical bindings remain unchanged. Previous completed proof/details are in CHECKPOINT_PRE_QUERY_COMPLETION_20261022.md.
 
-No query repair is applied. Six paired bridge/workspace/state production paths remain byte-identical to14ed.
+RELEASE-INTL-FX-CUSTODY still requires genuine full-history acquisition after protected adoption, seven stores, actual endpoint receipts/source clocks and renderer consumption. RELEASE-INTL-SERVED needs covering normal render/updater adoption and actual anonymous desktop/mobile/language/theme/navigation/assistant/access journeys. India/Taiwan GDP is a separate extension. Shared render9894 merged is not International production acceptance.
 
-- R1: `intl-20261022-workspace-transport-query-r1`, controller 23994, terminal 0 but NOT_ACCEPTED. Complete response SHA256 edaad4335d4feb161610cbbdd36a25da55fdb52025e59cf2f08b88a525bd6766. Only two unique production diffs arrived; the complete seven-file test patch was not delivered. Independent REQUEST_CHANGES requires installed-provider classification, containment of throwing property lookups, and the legitimate additive API inventory assertion. The claimed failing pristine baseline remains unsubstantiated.
-- Artifact retrieval: `intl-20261022-query-r1-artifact-return`, controller 37546, terminal 1, response unconfirmed/provider429. Execution absence unproven; retry false.
-- R2: `intl-20261022-workspace-transport-query-r2`, controller 72069, terminal 78 / EXECUTION_NOT_ELIGIBLE. Mandatory source-integrity error `canonical_source_unreadable / object_root_config_or_promisor`. Complete191-byte response SHA256 a801eede8f27859cff90d47564adcc41b02a0d5ba5873a7e68e96561da4bb3b3. Execution absence unproven; retry false.
-- All use root 01a1101f-2a37-7320-9a9b-5df3ce1b890d. Latest original-owner readbacks are retained in `main_composition_6a4_20261022/QUERY_HELD_STATUS_RECHECK.json`; neither fence has changed.
+No Slack/email or PR comment sent by this integrator. PR body was updated13:10UTC for df1CI; later comments belong to their separate read-only owners. Mission incomplete; continue useful authorized work.
 
-This is a local canonical-source admission failure, not evidence of a provider safety/permission refusal or universal outage. The original controller did launch its remote executor. Existing Fabric host qualification/provisioning and request/status owners must bind the executed slot bytes, distinguish config-read failure from rejected configuration, and adjudicate the exact run. Do not remove flags, change roots/pins/providers, replay the request, or substitute another actor for the held repair. See `OWNER_CAPTURED_QUERY_R2_GATE_REVIEW.md`.
+## Procedure compatibility
 
-## Remaining release work
-
-Retained actual-parent v9 remains816 passed/1 failed overall: saved Library-input focus returns to BODY while scroll restores. The actual unmodified Terminal parent tested for these results is e45bde2cac07ac3b29285ff70c40d68900fad62c.
-
-Accepted query driver v11's baseline remains5 contexts,73 passed/14 failed. Ordinary shell transport parameters produce false invalid-query warnings and prevent valid TW/3m/local History state. Matching fresh Library INIT finds the input disabled/hidden. A readiness contributor is established; a unique focus-timing cause is not. All owned proof servers are stopped; no corrected query candidate has run.
-
-Frozen artifact 883a1e48efdf9c334c08665262efa0961b1997a0, accepted source 442042e591d255dd24b540ff240edb4c0410c297, approved HTMLad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0 and144 historical bindings are unchanged.
-
-After current-head CI, recover the held query operation through its existing owners, accept a complete corrected artifact, and execute ordinary-build plus actual-parent v11 proof. Reassess saved focus after query readiness is repaired.
-
-RELEASE-INTL-FX-CUSTODY requires actual protected-main adoption, full-history acquisition into the seven canonical stores, real endpoint receipts/run/source custody and renderer consumption. RELEASE-INTL-SERVED requires normal acceptance, covering render, updater adoption and actual served journeys. Existing staged FX preparation is complete. India/Taiwan observed-GDP follow-up is a separate extension, not a missing current-release gate.
-
-No Ready transition, protected-main merge, deployment, production acquisition or complete-build claim. No Slack/email/checkpoint comment was sent.
-
-## Final gate receipt
-
-All seven required repository gates passed on evidence head de5e3125484ea20f715e242d73fd53a1164c8860, completed 2026-10-22 09:15:35 UTC. The exact receipt is `main_composition_6a4_20261022/guards_evidence/receipt.json`; it compares against incorporated main6a4. Remaining local changes are verification records only. Current publisher status and PR metadata govern the final receipt commit, push and subsequent exact-head CI; reconcile those instead of rerunning completed guards or replaying a publication action.
+Inherited verified procedure pinf14fac19d722455d7c8a84cefac6374f19978a64 retained. Current protected Mastermindc3623f7b9804fee28fa8204775f952fb22fe3d98 INDEX remains compatible1.0.1; 19-commit compare has no changes to required sol_skills or the routing-chairman/dialogue companions. Logical-frontier selection documentation changed without changing source-custody or admission authority.
