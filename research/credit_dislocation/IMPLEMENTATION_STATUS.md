@@ -1,3 +1,17 @@
+# Current implementation status — reconciled main, 22 October 2026
+
+**Source/artifact qualification complete on the recorded scope; broader Bonds release remains Draft/HOLD.**
+
+This containing merge preserves published `5a184be` and integrates main `2926e831`. The single generated-page conflict was an upstream build-timestamp edit; the actual qualified candidate artifact is retained. All 25 recorded native source files and 29 artifact records match. Both existing page/stylesheet contract tests passed in 4.92s on tree `67ee6bf5056e1a72d01eb330578ef443a986380a`. No native rebuild or observation refresh.
+
+Earlier 302-test/four-guard and native results remain bound to their original trees. Exact published head and ordinary CI are in canonical #9590 comment6337092277. Prior run39782577843 failed on now-repaired liquidity declarations and still-missing duration/CDI visual evidence. The browser, review, owner-contract and release gates remain open.
+
+Forex #10052 head3db8846 now has 355 local tests and green CI39787499393 (12 packs + gate) and fences39787499203. Active source admission remains separate. Tiingo licensing is complete by Chairman attestation.
+
+See MASTERPLAN.md, CONTINUATION.md, OWNER_CONTRACTS_20261022.md and evidence/current_main_generated_conflict_20261022.json for exact continuation and retained failures.
+
+## Historical implementation records
+
 # Current implementation status — 22 October 2026
 
 **Source composition qualified; browser/visual, review and production gates remain held.** This containing merge descends from414d785 + CI-tested maina37bfdcd. Publication/head and later CI are recorded in canonical#9590 comment6337092277.

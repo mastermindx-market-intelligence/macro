@@ -1,3 +1,41 @@
+# Bonds current-main reconciliation — 22 October 2026
+
+**The source composition is qualified; the broader Bonds project remains Draft/HOLD.** This containing merge joins published `5a184be55ccc62422790c64488d4281949d62b87` with main `2926e83157923c754751818026a4d0ce89a2a977`. The canonical [CDI checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) and [joint recovery checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) record the final publication identity and subsequent CI.
+
+## Completed reconciliation
+
+The earlier liquidity-scope composition was committed and normally pushed once as `5a184be` at 13:46:33 UTC. Its authority run 39789851113 passed, but ordinary CI and fences did not start while GitHub reported a conflict against newer main. The actual main ref was reconciled independently of the stale PR base field.
+
+The only conflict was `site/bonds.html`. Comparing base, candidate and incoming bytes proved that upstream changed the older page's build timestamp from 10:33 to 12:05 UTC and nothing else. That older page lacks all four candidate surfaces. The resolution retains the actual qualified candidate page, its real build timestamp and its evidence scope, while inheriting the other accepted upstream changes. No native build, asset optimization, provider acquisition or source-clock refresh was performed.
+
+| Qualification | Exact result |
+| --- | --- |
+| Resolved source/artifact tree | `67ee6bf5056e1a72d01eb330578ef443a986380a` |
+| Recorded native source | All 25 files match the already qualified liquidity-base source hashes. The earlier single accepted liquidity DAG registration remains the only difference from the original native source record. |
+| Packaged artifact | All 29 artifact records match; HTML remains 521,406 bytes, SHA256 `f50ac4fe92898a44b24c74442fbe2df1487948c79b2a2ef78d7885ea7c33b0d9`. |
+| Resolved page verification | Both existing committed-page/fingerprinted-stylesheet tests passed in 4.92s at 14:21:22 UTC. Source and artifacts remained unchanged. |
+| Retained broader qualification | The 302 source/artifact tests and four curation guards on `033890f7` remain accepted on that identity. They were not relabelled as new executions after this merge. Ordinary CI must qualify the published merge. |
+
+See [the reconciliation receipt](evidence/current_main_generated_conflict_20261022.json) and the earlier [liquidity-base receipt](evidence/liquidity_ci_base_qualification_20261022.json).
+
+The sparse merge removed the page's parent directory. The first wrapper stopped after the recorded merge and before restoring the artifact; only that uncompleted restoration resumed. A later broad whitespace check encountered inherited whitespace in unrelated accepted upstream generated pages and stopped before the artifact tests. The resolved page remained identical to the qualified candidate; sampled reported pages matched upstream exactly. The focused resolution check passed and only the two unstarted artifact tests then ran. Both interrupted wrappers remain recorded. No merge, build, completed test or uncertain effect was replayed; CI gates were not changed.
+
+## Release gates and ordered continuation
+
+1. Reconcile the `generated-conflict-source-commit-*` and `generated-conflict-publication-*` intent/result files in the existing private proof directory before any effect. Consume the ordinary automatic CI for the actual published head. Keep #9590 Draft with auto-merge unset.
+2. Preserve the prior CI findings. Run 39782577843 on parent `414d785` completed failure: contract/pack 1 identified the two liquidity paths repaired in `5a184be`; pack 3 job 119838304137 identified missing owning visual receipts for both `templates/_bonds_duration.html.j2` and `templates/_credit_dislocation.html.j2`. Those visual gates remain open. R11 run 39780032716 likewise retains its genuine duration-receipt failure with the other 11 packs passing.
+3. Obtain real admission/restoration and the accepting operator through the existing capture owner. The original administrator denial remains binding. Preserve the complete visual/interaction acceptance scope below; no alternate browser, profile, session or host.
+4. Continue the source-linked deliverables in [OWNER_CONTRACTS_20261022.md](OWNER_CONTRACTS_20261022.md). These remain UNADOPTED REQUIREMENTS: W4 per-instrument history and coverage; W5 funding input/subject/scenario binding; W6 immutable Bonds evidence and current access through the incumbent writer; an accepted prospective protocol and first eligible cohort. No new resolver, grader, evaluator or cohort is inferred from documentation.
+5. Preserve the terminal/unqualified original review results and Terminal #1106's original-review-only condition. There is no pending qualifying continuation. A different review requires a specific amendment. The separate deployment safety refusal, migration 0038's completed application and #804's T03k unknown-effect custody remain binding.
+
+Forex #10052 remains published at `3db88469490925ff9ed23eec4a87eb19a0ff0cec`. Its 355 local tests, all 12 automatic CI packs and final gate now pass; CI 39787499393 completed SUCCESS at 14:07:43 UTC and fences 39787499203 passed. This does not admit the source for active monitoring: current-slot support, technical owner adoption, qualified review and revision-safe dispatch remain separate gates.
+
+Tiingo licensing/intended use remains COMPLETE by Chairman special-license attestation; no outreach. Immutable Macro #9996, its green CI, covering render 39688064251, genuine inactive-condition CRUD, held carry/COT/RiskRadar work and all original workspaces remain preserved. Compatible protected Skillpack pin: `230e9a301ed774e79410829f1b5c049226fa59f1`.
+
+## Retained earlier composition plans and evidence
+
+The current section supersedes earlier pending commit, push, merge and build instructions. Historical evidence remains on its original identity.
+
 # Bonds completion plan — current recovery checkpoint
 
 ## Qualified CI-base composition — 22 October 2026

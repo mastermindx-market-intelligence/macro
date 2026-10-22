@@ -1,3 +1,39 @@
+# Replacement-session entry — current-main generated-page reconciliation
+
+Continue the same Forex/Bonds mission and owners. Read MASTERPLAN.md, evidence/current_main_generated_conflict_20261022.json, OWNER_CONTRACTS_20261022.md and the latest canonical CDI comment6337092277 / joint comment6336042815. Refresh a compatible protected Skillpack pin before a new modifying phase.
+
+## Exact completed work
+
+The liquidity-base composition is already published as `5a184be55ccc62422790c64488d4281949d62b87` at 13:46:33 UTC. It preserves 302 passing source/artifact tests and four passing curation guards, all prior native evidence and the owner-contract document. Do not repeat that commit or push.
+
+This containing merge integrates main `2926e83157923c754751818026a4d0ce89a2a977`. Its sole conflict, site/bonds.html, is resolved to the exact qualified candidate artifact because incoming changed only the older page's build timestamp. All 25 recorded source hashes and all 29 artifact records match the preceding qualified composition. Resolved tree `67ee6bf5056e1a72d01eb330578ef443a986380a` passed the two committed-artifact checks in 4.92s at 14:21:22 UTC. No build or source observation was repeated.
+
+## Reconcile effects before action
+
+Workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001`. Local branch: `sol/web-ccw-cdi-source-integration-20261022-sol-001`. Remote owner: `claude/ssd-ccw-dislocation-v1-cc87720e59421398`, existing PR #9590.
+
+Read these files in `.cdi-proof/integration-20261022`:
+
+- `liquidity-base-source-commit-result.json` and `liquidity-base-publication-result.json`: completed 5a184be effects.
+- `post-liquidity-main-preview-20261022.json`, `current-main-generated-conflict-intent.json`, `current-main-generated-conflict-merge-result.json`: the one already applied newer-main merge.
+- `current-main-generated-conflict-materialization-resume.json` and `current-main-generated-conflict-whitespace-reconciliation.json`: interrupted wrapper phases. The merge/resolution must not be repeated.
+- `current-main-generated-conflict-resolution.json` and `current-main-generated-conflict-artifact-tests.json`: qualified resolved tree.
+- `generated-conflict-source-commit-{intent,result}.json` and `generated-conflict-publication-{intent,result}.json`: reconcile their actual presence and effect state with HEAD/index/MERGE_HEAD and the same remote. Missing command output never authorizes replay.
+
+If publication is already APPLIED, read its automatic CI by exact head. No manual workflow retry or replacement run. Original CI failures stay recorded; current success must have its own identity.
+
+## Remaining work in order
+
+The original browser denial, genuine duration/CDI visual receipts, accepting capture operator, qualified independent review, source-owner adoption and authorized production proof remain open. Preserve every tablet/contrast/reduced-motion/keyboard/input correction/fractional/edit/reset/close/reopen/focus-return obligation documented below. Native HTML and older synthetic or source-inspector captures cannot satisfy this gate.
+
+Use OWNER_CONTRACTS_20261022.md for the concrete W4/W5/W6 and prospective deliverables and unresolved existing owners. No new store, evaluator, watcher, lifecycle, queue or publication plane. Terminal #1106 remains Draft/HOLD under the original-review-only condition and deployment refusal; no migration 0038 replay or #804 unknown-effect workaround.
+
+Forex head3db8846 has 355 local tests and green CI39787499393/fences39787499203. Preserve its genuine inactive CRUD and immutable Macro #9996/render evidence. Active monitoring/source admission remains unproved. Licensing is complete; no Tiingo support/licensing email.
+
+## Historical continuation records
+
+The following older instructions are retained history and superseded by the current effect identities above.
+
 # Replacement-session continuation — Bonds and Forex
 
 Read MASTERPLAN.md, evidence/liquidity_ci_base_qualification_20261022.json and OWNER_CONTRACTS_20261022.md, then the latest canonical #9590 comment6337092277 and joint #9996 comment6336042815. Refresh a compatible protected Mastermind pin. Continue the same PRs, branches, workspaces and original operations.

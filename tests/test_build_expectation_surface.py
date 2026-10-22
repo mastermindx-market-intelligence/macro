@@ -173,11 +173,12 @@ def test_index_and_ticker_file_contract_keys(fake_root: Path):
     index = _read_json(base / "tickers" / "index.json")
     assert isinstance(index, list) and index
     for entry in index:
-        assert set(entry) == {"ticker", "sessions", "latest_at", "identity_status"}
+        assert set(entry) == {"ticker", "sessions", "latest_at", "identity_status",
+                              "company_page"}
     assert [e["ticker"] for e in index] == ["AAA", "BBB", "CCC", "DDD", "EEE"]
     tf = _read_json(base / "tickers" / "AAA.json")
-    assert set(tf) == {"ticker", "identity_status", "financial_influence",
-                       "k3e_admissible", "series"}
+    assert set(tf) == {"ticker", "identity_status", "company_page",
+                       "financial_influence", "k3e_admissible", "series"}
     for metric, horizons in tf["series"].items():
         for horizon, points in horizons.items():
             for p in points:
@@ -190,6 +191,53 @@ def test_index_and_ticker_file_contract_keys(fake_root: Path):
     assert [p["at"] for p in tf["series"]["EPS"]["0q"]] == [AT[S1], AT[S2], AT[S3]]
     assert tf["series"]["revenue"]["0q"][0]["average"] == 1000.0
     assert tf["series"]["EPS"]["0q"][0]["analysts"] is None
+
+
+# ---------------------------------------------------------------------------
+# company_page link-out (wave 3a)
+# ---------------------------------------------------------------------------
+
+def test_company_page_link_from_rendered_pages(fake_root: Path):
+    """A ticker with a rendered stocks/<T>.html page gets company_page set on
+    its index entry and its ticker file; one without stays None."""
+    (fake_root / "site" / "stocks").mkdir(parents=True, exist_ok=True)
+    (fake_root / "site" / "stocks" / "AAA.html").write_bytes(b"<html></html>")
+    _build(fake_root)
+    index = {e["ticker"]: e for e in
+             _read_json(fake_root / "site" / "expectation_surface" / "tickers" / "index.json")}
+    assert index["AAA"]["company_page"] == "stocks/AAA.html"
+    assert index["BBB"]["company_page"] is None
+    aaa = _read_json(fake_root / "site" / "expectation_surface" / "tickers" / "AAA.json")
+    ddd = _read_json(fake_root / "site" / "expectation_surface" / "tickers" / "DDD.json")
+    assert aaa["company_page"] == "stocks/AAA.html"
+    assert ddd["company_page"] is None
+
+
+def test_company_page_none_without_stocks_dir(fake_root: Path):
+    """No stocks/ directory at all: every entry and ticker file carries
+    company_page None and the build completes."""
+    assert not (fake_root / "site" / "stocks").exists()
+    _build(fake_root)
+    base = fake_root / "site" / "expectation_surface" / "tickers"
+    for entry in _read_json(base / "index.json"):
+        assert entry["company_page"] is None
+    for tf in base.glob("*.json"):
+        if tf.name == "index.json":
+            continue
+        assert _read_json(tf)["company_page"] is None
+
+
+def test_template_company_link_hidden_by_default(fake_root: Path):
+    """The rendered page ships the card link hidden, href-less, bilingual, and
+    guarded by the JS stocks-path regex (defense in depth)."""
+    _build(fake_root)
+    html = (fake_root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
+    assert html.count('id="es-card-link"') == 1
+    m = re.search(r'<a class="es-link es-card-link"[^>]*>', html)
+    assert m, "es-card-link anchor missing"
+    assert "hidden" in m.group(0) and "href=" not in m.group(0)
+    assert "Company page" in html and "公司页面" in html
+    assert r"^stocks\/[A-Z0-9.\-]{1,12}\.html$" in html
 
 
 # ---------------------------------------------------------------------------
