@@ -137,6 +137,84 @@ def test_expired_shared_cookie_recovers_with_canonical_auth_client(monkeypatch):
     assert "Your membership hasn't been classified as unpaid" in r.text
 
 
+def test_bot_renewal_csp_restricts_transitive_third_party_scripts(monkeypatch):
+    """The shared Macro theme injects Umami; Bot's cookie-bearing 401 must block it."""
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    a = _check("/desk?symbol=AAPL", headers={"Sec-Fetch-Dest": "document"})
+    b = _check("/desk?symbol=AAPL", headers={"Sec-Fetch-Dest": "document"})
+    assert a.status_code == b.status_code == 401
+    csp = a.headers["content-security-policy"]
+    match = re.search(r"nonce=\"([a-f0-9]{32})\"", a.text)
+    assert match, "the recovery script must carry its server-generated CSP nonce"
+    assert f"script-src 'nonce-{match.group(1)}' https://www.mastermind-x.com;" in csp
+    assert "default-src 'none'" in csp
+    assert "connect-src https://fsldfzlxyavsuwqbceod.supabase.co" in csp
+    assert "base-uri https://www.mastermind-x.com" in csp
+    assert "frame-ancestors 'none'" in csp
+    script_src = csp.split("script-src ", 1)[1].split(";", 1)[0]
+    assert "'unsafe-inline'" not in script_src
+    assert "cloud.umami.is" not in csp
+    assert "www.googletagmanager.com" not in csp
+    assert "__MM_BOT_CSP_NONCE__" not in a.text
+    assert f"nonce=\"{match.group(1)}\"" not in b.text, "per-response nonces must rotate"
+    assert a.headers["referrer-policy"] == "no-referrer"
+    assert a.headers["cache-control"] == "private, no-store"
+
+
+def test_broken_csp_or_missing_template_fails_closed_without_scripts(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    broken = tmp_path / "bad-renewal.html"
+    broken.write_text("<!doctype html><script>danger()</script>", encoding="utf-8")
+    monkeypatch.setattr(paywall, "PRO_SESSION_RENEW", broken)
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 401
+    assert "danger()" not in r.text
+    assert "Sign in again" in r.text
+    assert "default-src 'none'" in r.headers["content-security-policy"]
+    assert "script-src" not in r.headers["content-security-policy"]
+
+
+def test_legacy_browser_deep_link_still_gets_renewal_html(monkeypatch):
+    """Some browsers omit Sec-Fetch-Dest; Accept: text/html is a safe fallback."""
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    r = _check("/desk?symbol=AAPL", headers={"Accept": "text/html"})
+    assert r.status_code == 401
+    assert r.headers["content-type"].startswith("text/html")
+    assert "content-security-policy" in r.headers
+    assert "mm-bot-renew" in r.text
+
+
+@pytest.mark.parametrize(
+    "path,headers",
+    [
+        ("/api/positions", {"Accept": "text/html"}),
+        ("/desk", {"Accept": "text/html", "Sec-Fetch-Dest": "script"}),
+        ("/desk", {"Accept": "text/html", "X-Original-Kind": "asset"}),
+        ("/assets/bot.js", {"Accept": "text/html"}),
+    ],
+)
+def test_bot_api_asset_or_explicit_fetch_never_confused_with_document(
+    monkeypatch, path, headers,
+):
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    r = _check(path, headers=headers)
+    assert r.status_code == 401
+    assert r.headers["content-type"].startswith("application/json")
+    assert r.json()["error"] == "session_reverification_required"
+
+
 def test_expired_api_session_refuses_without_upgrade_offer(monkeypatch):
     monkeypatch.setattr(
         "app.main._mm_supabase_access_token",
@@ -827,6 +905,7 @@ DOCUMENT = ROOT / "app" / "paywall_pro_session_refresh.html"
         ("bounded_repeat", "yes", "fresh", True, True, False, 0, 0),
         ("missing_sdk", "yes", "fresh", False, False, False, 0, 0),
         ("storage_unavailable", "yes", "fresh", False, True, True, 0, 0),
+        ("auth_timeout", "yes", "pending", False, True, False, 1, 0),
     ],
 )
 def test_shipping_session_renewal_behavior(
@@ -840,7 +919,7 @@ def test_shipping_session_renewal_behavior(
     expected_reload: int,
 ) -> None:
     html = DOCUMENT.read_text(encoding="utf-8")
-    scripts = re.findall(r"<script(?:\\s+[^>]*)?>(.*?)</script>", html, re.S)
+    scripts = re.findall(r"<script(?:\s+[^>]*)?>(.*?)</script>", html, re.S)
     actual = next((s for s in scripts if "function refresh()" in s), "")
     assert actual, "shipping recovery code missing"
     fixture = json.dumps(
@@ -852,6 +931,9 @@ const vm = require('node:vm');
 const fixture = __FIXTURE__;
 const javascript = __SOURCE__;
 let calls = 0, reloads = 0, status = {textContent:''};
+const timers = new Map();let nextTimerId = 0;
+function armTimer(fn,ms){let id=++nextTimerId;timers.set(id,{fn,ms});return id;}
+function disarmTimer(id){timers.delete(id);}
 const key = 'mm.bot.session-renew.v1';
 const memory = new Map();
 if (fixture.prior) memory.set(key, String(Date.now() - 800));
@@ -870,9 +952,10 @@ if(fixture.hasBroker) window.getSupabaseClient = () => {
     access_token:'test-only-not-authenticated',
     expires_at:Date.now()/1000 + (fixture.result==='fresh' ? 3600 : -300)
   };
-  return Promise.resolve({auth:{getSession:()=>Promise.resolve({
-    data:{session},error:fixture.result==='none'?{message:'no session'}:null
-  })}});
+  return Promise.resolve({auth:{getSession:()=>fixture.result==='pending'
+    ? new Promise(()=>{}) : Promise.resolve({
+      data:{session},error:fixture.result==='none'?{message:'no session'}:null
+    })}});
 };
 vm.runInNewContext(javascript, {
   window,document,location:{reload(){reloads++;}},
@@ -880,11 +963,18 @@ vm.runInNewContext(javascript, {
     getItem(k){if(fixture.storageOff)throw Error('storage unavailable');return memory.get(k)||null;},
     setItem(k,v){if(fixture.storageOff)throw Error('storage unavailable');memory.set(k,v);}
   },
-  Date,Number,JSON,Math,Promise,console
+  Date,Number,JSON,Math,Promise,console,setTimeout:armTimer,clearTimeout:disarmTimer
 });
-setImmediate(()=>setImmediate(()=>{
-  process.stdout.write(JSON.stringify({calls,reloads,prompt:status.textContent.includes('Please sign in again')}));
-}));
+setImmediate(()=>{
+  if(fixture.result==='pending'){
+    const timeout=[...timers.values()].find(x=>x.ms===12000);
+    if(!timeout)throw Error('Missing 12s Auth timeout');
+    timeout.fn(); // deterministic fake clock: prove the page is not stuck.
+  }
+  setImmediate(()=>{
+    process.stdout.write(JSON.stringify({calls,reloads,prompt:status.textContent.includes('Please sign in again')}));
+  });
+});
 """.replace("__SOURCE__", json.dumps(actual)).replace("__FIXTURE__", fixture)
     result_proc = subprocess.run(
         ["node", "-e", harness], text=True, capture_output=True, timeout=10, check=False

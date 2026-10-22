@@ -693,9 +693,26 @@ def _operator_unlimited(email: str) -> bool:
         return False
 
 
+def _is_bot_document(request: Request, path: str) -> bool:
+    """Recognize legacy browser navigations without changing the Macro site wall.
+
+    A missing Sec-Fetch-Dest on a Bot deep link should not strand a real browser
+    on raw 401 JSON; explicit fetch/asset/API semantics still win.
+    """
+    if _is_document(request, path):
+        return True
+    if request.headers.get("sec-fetch-dest") or request.headers.get("x-original-kind"):
+        return False
+    if path.startswith(("/api/", "/ws/")) or path.lower().endswith(
+        (".js", ".css", ".json", ".svg", ".ico", ".png", ".jpg", ".woff2")
+    ):
+        return False
+    return "text/html" in (request.headers.get("accept") or "").lower()
+
+
 def _locked_pro(request: Request, path: str, tier: str) -> Response:
     """403 for the Pro host: the interstitial for a document, JSON for anything else."""
-    if _is_document(request, path):
+    if _is_bot_document(request, path):
         try:
             body = PRO_INTERSTITIAL.read_text(encoding="utf-8")
         except Exception:  # noqa: BLE001 — still deny, with a self-contained fallback
@@ -721,11 +738,14 @@ def _unavailable_pro(request: Request, path: str, *, busy: bool = False) -> Resp
     """
     headers = _headers("unavailable")
     headers["Retry-After"] = "5"
-    if _is_document(request, path):
+    if _is_bot_document(request, path):
         try:
             body = PRO_UNAVAILABLE.read_text(encoding="utf-8")
             if busy:
-                body = body.replace('name="mm-bot-service-retry" content="enabled"',
+                marker = 'name="mm-bot-service-retry" content="enabled"'
+                if body.count(marker) != 1:
+                    raise ValueError("missing Bot busy-mode retry control")
+                body = body.replace(marker,
                                     'name="mm-bot-service-retry" content="disabled"')
         except Exception:  # noqa: BLE001
             body = (
@@ -741,6 +761,29 @@ def _unavailable_pro(request: Request, path: str, *, busy: bool = False) -> Resp
     )
 
 
+def _pro_renewal_csp(nonce: str) -> str:
+    """Allow the existing first-party Supabase broker, never third-party scripts.
+
+    The loaded Macro theme script also offers third-party analytics; on a Bot
+    renewal page that holds shared, non-HttpOnly login cookies, those scripts
+    must not execute. No new auth client is created here.
+    """
+    from app.main import SUPABASE_URL  # noqa: PLC0415
+
+    auth = urllib.parse.urlsplit(SUPABASE_URL)
+    if auth.scheme != "https" or not auth.hostname or auth.username or auth.password:
+        raise ValueError("unusable Supabase origin for Bot recovery CSP")
+    auth_origin = f"https://{auth.netloc}"
+    return (
+        "default-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://www.mastermind-x.com; "
+        f"connect-src {auth_origin} https://www.mastermind-x.com; "
+        "style-src 'unsafe-inline'; "
+        "base-uri https://www.mastermind-x.com; "
+        "form-action 'none'; object-src 'none'; frame-ancestors 'none'"
+    )
+
+
 def _reverify_pro_session(request: Request, path: str, *, expired: bool) -> Response:
     """An unverified token is not proof that a signed-in subscriber is unpaid.
 
@@ -749,17 +792,31 @@ def _reverify_pro_session(request: Request, path: str, *, expired: bool) -> Resp
     request verified by this server can enter the Bot. All branches deny.
     """
     headers = _headers("session-refresh")
-    if _is_document(request, path):
+    headers["Referrer-Policy"] = "no-referrer"
+    if _is_bot_document(request, path):
         try:
             body = PRO_SESSION_RENEW.read_text(encoding="utf-8")
+            nonce = uuid.uuid4().hex
+            if body.count("__MM_BOT_CSP_NONCE__") != 1:
+                raise ValueError("missing or ambiguous Bot recovery nonce slot")
+            csp = _pro_renewal_csp(nonce)
+            body = body.replace("__MM_BOT_CSP_NONCE__", nonce)
             if not expired:
-                body = body.replace('name="mm-bot-renew" content="yes"',
-                                    'name="mm-bot-renew" content="no"')
-        except Exception:  # noqa: BLE001
+                marker = 'name="mm-bot-renew" content="yes"'
+                if body.count(marker) != 1:
+                    raise ValueError("missing Bot rejected-session renewal control")
+                body = body.replace(marker, 'name="mm-bot-renew" content="no"')
+            headers["Content-Security-Policy"] = csp
+        except Exception:  # noqa: BLE001 — still refuse with no script
+            log.exception("paywall: Bot renewal template/CSP unavailable")
             body = (
                 "<!doctype html><title>Sign in to verify membership</title>"
                 "<h1>We could not verify this session</h1>"
                 '<p><a href="https://www.mastermind-x.com/?signin=1">Sign in again</a></p>'
+            )
+            headers["Content-Security-Policy"] = (
+                "default-src 'none'; style-src 'unsafe-inline'; "
+                "base-uri 'none'; frame-ancestors 'none'"
             )
         return HTMLResponse(body, status_code=401, headers=headers)
     return JSONResponse(
@@ -772,7 +829,7 @@ def _reverify_pro_session(request: Request, path: str, *, expired: bool) -> Resp
 def _internal_pro_failure(request: Request, path: str) -> Response:
     """Permanent application/config fault: closed, observable, NOT retry noise."""
     headers = _headers("error")
-    if _is_document(request, path):
+    if _is_bot_document(request, path):
         return HTMLResponse(
             "<!doctype html><title>Membership check unavailable</title>"
             "<h1>Membership verification is unavailable</h1>"

@@ -46,7 +46,9 @@
      storage. A second token refresh/auth plane must never live on the Bot host.
      The fixed base sends the lazy SDK load to www, not the gated Bot origin. -->
 <script src="https://www.mastermind-x.com/theme.js" defer></script>
-<script>
+<!-- The server replaces the opaque nonce per response; this is the only
+     inline recovery script permitted by the response CSP. -->
+<script nonce="__MM_BOT_CSP_NONCE__">
 (function () {
   'use strict';
   var status = document.getElementById('mm-bot-renew-status');
@@ -75,14 +77,21 @@
       return;
     }
     if (!window.getSupabaseClient) { showUnavailable(); return; }
-    window.getSupabaseClient().then(function (sb) {
-      // GoTrue handles refresh-token rotation and writes the canonical shared
-      // cookie before this promise resolves. Never authenticate from JWT claims.
-      return sb.auth.getSession();
-    }).then(function (result) {
-      var session = result && result.data && result.data.session;
+    var settled = false;
+    // An unsettled SDK/GoTrue promise must not strand the user on a spinner.
+    // This times out the page only; it never retries or mutates auth state.
+    var timeout = setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      showUnavailable();
+    }, 12000);
+    function finish(result, failed) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      var session = !failed && result && result.data && result.data.session;
       var expires = Number(session && session.expires_at || 0);
-      if (!result.error && session && session.access_token &&
+      if (!failed && !result.error && session && session.access_token &&
           Number.isFinite(expires) && expires > Date.now() / 1000 + 15) {
         // Original path and query are kept; no caller-controlled return URL.
         // Caddy revalidates the new token and Pro entitlement on the next GET.
@@ -90,7 +99,13 @@
       } else {
         showUnavailable();
       }
-    }).catch(showUnavailable);
+    }
+    window.getSupabaseClient().then(function (sb) {
+      // GoTrue handles refresh-token rotation and writes the canonical shared
+      // cookie before this promise resolves. Never authenticate from JWT claims.
+      return sb.auth.getSession();
+    }).then(function (result) { finish(result, false); })
+      .catch(function () { finish(null, true); });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', refresh, {once:true});
