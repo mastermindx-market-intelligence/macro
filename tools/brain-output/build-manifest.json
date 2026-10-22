@@ -1,0 +1,24 @@
+{
+  "normalizer_version": "terminal-statements-38723cef-v1",
+  "terminal_revision": "38723cef63e87e478b1652d42322a69bdec462fd",
+  "markdown_owner": "templates/mm_brain.js",
+  "markdown_source_sha256": "d294b6f2dce006df89cd67d5cff7cf6583e43020dbe6d47e99d3344aaafb649c",
+  "build_dependencies": {
+    "esbuild": "0.28.2",
+    "katex": "0.19.0"
+  },
+  "assets": {
+    "mm_brain_markdown.js": {
+      "sha256": "d346bcf26dadd8930ef2a3f6415d0e07334850cec0f14c6368b77f3e105827be",
+      "bytes": 4140
+    },
+    "mm_brain_finance_math_v1.js": {
+      "sha256": "b20772591c20b5d04a64c433472e1ccc66231116b42db891bac3b88fbe74447f",
+      "bytes": 11561
+    },
+    "mm_brain_math.js": {
+      "sha256": "3df69694f10edaea4561a2330cc52993e4505b2a2877b36fb6066c58b82b81ce",
+      "bytes": 268927
+    }
+  }
+}

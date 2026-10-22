@@ -2,7 +2,7 @@
 key: MASTERMIND-AI-ILLUSTRATIONS
 title: Native illustration templates inside Mastermind AI
 objective: Customers can ask the existing Mastermind AI chat for charts and visual explanations, receive bounded source-aware native templates, and recover the same visuals from their authorized saved conversation on Macro and Terminal. Completion requires published code, admitted release checks, actual model-selection proof and production-browser delivery; fixture previews or passing unit tests alone are not completion.
-status: awaiting_ci
+status: active
 program: macro-mastermind-ai
 repos: [macro, terminal]
 owner: sol
@@ -22,8 +22,12 @@ waves:
   - id: release
     title: Publish and qualify model selection and live two-host delivery
     status: awaiting_ci
-next_action: Publish the Paper reading-layout continuation on original PR9447 and compose it into original chart/gateway PR8014. Recapture first-frame evidence against the final combined bytes, resolve required hosted gates and the existing Sector RIG dependency, then verify admitted deployment and real model-selected visuals, chart actions, Stop and authenticated saved history on both hosts.
+  - id: intelligent_financial_output
+    title: Financial snapshots, local responsive controls, math and reliable Fast presentation
+    status: in_progress
+next_action: Complete the newly authorized finance-output extension, consume the original price-control Fabric return, obtain independent review, publish and qualify required gates, then verify the actual deployed Macro and Terminal chat surfaces including source snapshots and saved history.
 artifacts:
+  - docs/superpowers/specs/2026-10-21-brain-intelligent-output.md
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md
   - docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md
   - mockups/evidence/mastermind-ai-illustrations/manifest.json
@@ -87,3 +91,16 @@ The combined Macro 27db2306 hosted design-governance job 117841523721 failed its
 This repair publishes those 48 exact PNGs (3568992 bytes) alongside the original manifest and changes only its 48 file pointers to the adjacent content-addressed names. The real capture timestamp remains 2026-10-18T23:48:55Z. All cell outcomes, source provenance, hashes, byte lengths, dimensions, metrics and declared gaps remain unchanged. The earlier manifest SHA256 e5f13fea5c9bc18cc69aa79568593dc5bfc0e3a8b70aec986262dd416619cb12 remains in original Git history and the private provenance record. This publication is not another capture, a product change or a new review.
 
 The exact failed hosted job is https://github.com/mastermindx-market-intelligence/macro/actions/runs/39183375386/job/117841523721. The original carrier and scoped review history remain unchanged. The existing committed-corpus regression passed on the original source workspace: one test passed in 4.82 seconds. The corrected payload still must be composed through original Macro #8014 and obtain fresh hosted qualification. Release and ordinary-model acceptance remain outstanding.
+
+
+## Intelligent financial output continuation — October 21 commission
+
+The user explicitly authorized end-to-end implementation after the audit found incomplete Fast-mode template selection and finance-specific presentation coverage. Original illustration source was integrated through merged Macro8014; its historical evidence remains, but source integration does not establish the newly requested live behavior. Protected procedure pin is Mastermind `0454ada03d2c6d3023f0347e713f38b46e1ff629`; Macro source base `a92ee6e97208f765579a8958fb715b3239f2fe01`. Current sole integration carrier is operation/root `brain-intelligent-output-20261021`, parent `chatgpt-brain-intelligent-output-20261021`, branch `sol/web-brain-intelligent-output-20261021`, admitted workspace `/Volumes/Mastermind/agent-workspaces/macro/web/brain-intelligent-output-20261021`. Initial acquisition uncertainty was reconciled on the same operation via `mmx-workspace status`; no duplicate acquisition occurred.
+
+Implementation now includes a compact `render_financial_widget` schema, guarded canonical read adapters, bounded source snapshots, same-turn references, exact-transcript receipt validation and current entitlement on replay. The browser statement bundle is generated from unmodified Terminal `38723cef63e87e478b1652d42322a69bdec462fd` pure helpers; its pinned source hashes and generated manifest are in `tools/brain-output/`. It includes the legacy financial-family fallback and normalizes the complete retained source before choosing visible periods. There is no Python copy of statement math, new history store, arbitrary model markup, new calculator or ChartBus mutation. Price cards publish daily closes rather than synthetic OHLC wicks. Display math uses a separate lazy KaTeX MathML bundle.
+
+Evidence: `python3 -m pytest tests/test_brain_output_fast_presentation.py tests/test_brain_tool_economics.py tests/test_brain_visuals_integration.py -q --disable-warnings` passed 88 cases; `python3 -m pytest tests/test_brain_financial_views.py -q --disable-warnings` passed 30. The new browser suite has verified US/CN/HK normalization, bank labels, responsive 320/390/820/1440 geometry, local controls and canonical CSV; final integrated run remains pending. Real existing public Terminal snapshots for AAPL, JPM, 600519.SS and 0700.HK compiled successfully; temporary source-proof wires are under `/tmp/brain-intelligent-output-20261021-proof/`. This is source/browser preparation, not deployment or ordinary-model acceptance.
+
+Fabric effects: runs `brain-output-fast-reliability-20261021-01` and `brain-output-financial-contract-20261021-01` terminated rc78 with `canonical_source_unreadable / object_root_config_or_promisor`; their identical 191-byte response SHA is `a801eede8f27859cff90d47564adcc41b02a0d5ba5873a7e68e96561da4bb3b3`. Protected slot.py proves this rejection precedes child admission. These runs are not accepted or retried. Bounded principal implementation proceeds under NO_ELIGIBLE_PRE_EFFECT_WORKER, retaining independent review obligations; no policy/configuration was weakened. `brain-output-price-controls-20261021-01`, controller65585, actual minimax/ubuntu2 route, remains ACTIVE_OR_WAITING with no terminal result. Preserve its root/attempt and owned shared-widget files until reconciliation; silence is not failure. Native child output_contract_review supplies C3 architecture advice only.
+
+Preserve held Macro7217 calculator ownership and Macro9601 coordinated chart-command ownership. No commits, push, merge, deployment or live product acceptance are claimed at this checkpoint.

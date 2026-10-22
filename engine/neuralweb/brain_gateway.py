@@ -263,6 +263,7 @@ def _sanitize_brain_message(message: str, max_len: int = 2000) -> tuple[str, str
 _BRAIN_TOOLS = frozenset({
     # Inherited ask_brain read tools (import schemas + dispatcher from ask_brain)
     "read_world_state",
+    "read_inflation_intelligence",
     "query_spine",
     "read_kernel",
     "read_graph",
@@ -330,6 +331,8 @@ _BRAIN_TOOLS = frozenset({
     # Inline chart rendering (all pages — renders SVG inside the chat reply)
     "render_inline_chart",
     "render_inline_visual",
+    "render_financial_widget",
+    "read_financial_statements",
     # Chart-command bus (W6b): client-executed, terminal page only
     "set_chart_symbol",
     "set_chart_timeframe",
@@ -384,6 +387,8 @@ _BRAIN_ONLY_TOOLS = frozenset({
     # Inline chart rendering (all pages)
     "render_inline_chart",
     "render_inline_visual",
+    "render_financial_widget",
+    "read_financial_statements",
     # Chart-command bus (W6b)
     "set_chart_symbol",
     "set_chart_timeframe",
@@ -2235,7 +2240,8 @@ def _chart_command_tool_schemas() -> list[dict]:
 def _brain_tool_schemas() -> list[dict]:
     """Return brain-gateway-only schemas (excluding separately gated chart tools)."""
     from engine.neuralweb.brain_visuals import tool_schema
-    return [tool_schema(),
+    from engine.neuralweb.brain_financial_views import financial_widget_tool_schema
+    return [tool_schema(), financial_widget_tool_schema(),
         {
             "name": "get_quote",
             "description": (
@@ -7255,6 +7261,8 @@ def _dispatch_brain_tool(
     chart_client: str = "",
     chart_origin_id: str = "",
     chart_context_revision: int | None = None,
+    allowed_tool_names: set[str] | None = None,
+    _financial_source_read: bool = False,
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -7275,6 +7283,7 @@ def _dispatch_brain_tool(
         # CXI-R23a: exclude internals tool names for non-allowlisted sessions so the
         # model never learns of context_search / context_open from this error path.
         _disclosed_tools = set(_BRAIN_TOOLS)
+        _disclosed_tools.discard("read_financial_statements")
         if not internals_ok:
             _disclosed_tools.difference_update(_BRAIN_INTERNALS_TOOLS)
         # Match the model-facing schema boundary: a guest/free/inactive session must
@@ -7480,6 +7489,27 @@ def _dispatch_brain_tool(
             # Analyst OS W3 — durable enum-only preference write (depth/lang) to the
             # user's own metadata; guests refused inside the tool.
             return _tool_set_chat_preference(tool_params, user_id or "")
+        if tool_name == "render_financial_widget":
+            from engine.neuralweb.brain_financial_reader import prepare_widget_read
+            admitted = allowed_tool_names if allowed_tool_names is not None else {
+                s["name"] for s in _all_brain_tool_schemas(
+                    root, page=chart_client, internals_allowed=internals_ok, user_id=user_id)}
+            return prepare_widget_read(
+                tool_params,
+                lambda name, params: _dispatch_brain_tool(
+                    name, params, root, terminal_data_dir, terminal_hub_url,
+                    user_id=user_id, internals_ok=internals_ok, chart_client=chart_client,
+                    chart_origin_id=chart_origin_id, chart_context_revision=chart_context_revision,
+                    allowed_tool_names=admitted,
+                    _financial_source_read=name == "read_financial_statements"),
+                set(admitted), root)
+        if tool_name == "read_financial_statements":
+            if not _financial_source_read or not {"render_financial_widget", "get_fundamentals"}.issubset(allowed_tool_names or set()):
+                return {"error": "financial_source_not_admitted"}
+            # The same public .fund.json owner already served by Terminal.
+            # No paid filing-forensics or private transcript material is read here.
+            from engine.neuralweb.brain_financial_reader import read_statement_snapshot
+            return read_statement_snapshot(tool_params, terminal_data_dir)
         if tool_name == "render_inline_visual":
             # Compilation requires prior authorized observations, owned by the loop.
             return {"visual_request": tool_params}
@@ -7705,6 +7735,27 @@ def _fast_visible_tool_schemas(
         return full_schemas
 
     allowed = set(visible_names)
+    # Presentation eligibility is independent of evidence-family selection.
+    # Intersect with the already-authorized surface; never turn a self-contained
+    # illustration into permission to fetch external market data.
+    wants_visual = bool(re.search(
+        r"\b(chart|graph|plot|visual\w*|illustrat\w*|table|comparison|diagram)\b"
+        r"|图表|图解|示意|插图|可视化|表格|對比|对比",
+        message, re.I,
+    ))
+    if wants_visual and "render_inline_visual" in authorized_names:
+        allowed.add("render_inline_visual")
+    if profile.name != "self_contained_financial":
+        if wants_visual and "render_inline_chart" in authorized_names:
+            allowed.add("render_inline_chart")
+        wants_finance_view = wants_visual or bool(re.search(
+            r"\b(price|quote|company\s+(brief|profile)|financial\s+statements?"
+            r"|income\s+statement|balance\s+sheet|cash\s+flow|transcript)\b"
+            r"|股价|報價|报价|财报|財報|资产负债|資產負債|现金流|現金流|电话会|電話會|公司简介",
+            message, re.I,
+        ))
+        if wants_finance_view and "render_financial_widget" in authorized_names:
+            allowed.add("render_financial_widget")
     return [schema for schema in full_schemas if schema.get("name") in allowed]
 
 
@@ -8201,6 +8252,31 @@ def _build_system_prompt(mode: str = "chat", page: str = "",
         prompt = prompt + _CHART_COMMAND_SYSTEM_DIRECTIVE
     else:
         prompt = prompt + _INLINE_CHART_SYSTEM_DIRECTIVE
+    return prompt
+
+
+def _presentation_prompt_for_tools(prompt: str, schemas: list[dict]) -> str:
+    """Keep presentation instructions aligned with this turn's admitted tools."""
+    names = {s.get("name") for s in schemas if isinstance(s, dict)}
+    if "render_inline_visual" not in names:
+        prompt = "\n".join(line for line in prompt.split("\n")
+                           if "use render_inline_visual." not in line)
+    if "render_inline_chart" not in names:
+        prompt = prompt.replace(_INLINE_CHART_SYSTEM_DIRECTIVE, "")
+    if "render_financial_widget" in names:
+        prompt += (
+            "\nFor a company's price/trend, financial statements, company brief or earnings-call evidence, "
+            "prefer render_financial_widget with its symbol. It performs the authorized read and prepares "
+            "a reusable component in one call. Do not recreate its rows, source labels or controls. "
+            "Use its compact receipt to explain what is available; never infer browser-normalized statement values. "
+            "Prefer one useful widget, at most four when explicitly needed."
+        )
+    if names.intersection({"render_inline_visual", "render_inline_chart", "render_financial_widget"}):
+        prompt += (
+            "\nUse the provider's native tool-call channel for the available presentation tools. "
+            "Never write tool_calls, invoke tags, raw JSON or executable markup in answer prose. "
+            "If a presentation tool is unavailable or fails, explain the limitation in plain language."
+        )
     return prompt
 
 
@@ -10103,6 +10179,70 @@ _CHART_STUB_DROP = frozenset(
 )
 
 
+def _prepare_financial_widget(result: dict, prior: dict, retained: dict, identity: str,
+                              charts: list, user_id: str, root: Path,
+                              available_tools: set[str]) -> dict:
+    """Compile a completed guarded read; private snapshots never enter model context."""
+    import hashlib
+    from engine.neuralweb.brain_financial_views import (
+        MAX_WIDGETS, compile_financial_widget, model_visible_financial_result,
+        normalize_request, validate_financial_view,
+    )
+    from engine.neuralweb.ask_brain import _post_filter_advice
+    if not isinstance(result, dict) or result.get("error") or "financial_request" not in result:
+        return result
+    if sum(bool(c.get("visual")) for c in charts) >= MAX_WIDGETS:
+        return {"error": "visual_limit", "note": "Use at most four useful visuals in one reply."}
+    try:
+        request = normalize_request(result["financial_request"])
+    except (ValueError, TypeError, KeyError):
+        return {"error": "invalid_financial_view"}
+
+    def safe_copy(text: str) -> bool:
+        filtered, rejected = _post_filter_advice(text, [])
+        return not rejected and filtered == text and _leak_screen(text) == text
+
+    reference = request.get("source_ref")
+    if reference:
+        original = prior.get(reference)
+        if not validate_financial_view(original):
+            return {"error": "financial_source_ref_unavailable", "note": "Use a symbol for a new authorized read; references only work after a completed snapshot in this turn."}
+        v = original["visual"]
+        if (v["template"] != request["template"]
+                or (request["symbol"] and request["symbol"] != v["source"]["entity_id"])):
+            return {"error": "financial_source_ref_mismatch"}
+        if v["template"] == "transcript":
+            if (request["view"].get("transcript_id") and request["view"]["transcript_id"] != v["data"]["event"]["transcript_id"]) or (request["view"].get("focus") and request["view"]["focus"] != v["view"].get("focus")):
+                return {"error": "financial_source_ref_view_unavailable", "note": "Use the symbol for a different transcript or evidence focus."}
+        reader = v["source"]["reader"]
+        permission = "get_fundamentals" if reader == "read_financial_statements" else reader
+        if permission not in available_tools:
+            return {"error": "financial_source_not_admitted"}
+        if reader == "read_earnings_evidence" and not _earnings_evidence_allowed(user_id, root):
+            return {"error": "insider_required"}
+        wire = json.loads(json.dumps(original, allow_nan=False))
+        wire["visual"]["view"] = request["view"]
+        wire["visual_id"] = hashlib.sha256(
+            (identity + json.dumps(wire["visual"], sort_keys=True, ensure_ascii=False)).encode()
+        ).hexdigest()[:24]
+        if not validate_financial_view(wire):
+            return {"error": "invalid_financial_view"}
+    else:
+        observation = result.get("financial_observation")
+        if not isinstance(observation, dict):
+            return {"error": "financial_source_unavailable"}
+        observation = {**observation, "call_id": identity}
+        wire = compile_financial_widget(request, observation, identity, screen=safe_copy)
+        if wire.get("error"):
+            return wire
+    receipt = model_visible_financial_result(wire)
+    if receipt.get("error"):
+        return receipt
+    retained[receipt["source_ref"]] = wire
+    charts.append(wire)
+    return receipt
+
+
 def _prepare_inline_visual(result: dict, observations: list, identity: str, charts: list, message: str) -> dict:
     """Compile within the current turn; never refetch or manufacture source receipts."""
     from engine.neuralweb.brain_visuals import MAX_VISUALS, compile_visual
@@ -10146,6 +10286,12 @@ def _model_visible_tool_result(tool_name: str, result: Any) -> Any:
     An error result (no ``svg`` key — e.g. ``{"error": "symbol required"}``) passes
     through untouched: the model must still see why the draw failed.
     """
+    if tool_name == "read_financial_statements" and isinstance(result, dict):
+        fund = result.get("fund")
+        if isinstance(fund, dict):
+            return {"available": result.get("available") is True, "symbol": fund.get("ticker"),
+                    "asof": fund.get("asof"), "statement_currency": fund.get("stmt_currency"),
+                    "note": "Use render_financial_widget for the source-owned statement view; bulk arrays are not model context."}
     if tool_name != "render_inline_chart" or not isinstance(result, dict):
         return result
     if "svg" not in result:
@@ -10332,6 +10478,7 @@ def _run_brain_loop(
     commands: list[dict] = []
     charts: list[dict] = []
     visual_observations: list[tuple] = []  # existing results indexed by tool-use ID
+    financial_observations: dict[str, dict] = {}  # private bounded snapshots, this turn only
 
     # CXI-R23a: compute once per loop
     internals_ok = _internals_allowed(user_email)
@@ -10407,6 +10554,7 @@ def _run_brain_loop(
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
     turn_lang = _turn_lang(message, context, _account_pref(context, "lang"))
+    system_prompt = _presentation_prompt_for_tools(system_prompt, tool_schemas)
     system_prompt = system_prompt + _language_directive(turn_lang)
     # A Terminal chart turn spends rounds READING the chart (digest → state → measure)
     # before it draws, so a text-sized budget runs out mid-draw and the turn degrades.
@@ -10581,6 +10729,7 @@ def _run_brain_loop(
                     chart_client=("terminal" if safe_page == "terminal" else ""),
                     chart_origin_id=chart_origin_id,
                     chart_context_revision=chart_context_revision,
+                    allowed_tool_names={s["name"] for s in tool_schemas},
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -10593,11 +10742,16 @@ def _run_brain_loop(
                                 {"name": str(getattr(b, "name", "")), "ms": 0})
             for b in tool_blocks)
         prior_visual_observations = list(visual_observations)
+        prior_financial_observations = dict(financial_observations)
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
             if tool_name == "render_inline_visual":
                 result = _prepare_inline_visual(result, prior_visual_observations, tool_id, charts, message)
+            if tool_name == "render_financial_widget":
+                result = _prepare_financial_widget(
+                    result, prior_financial_observations, financial_observations,
+                    tool_id, charts, user_id, root, {s["name"] for s in tool_schemas})
             evidence_observations.append((tool_name, result))
             model_result = _model_visible_tool_result(tool_name, result)
             if tool_name == "read_chart_state":
@@ -10647,7 +10801,7 @@ def _run_brain_loop(
 
             # A requested chart effect is not an observation. Visual bindings use
             # the same processed receipt the model receives, including uncertainty.
-            if tool_name != "render_inline_visual":
+            if tool_name not in {"render_inline_visual", "render_financial_widget"}:
                 visual_observations.append((tool_name, model_result, tool_id))
             tool_results.append({
                 "type": "tool_result",
@@ -10795,6 +10949,8 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "set_chat_preference":    ("Saving your preference",        "保存您的偏好设置"),
     "render_inline_chart":    ("Drawing the chart for you",     "为你绘制图表"),
     "render_inline_visual":   ("Preparing a visual explanation", "正在准备可视化解读"),
+    "render_financial_widget": ("Preparing the financial view", "正在整理财务视图"),
+    "read_financial_statements": ("Reading financial statements", "正在读取财务报表"),
     "annotate_chart":         ("Marking key levels",            "标记关键位置"),
     "chart_digest":           ("Reading your chart",            "读取您的图表"),
     "read_chart_state":       ("Reading your chart",            "读取您的图表"),
@@ -11096,6 +11252,10 @@ class _StreamGate:
         """
         self.text += chunk
         self._chunks += 1
+        # Invalid tool-shaped prose stays buffered for the final readable fallback.
+        # It never becomes an executable call or a partially displayed XML payload.
+        if re.search(r"<\s*(?:tool_calls|invoke)(?:\s|>)", self.text, re.I):
+            return ""
         # LEAK SCREEN FIRST, on every chunk, before any flush decision. The scan window is
         # backed up by the longest sentinel so an echo split across two chunks is still
         # seen whole; the holdback below guarantees the scan has read every character
@@ -11345,6 +11505,7 @@ def _run_brain_loop_stream(
     annotations: list[dict] = []
     charts: list[dict] = []
     visual_observations: list[tuple] = []  # existing results indexed by tool-use ID
+    financial_observations: dict[str, dict] = {}  # private bounded snapshots, this turn only
 
     # CXI-R23a: compute once per loop
     internals_ok = _internals_allowed(user_email)
@@ -11418,6 +11579,7 @@ def _run_brain_loop_stream(
     # The turn's ONE language, named explicitly and LAST (see _language_directive).
     # W3: account language is the middle fallback — see _turn_lang.
     turn_lang = _turn_lang(message, context, _account_pref(context, "lang"))
+    system_prompt = _presentation_prompt_for_tools(system_prompt, tool_schemas)
     system_prompt = system_prompt + _language_directive(turn_lang)
     # A Terminal chart turn spends rounds READING the chart (digest → state → measure)
     # before it draws, so a text-sized budget runs out mid-draw and the turn degrades.
@@ -11748,6 +11910,7 @@ def _run_brain_loop_stream(
                     chart_client=("terminal" if safe_page == "terminal" else ""),
                     chart_origin_id=chart_origin_id,
                     chart_context_revision=chart_context_revision,
+                    allowed_tool_names={s["name"] for s in tool_schemas},
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -11761,11 +11924,16 @@ def _run_brain_loop_stream(
             for b in tool_blocks)
         pending_v2_receipts: list[tuple[int, dict]] = []
         prior_visual_observations = list(visual_observations)
+        prior_financial_observations = dict(financial_observations)
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
             if tool_name == "render_inline_visual":
                 result = _prepare_inline_visual(result, prior_visual_observations, tool_id, charts, message)
+            if tool_name == "render_financial_widget":
+                result = _prepare_financial_widget(
+                    result, prior_financial_observations, financial_observations,
+                    tool_id, charts, user_id, root, {s["name"] for s in tool_schemas})
             evidence_observations.append((tool_name, result))
             model_result = _model_visible_tool_result(tool_name, result)
             if tool_name == "read_chart_state":
@@ -11826,7 +11994,7 @@ def _run_brain_loop_stream(
             # The CLIENT event above keeps the whole picture; the model gets a compact receipt.
             # A requested chart effect is not an observation. Visual bindings use
             # the same processed receipt the model receives, including uncertainty.
-            if tool_name != "render_inline_visual":
+            if tool_name not in {"render_inline_visual", "render_financial_widget"}:
                 visual_observations.append((tool_name, model_result, tool_id))
             tool_results.append({
                 "type": "tool_result",
@@ -12741,6 +12909,12 @@ def _leak_screen(text: str) -> str:
     """If the answer verbatim-echoes a system-prompt sentinel, replace it with the distill refusal."""
     if not text:
         return text
+    # Protocol-looking prose is never a substitute for a native tool call.
+    # Do not parse it, execute it, or claim a successful visual.
+    if re.search(r"<\s*(?:tool_calls|invoke)(?:\s|>)", text, re.I):
+        return ("这次未能生成所需的图表，请重试。"
+                if _has_cjk(text) else
+                "I couldn’t prepare the requested visual in this response. Please try again.")
     for sentinel in _LEAK_SENTINELS:
         if sentinel in text:
             return _REFUSAL_DISTILL_ZH if _has_cjk(text) else _REFUSAL_DISTILL_EN
@@ -14388,11 +14562,26 @@ def get_thread(thread_id: str, user_id: str) -> dict | None:
         f"&select=role,content,created_at,visuals:meta->visuals&order=created_at.asc&limit=200"
     )
     from engine.neuralweb.brain_visuals import public_visuals
+    from engine.neuralweb.brain_financial_views import public_financial_visuals
+    quotes_allowed = None
     messages = []
     for row in msg_rows:
         message = {k: row[k] for k in ("role", "content", "created_at") if k in row}
         if row.get("role") == "assistant":
-            visuals = public_visuals({"visuals": row.get("visuals")})
+            meta = {"visuals": row.get("visuals")}
+            raw_visuals = meta["visuals"] if isinstance(meta["visuals"], list) else []
+            has_quotes = any(isinstance(v, dict) and isinstance(v.get("visual"), dict)
+                            and isinstance(v["visual"].get("source"), dict)
+                            and v["visual"]["source"].get("reader") == "read_earnings_evidence"
+                            for v in raw_visuals[:4])
+            if has_quotes and quotes_allowed is None:
+                quotes_allowed = _earnings_evidence_allowed(user_id)
+            accepted = public_visuals(meta) + public_financial_visuals(
+                meta, allow_transcript_quotes=quotes_allowed is True)
+            by_id = {v["visual_id"]: v for v in accepted}
+            visuals = [by_id[v["visual_id"]] for v in raw_visuals[:4]
+                       if isinstance(v, dict) and isinstance(v.get("visual_id"), str)
+                       and v["visual_id"] in by_id]
             if visuals:
                 message["visuals"] = visuals
         messages.append(message)
