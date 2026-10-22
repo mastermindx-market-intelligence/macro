@@ -16,6 +16,7 @@ import os
 import sys
 import time
 import urllib.request
+from pathlib import Path
 from urllib.error import URLError
 
 from engine.company_intelligence.relationships import (
@@ -118,19 +119,29 @@ def replay_fetch(excerpt: dict, user_agent: str, fetch=None) -> list:
 
 
 def _load_excerpts(sources_dir: str):
+    """Every *.json excerpt under sources_dir, recursively (M2 nested layout).
+
+    Order is the string order of the POSIX path relative to sources_dir, so a
+    flat directory loads exactly as before.  A file that cannot be read or
+    parsed becomes a stand-in record reported under its relative path.
+    """
+    root = Path(sources_dir)
     paths = sorted(
-        path
-        for path in os.listdir(sources_dir)
-        if path.endswith(".json")
+        (path for path in root.rglob("*.json") if path.is_file()),
+        key=lambda path: path.relative_to(root).as_posix(),
     )
     excerpts = []
-    for name in paths:
-        path = os.path.join(sources_dir, name)
+    for path in paths:
         try:
             with open(path, "rb") as handle:
                 excerpts.append(json.loads(handle.read().decode("utf-8")))
         except (OSError, ValueError) as error:
-            excerpts.append({"accession": name, "_load_error": str(error)})
+            excerpts.append(
+                {
+                    "accession": path.relative_to(root).as_posix(),
+                    "_load_error": str(error),
+                }
+            )
     return excerpts
 
 
