@@ -38,7 +38,7 @@ on:
         description: "Which pages to rebuild from committed data (all = every page)"
         type: choice
         default: all
-        options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits]
+        options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits, stubs]
       runner:
         description: "Runner label — render-linux is routine; render-heavy/macstudio are explicit Mac fallbacks"
         type: choice
@@ -543,7 +543,8 @@ jobs:
               templates/hk.html.j2|scripts/build_hk.py) echo hk;;
               templates/canada.html.j2|templates/canada_stock.html.j2|templates/canada_history.html.j2|templates/canada_sector.html.j2|scripts/build_canada.py|scripts/build_canada_library.py) echo canada;;
               templates/commodities.html.j2|templates/spr.html.j2|templates/sanctions_map.html.j2|templates/forex.html.j2|templates/bonds.html.j2|templates/crossasset.html.j2|templates/transmission.html.j2|templates/discovery.html.j2|templates/macro_context.html.j2|scripts/build_commodities.py|scripts/build_spr.py|scripts/build_sanctions_map.py|scripts/build_forex.py|scripts/build_bonds.py|scripts/build_crossasset.py|scripts/build_transmission.py|scripts/build_discovery.py|scripts/build_macro_context.py) echo markets;;
-              templates/gex.html.j2|scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
+              templates/gex.html.j2|templates/baskets_china.html.j2) echo stubs;;
+              scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
               # OIP E8 leaf-page narrowing — rationale in the step's YAML comment block.
               templates/options.html.j2|templates/options_screener.html.j2|scripts/build_options_command.py|scripts/build_options_screener.py) echo gex;;
               templates/baskets.html.j2|templates/methodology.html.j2|templates/government_revenue.html.j2|scripts/build_baskets.py|scripts/build_methodology.py|scripts/build_government_revenue.py|scripts/build_government_revenue_candidates.py|scripts/check_government_revenue_projection.py|config/government_revenue/candidate_issuance_corrections.v1.json|contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json|config/market_reference.yml|scripts/build_market_reference.py) echo baskets;;
@@ -765,6 +766,14 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
+      # ---- special situations: page-only rebake, NO EDGAR sweep ----
+      # The nightly owns the ~28m filing sweep; this lane re-renders the desk
+      # from the COMMITTED event store so a template/builder fix ships in
+      # minutes. --no-refresh reuses the last real build's `built` stamp, so an
+      # untouched desk rebakes byte-for-byte and commits nothing. It also emits
+      # site/premiumdata/special_situations.json — the Insider+ payload behind
+      # the page's free preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be
+      # rebuilt in the same pass as the shell it pairs with.
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -880,14 +889,6 @@ jobs:
           # of build_leader_radar's admission): rationale in the comment block above
           # this step (moved out 2026-08-10: 21,000-char run limit).
 
-          # ---- special situations: page-only rebake, NO EDGAR sweep ----
-          # The nightly owns the ~28m filing sweep; this lane re-renders the desk
-          # from the COMMITTED event store so a template/builder fix ships in
-          # minutes. --no-refresh reuses the last real build's `built` stamp, so an
-          # untouched desk rebakes byte-for-byte and commits nothing. It also emits
-          # site/premiumdata/special_situations.json — the Insider+ payload behind
-          # the page's free preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be
-          # rebuilt in the same pass as the shell it pairs with.
           sits() { [ -n "$SITS_DONE" ] && return 0; SITS_DONE=1; run_py "special situations desk, page only (build_special_situations --no-refresh)" scripts.build_special_situations --no-refresh; }
 
           # ---- china special situations: page-only rebake, NO collector sweep ----
@@ -900,6 +901,14 @@ jobs:
           # preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be rebuilt in the same pass
           # as the shell it pairs with.
           csits() { [ -n "$CSITS_DONE" ] && return 0; CSITS_DONE=1; run_py "china special situations desk, page only (build_china_special_situations --no-refresh)" scripts.build_china_special_situations --no-refresh; }
+
+          # Fixed legacy redirects have no market-data inputs. Keep template-only
+          # rebakes outside the full options and China basket computations.
+          stubs() {
+            [ -n "$STUBS_DONE" ] && return 0; STUBS_DONE=1
+            run_py "GEX redirect stub (page only)" scripts.build_gex_board --page-only
+            run_py "China baskets redirect stub (page only)" scripts.build_baskets_china --page-only
+          }
 
           # ---- the parallel regional/desk band (mirrors daily, MINUS special-sits) ----
           band() {
@@ -1043,13 +1052,15 @@ jobs:
           for SC in ${SCOPE//+/ }; do
           case "$SC" in
             all)
-              spine; intl; canada; band; central; flowleaders; optionscmd; leaderradar; foresightpage; hub; crypto; us_pages; libs; sits; csits ;;
+              spine; intl; canada; band; central; flowleaders; optionscmd; leaderradar; foresightpage; hub; crypto; us_pages; libs; sits; csits; stubs ;;
             macro)
               spine; hub; crypto; us_pages; central ;;
             intl)
               intl ;;
             sits)
               sits ;;
+            stubs)
+              stubs ;;
             china)
               run_py "build china a-share dashboard (build_china)" scripts.build_china
               run_py "china policy watch" scripts.build_china_policy_watch --site-only

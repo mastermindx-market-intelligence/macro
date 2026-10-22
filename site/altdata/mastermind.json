@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-10-21",
-  "generated_utc": "2026-10-21T22:42:16.042097+00:00",
+  "as_of": "2026-10-22",
+  "generated_utc": "2026-10-22T01:58:59.769240+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -20,8 +20,8 @@
     "open": 26,
     "note": "4 scored, hit-rate 0.75 (directional accuracy 0.75). Sample is tiny \u2014 treat conviction as provisional and lean low."
   },
-  "n_signals": 76,
-  "n_broken": 44,
+  "n_signals": 75,
+  "n_broken": 43,
   "signals": [
     {
       "ticker": "IBM",
@@ -210,48 +210,6 @@
         }
       ],
       "n_affiliated_actors": 4,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "PLTR",
-      "signal_score": 53,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.7,
-      "convergence_score": 4,
-      "channels": [
-        "affiliation",
-        "gov_contract_accel",
-        "retail_buzz",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 42.1,
-      "no_price_data": false,
-      "extended": true,
-      "rolling_over": false,
-      "off_high_252": -7.9,
-      "ret_20d": 4.1,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Marjorie Taylor Greene",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -485,6 +443,48 @@
       "clamped": null
     },
     {
+      "ticker": "PLTR",
+      "signal_score": 39,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.25,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "gov_contract",
+        "retail_buzz",
+        "stocktwits_bull"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 42.1,
+      "no_price_data": false,
+      "extended": true,
+      "rolling_over": false,
+      "off_high_252": -7.9,
+      "ret_20d": 4.1,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Marjorie Taylor Greene",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 2,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "KMB",
       "signal_score": 39,
       "conviction": "high",
@@ -636,27 +636,28 @@
       "clamped": null
     },
     {
-      "ticker": "PFE",
-      "signal_score": 35,
+      "ticker": "FITB",
+      "signal_score": 34,
       "conviction": "medium",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 0.9,
-      "convergence_score": 2,
+      "weighted_score": 1.2,
+      "convergence_score": 3,
       "channels": [
-        "clinical_phase3_start",
-        "fda_label_expansion"
+        "congress_buy",
+        "material_8k",
+        "special_situation"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 17.7,
+      "rs_vs_spy_60d": -12.3,
       "no_price_data": false,
       "extended": false,
       "rolling_over": false,
-      "off_high_252": 0.0,
-      "ret_20d": 7.8,
-      "above_50dma": true,
-      "entry_tier": "T1",
+      "off_high_252": -10.5,
+      "ret_20d": 2.8,
+      "above_50dma": false,
+      "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
       "thesis": null,
@@ -699,6 +700,41 @@
         }
       ],
       "n_affiliated_actors": 2,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "AXP",
+      "signal_score": 33,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.05,
+      "convergence_score": 2,
+      "channels": [
+        "affiliation",
+        "material_8k"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -9.1,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -16.4,
+      "ret_20d": 4.7,
+      "above_50dma": false,
+      "entry_tier": "T1",
+      "affiliations": [
+        {
+          "actor": "Warren Buffett",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1097,35 +1133,6 @@
       "second_order": [],
       "falsifier": null,
       "clamped": null
-    },
-    {
-      "ticker": "WDAY",
-      "signal_score": 28,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.55,
-      "convergence_score": 2,
-      "channels": [
-        "analyst_upgrade_cluster",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 33.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -17.0,
-      "ret_20d": 8.4,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
     }
   ],
   "broken_signals": [
@@ -1300,35 +1307,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "AVGO",
-      "signal_score": 36,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.3,
-      "convergence_score": 2,
-      "channels": [
-        "congress_cluster",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": -16.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -30.3,
-      "ret_20d": -8.3,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -2107,6 +2085,35 @@
         }
       ],
       "n_affiliated_actors": 1,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "SCHW",
+      "signal_score": 15,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.65,
+      "convergence_score": 2,
+      "channels": [
+        "13f_add",
+        "cnbc_pick"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -18.0,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -19.8,
+      "ret_20d": -8.4,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
