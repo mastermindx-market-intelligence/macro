@@ -147,3 +147,18 @@ only `tests/market_navigator_client_harness.js`, with `--changed-from origin/mai
 It selected the Navigator job plus two always-on jobs (3/279), with no unowned-path
 warning. This verifies path selection; it is not a claim those three hosted jobs ran.
 Plan SHA-256: 4dc67261c3ab37434245afe72023611c66fe7219eda4e0abbb2825453d14c50f
+
+
+## Upstream release reconciliation
+
+GitHub reported the prior candidate non-mergeable after main advanced. After disarming,
+main was fetched and merged on the original workspace; Git resolved the shared
+manifest automatically, with no unresolved files. The owned numerical/reader/extractor
+modules had no upstream changes in the inspected interval. The complete Navigator
+suite was nevertheless exercised on the combined source: **190 passed in 4.25 seconds**.
+
+The Navigator CI block was relocated beside the existing microstructure research job
+instead of the shared end-of-file append point. Parsed YAML equality before/after
+proved all 350 job definitions semantically unchanged; the manifest validator passed.
+This reduces an avoidable concurrent append collision without widening permission,
+removing checks or introducing another release owner. Exact new head/run remain GitHub facts.

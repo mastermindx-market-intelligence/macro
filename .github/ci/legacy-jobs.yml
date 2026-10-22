@@ -1231,6 +1231,25 @@ jobs:
       - name: Private directory boundary and deployment refusal contracts
         run: python -m pytest tests/test_company_intelligence_private_roots.py -q
 
+  market-navigator-foundation:
+    # Pure consumer contracts and non-network research checks; no live API/corpus.
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - name: install pure foundation test dependencies
+        run: pip install pytest pyyaml
+      - name: explicit client and harness syntax ownership
+        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js
+      - name: Navigator clocks, owner binding, numerical audit and inert design study
+        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q
+
   microstructure-pressure-response-r0:
     if: ${{ false }}
     gate: code
@@ -39557,22 +39576,3 @@ jobs:
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas pyarrow
       - name: Options R1 W2A relative trend tests
         run: python -m pytest tests/test_rotation_relative_trend.py -q
-
-  market-navigator-foundation:
-    # Pure consumer contracts and non-network research checks; no live API/corpus.
-    if: ${{ false }}
-    gate: code
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
-      - uses: actions/setup-node@v4
-        with: {node-version: '20'}
-      - name: install pure foundation test dependencies
-        run: pip install pytest pyyaml
-      - name: explicit client and harness syntax ownership
-        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js
-      - name: Navigator clocks, owner binding, numerical audit and inert design study
-        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q
