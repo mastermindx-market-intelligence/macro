@@ -11256,3 +11256,13 @@
 {"id":"ob-2026-10-22-ae07313e48","from":"approved","to":"posting","at":"2026-10-22T18:15:56Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-22-ae07313e48","from":"posting","to":"posted","at":"2026-10-22T18:15:57Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ada52dc399af6f1f72c98eb","external_url":null,"at":"2026-10-22T18:15:47Z","booked_at":"2026-10-22T18:15:47Z"}}
 {"id":"ob-2026-10-22-c2db8c696e","from":"approved","to":"quarantined","at":"2026-10-22T18:15:57Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.75) of ob-2026-10-22-1d02f770e6 posted today; same template, different ticker","receipt":null}
+{"id":"ob-2026-10-22-54ad275dfa","from":"queued","to":"approved","at":"2026-10-22T18:21:39Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-5f3e1052cb","from":"queued","to":"approved","at":"2026-10-22T18:21:40Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-8b0f8ff7cc","from":"queued","to":"approved","at":"2026-10-22T18:21:40Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-61b19d10fe","from":"queued","to":"approved","at":"2026-10-22T18:21:40Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-22-54ad275dfa","from":"approved","to":"posting","at":"2026-10-22T18:21:44Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-22-54ad275dfa","from":"posting","to":"posted","at":"2026-10-22T18:21:45Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ada54399a8a68d3cd73dc1d","external_url":null,"at":"2026-10-22T18:21:38Z","booked_at":"2026-10-22T18:21:38Z"}}
+{"id":"ob-2026-10-22-5f3e1052cb","from":"approved","to":"quarantined","at":"2026-10-22T18:21:46Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-22-8b0f8ff7cc","from":"approved","to":"posting","at":"2026-10-22T18:21:46Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-22-8b0f8ff7cc","from":"posting","to":"posted","at":"2026-10-22T18:21:47Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ada543bca69a1b7d3cf5810","external_url":null,"at":"2026-10-22T18:21:38Z","booked_at":"2026-10-22T18:21:38Z"}}
+{"id":"ob-2026-10-22-61b19d10fe","from":"approved","to":"quarantined","at":"2026-10-22T18:21:47Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
