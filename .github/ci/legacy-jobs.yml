@@ -5507,7 +5507,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        # jinja2: scripts/build_policy_watch.py:30 does `from jinja2 import Environment,
+        # FileSystemLoader` at module scope; tests/test_uk_policy_brain.py imports that
+        # builder, so the desk → spine writers step died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: desk → spine wiring — stock_desk's per-thesis outcome ledger
         # The append-only scored.jsonl engine.spine._DESK_SCORED reads for this desk. Pins the
         # properties a track record cannot: a published verdict is never re-graded from a
@@ -6584,7 +6587,14 @@ jobs:
         # ETF board synthesis imports the rotation constants from etf_pulse,
         # which imports numpy and pandas at module scope.  Keep this environment
         # closed over the real production import graph.
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas
+        # beautifulsoup4: tests/test_us_board_gate.py:1134 does `from bs4 import
+        # BeautifulSoup` inside the gate-payload assertions. plotly:
+        # scripts/build_site.py:22 does `import plotly.graph_objects as go` at
+        # module scope; both died ModuleNotFoundError in the split-contract step.
+        # pyarrow: second-order once those land — the same gate tests reach
+        # scripts/build_stock_library.py:1563 → engine/us_candidate_episode.py:19,
+        # which does `import pyarrow` at module scope.
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: tier-preview split contract (no paid row in the free shell)
         run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
       # The split's OTHER half: how the page puts the two sides back together.
@@ -7783,7 +7793,12 @@ jobs:
         # Forensics workbench (#4184) and predate it respectively, are reachable only
         # through lazy first-party paths, and are RETAINED deliberately — nothing here
         # proves those paths unreachable, and a wrong subtraction costs a red lane.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5
+        # playwright: tests/test_intraday_flow_w11_r5.py:109 does
+        # `from playwright.sync_api import sync_playwright` at test level for the
+        # computed-style probe — the suite died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+      - name: Install Chromium for the browser-backed render guards
+        run: python -m playwright install --with-deps chromium
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
       # onto ONE shell line, where `#` starts a SHELL comment — everything after it,
       # including every remaining test path and the trailing `-q`, silently vanishes
@@ -9168,7 +9183,10 @@ jobs:
         # No boto3: engine/prophet_live/r2io.py imports it lazily inside client() and
         # the prophet-live suites monkeypatch that factory; the only boto3 mentions in
         # this lane are string assertions ABOUT another workflow's pip line.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema rjsmin==1.2.5
+        # beautifulsoup4: tests/test_us_board_gate.py:1134 does `from bs4 import
+        # BeautifulSoup` inside the gate-payload assertions, which died
+        # ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema rjsmin==1.2.5 beautifulsoup4
       # The import-light tier-gate runs the shell/boundary cases, while the two
       # builder assertions intentionally require pandas + plotly. Pair the suite
       # with this lane's fat deps so those assertions execute instead of skip
@@ -11992,7 +12010,14 @@ jobs:
         #    which pulls admin.analytics_first_party, which does
         #    `try: import requests / except: requests = None`. Drop the dep and the lane silently
         #    exercises that degraded branch instead of the shipped one.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+        # fastapi: app/company_intelligence.py:22 does `from fastapi import APIRouter,
+        # HTTPException, Query, Request, Response` at module scope (the company-intelligence
+        # suites import it at collection). httpx is NOT required — with fastapi installed the
+        # full step runs with no httpx import anywhere. jsonschema:
+        # engine/intelligence_workspace/registry.py:11 does `from jsonschema import
+        # Draft202012Validator, FormatChecker` at module scope (test_issuer_profiles_a5a and
+        # the world_state thematic_state lobe reach it); without it the step failed 7 deep.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests fastapi jsonschema
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
         run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
 
@@ -13056,7 +13081,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+        # jsonschema: engine/intelligence_workspace/registry.py:11 does
+        # `from jsonschema import Draft202012Validator, FormatChecker` at module scope —
+        # the MO-J1A affected-company continuation suite died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 jsonschema
       - name: transmission chains — engine + state machine + validator + smoke
         run: python -m pytest tests/test_transmission_chains.py -q
       - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
@@ -15278,7 +15306,7 @@ jobs:
       # Shared Shell keeps the existing document producer and finite route
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
-        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py -q
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py -q
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -15729,7 +15757,10 @@ jobs:
         # requests: the v8 reflex-arc reping tests (#2442) patch scripts.notify.send_telegram,
         # and scripts/notify.py does a real `import requests` at module import — without it
         # the patch target fails to resolve and 5 reflex tests die at import, not on behavior.
-        run: pip install pytest pandas numpy pyyaml anthropic pyarrow requests
+        # jsonschema: engine/neuralweb/theme_state_generation_reader.py:14 imports it at module
+        # scope (the ADB-W3 suite reaches it through tests/test_theme_state_generation.py), so
+        # test_cortex_adb_w3.py died ModuleNotFoundError at call time without it.
+        run: pip install pytest pandas numpy pyyaml anthropic pyarrow requests jsonschema
       - name: capability-redline selftest (planted secret caught; clean real files pass)
         run: python3 scripts/check_capability_redline.py --selftest
       - name: capability-redline live scan (hard fail on secret values or value-capture)
@@ -18287,6 +18318,10 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      # Native activity proposal ledger writer (PIPE-PROPOSE 2026-10-21).
+      - "scripts/propose_activity_membership.py"
+      - "tests/test_gmi_activity_proposal_ledger.py"
+      - "data/theme_graph/probation/activity_proposals.jsonl"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18301,7 +18336,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -26548,6 +26583,36 @@ jobs:
       - name: page/render builders whose output ships to the site
         run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
 
+  macro-signals-conditions:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # Macro Signals reader repairs (W33-LA, 2026-10-21): recession probability printed in
+    # percent units, the withheld drawdown reason, and the conditions vintages tile. Three
+    # render suites (jinja2 + templates/; no data/ or site/ read). Own job, not a step in
+    # unrun-builders-render: that step moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes. scope: exclusive pins it to the
+    # page template, its two includes and the suites; the probe ceilings stay fixed.
+    paths:
+      - "templates/macro_signals.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/test_macro_signals_conditions_vintages.py"
+      - "tests/test_macro_signals_drawdown_withheld.py"
+      - "tests/test_macro_signals_recession_prob_units.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: Macro Signals — recession units, withheld drawdown, conditions vintages
+        run: python -m pytest tests/test_macro_signals_recession_prob_units.py tests/test_macro_signals_drawdown_withheld.py tests/test_macro_signals_conditions_vintages.py -q -p no:cacheprovider
   unrun-nav-chrome:
     # The two-family navigation law and the chrome around it: every product
     # page header must come from the ONE shared source (CLAUDE.md §Navigation
@@ -26904,7 +26969,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        # jsonschema: engine/neuralweb/theme_state_generation.py:20 imports it at module
+        # scope; tests/test_til_nw_citizenship.py:577 imports that module's test helpers,
+        # so the citizenship suite died ModuleNotFoundError at collection without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       - name: neural-web cortex world-state consumers + the factor-contradiction plane
         run: python -m pytest tests/test_build_active_build_map.py tests/test_build_cycle_pattern_state.py tests/test_imce_prospective.py tests/test_factor_contradictions.py tests/test_nw_consumers_w3.py tests/test_nw_health_escalation.py tests/test_options_nw_wiring.py tests/test_til_nw_citizenship.py tests/test_world_state_special_sits.py tests/test_world_state_stage_analysis.py -q
       - name: three-repository advisory Active Build Map
@@ -27039,6 +27107,8 @@ jobs:
       - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/test_us_candidate_episode_recorded_at_clock.py"
       - "config/fundamental_forensics/coverage/**"
       - "contracts/market_os/**"
       - "engine/close_pass/**"
@@ -28092,6 +28162,8 @@ jobs:
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
       - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
         run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
+      - name: US B1 recorded_at writer clock (durable CLI refuses caller clocks; exclusive organ, weight-neutral)
+        run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
@@ -30419,7 +30491,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        # jsonschema: lib/evidence_foundation.py:19 does `from jsonschema import
+        # Draft202012Validator, FormatChecker, SchemaError` at module scope, so the
+        # intraday-lane suites died ModuleNotFoundError without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       # P1 unrun backfill 2026-08-14 — three consumers of plumbing this step already
       # owns joined the list, appended rather than given a step of their own because a
       # step is the masking unit here (run_ci_pack.py returns on the first non-zero
@@ -31359,7 +31434,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
+        # jsonschema: engine/theme_graph/change_report.py:17 imports it at module
+        # scope (the theme-tree suites reach it through
+        # engine/theme_graph/structural_navigation.py:15), so
+        # tests/test_theme_tree_ticker_lookup.py died at collection without it.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5 jsonschema
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
@@ -34406,7 +34485,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema -r requirements/tiingo.txt
       - name: prospective reference clocks, refusals and consumer compatibility
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py

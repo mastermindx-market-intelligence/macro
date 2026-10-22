@@ -78,3 +78,14 @@ Exact implementation `509583b08e689a159fb8079bb6f27e26a9d2d958` received a scope
 Preserve the reader boundary: EMPTY_NORMALIZED creates no materialized Parquet view. Actual empty USDBRL raw responses are accounted for separately; a missing view or failed read must not become a successful empty result.
 
 The concrete remaining questions and their implementation consequences are prepared in TIINGO_PROVIDER_QUALIFICATION_REQUEST.md. That packet has not been sent and contains no token or raw prices. It requests authoritative semantics and the existing account rights mapping; it makes no new-purchase assumption.
+
+
+## Native four-hour request observed — 21 October 2026, 22:45 UTC
+
+One previously prepared EURUSD `4hour` research request was executed through the existing `scripts.tiingo_ingest.collect` owner after an exact request-hash receipt scan proved no earlier capture. The one-request budget produced one successful new response, **7 rows / 809 raw bytes**, and no failure or retry. Exact request: `/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19`. Original receipt identity: `148ee86d4fec717d8d5c4e4214cbbb8cdd4703ac8260ef42ca31c2efaba524ba`; original capture clock `2026-10-21T22:45:21.025233+00:00`.
+
+The retained raw digest is `7c58219d4866e1d7aef2ab0da9c8f52e3ba9d4ca9a1ca1e6896b4fbb31c7e934`. Exact gzip/raw bytes, length, receipt identity and count were verified locally without another HTTP request. All seven rows carry ticker `eurusd`, explicit UTC date labels and finite positive OHLC values within their bounds. The vendor labels run from **19 October 20:00 UTC through 20 October 20:00 UTC**, with six observed steps of exactly 14,400 seconds and no duplicate instants. These are observed labels, not an authoritative interval-start/end or finality contract. The requested 19 October date starts earlier than the first returned label; this probe does not establish full-window coverage.
+
+**Zero finalized-4H observations are admitted.** No local aggregation, gap filling, replacement pair, correction winner, historical availability backdating, source registry promotion, activation, evaluator or notification was introduced. Raw prices and credentials remain in the incumbent archive; committed evidence contains counts, labels, clocks and hashes only. Public documentation supports the request shape; observed labels cannot settle OHLC basis, completeness, market calendar, correction/finality or product-use mapping. The existing Chairman plan attestation is preserved; no new purchase is presumed.
+
+Evidence: `source_evidence/tiingo-eurusd-native-4hour-{plan,preflight,collect,receipt}.json`. The collection/receipt JSONs disclose the exact source head and the local owner-only execution scope. This is additional research evidence, not a re-run of the accepted minute-data diagnostic implementation or an independent source review.
