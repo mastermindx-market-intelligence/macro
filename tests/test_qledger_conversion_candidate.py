@@ -226,3 +226,116 @@ def test_preparation_refuses_missing_excluded_accepted_history(fixture):
     assert git(repo, "show-ref") == refs_before
     assert (repo / ".git/index").read_bytes() == index_before
     assert (repo / "data/qledger/claims.jsonl").read_bytes() == raw
+
+
+@pytest.fixture
+def native_fixture(fixture):
+    from engine import qledger_store_protocol as protocol
+    from scripts.ci.qledger_publication import NativeOperationReceipt
+    repo, _, _, raw, limits = fixture
+    converted = prepare(fixture)
+    git(repo, "update-ref", "refs/remotes/origin/main", converted.candidate_oid)
+    base = verify_source_snapshot(GitTreeSource(repo, tree_oid=converted.tree_oid, limits=limits), limits=limits)
+    one = protocol.plan_append(base, transaction_id="native:one", serialized_rows=[b'{"original":1}\n'], limits=limits)
+    two = protocol.plan_append(one.snapshot, transaction_id="native:two", serialized_rows=[b'raw-duplicate\n', b'raw-duplicate\n'], limits=limits)
+    receipt = NativeOperationReceipt("operation:native", "lane:native", base, two.snapshot,
+                                     ("native:one", "native:two"), limits)
+    return repo, converted.candidate_oid, raw, limits, receipt
+
+
+def prepare_native(native_fixture, **overrides):
+    repo, tip, _, limits, receipt = native_fixture
+    kwargs = dict(accepted_tip_oid=tip, accepted_ref="refs/remotes/origin/main",
+                  native_operation_receipt=receipt, target_ref="refs/heads/main", limits=limits,
+                  commit_metadata=candidate.CandidateCommitMetadata("Native fixture", "fixture@example.invalid", 1700000100))
+    kwargs.update(overrides)
+    return candidate.prepare_native_operation_candidate(repo, **kwargs)
+
+
+def read_native(native_fixture, prepared, **overrides):
+    repo, tip, _, limits, receipt = native_fixture
+    kwargs = dict(candidate_oid=prepared.candidate_oid, accepted_tip_oid=tip,
+        operation_id=receipt.operation_id, lane_id=receipt.lane_id,
+        authorized_transaction_ids=receipt.authorized_transaction_ids,
+        commit_metadata=prepared.commit_metadata, target_ref="refs/heads/main", limits=limits)
+    kwargs.update(overrides)
+    return candidate.read_native_operation_candidate(repo, **kwargs)
+
+
+def test_native_candidate_and_readback_preserve_original_bytes_and_live_state(native_fixture):
+    repo, tip, raw, limits, receipt = native_fixture
+    (repo / "data/qledger/claims.jsonl").write_bytes(raw + b"LIVE-PENDING\n")
+    before = (git(repo, "status", "--porcelain"), git(repo, "show-ref"), (repo / ".git/index").read_bytes())
+    result = prepare_native(native_fixture)
+    restored, witness = read_native(native_fixture, result)
+    assert witness.status == "NATIVE_OPERATION_VERIFIED" and not witness.eligible_for_cutover
+    assert restored.authorized_transaction_ids == ("native:one", "native:two")
+    assert restored.original_base_snapshot.root_bytes == receipt.original_base_snapshot.root_bytes
+    assert restored.original_candidate_snapshot.root_bytes == receipt.original_candidate_snapshot.root_bytes
+    with open_logical_bytes(restored.original_candidate_snapshot) as stream:
+        assert stream.read() == raw + b'{"original":1}\nraw-duplicate\nraw-duplicate\n'
+    assert git(repo, "rev-list", "--parents", "-n", "1", result.candidate_oid).decode() == result.candidate_oid + " " + tip
+    assert before == (git(repo, "status", "--porcelain"), git(repo, "show-ref"), (repo / ".git/index").read_bytes())
+    assert (repo / "data/qledger/claims.jsonl").read_bytes() == raw + b"LIVE-PENDING\n"
+    assert result.effect == "unreferenced_git_objects_only"
+
+
+@pytest.mark.parametrize("changes", [
+    {"operation_id": "other"}, {"lane_id": "other"},
+    {"authorized_transaction_ids": ("native:two", "native:one")},
+    {"authorized_transaction_ids": ("native:one",)},
+    {"commit_metadata": candidate.CandidateCommitMetadata("Other", "fixture@example.invalid", 1700000100)},
+])
+def test_native_readback_refuses_changed_operation_or_original_inputs(native_fixture, changes):
+    result = prepare_native(native_fixture)
+    with pytest.raises(SnapshotIntegrityError):
+        read_native(native_fixture, result, **changes)
+
+
+def test_native_bad_receipt_or_stale_ref_refuses_before_object_writes(native_fixture, monkeypatch):
+    receipt = native_fixture[-1]
+    monkeypatch.setattr(candidate, "_write_git_object", lambda *a: pytest.fail("invalid original inputs wrote objects"))
+    with pytest.raises(SnapshotIntegrityError):
+        prepare_native(native_fixture, native_operation_receipt=replace(receipt, authorized_transaction_ids=("native:one",)))
+    with pytest.raises(SnapshotIntegrityError):
+        prepare_native(native_fixture, accepted_ref="refs/remotes/origin/missing")
+
+
+def test_native_commit_response_loss_repeats_same_immutable_candidate(native_fixture, monkeypatch):
+    write = candidate._write_git_object
+    commits = []
+    def response_lost(repo, args, payload):
+        oid = write(repo, args, payload)
+        if args == ["hash-object", "-t", "commit", "-w", "--stdin"]:
+            commits.append(oid)
+            raise RuntimeError("fixture response loss after native commit")
+        return oid
+    monkeypatch.setattr(candidate, "_write_git_object", response_lost)
+    with pytest.raises(RuntimeError, match="response loss"):
+        prepare_native(native_fixture)
+    monkeypatch.setattr(candidate, "_write_git_object", write)
+    monkeypatch.setenv("GIT_AUTHOR_DATE", "1800000000 +0000")
+    monkeypatch.setenv("GIT_COMMITTER_DATE", "1800000001 +0000")
+    result = prepare_native(native_fixture)
+    assert commits == [result.candidate_oid]
+    assert read_native(native_fixture, result)[1].status == "NATIVE_OPERATION_VERIFIED"
+
+
+def test_native_git_readback_refuses_missing_retained_member(native_fixture):
+    repo, _, _, _, receipt = native_fixture
+    result = prepare_native(native_fixture)
+    path = next(path for path, payload in receipt.original_candidate_snapshot._members.items()
+                if payload == b'{"original":1}\n')
+    oid = git(repo, "rev-parse", result.candidate_oid + ":" + path).decode()
+    (repo / ".git/objects" / oid[:2] / oid[2:]).unlink()
+    with pytest.raises(SnapshotIntegrityError):
+        read_native(native_fixture, result)
+
+
+def test_native_preparation_never_retargets_original_to_advanced_accepted_root(native_fixture, monkeypatch):
+    repo = native_fixture[0]
+    original = prepare_native(native_fixture)
+    git(repo, "update-ref", "refs/remotes/origin/main", original.candidate_oid)
+    monkeypatch.setattr(candidate, "_write_git_object", lambda *a: pytest.fail("advanced source wrote objects"))
+    with pytest.raises(SnapshotIntegrityError, match="original operation base"):
+        prepare_native(native_fixture, accepted_tip_oid=original.candidate_oid)

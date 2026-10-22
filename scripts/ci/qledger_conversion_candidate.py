@@ -19,8 +19,8 @@ from pathlib import Path
 import re
 
 from engine.qledger_store_conversion import plan_legacy_conversion
-from engine.qledger_store_protocol import ProtocolLimits, SnapshotIntegrityError
-from engine.qledger_store_sources import read_legacy_claims_blob
+from engine.qledger_store_protocol import ROOT_PATH, ProtocolLimits, SnapshotIntegrityError
+from engine.qledger_store_sources import GitTreeSource, read_legacy_claims_blob, verify_source_snapshot
 from scripts.ci import qledger_publication as publication
 
 
@@ -204,3 +204,122 @@ def prepare_legacy_conversion_candidate(
     _ref_matches(repo, accepted_ref, accepted_tip_oid)
     return PreparedConversionCandidate(candidate, candidate_tree, accepted_ref,
                                        commit_metadata, witness)
+
+
+@dataclass(frozen=True)
+class PreparedNativeOperationCandidate:
+    """Immutable local objects only, NOT a durable pre-apply retention receipt."""
+
+    candidate_oid: str
+    tree_oid: str
+    accepted_ref: str
+    commit_metadata: CandidateCommitMetadata
+    native_operation_receipt: publication.NativeOperationReceipt
+    continuity: publication.PublicationContinuityWitness
+    effect: str = "unreferenced_git_objects_only"
+
+
+def _native_commit_bytes(tree, parent, operation_id, lane_id, metadata):
+    if type(metadata) is not CandidateCommitMetadata:
+        raise SnapshotIntegrityError("PUBLICATION_INPUT", "explicit fixed Git metadata is required")
+    identity = metadata.git_identity()
+    return (f"tree {tree}\nparent {parent}\nauthor {identity}\ncommitter {identity}\n\n"
+            f"QLedger native operation candidate {operation_id} {lane_id}\n").encode("ascii")
+
+
+def _commit_identity(payload: bytes, parent_oid: str) -> str:
+    digest = sha1 if len(parent_oid) == 40 else sha256
+    return digest(b"commit " + str(len(payload)).encode("ascii") + b"\0" + payload).hexdigest()
+
+
+def read_native_operation_candidate(
+    repo: Path, *, candidate_oid: str, accepted_tip_oid: str,
+    operation_id: str, lane_id: str, authorized_transaction_ids: tuple[str, ...],
+    commit_metadata: CandidateCommitMetadata, target_ref: str, limits: ProtocolLimits,
+) -> tuple[publication.NativeOperationReceipt, publication.PublicationContinuityWitness]:
+    """Read exact immutable original inputs; grant no retention or apply authority.
+
+    Explicit operation/metadata must reproduce the original commit bytes, and
+    the existing publisher verifies the complete ordered transaction suffix.
+    Missing objects (including after GC) fail closed. This does not reconstruct
+    a native sealed plan, durable operation location, outcome or claim clocks.
+    """
+    publication._profile(limits)
+    publication._repo(repo)
+    publication._oid(candidate_oid)
+    publication._oid(accepted_tip_oid)
+    publication._native_binding(publication.NativePublicationBinding(
+        operation_id, lane_id, target_ref, accepted_tip_oid, "0" * 64))
+    source_tree = publication._commit_tree(repo, accepted_tip_oid, limits=limits)
+    tree = publication._commit_tree(repo, candidate_oid, limits=limits)
+    expected = _native_commit_bytes(tree, accepted_tip_oid, operation_id, lane_id, commit_metadata)
+    actual, _ = publication._git(repo, ["cat-file", "commit", candidate_oid],
+                                 output_limit=min(limits.snapshot_bytes, 4096))
+    if actual != expected or _commit_identity(expected, accepted_tip_oid) != candidate_oid:
+        raise SnapshotIntegrityError("CONFLICT", "candidate differs from exact original operation/metadata")
+    base = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
+    candidate = verify_source_snapshot(GitTreeSource(repo, tree_oid=tree, limits=limits), limits=limits)
+    receipt = publication.NativeOperationReceipt(operation_id, lane_id, base, candidate,
+                                                 authorized_transaction_ids, limits)
+    witness = publication.check_native_operation_candidate(
+        repo, candidate_oid=candidate_oid, accepted_baseline_oids=(accepted_tip_oid,),
+        target_ref=target_ref, binding=publication.NativePublicationBinding(
+            operation_id, lane_id, target_ref, accepted_tip_oid, candidate.receipt.root_digest),
+        native_operation_receipt=receipt, limits=limits,
+    )
+    return receipt, witness
+
+
+def prepare_native_operation_candidate(
+    repo: Path, *, accepted_tip_oid: str, accepted_ref: str,
+    native_operation_receipt: publication.NativeOperationReceipt,
+    commit_metadata: CandidateCommitMetadata, target_ref: str, limits: ProtocolLimits,
+) -> PreparedNativeOperationCandidate:
+    """Prepare original native inputs as deterministic unreferenced Git objects.
+
+    No ref/index/worktree/native apply/artifact/clock changes. The exact accepted
+    native root must match the original base; this never retargets an uncertain
+    original operation. These objects have NO GC protection or qualified result
+    location. Actual pre-apply admission needs independent durable retention of
+    bytes AND the explicit operation-to-object binding; this result is not it.
+    """
+    publication._profile(limits)
+    publication._repo(repo)
+    publication._oid(accepted_tip_oid)
+    receipt = native_operation_receipt
+    publication._receipt(receipt)
+    if receipt.limits.fingerprint != limits.fingerprint:
+        raise SnapshotIntegrityError("CONFLICT", "original profile differs from candidate profile")
+    publication.classify_pending(receipt.original_candidate_snapshot, native_operation_receipt=receipt)
+    publication._native_binding(publication.NativePublicationBinding(
+        receipt.operation_id, receipt.lane_id, target_ref, accepted_tip_oid,
+        receipt.original_candidate_snapshot.receipt.root_digest))
+    # Validate explicit fixed metadata before writing even an immutable object.
+    _native_commit_bytes("0" * len(accepted_tip_oid), accepted_tip_oid,
+                         receipt.operation_id, receipt.lane_id, commit_metadata)
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    publication._complete_repository(repo)
+    publication._baselines(repo, (accepted_tip_oid,), limits=limits)
+    source_tree = publication._commit_tree(repo, accepted_tip_oid, limits=limits)
+    accepted = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
+    if accepted.root_bytes != receipt.original_base_snapshot.root_bytes:
+        raise SnapshotIntegrityError("SOURCE_CHANGED", "accepted native root differs from original operation base")
+    members = dict(receipt.original_candidate_snapshot._members)
+    members[ROOT_PATH] = receipt.original_candidate_snapshot.root_bytes
+    changes = {tuple(part.encode("ascii") for part in path.split("/")):
+               _write_git_object(repo, ["hash-object", "-w", "--stdin"], value)
+               for path, value in members.items()}
+    tree = _tree_with_members(repo, source_tree, changes, limits)
+    payload = _native_commit_bytes(tree, accepted_tip_oid, receipt.operation_id,
+                                   receipt.lane_id, commit_metadata)
+    candidate = _write_git_object(repo, ["hash-object", "-t", "commit", "-w", "--stdin"], payload)
+    if candidate != _commit_identity(payload, accepted_tip_oid):
+        raise SnapshotIntegrityError("HASH_MISMATCH", "native candidate commit differs from explicit bytes")
+    restored, witness = read_native_operation_candidate(
+        repo, candidate_oid=candidate, accepted_tip_oid=accepted_tip_oid,
+        operation_id=receipt.operation_id, lane_id=receipt.lane_id,
+        authorized_transaction_ids=receipt.authorized_transaction_ids,
+        commit_metadata=commit_metadata, target_ref=target_ref, limits=limits)
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    return PreparedNativeOperationCandidate(candidate, tree, accepted_ref, commit_metadata,
+                                             restored, witness)

@@ -589,7 +589,7 @@ def _append_ledger(brief: dict, root) -> list:
         return []
 
 
-def _register_qledger_claims(written: list, root) -> dict | None:
+def _register_qledger_claims(written: list, root, *, native_intent=None) -> dict | None:
     """Mirror THIS RUN's theses into the Universal Scoreboard (Eval OS P3).
 
     US region only (`engine.qledger_desk_adapter`'s own region filter): the
@@ -603,14 +603,18 @@ def _register_qledger_claims(written: list, root) -> dict | None:
     except Exception as exc:  # noqa: BLE001
         log.warning("thematic_desk: qledger adapter import failed: %s", exc)
         return None
+    intent_args = {} if native_intent is None else {"native_intent": native_intent}
     return _qadapt.register_prospective(
         written, family="thematic_desk", timestamp_quality="CRAWL_BOUNDED",
-        root=root, git_sha=_qclock.git_sha(root))
+        root=root, git_sha=_qclock.git_sha(root), **intent_args)
 
 
-def run(market: str = "us", persist: bool = True, root=None, call=None) -> dict | None:
+def run(market: str = "us", persist: bool = True, root=None, call=None, *, native_intent=None) -> dict | None:
     """Gather → synthesize → persist the public brief + ledger for one market. Additive:
-    returns None (and writes nothing) when disabled / no key / no state. Never raises."""
+    returns None (and writes nothing) when disabled / no key / no state. Never raises.
+    An explicit owner may supply native_intent for this run's one prospective
+    claims batch; this function never creates a retry identity or native binding.
+    """
     region = (market or "us").lower()
     if region not in REGION:
         return None
@@ -629,7 +633,8 @@ def run(market: str = "us", persist: bool = True, root=None, call=None) -> dict 
             (site / f"ai_desk_{region}.json").write_text(json.dumps(brief, default=str))
             written = _append_ledger(brief, root)
             if written:
-                _register_qledger_claims(written, root)
+                intent_args = {} if native_intent is None else {"native_intent": native_intent}
+                _register_qledger_claims(written, root, **intent_args)
         return brief
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("thematic_desk run[%s] failed: %s", region, e)

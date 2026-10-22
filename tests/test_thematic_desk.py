@@ -509,3 +509,33 @@ def test_min_quorum_is_clamped_to_the_panel():
                       make({"narrative_scout"}))
     assert b.get("regime_context") != "ADJUDICATED"
 
+
+
+def test_thematic_prospective_path_forwards_only_explicit_owner_intent(tmp_path, monkeypatch):
+    from engine import qledger_desk_adapter as adapter, qledger_evidence_clock as clock
+    from engine.qledger_store_native import NativeClaimsIntent
+    intent = NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write")
+    written = [{"id": "fixture-row"}]
+    calls = []
+    monkeypatch.setattr(clock, "git_sha", lambda root: "fixture-provenance")
+    monkeypatch.setattr(adapter, "register_prospective", lambda rows, **kwargs: calls.append((rows, kwargs)) or {"fixture": True})
+    assert td._register_qledger_claims(written, tmp_path, native_intent=intent) == {"fixture": True}
+    assert calls[0][0] is written and calls[0][1]["native_intent"] is intent
+    assert calls[0][1]["git_sha"] == "fixture-provenance"
+    td._register_qledger_claims(written, tmp_path)
+    assert "native_intent" not in calls[1][1]
+
+
+def test_thematic_run_passes_explicit_intent_only_when_persisting(tmp_path, monkeypatch):
+    from engine.qledger_store_native import NativeClaimsIntent
+    intent = NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write")
+    written = [{"id": "fixture-row"}]
+    calls = []
+    monkeypatch.setattr(td, "gather_thematic_state", lambda *a: {"fixture": True})
+    monkeypatch.setattr(td, "synthesize", lambda *a: {"theses": []})
+    monkeypatch.setattr(td, "_append_ledger", lambda *a: written)
+    monkeypatch.setattr(td, "_register_qledger_claims", lambda rows, root, **kwargs: calls.append((rows, kwargs)))
+    td.run("us", root=tmp_path, call=object(), native_intent=intent)
+    assert calls == [(written, {"native_intent": intent})]
+    td.run("us", persist=False, root=tmp_path, call=object(), native_intent=intent)
+    assert len(calls) == 1

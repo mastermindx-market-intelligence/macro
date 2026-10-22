@@ -413,8 +413,15 @@ def register_prospective(rows: Iterable[dict], *, family: str,
                          raw_sector_of: Callable[[str | None], str | None] | None = None,
                          git_sha: str | None = None,
                          dry_run: bool = False,
-                         source_error: str | None = None) -> dict[str, Any]:
+                         source_error: str | None = None,
+                         native_intent=None) -> dict[str, Any]:
     """Translate + forward-gate + register ONE family's freshly-written rows.
+
+    `native_intent`, when supplied by an explicit native owner, is forwarded
+    unchanged for this batch's actual storage write. It is never derived from
+    family, claim IDs, git_sha or time. Original-write recovery uses retained
+    prepared inputs instead of repeating this translation/registration path.
+    A native write identity cannot be sent to the throwaway legacy dry run.
 
     `rows` MUST be exactly the rows the caller's OWN ledger append just wrote
     this run — never a re-read of the full committed store (see module note).
@@ -477,6 +484,11 @@ def register_prospective(rows: Iterable[dict], *, family: str,
              f"({source_error}) — this is NOT the same as 'ran and found nothing'; "
              f"nothing was attempted", flush=True)
         log.warning("qledger[%s]: source unavailable — %s", family, source_error)
+        return stats
+
+    if dry_run and native_intent is not None:
+        stats["error"] = "native_intent cannot be consumed by dry_run's temporary legacy store"
+        print(f"::error title={family}-qledger-register-failed::{stats['error']}", flush=True)
         return stats
 
     fam_cfg = _FAMILIES.get(family)
@@ -595,7 +607,8 @@ def register_prospective(rows: Iterable[dict], *, family: str,
             with TemporaryDirectory(prefix="qledger_p3_dry_run_") as tmp:
                 results = qledger.register_batch(candidates, root=tmp, dedupe=True, today=today)
         else:
-            results = qledger.register_batch(candidates, root=root, dedupe=True, today=today)
+            intent_args = {} if native_intent is None else {"native_intent": native_intent}
+            results = qledger.register_batch(candidates, root=root, dedupe=True, today=today, **intent_args)
     except Exception as exc:  # noqa: BLE001 — LOUD, never silent (blocker: silent total failure)
         stats["error"] = str(exc)
         print(f"::error title={family}-qledger-register-failed::qledger[{family}] "
