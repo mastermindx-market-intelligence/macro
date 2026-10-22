@@ -26,9 +26,9 @@
                "避险 — 压力升高；优先防守。"]
   };
   var SUBLINE = {
-    RISK_ON: ["GREEN — Risk-on backdrop", "偏多 — 风险偏好环境"],
-    MIXED: ["YELLOW — Trade with caution", "谨慎操作"],
-    RISK_OFF: ["RED — Defend capital first", "优先保住本金"]
+    RISK_ON: ["Risk-on backdrop", "偏多 — 风险偏好环境"],
+    MIXED: ["Trade with caution", "谨慎操作"],
+    RISK_OFF: ["Defend capital first", "优先保住本金"]
   };
   var ACTION = {
     RISK_ON: ["Stay selective. Add where setups confirm.", "保持精选，仅在入场条件确认时加仓。"],

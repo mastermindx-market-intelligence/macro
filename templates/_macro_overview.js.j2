@@ -1,0 +1,18 @@
+/* Keep the shared assistant's own controls and handlers in the page action area.
+   Reparent the complete mounted widget so its scoped tokens and internal refs survive. */
+(function () {
+  'use strict';
+  var slot = document.getElementById('macro-assistant-slot');
+  if (!slot) return;
+  var observer;
+  function placeAssistant() {
+    var boot = document.getElementById('mmb-boot');
+    var root = document.getElementById('mmb-root');
+    if (boot && boot.parentNode !== slot) slot.appendChild(boot);
+    if (root && root.parentNode !== slot) slot.appendChild(root);
+    if (root && observer) observer.disconnect();
+  }
+  observer = new MutationObserver(placeAssistant);
+  observer.observe(document.body, { childList: true });
+  placeAssistant();
+})();

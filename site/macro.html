@@ -115,6 +115,7 @@
 
 <link rel="stylesheet" href="assets/css/7689f0db.css?v=7689f0db">
 <link rel="stylesheet" href="assets/css/5b12dcfe.css?v=5b12dcfe">
+<link rel="stylesheet" href="assets/css/f401e8a0.css?v=f401e8a0">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 <link rel="preload" as="style" href="assets/css/4e822d03.css?v=4e822d03">
@@ -360,7 +361,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="live.js?v=b7b55e6b" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -426,7 +427,22 @@
   </dialog>
 </div>
 
-<div class="grid">
+
+<header class="macro-page-heading">
+  <div>
+    <h1 id="macro-page-title"><span class="l-en">US market overview</span><span class="l-zh">美国市场总览</span></h1>
+    <p><span class="l-en">Market conditions, risk and the week ahead.</span><span class="l-zh">看清市场环境、风险与本周关键事件。</span></p>
+  </div>
+  <div class="macro-page-actions">
+    <nav class="macro-page-index" aria-label="Overview sections">
+      <a href="#sx-events-v2"><span class="l-en">Calendar</span><span class="l-zh">事件日历</span><span aria-hidden="true">&nbsp;↘</span></a>
+      <a href="#sx-deep-context"><span class="l-en">Explore signals</span><span class="l-zh">深入信号</span><span aria-hidden="true">&nbsp;↘</span></a>
+    </nav>
+    <div id="macro-assistant-slot" class="macro-assistant-slot"></div>
+  </div>
+</header>
+
+<div class="grid" role="main" aria-labelledby="macro-page-title">
 
   
 
@@ -849,13 +865,14 @@
         </svg>
 
         
-        <div>
+        <div class="macro-verdict-block">
+          <h2 class="macro-eyebrow"><span class="l-en">Market backdrop</span><span class="l-zh">市场环境</span></h2>
           <div class="mx5-score-line">
-            <span class="mx5-big-score">49</span>
             <span class="mx5-verdict-word"><span class="l-en">Mixed</span><span class="l-zh">混合</span></span>
+            <span class="macro-score-reading"><span class="mx5-big-score">49</span><span class="macro-score-max">/100</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">YELLOW — Trade with caution</span>
+            <span class="l-en">Trade with caution</span>
             <span class="l-zh">谨慎操作</span>
             
           </div>
@@ -1007,9 +1024,10 @@
       
       
       
+      
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
-        <span class="l-en">Green if risk appetite firms up. → Red if trend &amp; technicals breaks down.</span>
+        <span class="l-en">Improves if risk appetite firms up. → Worsens if trend &amp; technicals breaks down.</span>
         <span class="l-zh">若风险偏好转强，则转「偏多」。→ 若趋势与技术走坏，则转「避险」。</span>
       </div>
       
@@ -1167,10 +1185,10 @@
     
     <div class="mx5-sc-right">
       <div class="mx5-path-header">
-        <span class="mx5-path-title">
+        <h2 class="mx5-path-title">
           <span class="l-en">60-session path</span>
           <span class="l-zh">60 交易日走势</span>
-        </span>
+        </h2>
         
         
         <span class="mx5-path-meta"><span class="l-en">Measured blend &middot; settled through Oct 21</span><span class="l-zh">实测合成分 · 已结算至 10月21日</span></span>
@@ -2361,7 +2379,7 @@
   <div class="sx" id="sx-evidence" style="--isle-color:var(--isle-evidence)">
     
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-evidence')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-evidence');}">
-      <div class="mx5-card-title"><span class="l-en">What To Do Now</span><span class="l-zh">现在怎么做</span></div>
+      <h2 class="mx5-card-title"><span class="l-en">Today’s playbook</span><span class="l-zh">今日策略</span></h2>
       <div class="mx5-action-list">
         
         
@@ -2453,8 +2471,8 @@
     
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-events')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-events');}">
       <div class="mx5-card-title-row">
-        <div class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></div>
-        <div class="mx5-card-badge"><span class="l-en">This week</span><span class="l-zh">本周</span></div>
+        <h2 class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></h2>
+        <div class="mx5-card-badge"><span class="l-en">Upcoming</span><span class="l-zh">近期</span></div>
       </div>
       <div class="mx5-card-stance">
         <span class="l-en">Get ready — 3 big prints ahead; avoid adding risk right before them.</span>
@@ -2462,8 +2480,8 @@
       </div>
       <div class="mx5-events-sub">
         
-        <span class="l-en">3 high-impact prints ahead</span>
-        <span class="l-zh">3 项高影响数据待发</span>
+        <span class="l-en">Next 5 trading days</span>
+        <span class="l-zh">未来5个交易日</span>
         
       </div>
       
@@ -2476,8 +2494,8 @@
           
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
-            <div class="mx5-tl-date">Oct 22</div>
-            <div class="mx5-tl-name"><span class="l-en">Initial jobless …</span><span class="l-zh">初请失业金</span></div>
+            <div class="mx5-tl-date"><span class="l-en">Oct 22</span><span class="l-zh">10月22日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></div>
             <div class="mx5-tl-badge med">
               <span class="l-en">MED</span>
               <span class="l-zh">中</span>
@@ -2489,8 +2507,8 @@
           
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-high"></div></div>
-            <div class="mx5-tl-date">Oct 28</div>
-            <div class="mx5-tl-name"><span class="l-en">FOMC rate decisi…</span><span class="l-zh">美联储议息会议</span></div>
+            <div class="mx5-tl-date"><span class="l-en">Oct 28</span><span class="l-zh">10月28日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">FOMC rate decision</span><span class="l-zh">美联储议息会议</span></div>
             <div class="mx5-tl-badge high">
               <span class="l-en">HIGH</span>
               <span class="l-zh">高</span>
@@ -2502,8 +2520,8 @@
           
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-high"></div></div>
-            <div class="mx5-tl-date">Oct 29</div>
-            <div class="mx5-tl-name"><span class="l-en">GDP (BEA estimat…</span><span class="l-zh">GDP 数据</span></div>
+            <div class="mx5-tl-date"><span class="l-en">Oct 29</span><span class="l-zh">10月29日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">GDP (BEA estimate)</span><span class="l-zh">GDP 数据</span></div>
             <div class="mx5-tl-badge high">
               <span class="l-en">HIGH</span>
               <span class="l-zh">高</span>
@@ -2515,8 +2533,8 @@
           
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-high"></div></div>
-            <div class="mx5-tl-date">Oct 29</div>
-            <div class="mx5-tl-name"><span class="l-en">PCE / personal i…</span><span class="l-zh">PCE 物价指…</span></div>
+            <div class="mx5-tl-date"><span class="l-en">Oct 29</span><span class="l-zh">10月29日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">PCE / personal income (BEA)</span><span class="l-zh">PCE 物价指数</span></div>
             <div class="mx5-tl-badge high">
               <span class="l-en">HIGH</span>
               <span class="l-zh">高</span>
@@ -2528,8 +2546,8 @@
           
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
-            <div class="mx5-tl-date">Oct 29</div>
-            <div class="mx5-tl-name"><span class="l-en">Initial jobless …</span><span class="l-zh">初请失业金</span></div>
+            <div class="mx5-tl-date"><span class="l-en">Oct 29</span><span class="l-zh">10月29日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></div>
             <div class="mx5-tl-badge med">
               <span class="l-en">MED</span>
               <span class="l-zh">中</span>
@@ -4616,33 +4634,18 @@
   
   
   
+  
+  
     
+  
     
+  
     
+  
     
-    
-    
-      
-      
-      
-    
-      
-      
-      
-    
-      
-      
-      
-    
-      
-      
-      
-    
-      
-      
-      
-    
-    
+  
+  
+  
   
   
   <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-fed')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-fed');}">
@@ -4651,7 +4654,7 @@
     
     <div class="plf-stance-row" style="margin-bottom:4px">
       <svg width="8" height="8" viewBox="0 0 8 8" style="flex-shrink:0;margin-top:2px"><circle cx="4" cy="4" r="4" fill="var(--up)"/></svg>
-      <span style="font-size:12px;font-weight:600">
+      <span class="macro-driver-verdict">
         <span class="l-en">Easing pressure building</span>
         <span class="l-zh">宽松压力积聚</span>
       </span>
@@ -4659,32 +4662,14 @@
     
     
     
-    <div style="font-size:11px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.4;margin-bottom:6px">
+    <div class="macro-driver-copy">
       <span class="l-en">The futures rate path isn&#39;t shown until it can be matched to the policy rate.</span>
       <span class="l-zh">期货隐含的利率路径须与政策利率口径一致后才会显示</span>
     </div>
     
     
     
-    <div class="plf-spark-row" style="margin-bottom:6px">
-      <svg class="plf-spark-svg" viewBox="0 0 120 36" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="rcSpkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="var(--isle-policy)" stop-opacity=".18"/>
-            <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="M0,32.0 L30,31.2 L60,22.7 L90,11.7 L120,0.0 L120,36 L0,36 Z" fill="url(#rcSpkGrad)"/>
-        <polyline points="0,32.0 30,31.2 60,22.7 90,11.7 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-      </svg>
-    </div>
     
-    
-    
-    <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.4">
-      <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.88% → 4.67%)</span>
-      <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.88% → 4.67%）</span>
-    </div>
     
     
     
@@ -4716,7 +4701,7 @@
   <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-sentiment')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-sentiment');}">
     <div class="mx5-card-title"><span class="l-en">Market Sentiment</span><span class="l-zh">市场情绪</span></div>
     <div class="mx5-sentiment-dial-wrap">
-      <svg viewBox="0 0 380 212" style="width:100%;max-width:340px;height:190px;display:inline-block;overflow:visible">
+      <svg class="macro-sentiment-gauge" viewBox="0 0 380 212">
         <defs>
           <linearGradient id="sentGrad5" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%"   stop-color="#ef4444"/>
@@ -4816,64 +4801,9 @@
     
     
     
-    
-    <div class="mx5-sector-heat-divider hero">
-      <div class="mx5-sector-heat-label"><span class="l-en">Sector Heat</span><span class="l-zh">板块热图</span></div>
-      <div class="mx5-sector-heat-bars">
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-sector-heat-col" data-tip-en="Magnificent Seven — cooling" data-tip-zh="七巨头 — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-sector-heat-col" data-tip-en="Crypto &amp; Digital Rails — cooling" data-tip-zh="加密与数字轨道 — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-sector-heat-col" data-tip-en="Cybersecurity — cooling" data-tip-zh="网络安全 — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <div class="mx5-sector-heat-col" data-tip-en="Technology (Equal-Weight) — cooling" data-tip-zh="信息技术（等权） — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
-        </div>
-        
-      </div>
-      <div class="mx5-sector-heat-legend">
-        <span class="heat-up"><span class="l-en">▲ Heating</span><span class="l-zh">▲ 升温</span></span>
-        <span class="heat-dn"><span class="l-en">Cooling ▼</span><span class="l-zh">退潮 ▼</span></span>
-      </div>
+    <div class="macro-sector-counts">
+      <span class="heat-up"><strong>0</strong> <span class="l-en">heating</span><span class="l-zh">升温</span></span>
+      <span class="heat-dn"><strong>4</strong> <span class="l-en">cooling</span><span class="l-zh">退潮</span></span>
     </div>
     
     
@@ -4891,28 +4821,56 @@
       
       <div class="mx5-mkt-grid">
         <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">ES</div>
-          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
+          <div class="mx5-mkt-ticker">ES <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P 500</span><span class="l-zh">标普500</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">NQ</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
+          <div class="mx5-mkt-ticker">NQ <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq 100</span><span class="l-zh">纳斯达克100</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">YM</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
+          <div class="mx5-mkt-ticker">YM <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Dow Jones</span><span class="l-zh">道琼斯</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">RTY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
+          <div class="mx5-mkt-ticker">RTY <span class="l-en">· Futures</span><span class="l-zh">· 期货</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">Russell 2000</span><span class="l-zh">罗素2000</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         
         <div class="mx5-mkt-tile" data-sym="^TNX" data-mkt="us">
@@ -4920,12 +4878,26 @@
           <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
         <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
           <div class="mx5-mkt-ticker">DXY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
+          <div class="mx5-mkt-sub"><span class="l-en">US dollar</span><span class="l-zh">美元指数</span></div>
           <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
           <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
+          <div class="macro-quote-status">
+            <span class="macro-quote-live"><span class="l-en">Live</span><span class="l-zh">实时</span></span>
+            <span class="macro-quote-delayed"><span class="l-en">Delayed</span><span class="l-zh">延迟</span></span>
+            <span class="macro-quote-stale"><span class="l-en">Stale quote</span><span class="l-zh">报价已过期</span></span>
+            <span class="macro-quote-closed"><span class="l-en">Market closed</span><span class="l-zh">已收市</span></span>
+            <span class="macro-quote-unavailable"><span class="l-en">Unavailable</span><span class="l-zh">暂无报价</span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -4985,56 +4957,7 @@
       </div>
       
       
-      
-      
-      
-      
-      
-      
-      
-        
-        
-        
-      
-        
-        
-        
-      
-        
-        
-        
-      
-        
-        
-        
-      
-        
-        
-        
-      
-      
-      
-      <div class="plf-spark-row">
-        <svg class="plf-spark-svg" viewBox="0 0 120 36" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="plSpkGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--isle-policy)" stop-opacity=".18"/>
-              <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <path d="M0,32.0 L30,31.1 L60,22.9 L90,11.7 L120,0.0 L120,36 L0,36 Z" fill="url(#plSpkGrad)"/>
-          <polyline points="0,32.0 30,31.1 60,22.9 90,11.7 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-        </svg>
-        <div class="plf-spark-label">
-          
-          <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.88% → 4.62%)</span>
-          
-          
-          <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.88% → 4.62%）</span>
-          
-          
-        </div>
-      </div>
+      <div class="macro-driver-copy"><span class="l-en">Rate-path comparison unavailable.</span><span class="l-zh">利率路径比较暂不可用。</span></div>
       
       
       <div class="plf-chip-row">
@@ -5093,12 +5016,10 @@
         <span class="l-en">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">5 High-Impact Items</span><br>
           Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">growth</span><br>
-          5 high-impact signals across channels
         </span>
         <span class="l-zh">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">5 条高影响信息</span><br>
           主线：<span style="color:var(--mx5-accent-ink);font-weight:600">增长</span><br>
-          5 条高影响信号
         </span>
         
       </div>
@@ -11085,7 +11006,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
   
 
 
-  `. #}
+
 
 
   
@@ -13009,7 +12930,7 @@ window.__CHART_SWAP__ = {
 <script src="tablesort.js?v=62f1b5ef" defer></script>
 
 
-<script src="risk_state_live.js?v=2b9d32d5" defer></script>
+<script src="risk_state_live.js?v=42f290c3" defer></script>
 
 <script async src="risk_envelope_live.js?v=47a6eb04"></script>
 <script defer src="risk_radar_workspace.js?v=4df5cb03"></script>
@@ -13175,6 +13096,25 @@ window.__CHART_SWAP__ = {
   }, true);
 })();
 </script>
+
+<script id="macro-overview-script">/* Keep the shared assistant's own controls and handlers in the page action area.
+   Reparent the complete mounted widget so its scoped tokens and internal refs survive. */
+(function () {
+  'use strict';
+  var slot = document.getElementById('macro-assistant-slot');
+  if (!slot) return;
+  var observer;
+  function placeAssistant() {
+    var boot = document.getElementById('mmb-boot');
+    var root = document.getElementById('mmb-root');
+    if (boot && boot.parentNode !== slot) slot.appendChild(boot);
+    if (root && root.parentNode !== slot) slot.appendChild(root);
+    if (root && observer) observer.disconnect();
+  }
+  observer = new MutationObserver(placeAssistant);
+  observer.observe(document.body, { childList: true });
+  placeAssistant();
+})();</script>
 
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>

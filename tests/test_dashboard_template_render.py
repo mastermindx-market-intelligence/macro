@@ -689,9 +689,9 @@ def test_macro_strip_tnx_display_transform_wired():
 def test_macro_strip_labels_bilingual():
     """The six tiles carry their EN + ZH labels (bilingual UI law)."""
     html = _render("macro")
-    for en, zh in [("S&amp;P fut", "标普期货"), ("Nasdaq fut", "纳指期货"),
-                   ("Dow fut", "道指期货"), ("Russell fut", "罗素期货"),
-                   ("10Y yield", "十年期收益率"), ("Dollar DXY", "美元指数")]:
+    for en, zh in [("S&amp;P 500", "标普500"), ("Nasdaq 100", "纳斯达克100"),
+                   ("Dow Jones", "道琼斯"), ("Russell 2000", "罗素2000"),
+                   ("10Y yield", "十年期收益率"), ("US dollar", "美元指数")]:
         assert en in html, f"EN label {en!r} missing"
         assert zh in html, f"ZH label {zh!r} missing"
 

@@ -76,7 +76,12 @@ def theme_code(theme_src: str) -> str:
 # assigned from a bare string literal. An expression (pfx + 'x.js',
 # _mmBrainSrc(), _mmOverlaySrc) is not a literal and is not matched here; those
 # are checked for shared-root provenance by the second half of the test.
-_LITERAL_SRC_RE = re.compile(r"""\.(?:src|href)\s*=\s*(['"])([^'"]+)\1""")
+_LITERAL_SRC_RE = re.compile(
+    r"""(?P<receiver>[$\w]+)?\.(?P<attribute>src|href)\s*=\s*(?P<quote>['"])(?P<url>[^'"]+)(?P=quote)"""
+)
+_ELEMENT_ASSIGN_RE = re.compile(
+    r"""(?P<receiver>[$\w]+)\s*=\s*document\.createElement\(\s*(?P<quote>['"])(?P<tag>[\w-]+)(?P=quote)\s*\)"""
+)
 
 # URLs that are not ours to rebase: absolute, protocol-relative, data/blob, and
 # the empty string (used to detach a media element).
@@ -86,11 +91,23 @@ _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
 def _document_relative_offenders(code: str) -> list[str]:
     """Injected asset URLs that are bare relative literals (comments stripped)."""
     code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
-    return [
-        url
-        for _q, url in _LITERAL_SRC_RE.findall(code)
-        if url and not url.startswith(_NOT_LOCAL)
-    ]
+    offenders = []
+    for match in _LITERAL_SRC_RE.finditer(code):
+        url = match["url"]
+        if not url or url.startswith(_NOT_LOCAL):
+            continue
+        # Exempt a known anchor's href, not URLs that happen to end in .html.
+        # Use the most recent element assignment so a reused local cannot turn
+        # a later script/link into an exempt anchor.
+        assignments = [
+            element for element in _ELEMENT_ASSIGN_RE.finditer(code[:match.start()])
+            if element["receiver"] == match["receiver"]
+        ]
+        if (match["attribute"] == "href" and assignments
+                and assignments[-1]["tag"].lower() == "a"):
+            continue
+        offenders.append(url)
+    return offenders
 
 
 def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
@@ -111,6 +128,23 @@ def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
     assert _document_relative_offenders(
         "a.src = 'https://cdn.example/x.js'; b.src = '//h/y.js'; c.src = '/z.js'; d.src = 'data:,';"
     ) == []
+
+
+def test_page_navigation_is_distinct_from_injected_asset_references() -> None:
+    assert _document_relative_offenders(
+        "var a = document.createElement('a'); a.href = 'stock.html#' + encodeURIComponent(ticker);"
+    ) == []
+    assert _document_relative_offenders(
+        "s.src = 'mm_brain.js?v=1'; l.href = 'widget.css#theme'; frame.src = 'stock.html#AAPL'; "
+        "nodes[0].src = 'another.js';"
+    ) == ["mm_brain.js?v=1", "widget.css#theme", "stock.html#AAPL", "another.js"]
+    assert _document_relative_offenders(
+        "const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = 'theme.html';"
+    ) == ["theme.html"]
+    assert _document_relative_offenders(
+        "var a = document.createElement('a'); a.href = 'stock.html#'; "
+        "a = document.createElement('link'); a.href = 'theme.html';"
+    ) == ["theme.html"]
 
 
 def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:

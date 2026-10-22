@@ -504,8 +504,8 @@
 
   // ── Shared per-node patch (used by BOTH the poller and the /ws/tape socket) ──
   // reading = { price, src, stale, ageMin, delayFloor, chg, prevClose, basis }.
-  var TAPE_NULL_EN = "Quotes unavailable — the rest of this page is unaffected.";
-  var TAPE_NULL_ZH = "行情暂不可用——本页其余内容不受影响。";
+  var TAPE_NULL_EN = "Live quotes unavailable. Retained analysis remains visible.";
+  var TAPE_NULL_ZH = "实时行情暂不可用。已有分析仍可查看。";
   function paintTapeNull(el) {
     // Null design is Markets-only. patchSymbol walks every .nb-px[data-sym]
     // site-wide (nav ticker included); TAPE_SYMS is that same symbol set.
