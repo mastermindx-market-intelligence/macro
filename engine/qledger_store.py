@@ -1,14 +1,16 @@
 """Claims-owner bindings with an unconditional legacy production selection.
 
 Legacy transports preserve their original parser and I/O contracts. The native
-binding is available only through explicit private in-process construction for
-synthetic integration; there is no discovery, environment switch or activation.
+binding is available through an explicit context-local owner scope; default
+selection remains legacy, with no discovery, environment switch or enrollment.
+A native ROOT refuses unbound legacy I/O rather than reading an empty base.
 """
 
 from __future__ import annotations
 
 import io
 import json
+import os
 import re
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -28,8 +30,30 @@ def _production_claims_binding(explicit_claims_path: Path) -> LegacyClaimsBindin
     return LegacyClaimsBinding(explicit_claims_path)
 
 
+def _require_legacy_namespace(path):
+    """Refuse native ROOT at legacy I/O, never auto-select another format.
+
+    This check is not a checkout/old-descriptor synchronization fence. Actual
+    consumers must be bound before converted files become visible.
+    """
+    from engine.qledger_store_protocol import ROOT_PATH, SnapshotIntegrityError
+    key = _claims_key(path)
+    if key is None or key.parts[-3:] != ("data", "qledger", "claims.jsonl"):
+        return
+    try:
+        os.lstat(key.parents[2] / ROOT_PATH)
+    except FileNotFoundError:
+        return
+    except OSError as exc:
+        raise SnapshotIntegrityError("SOURCE_UNPROVEN", "legacy namespace cannot be qualified") from exc
+    raise SnapshotIntegrityError("NATIVE_BINDING_REQUIRED", "native ROOT requires an explicit owner or immutable read binding")
+
+
 _SYNTHETIC_BINDINGS: ContextVar[tuple[tuple[Path, Any], ...]] = ContextVar(
     "qledger_synthetic_bindings", default=(),
+)
+_OWNER_BINDINGS: ContextVar[tuple[tuple[Path, Any], ...]] = ContextVar(
+    "qledger_explicit_owner_bindings", default=(),
 )
 _READ_SCOPES: ContextVar[tuple[tuple[Path, Any, Any], ...]] = ContextVar(
     "qledger_claims_read_scopes", default=(),
@@ -46,6 +70,10 @@ def _claims_key(path: Path) -> Path | None:
 
 
 def _selected_claims_binding(path: Path):
+    key = _claims_key(path)
+    for candidate, binding in reversed(_OWNER_BINDINGS.get()):
+        if candidate == key:
+            return binding
     overrides = _SYNTHETIC_BINDINGS.get()
     if overrides:
         key = _claims_key(path)
@@ -86,6 +114,79 @@ def _synthetic_claims_binding(explicit_claims_path: Path, binding) -> Iterator[A
         yield binding
     finally:
         _SYNTHETIC_BINDINGS.reset(token)
+
+
+@dataclass(frozen=True, init=False)
+class NativeGitClaimsBinding:
+    """Complete immutable Git generation; read-only, never an apply grant."""
+
+    claims_path: Path
+    repo_root: Path
+    commit_oid: str
+    tree_oid: str
+    limits: Any
+    _snapshot: Any
+
+    def __init__(self, repo_root, *, commit_oid, expected_root_digest, limits):
+        from scripts.ci import qledger_publication as publication
+        from engine.qledger_store_sources import GitTreeSource, verify_source_snapshot
+        publication._profile(limits)
+        publication._repo(repo_root)
+        publication._oid(commit_oid)
+        if type(expected_root_digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", expected_root_digest):
+            raise ValueError("explicit immutable claims root digest required")
+        tree = publication._commit_tree(repo_root, commit_oid, limits=limits)
+        snapshot = verify_source_snapshot(GitTreeSource(repo_root, tree_oid=tree, limits=limits), limits=limits)
+        if snapshot.receipt.root_digest != expected_root_digest:
+            from engine.qledger_store_protocol import SnapshotIntegrityError
+            raise SnapshotIntegrityError("CONFLICT", "immutable Git generation differs from explicit root")
+        for name, value in dict(claims_path=repo_root / "data/qledger/claims.jsonl", repo_root=repo_root,
+            commit_oid=commit_oid, tree_oid=tree, limits=limits, _snapshot=snapshot).items():
+            object.__setattr__(self, name, value)
+
+    def read_snapshot(self):
+        return self._snapshot
+
+    @contextmanager
+    def mutation(self, *, native_intent=None):
+        from engine.qledger_store_protocol import SnapshotIntegrityError
+        raise SnapshotIntegrityError("READ_ONLY", "immutable Git read binding cannot authorize native mutation")
+        yield  # contextmanager protocol; no mutation is ever yielded
+
+
+class ClaimsBindingScope:
+    """Explicit caller selection, not runtime enrollment or a host admission.
+
+    Only a verified immutable Git reader or the retained-original owner may be
+    selected. No synthetic hook, environment discovery or mutable global pointer.
+    """
+
+    def __init__(self, binding):
+        self.binding, self._token = binding, None
+
+    def __enter__(self):
+        from engine.qledger_original_result import OriginalResultClaimsBinding
+        from engine.qledger_store_protocol import SnapshotIntegrityError
+        binding = self.binding
+        if self._token is not None or type(binding) not in (OriginalResultClaimsBinding, NativeGitClaimsBinding):
+            raise SnapshotIntegrityError("CONFLICT", "an exact explicit claims owner/read binding is required")
+        key = _claims_key(binding.claims_path)
+        if key is None or key != binding.repo_root / "data/qledger/claims.jsonl" or not key.is_absolute():
+            raise SnapshotIntegrityError("CONFLICT", "owner binding differs from exact claims root")
+        for path, previous in _OWNER_BINDINGS.get():
+            if path == key and previous is not binding:
+                raise SnapshotIntegrityError("CONFLICT", "another explicit binding owns this claims root")
+        scoped = _scoped_entry(key)
+        if scoped is not None and scoped[1] is not binding:
+            raise SnapshotIntegrityError("CONFLICT", "active read scope belongs to another claims generation")
+        self._token = _OWNER_BINDINGS.set(_OWNER_BINDINGS.get() + ((key, binding),))
+        return binding
+
+    def __exit__(self, exc_type, exc, traceback):
+        token, self._token = self._token, None
+        if token is not None:
+            _OWNER_BINDINGS.reset(token)
+        return False
 
 
 class ClaimsReadScope:
@@ -157,6 +258,7 @@ def read_raw_lines(
     """Eager text transport; a native snapshot is fully verified before values."""
     binding = _read_claims_binding(path)
     if isinstance(binding, LegacyClaimsBinding):
+        _require_legacy_namespace(path)
         if missing_ok and not path.exists():
             return []
         return path.read_text(encoding=encoding).splitlines()
@@ -170,6 +272,7 @@ def open_raw_lines(
     """Preserve physical lines, incremental decoding and stream closure."""
     binding = _read_claims_binding(path)
     if isinstance(binding, LegacyClaimsBinding):
+        _require_legacy_namespace(path)
         with path.open(encoding=encoding) as handle:
             yield handle
     else:
@@ -209,6 +312,7 @@ def read_tracked_claims_text(
         return legacy_reader(root, relative_path)
     binding = _read_claims_binding(path)
     if isinstance(binding, LegacyClaimsBinding):
+        _require_legacy_namespace(path)
         return legacy_reader(root, relative_path)
     snapshot = _retained_snapshot(path, binding)
     with _snapshot_text(snapshot) as handle:
@@ -478,6 +582,7 @@ def _claims_mutation(path: Path, *, native_intent=None):
     # acquires a fresh exclusive session before preparation, dedupe or planning.
     binding = _selected_claims_binding(path)
     if isinstance(binding, LegacyClaimsBinding):
+        _require_legacy_namespace(path)
         if native_intent is not None:
             from engine.qledger_store_protocol import SnapshotIntegrityError
 

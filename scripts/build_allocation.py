@@ -300,7 +300,7 @@ def _run_thematic_desk(regions: list[str]) -> None:
         log.error("thematic_desk score_ledger failed: %s", e)
 
 
-def run_native_thematic_owner(regions: list[str], *, native_intents, root, call=None):
+def run_native_thematic_owner(regions: list[str], *, native_intents, root, owner_binding=None, call=None):
     """Explicit inert owner invocation of the existing thematic producer.
 
     No CLI/env selection, intent factory, optional-error swallowing or grading.
@@ -318,15 +318,23 @@ def run_native_thematic_owner(regions: list[str], *, native_intents, root, call=
             or any(type(intent) is not NativeClaimsIntent for intent in native_intents.values())
             or len(set(native_intents.values())) != len(regions)):
         raise ValueError("explicit distinct native intent required for each declared thematic region")
+    from engine.qledger_original_result import OriginalResultClaimsBinding
+    from engine.qledger_store import ClaimsBindingScope
+    if type(owner_binding) is not OriginalResultClaimsBinding or owner_binding.repo_root != Path(root):
+        raise ValueError("explicit retained-original owner binding for the exact thematic root required")
     intents = dict(native_intents)  # caller mutation cannot retarget a later region
+    for intent in intents.values():
+        owner_binding._check_intent(intent)
+        owner_binding._target_for(intent)
     results = {}
-    for region in regions:
-        try:
-            results[region] = td.run(region, root=root, call=call, native_intent=intents[region])
-        except td.NativeThematicFailure as exc:
-            # Preserve completed prior regions; stop before any later producer.
-            exc.completed_regions = dict(results)
-            raise
+    with ClaimsBindingScope(owner_binding):
+        for region in regions:
+            try:
+                results[region] = td.run(region, root=root, call=call, native_intent=intents[region])
+            except td.NativeThematicFailure as exc:
+                # Preserve completed prior regions; stop before any later producer.
+                exc.completed_regions = dict(results)
+                raise
     return results
 
 

@@ -480,9 +480,8 @@ def thematic_owner(original, monkeypatch):
     family_clocks = []
     monkeypatch.setattr(clock, 'record_start', lambda *a, **k: family_clocks.append('attempted') or {'fixture': True})
     def invoke():
-        with store._synthetic_claims_binding(binding.claims_path, binding):
-            return allocation.run_native_thematic_owner(['us'], native_intents={'us': intent},
-                                                       root=binding.repo_root, call=object())
+        return allocation.run_native_thematic_owner(['us'], native_intents={'us': intent},
+            root=binding.repo_root, owner_binding=binding, call=object())
     return td, adapter, clock, binding, intent, root, prepared, family_clocks, invoke
 
 
@@ -639,3 +638,160 @@ def test_thematic_owner_old_open_plus_new_rejected_does_not_start_clock(original
     assert value.claims_status == 'materialized'
     assert value.registration['n_accepted'] == 1 and value.registration['n_rejected'] == 1
     assert value.family_clock_status == 'not_attempted' and not clocks
+
+
+@thematic_source
+def test_explicit_immutable_git_scope_reads_native_despite_empty_checkout(original, monkeypatch):
+    from engine import qledger_store as store
+    write, _, _, _, limits, candidate = original
+    repo = write.claims_path.parents[2]
+    commit = candidate.continuity.accepted_tip_oid
+    binding = store.NativeGitClaimsBinding(repo, commit_oid=commit,
+        expected_root_digest=write.plan._before.receipt.root_digest, limits=limits)
+    write.claims_path.write_bytes(b'')
+    (repo / p.ROOT_PATH).write_bytes(b'partially checked out root')
+    monkeypatch.setattr(store, '_synthetic_claims_binding', lambda *a, **k: pytest.fail('production owner used fixture hook'))
+    with store.ClaimsBindingScope(binding):
+        with store.ClaimsReadScope(repo):
+            value = store.read_raw_lines(write.claims_path, encoding='latin1')
+            text, source = store.read_tracked_claims_text(repo, Path(p.BASE_PATH),
+                legacy_reader=lambda *a: pytest.fail('native immutable read fell through to empty legacy base'))
+    with p.open_logical_bytes(write.plan._before) as raw:
+        expected = raw.read()
+    assert value == expected.decode('latin1').splitlines()
+    assert text == expected.decode('utf-8') and source.startswith('qledger-native:')
+
+
+def test_unbound_native_root_refuses_legacy_reads_writes_and_cli(original, monkeypatch, capsys):
+    from engine import qledger_store as store, qledger as q
+    from scripts.ci import qledger_publication as publication
+    repo = original[0].claims_path.parents[2]
+    path = original[0].claims_path
+    path.write_bytes(b'')
+    (repo / p.ROOT_PATH).write_bytes(b'unknown native ROOT')
+    monkeypatch.setattr(q, '_prepare_claim', lambda *a: pytest.fail('unowned native write prepared claims'))
+    for read in (lambda: store.read_raw_lines(path), lambda: q.load_claims(repo),
+                 lambda: store.read_tracked_claims_text(repo, Path(p.BASE_PATH), legacy_reader=lambda *a: pytest.fail('legacy fallback')),
+                 lambda: q.register({'fixture': True}, repo)):
+        with pytest.raises(p.SnapshotIntegrityError, match='NATIVE_BINDING_REQUIRED'):
+            read()
+    with pytest.raises(p.SnapshotIntegrityError, match='NATIVE_BINDING_REQUIRED'):
+        with store.open_raw_lines(path):
+            pytest.fail('unbound native stream opened')
+    assert publication.main(['--repo', str(repo), '--boundary', 'publish-candidate']) == 1
+    assert 'NATIVE_BINDING_REQUIRED' in capsys.readouterr().out
+    assert path.read_bytes() == b'' and (repo / p.ROOT_PATH).read_bytes() == b'unknown native ROOT'
+
+
+@thematic_source
+def test_public_binding_scope_refuses_readonly_write_and_conflicting_generation(original, monkeypatch):
+    from engine import qledger_store as store, qledger as q
+    write, _, _, _, limits, candidate = original
+    repo = write.claims_path.parents[2]
+    binding = store.NativeGitClaimsBinding(repo, commit_oid=candidate.continuity.accepted_tip_oid,
+        expected_root_digest=write.plan._before.receipt.root_digest, limits=limits)
+    other = store.NativeGitClaimsBinding(repo, commit_oid=candidate.candidate_oid,
+        expected_root_digest=write.plan.snapshot.receipt.root_digest, limits=limits)
+    with pytest.raises(p.SnapshotIntegrityError, match='explicit root'):
+        store.NativeGitClaimsBinding(repo, commit_oid=candidate.candidate_oid,
+            expected_root_digest='0'*64, limits=limits)
+    monkeypatch.setattr(q, '_prepare_claim', lambda *a: pytest.fail('read-only source prepared mutation'))
+    with pytest.raises(RuntimeError, match='fixture consumer failed'):
+        with store.ClaimsBindingScope(binding):
+            with store.ClaimsBindingScope(binding):
+                assert store._selected_claims_binding(write.claims_path) is binding
+            with store.ClaimsReadScope(repo):
+                first = store.read_raw_lines(write.claims_path)
+                from tests.test_qledger_conversion_candidate import git
+                git(repo, 'update-ref', 'refs/remotes/origin/main', candidate.candidate_oid)
+                with pytest.raises(p.SnapshotIntegrityError, match='another explicit binding'):
+                    with store.ClaimsBindingScope(other):
+                        pass
+                with pytest.raises(p.SnapshotIntegrityError, match='READ_ONLY'):
+                    q.register({'fixture': True}, repo, native_intent=write.intent)
+                assert store.read_raw_lines(write.claims_path) == first
+            raise RuntimeError('fixture consumer failed')
+    assert isinstance(store._selected_claims_binding(write.claims_path), store.LegacyClaimsBinding)
+    with store.ClaimsBindingScope(other):
+        assert store.read_raw_lines(write.claims_path) != first
+    with pytest.raises(p.SnapshotIntegrityError, match='explicit claims owner'):
+        with store.ClaimsBindingScope(object()):
+            pass
+
+
+@thematic_source
+def test_public_binding_does_not_shadow_existing_read_scope_or_use_fixture_hook(original, monkeypatch):
+    from engine import qledger_store as store
+    write, _, _, _, limits, candidate = original
+    repo = write.claims_path.parents[2]
+    binding = store.NativeGitClaimsBinding(repo, commit_oid=candidate.continuity.accepted_tip_oid,
+        expected_root_digest=write.plan._before.receipt.root_digest, limits=limits)
+    with store.ClaimsReadScope(repo):
+        with pytest.raises(p.SnapshotIntegrityError, match='active read scope'):
+            with store.ClaimsBindingScope(binding):
+                pass
+    monkeypatch.setattr(store, '_synthetic_claims_binding', lambda *a, **k: pytest.fail('fixture hook'))
+    with store.ClaimsBindingScope(binding):
+        with store.ClaimsReadScope(repo):
+            assert store.read_raw_lines(write.claims_path)
+    assert isinstance(store._selected_claims_binding(write.claims_path), store.LegacyClaimsBinding)
+
+
+@thematic_source
+def test_explicit_owner_invocation_rejects_missing_foreign_root_and_intent_before_producer(original, monkeypatch):
+    from scripts import build_allocation as allocation
+    td, _, _, binding, intent, _, prepared, _, _ = thematic_owner(original, monkeypatch)
+    calls = []
+    monkeypatch.setattr(td, 'run', lambda *a, **k: calls.append((a, k)) or pytest.fail('unqualified owner invoked producer'))
+    for owner, root, identity in [(None, binding.repo_root, intent),
+                                 (binding, binding.repo_root.parent, intent),
+                                 (binding, binding.repo_root, replace(intent, lane_id='foreign'))]:
+        with pytest.raises((ValueError, p.SnapshotIntegrityError)):
+            allocation.run_native_thematic_owner(['us'], native_intents={'us': identity}, root=root, owner_binding=owner)
+    assert not prepared and not calls and not binding.attempts
+
+
+@thematic_source
+def test_owner_publication_reads_retained_original_and_builds_current_binding(original, monkeypatch):
+    from tests.test_qledger_conversion_candidate import git
+    q, store, binding, identities, root, _ = owner_bridge(original, monkeypatch)
+    with store.ClaimsBindingScope(binding):
+        q.register({'claim_id': 'owned'}, binding.repo_root, dedupe=False, native_intent=identities[0])
+    write, prepared = binding.prepared_original_results[0]
+    checked = binding.read_original_write_result(write)
+    old_oid = checked.candidate_oid
+    original_manifest = (root / 'bridge' / 'manifest.json').read_bytes()
+    # A separately accepted commit with unchanged claims still invalidates the
+    # original candidate's parent. Fixture-only commit/ref changes, no publisher.
+    tree = git(binding.repo_root, 'rev-parse', checked.accepted_tip_oid+'^{tree}').decode()
+    current_tip = git(binding.repo_root, 'commit-tree', tree, '-p', checked.accepted_tip_oid,
+                      input=b'fixture accepted source integration\n').decode()
+    git(binding.repo_root, 'update-ref', 'refs/remotes/origin/main', current_tip)
+    (binding.repo_root / '.git/objects' / old_oid[:2] / old_oid[2:]).unlink()
+    before = ((binding.repo_root / p.ROOT_PATH).read_bytes(), (binding.repo_root / '.git/index').read_bytes(),
+              git(binding.repo_root, 'show-ref'))
+    current = binding.prepare_publication_candidate(write, accepted_tip_oid=current_tip,
+        accepted_ref='refs/remotes/origin/main', commit_metadata=result.git_candidate.CandidateCommitMetadata(
+            'Current owner publication', 'fixture@example.invalid', 1700000600))
+    assert current.binding.accepted_tip_oid == current_tip and current.candidate_oid != old_oid
+    assert current.original_operation_receipt.original_base_snapshot.root_bytes == write.plan._before.root_bytes
+    output = git(binding.repo_root, 'hash-object', '-w', '--stdin', input=b'actual engine output\n').decode()
+    actual_tree = result.git_candidate._tree_with_members(binding.repo_root, current.tree_oid, {(b'engine-output',): output}, binding.limits)
+    actual = git(binding.repo_root, 'commit-tree', actual_tree, '-p', current_tip, input=b'actual owner output commit\n').decode()
+    bound, witness = binding.check_publication_candidate(write, candidate_oid=actual, expected_tree_oid=actual_tree,
+        accepted_tip_oid=current_tip, accepted_ref='refs/remotes/origin/main')
+    assert bound.accepted_tip_oid == current_tip and witness.publication.candidate_oid == actual
+    assert git(binding.repo_root, 'show', actual+':engine-output') == b'actual engine output'
+    assert (root / 'bridge' / 'manifest.json').read_bytes() == original_manifest
+    assert ((binding.repo_root / p.ROOT_PATH).read_bytes(), (binding.repo_root / '.git/index').read_bytes(),
+            git(binding.repo_root, 'show-ref')) == before
+    assert not (binding.repo_root / '.git/objects' / old_oid[:2] / old_oid[2:]).exists()
+    (root / 'bridge' / 'manifest.json').unlink()
+    monkeypatch.setattr(result.git_candidate, 'prepare_native_publication_candidate',
+        lambda *a, **k: pytest.fail('missing retained original reached publication preparation'))
+    with pytest.raises(p.SnapshotIntegrityError):
+        binding.prepare_publication_candidate(write, accepted_tip_oid=current_tip,
+            accepted_ref='refs/remotes/origin/main', commit_metadata=current.commit_metadata)
+    with pytest.raises(p.SnapshotIntegrityError):
+        binding.check_publication_candidate(write, candidate_oid=actual, expected_tree_oid=actual_tree,
+            accepted_tip_oid=current_tip, accepted_ref='refs/remotes/origin/main')

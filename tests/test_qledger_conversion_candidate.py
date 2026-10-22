@@ -340,3 +340,120 @@ def test_native_preparation_never_retargets_original_to_advanced_accepted_root(n
     monkeypatch.setattr(candidate, "_write_git_object", lambda *a: pytest.fail("advanced source wrote objects"))
     with pytest.raises(SnapshotIntegrityError, match="original operation base"):
         prepare_native(native_fixture, accepted_tip_oid=original.candidate_oid)
+
+
+def test_current_native_publication_uses_current_parent_not_cached_original(native_fixture):
+    from scripts.ci import qledger_publication as publication
+    from engine import qledger_store_protocol as protocol
+    repo, tip, raw, limits, original = native_fixture
+    old = prepare_native(native_fixture)
+    remote = protocol.plan_append(original.original_base_snapshot, transaction_id='remote:accepted',
+                                  serialized_rows=[b'{"remote":1}\n'], limits=limits)
+    remote_candidate = candidate.prepare_native_operation_candidate(repo, accepted_tip_oid=tip,
+        accepted_ref='refs/remotes/origin/main', native_operation_receipt=publication.NativeOperationReceipt(
+            'operation:remote', 'lane:remote', remote._before, remote.snapshot, ('remote:accepted',), limits),
+        commit_metadata=candidate.CandidateCommitMetadata('Remote fixture', 'fixture@example.invalid', 1700000200),
+        target_ref='refs/heads/main', limits=limits)
+    git(repo, 'update-ref', 'refs/remotes/origin/main', remote_candidate.candidate_oid)
+    current = candidate.prepare_native_publication_candidate(repo,
+        accepted_tip_oid=remote_candidate.candidate_oid, accepted_ref='refs/remotes/origin/main',
+        native_operation_receipt=original, commit_metadata=candidate.CandidateCommitMetadata(
+            'Publication fixture', 'fixture@example.invalid', 1700000300), target_ref='refs/heads/main', limits=limits)
+    assert current.candidate_oid != old.candidate_oid
+    assert current.binding.accepted_tip_oid == remote_candidate.candidate_oid
+    assert current.original_operation_receipt is original
+    assert git(repo, 'rev-list', '--parents', '-n', '1', current.candidate_oid).decode() == (
+        current.candidate_oid+' '+remote_candidate.candidate_oid)
+    checked = candidate.check_current_native_publication_candidate(repo, current,
+        accepted_tip_oid=remote_candidate.candidate_oid, accepted_ref='refs/remotes/origin/main')
+    assert checked.status == 'NATIVE_OPERATION_VERIFIED'
+    snapshot = verify_source_snapshot(GitTreeSource(repo, tree_oid=current.tree_oid, limits=limits), limits=limits)
+    with open_logical_bytes(snapshot) as stream:
+        assert stream.read() == raw+b'{"remote":1}\n'+b'{"original":1}\nraw-duplicate\nraw-duplicate\n'
+    with pytest.raises(SnapshotIntegrityError):
+        candidate.check_current_native_publication_candidate(repo, old,
+            accepted_tip_oid=remote_candidate.candidate_oid, accepted_ref='refs/remotes/origin/main')
+    git(repo, 'update-ref', 'refs/remotes/origin/main', tip)
+    with pytest.raises(SnapshotIntegrityError, match='accepted ref'):
+        candidate.check_current_native_publication_candidate(repo, current,
+            accepted_tip_oid=remote_candidate.candidate_oid, accepted_ref='refs/remotes/origin/main')
+
+
+def test_current_native_publication_already_accepted_creates_no_empty_commit(native_fixture, monkeypatch):
+    repo, _, _, limits, original = native_fixture
+    accepted = prepare_native(native_fixture)
+    git(repo, 'update-ref', 'refs/remotes/origin/main', accepted.candidate_oid)
+    monkeypatch.setattr(candidate, '_write_git_object', lambda *a, **k: pytest.fail('already accepted operation created another object/commit'))
+    current = candidate.prepare_native_publication_candidate(repo,
+        accepted_tip_oid=accepted.candidate_oid, accepted_ref='refs/remotes/origin/main', native_operation_receipt=original,
+        commit_metadata=candidate.CandidateCommitMetadata('Explicit no-op', 'fixture@example.invalid', 1700000400),
+        target_ref='refs/heads/main', limits=limits)
+    assert current.candidate_oid == accepted.candidate_oid and current.effect == 'not_attempted'
+    assert current.commit_metadata is None and current.continuity.planned_transaction_ids == ()
+    assert current.continuity.already_present_transaction_ids == original.authorized_transaction_ids
+
+
+def test_current_native_publication_refuses_unknown_order_before_objects(native_fixture, monkeypatch):
+    from dataclasses import replace
+    repo, tip, _, limits, original = native_fixture
+    monkeypatch.setattr(candidate, '_write_git_object', lambda *a, **k: pytest.fail('unknown original wrote Git objects'))
+    with pytest.raises(SnapshotIntegrityError):
+        candidate.prepare_native_publication_candidate(repo,
+            accepted_tip_oid=tip, accepted_ref='refs/remotes/origin/main',
+            native_operation_receipt=replace(original, authorized_transaction_ids=tuple(reversed(original.authorized_transaction_ids))),
+            commit_metadata=candidate.CandidateCommitMetadata('Unknown', 'fixture@example.invalid', 1700000400),
+            target_ref='refs/heads/main', limits=limits)
+
+
+def test_current_native_publication_ref_movement_never_returns_witness_or_restores_ref(native_fixture, monkeypatch):
+    repo, tip, _, limits, original = native_fixture
+    other = prepare_native(native_fixture)
+    write = candidate._write_git_object
+    def moved(repo, args, payload):
+        oid = write(repo, args, payload)
+        if args[:3] == ['hash-object', '-t', 'commit']:
+            git(repo, 'update-ref', 'refs/remotes/origin/main', other.candidate_oid)
+        return oid
+    monkeypatch.setattr(candidate, '_write_git_object', moved)
+    with pytest.raises(SnapshotIntegrityError, match='accepted ref'):
+        candidate.prepare_native_publication_candidate(repo,
+            accepted_tip_oid=tip, accepted_ref='refs/remotes/origin/main', native_operation_receipt=original,
+            commit_metadata=candidate.CandidateCommitMetadata('Moving', 'fixture@example.invalid', 1700000500),
+            target_ref='refs/heads/main', limits=limits)
+    assert git(repo, 'rev-parse', 'refs/remotes/origin/main').decode() == other.candidate_oid
+
+
+def test_actual_owner_frozen_candidate_keeps_broad_outputs_and_requires_fresh_binding(native_fixture):
+    repo, tip, _, limits, original = native_fixture
+    native = prepare_native(native_fixture)
+    output = git(repo, "hash-object", "-w", "--stdin", input=b"complete engine output\n").decode()
+    tree = candidate._tree_with_members(repo, native.tree_oid, {(b"engine-output",): output}, limits)
+    actual = git(repo, "commit-tree", tree, "-p", tip, input=b"incumbent complete output commit\n").decode()
+    before = (git(repo, "show-ref"), (repo / ".git/index").read_bytes(), git(repo, "status", "--porcelain"))
+    binding, witness = candidate.bind_current_native_publication(repo, candidate_oid=actual, expected_tree_oid=tree,
+        accepted_tip_oid=tip, accepted_ref="refs/remotes/origin/main", native_operation_receipt=original,
+        target_ref="refs/heads/main", limits=limits)
+    assert binding.accepted_tip_oid == tip and witness.publication.candidate_oid == actual
+    assert witness.publication.tree_oid == tree and actual != native.candidate_oid
+    assert git(repo, "show", actual+":engine-output") == b"complete engine output"
+    assert (git(repo, "show-ref"), (repo / ".git/index").read_bytes(), git(repo, "status", "--porcelain")) == before
+    with pytest.raises(SnapshotIntegrityError, match="exact tree"):
+        # A claims-only candidate cannot substitute for the owner's full tree.
+        candidate.bind_current_native_publication(repo, candidate_oid=native.candidate_oid, expected_tree_oid=tree,
+            accepted_tip_oid=tip, accepted_ref="refs/remotes/origin/main", native_operation_receipt=original,
+            target_ref="refs/heads/main", limits=limits)
+    accepted_tree = git(repo, "rev-parse", tip+"^{tree}").decode()
+    with pytest.raises(SnapshotIntegrityError):
+        candidate.bind_current_native_publication(repo, candidate_oid=tip, expected_tree_oid=accepted_tree,
+            accepted_tip_oid=tip, accepted_ref="refs/remotes/origin/main", native_operation_receipt=original,
+            target_ref="refs/heads/main", limits=limits)
+    git(repo, "update-ref", "refs/remotes/origin/main", native.candidate_oid)
+    with pytest.raises(SnapshotIntegrityError):
+        # Fresh accepted input still rejects an actual commit with the old parent.
+        candidate.bind_current_native_publication(repo, candidate_oid=actual, expected_tree_oid=tree,
+            accepted_tip_oid=native.candidate_oid, accepted_ref="refs/remotes/origin/main", native_operation_receipt=original,
+            target_ref="refs/heads/main", limits=limits)
+    with pytest.raises(SnapshotIntegrityError, match="accepted ref"):
+        candidate.bind_current_native_publication(repo, candidate_oid=actual, expected_tree_oid=tree,
+            accepted_tip_oid=tip, accepted_ref="refs/remotes/origin/main", native_operation_receipt=original,
+            target_ref="refs/heads/main", limits=limits)

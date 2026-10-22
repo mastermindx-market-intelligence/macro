@@ -606,13 +606,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--push-arg", action="append", default=[])
     args = parser.parse_args(argv)
     try:
-        from engine.qledger_store import LegacyClaimsBinding, _production_claims_binding
+        from engine.qledger_store import LegacyClaimsBinding, _production_claims_binding, _require_legacy_namespace
         repo = _repo(args.repo)
         binding = _production_claims_binding(repo / BASE_PATH)
         if type(binding) is not LegacyClaimsBinding:
             _fail("PUBLICATION_INPUT", "native publication needs a separately admitted explicit owner binding")
-        # No path discovery, candidate inspection, filesystem change or Git
-        # command is performed by the current production format selection.
+        _require_legacy_namespace(repo / BASE_PATH)
+        # Pure default selection remains legacy. A native checkout requires
+        # the separately bound owner API; this CLI never enrolls it.
         print(json.dumps({"status": "LEGACY_SELECTED", "boundary": args.boundary,
                           "effect": "not_attempted"}, sort_keys=True))
         return 0

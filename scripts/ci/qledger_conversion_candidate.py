@@ -323,3 +323,146 @@ def prepare_native_operation_candidate(
     _ref_matches(repo, accepted_ref, accepted_tip_oid)
     return PreparedNativeOperationCandidate(candidate, tree, accepted_ref, commit_metadata,
                                              restored, witness)
+
+
+@dataclass(frozen=True)
+class PreparedNativePublicationCandidate:
+    """Claims-only current-tip preparation; not the full engine-output tree.
+
+    Never replaces an immutable original result. The release owner validates
+    its actual complete frozen candidate with bind_current_native_publication.
+    """
+
+    candidate_oid: str
+    tree_oid: str
+    accepted_ref: str
+    binding: publication.NativePublicationBinding
+    original_operation_receipt: publication.NativeOperationReceipt
+    continuity: publication.PublicationContinuityWitness | None
+    commit_metadata: CandidateCommitMetadata | None
+    effect: str
+
+
+def check_current_native_publication_candidate(
+    repo: Path, prepared: PreparedNativePublicationCandidate, *,
+    accepted_tip_oid: str, accepted_ref: str,
+) -> publication.PublicationContinuityWitness:
+    """Fresh incumbent validation, not permission to push a cached witness."""
+    if type(prepared) is not PreparedNativePublicationCandidate:
+        raise SnapshotIntegrityError("PUBLICATION_INPUT", "explicit current publication preparation required")
+    binding, receipt = prepared.binding, prepared.original_operation_receipt
+    publication._native_binding(binding)
+    publication._receipt(receipt)
+    if prepared.accepted_ref != accepted_ref or binding.accepted_tip_oid != accepted_tip_oid:
+        raise SnapshotIntegrityError("SOURCE_CHANGED", "publication preparation differs from current accepted source")
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    if prepared.commit_metadata is not None:
+        payload = _native_commit_bytes(prepared.tree_oid, accepted_tip_oid,
+                                       receipt.operation_id, receipt.lane_id, prepared.commit_metadata)
+        actual, _ = publication._git(repo, ["cat-file", "commit", prepared.candidate_oid],
+                                     output_limit=min(receipt.limits.snapshot_bytes, 4096))
+        if actual != payload or _commit_identity(payload, accepted_tip_oid) != prepared.candidate_oid:
+            raise SnapshotIntegrityError("CONFLICT", "publication candidate differs from fixed explicit metadata")
+    elif prepared.candidate_oid != accepted_tip_oid:
+        raise SnapshotIntegrityError("CONFLICT", "no-op publication must name the already accepted commit")
+    witness = publication.check_native_operation_candidate(
+        repo, candidate_oid=prepared.candidate_oid, accepted_baseline_oids=(accepted_tip_oid,),
+        target_ref=binding.target_ref, binding=binding, native_operation_receipt=receipt, limits=receipt.limits)
+    if witness.publication.tree_oid != prepared.tree_oid:
+        raise SnapshotIntegrityError("CONFLICT", "publication candidate differs from explicit tree")
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    return witness
+
+
+def prepare_native_publication_candidate(
+    repo: Path, *, accepted_tip_oid: str, accepted_ref: str,
+    native_operation_receipt: publication.NativeOperationReceipt,
+    commit_metadata: CandidateCommitMetadata, target_ref: str, limits: ProtocolLimits,
+) -> PreparedNativePublicationCandidate:
+    """Compose claims-only original intent onto the CURRENT accepted tip.
+
+    Pending non-claims engine outputs remain untouched in their incumbent
+    owner workspace; this isolated tree does not include or publish them.
+
+    Uses the existing rebase/continuity/publication validators. Never mutates
+    the original receipt, native store, checkout, index or ref, and never pushes.
+    This is not re-preparation/replay of the domain write or a new write identity.
+    The owner still owes actual current-tip authority and release admission.
+    """
+    publication._profile(limits)
+    publication._repo(repo)
+    publication._oid(accepted_tip_oid)
+    receipt = native_operation_receipt
+    publication._receipt(receipt)
+    if receipt.limits.fingerprint != limits.fingerprint:
+        raise SnapshotIntegrityError("CONFLICT", "original and current publication profiles differ")
+    publication.classify_pending(receipt.original_candidate_snapshot, native_operation_receipt=receipt)
+    _native_commit_bytes("0" * len(accepted_tip_oid), accepted_tip_oid,
+                         receipt.operation_id, receipt.lane_id, commit_metadata)
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    publication._complete_repository(repo)
+    publication._baselines(repo, (accepted_tip_oid,), limits=limits)
+    source_tree = publication._commit_tree(repo, accepted_tip_oid, limits=limits)
+    accepted = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
+    required = publication.rebase_native_pending(accepted, native_operation_receipt=receipt)
+    binding = publication.NativePublicationBinding(receipt.operation_id, receipt.lane_id,
+        target_ref, accepted_tip_oid, required.snapshot.receipt.root_digest)
+    publication._native_binding(binding)
+    tree, candidate, metadata, effect = source_tree, accepted_tip_oid, None, "not_attempted"
+    if required.applied:
+        members = {**required.snapshot._members, ROOT_PATH: required.snapshot.root_bytes}
+        changes = {tuple(part.encode("ascii") for part in path.split("/")):
+                   _write_git_object(repo, ["hash-object", "-w", "--stdin"], value)
+                   for path, value in members.items()}
+        tree = _tree_with_members(repo, source_tree, changes, limits)
+        payload = _native_commit_bytes(tree, accepted_tip_oid, receipt.operation_id, receipt.lane_id, commit_metadata)
+        candidate = _write_git_object(repo, ["hash-object", "-t", "commit", "-w", "--stdin"], payload)
+        if candidate != _commit_identity(payload, accepted_tip_oid):
+            raise SnapshotIntegrityError("HASH_MISMATCH", "current publication commit differs from explicit bytes")
+        metadata, effect = commit_metadata, "unreferenced_git_objects_only"
+    elif required.snapshot.root_bytes != accepted.root_bytes:
+        raise SnapshotIntegrityError("CONFLICT", "no pending publication differs from accepted root")
+    # No cached/original witness is forwarded as a current one.
+    prepared = PreparedNativePublicationCandidate(candidate, tree, accepted_ref, binding, receipt, None, metadata, effect)
+    witness = check_current_native_publication_candidate(repo, prepared,
+        accepted_tip_oid=accepted_tip_oid, accepted_ref=accepted_ref)
+    return PreparedNativePublicationCandidate(candidate, tree, accepted_ref, binding, receipt, witness, metadata, effect)
+
+
+def bind_current_native_publication(
+    repo: Path, *, candidate_oid: str, expected_tree_oid: str, accepted_tip_oid: str, accepted_ref: str,
+    native_operation_receipt: publication.NativeOperationReceipt,
+    target_ref: str, limits: ProtocolLimits,
+) -> tuple[publication.NativePublicationBinding, publication.PublicationContinuityWitness]:
+    """Validate the incumbent owner's ACTUAL complete frozen candidate.
+
+    Unlike the claims-only isolated preparer, this never substitutes a tree or
+    commit and never stages/omits other engine outputs. Existing publication
+    validation checks that candidate's full introduced history and native root.
+    Returned binding/witness are source checks, not release or clock authority.
+    """
+    publication._profile(limits)
+    publication._repo(repo)
+    publication._oid(accepted_tip_oid)
+    publication._oid(candidate_oid)
+    publication._oid(expected_tree_oid)
+    if publication._commit_tree(repo, candidate_oid, limits=limits) != expected_tree_oid:
+        raise SnapshotIntegrityError("CONFLICT", "actual frozen candidate differs from the owner's exact tree")
+    receipt = native_operation_receipt
+    publication._receipt(receipt)
+    if receipt.limits.fingerprint != limits.fingerprint:
+        raise SnapshotIntegrityError("CONFLICT", "original and actual publication profiles differ")
+    publication.classify_pending(receipt.original_candidate_snapshot, native_operation_receipt=receipt)
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    source_tree = publication._commit_tree(repo, accepted_tip_oid, limits=limits)
+    accepted = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
+    required = publication.rebase_native_pending(accepted, native_operation_receipt=receipt)
+    binding = publication.NativePublicationBinding(receipt.operation_id, receipt.lane_id,
+        target_ref, accepted_tip_oid, required.snapshot.receipt.root_digest)
+    witness = publication.check_native_operation_candidate(repo,
+        candidate_oid=candidate_oid, accepted_baseline_oids=(accepted_tip_oid,), target_ref=target_ref,
+        binding=binding, native_operation_receipt=receipt, limits=limits)
+    if witness.publication.tree_oid != expected_tree_oid:
+        raise SnapshotIntegrityError("CONFLICT", "validated candidate replaced the owner's frozen tree")
+    _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    return binding, witness

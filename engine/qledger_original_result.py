@@ -478,7 +478,7 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
                                          result_path=target.result_path, prepared=prepared)
         return apply_retained_original(session, write, retained)
 
-    def reconcile_original_write(self, write, *, retained_original=None):
+    def read_original_write_result(self, write, *, retained_original=None):
         """Read the SAME result; never re-prepare claims/candidates/locations.
 
         After process loss the owner must supply explicit retained readback with
@@ -504,4 +504,34 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
                 or checked.result_id != target.result_id or checked.accepted_tip_oid != target.accepted_tip_oid
                 or checked.commit_metadata != target.commit_metadata or checked.target_ref != target.target_ref):
             _fail("retained original differs from exact predeclared owner target/source")
+        return checked
+
+    def reconcile_original_write(self, write, *, retained_original=None):
+        self.read_original_write_result(write, retained_original=retained_original)
         return super().reconcile_original_write(write)
+
+    def prepare_publication_candidate(self, write, *, accepted_tip_oid, accepted_ref,
+                                      commit_metadata, retained_original=None):
+        """Retain original authority; prepare, never execute, current publication.
+
+        Original apply/clock uncertainty is not cleared by this representation
+        check. Caller must consume actual owner failure and release gates.
+        """
+        checked = self.read_original_write_result(write, retained_original=retained_original)
+        return git_candidate.prepare_native_publication_candidate(self.repo_root,
+            accepted_tip_oid=accepted_tip_oid, accepted_ref=accepted_ref,
+            native_operation_receipt=checked.native_operation_receipt, commit_metadata=commit_metadata,
+            target_ref=checked.target_ref, limits=self.limits)
+
+    def check_publication_candidate(self, write, *, candidate_oid, expected_tree_oid, accepted_tip_oid,
+                                    accepted_ref, retained_original=None):
+        """Fresh binding for the incumbent's actual complete frozen candidate.
+
+        This neither substitutes the claims-only prepared tree nor publishes.
+        Native apply/clock outcomes and all release gates remain independent.
+        """
+        checked = self.read_original_write_result(write, retained_original=retained_original)
+        return git_candidate.bind_current_native_publication(self.repo_root,
+            candidate_oid=candidate_oid, expected_tree_oid=expected_tree_oid,
+            accepted_tip_oid=accepted_tip_oid, accepted_ref=accepted_ref,
+            native_operation_receipt=checked.native_operation_receipt, target_ref=checked.target_ref, limits=self.limits)
