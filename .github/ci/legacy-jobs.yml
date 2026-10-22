@@ -13156,6 +13156,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "app/macro_command.py"
       - "app/medtech.py"
       - "app/ticker_news_stream.py"
