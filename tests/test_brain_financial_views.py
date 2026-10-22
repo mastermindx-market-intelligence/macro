@@ -257,6 +257,9 @@ def test_exact_quote_replay_rechecks_current_membership_and_owner(tmp_path,monke
             [{"role":"assistant","content":"Retained evidence.","visuals":saved}]]) as read:
             response=gw.get_thread(TID,"owner")
         assert response["messages"][0]["visuals"]==expected
+        assert response["messages"][0].get("visual_notices",[]) == ([] if entitled else [{"type":"membership_required","template":"transcript"}])
+        if not entitled:
+            assert exact["visual"]["data"]["source_sha256"] not in json.dumps(response)
         assert "user_id=eq.owner" in read.call_args_list[0].args[0]
     with patch.object(gw,"_thread_read_rows",return_value=[]) as read:
         assert gw.get_thread(TID,"intruder") is None
@@ -280,3 +283,23 @@ def test_forged_quote_receipt_is_not_saved_or_displayed(tmp_path):
     altered["visual"]["source"]["snapshot_id"]=fv._sha(altered["visual"]["data"])
     assert not fv.validate_financial_view(altered)
     assert fv.public_financial_visuals({"visuals":[altered]},allow_transcript_quotes=True)==[]
+
+
+def test_fresh_and_reused_views_share_the_identity_derivation(tmp_path):
+    original=wire()
+    reference=fv.model_visible_financial_result(original)["source_ref"]
+    charts=[]
+    result=gw._prepare_financial_widget(
+        {"financial_request":{"template":"financial_statement","source_ref":reference}},
+        {reference:original},{},"turn:read-1",charts,"owner",tmp_path,{"get_fundamentals"})
+    assert result["ok"] is True
+    assert charts==[original]
+
+
+def test_withheld_notice_is_static_and_never_exposes_invalid_evidence(tmp_path):
+    exact=exact_wire(tmp_path)
+    notices=fv.financial_replay_notices({"visuals":[exact]})
+    assert notices==[{"type":"membership_required","template":"transcript"}]
+    assert fv.financial_replay_notices({"visuals":[exact]},allow_transcript_quotes=True)==[]
+    exact["visual"]["data"]["facts"][0]["quote"]["text"] += " forged"
+    assert fv.financial_replay_notices({"visuals":[exact]})==[]

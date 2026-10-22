@@ -36,6 +36,12 @@ const mathOutput = await build({
   format: "iife", globalName: "MMBrainMath", platform: "browser",
   target: ["es2020"], minify: true, treeShaking: true, legalComments: "inline",
 });
+// KaTeX's unused error-markup fallback must inherit host ink, not introduce a
+// vendor palette. Strict rendering still throws and preserves plain formula text.
+const mathRaw = mathOutput.outputFiles[0].text;
+if ((mathRaw.match(/#cc0000/g) || []).length !== 1) throw new Error("KaTeX default error-color contract changed");
+const math = mathRaw.replace('default:"#cc0000"', 'default:"currentColor"');
+if (math.includes("#cc0000")) throw new Error("KaTeX error-color adaptation did not apply");
 // Standalone chat uses the exact shared widget Markdown owner, not another parser.
 const widget = await readFile(path.join(root, "templates/mm_brain.js"), "utf8");
 const mdStart = widget.indexOf("  var MD_INLINE =");
@@ -53,7 +59,7 @@ const markdownOutput = await build({
 const outputs = {
   "mm_brain_markdown.js": markdownOutput.outputFiles[0].text,
   "mm_brain_finance_math_v1.js": statements,
-  "mm_brain_math.js": mathOutput.outputFiles[0].text,
+  "mm_brain_math.js": math,
 };
 const manifest = { normalizer_version: source.normalizer_version, terminal_revision: source.revision,
   markdown_owner: "templates/mm_brain.js", markdown_source_sha256: hash(markdownSource),
@@ -74,6 +80,19 @@ for (const [key,name] of Object.entries(registry)) {
   presentation = presentation.replace(pattern,"$1"+digest+"'");
 }
 await writeFile(presentationPath,presentation);
+// Keep the primary cross-product widget's lazy entry points content-addressed.
+let primary = widget;
+for (const [key,name] of Object.entries({
+  visualScriptVersion:"mm_brain_visuals.js",visualStyleVersion:"mm_brain_visuals.css",
+  presentationVersion:"mm_brain_presentation.js"
+})) {
+  const digest = hash(await readFile(path.join(root,"templates",name))).slice(0,8);
+  const pattern = new RegExp("(var "+key+" = ')[a-f0-9]+'");
+  if(!pattern.test(primary)) throw new Error("Primary presentation key missing: "+key);
+  primary = primary.replace(pattern,"$1"+digest+"'");
+}
+await writeFile(path.join(root,"templates/mm_brain.js"),primary);
+await writeFile(path.join(root,"site/mm_brain.js"),primary);
 const chatPath=path.join(root,"templates/chat.html");
 let chat=await readFile(chatPath,"utf8");
 for(const name of ["mm_brain_presentation.js","mm_brain_markdown.js","chat.css"]){

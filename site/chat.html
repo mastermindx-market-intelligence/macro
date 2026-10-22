@@ -36,7 +36,7 @@
 <title>Mastermind Chat</title>
 <link rel="stylesheet" href="theme.css?v=2e861147">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="stylesheet" href="chat.css?v=9e17fa95">
+<link rel="stylesheet" href="chat.css?v=b4bee114">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
 <body>
@@ -448,8 +448,8 @@
 </div>
 
 <script src="theme.js?v=a46f6677" defer></script>
-<script src="mm_brain_presentation.js?v=ebbe25c1" charset="utf-8"></script>
-<script src="mm_brain_markdown.js?v=d346bcf2" charset="utf-8"></script>
+<script src="mm_brain_presentation.js?v=55272dd6" charset="utf-8"></script>
+<script src="mm_brain_markdown.js?v=9b93741c" charset="utf-8"></script>
 <script>
 (function () {
   'use strict';
@@ -518,6 +518,19 @@
   }
   function mountVisual(bubble, wire) {
     if (window.MMBrainPresentation && wire && wire.visual) window.MMBrainPresentation.mount(visualHost(bubble), wire);
+  }
+  function mountVisualNotices(bubble, notices) {
+    if (!Array.isArray(notices) || !notices.slice(0, 4).some(function (n) {
+      return n && n.type === 'membership_required' && n.template === 'transcript';
+    })) return;
+    var host = visualHost(bubble);
+    if (host.querySelector('.mmb-visual-notice')) return;
+    var note = document.createElement('p'); note.className = 'mmb-visual-notice'; note.setAttribute('role', 'status');
+    [['l-en', 'Some saved transcript evidence requires membership and is unavailable for this account.'],
+     ['l-zh', '部分已保存的电话会证据需要会员权限，当前账户暂不可查看。']].forEach(function (v) {
+      var span = document.createElement('span'); span.className = v[0]; span.textContent = v[1]; note.appendChild(span);
+    });
+    host.appendChild(note);
   }
   function clearVisuals(bubble) {
     var host = bubble && bubble.querySelector('.msg-visuals');
@@ -746,7 +759,7 @@
         if (!d || loadEpoch !== conversationEpoch) return;
         (d.messages || []).forEach(function (m) {
           var bubble = appendMessage(m.role, m.content, m.citations || []);
-          if (m.role === 'assistant') (m.visuals || []).forEach(function (wire) { mountVisual(bubble, wire); });
+          if (m.role === 'assistant') { (m.visuals || []).forEach(function (wire) { mountVisual(bubble, wire); }); mountVisualNotices(bubble, m.visual_notices); }
         });
       }).catch(function () {});
   }

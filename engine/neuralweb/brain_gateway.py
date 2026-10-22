@@ -8263,6 +8263,10 @@ def _presentation_prompt_for_tools(prompt: str, schemas: list[dict]) -> str:
                            if "use render_inline_visual." not in line)
     if "render_inline_chart" not in names:
         prompt = prompt.replace(_INLINE_CHART_SYSTEM_DIRECTIVE, "")
+    prompt += (
+        "\nTypeset formulas with explicit \\( ... \\) inline or \\[ ... \\] display delimiters. "
+        "Keep currency amounts as ordinary text. Typesetting does not perform calculations."
+    )
     if "render_financial_widget" in names:
         prompt += (
             "\nFor a company's price/trend, financial statements, company brief or earnings-call evidence, "
@@ -10183,10 +10187,9 @@ def _prepare_financial_widget(result: dict, prior: dict, retained: dict, identit
                               charts: list, user_id: str, root: Path,
                               available_tools: set[str]) -> dict:
     """Compile a completed guarded read; private snapshots never enter model context."""
-    import hashlib
     from engine.neuralweb.brain_financial_views import (
         MAX_WIDGETS, compile_financial_widget, model_visible_financial_result,
-        normalize_request, validate_financial_view,
+        normalize_request, validate_financial_view, financial_visual_id,
     )
     from engine.neuralweb.ask_brain import _post_filter_advice
     if not isinstance(result, dict) or result.get("error") or "financial_request" not in result:
@@ -10222,9 +10225,7 @@ def _prepare_financial_widget(result: dict, prior: dict, retained: dict, identit
             return {"error": "insider_required"}
         wire = json.loads(json.dumps(original, allow_nan=False))
         wire["visual"]["view"] = request["view"]
-        wire["visual_id"] = hashlib.sha256(
-            (identity + json.dumps(wire["visual"], sort_keys=True, ensure_ascii=False)).encode()
-        ).hexdigest()[:24]
+        wire["visual_id"] = financial_visual_id(identity, wire["visual"])
         if not validate_financial_view(wire):
             return {"error": "invalid_financial_view"}
     else:
@@ -10950,7 +10951,6 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "render_inline_chart":    ("Drawing the chart for you",     "为你绘制图表"),
     "render_inline_visual":   ("Preparing a visual explanation", "正在准备可视化解读"),
     "render_financial_widget": ("Preparing the financial view", "正在整理财务视图"),
-    "read_financial_statements": ("Reading financial statements", "正在读取财务报表"),
     "annotate_chart":         ("Marking key levels",            "标记关键位置"),
     "chart_digest":           ("Reading your chart",            "读取您的图表"),
     "read_chart_state":       ("Reading your chart",            "读取您的图表"),
@@ -14562,7 +14562,7 @@ def get_thread(thread_id: str, user_id: str) -> dict | None:
         f"&select=role,content,created_at,visuals:meta->visuals&order=created_at.asc&limit=200"
     )
     from engine.neuralweb.brain_visuals import public_visuals
-    from engine.neuralweb.brain_financial_views import public_financial_visuals
+    from engine.neuralweb.brain_financial_views import public_financial_visuals, financial_replay_notices
     quotes_allowed = None
     messages = []
     for row in msg_rows:
@@ -14584,6 +14584,9 @@ def get_thread(thread_id: str, user_id: str) -> dict | None:
                        and v["visual_id"] in by_id]
             if visuals:
                 message["visuals"] = visuals
+            notices = financial_replay_notices(meta, allow_transcript_quotes=quotes_allowed is True)
+            if notices:
+                message["visual_notices"] = notices
         messages.append(message)
     return {"thread": thread, "messages": messages}
 

@@ -26,7 +26,7 @@ def standalone():
             elif path=="/api/brain/threads":
                 body={"threads":[{"id":TID,"title":"Retained statement","lane":"fast","updated_at":"2026-10-21"}]}
             elif path=="/api/brain/threads/"+TID:
-                body={"thread":{"id":TID},"messages":[{"role":"assistant","content":"The statement is shown below.","visuals":[state["visual"]]}]}
+                body={"thread":{"id":TID},"messages":[{"role":"assistant","content":"The statement is shown below.","visuals":[state["visual"]],"visual_notices":state.get("notices",[])}]}
             elif path=="/api/brain/stream":
                 return r.fulfill(content_type="text/event-stream",body="".join("data: "+json.dumps(e)+"\n\n" for e in state["events"]))
             else:
@@ -93,3 +93,15 @@ def test_standalone_reuses_v1_and_shared_dom_markdown(standalone):
     expect(page.locator(".msg-prose table")).to_have_count(1)
     expect(page.locator(".msg-prose script")).to_have_count(0)
     assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+
+
+def test_standalone_explains_withheld_history_evidence(standalone):
+    page,state=standalone
+    state["notices"]=[{"type":"membership_required","template":"transcript"}]
+    page.get_by_role("button",name="History",exact=True).click()
+    page.get_by_text("Retained statement",exact=True).click()
+    expect(page.locator(".mmb-visual-notice .l-en")).to_contain_text("requires membership")
+    page.evaluate("document.documentElement.dataset.lang='zh';document.dispatchEvent(new Event('langchange'))")
+    expect(page.locator(".mmb-visual-notice .l-zh")).to_be_visible()
+    page.evaluate("window.__onAuth({id:'user-B'})")
+    expect(page.locator(".mmb-visual-notice")).to_have_count(0)

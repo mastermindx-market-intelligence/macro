@@ -4,7 +4,7 @@
   var doc=win.document, script=doc.currentScript;
   var base=new URL('./',script&&script.src||doc.baseURI).href;
   var loads={};
-  var versions={visualJS:'2e3ce3a5',visualCSS:'b9f2e195',financeJS:'4ec17a25',financeCSS:'951a09df',math:'3df69694'};
+  var versions={visualJS:'2e3ce3a5',visualCSS:'b9f2e195',financeJS:'737631d9',financeCSS:'b317487a',math:'e24d5a2c'};
   function asset(name,kind,version) {
     return new Promise(function(resolve,reject) {
       var node=doc.createElement(kind==='style'?'link':'script');
@@ -33,7 +33,7 @@
     if(!host)return;host._presentationEpoch=(host._presentationEpoch||0)+1;
     if(win.MMBrainVisuals)win.MMBrainVisuals.clear(host);
     if(win.MMBrainFinance)win.MMBrainFinance.clear(host);
-    host.querySelectorAll('.mmb-f-card,.mmb-v,[data-presentation-pending]').forEach(function(n){n.remove();});
+    host.querySelectorAll('.mmb-f-card,.mmb-v,.mmb-visual-notice,[data-presentation-pending]').forEach(function(n){n.remove();});
   }
   function mount(host,wire,options) {
     if(!host||!wire||!wire.visual||![1,2].includes(wire.visual.version)||!/^[a-f0-9]{24}$/.test(wire.visual_id))return Promise.resolve(null);
@@ -42,13 +42,13 @@
     pending.className='mmb-f-note';pending.dataset.presentationPending=wire.visual_id;
     pending.textContent=locale('Preparing the view…','正在整理视图…');host.appendChild(pending);
     return renderer(wire.visual.version).then(function(module){
-      if(!host.isConnected||(host._presentationEpoch||0)!==epoch)return null;
+      if(!pending.isConnected||!host.isConnected||(host._presentationEpoch||0)!==epoch)return null;
       pending.remove();
       var result=module.mount(host,wire,{assetBase:base,onExpand:options&&options.onExpand});
       if(!result){pending.textContent=locale('This view is unavailable.','此视图暂不可用。');host.appendChild(pending);}
       return result;
     }).catch(function(){
-      if(host.isConnected&&(host._presentationEpoch||0)===epoch)
+      if(pending.isConnected&&host.isConnected&&(host._presentationEpoch||0)===epoch)
         pending.textContent=locale('The view could not load. The text answer remains available.','视图加载失败，仍可阅读文字回答。');
       return null;
     });

@@ -30266,7 +30266,7 @@ jobs:
       - name: install Brain browser
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}

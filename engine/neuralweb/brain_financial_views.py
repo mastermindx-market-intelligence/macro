@@ -379,7 +379,7 @@ def compile_financial_widget(params: Any, observation: Any, identity: str,
         # Existing output guards cover ALL source/model text, not just the title.
         if screen:
             _need(screen("\n".join(_all_strings(visual))), "financial_copy_rejected")
-        wire = {"type": "chart", "visual_id": _sha([identity, visual])[:24], "visual": visual}
+        wire = {"type": "chart", "visual_id": financial_visual_id(identity, visual), "visual": visual}
         _bounded(wire)
         _need(validate_financial_view(wire), "invalid_compiled_view")
         return wire
@@ -468,6 +468,23 @@ def public_financial_visuals(meta: Any, *, allow_transcript_quotes: bool = False
         return []
     return [wire for wire in meta["visuals"][:MAX_WIDGETS] if validate_financial_view(wire)
             and (allow_transcript_quotes or wire["visual"]["source"]["reader"] != "read_earnings_evidence")]
+
+
+def financial_replay_notices(meta: Any, *, allow_transcript_quotes: bool = False) -> list[dict]:
+    """Explain withheld evidence without projecting its entity, facts or receipt."""
+    if allow_transcript_quotes or not isinstance(meta, dict) or not isinstance(meta.get("visuals"), list):
+        return []
+    if any(validate_financial_view(wire)
+           and wire["visual"]["source"]["reader"] == "read_earnings_evidence"
+           for wire in meta["visuals"][:MAX_WIDGETS]):
+        return [{"type": "membership_required", "template": "transcript"}]
+    return []
+
+
+def financial_visual_id(identity: str, visual: dict) -> str:
+    """One stable identity derivation for fresh compilation and same-turn reuse."""
+    _need(isinstance(identity, str) and 0 < len(identity) <= 256, "invalid_identity")
+    return _sha([identity, visual])[:24]
 
 
 def model_visible_financial_result(wire: dict) -> dict:

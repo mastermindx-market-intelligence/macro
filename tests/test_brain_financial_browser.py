@@ -148,3 +148,25 @@ def test_mathml_is_lazy_safe_and_literal_fallback(page):
     expect(page.locator("math")).to_have_count(2)  # untrusted href stays noninteractive MathML text
     expect(page.locator("a,[href]")).to_have_count(0)
     expect(page.locator(".mmb-math-fallback")).to_have_count(1)
+
+
+def test_selected_period_drives_desktop_table_and_live_locale_preserves_snapshot(page):
+    page.set_viewport_size({"width":1440,"height":1000})
+    w=wire(basis="interim",period_count=4)
+    assert mount(page,w)
+    expect(page.locator(".mmb-f-statement-table thead")).to_contain_text("Q4 2025")
+    page.get_by_label("Through period",exact=True).select_option("3")
+    expect(page.locator(".mmb-f-statement-table thead")).to_contain_text("Q4 2024")
+    expect(page.locator(".mmb-f-statement-table thead")).not_to_contain_text("2025")
+    snapshot=page.locator(".mmb-f-card").get_attribute("data-snapshot-id")
+    page.evaluate("document.documentElement.dataset.lang='zh';document.dispatchEvent(new Event('langchange'))")
+    expect(page.get_by_role("button",name="利润表",exact=True)).to_be_visible()
+    expect(page.locator(".mmb-f-eyebrow")).to_have_text("财务报表")
+    expect(page.locator(".mmb-f-footer")).to_contain_text("已保存快照")
+    expect(page.locator(".mmb-f-statement-table thead")).to_contain_text("Q4 2024")
+    page.evaluate("document.documentElement.dataset.lang='en';window.dispatchEvent(new Event('mm:lang'))")
+    expect(page.get_by_label("Through period",exact=True)).to_have_value("3")
+    expect(page.locator(".mmb-f-eyebrow")).to_have_text("Financial statements")
+    assert page.locator(".mmb-f-card").get_attribute("data-snapshot-id")==snapshot
+    page.evaluate("MMBrainFinance.clear(document.querySelector('#host'));document.dispatchEvent(new Event('langchange'))")
+    expect(page.locator(".mmb-f-card")).to_have_count(0)

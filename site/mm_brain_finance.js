@@ -40,7 +40,7 @@
   function select(parent, label, options, selected, onChange) {
     var wrap = add(parent, 'label', 'mmb-f-select');
     add(wrap, 'span', '', label);
-    var s = add(wrap, 'select');
+    var s = add(wrap, 'select'); s.setAttribute('aria-label', label);
     options.forEach(function (o) { var n = add(s, 'option', '', o[1]); n.value = o[0]; });
     s.value = text(selected);
     s.addEventListener('change', function () { onChange(s.value); }); return s;
@@ -266,15 +266,15 @@
     controls(c, [['annual',tr(c,'Annual','年度'),!annual],['quarterly',m.statementCadenceLabel(f.statements.quarterly,'quarterly',c.zh),!interim]], 'basis', tr(c,'Reporting basis','报告周期'));
     var model = statementModel(f, m, c.state.basis, c.state.statement), set = model.set;
     if (!set || !set.periods.length) { note(c, tr(c,'This reporting basis is unavailable.','此报告周期暂无数据。')); return; }
-    var total = set.periods.length, count = Math.min(c.v.view.period_count || 4, total), start = total - count;
-    var indexes = []; for (var i = start; i < total; i++) indexes.push(i);
+    var total = set.periods.length, count = Math.min(c.v.view.period_count || 4, total);
     var latest = c.state.period != null && c.state.period < total ? c.state.period : total - 1;
+    var start = Math.max(0, latest + 1 - count), indexes = [];
+    for (var i = start; i <= latest; i++) indexes.push(i);
     var currency = f.stmt_currency || tr(c, 'currency not supplied', '币种未提供');
     note(c, currency + ' · ' + tr(c, 'Millions, except per-share figures', '百万，每股数据除外') +
-      ' · ' + m.statementPeriodCountLabel(set, c.state.basis, c.zh) + ' · ' +
-      tr(c, 'Snapshot ', '快照 ') + (f.asof || tr(c,'date unavailable','日期未知')));
+      ' · ' + m.statementPeriodCountLabel(set, c.state.basis, c.zh));
     var toolbar = add(c.body,'div','mmb-f-statement-toolbar');
-    var period = select(toolbar, tr(c,'Period detail','期间明细'),
+    var period = select(toolbar, tr(c,'Through period','截至期间'),
       set.periods.map(function (p, ix) { return [ix,p]; }).reverse(), latest,
       function (value) { redraw(c,function(){c.state.period=Number(value);}); });
     period.setAttribute('data-focus-key','period');
@@ -379,6 +379,7 @@
     }
   }
   function renderBody(c) {
+    c.zh=zh(c.root);
     if(c.v.template==='price')renderPrice(c);
     else if(c.v.template==='financial_statement')renderStatement(c);
     else if(c.v.template==='company')renderCompany(c);
@@ -394,16 +395,27 @@
       metric:v.view.metric||null,period:null,fullTable:false,detailAll:false}};
     var header=add(root,'header','mmb-f-header');
     var names={price:['Price & trend','价格与趋势'],financial_statement:['Financial statements','财务报表'],company:['Company brief','公司概况'],transcript:['Earnings call','业绩电话会']};
-    add(header,'span','mmb-f-eyebrow',names[v.template][c.zh?1:0]);add(header,'h3','',v.source.entity_id);
+    var eyebrow=add(header,'span','mmb-f-eyebrow');add(header,'h3','',v.source.entity_id);
     c.body=add(root,'div','mmb-f-body');
     var footer=add(root,'footer','mmb-f-footer');
     var sources=v.template==='financial_statement'?v.data.fund.src:
       v.template==='price'?{statements:v.data.quote.source}:null;
     var source=sources&&[sources.statements,sources.statement_lineage].filter(Boolean).join(' / ');
-    add(footer,'span','',(source||tr(c,'Mastermind source snapshot','Mastermind 来源快照'))+' · '+
-      tr(c,'As of ','截至 ')+(v.source.asof||tr(c,'not supplied','未提供')));
-    add(footer,'span','mmb-f-snapshot-label',tr(c,'Saved snapshot · controls use this data','已保存快照 · 控件使用此数据'));
-    renderBody(c);
+    var sourceLabel=add(footer,'span'), snapshotLabel=add(footer,'span','mmb-f-snapshot-label');
+    function refreshLocale() {
+      c.zh=zh(root);eyebrow.textContent=names[v.template][c.zh?1:0];
+      root.setAttribute('aria-label',v.source.entity_id+' · '+names[v.template][c.zh?1:0]);
+      sourceLabel.textContent=(source||tr(c,'Mastermind source snapshot','Mastermind 来源快照'))+' · '+
+        tr(c,'As of ','截至 ')+(v.source.asof||tr(c,'not supplied','未提供'));
+      snapshotLabel.textContent=tr(c,'Saved snapshot · controls use this data','已保存快照 · 控件使用此数据');
+    }
+    function languageChanged(){if(root.isConnected){refreshLocale();redraw(c,function(){});}}
+    refreshLocale();renderBody(c);
+    D.addEventListener('langchange',languageChanged);win.addEventListener('mm:lang',languageChanged);
+    var disposeResize=function(){};
+    root._financeDispose=function(){
+      disposeResize();D.removeEventListener('langchange',languageChanged);win.removeEventListener('mm:lang',languageChanged);
+    };
     if(win.ResizeObserver){
       var lastWidth=root.getBoundingClientRect().width, timer;
       var resize=new win.ResizeObserver(function(){
@@ -411,7 +423,7 @@
         if(Math.abs(nextWidth-lastWidth)<1)return;lastWidth=nextWidth;
         win.clearTimeout(timer);timer=win.setTimeout(function(){if(root.isConnected)redraw(c,function(){});},90);
       });
-      resize.observe(root);root._financeDispose=function(){resize.disconnect();win.clearTimeout(timer);};
+      resize.observe(root);disposeResize=function(){resize.disconnect();win.clearTimeout(timer);};
     }
     if(v.template==='financial_statement'){
       loadMath(c.options.assetBase).then(function(math){
