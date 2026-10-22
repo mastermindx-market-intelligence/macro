@@ -5172,7 +5172,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_837),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5181,6 +5181,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 native Prophet-plan Brief validation adds two suites to the
+    incumbent code-gated ticker-news-qbus job: estimated weight 98 -> 102.
+    Register each new suite once there; remove only its new duplicate in the
+    data-gated press-lane, whose estimated weight returns from 43 to 38.
+    The scoped planner on aa5bd135 plus this deduplication measures index
+    135 jobs / 5,837, free-content 135 / 5,814 and plan-book 128 / 5,586,
+    all at ten packs, with no newly selected jobs. Fund only free-content's
+    necessary four-unit code-coverage cost, 5,810 -> 5,814. Preserve index,
+    plan-book, job-count and pack ceilings and every previous registration.
+    These are planning estimates, not measured execution times.
 
     2026-10-21 qualified Today and Research API composition adds exactly five
     estimator units to research-vault-api (7 -> 12) for the two mandatory API
