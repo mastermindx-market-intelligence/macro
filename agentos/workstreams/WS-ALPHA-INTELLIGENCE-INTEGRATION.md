@@ -260,6 +260,19 @@ next_action: >
   be met on post-boundary data. Absolute gates: vendor PIT procurement, capital/rank authority
   (Chairman). No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size, trade or
   deployment; financial_influence, k3e_admissible and promotion_eligible stay false.
+  (4) DONE 2026-10-22 as a site materialization, not a ledger or admission change: the Expectation
+  Surface page (scripts/build_expectation_surface.py + templates/expectation_surface.html.j2, program
+  brief research/INFORMATION_TO_PRICE_SITE_PROGRAM_BRIEF_2026-10-21.md, #9958 squash cd90f651) merged
+  as #9969 squash 6a4c0079 from exact head 6de93f86fbd8555b9125182dc68820e975387b15 (fabric lanes
+  itp-es-build-data-20261021-r1 and itp-es-build-ui-20261021-r1, seat repairs r2 (design ratchet,
+  render ownership) r3 (visual-evidence receipt, site/theme.css sync) r4 (P0B receipt remint + manifest
+  bindings, research screener re-bake) and r5 (merge of main 8182ec04 + fresh remint); ledger research/INFORMATION_TO_PRICE_CONTINUATION_HANDOFF_2026-10-06.md
+  sections 41-43). The page is a descriptive, nightly-regenerated view of
+  data/revisions/expectation_observations.parquet; financial_influence and k3e_admissible stay false,
+  and it authorizes no rank, gate, size, trade or deployment. Rung = MERGED until the first nightly
+  render proves site/expectation_surface.html on origin/main (PRODUCTION_PROOF). Wave 2 after that
+  proof: Research mega-menu item (design-tier, nav-parity suites), per-security link-out, CPL-1
+  coupling panel; never the Intelligence Hub desk rail.
 ---
 
 # Alpha Intelligence Expansion — integration workstream

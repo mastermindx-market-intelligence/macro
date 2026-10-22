@@ -2,6 +2,34 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-22",
+      "tickers": [
+        "ACMR",
+        "AEYE",
+        "AFG",
+        "AMCR",
+        "AMSF",
+        "BAC",
+        "BOLD",
+        "CHRD",
+        "CRF",
+        "DDOG",
+        "DEI",
+        "FE",
+        "GH",
+        "IDA",
+        "LOPE",
+        "MIDD",
+        "NOKBF",
+        "RAPP",
+        "STZ",
+        "TREX",
+        "UGI",
+        "ULS",
+        "WMG"
+      ]
+    },
+    {
       "as_of": "2026-10-20",
       "tickers": [
         "ELF",
@@ -128,19 +156,6 @@
         "UNFI",
         "VNO",
         "WMG"
-      ]
-    },
-    {
-      "as_of": "2026-10-14",
-      "tickers": [
-        "ATO",
-        "BKH",
-        "FIBK",
-        "MUB",
-        "STX",
-        "TLN",
-        "TNDM",
-        "TSN"
       ]
     }
   ]

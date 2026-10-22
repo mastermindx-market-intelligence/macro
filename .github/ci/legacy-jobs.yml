@@ -261,6 +261,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -2152,6 +2154,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -3102,6 +3106,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -8951,6 +8957,11 @@ jobs:
     # separate, larger cleanup outside this PR's scope.
     paths:
       - "app/prophet_lab.py"
+      # Same-box Treasury input reuses this module's internal and site-full guards.
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
+      - "tests/test_treasury_daily_history.py"
+      - "tests/test_treasury_history_api.py"
       - "engine/prophet_lab/**"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
@@ -9038,6 +9049,7 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
@@ -9406,6 +9418,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -11848,6 +11862,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
       - "scripts/build_live_overlay.py"
@@ -13775,6 +13791,8 @@ jobs:
       - "templates/finance_intelligence.js"
       - "templates/finance_intelligence.css"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "tests/test_finance_intelligence_page.py"
       - "tests/test_finance_intelligence_hydration.py"
       - "tests/finance_intelligence_hydration_harness.js"
@@ -18137,6 +18155,8 @@ jobs:
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - scripts/build_expectation_surface.py
       - engine/sector_intelligence/finance_watching.py
       - engine/sector_intelligence/finance_witness_hints.py
       - engine/sector_intelligence/finance_page_signal.py
@@ -20263,6 +20283,7 @@ jobs:
       - "engine/press/external_candidate.py"
       - "engine/press/research_triage.py"
       - "engine/press/validators.py"
+      - "engine/press/native_plan_scope.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
@@ -21129,6 +21150,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): imported by
@@ -23212,12 +23235,21 @@ jobs:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
+      - templates/calculators/cagr.html.j2
+      - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install copy feedback test dependency
+        run: pip install pytest
+      - name: CAGR truthful copy feedback
+        run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: node --test tests/js/calculator_input_integrity.test.mjs
 
@@ -23415,6 +23447,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -27949,6 +27983,14 @@ jobs:
       - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
+      # ITP-ES wave 1: the expectation-surface contract suite + the template
+      # family it renders through the real jinja2 environment.
+      - "tests/test_build_expectation_surface.py"
+      - "templates/expectation_surface.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -28252,6 +28294,11 @@ jobs:
         run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
+      # ITP-ES wave 1 (2026-10-21): Expectation Surface page builder contract —
+      # deterministic synthetic-fixture suite; rides this job's single install
+      # step (pytest pandas pyarrow jinja2) and its declared scope above.
+      - name: expectation surface page builder contract (ITP-ES wave 1)
+        run: python -m pytest tests/test_build_expectation_surface.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -29346,6 +29393,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -32133,6 +32182,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -35187,6 +35238,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
       - "engine/press/adjusted_baseline.py"
       - "templates/press/press_news.css"
@@ -36185,6 +36238,9 @@ jobs:
       - "engine/marketing/x_intel.py"
       - "engine/press/__init__.py"
       - "engine/press/desk_planner.py"
+      - "engine/press/native_plan_scope.py"
+      - "tests/test_press_native_plan_scope.py"
+      - "tests/test_press_native_plan_integration.py"
       - "engine/press/external_candidate.py"
       - "engine/press/properties.py"
       - "engine/press/qbus_news.py"
@@ -36293,7 +36349,8 @@ jobs:
           tests/test_ticker_news_snapshot_provenance.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
-          tests/test_press_run.py tests/test_press_writer.py -q -rs
+          tests/test_press_run.py tests/test_press_writer.py
+          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
@@ -36955,6 +37012,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -39230,6 +39289,7 @@ jobs:
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
       - "site/commodities.html"
+      - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
@@ -39251,8 +39311,11 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
       - "tests/test_commodity_publication.py"
+      - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
+      - "tests/test_commodity_workspace_ui.js"
+      - "tests/test_commodity_workspace_presentation.js"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -39265,10 +39328,17 @@ jobs:
           node-version: "20"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+      - name: install pinned DOM test dependency
+        run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py tests/test_commodity_presentation_render.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
+      - name: rendered workspace and signed presentation journeys
+        run: |
+          export NODE_PATH="${RUNNER_TEMP:?}/commodity-dom/node_modules"
+          node tests/test_commodity_workspace_ui.js
+          node tests/test_commodity_workspace_presentation.js
 
   options-r1-rotation-relative-trend:
     # Options R1 W2A: weekly sector relative-trend emitter — calendar endpoints, EMA math, vintage, Terminal contract, additive hook.
