@@ -14,14 +14,18 @@ import time
 
 from collectors.benzinga_news import route_revision
 from engine.qbus_news_receipts import combine_news_rights
+from engine.qbus_news_quality import curated_source
 
 
 class SupplementalNewsIntake:
     def __init__(
         self, *, client, store, rights_provider, universe_provider,
         clock=lambda: datetime.now(timezone.utc), monotonic=time.monotonic,
-        interval_seconds=60.0, overlap_seconds=86400.0,
+        interval_seconds=60.0, overlap_seconds=86400.0, provider="massive",
     ):
+        if provider not in {"massive", "finlight"}:
+            raise ValueError("unsupported_supplemental_provider")
+        self.provider = provider
         if interval_seconds < 1 or overlap_seconds < 0:
             raise ValueError("invalid_supplemental_interval")
         self.client, self.store = client, store
@@ -38,13 +42,15 @@ class SupplementalNewsIntake:
         self.last_successful_poll = None
         self.last_error = None
         self.accepted_reports = 0
+        self.diagnostics = {}
         self.publishers = ()
         self._closed = False
 
     def _allowed(self):
         receipts = tuple(
             receipt for receipt in self.rights_provider()
-            if receipt.provider == "massive" and receipt.source.startswith("massive:")
+            if receipt.provider == self.provider and receipt.source.startswith(self.provider + ":")
+            and (self.provider != "finlight" or curated_source(receipt.source))
         )
         rights = combine_news_rights(receipts)
         return rights.allowed_sources
@@ -74,6 +80,16 @@ class SupplementalNewsIntake:
                     for revision in batch.revisions
                     if revision.source in allowed
                 ]
+                self.diagnostics = dict(getattr(batch, "diagnostics", {}))
+                if self.provider == "finlight":
+                    self.diagnostics.update(
+                        accepted=sum(bool(row.security_ids) for row in routed),
+                        out_of_universe=sum(bool(row.revision.provider_tickers) and not row.security_ids for row in routed),
+                        truncated=int(not batch.complete),
+                    )
+                    self.diagnostics["rights_rejected"] = self.diagnostics.get("rights_rejected", 0) + sum(
+                        revision.source not in allowed for revision in batch.revisions
+                    )
                 # The provider exposes publication time, not an update clock.
                 # Always overlap the next acquisition window; an incomplete page
                 # budget never advances the checkpoint past unobserved content.
@@ -89,9 +105,12 @@ class SupplementalNewsIntake:
                 )
                 self.accepted_reports += receipt.applied_states
                 if batch.complete:
-                    self.state = "available"
                     self.last_successful_poll = self.clock()
-                    self.last_error = None
+                    limited = any(self.diagnostics.get(key, 0) for key in (
+                        "entity_invalid", "unattributed", "rights_rejected", "language_rejected",
+                    ))
+                    self.state = "degraded" if limited else "available"
+                    self.last_error = "finlight_coverage_limited" if limited else None
                 else:
                     self.state = "degraded"
                     self.last_error = "page_budget_exhausted"
@@ -144,13 +163,14 @@ class SupplementalNewsIntake:
     def health(self):
         last = self.last_successful_poll
         return {
-            "provider": "massive",
+            "provider": self.provider,
             "state": self.state,
             "last_successful_poll": last.isoformat() if last else None,
             "last_error": self.last_error,
             "accepted_reports": self.accepted_reports,
             "publishers": list(self.publishers),
             "delivery": "polled",
+            **({"last_batch": dict(self.diagnostics)} if self.provider == "finlight" else {}),
         }
 
     def close(self):

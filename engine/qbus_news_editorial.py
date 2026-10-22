@@ -17,7 +17,7 @@ from engine.qkernel import publisher_domain
 
 EDITORIAL_VIEW_VERSION = "ticker_news.editorial_view.v1"
 # Bump when admission/reference rules change, independently of the wire schema.
-EDITORIAL_RULES_VERSION = "ticker_news.editorial_rules.v1"
+EDITORIAL_RULES_VERSION = "ticker_news.editorial_rules.v2"
 VIEW_MODES = frozenset({"all", "news", "company"})
 
 _LEGAL_SUFFIX = re.compile(
@@ -25,6 +25,7 @@ _LEGAL_SUFFIX = re.compile(
     re.I,
 )
 _SPACE = re.compile(r"\s+")
+_CJK = re.compile(r"[\u3400-\u9fff\uf900-\ufaff]")
 # Named formats, not predictions about an article's truth or investment value.
 _FORMATS = (
     ("roundup", "named_roundup", re.compile(
@@ -90,7 +91,7 @@ def company_reference_context(
         if not name or len(name) > 160 or name.upper() in clean_symbols:
             continue
         for candidate in (name, _LEGAL_SUFFIX.sub("", name).strip()):
-            if (len(candidate) >= 3 and candidate.upper() not in clean_symbols
+            if (len(candidate) >= (2 if _CJK.search(candidate) else 3) and candidate.upper() not in clean_symbols
                     and any(char.isalpha() for char in candidate)):
                 clean_names.add(candidate.casefold())
     return CompanyReferenceContext(
@@ -105,12 +106,20 @@ def company_reference(title: str, teaser: str, context: CompanyReferenceContext 
     for field, value in (("headline", title), ("summary", teaser)):
         text = plain_text(value)
         for name in context.names:
+            # Chinese company names do not have Latin word boundaries or case.
+            # This remains a display-text reference, never an identity resolver.
+            if _CJK.search(name) and name in text.casefold():
+                return field
             for match in re.finditer(r"(?<![\w@])" + re.escape(name) + r"(?![\w@])", text, re.I):
                 # A single ordinary word in prose is not a company identifier.
                 # This remains text-reference evidence, never semantic relevance.
                 if " " in name or any(char.isupper() for char in match.group()):
                     return field
         for symbol in context.symbols:
+            if (re.fullmatch(r"\d{1,6}\.(?:HK|SH|SS|SZ|BJ)", symbol)
+                    and re.search(r"(?<![A-Za-z0-9])" + re.escape(symbol)
+                                  + r"(?![A-Za-z0-9.])", text, re.I)):
+                return field
             if re.search(
                 r"(?<![\w$])(?:\$|(?:NASDAQ|NYSE|AMEX)\s*:\s*)"
                 + re.escape(symbol) + r"(?![\w.\-])", text, re.I,

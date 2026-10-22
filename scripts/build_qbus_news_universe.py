@@ -132,6 +132,7 @@ def build_from_files(
     fresh_for: timedelta = timedelta(hours=36),
     min_count: int = 400,
     write: bool = False,
+    include_cn_hk: bool = False,
 ) -> dict[str, object]:
     current_path = Path(current)
     pit_path = Path(pit)
@@ -153,6 +154,7 @@ def build_from_files(
             observed_at=observed_at,
             fresh_for=fresh_for,
             min_count=min_count,
+            include_cn_hk=include_cn_hk,
         )
     except NewsUniverseSnapshotError as exc:
         raise NewsUniverseBuildError(exc.code) from exc
@@ -169,6 +171,7 @@ def build_from_files(
         "mode": "write" if write else "check_only",
         "qualified": True,
         "count": qualified.count,
+        "cn_hk_count": snapshot.get("cn_hk_count", 0),
         "revision": qualified.revision,
         "owner": qualified.owner,
         "known_at": snapshot["known_at"],
@@ -235,6 +238,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--fresh-hours", type=float, default=36.0)
     parser.add_argument("--min-count", type=int, default=400)
+    parser.add_argument(
+        "--include-cn-hk", action="store_true",
+        default=os.environ.get("MM_TICKER_NEWS_FINLIGHT_ENABLED") == "1",
+        help="include current canonical mainland/HK listings in the news-only selection",
+    )
     parser.add_argument(
         "--observed-at",
         type=str,
@@ -315,6 +323,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             fresh_for=timedelta(hours=float(args.fresh_hours)),
             min_count=int(args.min_count),
             write=bool(args.write),
+            include_cn_hk=args.include_cn_hk,
         )
     except (NewsUniverseBuildError, ValueError, TypeError) as exc:
         return _emit_error(getattr(exc, "code", "build_failed"))

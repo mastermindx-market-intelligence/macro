@@ -152,6 +152,7 @@ class NewsIngestRunner:
         stream_handshake: Callable[[object], None] | None = None,
         frame_normalizer: Callable[..., Sequence[NewsRevision]] | None = None,
         supplemental=None,
+        supplementals=(),
     ) -> None:
         if not token and stream_target is None:
             raise ValueError("qbus_news:missing_stream_token")
@@ -181,7 +182,8 @@ class NewsIngestRunner:
         self.stream_target = stream_target
         self.stream_handshake = stream_handshake
         self.frame_normalizer = frame_normalizer
-        self.supplemental = supplemental
+        self.supplemental = supplemental  # compatibility for callers supplying one intake
+        self.supplementals = tuple(supplementals) + ((supplemental,) if supplemental is not None else ())
         self.stats = RunnerStats()
         self._catchup_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="news-catchup")
         self._catchup_future = None
@@ -217,7 +219,7 @@ class NewsIngestRunner:
             "catchups_failed": self.stats.catchups_failed,
             "last_catchup_error": self._last_catchup_error,
             "last_stream_error": self._last_stream_error,
-            **({"additional_sources": [self.supplemental.health()]} if self.supplemental else {}),
+            **({"additional_sources": [item.health() for item in self.supplementals]} if self.supplementals else {}),
         }
 
     def _publish_health(self, state: str) -> None:
@@ -378,8 +380,8 @@ class NewsIngestRunner:
                 ):
                     break
 
-                if self.supplemental is not None:
-                    self.supplemental.pump()
+                for intake in self.supplementals:
+                    intake.pump()
                 self._catch_up()
                 if self.stop.is_set():
                     break
@@ -408,8 +410,8 @@ class NewsIngestRunner:
                             if not self._admitted():
                                 self.stop.set()
                                 break
-                            if self.supplemental is not None:
-                                self.supplemental.pump()
+                            for intake in self.supplementals:
+                                intake.pump()
                             self._drain_catchup()
                             if self.monotonic() >= next_catchup:
                                 self._start_periodic_catchup()
@@ -448,8 +450,8 @@ class NewsIngestRunner:
             if self._catchup_future is not None:
                 self._catchup_future.cancel()
             self._catchup_pool.shutdown(wait=False, cancel_futures=True)
-            if self.supplemental is not None:
-                self.supplemental.close()
+            for intake in self.supplementals:
+                intake.close()
             self._publish_health("unavailable")
 
         return self.stats
@@ -483,6 +485,10 @@ def build_parser() -> argparse.ArgumentParser:
                    default=os.environ.get("MM_TICKER_NEWS_MASSIVE_ENABLED") == "1",
                    help="enable rights-qualified additional publishers in the existing runner")
     p.add_argument("--massive-token-env", default="POLYGON_API_KEY")
+    p.add_argument("--finlight-news", action="store_true",
+                   default=os.environ.get("MM_TICKER_NEWS_FINLIGHT_ENABLED") == "1",
+                   help="enable publisher-qualified original Chinese CN/HK headlines")
+    p.add_argument("--finlight-token-env", default="FINLIGHT_KEY")
     p.add_argument(
         "--provider",
         default=os.environ.get("QBUS_NEWS_PROVIDER") or "benzinga",
@@ -649,13 +655,40 @@ def main(argv=None) -> int:
         }, sort_keys=True))
         return 2
 
+    from engine.qbus_news_quality import curated_source
+
+    finlight_rights = combine_news_rights(tuple(
+        receipt for receipt in supplemental_receipts
+        if receipt.provider == "finlight" and receipt.source.startswith("finlight:")
+        and curated_source(receipt.source)
+    ))
+    finlight_token = os.environ.get(args.finlight_token_env, "") if args.finlight_news else ""
+    cn_count = sum(row.security_id.startswith("SEC:CN-") for row in universe.securities)
+    hk_count = sum(row.security_id.startswith("SEC:HK-") for row in universe.securities)
+    if args.finlight_news and (
+        not finlight_token or not finlight_rights.allowed_sources or not cn_count or not hk_count
+    ):
+        print(json.dumps({
+            **report, "activation_qualified": False,
+            "error": "activation_chinese_sources_unqualified",
+            "chinese_token_present": bool(finlight_token),
+            "chinese_sources_qualified": len(finlight_rights.allowed_sources),
+            "cn_universe_count": cn_count, "hk_universe_count": hk_count,
+        }, sort_keys=True))
+        return 2
+
     qualified_report = {
         **report,
         "activation_qualified": True,
         "universe_count": universe.count,
         "universe_revision": universe.revision,
-        "additional_sources_enabled": bool(args.massive_news),
-        "additional_sources_qualified": len(supplemental_rights.allowed_sources) if args.massive_news else 0,
+        "additional_sources_enabled": bool(args.massive_news or args.finlight_news),
+        "additional_sources_qualified": (
+            (len(supplemental_rights.allowed_sources) if args.massive_news else 0)
+            + (len(finlight_rights.allowed_sources) if args.finlight_news else 0)
+        ),
+        "chinese_sources_enabled": bool(args.finlight_news),
+        "cn_universe_count": cn_count, "hk_universe_count": hk_count,
     }
     if args.check_activation:
         print(json.dumps(qualified_report, sort_keys=True))
@@ -675,6 +708,7 @@ def main(argv=None) -> int:
 
     with ExitStack() as resources:
         supplemental = None
+        supplementals = []
         if args.massive_news:
             from engine.massive_news import MassiveNewsClient
             from engine.qbus_news_intake import SupplementalNewsIntake
@@ -690,6 +724,20 @@ def main(argv=None) -> int:
                 ),
                 universe_provider=lambda: universe,
             )
+        if args.finlight_news:
+            from engine.finlight_news import FinlightNewsClient
+            from engine.qbus_news_intake import SupplementalNewsIntake
+
+            chinese_store = resources.enter_context(NewsStore(
+                args.database, source_key="finlight-chinese-news",
+            ))
+            supplementals.append(SupplementalNewsIntake(
+                client=FinlightNewsClient(finlight_token), store=chinese_store,
+                rights_provider=lambda: load_rights_set(
+                    additional_rights_paths(), now=_utc_now(),
+                ),
+                universe_provider=lambda: universe, provider="finlight",
+            ))
         source_key = "alpaca-rest" if provider == "alpaca" else "benzinga-rest"
         store = resources.enter_context(NewsStore(args.database, source_key=source_key))
         kwargs = {}
@@ -707,7 +755,7 @@ def main(argv=None) -> int:
         runner = NewsIngestRunner(
             token=token, store=store, universe_provider=lambda: universe,
             direct_client=client, stop=stop, health_path=health_path,
-            admission_guard=rights_admitted, supplemental=supplemental,
+            admission_guard=rights_admitted, supplemental=supplemental, supplementals=supplementals,
             recv_timeout_seconds=0.1,
             **kwargs,
         )

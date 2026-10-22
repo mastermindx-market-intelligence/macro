@@ -35079,6 +35079,9 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/massive_news.py
+      - engine/finlight_news.py
+      - engine/qbus_news_cn_hk.py
+      - tests/test_chinese_ticker_news.py
       - engine/qbus_news_intake.py
       - engine/qbus_news_quality.py
       - engine/qbus_news_editorial.py
@@ -36123,6 +36126,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_qbus_news_retrieval.py
           tests/test_massive_news.py
+          tests/test_chinese_ticker_news.py
           tests/test_qbus_news_intake.py
           tests/test_shared_news_intelligence.py
           tests/test_alpaca_news.py

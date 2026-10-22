@@ -100,11 +100,30 @@ load_provider_credentials() {
   fi
 }
 
+
+# Match the supplemental settings systemd passes to this same runner. Do not
+# source the credential file: values are exported literally, never evaluated.
+load_supplemental_settings() {
+  local key count line value
+  require_private_file "$ENV_FILE"
+  for key in MM_TICKER_NEWS_MASSIVE_ENABLED POLYGON_API_KEY \
+    MM_TICKER_NEWS_FINLIGHT_ENABLED FINLIGHT_KEY MM_TICKER_NEWS_ADDITIONAL_RIGHTS; do
+    count=$(grep -c -E "^$key=" "$ENV_FILE" || true)
+    [ "$count" != 0 ] || continue
+    [ "$count" = 1 ] || fail "expected at most one $key line in $ENV_FILE"
+    line=$(grep -E "^$key=" "$ENV_FILE")
+    value=${line#*=}
+    case "$value" in *$'\r'*) fail "$key contains carriage return" ;; esac
+    export "$key=$value"
+  done
+}
+
 check_activation() {
   require_private_file "$RIGHTS_FILE"
   [ -f "$UNIT_SOURCE" ] && [ ! -L "$UNIT_SOURCE" ] || fail "reviewed unit missing"
   install -d -m 0700 "$STATE_DIR"
   load_provider_credentials
+  load_supplemental_settings
 
   # Verify the exact production interpreter has the sync WebSocket API before
   # touching systemd. This imports only; it opens no provider connection.

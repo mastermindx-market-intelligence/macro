@@ -129,15 +129,19 @@ def parse_rights_receipt(
         raise NewsReceiptError("rights_not_approved")
     source = _text(obj.get("source"), "rights_source", maximum=260).lower()
     if source != _SOURCE and re.fullmatch(
-        r"massive:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", source
+        r"(?:massive|finlight):(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", source
     ) is None:
         raise NewsReceiptError("rights_source")
     receipt_id = _text(obj.get("receipt_id"), "rights_receipt_id", maximum=256)
     owner_ref = _text(obj.get("owner_ref"), "rights_owner_ref", maximum=1024)
     product_id = _text(obj.get("product_id"), "rights_product_id", maximum=256)
     provider = None if obj.get("provider") is None else _text(obj.get("provider"), "rights_provider", maximum=64)
-    if source.startswith("massive:") and provider != "massive":
+    if source != _SOURCE and provider != source.partition(":")[0]:
         raise NewsReceiptError("rights_provider_mismatch")
+    if source.startswith("finlight:"):
+        # Finlight terms explicitly do not grant rights in publisher content.
+        # The existing rights owner must cite a separate publisher-use grant.
+        _text(obj.get("publisher_rights_ref"), "rights_publisher_grant_required")
     requested_audience = _text(audience, "rights_audience_requested", maximum=128)
 
     audiences_raw = obj.get("audiences")
@@ -171,6 +175,8 @@ def parse_rights_receipt(
             raise NewsReceiptError(f"capability_{required}_required")
 
     allow_url = _bool(caps, "source_link_display", default=False)
+    if source.startswith("finlight:") and not allow_url:
+        raise NewsReceiptError("capability_source_link_display_required")
     allow_teaser = _bool(caps, "teaser_display", default=False)
 
     for optional in (
@@ -345,7 +351,7 @@ def parse_health_receipt(
     if isinstance(additional, list):
         projected = []
         for item in additional[:8]:
-            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+            if not isinstance(item, Mapping) or item.get("provider") not in {"massive", "finlight"}:
                 continue
             extra_state = item.get("state")
             if extra_state not in {"waiting", "available", "catching_up", "degraded", "restricted", "unavailable"}:
@@ -365,7 +371,7 @@ def parse_health_receipt(
             except NewsReceiptError:
                 extra_state, last_poll = "unavailable", None
             extra = {
-                "provider": "massive", "state": extra_state,
+                "provider": item["provider"], "state": extra_state,
                 "last_successful_poll": last_poll.isoformat() if last_poll else None,
                 "delivery": "polled",
             }
@@ -382,6 +388,14 @@ def parse_health_receipt(
             accepted = item.get("accepted_reports")
             if type(accepted) is int and 0 <= accepted <= 9007199254740991:
                 extra["accepted_reports_since_start"] = accepted
+            diagnostics = item.get("last_batch")
+            if item["provider"] == "finlight" and isinstance(diagnostics, Mapping):
+                extra["last_batch"] = {
+                    key: value for key, value in diagnostics.items()
+                    if key in {"fetched", "accepted", "rights_rejected", "language_rejected",
+                               "entity_invalid", "unattributed", "out_of_universe", "truncated"}
+                    and type(value) is int and 0 <= value <= 9007199254740991
+                }
             projected.append(extra)
         if projected:
             result["additional_sources"] = projected

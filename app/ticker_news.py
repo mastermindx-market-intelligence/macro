@@ -377,23 +377,28 @@ def _source_health() -> dict[str, Any]:
     )
 
 
-def _curated_health(health: Mapping[str, Any], rights: NewsReadRights) -> dict[str, Any]:
+def _curated_health(health: Mapping[str, Any], rights: NewsReadRights, security_id: str = "") -> dict[str, Any]:
     """Scope delivery evidence to publishers this reader can actually see."""
     eligible = frozenset(
         source for source in rights.allowed_sources
         if rights.allows(source, "title") and curated_source(source)
     )
     result = dict(health)
+    if security_id.startswith(("SEC:CN-", "SEC:HK-")):
+        # US primary-wire health is not evidence of Chinese listing coverage.
+        eligible = frozenset(source for source in eligible if source.startswith("finlight:"))
+    elif security_id:
+        eligible = frozenset(source for source in eligible if not source.startswith("finlight:"))
     if "benzinga" not in eligible:
         result.update(state="unavailable", last_successful_catchup=None,
                       last_stream_event_at=None, reason="no_curated_primary_source")
     if "additional_sources" in health:
         extras = []
         for item in health.get("additional_sources") or []:
-            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+            if not isinstance(item, Mapping) or item.get("provider") not in {"massive", "finlight"}:
                 continue
             publishers = [publisher for publisher in item.get("configured_publishers", [])
-                          if isinstance(publisher, str) and "massive:" + publisher in eligible]
+                          if isinstance(publisher, str) and item["provider"] + ":" + publisher in eligible]
             if not publishers:
                 continue
             entry = dict(item, configured_publishers=publishers)
@@ -410,6 +415,11 @@ def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
     extras = health.get("additional_sources") or []
     if raw == "unavailable" and any(item.get("state") == "available" for item in extras):
         return "degraded" if row_count else "quiet"
+    if raw == "unavailable":
+        chinese_states = {item.get("state") for item in extras if item.get("provider") == "finlight"}
+        for state in ("degraded", "catching_up", "restricted"):
+            if state in chinese_states:
+                return state
     if raw == "live" and any(item.get("state") != "available" for item in extras):
         return "degraded"
     if raw == "live" and row_count == 0:
@@ -717,7 +727,10 @@ def _attach_annotation(
     editorial_view: NewsEditorialView | None = None,
 ) -> dict[str, Any]:
     allowed = payload.get("source") in permitted if isinstance(permitted, frozenset) else permitted
-    payload["annotation"] = annotate_row(title, teaser) if allowed else None
+    payload["annotation"] = (
+        annotate_row(title, teaser)
+        if allowed and not str(payload.get("source") or "").startswith("finlight:") else None
+    )
     if editorial_view is not None:
         payload["editorial"] = (
             editorial_view.decision(source=str(payload.get("source") or ""),
@@ -737,7 +750,9 @@ def _attach_annotation(
     url = str(payload.get("url") or "")
     payload["publisher"] = publisher_identity(source, url)
     payload["content_kind"] = publisher_category(payload["publisher"])
-    payload["provider"] = "massive" if source.startswith("massive:") else None
+    payload["provider"] = source.partition(":")[0] if source.startswith(("massive:", "finlight:")) else None
+    if source.startswith("finlight:"):
+        payload["language"] = "zh"
     if title:
         score, reason = story_quality(title=title, url=url, source=source)
         # A material difference must remain discoverable in the signal view.
@@ -956,7 +971,7 @@ def ticker_news_snapshot(
         return JSONResponse(
             _snapshot_payload(
                 ticker=normalized, security_id=security_id, snapshot=snapshot,
-                health=_curated_health(_source_health(), rights),
+                health=_curated_health(_source_health(), rights, security_id),
                 permitted=_derivative_permitted_after_rights(),
                 flow=flow, provenance=provenance, editorial_view=editorial,
             ),

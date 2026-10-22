@@ -28,7 +28,9 @@ from engine import qkernel
 
 # v3 also bounds fuzzy joins by both known immutable publication clocks.
 # Receipt-time retrieval and the source/item identity digest stay unchanged.
-CLUSTER_POLICY_VERSION = "qbus_news_cluster.v3"
+# v4 refuses fuzzy CJK equivalence: the English material-discriminator rules
+# cannot establish that two different Chinese headlines describe the same event.
+CLUSTER_POLICY_VERSION = "qbus_news_cluster.v4"
 # Label for a cluster row minted before the column existed (NULL), or a
 # member whose cluster row is missing.
 UNKNOWN_CLUSTER_POLICY_VERSION = "unknown (pre-column)"
@@ -303,6 +305,8 @@ def _analyst_actor(title: str) -> str | None:
 
 
 def _compatible(a: str, b: str) -> bool:
+    if re.search(r"[\u3400-\u9fff\uf900-\ufaff]", a + b) and a.strip() != b.strip():
+        return False
     na, nb = _numbers(a), _numbers(b)
     if na and nb and na != nb:
         return False

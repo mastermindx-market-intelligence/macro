@@ -2411,7 +2411,7 @@ fi
 # never install, enable, or start an absent/inactive unit. If an operator has
 # already installed it, keep the reviewed unit current and restart only an
 # already-active writer when import-cached code or canonical universe inputs move.
-TICKER_NEWS_RUNTIME_REGEX='^(app/requirements\.txt|scripts/run_qbus_news\.py|scripts/build_qbus_news_universe\.py|collectors/benzinga_news\.py|engine/massive_news\.py|engine/qbus_news_.*\.py|engine/news_common\.py|engine/qkernel\.py|lib/dataos/identity\.py|data/breadth/(constituents|sp1500_pit_membership)\.parquet|data/reference/(security_master|vendor_aliases)\.parquet)$'
+TICKER_NEWS_RUNTIME_REGEX='^(app/requirements\.txt|scripts/run_qbus_news\.py|scripts/build_qbus_news_universe\.py|collectors/benzinga_news\.py|engine/(massive_news|finlight_news)\.py|engine/qbus_news_.*\.py|engine/news_common\.py|engine/qkernel\.py|lib/dataos/identity\.py|data/breadth/(constituents|sp1500_pit_membership)\.parquet|data/reference/(security_master|vendor_aliases)\.parquet)$'
 TICKER_NEWS_UNIT_UPDATED=0
 if [ -f /etc/systemd/system/macro-ticker-news.service ]; then
 	if ! cmp -s "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service; then

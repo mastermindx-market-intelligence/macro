@@ -774,3 +774,32 @@ def test_setup_script_check_activation_uses_the_dispatcher(tmp_path):
     ]
     assert 'grep -c -E "^BENZINGA_API_KEY="' in token_block
     assert "export BENZINGA_API_KEY" in token_block
+
+
+def test_setup_chinese_settings_are_literal_private_and_checked(tmp_path):
+    env_file = _env_file(tmp_path, [
+        f"BENZINGA_API_KEY={BENZINGA_TOKEN}",
+        "MM_TICKER_NEWS_FINLIGHT_ENABLED=1",
+        "FINLIGHT_KEY=fixture-$NONEXISTENT-$(must-not-execute)",
+        'MM_TICKER_NEWS_ADDITIONAL_RIGHTS=["/etc/fixture-cls-rights.json"]',
+    ])
+    script = _dispatcher_script() + (
+        "\nload_supplemental_settings\n"
+        '[ "$MM_TICKER_NEWS_FINLIGHT_ENABLED" = 1 ]\n'
+        """[ "$FINLIGHT_KEY" = 'fixture-$NONEXISTENT-$(must-not-execute)' ]\n"""
+        """[ "$MM_TICKER_NEWS_ADDITIONAL_RIGHTS" = '["/etc/fixture-cls-rights.json"]' ]\n"""
+    )
+    proc = subprocess.run(["bash", "-c", script],
+                          env={**os.environ, "ENV_FILE": str(env_file)},
+                          capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 0, proc.stderr
+    assert "fixture-$NONEXISTENT" not in proc.stdout + proc.stderr
+    env_file.write_text(env_file.read_text() + "FINLIGHT_KEY=duplicate-secret\n")
+    proc = subprocess.run(["bash", "-c", script],
+                          env={**os.environ, "ENV_FILE": str(env_file)},
+                          capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 2
+    assert "at most one FINLIGHT_KEY" in proc.stderr
+    assert "duplicate-secret" not in proc.stdout + proc.stderr
+    block = SETUP.read_text().split("check_activation() {", 1)[1].split("install_unit() {", 1)[0]
+    assert "load_supplemental_settings" in block
