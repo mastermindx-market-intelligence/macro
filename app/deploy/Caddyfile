@@ -292,7 +292,16 @@
 	# and same-direction theme read now live on the canonical US stock library.
 	# Keep the fragment in the Location header so old bookmarks land on the exact
 	# consolidated section rather than at the top of a long dossier directory.
-	redir /movers.html "/stocks/index.html#today-movers" 301
+	# Trusted opt-in requests first load the paired moved stub, which asks the
+	# parent to replace its route/generation. Standalone SEO keeps the 301.
+	@movers_seo_redirect {
+		path /movers.html
+		not {
+			query mmx_shell=1
+			header Referer https://beta.mastermind-x.com/*
+		}
+	}
+	redir @movers_seo_redirect "/stocks/index.html#today-movers" 301
 
 	# ── Site Access Boundary ──────────────────────────────────────────────────
 	#

@@ -25,7 +25,7 @@ waves:
   - id: intelligent_financial_output
     title: Financial snapshots, local responsive controls, math and reliable Fast presentation
     status: in_progress
-next_action: Complete the newly authorized finance-output extension, consume the original price-control Fabric return, obtain independent review, publish and qualify required gates, then verify the actual deployed Macro and Terminal chat surfaces including source snapshots and saved history.
+next_action: Publish the measured current-main composition through original PR10069, consume its full applicable hosted verdict, merge through normal required checks, verify automatic publication and actual signed-in Macro standalone/embedded and Terminal behavior, then record release closeout.
 artifacts:
   - docs/superpowers/specs/2026-10-21-brain-intelligent-output.md
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md
@@ -155,3 +155,14 @@ Final visual evidence is 104/104 with no console errors or failed responses, man
 Main advanced to `8c23f6b26a36ce20f5842590e41bb9d78bff1bac`, overlapping only CI registration and its packing-test history. Preserve both coverage deltas and existing limits, qualify the merged packing probe, then publish the repaired candidate through the exact-head owner. Required hosted checks, merge/deployment/public-render, actual Macro standalone + embedded and Terminal acceptance, and durable release closeout remain open. No production success is claimed yet.
 
 The final receipt/first-frame/UI-evidence selection passed **208 tests**. Current-main integration is pinned to `ce93903889ea50056e9f4890422dad044c31c65a` (subsequent generated site/data changes have no feature overlap). Both CI histories and all manifest coverage were preserved; only explanatory text required manual resolution. The guard's executable AST is unchanged, and its absolute packing probe passed **1 test in 118.12 seconds** with no additional ceiling adjustment. Final merged-tree evidence/design/runtime-style checks passed; AgentOS reports 0 errors. Financial assets and screenshots are unchanged by the merge. Publish the exact merged candidate, consume complete hosted checks, then qualify deployment and live product behavior.
+
+
+## Hosted pass and current-main conflict resolution — 2026-10-22
+
+Exact head `4fa370510b7304c52a4d932cc43b96a5fa3b6809` completed hosted run `39780785899` successfully: all twelve packs, contract-delta and ci-gate passed. Final hosted Brain evidence includes 1,938 source, 383 owner, 38 report-evidence and 145 browser tests. Applicable main authority/fence contexts passed; the inactive pilot-base context is explicitly not applicable. These qualify that source head, not live delivery.
+
+Main2926 composed cleanly and passed the canonical packing guard in a cleaned repository-owned temporary fixture (1 test, 109.68s). Main then advanced to qualified Movers commit `7abe860f0ab79f206ea846d7ffe6df0fdc2579d0`, creating an actual packing-budget/history conflict. The original source workspace integrates it, retaining all coverage and both histories. Canonical combined measurements are index136/5876/10, free-content135/5848/10 and Prophet128/5620/10. Only weight caps become5876/5848/5620; job caps136/136/130, ten-pack bound and every suite/command/selector/timeout remain. AST and parsed three-way CI checks pass; all financial asset/evidence bytes match qualified4fa. The inherited Movers Caddy behavior is preserved; 59 finance-asset/access-boundary tests passed.
+
+The bounded native composition consultation accepted supplied arithmetic and strategy, with no independent checkout/hosted claim; it closed STOP. Release-helper review requests were addressed and likewise do not constitute release acceptance. Full updated-head hosted checks, normal merge, automatic public-render, running-source/deployed-byte verification and actual signed-in product acceptance remain the immediate frontier. Detailed evidence and limits are retained in the October22 review specification. Do not call the commission complete before those observations and reviewed closeout exist.
+
+The final resolved-file canonical packing guard passed **1 test in 104.92 seconds**. Changed-path receipt closure and visual-evidence guards passed on the actual combined feature diff; whitespace checks passed. AgentOS validation reports **0 errors and 162 pre-existing warnings**. The measured source composition is qualified for exact-head publication and fresh required hosted CI; this does not close deployment or live acceptance.
