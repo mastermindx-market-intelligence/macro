@@ -259,10 +259,54 @@ def cmd_measure(args) -> int:
     add("")
 
     # --- E4 ---------------------------------------------------------------
-    e4 = env.e4_recall()
+    recall_report = (
+        Path(args.recall_report) if args.recall_report
+        else inputs_dir / "m2_recall" / "recall_report_v1.json"
+    )
+    try:
+        recall_display = str(recall_report.relative_to(REPO_ROOT))
+    except ValueError:
+        recall_display = str(recall_report)
+    e4 = env.e4_recall(recall_report, inputs_dir / "extraction",
+                       recall_display)
+    for path in e4.pop("files_read", []) or []:
+        try:
+            inputs[str(Path(path).relative_to(REPO_ROOT))] = _sha_file(Path(path))
+        except ValueError:
+            inputs[str(path)] = _sha_file(Path(path))
     add("E4 extraction recall")
-    add(f"  value={e4['value']} state={e4['state']}")
-    add(f"  reason: {e4['reason']}")
+    if e4["state"] == "MEASURED":
+        add(f"  value={e4['value']} state=MEASURED")
+        add(
+            f"  reference={e4['reference_set_size']} hits={e4['hits']} "
+            f"misses={e4['misses_count']} pipeline={e4['pipeline_set_size']}"
+        )
+        add(
+            f"  wilson_95={e4['wilson_95']} jackknife_95={e4['jackknife_95']} "
+            f"jackknife_issuers={e4['jackknife_issuers']}"
+        )
+        for domain in sorted(e4["by_domain"]):
+            block = e4["by_domain"][domain]
+            add(
+                f"  {domain} recall={block['recall']} hit={block['hit']} "
+                f"ref={block['ref']} wilson_95={block['wilson_95']}"
+            )
+        for species in sorted(e4["by_species"]):
+            block = e4["by_species"][species]
+            add(
+                f"  {species} recall={block['recall']} hit={block['hit']} "
+                f"ref={block['ref']} wilson_95={block['wilson_95']}"
+            )
+        add(f"  report: {e4['report']} sha256={e4['report_sha256']}")
+        add(
+            f"  corpus_sha256={e4['corpus_sha256']} "
+            f"lexicon_sha256={e4['lexicon_sha256']}"
+        )
+        add(f"  caveat: {e4['caveat']}")
+        add(f"  note: {e4['note']}")
+    else:
+        add(f"  value={e4['value']} state={e4['state']}")
+        add(f"  reason: {e4['reason']}")
     add("")
 
     # --- E5 ---------------------------------------------------------------
@@ -422,6 +466,9 @@ def main(argv=None) -> int:
                          help="research inputs directory")
     measure.add_argument("--precision-dir", default=None,
                          help="optional M2 precision sample directory")
+    measure.add_argument("--recall-report", default=None,
+                         help="recall report path (default: the committed "
+                              "m2_recall/recall_report_v1.json)")
     measure.set_defaults(func=cmd_measure)
     args = parser.parse_args(argv)
     try:

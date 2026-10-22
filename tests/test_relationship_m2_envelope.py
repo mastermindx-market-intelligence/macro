@@ -44,6 +44,12 @@ PACKAGE_PATH = REPO_ROOT / "data/company_intelligence/relationships/observation_
 EDGES_PATH = REPO_ROOT / "data/company_intelligence/relationships/relationship_edges.json"
 EXTRACTION_DIR = REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/extraction"
 INPUTS_DIR = REPO_ROOT / "research/theme_graph/gmi_relationships_20261021"
+RECALL_CORPUS_DIR = (
+    REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/m2_recall"
+)
+RECALL_REPORT_PATH = RECALL_CORPUS_DIR / "recall_report_v1.json"
+RECALL_EXTRACTION_DIR = EXTRACTION_DIR
+RECALL_CLI = REPO_ROOT / "scripts/relationship_m2_recall.py"
 M1_EXTRACTION_PATH = (
     REPO_ROOT
     / "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
@@ -430,11 +436,208 @@ def test_e4_recall_owed():
     assert e4 == {
         "value": None,
         "state": "OWED",
-        "reason": (
-            "requires an independent frozen annotated corpus; none exists — "
-            "precision is never used as a recall proxy"
-        ),
+        "reason": env.RECALL_REASON,
+        "files_read": [],
     }
+
+
+def _stage_recall_corpus(tmp_path):
+    """The committed m2_recall D1/D2 sentences + annotations staged into
+    tmp_path exactly like the regeneration recipe: workdir/D{1,2}/
+    sentences.jsonl plus a flat annotations dir with D1_/D2_ filename
+    prefixes."""
+    workdir = tmp_path / "wd"
+    annotations = tmp_path / "ann"
+    (workdir / "D1").mkdir(parents=True)
+    (workdir / "D2").mkdir(parents=True)
+    annotations.mkdir()
+    for domain in ("D1", "D2"):
+        (workdir / domain / "sentences.jsonl").write_bytes(
+            (RECALL_CORPUS_DIR / domain / "sentences.jsonl").read_bytes()
+        )
+        for pack in sorted(
+            (RECALL_CORPUS_DIR / domain / "annotations").glob("*.jsonl")
+        ):
+            (annotations / f"{domain}_{pack.name}").write_bytes(
+                pack.read_bytes()
+            )
+    return workdir, annotations
+
+
+def _stage_report_and_extraction(tmp_path):
+    """The committed recall report + the 6 extraction files copied into
+    tmp_path (the repo is never mutated)."""
+    report = tmp_path / "recall_report_v1.json"
+    report.write_bytes(RECALL_REPORT_PATH.read_bytes())
+    extraction = tmp_path / "extraction"
+    for path in sorted(RECALL_EXTRACTION_DIR.rglob("*.jsonl")):
+        target = extraction / path.relative_to(RECALL_EXTRACTION_DIR)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    return report, extraction
+
+
+def test_committed_recall_report_equals_fresh_compare(tmp_path):
+    """The committed recall report is byte-equal to a fresh `compare` over
+    the committed corpus.  Falsifier: any drift in sentences, annotations,
+    aliases, resolver, manifest, extraction or recall code makes the
+    committed number stale."""
+    workdir, annotations = _stage_recall_corpus(tmp_path)
+    fresh = tmp_path / "recall_report_v1.json"
+    env_vars = dict(os.environ)
+    env_vars["TZ"] = "UTC"
+    proc = subprocess.run(
+        [sys.executable, str(RECALL_CLI), "compare",
+         "--workdir", str(workdir), "--annotations", str(annotations),
+         "--report", str(fresh)],
+        cwd=str(REPO_ROOT), env=env_vars, capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert fresh.read_bytes() == RECALL_REPORT_PATH.read_bytes(), (
+        "committed recall_report_v1.json != a fresh compare over the "
+        "committed corpus"
+    )
+
+
+def test_e4_measured_from_committed_report():
+    report_bytes = RECALL_REPORT_PATH.read_bytes()
+    report = json.loads(report_bytes.decode("utf-8"))
+    e4 = env.e4_recall(RECALL_REPORT_PATH, RECALL_EXTRACTION_DIR, "x")
+    assert e4["state"] == "MEASURED"
+    # every field re-derived from the committed report itself
+    assert e4["value"] == report["recall"]["value"]
+    assert e4["wilson_95"] == report["recall"]["wilson_95"]
+    assert e4["jackknife_95"] == report["recall"]["jackknife_95"]
+    assert e4["jackknife_issuers"] == report["recall"]["jackknife_issuers"]
+    assert e4["reference_set_size"] == report["reference_set_size"]
+    assert e4["hits"] == report["hits"]
+    assert e4["misses_count"] == report["misses_count"]
+    assert e4["pipeline_set_size"] == report["pipeline_set_size"]
+    assert e4["by_domain"] == report["by_domain"]
+    assert e4["by_species"] == report["by_species"]
+    assert e4["corpus_sha256"] == report["corpus_sha256"]
+    assert e4["lexicon_sha256"] == report["lexicon_sha256"]
+    assert e4["caveat"] == report["caveat"]
+    # the frozen literals at this base
+    assert e4["value"] == 0.3487
+    assert e4["hits"] == 83
+    assert e4["reference_set_size"] == 238
+    assert e4["by_domain"]["D1"]["recall"] == 0.4423
+    assert e4["by_domain"]["D2"]["recall"] == 0.1707
+    assert e4["report"] == "x"
+    assert e4["report_sha256"] == _sha_bytes(report_bytes)
+    assert e4["note"] == "precision is never used as a recall proxy"
+    assert e4["reason"] is None
+    assert e4["files_read"] == [RECALL_REPORT_PATH]
+
+
+def test_e4_owed_cases(tmp_path):
+    report, extraction = _stage_report_and_extraction(tmp_path)
+    # the staged copies still measure clean (staging sanity, not a repo write)
+    assert env.e4_recall(report, extraction, "r")["state"] == "MEASURED"
+
+    # (a) no report given
+    e4 = env.e4_recall(None, extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"] == env.RECALL_REASON
+    assert e4["value"] is None
+    assert e4["files_read"] == []
+
+    # (b) file absent
+    e4 = env.e4_recall(tmp_path / "absent.json", extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("recall report not found")
+    assert e4["value"] is None
+    assert e4["files_read"] == []
+
+    # (c) invalid JSON
+    bad = tmp_path / "bad.json"
+    bad.write_bytes(b"{not json")
+    e4 = env.e4_recall(bad, extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("RECALL_REPORT_SCHEMA")
+    assert e4["value"] is None
+
+    # (c) wrong schema
+    doc = json.loads(report.read_bytes().decode("utf-8"))
+    doc["schema"] = "some.other.schema/v1"
+    wrong = tmp_path / "wrong_schema.json"
+    wrong.write_bytes((json.dumps(doc, sort_keys=True, indent=1) + "\n").encode())
+    e4 = env.e4_recall(wrong, extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("RECALL_REPORT_SCHEMA")
+    assert e4["value"] is None
+
+    # (d) corpus drift
+    doc = json.loads(report.read_bytes().decode("utf-8"))
+    doc["corpus_sha256"] = "0" * 64
+    drifted = tmp_path / "corpus_drift.json"
+    drifted.write_bytes((json.dumps(doc, sort_keys=True, indent=1) + "\n").encode())
+    e4 = env.e4_recall(drifted, extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"] == "RECALL_REPORT_DRIFT: corpus"
+    assert e4["value"] is None
+
+    # (d) lexicon drift
+    doc = json.loads(report.read_bytes().decode("utf-8"))
+    doc["lexicon_sha256"] = "1" * 64
+    drifted = tmp_path / "lexicon_drift.json"
+    drifted.write_bytes((json.dumps(doc, sort_keys=True, indent=1) + "\n").encode())
+    e4 = env.e4_recall(drifted, extraction, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"] == "RECALL_REPORT_DRIFT: lexicon"
+    assert e4["value"] is None
+
+    # (e) one extraction file with one byte appended
+    appended = tmp_path / "ext_appended"
+    appended.mkdir()
+    for path in sorted(extraction.rglob("*.jsonl")):
+        target = appended / path.relative_to(extraction)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    victim = sorted(appended.rglob("*.jsonl"))[0]
+    victim.write_bytes(victim.read_bytes() + b"\n")
+    e4 = env.e4_recall(report, appended, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("RECALL_REPORT_DRIFT: extraction")
+    assert e4["value"] is None
+
+    # (e) one extraction file deleted
+    deleted = tmp_path / "ext_deleted"
+    deleted.mkdir()
+    for path in sorted(extraction.rglob("*.jsonl")):
+        target = deleted / path.relative_to(extraction)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    sorted(deleted.rglob("*.jsonl"))[0].unlink()
+    e4 = env.e4_recall(report, deleted, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("RECALL_REPORT_DRIFT: extraction")
+    assert e4["value"] is None
+
+    # (e) one extra *.jsonl added
+    extra = tmp_path / "ext_extra"
+    extra.mkdir()
+    for path in sorted(extraction.rglob("*.jsonl")):
+        target = extra / path.relative_to(extraction)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    (extra / "zz_extra.jsonl").write_bytes(b"{}\n")
+    e4 = env.e4_recall(report, extra, "r")
+    assert e4["state"] == "OWED"
+    assert e4["reason"].startswith("RECALL_REPORT_DRIFT: extraction")
+    assert e4["value"] is None
+
+
+def test_e4_print_block(tmp_path):
+    out = tmp_path / "print"
+    result = _run_cli("--out", str(out))
+    assert result.returncode == 0, result.stderr
+    assert "E4 extraction recall" in result.stdout
+    assert "  value=0.3487 state=MEASURED" in result.stdout
+    assert "  note: precision is never used as a recall proxy" in result.stdout
+    assert "recall is OWED" not in result.stdout
+    assert "none exists" not in result.stdout
 
 
 # --- E5 ------------------------------------------------------------------------
@@ -724,7 +927,9 @@ def test_real_m1_artifacts(m1_reference, tmp_path, monkeypatch):
     monkeypatch.setattr(script, "EDGES_PATH", str(m1_reference["edges"]))
     out = tmp_path / "report"
     with contextlib.redirect_stdout(io.StringIO()):
-        assert script.main(["measure", "--out", str(out)]) == 0
+        assert script.main(["measure", "--out", str(out),
+                            "--recall-report",
+                            str(tmp_path / "absent.json")]) == 0
     report = _load(out / "envelope_report.json")
     assert report["schema"] == "gmi_rel_m2.envelope_report/v1"
     assert report["as_of"] == "2026-10-21T00:00:00Z"
@@ -745,17 +950,21 @@ def test_real_m1_artifacts(m1_reference, tmp_path, monkeypatch):
     d2 = [row for row in report["E8"]["kinds"] if row["domain"] == "D2"]
     assert len(d2) == 11
     assert all(row["state"] == "ABSENT" and row["candidates"] == 0 for row in d2)
-    # E4 is OWED, E6 package lag NOT_MEASURABLE, E7 note verbatim
+    # E4 is OWED (this run passes an absent recall report), E6 package lag
+    # NOT_MEASURABLE, E7 note verbatim
     assert report["E4"]["state"] == "OWED"
+    assert report["E4"]["reason"].startswith("recall report not found")
     assert report["E6"]["package_lag"]["state"] == "NOT_MEASURABLE"
     assert report["E7"]["note"] == env.USEFULNESS_LINE
 
     # full data, the default CLI run (subprocess, as committed today),
     # re-derived independently: schema/as_of/panel pins, a clean M0 join, E4
-    # OWED, the verbatim E7 note, and an E1 total equal to the eligible leaf
-    # count recomputed from leaves_v1.json.
+    # MEASURED at the committed report's own value, the verbatim E7 note, and
+    # an E1 total equal to the eligible leaf count recomputed from
+    # leaves_v1.json.
     # falsifier: a committed-artifacts run that drops eligible issuers,
-    # breaks the M0 join, or drifts the usefulness note
+    # breaks the M0 join, drifts the usefulness note, or prints a recall
+    # number the committed report does not carry
     full_out = tmp_path / "report_full"
     result = _run_cli("--out", str(full_out))
     assert result.returncode == 0, result.stderr
@@ -764,7 +973,8 @@ def test_real_m1_artifacts(m1_reference, tmp_path, monkeypatch):
     assert full["as_of"] == "2026-10-21T00:00:00Z"
     assert full["panel_sha256"] == env.PANEL_SHA256
     assert full["M0"]["join"]["join_missing"] == []
-    assert full["E4"]["state"] == "OWED"
+    assert full["E4"]["state"] == "MEASURED"
+    assert full["E4"]["value"] == _load(RECALL_REPORT_PATH)["recall"]["value"]
     assert full["E7"]["note"] == env.USEFULNESS_LINE
     assert full["E1"]["eligible_total"] == len(_eligible_issuers(_load(LEAVES_PATH)))
 
