@@ -4243,6 +4243,127 @@ def _baseline_failure_is_infra(
     return saw_failure and not tests_ran
 
 
+def _qualified_main_workflow_runs(
+    repo: str, workflow: str, payload: Any, lookback: int
+) -> list[dict[str, Any]]:
+    """Qualify one bounded workflow page without trusting its branch index.
+
+    Foreign rows may consume the window; they never justify another page. Validate
+    every potentially-main row before choosing a verdict, so malformed newer data
+    cannot become permission to select an older green. Equal creation timestamps
+    require descending run IDs; an undated singleton still reaches the existing
+    fail-closed freshness rules, but an undated multirow order is unprovable.
+    The endpoint binds the
+    requested workflow/repository; the rows must independently agree with it.
+    """
+    if not isinstance(payload, dict) or not isinstance(payload.get("workflow_runs"), list):
+        raise RuntimeError("main workflow listing returned an unusable payload")
+    rows = payload["workflow_runs"]
+    count = payload.get("total_count", len(rows))
+    if type(count) is not int or count < len(rows) or len(rows) > lookback:
+        raise RuntimeError("main workflow listing exceeded its bounded page or count")
+    allowed_events = {
+        "integration-baseline.yml": {"push", "schedule", "workflow_dispatch"},
+        "ci.yml": {"workflow_dispatch"},
+        "fences.yml": {"push"},
+    }
+    if workflow not in allowed_events:
+        raise RuntimeError("unsupported main proof workflow")
+    result: list[dict[str, Any]] = []
+    ids: set[int] = set()
+    workflow_id = None
+    repository_id = None
+    previous_created = None
+    previous_id = None
+    for row in rows:
+        if not isinstance(row, dict):
+            raise RuntimeError("main workflow listing contains an ambiguous row")
+        branch = row.get("head_branch")
+        event = row.get("event")
+        repository = row.get("repository")
+        # Only affirmative foreign identity is skippable. Missing identity is not
+        # evidence of a foreign run, even when an older row would otherwise pass.
+        if isinstance(branch, str) and branch and branch != "main":
+            continue
+        if event in (
+            "push", "schedule", "workflow_dispatch", "pull_request",
+            "pull_request_target", "merge_group", "workflow_run", "repository_dispatch",
+        ) and event not in allowed_events[workflow]:
+            continue
+        if isinstance(repository, dict):
+            name = repository.get("full_name")
+            if isinstance(name, str) and re.fullmatch(r"[^/\s]+/[^/\s]+", name) and name != repo:
+                continue
+        head_repository = row.get("head_repository")
+        if (
+            branch != "main" or not isinstance(event, str) or event not in allowed_events[workflow]
+            or not isinstance(repository, dict)
+            or not isinstance(head_repository, dict)
+            or repository.get("full_name") != repo
+            or head_repository.get("full_name") != repo
+            or type(repository.get("id")) is not int or repository["id"] <= 0
+            or head_repository.get("id") != repository["id"]
+            or type(head_repository.get("id")) is not int
+            or row.get("path") != f".github/workflows/{workflow}"
+            or type(row.get("workflow_id")) is not int or row["workflow_id"] <= 0
+            or type(row.get("id")) is not int or row["id"] <= 0
+            or not isinstance(row.get("head_sha"), str)
+            or not re.fullmatch(r"[0-9a-f]{40}", row["head_sha"])
+            or not isinstance(row.get("status"), str)
+            or row.get("status") not in {
+                "queued", "in_progress", "completed", "requested", "waiting", "pending"
+            }
+            or (row.get("status") != "completed" and row.get("conclusion") is not None)
+            or (row.get("conclusion") is not None and not isinstance(row["conclusion"], str))
+        ):
+            raise RuntimeError("main workflow run identity is unproven")
+        created_text = row.get("created_at")
+        created = _parse_dt(created_text)
+        if created_text is not None and (
+            not isinstance(created_text, str)
+            or not re.fullmatch(
+                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})",
+                created_text,
+            )
+            or created is None
+        ):
+            raise RuntimeError("main workflow run creation order is unproven")
+        if (
+            row["id"] in ids
+            or (workflow_id is not None and workflow_id != row["workflow_id"])
+            or (repository_id is not None and repository_id != repository["id"])
+            or (result and (created is None or previous_created is None or created > previous_created))
+            or (result and created == previous_created and row["id"] >= previous_id)
+        ):
+            raise RuntimeError("main workflow run order or identity changed within page")
+        ids.add(row["id"])
+        workflow_id = row["workflow_id"]
+        repository_id = repository["id"]
+        previous_created = created
+        previous_id = row["id"]
+        result.append(row)
+    return result
+
+
+def _main_workflow_runs(
+    repo: str, workflow: str, token: str, lookback: int, *, completed_only: bool = False
+) -> list[dict[str, Any]]:
+    # GitHub's branch-filtered workflow index has returned an empty list while
+    # this same workflow endpoint without branch filtering exposed fresh main
+    # proofs. One unfiltered page plus local identity checks keeps the read cost.
+    query = urllib.parse.urlencode({"per_page": str(lookback)})
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/actions/workflows/"
+        f"{urllib.parse.quote(workflow, safe='')}/runs?{query}",
+        token,
+    )
+    if status != 200:
+        raise _read_failed(status, payload, f"{workflow.removesuffix('.yml')} listing failed")
+    runs = _qualified_main_workflow_runs(repo, workflow, payload, lookback)
+    return [row for row in runs if not completed_only or row["status"] == "completed"]
+
+
 def integration_baseline_state(repo: str, token: str) -> tuple[str, str]:
     """Return ``(state, detail)`` for the newest source-main baseline proof.
 
@@ -4282,8 +4403,8 @@ def integration_baseline_state(repo: str, token: str) -> tuple[str, str]:
     ("the circuit breaker reads a never-concluding newest run as `pending`, and pending
     blocks ordinary merges") when it flipped `cancel-in-progress` to false.
 
-    Every fail-closed property is kept. One bounded 100-run listing falls through to
-    the newest run that
+    Every fail-closed property is kept. One unfiltered bounded 100-run listing is
+    qualified locally as source-main before falling through to the newest run that
     actually CONCLUDED and decides on that one: a genuine `failure`/`timed_out` stops
     the walk and returns ``red`` (an in-flight run can never launder a red, and an older
     green is never reached past one), the ancestry check still applies to whichever run
@@ -4295,18 +4416,9 @@ def integration_baseline_state(repo: str, token: str) -> tuple[str, str]:
     """
     global _LAST_INTEGRATION_BASELINE_SHA
     _LAST_INTEGRATION_BASELINE_SHA = ""
-    workflow = urllib.parse.quote(BASELINE_WORKFLOW, safe="")
-    query = urllib.parse.urlencode(
-        {"branch": "main", "per_page": str(INTEGRATION_BASELINE_RUN_LOOKBACK)}
+    runs = _main_workflow_runs(
+        repo, BASELINE_WORKFLOW, token, INTEGRATION_BASELINE_RUN_LOOKBACK
     )
-    status, payload = _request(
-        "GET",
-        f"{GITHUB_API}/repos/{repo}/actions/workflows/{workflow}/runs?{query}",
-        token,
-    )
-    if status >= 400 or not isinstance(payload, dict):
-        raise _read_failed(status, payload, "integration-baseline listing failed")
-    runs = payload.get("workflow_runs") or []
     if not runs:
         return "unproven", "integration-baseline has not published a run"
 
@@ -4433,17 +4545,12 @@ def ensure_integration_baseline(repo: str, token: str, baseline_state: str) -> s
         if baseline_state != "pending":
             return f"not needed (breaker is {baseline_state})"
         workflow = urllib.parse.quote(BASELINE_WORKFLOW, safe="")
-        query = urllib.parse.urlencode(
-            {"branch": "main", "per_page": str(INTEGRATION_BASELINE_RUN_LOOKBACK)}
-        )
-        status, payload = _request(
-            "GET",
-            f"{GITHUB_API}/repos/{repo}/actions/workflows/{workflow}/runs?{query}",
-            token,
-        )
-        if status >= 400 or not isinstance(payload, dict):
-            return f"skipped (could not read the baseline runs: HTTP {status})"
-        runs = payload.get("workflow_runs") or []
+        try:
+            runs = _main_workflow_runs(
+                repo, BASELINE_WORKFLOW, token, INTEGRATION_BASELINE_RUN_LOOKBACK
+            )
+        except Exception as exc:
+            return f"skipped (could not read the baseline runs: {exc})"
         concluded = next(
             (
                 candidate
@@ -4558,6 +4665,9 @@ MAIN_BASELINE_WORKFLOW = MAIN_PROOF_WORKFLOWS[0]
 #: `integration_baseline_state` latched the breaker red for 8.5h on a cancelled newest
 #: run. 10 is one request either way — the walk costs nothing extra.
 MAIN_PROOF_RUN_WALK = 10
+# Branch-independent listing also contains PR and in-flight runs. Inspect one
+# full API page, then retain the original ten concluded-main-run decision window.
+MAIN_WORKFLOW_RUN_PAGE = 100
 #: Above this age, main's proof is too old to answer today's reds and the sweep orders a
 #: fresh one (see `ensure_main_baseline`). Three hours is chosen against the two clocks
 #: that matter: a ci.yml run here takes 30-34 minutes, so the sweep is never dispatching
@@ -4704,21 +4814,14 @@ def _newest_concluded_main_run(
 
     Skips `cancelled` runs rather than answering from them — see MAIN_PROOF_RUN_WALK.
     """
-    query = urllib.parse.urlencode(
-        {"branch": "main", "status": "completed", "per_page": str(MAIN_PROOF_RUN_WALK)}
-    )
-    status, payload = _request(
-        "GET",
-        f"{GITHUB_API}/repos/{repo}/actions/workflows/"
-        f"{urllib.parse.quote(workflow, safe='')}/runs?{query}",
-        token,
-    )
-    if status >= 400:
-        return None, f"{workflow} run listing failed (HTTP {status})"
-    if not isinstance(payload, dict):
-        return None, f"{workflow} run listing returned an unusable payload"
+    try:
+        runs = _main_workflow_runs(
+            repo, workflow, token, MAIN_WORKFLOW_RUN_PAGE, completed_only=True
+        )
+    except Exception as exc:
+        return None, f"{workflow} run listing failed ({exc})"
     seen = 0
-    for run in payload.get("workflow_runs") or []:
+    for run in runs[:MAIN_PROOF_RUN_WALK]:
         if not isinstance(run, dict):
             continue
         seen += 1

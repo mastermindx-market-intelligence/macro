@@ -17,6 +17,7 @@ import ast
 import base64
 import datetime as dt
 import json
+import itertools
 from pathlib import Path
 
 import pytest
@@ -3021,6 +3022,23 @@ def test_labeled_pulls_filters_client_side(monkeypatch):
     assert [pull["number"] for pull in MOG.labeled_pulls("acme/widgets", "t")] == [1, 3]
 
 
+_MAIN_RUN_IDS = itertools.count(1000000, -1)
+
+
+def _main_run_identity(workflow="integration-baseline.yml"):
+    """Explicit identity fields for the legacy tests' real Actions-shaped rows.
+
+    Constructors use this; raw malformed payload tests never pass through it.
+    """
+    return {
+        "id": next(_MAIN_RUN_IDS), "workflow_id": 17,
+        "path": f".github/workflows/{workflow}", "head_branch": "main",
+        "event": "workflow_dispatch" if workflow != "fences.yml" else "push",
+        "repository": {"id": 12, "full_name": "acme/widgets"},
+        "head_repository": {"id": 12, "full_name": "acme/widgets"},
+    }
+
+
 def test_integration_baseline_accepts_a_green_ancestor_of_data_only_main(monkeypatch):
     baseline_sha = "b" * 40
     main_sha = "c" * 40
@@ -3029,6 +3047,7 @@ def test_integration_baseline_accepts_a_green_ancestor_of_data_only_main(monkeyp
         if "/actions/workflows/" in url:
             return 200, {
                 "workflow_runs": [{
+                    **_main_run_identity(),
                     "status": "completed",
                     "conclusion": "success",
                     "head_sha": baseline_sha,
@@ -3073,6 +3092,7 @@ def test_integration_baseline_fail_closes_non_green_runs(
         if "/actions/workflows/" in url:
             return 200, {
                 "workflow_runs": [{
+                    **_main_run_identity(),
                     "status": status,
                     "conclusion": conclusion,
                     "head_sha": sha,
@@ -3123,6 +3143,7 @@ def _baseline_stamp(hours_old: float) -> str:
 
 def _baseline_run(conclusion, sha, status="completed", hours_old: float = 0.1, run_id=None):
     payload = {
+        **_main_run_identity(),
         "status": status,
         "conclusion": conclusion,
         "head_sha": sha,
@@ -3208,7 +3229,7 @@ def test_an_infra_only_baseline_failure_is_skipped_like_cancelled(monkeypatch):
     paused every ordinary merge. A pytest failure still latches red.
     """
     green = "e" * 40
-    flake = _baseline_run("failure", "f" * 40, run_id=77)
+    flake = _baseline_run("failure", "f" * 40, hours_old=0.05, run_id=77)
     jobs = {
         77: {
             "jobs": [
@@ -3242,7 +3263,7 @@ def test_an_infra_only_baseline_failure_is_skipped_like_cancelled(monkeypatch):
 def test_a_pytest_failed_baseline_still_latches_the_breaker(monkeypatch):
     """Skipping infra flakes must not skip a real control-plane test failure."""
     red = "a" * 40
-    failed = _baseline_run("failure", red, run_id=88)
+    failed = _baseline_run("failure", red, hours_old=0.05, run_id=88)
     jobs = {
         88: {
             "jobs": [
@@ -7320,8 +7341,10 @@ def _wf_run(
     conclusion="success",
     status="completed",
     created_at=None,
+    workflow="ci.yml",
 ):
     return {
+        **_main_run_identity(workflow),
         "id": run_id,
         "head_sha": head_sha,
         "status": status,
@@ -7436,7 +7459,7 @@ def _both_workflows(ci_jobs, fence_jobs=(("fence-pack", "success"),)):
     """The two-workflow shape `main_proof` reads, as (runs, jobs) fakes."""
     runs = {
         "ci.yml": [_wf_run(CI_RUN_ID)],
-        "fences.yml": [_wf_run(FENCES_RUN_ID, head_sha="d" * 40)],
+        "fences.yml": [_wf_run(FENCES_RUN_ID, workflow="fences.yml", head_sha="d" * 40)],
     }
     jobs = {
         CI_RUN_ID: [_job(name, conclusion) for name, conclusion in ci_jobs],
@@ -7695,8 +7718,8 @@ def test_a_cancelled_newest_run_does_not_zero_the_proof(monkeypatch):
     """
     runs, jobs = _both_workflows([("ci-pack-0", "success")])
     runs["fences.yml"] = [
-        _wf_run(999, conclusion="cancelled"),
-        _wf_run(FENCES_RUN_ID, head_sha="d" * 40),
+        _wf_run(FENCES_RUN_ID + 1, workflow="fences.yml", conclusion="cancelled"),
+        _wf_run(FENCES_RUN_ID, workflow="fences.yml", head_sha="d" * 40),
     ]
     jobs[999] = [_job("fence-pack", "cancelled", completed_at=None)]
     _proof_api(monkeypatch, runs=runs, jobs=jobs)
@@ -8262,7 +8285,7 @@ def test_an_all_red_main_cannot_loop_the_dispatcher(monkeypatch):
     ]
     runs = {
         "ci.yml": [_wf_run(CI_RUN_ID, conclusion="failure", created_at=_ago(hours=12))],
-        "fences.yml": [_wf_run(FENCES_RUN_ID, head_sha="d" * 40, created_at=_ago(hours=12))],
+        "fences.yml": [_wf_run(FENCES_RUN_ID, workflow="fences.yml", head_sha="d" * 40, created_at=_ago(hours=12))],
     }
     jobs = {
         CI_RUN_ID: red_jobs,
@@ -8658,6 +8681,10 @@ def test_the_baseline_runs_on_hosted_runners_for_every_event():
 # the single `main-red-repair` slot. So the sweeper orders it.
 
 
+def _source_wf_run(*args, **kwargs):
+    return _wf_run(*args, workflow="integration-baseline.yml", **kwargs)
+
+
 def _source_api(monkeypatch, runs, **kwargs):
     """`_proof_api` pointed at the baseline workflow's run list."""
     return _proof_api(
@@ -8672,7 +8699,7 @@ def _source_dispatches(calls):
 
 def _stale_green(hours=None):
     """A concluded green baseline past the freshness bound."""
-    return _wf_run(
+    return _source_wf_run(
         9001,
         conclusion="success",
         created_at=_ago(hours=hours or MOG.BASELINE_MAX_AGE_HOURS + 3),
@@ -8704,7 +8731,7 @@ def test_a_baseline_already_in_flight_is_never_stampeded(monkeypatch, in_flight)
     calls = _source_api(
         monkeypatch,
         [
-            _wf_run(9100, status=in_flight, conclusion=None, created_at=_ago(minutes=1)),
+            _source_wf_run(9100, status=in_flight, conclusion=None, created_at=_ago(minutes=1)),
             _stale_green(),
         ],
     )
@@ -8719,7 +8746,7 @@ def test_a_baseline_ordered_inside_the_floor_is_not_re_ordered(monkeypatch):
     calls = _source_api(
         monkeypatch,
         [
-            _wf_run(9101, conclusion="cancelled", created_at=_ago(minutes=5)),
+            _source_wf_run(9101, conclusion="cancelled", created_at=_ago(minutes=5)),
             _stale_green(),
         ],
     )
@@ -8733,7 +8760,7 @@ def test_a_run_outside_the_floor_may_be_re_ordered(monkeypatch):
     calls = _source_api(
         monkeypatch,
         [
-            _wf_run(
+            _source_wf_run(
                 9102,
                 conclusion="cancelled",
                 created_at=_ago(minutes=MOG.INTEGRATION_BASELINE_MIN_INTERVAL_MINUTES + 5),
@@ -8786,15 +8813,15 @@ def test_a_read_failure_aborts_the_sweep_before_any_baseline_is_ordered(
     [
         ([], "not needed (no concluded baseline to be stale)"),
         (
-            [_wf_run(9103, status="queued", conclusion=None, created_at=_ago(minutes=1))],
+            [_source_wf_run(9103, status="queued", conclusion=None, created_at=_ago(minutes=1))],
             "not needed (no concluded baseline to be stale)",
         ),
         (
-            [_wf_run(9104, conclusion="failure", created_at=_ago(hours=9))],
+            [_source_wf_run(9104, conclusion="failure", created_at=_ago(hours=9))],
             "not needed (the newest concluded baseline is not green)",
         ),
         (
-            [_wf_run(9105, conclusion="success", created_at=_ago(hours=1))],
+            [_source_wf_run(9105, conclusion="success", created_at=_ago(hours=1))],
             "not needed (the proof is 1.0h old)",
         ),
     ],
@@ -8819,7 +8846,7 @@ def test_an_undatable_green_does_not_dispatch(monkeypatch):
     """Age unknown is not age exceeded. `integration_baseline_state` also reports
     `pending` for an undatable green, and dispatching on it would turn one unparseable
     timestamp into a dispatch every sweep, forever."""
-    undated = _wf_run(9106, conclusion="success")
+    undated = _source_wf_run(9106, conclusion="success")
     for field in ("created_at", "run_started_at", "updated_at"):
         undated.pop(field, None)
     calls = _source_api(monkeypatch, [undated])
@@ -8835,7 +8862,8 @@ def test_an_unreadable_run_list_skips_rather_than_dispatching(monkeypatch):
         monkeypatch, [_stale_green()], run_status={"integration-baseline.yml": 403}
     )
     result = MOG.ensure_integration_baseline("acme/widgets", "write", "pending")
-    assert result == "skipped (could not read the baseline runs: HTTP 403)"
+    assert result.startswith("skipped (could not read the baseline runs:")
+    assert "HTTP 403" in result
     assert _source_dispatches(calls) == []
 
 
@@ -8886,7 +8914,7 @@ def test_repeated_sweeps_order_at_most_one_baseline_per_interval(monkeypatch):
     def on_dispatch(pool, _jobs):
         pool["integration-baseline.yml"].insert(
             0,
-            _wf_run(9200, status="queued", conclusion=None, created_at=_ago(seconds=1)),
+            _source_wf_run(9200, status="queued", conclusion=None, created_at=_ago(seconds=1)),
         )
 
     calls = _source_api(monkeypatch, [_stale_green()], on_dispatch=on_dispatch)
@@ -10074,3 +10102,155 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# Workflow branch-index recovery: raw fixtures intentionally bypass every legacy
+# constructor/default so absent/foreign identity cannot be hydrated into authority.
+def _raw_main_proof_run(workflow="integration-baseline.yml", **changes):
+    row = {
+        "id": 39796392243, "workflow_id": 326180863,
+        "path": f".github/workflows/{workflow}",
+        "head_branch": "main", "event": "schedule" if workflow == "integration-baseline.yml" else "workflow_dispatch",
+        "repository": {"id": 42, "full_name": "acme/widgets"},
+        "head_repository": {"id": 42, "full_name": "acme/widgets"},
+        "head_sha": "e" * 40, "status": "completed", "conclusion": "success",
+        "created_at": _baseline_stamp(0.1),
+    }
+    row.update(changes)
+    return row
+
+
+def test_branch_index_empty_does_not_hide_existing_main_baseline(monkeypatch):
+    calls = []
+    row = _raw_main_proof_run()
+
+    def fake(method, url, token, payload=None):
+        calls.append((method, url))
+        assert method == "GET", "existing green must not trigger any producer"
+        if "/actions/workflows/" in url:
+            return 200, {"total_count": 0, "workflow_runs": []} if "branch=" in url else {"total_count": 3506, "workflow_runs": [row]}
+        if "/git/ref/heads/main" in url:
+            return 200, {"object": {"sha": "f" * 40}}
+        if "/compare/" in url:
+            return 200, {"status": "ahead"}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake)
+    assert MOG.integration_baseline_state("acme/widgets", "read")[0] == "green"
+    assert MOG.ensure_integration_baseline("acme/widgets", "write", "green") == "not needed (breaker is green)"
+    assert len(calls) == 3
+    assert all("branch=" not in url and "page=" not in url.replace("per_page=", "") for _, url in calls)
+
+
+@pytest.mark.parametrize("state", ["unproven", "green", "red"])
+def test_qualified_baseline_nonpending_state_never_dispatches(monkeypatch, state):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: pytest.fail("no read or write required"))
+    assert MOG.ensure_integration_baseline("acme/widgets", "write", state) == f"not needed (breaker is {state})"
+
+
+def test_unfiltered_stale_guard_still_sees_newer_inflight_main(monkeypatch):
+    older = _raw_main_proof_run(id=7, created_at=_baseline_stamp(9))
+    newer = _raw_main_proof_run(id=8, status="queued", conclusion=None)
+    calls = []
+
+    def fake(method, url, *_a, **_k):
+        calls.append((method, url))
+        assert method == "GET"
+        assert "branch=" not in url
+        return 200, {"workflow_runs": [newer, older]}
+
+    monkeypatch.setattr(MOG, "_request", fake)
+    assert MOG.ensure_integration_baseline("acme/widgets", "write", "pending") == "skipped (a baseline is already queued)"
+    assert len(calls) == 1
+
+
+def test_unfiltered_newer_main_red_cannot_be_laundered_by_older_green(monkeypatch):
+    red = _raw_main_proof_run(id=9, conclusion="failure")
+    green = _raw_main_proof_run(id=8, created_at=_baseline_stamp(1))
+    calls = []
+
+    def fake(method, url, *_a, **_k):
+        calls.append((method, url))
+        if "/actions/workflows/" in url:
+            assert "branch=" not in url
+            return 200, {"workflow_runs": [red, green]}
+        if "/jobs?" in url:
+            return 200, {"jobs": [{"conclusion": "failure", "steps": [{"name": "pytest", "conclusion": "failure"}]}]}
+        if "/git/ref/heads/main" in url:
+            return 200, {"object": {"sha": "e" * 40}}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake)
+    assert MOG.integration_baseline_state("acme/widgets", "read")[0] == "red"
+    assert MOG.ensure_integration_baseline("acme/widgets", "write", "pending") == "not needed (the newest concluded baseline is not green)"
+    assert all(method == "GET" for method, _ in calls)
+
+
+def test_unfiltered_main_proof_is_still_exactly_four_reads(monkeypatch):
+    runs, jobs = _both_workflows([("ci-pack-0", "success")])
+    calls = _proof_api(monkeypatch, runs=runs, jobs=jobs)
+    proof = MOG.main_proof("acme/widgets", "read")
+    assert "ci-pack-0" in proof.clean_names and "fence-pack" in proof.clean_names
+    assert len(calls) == 4
+    assert all("branch=" not in url for _, url, _ in calls)
+
+
+@pytest.mark.parametrize("workflow,event", [("ci.yml", "push"), ("fences.yml", "workflow_dispatch"), ("integration-baseline.yml", "pull_request")])
+def test_workflow_specific_main_event_never_supplies_proof(workflow, event):
+    row = _raw_main_proof_run(workflow, event=event)
+    assert MOG._qualified_main_workflow_runs("acme/widgets", workflow, {"workflow_runs": [row]}, 100) == []
+
+
+def test_undated_multirow_order_is_unproven_even_above_green():
+    newer = _raw_main_proof_run(id=9, created_at=None, conclusion="failure")
+    older = _raw_main_proof_run(id=8)
+    with pytest.raises(RuntimeError):
+        MOG._qualified_main_workflow_runs("acme/widgets", "integration-baseline.yml", {"workflow_runs": [newer, older]}, 100)
+
+
+@pytest.mark.parametrize("changes", [{"event": "unknown-new-event"}, {"event": ["push"]}, {"repository": {"id": 42, "full_name": "invalid-name"}}, {"status": ["completed"]}, {"created_at": "invalid"}])
+def test_ambiguous_newer_identity_cannot_be_skipped(changes):
+    newer = _raw_main_proof_run(id=9, **changes)
+    older = _raw_main_proof_run(id=8, created_at=_baseline_stamp(1))
+    with pytest.raises(RuntimeError):
+        MOG._qualified_main_workflow_runs("acme/widgets", "integration-baseline.yml", {"workflow_runs": [newer, older]}, 100)
+
+
+def test_equal_timestamp_main_runs_require_newest_id_first():
+    stamp = _baseline_stamp(0.1)
+    red = _raw_main_proof_run(id=9, created_at=stamp, conclusion="failure")
+    green = _raw_main_proof_run(id=8, created_at=stamp)
+    assert MOG._qualified_main_workflow_runs("acme/widgets", "integration-baseline.yml", {"workflow_runs": [red, green]}, 100) == [red, green]
+    with pytest.raises(RuntimeError):
+        MOG._qualified_main_workflow_runs("acme/widgets", "integration-baseline.yml", {"workflow_runs": [green, red]}, 100)
+
+
+def test_foreign_pr_rows_do_not_consume_the_main_verdict_walk(monkeypatch):
+    foreign = [_raw_main_proof_run("ci.yml", id=1000-i, event="pull_request", head_branch=f"topic-{i}") for i in range(20)]
+    main = _raw_main_proof_run("ci.yml", id=900)
+    calls = []
+
+    def fake(method, url, *_a, **_k):
+        calls.append((method, url))
+        assert method == "GET" and "per_page=100" in url
+        assert "branch=" not in url and "status=" not in url
+        return 200, {"workflow_runs": foreign + [main]}
+
+    monkeypatch.setattr(MOG, "_request", fake)
+    assert MOG._newest_concluded_main_run("acme/widgets", "ci.yml", "read")[0] == main
+    assert len(calls) == 1
+
+
+def test_raw_page_does_not_extend_the_old_concluded_main_walk(monkeypatch):
+    rows = [_raw_main_proof_run("ci.yml", id=1000-i, conclusion="cancelled") for i in range(MOG.MAIN_PROOF_RUN_WALK)]
+    rows.append(_raw_main_proof_run("ci.yml", id=900))
+    calls = []
+
+    def fake(method, url, *_a, **_k):
+        calls.append(url)
+        return 200, {"workflow_runs": rows}
+
+    monkeypatch.setattr(MOG, "_request", fake)
+    run, why = MOG._newest_concluded_main_run("acme/widgets", "ci.yml", "read")
+    assert run is None and "all cancelled" in why
+    assert len(calls) == 1
