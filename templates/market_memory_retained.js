@@ -1261,7 +1261,7 @@
     var entry = state.selected;
     if (!entry) {
       /* A pinned citation opened without the catalog has no selected catalog
-       * entry to quote. Only the comparison's own validated source card may
+       * entry to quote. Only the source card bound to this comparison may
        * be shown, and the absent list is never presented as freshness. */
       var card = state.committed && state.committed.kind === 'compare'
         ? state.committed.data.sourceCards[state.committed.intent.context] : null;
