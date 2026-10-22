@@ -277,6 +277,8 @@ Deleted (not moved):
 
 Literal `var()` fallbacks, such as `var(--r-btn,10px)` and its siblings, are dropped.
 
+A1.1: --r-card/--r-ctl are not yet at :root (DS-PR-0 pending); radius declarations carry the estate fallback pairs 12px/8px/999px; the derivations become live automatically when DS-PR-0 lands.
+
 Accepted visual deltas:
 - panel radius 14px → 12px (`--r-card`);
 - button radius 10px → 8px (`--r-ctl`);

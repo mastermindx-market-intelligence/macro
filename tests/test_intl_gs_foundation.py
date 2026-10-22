@@ -194,7 +194,12 @@ def test_a1_superseded_tokens_and_literal_fallbacks_absent():
         for needle in A1_SUPERSEDED:
             assert needle not in text, (path.name, needle)
     css = _strip_comments(_css())
-    assert not re.search(r"var\(--[A-Za-z0-9_-]+\s*,", css), "literal var() fallback survives"
+    # Seat ruling A1.1 (2026-10-22): --r-card/--r-ctl are not yet at :root (DS-PR-0 pending), so radius
+    # declarations carry exactly these three estate fallback pairs; every other var() fallback is refused.
+    for path, text in ((CSS_PATH, css), (MACROS_PATH, _require(MACROS_PATH)), (FIXTURE_PATH, _require(FIXTURE_PATH))):
+        opened = re.findall(r"var\(--[A-Za-z0-9_-]+\s*,", text)
+        allowed = re.findall(r"var\(--r-(?:panel,12px|btn,8px|pill,999px)\)", text)
+        assert len(opened) == len(allowed), (path.name, "var() fallback outside the A1.1 pairs", opened)
     assert not re.search(r"--[A-Za-z0-9_-]+::?(?:before|after)", css), "pseudo-element directly after a --modifier"
 
 
@@ -275,7 +280,9 @@ def test_no_colour_font_or_radius_literals_outside_token_block():
     for value in re.findall(r"font-family\s*:\s*([^;}\n]+)", outside):
         assert re.fullmatch(r"\s*var\(--font-(?:ui|mono|zh)\)(?:\s*,\s*var\(--font-(?:ui|zh)\))?\s*", value), value
     for value in re.findall(r"border-radius\s*:\s*([^;}\n]+)", outside):
-        assert "var(--r-" in value, value
+        # A1.1: exactly one scoped estate pair per declaration (calc() allowed); never --r-card/--r-ctl here
+        pairs = re.findall(r"var\(--r-(?:panel,12px|btn,8px|pill,999px)\)", value)
+        assert len(pairs) == 1 and not re.search(r"--r-(?:card|ctl)\b", value), value
 
 
 # ---------------------------------------------------------------- 2.5 shell registration
