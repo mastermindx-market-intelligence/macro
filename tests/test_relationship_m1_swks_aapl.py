@@ -13,6 +13,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -100,6 +101,50 @@ def _m1_edge(m1_run) -> dict:
     edges = m1_run["edges"]["edges"]
     assert len(edges) == 1
     return edges[0]
+
+
+def _unknown_rights() -> dict:
+    """The A7 default: a ruling binds nothing, so nothing is granted."""
+    return {
+        "source_class": "SEC_PUBLIC_ACCESS",
+        "purpose_permitted": ["private_api", "research"],
+        "public_display": "unknown",
+        "excerpt_display": "unknown",
+        "magnitude_display": "unknown",
+        "ruling_ref": None,
+    }
+
+
+def _valid_ruling() -> dict:
+    """A synthetic Chairman rights ruling with the exact binding shape (A7).
+
+    Built in tmp_path only — a ruling is a Chairman artifact and is never
+    committed under research/ or data/.
+    """
+    return {
+        "schema": "company_intelligence.source_purpose_ruling/v1",
+        "ruling_id": "GMI-REL-TEST-0001",
+        "decision_owner": "Chairman Chris",
+        "evidence_kind": "direct_chairman_source_rights_confirmation",
+        "source": {"source_class": "SEC_PUBLIC_ACCESS"},
+        "permitted_use": {
+            "citation_required": True,
+            "derived_fact_public_display": True,
+            "magnitude_display": False,
+            "verbatim_excerpt_display": "entitled_only",
+            "excerpt_max_raw_bytes": 2048,
+        },
+    }
+
+
+def _write_ruling(path: Path, ruling: dict) -> bytes:
+    raw = json.dumps(ruling, indent=1, sort_keys=True).encode("utf-8")
+    path.write_bytes(raw)
+    return raw
+
+
+def _has_warning(stdout: str, title: str) -> bool:
+    return any(line.startswith(f"::warning title={title}") for line in stdout.splitlines())
 
 
 def test_recomputed_ids_equal_committed():
@@ -194,11 +239,7 @@ def test_m1_edge_exact(m1_run):
     assert edge["freshness_state"] == "fresh"
     assert edge["magnitude_state"] == "disclosed"
     assert edge["asserted_period"] == {"start": "2021-10-02", "end": "2025-10-03"}
-    assert edge["rights"] == {
-        "source_class": "SEC_PUBLIC_ACCESS",
-        "purpose_permitted": ["private_api", "research"],
-        "public_display": "unknown",
-    }
+    assert edge["rights"] == _unknown_rights()
     assert edge["conditions"] == []
     assert edge["source_refs"] == [
         {
@@ -427,3 +468,201 @@ def test_committed_data_equals_fresh_run(tmp_path):
         committed = REPO_ROOT / "data/company_intelligence/relationships" / name
         assert committed.exists(), name
         assert committed.read_bytes() == (out / name).read_bytes(), name
+
+
+def test_producer_quarantines_clock_mismatch(tmp_path):
+    rows = []
+    shifted = False
+    for line in EXTRACTION_PATH.read_text("utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row.get("row_kind") == "observation" and not shifted:
+            moment = datetime.strptime(
+                row["published_at"], "%Y-%m-%dT%H:%M:%SZ"
+            ).replace(tzinfo=timezone.utc)
+            row["published_at"] = (moment + timedelta(hours=1)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
+            shifted = True
+        rows.append(json.dumps(row))
+    assert shifted
+    extraction = tmp_path / "shifted.jsonl"
+    extraction.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    out = tmp_path / "out"
+    proc = _run_producer(
+        "--as-of", AS_OF, "--extraction", str(extraction), "--out-dir", str(out)
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert _has_warning(proc.stdout, "CLOCK_MISMATCH")
+    package = json.loads((out / "observation_package.v2.json").read_text("utf-8"))
+    mismatched = [
+        o for o in package["observations"] if o["refusal_reason"] == "clock_mismatch"
+    ]
+    assert len(mismatched) == 1
+    assert mismatched[0]["disposition"] == "quarantined"
+    assert package["counts"]["edges"] == 1  # the untouched observation still binds
+    strict = _run_producer(
+        "--as-of",
+        AS_OF,
+        "--extraction",
+        str(extraction),
+        "--out-dir",
+        str(tmp_path / "out_strict"),
+        "--strict",
+    )
+    assert strict.returncode == 2
+
+
+def test_rights_ruling_absent_keeps_unknown(m1_run):
+    for edge in m1_run["edges"]["edges"]:
+        assert edge["rights"] == _unknown_rights()
+    assert m1_run["package"]["rights_ruling_ref"] is None
+
+
+def test_rights_ruling_synthetic_binds_and_cites(tmp_path):
+    import jsonschema
+
+    path = tmp_path / "ruling.json"
+    raw = _write_ruling(path, _valid_ruling())
+    ref = "GMI-REL-TEST-0001@sha256:" + hashlib.sha256(raw).hexdigest()
+    out = tmp_path / "out"
+    proc = _run_producer(
+        "--as-of", AS_OF, "--rights-ruling", str(path), "--out-dir", str(out)
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert not _has_warning(proc.stdout, "RIGHTS_RULING_INVALID")
+    edges = json.loads((out / "relationship_edges.json").read_text("utf-8"))
+    package = json.loads((out / "observation_package.v2.json").read_text("utf-8"))
+    assert edges["edges"]
+    for edge in edges["edges"]:
+        assert edge["rights"] == {
+            "source_class": "SEC_PUBLIC_ACCESS",
+            "purpose_permitted": ["private_api", "research"],
+            "public_display": "derived_facts_permitted",
+            "excerpt_display": "entitled_only",
+            "magnitude_display": "entitled_only",
+            "ruling_ref": ref,
+        }
+    assert package["rights_ruling_ref"] == ref
+    assert {
+        "path": str(path.resolve()),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+    } in package["inputs"]
+    for name, schema_path in (
+        ("observation_package.v2.json", "relationship_observation_package.v2.schema.json"),
+        ("relationship_edges.json", "relationship_edges.v1.schema.json"),
+    ):
+        schema = json.loads(
+            (REPO_ROOT / "contracts/company_intelligence" / schema_path).read_text(
+                "utf-8"
+            )
+        )
+        jsonschema.validate(json.loads((out / name).read_text("utf-8")), schema)
+
+
+def _ruling_mutations() -> dict:
+    def _mutate(mutator):
+        def apply(ruling: dict) -> None:
+            mutator(ruling)
+
+        return apply
+
+    return {
+        "wrong_owner": _mutate(lambda r: r.update(decision_owner="Sol")),
+        "wrong_evidence_kind": _mutate(
+            lambda r: r.update(evidence_kind="derived_opinion")
+        ),
+        "excerpt_bytes_over_limit": _mutate(
+            lambda r: r["permitted_use"].update(excerpt_max_raw_bytes=4096)
+        ),
+        "missing_citation_required": _mutate(
+            lambda r: r["permitted_use"].pop("citation_required")
+        ),
+    }
+
+
+@pytest.mark.parametrize("mutation", sorted(_ruling_mutations()))
+def test_rights_ruling_malformed_fails_open_unknown(tmp_path, mutation):
+    ruling = _valid_ruling()
+    _ruling_mutations()[mutation](ruling)
+    path = tmp_path / "ruling.json"
+    _write_ruling(path, ruling)
+    out = tmp_path / "out"
+    proc = _run_producer(
+        "--as-of", AS_OF, "--rights-ruling", str(path), "--out-dir", str(out)
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert _has_warning(proc.stdout, "RIGHTS_RULING_INVALID")
+    edges = json.loads((out / "relationship_edges.json").read_text("utf-8"))
+    package = json.loads((out / "observation_package.v2.json").read_text("utf-8"))
+    assert edges["edges"]
+    for edge in edges["edges"]:
+        assert edge["rights"] == _unknown_rights()  # never a partial grant
+    assert package["rights_ruling_ref"] is None
+    strict = _run_producer(
+        "--as-of",
+        AS_OF,
+        "--rights-ruling",
+        str(path),
+        "--out-dir",
+        str(tmp_path / "out_strict"),
+        "--strict",
+    )
+    assert strict.returncode == 2
+
+
+def test_extraction_directory_input_equals_file_input(tmp_path):
+    nested = tmp_path / "d" / "a"
+    nested.mkdir(parents=True)
+    (nested / "swks.jsonl").write_bytes(EXTRACTION_PATH.read_bytes())
+    out_file = tmp_path / "out_file"
+    out_dir = tmp_path / "out_dir"
+    proc_file = _run_producer("--as-of", AS_OF, "--out-dir", str(out_file))
+    proc_dir = _run_producer(
+        "--as-of", AS_OF, "--extraction", str(tmp_path / "d"), "--out-dir", str(out_dir)
+    )
+    assert proc_file.returncode == 0, proc_file.stdout + proc_file.stderr
+    assert proc_dir.returncode == 0, proc_dir.stdout + proc_dir.stderr
+    edges_file = json.loads((out_file / "relationship_edges.json").read_text("utf-8"))
+    edges_dir = json.loads((out_dir / "relationship_edges.json").read_text("utf-8"))
+    assert edges_dir["edges"] == edges_file["edges"]
+    assert edges_dir["non_edges"] == edges_file["non_edges"]
+    assert edges_dir["coverage"] == edges_file["coverage"]
+    assert edges_dir["counts"] == edges_file["counts"]
+    package_file = json.loads(
+        (out_file / "observation_package.v2.json").read_text("utf-8")
+    )
+    package_dir = json.loads(
+        (out_dir / "observation_package.v2.json").read_text("utf-8")
+    )
+    assert package_dir["package_id"] == package_file["package_id"]
+    assert package_dir["counts"] == package_file["counts"]
+
+
+def test_sources_duplicate_conflict_is_source_corrupt(tmp_path):
+    original = (SOURCES_DIR / f"{ACC_24}.json").read_bytes()
+    # Same parsed JSON, different bytes: only the byte-conflict path can explain
+    # a source_corrupt verdict here.
+    tampered = original.replace(b"{", b"{ ", 1)
+    assert tampered != original
+    sources = tmp_path / "sources"
+    (sources / "nested" / "deep").mkdir(parents=True)
+    (sources / f"{ACC_24}.json").write_bytes(original)
+    (sources / "nested" / "deep" / f"{ACC_24}.json").write_bytes(tampered)
+    out = tmp_path / "out"
+    proc = _run_producer(
+        "--as-of",
+        AS_OF,
+        "--sources",
+        str(sources),
+        "--out-dir",
+        str(out),
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert _has_warning(proc.stdout, "SOURCE_DUPLICATE_CONFLICT")
+    package = json.loads((out / "observation_package.v2.json").read_text("utf-8"))
+    citing = [o for o in package["observations"] if o["accession"] == ACC_24]
+    assert citing
+    assert all(o["source_state"] == "source_corrupt" for o in citing)
+    assert all(o["disposition"] == "quarantined" for o in citing)

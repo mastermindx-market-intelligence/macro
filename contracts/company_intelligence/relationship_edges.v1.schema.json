@@ -3,6 +3,18 @@
   "$id": "https://mastermind-x.com/contracts/company_intelligence/relationship_edges.v1.schema.json",
   "title": "Company intelligence relationship edges (v1)",
   "description": "The directed relationship-edge projection of one observation package v2: edges keyed to named counterparties only, with magnitude revisions that are never summed, averaged or netted, verbatim filing conditions, source rights, and correction lineage. Adoption is proposed-only; the record holds no rank, gate, size, trade or prediction authority.",
+  "x-gmi-clock-rule": {
+    "rule_id": "A24",
+    "clock": "sec_acceptance",
+    "source_field": "sec_index_header_acceptance_et",
+    "source_format": "YYYYMMDDHHMMSS",
+    "source_tz": "America/New_York",
+    "target_tz": "UTC",
+    "target_format": "YYYY-MM-DDTHH:MM:SSZ",
+    "dst": "IANA tzdata; ambiguous (fall-back) or nonexistent (spring-forward) wall times are refused, never guessed",
+    "not_a_clock": ["sec_submissions_acceptance_raw"],
+    "note": "The EDGAR submissions JSON acceptanceDateTime carries a 'Z' suffix but is NOT a UTC instant (observed +5h versus header-derived UTC on all three M1 documents, e.g. header 20241115163743 ET = 2024-11-15T21:37:43Z while the JSON reads 2024-11-16T02:37:43.000Z); it is retained only as sec_submissions_acceptance_raw and never used as a clock."
+  },
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -222,7 +234,10 @@
         "revision_seq": {"type": "integer", "minimum": 1},
         "revision_kind": {"$ref": "#/$defs/revision_kind"},
         "supersedes": {"type": ["string", "null"], "pattern": "^rev:[0-9a-f]{20}$"},
-        "known_at": {"$ref": "#/$defs/instant"},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "source_ref": {"$ref": "#/$defs/revision_source_ref"}
       }
     },
@@ -290,12 +305,44 @@
     "rights": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_class", "purpose_permitted", "public_display"],
+      "required": [
+        "source_class",
+        "purpose_permitted",
+        "public_display",
+        "excerpt_display",
+        "magnitude_display",
+        "ruling_ref"
+      ],
       "properties": {
         "source_class": {"const": "SEC_PUBLIC_ACCESS"},
         "purpose_permitted": {"const": ["private_api", "research"]},
-        "public_display": {"const": "unknown"}
-      }
+        "public_display": {
+          "enum": ["unknown", "derived_facts_permitted", "entitled_only"],
+          "description": "Derived facts plus citation: unknown until a Chairman rights ruling binds, derived_facts_permitted when the ruling grants it, entitled_only when it does not (A7)."
+        },
+        "excerpt_display": {
+          "enum": ["unknown", "entitled_only", "public_permitted"],
+          "description": "Verbatim excerpt text: unknown until a Chairman rights ruling binds, entitled_only or public_permitted once it does (A7)."
+        },
+        "magnitude_display": {
+          "enum": ["unknown", "permitted", "entitled_only"],
+          "description": "Disclosed magnitudes: unknown until a Chairman rights ruling binds, permitted or entitled_only once it does (A7)."
+        },
+        "ruling_ref": {
+          "type": ["string", "null"],
+          "pattern": "^GMI-REL-[A-Z0-9-]{3,80}@sha256:[0-9a-f]{64}$",
+          "description": "The binding ruling as <ruling_id>@sha256:<sha256 of the ruling file bytes>, or null while nothing is granted (A7)."
+        }
+      },
+      "if": {
+        "properties": {
+          "public_display": {"const": "unknown"},
+          "excerpt_display": {"const": "unknown"},
+          "magnitude_display": {"const": "unknown"}
+        }
+      },
+      "then": {"properties": {"ruling_ref": {"type": "null"}}},
+      "else": {"properties": {"ruling_ref": {"type": "string"}}}
     },
     "correction_lineage_entry": {
       "type": "object",
@@ -315,7 +362,10 @@
         "amends_accession": {"$ref": "#/$defs/accession"},
         "assessment": {"$ref": "#/$defs/assessment"},
         "reason": {"type": ["string", "null"]},
-        "known_at": {"$ref": "#/$defs/instant"},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "effect": {"$ref": "#/$defs/lineage_effect"}
       }
     },
@@ -362,9 +412,18 @@
           "items": {"$ref": "#/$defs/issuer_id"},
           "uniqueItems": true
         },
-        "first_known_at": {"$ref": "#/$defs/instant"},
-        "last_asserted_at": {"$ref": "#/$defs/instant"},
-        "last_assessed_at": {"$ref": "#/$defs/instant"},
+        "first_known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
+        "last_asserted_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
+        "last_assessed_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "freshness_state": {"$ref": "#/$defs/freshness_state"},
         "asserted_period": {"$ref": "#/$defs/asserted_period"},
         "magnitude_state": {"$ref": "#/$defs/magnitude_state"},
@@ -409,7 +468,10 @@
         "object_name_as_filed": {"type": ["string", "null"]},
         "anonymous_alias": {"type": ["string", "null"]},
         "non_edge_reason": {"$ref": "#/$defs/non_edge_reason"},
-        "known_at": {"$ref": "#/$defs/instant"}
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        }
       }
     },
     "coverage_entry": {
@@ -427,7 +489,8 @@
         },
         "known_at": {
           "type": ["string", "null"],
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
         }
       }
     },

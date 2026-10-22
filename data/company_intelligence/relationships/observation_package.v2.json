@@ -294,6 +294,7 @@
   "source_purpose_permission": "NOT_ESTABLISHED",
   "training": false
  },
+ "rights_ruling_ref": null,
  "schema": "company_intelligence.relationship_observation_package/v2",
  "warnings": []
 }

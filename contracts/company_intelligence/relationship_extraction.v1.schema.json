@@ -3,6 +3,18 @@
   "$id": "https://mastermind-x.com/contracts/company_intelligence/relationship_extraction.v1.schema.json",
   "title": "Company intelligence relationship extraction row (v1)",
   "description": "One point-in-time row extracted from a primary SEC filing: a directed relationship observation, a document assessment, or an issuer coverage statement. Transcription only — no scoring, ranking, prediction or sizing. Acceptance-time eligibility: a row becomes knowable at its acceptance instant.",
+  "x-gmi-clock-rule": {
+    "rule_id": "A24",
+    "clock": "sec_acceptance",
+    "source_field": "sec_index_header_acceptance_et",
+    "source_format": "YYYYMMDDHHMMSS",
+    "source_tz": "America/New_York",
+    "target_tz": "UTC",
+    "target_format": "YYYY-MM-DDTHH:MM:SSZ",
+    "dst": "IANA tzdata; ambiguous (fall-back) or nonexistent (spring-forward) wall times are refused, never guessed",
+    "not_a_clock": ["sec_submissions_acceptance_raw"],
+    "note": "The EDGAR submissions JSON acceptanceDateTime carries a 'Z' suffix but is NOT a UTC instant (observed +5h versus header-derived UTC on all three M1 documents, e.g. header 20241115163743 ET = 2024-11-15T21:37:43Z while the JSON reads 2024-11-16T02:37:43.000Z); it is retained only as sec_submissions_acceptance_raw and never used as a clock."
+  },
   "oneOf": [
     {"$ref": "#/$defs/observation_row"},
     {"$ref": "#/$defs/assessment_row"},
@@ -233,14 +245,21 @@
         "cik": {"$ref": "#/$defs/cik"},
         "form": {"$ref": "#/$defs/form"},
         "url": {"type": "string", "pattern": "^https://www\\.sec\\.gov/Archives/edgar/data/"},
-        "primary_document": {"type": "string"},
+        "primary_document": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.(htm|html|txt|xml)$",
+          "description": "File name, inside the accession folder, of the document whose bytes doc_sha256 hashes and in which the cited span lies: the primary document for 10-K/20-F; for 40-F it may be the exhibit that carries the span (e.g. the EX-99.x annual information form, MD&A or audited financial statements)."
+        },
         "doc_sha256": {"$ref": "#/$defs/hex64"},
         "doc_byte_length": {"type": "integer", "minimum": 1},
         "byte_start": {"type": "integer", "minimum": 0},
         "byte_end": {"type": "integer", "minimum": 1},
         "span_sha256": {"$ref": "#/$defs/hex64"},
         "normalized_span_sha256": {"$ref": "#/$defs/hex64"},
-        "accepted_at": {"$ref": "#/$defs/instant"},
+        "accepted_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "filed_at": {"$ref": "#/$defs/date"},
         "period_of_report": {"$ref": "#/$defs/date"},
         "xbrl": {"type": "array", "items": {"$ref": "#/$defs/xbrl_fact"}}
@@ -275,11 +294,21 @@
         "schema": {"const": "company_intelligence.relationship_extraction/v1"},
         "row_kind": {"const": "observation"},
         "temporal_eligibility": {"const": "acceptance_time"},
-        "published_at": {"$ref": "#/$defs/instant"},
+        "published_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "ingested_at": {"$ref": "#/$defs/instant"},
         "period_end": {"$ref": "#/$defs/date"},
-        "sec_index_header_acceptance_et": {"type": "string", "pattern": "^\\d{14}$"},
-        "sec_submissions_acceptance_raw": {"type": "string"},
+        "sec_index_header_acceptance_et": {
+          "type": "string",
+          "pattern": "^\\d{14}$",
+          "description": "SEC EDGAR index-header acceptance stamp: the America/New_York wall clock (YYYYMMDDHHMMSS) that the A24 rule reads and converts to UTC to produce published_at (x-gmi-clock-rule A24)"
+        },
+        "sec_submissions_acceptance_raw": {
+          "type": "string",
+          "description": "Verbatim EDGAR submissions acceptanceDateTime, retained as filed: NOT a clock (x-gmi-clock-rule A24 not_a_clock) — its 'Z' suffix does not make it a UTC instant and it is never used as one"
+        },
         "observation_id": {"$ref": "#/$defs/observation_id"},
         "species": {"$ref": "#/$defs/species"},
         "relation_status": {"$ref": "#/$defs/relation_status"},
@@ -323,11 +352,21 @@
         "schema": {"const": "company_intelligence.relationship_extraction/v1"},
         "row_kind": {"const": "document_assessment"},
         "temporal_eligibility": {"const": "acceptance_time"},
-        "published_at": {"$ref": "#/$defs/instant"},
+        "published_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "ingested_at": {"$ref": "#/$defs/instant"},
         "period_end": {"$ref": "#/$defs/date"},
-        "sec_index_header_acceptance_et": {"type": "string", "pattern": "^\\d{14}$"},
-        "sec_submissions_acceptance_raw": {"type": "string"},
+        "sec_index_header_acceptance_et": {
+          "type": "string",
+          "pattern": "^\\d{14}$",
+          "description": "SEC EDGAR index-header acceptance stamp: the America/New_York wall clock (YYYYMMDDHHMMSS) that the A24 rule reads and converts to UTC to produce published_at (x-gmi-clock-rule A24)"
+        },
+        "sec_submissions_acceptance_raw": {
+          "type": "string",
+          "description": "Verbatim EDGAR submissions acceptanceDateTime, retained as filed: NOT a clock (x-gmi-clock-rule A24 not_a_clock) — its 'Z' suffix does not make it a UTC instant and it is never used as one"
+        },
         "assessment_id": {"$ref": "#/$defs/assessment_id"},
         "issuer_id": {"$ref": "#/$defs/issuer_id"},
         "amends_accession": {"$ref": "#/$defs/accession"},
@@ -356,7 +395,10 @@
         "schema": {"const": "company_intelligence.relationship_extraction/v1"},
         "row_kind": {"const": "coverage"},
         "temporal_eligibility": {"const": "acceptance_time"},
-        "published_at": {"$ref": "#/$defs/instant"},
+        "published_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
         "ingested_at": {"$ref": "#/$defs/instant"},
         "period_end": {"$ref": "#/$defs/date"},
         "issuer_id": {"$ref": "#/$defs/issuer_id"},

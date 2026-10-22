@@ -21,6 +21,10 @@ import json
 import re
 from datetime import datetime, timedelta, timezone
 
+from engine.company_intelligence.relationships.clock import (
+    ClockRefused,
+    et_acceptance_to_utc,
+)
 from lib.dataos.temporal import TemporalProfile, as_of_filter
 
 PACKAGE_SCHEMA = "company_intelligence.relationship_observation_package/v2"
@@ -227,8 +231,55 @@ def _warn(warnings: list, title: str, message: str) -> None:
     warnings.append({"title": title, "message": message})
 
 
+def clock_refusal(row: dict, excerpt) -> str | None:
+    """A24 refusal reason for one row, or None when its clock fields agree.
+
+    Only rows that carry ``sec_index_header_acceptance_et`` (observation and
+    document-assessment rows) are checkable.  The header must convert to the
+    row's own ``published_at``, and a dict ``excerpt``'s ``accepted_at`` must
+    equal it; anything else, including a converter refusal, is a refusal reason
+    in the ``clock_mismatch`` / ``clock_refused:<reason>`` family.
+    """
+    header = row.get("sec_index_header_acceptance_et")
+    if not header:
+        return None
+    published_at = row.get("published_at")
+    try:
+        converted = et_acceptance_to_utc(header)
+    except ClockRefused as error:
+        return f"clock_refused:{error.args[0] if error.args else 'refused'}"
+    if converted != published_at:
+        return "clock_mismatch"
+    if isinstance(excerpt, dict) and excerpt.get("accepted_at") != published_at:
+        return "clock_mismatch"
+    return None
+
+
+def rights_block(rights: dict | None) -> dict:
+    """The per-edge rights block (A7): unknown/null until a ruling binds.
+
+    ``rights`` is the producer's validated ruling binding (display fields plus
+    ``ruling_ref``) or None — an absent or refused ruling grants nothing.
+    """
+    block = {
+        "source_class": "SEC_PUBLIC_ACCESS",
+        "purpose_permitted": ["private_api", "research"],
+        "public_display": "unknown",
+        "excerpt_display": "unknown",
+        "magnitude_display": "unknown",
+        "ruling_ref": None,
+    }
+    if rights is not None:
+        block["public_display"] = rights["public_display"]
+        block["excerpt_display"] = rights["excerpt_display"]
+        block["magnitude_display"] = rights["magnitude_display"]
+        block["ruling_ref"] = rights["ruling_ref"]
+    return block
+
+
 def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
-                  manifest_version: str, inputs):  # noqa: C901
+                  manifest_version: str, inputs, *, enforce_clock: bool = False,
+                  rights: dict | None = None):  # noqa: C901
     """Derive (package, edges_doc_without_package_sha256) from pinned rows.
 
     ``rows`` are contract-checked extraction rows of all three kinds.  ``excerpts``
@@ -236,6 +287,19 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
     issuer_id -> sorted manifest security_ids.  The returned edges doc carries a
     placeholder ``package_sha256``; the producer replaces it with the hash of the
     package bytes it just wrote.
+
+    ``enforce_clock`` applies the A24 clock rule (the contracts'
+    ``x-gmi-clock-rule``): a row whose ``sec_index_header_acceptance_et`` does
+    not convert to its own ``published_at`` — or whose source excerpt's
+    ``accepted_at`` disagrees — is not used (observation: quarantined;
+    assessment: excluded and counted under quarantined).  The producer always
+    enables it; direct callers (the synthetic battery) own their rows' clock
+    consistency and may leave it off.
+
+    ``rights`` binds the A7 public-display fields on every edge and the
+    package's ``rights_ruling_ref``; None keeps the committed unknown/null
+    default.  A binding is all-or-nothing by construction — the producer never
+    passes a partial one.
     """
     as_of_dt = _instant_dt(as_of)
     obs_rows = [r for r in rows if r.get("row_kind") == "observation"]
@@ -254,6 +318,7 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
     non_edges: list = []
     assessments: list = []
     accs: dict = {}
+    excluded_assessments = 0
 
     for row in pit_obs:
         obs_id = row.get("observation_id")
@@ -265,8 +330,19 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         rel_key = None
         non_edge_key = None
         refusal_reason = None
+        clock_problem = (
+            clock_refusal(row, excerpts.get(accession)) if enforce_clock else None
+        )
 
-        if species not in SPECIES_ROLES:
+        if clock_problem is not None:
+            disposition = "quarantined"
+            refusal_reason = clock_problem
+            _warn(
+                warnings,
+                "CLOCK_MISMATCH",
+                f"{obs_id}: {clock_problem}; the row is not used (x-gmi-clock-rule A24)",
+            )
+        elif species not in SPECIES_ROLES:
             disposition = "refused"
             refusal_reason = "species_refused"
             _warn(
@@ -364,6 +440,21 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
     ):
         asm_id = row.get("assessment_id")
         source = row.get("source_ref") or {}
+        clock_problem = (
+            clock_refusal(row, excerpts.get(source.get("accession")))
+            if enforce_clock
+            else None
+        )
+        if clock_problem is not None:
+            # Excluded entirely and counted under quarantined; it contributes
+            # no assessments entry and never reaches correction lineage.
+            excluded_assessments += 1
+            _warn(
+                warnings,
+                "CLOCK_MISMATCH",
+                f"{asm_id}: {clock_problem}; the row is not used (x-gmi-clock-rule A24)",
+            )
+            continue
         source_state, _usable = _excerpt_state(row, excerpts, match_row_span=False)
         assessments.append(
             {
@@ -378,7 +469,9 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         )
 
     edges = [
-        _build_edge(rel_key, accs[rel_key], pit_asm, issuers, as_of_dt, excerpts)
+        _build_edge(
+            rel_key, accs[rel_key], pit_asm, issuers, as_of_dt, excerpts, rights
+        )
         for rel_key in sorted(accs)
     ]
     coverage = _build_coverage(cov_rows, pit_cov)
@@ -401,7 +494,8 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         "observations_pit_visible": len(pit_obs),
         "observations_quarantined": sum(
             1 for o in observations if o["disposition"] == "quarantined"
-        ),
+        )
+        + excluded_assessments,
         "observations_refused": sum(
             1 for o in observations if o["disposition"] == "refused"
         ),
@@ -434,6 +528,7 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         "authority": {key: False for key in ("rank", "gate", "size", "trade", "prediction")},
         "purpose": _v1_purpose_v2(),
         "content_boundary": _v1_content_boundary(),
+        "rights_ruling_ref": rights["ruling_ref"] if rights else None,
         "observations": sorted(observations, key=lambda o: o["observation_id"] or ""),
         "assessments": sorted(assessments, key=lambda a: a["assessment_id"] or ""),
         "coverage": coverage,
@@ -509,7 +604,7 @@ def _record_non_edge(non_edges: list, row: dict, accession: str, known_at: str,
 
 
 def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
-                as_of_dt: datetime, excerpts: dict) -> dict:
+                as_of_dt: datetime, excerpts: dict, rights: dict | None) -> dict:
     rows = sorted(
         acc["observations"],
         key=lambda r: (_known_at(r), r.get("observation_id") or ""),
@@ -638,11 +733,7 @@ def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
         "conflicts": conflicts,
         "conditions": conditions,
         "source_refs": source_refs,
-        "rights": {
-            "source_class": "SEC_PUBLIC_ACCESS",
-            "purpose_permitted": ["private_api", "research"],
-            "public_display": "unknown",
-        },
+        "rights": rights_block(rights),
         "correction_lineage": lineage,
     }
 

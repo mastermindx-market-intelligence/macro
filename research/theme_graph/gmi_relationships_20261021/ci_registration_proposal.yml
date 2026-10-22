@@ -28,6 +28,7 @@ company-intelligence-relationships:
     - "engine/company_intelligence/health.py"
     - "engine/company_intelligence/views.py"
     - "engine/company_intelligence/relationships/__init__.py"
+    - "engine/company_intelligence/relationships/clock.py"
     - "engine/company_intelligence/relationships/package_v2.py"
     - "engine/company_intelligence/relationships/replay.py"
     - "lib/__init__.py"
@@ -57,7 +58,7 @@ company-intelligence-relationships:
     - uses: actions/setup-python@v5
       with: {python-version: "3.12"}
     - name: Install relationship contract test dependencies
-      run: pip install pytest jsonschema
+      run: pip install pytest jsonschema tzdata
     - name: Relationship contract schemas
       run: python -m pytest tests/test_relationship_contracts.py -q
     - name: Relationship M1 SWKS->AAPL primary-source record

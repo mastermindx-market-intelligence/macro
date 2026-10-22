@@ -297,11 +297,14 @@
    "relation_status": "asserted",
    "relationship_key": "rel:2dddc958720e18bf0275",
    "rights": {
+    "excerpt_display": "unknown",
+    "magnitude_display": "unknown",
     "public_display": "unknown",
     "purpose_permitted": [
      "private_api",
      "research"
     ],
+    "ruling_ref": null,
     "source_class": "SEC_PUBLIC_ACCESS"
    },
    "scope": {
@@ -344,6 +347,6 @@
  "manifest_version": "2373df79e9418057828ab6cbf7f6fd4055e96b5d9fc66e3de72fa10854a782d5",
  "non_edges": [],
  "package_id": "pkg:56502f8b52805a61749a",
- "package_sha256": "985455e1d48c4fa123405b5dd627185c296bb683439ef7c728568682d0e2ae97",
+ "package_sha256": "cc67c2f9c065d04f5029c75157eefad19277fde29d2cbda5b2865c0f5d1307bb",
  "schema": "company_intelligence.relationship_edges/v1"
 }
