@@ -1,0 +1,7 @@
+{
+ "_source": "ZH forms for producer enums used by copy_deck cycles.forecast_footnote placeholders: next_turn from templates/sector_cycles.js:1420 L(\"Next \"+nextTurn, \"下次\"+(peak?\"顶部\":\"底部\")); unit sector/basket from the deck placeholder gloss",
+ "peak": "顶部",
+ "trough": "底部",
+ "sector": "板块",
+ "basket": "篮子"
+}

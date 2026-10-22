@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"><title>mobile host</title>
+<style>html,body{margin:0;padding:0;background:#000}iframe{display:block;border:0;width:390px}</style></head>
+<body><iframe id="f" title="specimen"></iframe>
+<script>
+(function(){var q=new URLSearchParams(location.search),src=(q.get("src")||"cycles.html"),p=[];
+["theme","lang","state"].forEach(function(k){if(q.get(k))p.push(k+"="+encodeURIComponent(q.get(k)));});
+var f=document.getElementById("f");f.src=src+(p.length?"?"+p.join("&"):"");
+f.addEventListener("load",function(){try{var d=f.contentDocument.documentElement,h=d.scrollHeight;f.style.height=h+"px";
+document.documentElement.setAttribute("data-h",String(h));document.documentElement.setAttribute("data-w",String(d.scrollWidth));
+document.documentElement.setAttribute("data-ovf",d.getAttribute("data-ovf")||"");}catch(e){document.documentElement.setAttribute("data-err",String(e));}});})();
+</script></body></html>

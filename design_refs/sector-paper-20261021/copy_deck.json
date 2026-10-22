@@ -174,7 +174,11 @@
     "phase_age_measured": {"en": "{n} sessions in this phase", "zh": "本阶段已持续 {n} 个交易日", "role": "label", "source": "engine/cycle_phase_age.py status=measured (PRC-006)"},
     "phase_age_lower_bound": {"en": "At least {n} sessions in this phase (history starts {date})", "zh": "本阶段至少已持续 {n} 个交易日（历史自 {date} 起）", "role": "label", "source": "engine/cycle_phase_age.py status=lower_bound (PRC-006)"},
     "phase_age_unknown": {"en": "Phase age not yet measured", "zh": "阶段持续时间尚未测得", "role": "label", "source": "engine/cycle_phase_age.py status=insufficient_history|source_unavailable (PRC-006; never rendered as 0)"},
-    "read_provenance": {"en": "Narrative, written from the cycle record. Not a measurement.", "zh": "叙述，基于周期记录撰写，并非测量值。", "role": "footnote", "source": "data/sector_cycles/narratives.json (PRC-019)"}
+    "read_provenance": {"en": "Narrative, written from the cycle record. Not a measurement.", "zh": "叙述，基于周期记录撰写，并非测量值。", "role": "footnote", "source": "data/sector_cycles/narratives.json (PRC-019)"},
+    "hazard_unavailable": {"en": "No calibrated cell for this leg. The producer could not form a monotone turn curve; shown as a gap, never as zero.", "zh": "该周期段没有校准单元格。生产端无法形成单调的转折曲线；显示为空缺，绝不记为零。", "role": "footnote", "source": "data/sector_cycles now.hazard.unavailable=true unavailable_reason=non_monotone_cdf (C19); templates/sector_cycles.js has no unavailable render (PRODUCED_NOT_RENDERED)"},
+    "sizing_inert": {"en": "Position sizing: none. The conviction multiplier is held at 1.0 and is not a size.", "zh": "仓位规模：无。信念倍数固定为 1.0，并非仓位大小。", "role": "method", "source": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_ia.md:166 cites :404, stale)"},
+    "leadlag_stop": {"en": "Lead-lag: no claim. The W5.1 study stopped; nothing here orders sectors in time.", "zh": "领先滞后：不作声明。W5.1 研究已停止；此处不对板块作时间排序。", "role": "method", "source": "research/sector_completion_20261021/MASTERPLAN_2026-10-21.md:169 (W5.1 STOP/NO-GO; descriptive synchronization gauge is the accepted fallback)"},
+    "stance_label": {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:155 stanceHTML L(\"Resolved stance · engine\",\"综合策略 · 引擎\") (production verbatim)"}
   },
   "components": {
     "title": {"en": "Shared components", "zh": "共享组件", "role": "h1", "source": "NEW"},

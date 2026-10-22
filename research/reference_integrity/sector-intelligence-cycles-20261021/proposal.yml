@@ -33,6 +33,15 @@ proposed_artifact:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/23-brief-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/24-brief-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/25-brief-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/26-brief-mobile-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/27-coverage-matrix-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/28-cycles-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/29-cycles-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/30-cycles-mobile-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/31-cycles-mobile-light-en.png
   - design_refs/sector-paper-20261021/components/COMPONENTS.md
   - design_refs/sector-paper-20261021/components/components.css
   - design_refs/sector-paper-20261021/components/specimen.html
@@ -40,6 +49,9 @@ proposed_artifact:
   - design_refs/sector-paper-20261021/copy_deck.md
   - design_refs/sector-paper-20261021/cycles_ia.csv
   - design_refs/sector-paper-20261021/cycles_ia.md
+  - design_refs/sector-paper-20261021/brief_repair/brief.html
+  - design_refs/sector-paper-20261021/brief_repair/coverage_matrix.html
+  - design_refs/sector-paper-20261021/cycles_repair/cycles.html
   - design_refs/sector-paper-20261021/state_matrix.csv
   - design_refs/sector-paper-20261021/state_matrix.md
   screenshots:
@@ -788,7 +800,7 @@ chrome:
   - PRC-008
 coverage_matrix:
   legend:
-    drawn: board numbers from boards_manifest.yml (0-27)
+    drawn: board numbers from boards_manifest.yml (0-31)
     PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the
       named journey cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
   families:
@@ -929,12 +941,14 @@ coverage_matrix:
         drawn:
         - 1
         - 6
+        - 29
       desktop/light/zh:
         drawn:
         - 2
       desktop/light/en:
         drawn:
         - 8
+        - 28
       mobile/dark/en:
         drawn:
         - 3
@@ -948,13 +962,11 @@ coverage_matrix:
         status: PAPER_CAPACITY_LIMITED
         proof_cell: P10-P13 investigation journey · Cycles · desktop · dark · zh
       mobile/dark/zh:
-        drawn: []
-        status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Cycles · mobile · dark · zh
+        drawn:
+        - 30
       mobile/light/en:
-        drawn: []
-        status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Cycles · mobile · light · en
+        drawn:
+        - 31
   - family: Research
     cells:
       desktop/light/en:

@@ -725,3 +725,117 @@ boards:
   png_px:
   - 1440
   - 853
+- board_no: 28
+  title: R4 · Cycles · corrections · Desktop · Light · EN (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: EN
+  states_shown:
+  - pos_v2 + phase_v2 only (legacy families retired from display)
+  - resolved stance + tone + clocks-disagree note (XLF)
+  - phase age lower_bound (3 rows)
+  - hazard MODEL cells + parity_failed muting (XLF)
+  - hazard unavailable gap cells (XLK, XLC)
+  - descriptive rhythm window + overdue
+  - sizing inert + lead-lag STOP methods
+  - grader caption without a number
+  - rotation clocks aligned (fresh)
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C17
+  - C18
+  - C19
+  - C20
+  - C21
+  - C23
+  - C24
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/28-cycles-desktop-light-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 1440
+  - 2368
+- board_no: 29
+  title: R4 · Cycles · corrections · Desktop · Dark · EN (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: dark
+  locale: EN
+  states_shown:
+  - same composition as board 28 on the dark tokens
+  - hazard gap cells + muted ladder on dark
+  - chip/badge contrast on dark
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/29-cycles-desktop-dark-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 1440
+  - 2368
+- board_no: 30
+  title: R4 · Cycles · corrections · Mobile · Dark · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: dark
+  locale: ZH
+  states_shown:
+  - single-column recomposition (cards, methods, grader, events, metadata)
+  - ZH deck copy + ZH producer enums (顶部/底部, 板块)
+  - phase_age_lower_bound ZH
+  - forecast_footnote ZH with producer months
+  - MODEL badge 模型 at >= 11px
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C24
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/30-cycles-mobile-dark-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 390
+  - 5436
+- board_no: 31
+  title: R4 · Cycles · corrections · Mobile · Light · EN · incompatible_generation fixture (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: light
+  locale: EN
+  states_shown:
+  - 'incompatible_generation state banner (labeled FIXTURE: history 2026-10-16, current read 2026-10-19)'
+  - fresh row hidden while the state is set
+  - fixture label printed under the banner
+  - hazard unavailable gap cells on light
+  capabilities_covered:
+  - C18
+  - C19
+  - C20
+  - C21
+  - C24
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/31-cycles-mobile-light-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 390
+  - 6116

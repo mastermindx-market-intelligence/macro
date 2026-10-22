@@ -1,0 +1,108 @@
+/* Cycles corrections specimen — consumes templates/theme.css tokens + components/components.css.
+   Law: no colored edge/accent stripe on any edge of any container (docs/DESIGN_DOCTRINE.md).
+   Hierarchy comes from surface (--panel/--panel2), even 1px --line borders, type and labeled ink. */
+.cyc{max-width:1240px;margin:0 auto;padding:18px 24px 56px;font-family:var(--font-ui);color:var(--text)}
+.cyc *:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+.cyc .mono{font-family:var(--font-mono,var(--font-ui));font-variant-numeric:tabular-nums}
+.cyc code{font:500 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));padding:1px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--text);overflow-wrap:anywhere}
+.cyc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.cyc-eyebrow{font-size:var(--fs-label);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0}
+html[data-lang="zh"] .cyc-eyebrow{letter-spacing:.02em;text-transform:none}
+.cyc-foot{font-size:var(--fs-micro);color:var(--muted);margin:8px 0 0;line-height:1.45}
+.cyc h1,.cyc h2,.cyc h3{margin:0;font-weight:720;line-height:1.2}
+.cyc h2{font-size:var(--fs-h2)} .cyc h3{font-size:var(--fs-h3)}
+.cyc-asof{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:var(--fs-sm);color:var(--muted);margin:10px 0 0}
+.cyc-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.cyc a{color:var(--link);text-decoration:none;font-weight:600}
+.cyc a:hover{text-decoration:underline}
+
+/* R1 header: title, tagline, as-of + source, basis */
+.cyc-head{margin-top:14px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.cyc-head h1{font-size:30px;letter-spacing:-.01em;margin:6px 0 6px}
+.cyc-tagline{margin:0;font-size:var(--fs-body);color:var(--text);line-height:1.5;max-width:60ch}
+.cyc-intro{margin:10px 0 0;font-size:var(--fs-sm);color:var(--muted);line-height:1.5;max-width:72ch}
+.cyc-basis{display:flex;flex-direction:column;gap:10px}
+.cyc-basis .cyc-chips{margin-top:8px}
+
+/* sector focus cards (the three hazard shapes) */
+.cyc-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.cyc-card{display:flex;flex-direction:column;gap:12px;padding:16px}
+.cyc-card-head{display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.cyc-id{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.cyc-id h2{font-size:var(--fs-h3)}
+.cyc-tk{font:700 var(--fs-label)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-grp{font-size:var(--fs-micro);color:var(--muted);flex-basis:100%}
+.cyc-pos{font:700 var(--fs-sm)/1.3 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--text);margin-left:auto;text-align:right}
+.cyc-pos b{font-size:var(--fs-md)} .cyc-pos .b{display:block;font:500 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted)}
+.cyc-stance{--c:var(--muted)}
+.cyc-stance[data-tone="bullish"]{--c:var(--ink-up,var(--up))} .cyc-stance[data-tone="bearish"]{--c:var(--ink-down,var(--down))}
+.cyc-stance[data-tone="caution"]{--c:var(--ink-warn,var(--warn))} .cyc-stance[data-tone="anticipatory"]{--c:var(--ink-info,var(--info))}
+.cyc-stance-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.cyc-stance-ttl{font-size:var(--fs-label);color:var(--muted);font-weight:600}
+.cyc-clocks{--c:var(--ink-warn,var(--warn))}
+.cyc-div-note{flex-basis:100%;margin:0;font-size:var(--fs-micro);color:var(--muted);line-height:1.45}
+.cyc-age{margin:0;font-size:var(--fs-sm);color:var(--text);display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.cyc-age .spc-icon{color:var(--muted);margin-top:2px}
+.cyc-sec{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.cyc-sec-ttl{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.cyc-sec-ttl h3{font-size:var(--fs-md)}
+.cyc-card .spc-hazard-ladder{grid-template-columns:minmax(44px,auto) repeat(3,minmax(0,1fr))}
+.cyc-hz-cap{font:700 var(--fs-micro)/1.2 var(--font-ui);letter-spacing:.06em;color:var(--muted)}
+.cyc-card .spc-hz-cell[data-source="none"] .spc-hz-val{color:var(--muted);font-weight:500}
+.cyc-hz-muted .spc-hz-cell[data-source="model"]{background:var(--panel)}
+.cyc-hz-muted .spc-hz-cell[data-source="model"] .spc-hz-val{color:var(--muted)}
+.cyc-hz-muted .spc-model-prior-badge[data-source="model"]{color:var(--muted);border-style:dashed}
+.cyc-rhythm-row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.cyc-overdue{--c:var(--ink-warn,var(--warn))}
+.cyc-win{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.cyc-win div{padding:8px 6px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);text-align:center;min-width:0}
+.cyc-win .k{display:block;font:700 var(--fs-micro)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-win .v{display:block;font:700 var(--fs-md)/1.25 var(--font-ui);font-variant-numeric:tabular-nums;margin-top:2px}
+.cyc-win div[data-central="true"]{background:color-mix(in srgb,var(--text) 8%,var(--panel))}
+.cyc-read-body{margin:0;font-size:var(--fs-sm);line-height:1.55;color:var(--text)}
+
+/* R6 timing methods: hazard, rhythm, sizing, lead-lag */
+.cyc-methods{margin-top:16px}
+.cyc-method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.cyc-method{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);min-width:0}
+.cyc-method .k{font:700 var(--fs-micro)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-method p{margin:0;font-size:var(--fs-sm);line-height:1.5}
+.cyc-method .cyc-chips{margin-top:auto}
+
+/* R8 grader + R7 events */
+.cyc-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:16px}
+.cyc-grader-body{margin:10px 0 0;font-size:var(--fs-sm);line-height:1.55;color:var(--text)}
+.cyc-ev-chips{margin-top:12px}
+.cyc-ev-fresh,.cyc-ev-incompat{margin-top:12px}
+.cyc-ev-fresh{display:flex;flex-direction:column;gap:4px;font-size:var(--fs-sm)}
+.cyc-ev-fresh .t{font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.cyc-ev-fresh .t .spc-asof-state{text-transform:none}
+.cyc-ev-fresh .b{color:var(--muted);line-height:1.5}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-fresh{display:none}
+html:not([data-state="incompatible_generation"]) .cyc .cyc-ev-incompat{display:none}
+.cyc-fixture{margin:10px 0 0;font:600 var(--fs-micro)/1.45 var(--font-mono,var(--font-ui));color:var(--muted);overflow-wrap:anywhere}
+
+/* R9 metadata: producer field paths and values, mono */
+.cyc-meta{margin-top:16px}
+.cyc-meta dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin:10px 0 0}
+.cyc-meta dl > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);align-items:baseline;min-width:0}
+.cyc-meta dt{font:500 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));color:var(--muted);overflow-wrap:anywhere}
+.cyc-meta dd{margin:0;font:600 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));color:var(--text);text-align:right;overflow-wrap:anywhere;max-width:100%}
+
+/* language switching: theme.css owns .l-en/.l-zh; this file hides the unset locale copy defensively */
+html:not([data-lang="zh"]) .cyc .l-zh{display:none}
+html[data-lang="zh"] .cyc .l-en{display:none}
+
+/* responsive: 2-up at tablet, single column at 390 (decision, then hazard/rhythm, then read, then methods) */
+@media (max-width:1100px){.cyc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.cyc-method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .cyc{padding:12px 16px 40px}
+  .cyc-head,.cyc-cards,.cyc-method-grid,.cyc-two,.cyc-meta dl{grid-template-columns:minmax(0,1fr)}
+  .cyc-head h1{font-size:24px}
+  .cyc-card{padding:14px}
+  .cyc-pos{margin-left:0;text-align:left}
+  .cyc-meta dl > div{grid-template-columns:minmax(0,1fr)}
+  .cyc-meta dd{text-align:left}
+}
+.cyc-warn{--c:var(--ink-warn,var(--warn))}
+.cyc-hz-gap{display:block;width:16px;height:0;margin:9px auto;border-top:1px dashed var(--muted)}

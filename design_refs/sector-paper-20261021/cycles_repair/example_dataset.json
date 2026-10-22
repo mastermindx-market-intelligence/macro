@@ -1,0 +1,695 @@
+{
+ "_fixture_note": "Captured verbatim from site/sector_cycles_data.js rendered at d86344b93a0bd (render tree sic-render-9917, as-of 2026-10-20). Three sector records chosen to show the three hazard shapes: XLF (qualified MODEL cells, model_cell_current_claim parity_failed), XLK (down-leg hazard unavailable: non_monotone_cdf), XLC (up-leg hazard unavailable). Nothing is edited; the incompatible_generation state shown on board 31 is a LABELED FIXTURE (see README) and is NOT in this file.",
+ "captured_at": "d86344b93a0bd",
+ "meta": {
+  "asOf": "2026-10-20",
+  "benchmark": "SPY",
+  "rebaseDate": "2011-10-20",
+  "phase_age_version": 2,
+  "rhythm_version": 1,
+  "correction_contract": {
+   "status": "none_native",
+   "basis": "no native correction or revision field in Cycles inputs (capability row R3A-92)"
+  },
+  "n_sectors": 11,
+  "n_baskets": 49,
+  "window_years": 15,
+  "default_window_years": 7,
+  "live_hazard_parity": {
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ],
+   "measured_on": "a038b3f35aafd3acc8879212a25373d4c94510c2"
+  },
+  "semantic_families": {
+   "schema": "sector_cycles.semantic_families.v2",
+   "legacy": [
+    "phase",
+    "phaseLabel",
+    "pos",
+    "signal",
+    "osc_slope",
+    "timing_state",
+    "action",
+    "read",
+    "read_zh"
+   ]
+  }
+ },
+ "phases": {
+  "Trough": {
+   "label": "Trough",
+   "short": "Bottoming",
+   "hue": "#5b9bf0"
+  },
+  "Recovery": {
+   "label": "Recovery",
+   "short": "Prime entry",
+   "hue": "#2dd4bf"
+  },
+  "Expansion": {
+   "label": "Expansion",
+   "short": "Trending",
+   "hue": "#45b873"
+  },
+  "Peak": {
+   "label": "Peak",
+   "short": "Topping",
+   "hue": "#e0a030"
+  },
+  "Downturn": {
+   "label": "Downturn",
+   "short": "Rolling over",
+   "hue": "#e0556b"
+  }
+ },
+ "sectors": [
+  {
+   "id": "xlf",
+   "ticker": "XLF",
+   "kind": "sector",
+   "name": "Financials",
+   "short": "Financials",
+   "name_zh": "金融",
+   "short_zh": "金融",
+   "group": "Cyclical",
+   "group_zh": "周期",
+   "accent": "#34d399",
+   "basis": "price",
+   "rhythm": {
+    "schema": "sector_cycles.rhythm.v1",
+    "kind": "descriptive_rhythm",
+    "status": "inside_window_past_central",
+    "anchor_turn": "2026-03",
+    "anchor_x": 2026.233,
+    "next_turn": "peak",
+    "window": {
+     "low": "2026-05",
+     "central": "2026-07",
+     "high": "2027-02"
+    },
+    "window_x": {
+     "low": 2026.345,
+     "central": 2026.504,
+     "high": 2027.102
+    },
+    "as_of_x": 2026.799,
+    "elapsed_half_cycle_ratio": 2.09,
+    "exceeded_central_years": 0.295,
+    "exceeded_window_years": null,
+    "n_confirmed_halves": 22,
+    "overdue": true,
+    "reason": null
+   },
+   "estimate_kinds": {
+    "schema": "sector_cycles.estimate_kinds.v1",
+    "rhythm": "descriptive_rhythm",
+    "hazard": {
+     "1m": "qualified_model_cell",
+     "3m": "qualified_model_cell",
+     "6m": "qualified_model_cell"
+    },
+    "model_cell_current_claim": "parity_failed",
+    "live_feature_parity": {
+     "verdict": "PARITY_FAILS",
+     "failing": [
+      "age_b1",
+      "age_b2",
+      "age_b3",
+      "age_b4",
+      "age_b5",
+      "log_age_ratio",
+      "amp_proxy",
+      "pos_osc_s",
+      "osc_slope_s",
+      "trend_pass",
+      "mom_score",
+      "rs_63d",
+      "vol_pctile",
+      "direction",
+      "basis_epoch"
+     ],
+     "report_ref": "meta.live_hazard_parity"
+    }
+   },
+   "series_provenance": {
+    "schema": "sector_cycles.series_provenance.v1",
+    "structure_basis": "price",
+    "rs_basis": "tr",
+    "membership": "single_instrument",
+    "point_in_time": true,
+    "benchmark": "SPY",
+    "benchmark_ffill_limit_sessions": 5,
+    "history_mode": "reconstructed_price_history"
+   },
+   "proj": {
+    "nextTurn": "peak",
+    "central": "2026-06",
+    "low": "2026-05",
+    "high": "2026-09",
+    "central_x": 2026.415,
+    "overdue": true,
+    "overdue_frac": 3.112,
+    "last_confirmed_x": 2026.233,
+    "last_confirmed_t": "2026-03",
+    "period_yrs": {
+     "median": 0.36,
+     "lo": 0.16,
+     "hi": 0.88
+    },
+    "tilt": "mixed"
+   },
+   "n_turns_all": 66,
+   "now": {
+    "phase": "Downturn",
+    "phaseLabel": "Rolling over",
+    "pos": 46.9,
+    "signal": null,
+    "osc_slope": -34.2,
+    "timing_state": "RALLY ON",
+    "action": "HOLD",
+    "w_macd_up": false,
+    "t3_macd_up": false,
+    "lastTrough": "2026-03",
+    "lastPeak": "2026-09",
+    "above200d": true,
+    "ret_win_pct": 435.9,
+    "dc_phase": "mid",
+    "read": "Financials is in a Rolling over phase (cycle position 47/100), above its 200-day. RS vs SPY (63d): -3.3%. Next projected peak: 2026-06.",
+    "read_zh": "Financials下行阶段（周期位置 47/100），位于200日均线。相对标普RS（63日）：-3.3%。预计下一顶部：2026-06。",
+    "pos_v2": 72.64,
+    "phase_v2": "Downturn",
+    "phase_v2_age_bars": null,
+    "phase_v2_source": "ontology",
+    "phase_v2_position_input": "pos_v2",
+    "stance": "HOLD",
+    "divergence": true,
+    "tone": "bullish",
+    "stance_zh": "持有",
+    "divergence_note": "The cycle is in Downturn but the daily ladder shows a rallying structure. Hold, but trim into strength — the larger trend is down.",
+    "divergence_note_zh": "周期处于下行阶段，但日线阶梯显示反弹结构。持有，但逢强减仓——更大趋势向下。",
+    "clocks": {
+     "phase": "Downturn",
+     "ladder": "RALLY ON",
+     "agree": false
+    },
+    "basis": "price",
+    "rs_21d": 0.3,
+    "rs_63d": -3.3,
+    "rs_126d": -2.3,
+    "rs_above_trend": false,
+    "thin_history": false,
+    "hazard": {
+     "epoch": "price_c4414dcb",
+     "revision_optimistic": true,
+     "direction": "down",
+     "turn_kind": "trough",
+     "1m": {
+      "p": 0.3511,
+      "source": "MODEL",
+      "cell_verdict": "PASS"
+     },
+     "3m": {
+      "p": 0.4,
+      "source": "MODEL",
+      "cell_verdict": "PASS"
+     },
+     "6m": {
+      "p": 0.5882,
+      "source": "MODEL",
+      "cell_verdict": "PASS"
+     }
+    },
+    "rs_rank": 8,
+    "rs_21d_rank": 7,
+    "phase_v2_age": {
+     "sessions": 5,
+     "status": "lower_bound",
+     "method": "forward_log_replay.v2",
+     "run_start": null,
+     "observed_from": "2026-10-13",
+     "basis": "price",
+     "history_rows": 56
+    },
+    "phase_v2_age_sessions": 5,
+    "phase_v2_age_status": "lower_bound"
+   },
+   "turns_tail": [
+    {
+     "i": 6800,
+     "date": "2026-01-06",
+     "t": "2026-01",
+     "x": 2026.014,
+     "px": 56.4,
+     "k": "peak",
+     "mag_pct": 28.4,
+     "major": true,
+     "provisional": false,
+     "rebased": 542.41,
+     "osc": 47.3
+    },
+    {
+     "i": 6856,
+     "date": "2026-03-27",
+     "t": "2026-03",
+     "x": 2026.233,
+     "px": 47.81,
+     "k": "trough",
+     "mag_pct": 15.2,
+     "major": false,
+     "provisional": false,
+     "rebased": 459.8,
+     "osc": 0.1
+    },
+    {
+     "i": 6966,
+     "date": "2026-09-03",
+     "t": "2026-09",
+     "x": 2026.671,
+     "px": 58.56,
+     "k": "peak",
+     "mag_pct": 22.5,
+     "major": true,
+     "provisional": true,
+     "rebased": 563.18,
+     "osc": 94.9
+    }
+   ]
+  },
+  {
+   "id": "xlk",
+   "ticker": "XLK",
+   "kind": "sector",
+   "name": "Technology",
+   "short": "Tech",
+   "name_zh": "科技",
+   "short_zh": "科技",
+   "group": "Growth",
+   "group_zh": "成长",
+   "accent": "#38bdf8",
+   "basis": "price",
+   "rhythm": {
+    "schema": "sector_cycles.rhythm.v1",
+    "kind": "descriptive_rhythm",
+    "status": "inside_window_past_central",
+    "anchor_turn": "2026-07",
+    "anchor_x": 2026.572,
+    "next_turn": "peak",
+    "window": {
+     "low": "2026-10",
+     "central": "2026-10",
+     "high": "2027-02"
+    },
+    "window_x": {
+     "low": 2026.728,
+     "central": 2026.783,
+     "high": 2027.106
+    },
+    "as_of_x": 2026.799,
+    "elapsed_half_cycle_ratio": 1.078,
+    "exceeded_central_years": 0.016,
+    "exceeded_window_years": null,
+    "n_confirmed_halves": 17,
+    "overdue": true,
+    "reason": null
+   },
+   "estimate_kinds": {
+    "schema": "sector_cycles.estimate_kinds.v1",
+    "rhythm": "descriptive_rhythm",
+    "hazard": {
+     "1m": "missing_estimate",
+     "3m": "missing_estimate",
+     "6m": "missing_estimate"
+    },
+    "model_cell_current_claim": null,
+    "live_feature_parity": null
+   },
+   "series_provenance": {
+    "schema": "sector_cycles.series_provenance.v1",
+    "structure_basis": "price",
+    "rs_basis": "tr",
+    "membership": "single_instrument",
+    "point_in_time": true,
+    "benchmark": "SPY",
+    "benchmark_ffill_limit_sessions": 5,
+    "history_mode": "reconstructed_price_history"
+   },
+   "proj": {
+    "nextTurn": "peak",
+    "central": "2026-10",
+    "low": "2026-10",
+    "high": "2027-02",
+    "central_x": 2026.785,
+    "overdue": true,
+    "overdue_frac": 1.068,
+    "last_confirmed_x": 2026.572,
+    "last_confirmed_t": "2026-07",
+    "period_yrs": {
+     "median": 0.43,
+     "lo": 0.28,
+     "hi": 0.98
+    },
+    "tilt": "mixed"
+   },
+   "n_turns_all": 56,
+   "now": {
+    "phase": "Downturn",
+    "phaseLabel": "Rolling over",
+    "pos": 53.1,
+    "signal": null,
+    "osc_slope": 3.6,
+    "timing_state": "COUNTERTREND BOUNCE",
+    "action": "HIGH-RISK · NIMBLE ONLY",
+    "w_macd_up": false,
+    "t3_macd_up": false,
+    "lastTrough": "2026-07",
+    "lastPeak": "2026-10",
+    "above200d": true,
+    "ret_win_pct": 1371.2,
+    "dc_phase": "in_band",
+    "read": "Technology is in a Rolling over phase (cycle position 53/100), above its 200-day. RS vs SPY (63d): -0.2%. Next projected peak: 2026-10.",
+    "read_zh": "Technology下行阶段（周期位置 53/100），位于200日均线。相对标普RS（63日）：-0.2%。预计下一顶部：2026-10。",
+    "pos_v2": 98.58,
+    "phase_v2": "Downturn",
+    "phase_v2_age_bars": null,
+    "phase_v2_source": "ontology",
+    "phase_v2_position_input": "pos_v2",
+    "stance": "HIGH-RISK BOUNCE",
+    "divergence": false,
+    "tone": "caution",
+    "stance_zh": "高风险反弹",
+    "divergence_note": "",
+    "divergence_note_zh": "",
+    "clocks": {
+     "phase": "Downturn",
+     "ladder": "COUNTERTREND BOUNCE",
+     "agree": true
+    },
+    "basis": "price",
+    "rs_21d": -4.3,
+    "rs_63d": -0.2,
+    "rs_126d": 9.5,
+    "rs_above_trend": true,
+    "thin_history": false,
+    "hazard": {
+     "epoch": "price_c4414dcb",
+     "revision_optimistic": true,
+     "direction": "down",
+     "turn_kind": "trough",
+     "unavailable": true,
+     "unavailable_reason": "non_monotone_cdf"
+    },
+    "rs_rank": 4,
+    "rs_21d_rank": 11,
+    "phase_v2_age": {
+     "sessions": 4,
+     "status": "lower_bound",
+     "method": "forward_log_replay.v2",
+     "run_start": null,
+     "observed_from": "2026-10-14",
+     "basis": "price",
+     "history_rows": 56
+    },
+    "phase_v2_age_sessions": 4,
+    "phase_v2_age_status": "lower_bound"
+   },
+   "turns_tail": [
+    {
+     "i": 6901,
+     "date": "2026-06-02",
+     "t": "2026-06",
+     "x": 2026.416,
+     "px": 198.21,
+     "k": "peak",
+     "mag_pct": 55.5,
+     "major": true,
+     "provisional": false,
+     "rebased": 1572.47,
+     "osc": 99.4
+    },
+    {
+     "i": 6940,
+     "date": "2026-07-29",
+     "t": "2026-07",
+     "x": 2026.572,
+     "px": 166.57,
+     "k": "trough",
+     "mag_pct": 16.0,
+     "major": false,
+     "provisional": false,
+     "rebased": 1321.46,
+     "osc": 54.2
+    },
+    {
+     "i": 6988,
+     "date": "2026-10-06",
+     "t": "2026-10",
+     "x": 2026.761,
+     "px": 202.0,
+     "k": "peak",
+     "mag_pct": 21.3,
+     "major": true,
+     "provisional": true,
+     "rebased": 1602.54,
+     "osc": 57.9
+    }
+   ]
+  },
+  {
+   "id": "xlc",
+   "ticker": "XLC",
+   "kind": "sector",
+   "name": "Communication Services",
+   "short": "Comm",
+   "name_zh": "通讯服务",
+   "short_zh": "通讯",
+   "group": "Growth",
+   "group_zh": "成长",
+   "accent": "#818cf8",
+   "basis": "price",
+   "rhythm": {
+    "schema": "sector_cycles.rhythm.v1",
+    "kind": "descriptive_rhythm",
+    "status": "inside_window_past_central",
+    "anchor_turn": "2025-04",
+    "anchor_x": 2025.266,
+    "next_turn": "peak",
+    "window": {
+     "low": "2025-09",
+     "central": "2026-08",
+     "high": "2026-12"
+    },
+    "window_x": {
+     "low": 2025.669,
+     "central": 2026.577,
+     "high": 2026.882
+    },
+    "as_of_x": 2026.799,
+    "elapsed_half_cycle_ratio": 1.17,
+    "exceeded_central_years": 0.222,
+    "exceeded_window_years": null,
+    "n_confirmed_halves": 6,
+    "overdue": true,
+    "reason": null
+   },
+   "estimate_kinds": {
+    "schema": "sector_cycles.estimate_kinds.v1",
+    "rhythm": "descriptive_rhythm",
+    "hazard": {
+     "1m": "missing_estimate",
+     "3m": "missing_estimate",
+     "6m": "missing_estimate"
+    },
+    "model_cell_current_claim": null,
+    "live_feature_parity": null
+   },
+   "series_provenance": {
+    "schema": "sector_cycles.series_provenance.v1",
+    "structure_basis": "price",
+    "rs_basis": "tr",
+    "membership": "single_instrument",
+    "point_in_time": true,
+    "benchmark": "SPY",
+    "benchmark_ffill_limit_sessions": 5,
+    "history_mode": "reconstructed_price_history"
+   },
+   "proj": {
+    "nextTurn": "peak",
+    "central": "2026-08",
+    "low": "2025-09",
+    "high": "2026-12",
+    "central_x": 2026.577,
+    "overdue": true,
+    "overdue_frac": 1.17,
+    "last_confirmed_x": 2025.266,
+    "last_confirmed_t": "2025-04",
+    "period_yrs": {
+     "median": 2.62,
+     "lo": 0.81,
+     "hi": 3.23
+    },
+    "tilt": "headwind"
+   },
+   "n_turns_all": 8,
+   "now": {
+    "phase": "Trough",
+    "phaseLabel": "Bottoming",
+    "pos": 19.2,
+    "signal": null,
+    "osc_slope": -1.0,
+    "timing_state": "ROLLING OVER",
+    "action": "SELL SETUP",
+    "w_macd_up": true,
+    "t3_macd_up": false,
+    "lastTrough": "2025-04",
+    "lastPeak": "2026-01",
+    "above200d": false,
+    "ret_win_pct": 120.6,
+    "dc_phase": "mid",
+    "read": "Communication Services is in a Bottoming phase (cycle position 19/100), below its 200-day. RS vs SPY (63d): -1.9%. Next projected peak: 2026-08.",
+    "read_zh": "Communication Services筑底阶段（周期位置 19/100），低于200日均线。相对标普RS（63日）：-1.9%。预计下一顶部：2026-08。",
+    "pos_v2": 48.18,
+    "phase_v2": "Downturn",
+    "phase_v2_age_bars": null,
+    "phase_v2_source": "ontology",
+    "phase_v2_position_input": "pos_v2",
+    "stance": "SELL",
+    "divergence": false,
+    "tone": "bearish",
+    "stance_zh": "卖出",
+    "divergence_note": "",
+    "divergence_note_zh": "",
+    "clocks": {
+     "phase": "Downturn",
+     "ladder": "ROLLING OVER",
+     "agree": true
+    },
+    "basis": "price",
+    "rs_21d": -3.4,
+    "rs_63d": -1.9,
+    "rs_126d": -13.8,
+    "rs_above_trend": false,
+    "thin_history": false,
+    "hazard": {
+     "epoch": "price_c4414dcb",
+     "revision_optimistic": true,
+     "direction": "up",
+     "turn_kind": "peak",
+     "unavailable": true,
+     "unavailable_reason": "non_monotone_cdf"
+    },
+    "rs_rank": 7,
+    "rs_21d_rank": 10,
+    "phase_v2_age": {
+     "sessions": 2,
+     "status": "lower_bound",
+     "method": "forward_log_replay.v2",
+     "run_start": null,
+     "observed_from": "2026-10-16",
+     "basis": "price",
+     "history_rows": 56
+    },
+    "phase_v2_age_sessions": 2,
+    "phase_v2_age_status": "lower_bound"
+   },
+   "turns_tail": [
+    {
+     "i": 1674,
+     "date": "2025-02-14",
+     "t": "2025-02",
+     "x": 2025.12,
+     "px": 105.31,
+     "k": "peak",
+     "mag_pct": 131.9,
+     "major": true,
+     "provisional": false,
+     "rebased": 210.79,
+     "osc": 69.4
+    },
+    {
+     "i": 1710,
+     "date": "2025-04-08",
+     "t": "2025-04",
+     "x": 2025.266,
+     "px": 86.13,
+     "k": "trough",
+     "mag_pct": 18.2,
+     "major": false,
+     "provisional": false,
+     "rebased": 172.4,
+     "osc": 1.4
+    },
+    {
+     "i": 1914,
+     "date": "2026-01-30",
+     "t": "2026-01",
+     "x": 2026.079,
+     "px": 120.08,
+     "k": "peak",
+     "mag_pct": 39.4,
+     "major": true,
+     "provisional": true,
+     "rebased": 240.35,
+     "osc": 49.5
+    }
+   ]
+  }
+ ],
+ "rotation_context": {
+  "schema": "sector_cycles.rotation_context.v1",
+  "events": {
+   "clock": "settled_daily_session",
+   "status": "aligned",
+   "reason": "aligned",
+   "artifact_session": "2026-10-20",
+   "consumer_session": "2026-10-20"
+  },
+  "fragmentation": {
+   "clock": "settled_daily_session",
+   "status": "aligned",
+   "reason": "aligned",
+   "artifact_session": "2026-10-20",
+   "consumer_session": "2026-10-20"
+  },
+  "fragmentation_xlk": [
+   {
+    "key": "xlk",
+    "etf": "XLK",
+    "name_en": "Technology",
+    "name_zh": "科技",
+    "asof": "2026-10-20",
+    "ret_etf": -0.0552,
+    "spread": 0.3316,
+    "opposite_signs": true,
+    "max_abs_ratio_z": 1.87,
+    "fragmented": true,
+    "copy_en": "Aggregate read may not be representative — Software (non-AI) +9.8% vs Memory & storage -23.3% over 20 sessions.",
+    "copy_zh": "板块聚合读数或失真 — 软件（非AI） +9.8%，存储芯片 -23.3%（20个交易日）。"
+   }
+  ]
+ },
+ "_fixtures": {
+  "incompatible_generation": {
+   "label": "FIXTURE",
+   "query": "?state=incompatible_generation",
+   "x": "2026-10-16",
+   "y": "2026-10-19",
+   "basis": "Render log at d86344b93a0bd: sector_central rotation artifact generation incompatible_generation (as_of_mismatch). The Cycles events/fragmentation clocks were aligned on 2026-10-20; this state is a labeled fixture, not a captured Cycles value."
+  }
+ }
+}
