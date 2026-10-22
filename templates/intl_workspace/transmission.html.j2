@@ -1,0 +1,183 @@
+{# INTL-GS W4B — the Transmission board (R14 §10.4, board 10), IM17 contract.
+   gs_panel.payload IS the present_transmission() output (view contract
+   intl-gs-transmission-view-v1) built by lib/intl_gs_transmission_present.py.
+   The future production builder lib.intl_gs_transmission_view (NOT in this
+   PR: no admitted live IM17 producer exists yet) must call
+   present_transmission on the board document it assembles; until then the
+   Transmission tab stays not_built on the real site. No specimen value lives
+   in this file: every value below is a payload field the IM17 contract
+   emits, and every withheld or missing value renders its §7 state. #}
+{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+{% set cid = gs_panel.context_id %}
+{% set p = gs_panel.payload %}
+{% call gs.gs_panel_root(view='transmission', panel=gs_panel) %}
+<div class="intl-gs__bandhead">
+  <span class="intl-gs__eyebrow">{{ t('Q4 · Q5', 'Q4 · Q5') }}</span>
+  <h2 class="intl-gs__bandhead__title" id="{{ cid|e }}-transmission-title">{{ t('Transmission', '传导') }}</h2>
+  <span class="intl-gs__bandhead__sub">{{ t('Typed evidence edges from the origin markets into the three US receivers.', '从源头市场进入三个美国接收端的类型化证据边。') }}</span>
+  <span class="intl-gs__bandhead__clock intl-gs__num">{{ t(p.as_of.en, p.as_of.zh) }}</span>
+</div>
+{% if p.specimen %}{{ gs.gs_specimen_chip() }}{% endif %}
+{% for o in p.origins %}
+<input type="radio" class="intl-transmission__opick intl-transmission__vh" name="{{ cid|e }}-origin" id="{{ cid|e }}-o{{ o.i }}" data-i="{{ o.i }}"{% if o.i == p.selected.i %} checked{% endif %}>
+{% endfor %}
+<div class="intl-transmission__panes">
+{% for o in p.origins %}
+<div class="intl-transmission__pane" data-i="{{ o.i }}">
+  {% for edge in o.edges %}
+  <input type="radio" class="intl-transmission__epick intl-transmission__vh" name="{{ cid|e }}-o{{ o.i }}-edge" id="{{ cid|e }}-o{{ o.i }}-e{{ edge.e }}" data-e="{{ edge.e }}"{% if (o.i == p.selected.i and edge.e == p.selected.e) or (o.i != p.selected.i and edge.e == 0) %} checked{% endif %}>
+  {% endfor %}
+  <div class="intl-gs__split intl-transmission__row">
+    <div class="intl-gs__split__main intl-transmission__left">
+      <div class="intl-gs__panel intl-transmission__graphpanel">
+        {{ gs.gs_bandhead(t('Transmission graph', '传导图'), qnum='Q4', sub=t('Typed evidence edges into the three US receivers. Not a causal claim.', '进入三个美国接收端的类型化证据边。并非因果判断。'), clock=t(p.as_of.en, p.as_of.zh)) }}
+        <div class="intl-gs__seg intl-transmission__picker" role="radiogroup" aria-label="{{ t('Origin market', '源头市场') }}">
+          {% for oo in p.origins %}
+          <label for="{{ cid|e }}-o{{ oo.i }}" class="intl-gs__seg__opt intl-transmission__olabel" data-i="{{ oo.i }}"{% if oo.i == o.i %} aria-current="true"{% endif %}>{{ t(oo.name_en, oo.name_zh) }} <span class="intl-gs__num">#{{ oo.relevance.rank }}</span></label>
+          {% endfor %}
+        </div>
+        <div class="intl-transmission__legend">
+          {% for fam in p.legend %}
+          <span class="intl-gs__edgelabel">{{ gs.gs_typed_edge(fam.glyph_family) }} {{ t(fam.type_en, fam.type_zh) }} <span class="intl-transmission__legendch">{% for c in fam.channels %}{{ t(c.label_en, c.label_zh) }}{% if not loop.last %} · {% endif %}{% endfor %}</span></span>
+          {% endfor %}
+          <span class="intl-gs__edgelabel">{{ t(p.common_shock_legend.label_en, p.common_shock_legend.label_zh) }} — {{ t(p.common_shock_legend.note_en, p.common_shock_legend.note_zh) }}</span>
+        </div>
+        {% set g = o.graph %}
+        <svg class="intl-transmission__graph" viewBox="{{ g.view_box|e }}" role="img" aria-label="{{ t(g.aria_en, g.aria_zh) }}">
+          {% for ge in g.edges %}<path class="intl-gs__edge intl-gs__edge--{{ ge.glyph_family|e }}" d="{{ ge.d|e }}"></path>
+          {% endfor %}<g class="intl-transmission__node intl-transmission__node--origin" transform="translate({{ g.origin.x }} {{ g.origin.y }})"><rect x="-46" y="-16" width="92" height="32" rx="8"></rect><text class="intl-transmission__nodelabel" y="4" text-anchor="middle">{{ t(g.origin.label_en, g.origin.label_zh) }}</text><text class="intl-transmission__nodesub" y="28" text-anchor="middle">{{ t('Origin', '源头') }}</text></g>
+          {% for rn in g.receivers %}<g class="intl-transmission__node" transform="translate({{ rn.x }} {{ rn.y }})"><rect x="-49" y="-16" width="98" height="32" rx="8"></rect><text class="intl-transmission__nodelabel" y="4" text-anchor="middle">{{ t(rn.label_en, rn.label_zh) }}</text></g>
+          {% endfor %}
+          {% for ge in g.edges %}<text class="intl-transmission__edgelabel" x="{{ ge.label_x }}" y="{{ ge.label_y }}" text-anchor="middle">{{ t(ge.label_en, ge.label_zh) }}</text>
+          {% endfor %}
+        </svg>
+        <table class="intl-transmission__vh intl-transmission__vhedges">
+          <caption>{{ t('Drawn edges', '已绘制边') }}</caption>
+          <thead><tr><th scope="col">{{ t('Edge', '传导边') }}</th><th scope="col">{{ t('Type', '类型') }}</th><th scope="col">{{ t('Pathway', '路径') }}</th></tr></thead>
+          <tbody>
+            {% for edge in o.edges %}
+            <tr><td>{{ t(edge.name_en, edge.name_zh) }}</td><td>{{ gs.gs_typed_edge(edge.glyph_family) }} {{ t(edge.type_en, edge.type_zh) }}</td><td>{{ t(edge.pathway.label_en, edge.pathway.label_zh) }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if o.event_state == 'abstain' %}
+        <p class="intl-transmission__abstain">{{ gs.gs_state_chip('abstain') }}{% for reason in o.abstain_reasons %} <span class="intl-gs__num">{{ reason.id }}</span> {{ t(reason.en, reason.zh) }}{% endfor %}</p>
+        {% endif %}
+        <p class="intl-transmission__structural">{{ gs.gs_chip(t(o.structural.en, o.structural.zh), 'muted-dashed' if o.structural.state == 'outside_structural_graph' else '') }}</p>
+        <p class="intl-transmission__deskread">{{ t(o.desk_read.en, o.desk_read.zh) }}</p>
+        <p class="intl-gs__footnote">{{ t(o.ceiling.en, o.ceiling.zh) }} · {{ t(o.attribution.en, o.attribution.zh) }} · {{ t(o.us_response_stage.en, o.us_response_stage.zh) }}</p>
+        {% if o.event_state == 'abstain' %}
+        <div class="intl-transmission__alts">
+          {% for alt in o.alternatives %}
+          <p class="intl-gs__footnote">{{ t(alt.label_en, alt.label_zh) }}: {{ t(alt.status_en, alt.status_zh) }} — {{ t(alt.basis_en, alt.basis_zh) }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="intl-gs__panel intl-transmission__rankstrip">
+        {{ gs.gs_bandhead(t('US exposure by channel', '美国按渠道敞口'), qnum='Q4', sub=t('Rank among markets with the same measure, units and denominator. No cross-denominator total.', '仅在相同指标、单位与分母的市场间排名。不跨分母汇总。')) }}
+        {% for r in o.rank_strip %}
+        <div class="intl-transmission__rankrow">
+          <span class="intl-transmission__ranklabel">{{ gs.gs_typed_edge(r.glyph_family) }} {{ t(r.label_en, r.label_zh) }}</span>
+          {% if r.state == 'shown' %}
+          <svg class="intl-transmission__track" width="200" height="20" viewBox="0 0 200 20" aria-hidden="true"><rect class="intl-transmission__trackbg" x="0" y="0" width="200" height="8" rx="4"></rect><rect class="intl-transmission__bar" data-fam="{{ r.glyph_family|e }}" x="{{ [r.tick_x - 6, 0]|max }}" y="0" width="12" height="8" rx="4"></rect>{% for tk in r.ticks %}<text class="intl-transmission__ticklabel" x="{{ tk.x }}" y="18"{% if tk.x == 200 %} text-anchor="end"{% else %} text-anchor="start"{% endif %}>{{ tk.rank }}</text>{% endfor %}</svg>
+          <span class="intl-transmission__rankvalue">{{ gs.gs_value(r.value, {'label': t(r.label_en, r.label_zh), 'unit': r.units, 'basis': r.denominator, 'clock': t(r.as_of.en, r.as_of.zh), 'tier': t(r.source_id, r.source_id), 'dp': r.dp}) }}</span>
+          <span class="intl-gs__footnote">{{ t('rank ' ~ r.rank ~ ' of ' ~ r.rank_population, '第' ~ r.rank ~ '名，共' ~ r.rank_population ~ '个') }}</span>
+          {% elif r.state == 'withheld' %}
+          <span class="intl-transmission__rankstate">{{ gs.gs_rights_slot() }} {{ t(r.reason.en, r.reason.zh) }}</span>
+          {% else %}
+          <span class="intl-transmission__rankstate">{{ gs.gs_state_chip('empty', ' · ' ~ t(r.reason.en, r.reason.zh) if r.reason else '') }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="intl-gs__panel intl-transmission__edgelist">
+        <table class="intl-gs__table intl-transmission__edges">
+          <colgroup><col class="intl-transmission__col-n"><col class="intl-transmission__col-edge"><col class="intl-transmission__col-type"><col class="intl-transmission__col-mech"><col class="intl-transmission__col-evid"><col class="intl-transmission__col-win"><col class="intl-transmission__col-resp"><col class="intl-transmission__col-tier"></colgroup>
+          <thead>
+            <tr><th scope="col">{{ t('#', '#') }}</th><th scope="col">{{ t('Edge', '传导边') }}</th><th scope="col">{{ t('Type', '类型') }}</th><th scope="col">{{ t('Mechanism', '机制') }}</th><th scope="col">{{ t('Evidence', '证据') }}</th><th scope="col">{{ t('US window', '美国窗口') }}</th><th scope="col">{{ t('US response', '美国响应') }}</th><th scope="col">{{ t('Tier', '层级') }}</th></tr>
+          </thead>
+          <tbody>
+            {% for edge in o.edges %}
+            <tr id="{{ cid|e }}-o{{ o.i }}-row-{{ edge.e }}" data-e="{{ edge.e }}">
+              <td class="intl-transmission__num"><span class="intl-gs__num">{{ edge.n }}</span></td>
+              <td class="intl-transmission__edgecell"><span class="intl-transmission__cardlabel">{{ t('Edge', '传导边') }}</span><label for="{{ cid|e }}-o{{ o.i }}-e{{ edge.e }}" data-e="{{ edge.e }}">{{ t(edge.name_en, edge.name_zh) }}</label></td>
+              <td class="intl-transmission__type"><span class="intl-transmission__cardlabel">{{ t('Type', '类型') }}</span>{{ gs.gs_typed_edge(edge.glyph_family) }} {{ t(edge.type_en, edge.type_zh) }}</td>
+              <td class="intl-transmission__mech"><span class="intl-transmission__cardlabel">{{ t('Mechanism', '机制') }}</span><span title="{{ edge.mechanism.en|e }} · {{ edge.mechanism.zh|e }}">{{ t(edge.mechanism.en, edge.mechanism.zh) }}</span></td>
+              <td class="intl-transmission__evid"><span class="intl-transmission__cardlabel">{{ t('Evidence', '证据') }}</span>{{ t(edge.evidence.en, edge.evidence.zh) }}</td>
+              <td class="intl-transmission__win"><span class="intl-transmission__cardlabel">{{ t('US window', '美国窗口') }}</span><span class="intl-gs__num">{{ t(edge.window.en, edge.window.zh) }}</span>{% if edge.window.same_session == false %} <span class="intl-transmission__samesession">{{ t('Not same-session testable', '非同一交易时段可检验') }}</span>{% endif %}</td>
+              <td class="intl-transmission__resp"><span class="intl-transmission__cardlabel">{{ t('US response', '美国响应') }}</span><span class="intl-transmission__exp">{{ t(edge.expected.en, edge.expected.zh) }}</span> <span class="intl-transmission__obs">{{ t(edge.observed.en, edge.observed.zh) }}</span></td>
+              <td class="intl-transmission__tier"><span class="intl-transmission__cardlabel">{{ t('Tier', '层级') }}</span>{% if edge.tier.kind == 'restricted' %}{{ gs.gs_tier_chip('Restricted') }}{% else %}{{ gs.gs_chip(t(edge.tier.en, edge.tier.zh), 'tier') }}{% endif %}</td>
+            </tr>
+            {% endfor %}
+            {% if o.event_state == 'abstain' %}
+            <tr class="intl-transmission__staterow"><td colspan="8"><span class="intl-transmission__cardlabel">{{ t('Edge', '传导边') }}</span>{{ gs.gs_state_chip('abstain') }} {{ t('No qualified transmission event', '无合格传导事件') }}</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+        {% if o.more_edges.count > 0 %}
+        <p class="intl-gs__footnote">{{ t('+' ~ o.more_edges.count ~ ' more edges in the evidence record', '证据记录中另有 ' ~ o.more_edges.count ~ ' 条边') }}</p>
+        {% endif %}
+        <div class="intl-transmission__coverage">
+          {{ gs.gs_bandhead(t('Structural graph coverage', '结构图覆盖')) }}
+          {% for m in p.markets %}
+          <div class="intl-transmission__mkt" data-market="{{ m.market_id|e }}">
+            <span class="intl-transmission__mktname">{{ t(m.name_en, m.name_zh) }}</span>
+            {{ gs.gs_chip(t(m.structural.en, m.structural.zh), 'muted-dashed' if m.structural.state == 'outside_structural_graph' else '') }}
+            <span class="intl-transmission__mktsections">{% for s in m.sections %}{{ t(s.en, s.zh) }} <span class="intl-gs__num">{{ s.count }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <aside class="intl-gs__rail intl-transmission__inspector">
+      {% for edge in o.edges %}
+      <div class="intl-transmission__insp" data-e="{{ edge.e }}">
+        <p class="intl-transmission__edgeid">{{ t(edge.name_en, edge.name_zh) }}</p>
+        <p class="intl-transmission__edgemeta">{{ gs.gs_typed_edge(edge.glyph_family) }} {{ t(edge.type_en, edge.type_zh) }} · {{ t(edge.channel.label_en, edge.channel.label_zh) }} · {{ t(edge.pathway.label_en, edge.pathway.label_zh) }} {% if edge.tier.kind == 'restricted' %}{{ gs.gs_tier_chip('Restricted') }}{% else %}{{ gs.gs_chip(t(edge.tier.en, edge.tier.zh), 'tier') }}{% endif %}</p>
+        <h3 class="intl-transmission__insphead">{{ t('Expected vs observed', '预期与实际') }}</h3>
+        <div class="intl-transmission__exprow"><svg class="intl-transmission__rule" width="88" height="6" viewBox="0 0 88 6" aria-hidden="true"><line class="intl-transmission__exp-rule" x1="0" y1="3" x2="88" y2="3"></line></svg><span class="intl-transmission__exp">{{ t(edge.expected.en, edge.expected.zh) }}</span></div>
+        <div class="intl-transmission__obsrow"><svg class="intl-transmission__rule" width="88" height="6" viewBox="0 0 88 6" aria-hidden="true"><line class="intl-transmission__obs-rule" x1="0" y1="3" x2="88" y2="3"></line></svg><span class="intl-transmission__obs">{{ t(edge.observed.en, edge.observed.zh) }}</span></div>
+        <h3 class="intl-transmission__insphead">{{ t('Cumulative response', '累计响应') }}</h3>
+        <p>{{ gs.gs_state_chip('empty', ' · ' ~ t('not in contract (IM18)', '合约未提供（IM18）')) }}</p>
+        <h3 class="intl-transmission__insphead">{{ t('Edge evidence', '边证据') }}</h3>
+        <dl class="intl-transmission__ev">
+          <dt>{{ t('Model status', '模型状态') }}</dt><dd>{{ t(edge.model_status.en, edge.model_status.zh) }}</dd>
+          <dt>{{ t('Source', '来源') }}</dt><dd><span class="intl-gs__num">{{ edge.source.source_id|e }}</span></dd>
+          <dt>{{ t('Authority', '权限依据') }}</dt><dd>{{ t(edge.evidence.en, edge.evidence.zh) }}</dd>
+          <dt>{{ t('Rights', '权利') }}</dt><dd>{% if edge.source.rights_class %}<span class="intl-gs__num">{{ edge.source.rights_class|e }}</span>{% else %}{{ t('No rights row', '无权利行') }}{% endif %}</dd>
+          <dt>{{ t('Vintage', '数据时点') }}</dt><dd>{{ t('as of', '数据截至') }} <span class="intl-gs__num">{{ t(edge.vintage.as_of.en, edge.vintage.as_of.zh) }}</span> · {{ t('published', '发布于') }} <span class="intl-gs__num">{{ t(edge.vintage.published_at.en, edge.vintage.published_at.zh) }}</span></dd>
+          <dt>{{ t('Measure', '指标') }}</dt><dd><span class="intl-gs__num">{{ edge.source.source_id|e }}</span> · {{ t('units', '单位') }} <span class="intl-gs__num">{{ edge.value.units|e }}</span></dd>
+          <dt>{{ t('Coverage', '覆盖') }}</dt><dd>{{ t(edge.coverage.state, edge.coverage.state) }}{% if edge.coverage.basis %} · {{ t(edge.coverage.basis, edge.coverage.basis) }}{% endif %}</dd>
+          <dt>{{ t('Value', '数值') }}</dt>
+          <dd class="intl-transmission__value">{% if edge.value.display == 'shown' %}<span class="intl-gs__num">{{ t(edge.value.text, edge.value.text) }}</span>{% elif 'withheld' in edge.value.display %}{{ gs.gs_rights_slot() }}{% else %}{{ gs.gs_state_chip('empty') }}{% endif %}</dd>
+        </dl>
+        {{ gs.gs_bandhead(t('Q5 corroboration', 'Q5 印证'), qnum='Q5') }}
+        <ul class="intl-transmission__receivers">
+          {% for r in o.receivers %}
+          <li><span class="intl-transmission__recvlabel">{{ t(r.label_en, r.label_zh) }}</span> {{ gs.gs_chip(t(r.status_en, r.status_zh), '') }} <span class="intl-gs__num">{{ t(r.window.en, r.window.zh) }}</span>{% if r.note %} <span class="intl-gs__footnote">{{ t(r.note.en, r.note.zh) }}</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+        <p class="intl-gs__footnote">{{ t(o.confidence.en, o.confidence.zh) }} · {{ o.confidence.family_count }} {% if o.confidence.family_count == 1 %}{{ t('evidence family', '个证据族') }}{% else %}{{ t('independent evidence families', '个独立证据族') }}{% endif %}</p>
+        {% for alt in o.alternatives %}
+        <p class="intl-gs__footnote">{{ t(alt.label_en, alt.label_zh) }}: {{ t(alt.status_en, alt.status_zh) }} — {{ t(alt.basis_en, alt.basis_zh) }}</p>
+        {% endfor %}
+        <div class="intl-transmission__actions">
+          <a class="intl-gs__btn" href="#{{ cid|e }}-o{{ o.i }}-row-{{ edge.e }}">{{ t('Open edge evidence', '打开边证据') }}</a>
+          {{ gs.gs_btn(t('Watch', '关注'), disabled=true) }}
+          <span class="intl-gs__footnote">{{ t('Watchlist arrives with IM18', '关注列表随 IM18 提供') }}</span>
+        </div>
+      </div>
+      {% endfor %}
+      {% if o.event_state == 'abstain' %}
+      <p class="intl-gs__footnote">{{ t('No edge selected: the event abstained.', '未选择边：事件弃权。') }}</p>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% if p.more_origins %}
+<p class="intl-gs__footnote intl-transmission__more">{{ t('Also ranked: ', '其他排名：') }}{% for m in p.more_origins %}{{ t(m.market_id, m.market_id) }} <span class="intl-gs__num">#{{ m.rank }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</p>
+{% endif %}
+{% endcall %}

@@ -261,6 +261,128 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
   .intl-gs__table td{height:auto;padding:4px 14px;display:flex;justify-content:space-between;gap:12px;border-bottom:none;}
   .intl-gs__statematrix{grid-template-columns:1fr;}
 }
+/* ==== INTL-GS IM17 transmission (.intl-transmission__*) — W4B ==== */
+/* R14 §10.4 board 10 (IM17). Laws honoured: .intl-gs scope only; colours as
+   var(--token) reads; radius only the A1.1 estate pairs; no single-side
+   border, no inset shadow, no pseudo-element bar (Chairman rule); focus =
+   2px var(--link) offset 3; selected = 1.5px var(--info) ring; motion none.
+   The origin/edge switch is native radio inputs + CSS sibling combinators —
+   no script, no new asset. */
+.intl-gs .intl-transmission__row{gap:16px;}
+.intl-gs .intl-transmission__left{flex:1;min-width:0;width:100%;display:flex;flex-direction:column;gap:16px;}
+.intl-gs .intl-transmission__inspector{padding:20px;gap:14px;}
+.intl-gs .intl-transmission__edgelist{padding:16px 20px;gap:10px;border-radius:var(--r-panel,12px);}
+.intl-gs .intl-transmission__edges{table-layout:fixed;}
+.intl-gs .intl-transmission__edges thead th{height:24px;padding:0 8px;font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+html[data-lang="zh"] .intl-gs .intl-transmission__edges thead th{text-transform:none;letter-spacing:0.02em;}
+.intl-gs .intl-transmission__edges tbody td{height:40px;padding:0 8px;}
+.intl-gs .intl-transmission__col-n{width:28px;}
+.intl-gs .intl-transmission__col-edge{width:220px;}
+.intl-gs .intl-transmission__col-type{width:116px;}
+.intl-gs .intl-transmission__col-mech{width:auto;}
+.intl-gs .intl-transmission__col-evid{width:140px;}
+.intl-gs .intl-transmission__col-win{width:150px;}
+.intl-gs .intl-transmission__col-resp{width:200px;}
+.intl-gs .intl-transmission__col-tier{width:90px;}
+.intl-gs .intl-transmission__mech{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+.intl-gs .intl-transmission__mech span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.intl-gs .intl-transmission__edgecell label,.intl-gs .intl-transmission__picker label{cursor:pointer;}
+.intl-gs .intl-transmission__edgecell label{color:var(--text);font-weight:600;}
+.intl-gs .intl-transmission__exp{color:var(--muted);}
+.intl-gs .intl-transmission__obs{color:var(--text);}
+.intl-gs .intl-transmission__exp-rule{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3;}
+.intl-gs .intl-transmission__obs-rule{stroke:var(--text);stroke-width:2;}
+.intl-gs .intl-transmission__rule{flex:none;}
+.intl-gs .intl-transmission__exprow,.intl-gs .intl-transmission__obsrow{display:flex;align-items:center;gap:8px;}
+.intl-gs .intl-transmission__deskread{margin:0;font-size:var(--fs-sm);color:var(--text);line-height:1.5;}
+.intl-gs .intl-transmission__track{display:block;flex:none;}
+.intl-gs .intl-transmission__trackbg{fill:var(--panel2);}
+.intl-gs .intl-transmission__bar[data-fam="flow"]{fill:var(--ser-1);}
+.intl-gs .intl-transmission__bar[data-fam="lending"]{fill:var(--ser-2);}
+.intl-gs .intl-transmission__bar[data-fam="credit"]{fill:var(--ser-3);}
+.intl-gs .intl-transmission__bar[data-fam="commodity"]{fill:var(--ser-4);}
+.intl-gs .intl-transmission__ticklabel{fill:var(--muted);font-family:var(--font-mono);font-size:var(--fs-micro);}
+.intl-gs .intl-transmission__rankrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.intl-gs .intl-transmission__ranklabel{flex:1;min-width:160px;display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:var(--text);}
+.intl-gs .intl-transmission__rankvalue{font-size:var(--fs-sm);color:var(--text);}
+.intl-gs .intl-transmission__rankstate{display:inline-flex;align-items:center;gap:8px;font-size:var(--fs-label);color:var(--muted);}
+.intl-gs .intl-transmission__vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.intl-gs .intl-transmission__vhedges{display:block;}
+.intl-gs .intl-transmission__vhedges caption{text-align:left;}
+.intl-gs .intl-transmission__pane{display:none;}
+.intl-gs .intl-transmission__opick[data-i="0"]:checked ~ .intl-transmission__panes .intl-transmission__pane[data-i="0"]{display:block;}
+.intl-gs .intl-transmission__opick[data-i="1"]:checked ~ .intl-transmission__panes .intl-transmission__pane[data-i="1"]{display:block;}
+.intl-gs .intl-transmission__opick[data-i="2"]:checked ~ .intl-transmission__panes .intl-transmission__pane[data-i="2"]{display:block;}
+.intl-gs .intl-transmission__opick[data-i="3"]:checked ~ .intl-transmission__panes .intl-transmission__pane[data-i="3"]{display:block;}
+.intl-gs .intl-transmission__insp{display:none;row-gap:10px;}
+.intl-gs .intl-transmission__epick[data-e="0"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="0"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="1"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="1"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="2"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="2"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="3"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="3"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="4"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="4"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="5"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="5"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="6"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="6"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="7"]:checked ~ .intl-gs__split .intl-transmission__insp[data-e="7"]{display:grid;}
+.intl-gs .intl-transmission__epick[data-e="0"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="0"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="1"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="1"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="2"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="2"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="3"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="3"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="4"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="4"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="5"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="5"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="6"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="6"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__epick[data-e="7"]:checked ~ .intl-gs__split .intl-transmission__edges tr[data-e="7"]{outline:1.5px solid var(--info);outline-offset:-1.5px;}
+.intl-gs .intl-transmission__opick[data-i="0"]:focus-visible ~ .intl-transmission__panes .intl-transmission__olabel[data-i="0"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__opick[data-i="1"]:focus-visible ~ .intl-transmission__panes .intl-transmission__olabel[data-i="1"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__opick[data-i="2"]:focus-visible ~ .intl-transmission__panes .intl-transmission__olabel[data-i="2"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__opick[data-i="3"]:focus-visible ~ .intl-transmission__panes .intl-transmission__olabel[data-i="3"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="0"]:focus-visible ~ .intl-gs__split label[data-e="0"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="1"]:focus-visible ~ .intl-gs__split label[data-e="1"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="2"]:focus-visible ~ .intl-gs__split label[data-e="2"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="3"]:focus-visible ~ .intl-gs__split label[data-e="3"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="4"]:focus-visible ~ .intl-gs__split label[data-e="4"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="5"]:focus-visible ~ .intl-gs__split label[data-e="5"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="6"]:focus-visible ~ .intl-gs__split label[data-e="6"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__epick[data-e="7"]:focus-visible ~ .intl-gs__split label[data-e="7"]{outline:2px solid var(--link);outline-offset:3px;}
+.intl-gs .intl-transmission__olabel{min-height:32px;}
+.intl-gs .intl-transmission__picker{flex-wrap:wrap;}
+.intl-gs .intl-transmission__graph{width:100%;height:auto;display:block;}
+.intl-gs .intl-transmission__node rect{fill:var(--panel);stroke:var(--line);stroke-width:1;}
+.intl-gs .intl-transmission__node--origin rect{stroke:var(--info);stroke-width:1.5;}
+.intl-gs .intl-transmission__nodelabel{fill:var(--text);font-family:var(--font-ui);font-size:var(--fs-sm);font-weight:600;}
+.intl-gs .intl-transmission__nodesub{fill:var(--muted);font-family:var(--font-ui);font-size:var(--fs-micro);}
+.intl-gs .intl-transmission__edgelabel{paint-order:stroke;stroke:var(--panel);stroke-width:4px;fill:var(--text);font-family:var(--font-ui);font-size:var(--fs-label);}
+.intl-gs .intl-transmission__insphead{margin:0;font-size:var(--fs-sm);font-weight:600;color:var(--text);}
+.intl-gs .intl-transmission__edgeid{margin:0;font-size:var(--fs-body);font-weight:600;color:var(--text);}
+.intl-gs .intl-transmission__edgemeta{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:var(--fs-label);color:var(--muted);}
+.intl-gs .intl-transmission__ev{margin:0;display:grid;grid-template-columns:auto;gap:6px;font-size:var(--fs-sm);color:var(--text);}
+.intl-gs .intl-transmission__ev dt{font-size:var(--fs-label);color:var(--muted);font-weight:700;letter-spacing:0.02em;}
+.intl-gs .intl-transmission__receivers{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;}
+.intl-gs .intl-transmission__receivers li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--text);}
+.intl-gs .intl-transmission__recvlabel{font-weight:600;}
+.intl-gs .intl-transmission__actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.intl-gs .intl-transmission__abstain{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--muted);}
+.intl-gs .intl-transmission__structural{margin:0;}
+.intl-gs .intl-transmission__alts{display:flex;flex-direction:column;gap:4px;}
+.intl-gs .intl-transmission__coverage{display:flex;flex-direction:column;gap:8px;}
+.intl-gs .intl-transmission__mkt{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--text);}
+.intl-gs .intl-transmission__mktname{font-weight:600;}
+.intl-gs .intl-transmission__mktsections{color:var(--muted);font-size:var(--fs-label);}
+.intl-gs .intl-transmission__legend{display:flex;flex-direction:column;gap:4px;}
+.intl-gs .intl-transmission__legend .intl-gs__edgelabel{flex-wrap:wrap;max-width:100%;}
+.intl-gs .intl-transmission__deskread,.intl-gs .intl-transmission__abstain{max-width:100%;}
+.intl-gs .intl-transmission__legendch{color:var(--muted);}
+.intl-gs .intl-transmission__samesession{color:var(--muted);font-size:var(--fs-label);}
+.intl-gs .intl-transmission__cardlabel{display:none;}
+.intl-gs .intl-transmission__staterow td{height:auto;}
+@media (max-width:900px){
+  .intl-gs .intl-transmission__picker{height:auto;flex-wrap:wrap;}
+  .intl-gs .intl-transmission__olabel,.intl-gs .intl-transmission__edgecell label{min-height:40px;}
+  .intl-gs .intl-transmission__edgelabel{display:none;}
+  .intl-gs .intl-transmission__cardlabel{display:inline;color:var(--muted);font-size:var(--fs-label);}
+  .intl-gs .intl-transmission__edges tbody td{height:auto;}
+}
+.intl-gs :is(button,select,a,[tabindex],.intl-gs__seg__opt,.intl-gs__qcard,.intl-gs__row,.intl-gs__chip--link,.intl-transmission__olabel,.intl-transmission__edgecell label):focus-visible{outline:2px solid var(--link);outline-offset:3px;}
+/* ==== end INTL-GS IM17 transmission ==== */
 /* ==== W2A region (IM13 scanner + coverage): the W2A lane inserts its rules between this line and the next ==== */
 /* ==== end W2A region ==== */
 /* spacer 1: keep unchanged; separates the two lane regions */
