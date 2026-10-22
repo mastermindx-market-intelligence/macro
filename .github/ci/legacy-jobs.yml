@@ -11842,6 +11842,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
       - "scripts/build_live_overlay.py"
@@ -14990,6 +14992,8 @@ jobs:
       - "templates/finance_intelligence.js"
       - "templates/finance_intelligence.css"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "tests/test_finance_intelligence_page.py"
       - "tests/test_finance_intelligence_hydration.py"
       - "tests/finance_intelligence_hydration_harness.js"
@@ -19361,6 +19365,8 @@ jobs:
       - "scripts/build_crossmarket.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -22389,6 +22395,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
@@ -29152,6 +29160,12 @@ jobs:
       - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
+      - "tests/test_build_expectation_surface.py"
+      - "templates/expectation_surface.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -29458,6 +29472,10 @@ jobs:
         run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
+
+      # ITP-ES wave 1: deterministic page builder contract.
+      - name: expectation surface page builder contract (ITP-ES wave 1)
+        run: python -m pytest tests/test_build_expectation_surface.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -30481,6 +30499,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -38110,6 +38130,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: additive builder and test/template closure.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
