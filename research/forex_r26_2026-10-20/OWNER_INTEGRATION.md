@@ -1,8 +1,22 @@
 # Forex R26 — current-owner integration
 
-MISSION_COMPLETE: false. The inactive-condition release is progressing through final integration gates; finalized-4H monitoring and delivery remain unaccepted.
+MISSION_COMPLETE: false. Inactive account conditions have accepted live save/reload/edit/delete proof. Finalized-4H monitoring and delivery remain unaccepted.
 
-## Current release frontier — 2026-10-21 after 17:41 UTC
+## Current recovery frontier — 22 October 2026
+
+This section supersedes older frontier statements below; their dated receipts remain historical. Protected compatible Skillpack pin: `Mastermind@c9cbee5569ba50e30e28715d930809061a169517`.
+
+- **Licensing/product use COMPLETE:** special approval is Chairman-attested in [6331071428](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6331071428). Do not email Tiingo about licensing or product use, demand another approval, or reopen that gate. Technical support is not the default next action.
+- **Accepted inactive-condition release evidence:** signed-in save, full reload, edit with revision advance, full reload and delete were proved across Forex and Terminal; the disposable condition was removed. Twelve Today viewport/language/theme states and the final generated/public HTML match were recorded in [6330683878](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6330683878) and [6330961048](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6330961048).
+- **Macro #9996 merged:** immutable head `7720d4bf470d7e490de1d98be551aaf4e1cfca8b`, actual merge `97afdb50f38b2e7d85e958f5f1d356ece84ad1bc`. Accepted green active CI/fences remain evidence for their exact source.
+- **Original render 39688064251 completed SUCCESS:** consume that result; no duplicate render. It produced `9c5596573076ea2dbd3e13958c799ae4b82448fa` and guardsync `24c6e58c9ecba6507169ed68c4b2f06fc82320aa`. Final public Forex HTML matched at SHA256 `a0b07b8faf4add60756365dd18d22ae1486bde97e6751b4f560bee8aba82a1d1`.
+- **Terminal #1106 stays Draft/HOLD:** head `6faed070170ae3f65cfe029fe75b18d4ee7ecc9b`; CI39689425479 passed 21/21. The original repair review returned a qualified failure lineage but no review verdict after provider429. The Secretary's original-thread ruling did not qualify continuation. Do not replay, replace the reviewer/provider, or reinterpret a green CI result as independent review.
+- **Source continuation:** operation `forex-r26-source-qualification-20261022-sol-001` uses the normally acquired isolated Macro workspace/branch at base `a1ff21e17ab43872758d653e4295f9a805fca350`. Its initially uncertain allocation was reconciled through the same installed owner and exact Git worktree registration. Original workspaces and accepted branches remain untouched.
+- The active technical work now includes a reusable interval diagnostic: 138 source/reader tests passed, and exact-reader integration reproduced 48/48 closed-day OHLC matches (38 dense, 10 sparse), the original retained 6/7 result, and the 170-minute still-open interval. 84 archive files remained unchanged; integration made no new API/materializer calls. See SOURCE_QUALIFICATION.md and source_evidence/interval-reconciliation-integration-qualified.json. Research evidence remains ineligible for monitoring; licensing is already complete.
+
+Do not reapply migration0038, retry the expressly refused Terminal deployment, alter carry/COT holds, delete original dirty/untracked/ignored data, or create a new lifecycle/account/watch/evaluator/queue/retry/publication plane. The existing live proof does not establish finalized-source admission, evaluated conditions or delivered alerts.
+
+## Historical release frontier — 2026-10-21 after 17:41 UTC
 
 Protected procedure: `Mastermind@43f83e068ad664a2bf75a21b6952368fa908c626`. This section supersedes older frontier statements below; their dated receipts remain historical.
 
@@ -174,7 +188,7 @@ Mission remains incomplete. The current assigned Sol session owns continuation u
 2. **Terminal release:** the preceding build completed at21:59:41Z and live generation was `ab5beab6b0c2362414a1da17745587d490e923e8` at22:30:52Z, not the Forex merge. The exact existing git-gated build request for5f14b35 was then blocked by the platform safety check before a process handle. No deployment effect is claimed; do not retry/rephrase/re-home or route this blocked effect through another tool/account/worker. Preserve the action-specific policy boundary and obtain permitted platform resolution, not a new approval invented from this record.
 3. **Authenticated acceptance:** Browser.list_tabs reports that the originating connected browser context is missing. No signed-in cross-surface save/reload/edit/delete has been proved; never replace the account, inject an identity or use a synthetic fixture as live proof.
 4. **Docs release:** consume the original repair-review run/root, verify its exact response and scope, address genuine findings, then require current-head CI on PR1106 before ordinary expected-head-fenced release. Initial conflicted3eb5500 had no normal PR CI; CodeQL alone was not treated as sufficient. No native automerge or merge-on-green label is armed.
-5. **Source qualification:** provider questions remain unsent and unresolved. The existing source owner must obtain authoritative basis, interval-label/calendar, completeness, correction/finality and existing-rights mapping before feeding actual4H observations. Do not infer finality from age or silently drop BRL/CNH identity obligations. Activation, evaluation and delivery remain separate unimplemented/unaccepted release steps.
+5. **Source qualification (historical checkpoint, superseded by the current frontier above):** this checkpoint retained unsent provider questions about basis, labels/calendar, completeness, corrections and rights. The Chairman has since completed licensing/product-use approval in comment6331071428; no licensing inquiry is authorized or needed. The current source owner is qualifying the documented prospective policy using retained data and existing owners. Do not infer finality from age or silently drop BRL/CNH identity obligations. Activation, evaluation and delivery remain separate unimplemented/unaccepted release steps.
 
 ### Recovery and do-not-redo
 
