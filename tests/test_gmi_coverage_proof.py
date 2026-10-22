@@ -417,6 +417,29 @@ def test_gate2_tokens_are_never_activity_labels(tmp_path):
         assert "basket:" not in text and "ltheme:" not in text
 
 
+# --- 4b ----------------------------------------------------------------------
+def test_store_activity_ledger_is_read_by_default(tmp_path):
+    """The activity ledger beside the hierarchy queue is an input without
+    --activity-proposals: a PROPOSED row there surfaces in proposals_seen and in
+    the input manifest, and still never enters the numerator (measured gap
+    2026-10-22: the M3 proof saw no proposals while the ledger held one)."""
+    fixture = _build(tmp_path)
+    base_report, _, _ = _run(fixture)
+    base_seen = base_report["activity"]["us"]["proposals_seen"]
+    proposed = _a1_row(fixture.root, "co:us:TXN", "SEC:US-XNAS-TXN",
+                       "ISS:US-XNAS-TXN", MICROS[1])
+    ledger = fixture.store / "probation" / "activity_proposals.jsonl"
+    _write_jsonl(ledger, [proposed])
+    out = tmp_path / "out_ledger"
+    report, manifest, _ = _run(fixture, out=out)
+    seen = report["activity"]["us"]["proposals_seen"]
+    assert seen["proposed"] == base_seen["proposed"] + 1
+    assert seen["total_rows"] == base_seen["total_rows"] + 1
+    assert report["activity"]["us"]["numerator_issuers"] == base_report["activity"]["us"]["numerator_issuers"]
+    roles = {entry["role"] for entry in manifest["inputs"]}
+    assert "store_probation_activity_proposals" in roles
+
+
 # --- 5 -----------------------------------------------------------------------
 def test_ratified_a1_row_enters_numerator(tmp_path):
     fixture = _build(tmp_path)
