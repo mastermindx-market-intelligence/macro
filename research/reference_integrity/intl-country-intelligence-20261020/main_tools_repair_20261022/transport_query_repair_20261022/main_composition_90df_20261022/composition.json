@@ -1,0 +1,329 @@
+{
+  "schema": "intl.main_composition.v2",
+  "at": "2026-10-22T07:49:08.016670+00:00",
+  "parents": [
+    "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+    "90df0e302637ade26b894aee46141b6a1813a630"
+  ],
+  "base": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+  "ci_jobs": 349,
+  "changed_job_sources": [
+    {
+      "job": "bea-gvc-current-descriptive-consumer",
+      "source": "protected_main"
+    },
+    {
+      "job": "biocatalyst-serving",
+      "source": "international"
+    },
+    {
+      "job": "c19-wp22-dhi-traversal",
+      "source": "protected_main"
+    },
+    {
+      "job": "c19-wp32-integrated-answer-correction-denial-pins",
+      "source": "protected_main"
+    },
+    {
+      "job": "capability-broker",
+      "source": "protected_main"
+    },
+    {
+      "job": "conviction-profile",
+      "source": "protected_main"
+    },
+    {
+      "job": "crypto-assistant-context",
+      "source": "protected_main"
+    },
+    {
+      "job": "dashboard-render-contract",
+      "source": "protected_main"
+    },
+    {
+      "job": "data-base-shim",
+      "source": "protected_main"
+    },
+    {
+      "job": "dataos-prospective-reference",
+      "source": "protected_main"
+    },
+    {
+      "job": "engine-render-guards",
+      "source": "protected_main"
+    },
+    {
+      "job": "express-render-guards",
+      "source": "protected_main"
+    },
+    {
+      "job": "fif-kernel-guards",
+      "source": "protected_main"
+    },
+    {
+      "job": "intelligence-registry",
+      "source": "verified_path_union_and_main_commands"
+    },
+    {
+      "job": "international-workspace-browser",
+      "source": "international"
+    },
+    {
+      "job": "international-workspace-foundation",
+      "source": "international"
+    },
+    {
+      "job": "itr-turn-rotation",
+      "source": "international"
+    },
+    {
+      "job": "macro-signals-conditions",
+      "source": "protected_main"
+    },
+    {
+      "job": "neural-web-core",
+      "source": "protected_main"
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "source": "verified_path_union_and_main_commands"
+    },
+    {
+      "job": "options-estate-guards",
+      "source": "protected_main"
+    },
+    {
+      "job": "outcome-spine",
+      "source": "protected_main"
+    },
+    {
+      "job": "ratio-lens",
+      "source": "protected_main"
+    },
+    {
+      "job": "regime-outlook-mapping",
+      "source": "protected_main"
+    },
+    {
+      "job": "research-price-panel",
+      "source": "protected_main"
+    },
+    {
+      "job": "research-vault",
+      "source": "protected_main"
+    },
+    {
+      "job": "ticker-news-qbus",
+      "source": "protected_main"
+    },
+    {
+      "job": "tier-gate",
+      "source": "protected_main"
+    },
+    {
+      "job": "transmission-chains",
+      "source": "protected_main"
+    },
+    {
+      "job": "unrun-intl-libraries",
+      "source": "protected_main"
+    },
+    {
+      "job": "unrun-market-plumbing",
+      "source": "protected_main"
+    },
+    {
+      "job": "unrun-neuralweb-cortex",
+      "source": "protected_main"
+    },
+    {
+      "job": "unrun-picks-boards",
+      "source": "verified_path_union_and_main_commands"
+    },
+    {
+      "job": "unrun-subsector-themes",
+      "source": "protected_main"
+    },
+    {
+      "job": "washout-turn-organ",
+      "source": "verified_path_union_and_main_commands"
+    }
+  ],
+  "ci_overlap_checks": [
+    {
+      "job": "intelligence-registry",
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ],
+      "main_added_paths": [
+        "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      ],
+      "preserved_main_commands": true,
+      "complete_path_union": true
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ],
+      "main_added_paths": [
+        "contracts/theme_graph/activity_curation_receipt.v1.schema.json",
+        "data/theme_graph/probation/activity_proposals.jsonl",
+        "engine/theme_graph/activity_history_bridge.py",
+        "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json",
+        "scripts/bridge_activity_history.py",
+        "scripts/propose_activity_membership.py",
+        "tests/test_build_thematic_state_activity_mode.py",
+        "tests/test_gmi_activity_history_bridge.py",
+        "tests/test_gmi_activity_proposal_ledger.py"
+      ],
+      "preserved_main_commands": true,
+      "complete_path_union": true
+    },
+    {
+      "job": "unrun-picks-boards",
+      "local_added_paths": [
+        "lib/intl_currency_observation.py"
+      ],
+      "main_added_paths": [
+        "engine/theme_graph/capability.py",
+        "engine/theme_graph/local_sources.py",
+        "engine/theme_graph/materialize.py"
+      ],
+      "preserved_main_commands": true,
+      "complete_path_union": true
+    },
+    {
+      "job": "washout-turn-organ",
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ],
+      "main_added_paths": [
+        "contracts/theme_graph/activity_membership_history.v1.schema.json",
+        "engine/theme_graph/capability.py",
+        "engine/theme_graph/local_sources.py",
+        "engine/theme_graph/materialize.py",
+        "templates/_prophet_receipts.html.j2",
+        "templates/watchlist.html.j2",
+        "tests/test_prophet_r7_wave_a_guards.py",
+        "tests/test_prophet_r7_wave_a_plan_cards.py",
+        "tests/test_us_candidate_episode_reconciler.py",
+        "tests/test_us_candidate_episode_recorded_at_clock.py"
+      ],
+      "preserved_main_commands": true,
+      "complete_path_union": true
+    }
+  ],
+  "foundation_job_identical_to_reviewed_ci_commit": true,
+  "resolved_paths": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/research_screener.html"
+  ],
+  "resolution": "exact_main_historical_staging_requires_actual_P0B_recapture",
+  "theme_sha256": "50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51",
+  "unchanged_product_inputs": [
+    "templates/intl_country_cockpit.js",
+    "templates/intl_country_cockpit.css",
+    "templates/intl_country_cockpit.html.j2",
+    "templates/shared_shell_bridge.js",
+    "site/shared_shell_bridge.js",
+    "templates/intl_workspace.js",
+    "site/intl_workspace.js",
+    "templates/intl_workspace_state.js",
+    "site/intl_workspace_state.js",
+    "tests/js/shared_shell_bridge.test.cjs",
+    "tests/intl_workspace_controller.test.cjs",
+    "tests/intl_workspace_state.test.cjs"
+  ],
+  "parent_evidence": [
+    {
+      "parent": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "sha256": "df761dafe1fb82246b4f2f4df19c5fea93d1f2bced8c74dc41b2a75e1332e2c2",
+      "blob": "2eb0bdd4029ec635b034f6a87dbd1236ee8becde",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/previous_published/manifest.json"
+    },
+    {
+      "parent": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "sha256": "9f288649a0be6e7edf4150219816340e7acbc940865b26aea209c78a2d0cc9d1",
+      "blob": "aae81020b9484a04fc96efb155dfc0c2cb22ab43",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/previous_published/mobile-layout-canada.json"
+    },
+    {
+      "parent": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "sha256": "5b41af5add8565f1719b0ab3982189f88b184314da102df32e71448664ced948",
+      "blob": "d3fb431cae19c5ccbe946a3e76b13beda5dacbd0",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/previous_published/mobile-layout.json"
+    },
+    {
+      "parent": "a2997f8e9583f09f08acc0c5617c2c75baa87da8",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d",
+      "blob": "0fd1c761dbd973c9c78662a0c15a7f045e2b0a9c",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/previous_published/rendered-fixture.json"
+    },
+    {
+      "parent": "90df0e302637ade26b894aee46141b6a1813a630",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "sha256": "168df0b76726c4313777c4fc6a68bc0f1e4658df257e97723a51120bc61a5962",
+      "blob": "51423a5460dca19531fbbe77fe9aae6e037af037",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/incoming_main/manifest.json"
+    },
+    {
+      "parent": "90df0e302637ade26b894aee46141b6a1813a630",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "sha256": "bbc6f54d26f36acdbb8daa84ba67095e54c292b5b81b03d6a52851e098e9b7ce",
+      "blob": "66e1c88fe87c745632f4a4107326917f2c82806e",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/incoming_main/mobile-layout-canada.json"
+    },
+    {
+      "parent": "90df0e302637ade26b894aee46141b6a1813a630",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "sha256": "b8349824849fa8aeda2ed35e483df1a0e6e55a08ad86784b8da6ff540f512e51",
+      "blob": "2b359cd7c18aba0d1c376dfef8b5569180599ac5",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/incoming_main/mobile-layout.json"
+    },
+    {
+      "parent": "90df0e302637ade26b894aee46141b6a1813a630",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d",
+      "blob": "0fd1c761dbd973c9c78662a0c15a7f045e2b0a9c",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/incoming_main/rendered-fixture.json"
+    }
+  ],
+  "production_acceptance": false
+}

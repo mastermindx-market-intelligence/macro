@@ -1,0 +1,488 @@
+{
+  "boundary_latency_proven": false,
+  "code_sha256": {
+    "lib/dataos/tiingo_forex.py": "7d30b518225222eac431877bb9f71e5e78454cb5056dfd7f44fe24aace171796",
+    "lib/dataos/tiingo_reader.py": "f563efc37718fc509bc86159ff0bead4eb55ab2f6b4e5c1118088f606a6b54b3",
+    "scripts/tiingo_materialize.py": "c554f9693cec7287d6953dc5a1a6d28c13012c85000af38fc0b607c0dc411500"
+  },
+  "eligible_observations": 0,
+  "hypotheses": [
+    {
+      "name": "start_label_half_open",
+      "summary": {
+        "all_ohlc_equal_windows": 1,
+        "close_equal_windows": 1,
+        "compared_windows": 2,
+        "dense_equal_windows": 1,
+        "native_rows": 2,
+        "sparse_equal_windows": 0
+      },
+      "windows": [
+        {
+          "all_ohlc_equal": true,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T04:00:00+00:00",
+          "candidate_start_utc": "2026-10-22T00:00:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": true,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T00:00:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": "2026-10-22T03:59:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [],
+            "missing_expected_minute_slots": 0,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "dense",
+            "observed_minute_rows": 240,
+            "observed_unique_instants": 240,
+            "trailing_unobserved_slots": 0,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "native_source_row_ordinal": 0
+        },
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T08:00:00+00:00",
+          "candidate_start_utc": "2026-10-22T04:00:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": false,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T04:00:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": true,
+            "interval_end_after_minute_receipt_observed": true,
+            "last_observed_minute_utc": "2026-10-22T04:41:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [
+              {
+                "first_utc": "2026-10-22T04:42:00+00:00",
+                "last_utc": "2026-10-22T07:59:00+00:00",
+                "slots": 198
+              }
+            ],
+            "missing_expected_minute_slots": 198,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "sparse",
+            "observed_minute_rows": 42,
+            "observed_unique_instants": 42,
+            "trailing_unobserved_slots": 198,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "native_source_row_ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "end_label_half_open",
+      "summary": {
+        "all_ohlc_equal_windows": 0,
+        "close_equal_windows": 0,
+        "compared_windows": 1,
+        "dense_equal_windows": 0,
+        "native_rows": 2,
+        "sparse_equal_windows": 0
+      },
+      "windows": [
+        {
+          "all_ohlc_equal": null,
+          "blocked_reasons": [
+            "no_observed_minute_rows"
+          ],
+          "candidate_end_utc": "2026-10-22T00:00:00+00:00",
+          "candidate_start_utc": "2026-10-21T20:00:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": false,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": null,
+            "internal_unobserved_slots": null,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": null,
+            "leading_unobserved_slots": null,
+            "missing_expected_minute_ranges": [
+              {
+                "first_utc": "2026-10-21T20:00:00+00:00",
+                "last_utc": "2026-10-21T23:59:00+00:00",
+                "slots": 240
+              }
+            ],
+            "missing_expected_minute_slots": 240,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "empty",
+            "observed_minute_rows": 0,
+            "observed_unique_instants": 0,
+            "trailing_unobserved_slots": null,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": null,
+            "high": null,
+            "low": null,
+            "open": null
+          },
+          "native_source_row_ordinal": 0
+        },
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T04:00:00+00:00",
+          "candidate_start_utc": "2026-10-22T00:00:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": true,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T00:00:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": "2026-10-22T03:59:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [],
+            "missing_expected_minute_slots": 0,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "dense",
+            "observed_minute_rows": 240,
+            "observed_unique_instants": 240,
+            "trailing_unobserved_slots": 0,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "native_source_row_ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "end_label_inclusive_minute",
+      "summary": {
+        "all_ohlc_equal_windows": 0,
+        "close_equal_windows": 0,
+        "compared_windows": 2,
+        "dense_equal_windows": 0,
+        "native_rows": 2,
+        "sparse_equal_windows": 0
+      },
+      "windows": [
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T00:01:00+00:00",
+          "candidate_start_utc": "2026-10-21T20:01:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": false,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T00:00:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": "2026-10-22T00:00:00+00:00",
+            "leading_unobserved_slots": 239,
+            "missing_expected_minute_ranges": [
+              {
+                "first_utc": "2026-10-21T20:01:00+00:00",
+                "last_utc": "2026-10-21T23:59:00+00:00",
+                "slots": 239
+              }
+            ],
+            "missing_expected_minute_slots": 239,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "sparse",
+            "observed_minute_rows": 1,
+            "observed_unique_instants": 1,
+            "trailing_unobserved_slots": 0,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": true
+          },
+          "native_source_row_ordinal": 0
+        },
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T04:01:00+00:00",
+          "candidate_start_utc": "2026-10-22T00:01:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": true,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T00:01:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": "2026-10-22T04:00:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [],
+            "missing_expected_minute_slots": 0,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "dense",
+            "observed_minute_rows": 240,
+            "observed_unique_instants": 240,
+            "trailing_unobserved_slots": 0,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "native_source_row_ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "start_label_exclusive_minute",
+      "summary": {
+        "all_ohlc_equal_windows": 0,
+        "close_equal_windows": 0,
+        "compared_windows": 2,
+        "dense_equal_windows": 0,
+        "native_rows": 2,
+        "sparse_equal_windows": 0
+      },
+      "windows": [
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T04:01:00+00:00",
+          "candidate_start_utc": "2026-10-22T00:01:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": true,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T00:01:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": false,
+            "interval_end_after_minute_receipt_observed": false,
+            "last_observed_minute_utc": "2026-10-22T04:00:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [],
+            "missing_expected_minute_slots": 0,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "dense",
+            "observed_minute_rows": 240,
+            "observed_unique_instants": 240,
+            "trailing_unobserved_slots": 0,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "native_source_row_ordinal": 0
+        },
+        {
+          "all_ohlc_equal": false,
+          "blocked_reasons": [],
+          "candidate_end_utc": "2026-10-22T08:01:00+00:00",
+          "candidate_start_utc": "2026-10-22T04:01:00+00:00",
+          "coverage": {
+            "dense_240_minute_grid": false,
+            "duplicate_instant_rows": 0,
+            "expected_minute_slots": 240,
+            "first_observed_minute_utc": "2026-10-22T04:01:00+00:00",
+            "internal_unobserved_slots": 0,
+            "interval_end_after_four_hour_receipt_observed": true,
+            "interval_end_after_minute_receipt_observed": true,
+            "last_observed_minute_utc": "2026-10-22T04:41:00+00:00",
+            "leading_unobserved_slots": 0,
+            "missing_expected_minute_ranges": [
+              {
+                "first_utc": "2026-10-22T04:42:00+00:00",
+                "last_utc": "2026-10-22T08:00:00+00:00",
+                "slots": 199
+              }
+            ],
+            "missing_expected_minute_slots": 199,
+            "missing_slots_prove_missing_vendor_data": false,
+            "observed_grid_state": "sparse",
+            "observed_minute_rows": 41,
+            "observed_unique_instants": 41,
+            "trailing_unobserved_slots": 199,
+            "unexpected_minute_instants_utc": [],
+            "unplaced_minute_source_row_ordinals": []
+          },
+          "equal_fields": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "native_source_row_ordinal": 1
+        }
+      ]
+    }
+  ],
+  "interpretation": "One observation about41minutes after04:00; retained prior open responses are compared without replacing their clocks or values. A post-boundary complete local grid is not a guarantee of immutable vendor finality or low-latency availability.",
+  "monitoring_admitted": false,
+  "new_api_requests_in_verification": 0,
+  "raw_and_receipt_files_unchanged": {
+    "/Volumes/Mastermind/market-data/tiingo/raw/forex-bars/2026-10-22/eurusd/48782d45acfd24d6-5307dc5ac46fcee569b0b892.raw.gz": "62d7327f9dc1f368c6842d61487a9c2241fe83cd483ff3f950a47baf57dde14a",
+    "/Volumes/Mastermind/market-data/tiingo/raw/forex-bars/2026-10-22/eurusd/48782d45acfd24d6-b0f06ffc93a6e71afddc88e2.raw.gz": "7beb802d82bb0946dbc378c19d245e7bda3a99283f6dbc21599d9b64fe9ee671",
+    "/Volumes/Mastermind/market-data/tiingo/raw/forex-bars/2026-10-22/eurusd/93e3ef8404b94227-23d9b142f21463c6fe396b04.raw.gz": "f14cddc1eed4d3d0adac68d714be85f3e795e3db6d40e2f944d225f9596eb2b5",
+    "/Volumes/Mastermind/market-data/tiingo/raw/forex-bars/2026-10-22/eurusd/93e3ef8404b94227-559d5bab079dfe3717badcc2.raw.gz": "c28d0a0ba84ace07cc59bc66e1bc9844e25095e2d7884e1fd8b77144a75380b1",
+    "/Volumes/Mastermind/market-data/tiingo/receipts/forex-bars/2026-10-22/48782d45acfd24d6-5307dc5ac46fcee569b0b892.json": "8be56583e6b02734279ef3c1cc2e5f923ed67e41f768a0081a0adaebe47f4203",
+    "/Volumes/Mastermind/market-data/tiingo/receipts/forex-bars/2026-10-22/48782d45acfd24d6-b0f06ffc93a6e71afddc88e2.json": "7e8496203b8afffbd66faf89fe91e915e8442aee7f6ee2c868f16aa027522d61",
+    "/Volumes/Mastermind/market-data/tiingo/receipts/forex-bars/2026-10-22/93e3ef8404b94227-23d9b142f21463c6fe396b04.json": "1ebeacbbab03dd3f9cb27aa9f648f7dc1ec538356f26c42331a4af9e7fbeea11",
+    "/Volumes/Mastermind/market-data/tiingo/receipts/forex-bars/2026-10-22/93e3ef8404b94227-559d5bab079dfe3717badcc2.json": "84d86324dd0982cc6567b93e215348c97ac4b7233de36299e32d2e8a5e056cfb"
+  },
+  "raw_decimal_start_label_windows": [
+    {
+      "candidate_end_utc": "2026-10-22T04:00:00+00:00",
+      "candidate_start_utc": "2026-10-22T00:00:00+00:00",
+      "native_label": "2026-10-22T00:00:00.000Z",
+      "observed_minute_rows": 240,
+      "raw_decimal_equal_fields": {
+        "close": true,
+        "high": true,
+        "low": true,
+        "open": true
+      }
+    },
+    {
+      "candidate_end_utc": "2026-10-22T08:00:00+00:00",
+      "candidate_start_utc": "2026-10-22T04:00:00+00:00",
+      "native_label": "2026-10-22T04:00:00.000Z",
+      "observed_minute_rows": 42,
+      "raw_decimal_equal_fields": {
+        "close": false,
+        "high": true,
+        "low": true,
+        "open": true
+      }
+    }
+  ],
+  "receipt_observation_clocks": {
+    "absolute_separation_seconds": 1.542572,
+    "four_hour_minus_minute_nanoseconds": 1542572000,
+    "four_hour_source_observed_at_utc": "2026-10-22T04:41:20.112509+00:00",
+    "meaning": "original response/receipt observation clocks; not durable availability or a fresh recheck",
+    "minute_source_observed_at_utc": "2026-10-22T04:41:18.569937+00:00"
+  },
+  "schema": "forex_r26.post_boundary_qualification.v1",
+  "source_records": {
+    "1min": {
+      "first_vendor_label": "2026-10-22T00:00:00.000Z",
+      "last_vendor_label": "2026-10-22T04:41:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/b0f06ffc93a6e71afddc88e2cd7c3745aabaea7e8335c5fa760727a5c2cee872.parquet",
+        "rows": 282,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "original_response_observed_at_utc": "2026-10-22T04:41:18.569937+00:00",
+      "raw_bytes": 32621,
+      "raw_sha256": "b0f06ffc93a6e71afddc88e2cd7c3745aabaea7e8335c5fa760727a5c2cee872",
+      "reader_authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+      "reader_purpose": "INSPECTION",
+      "receipt_id": "2bc9f93e5870b780582da71dc5bfb75de8990032e4d11b2982c9d247eb311865",
+      "receipt_path": "receipts/forex-bars/2026-10-22/48782d45acfd24d6-b0f06ffc93a6e71afddc88e2.json",
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=1min&startDate=2026-10-22",
+      "rows": 282
+    },
+    "4hour": {
+      "first_vendor_label": "2026-10-22T00:00:00.000Z",
+      "last_vendor_label": "2026-10-22T04:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/23d9b142f21463c6fe396b04d2038bd8682dd5bc429343de00be503e76435e07.parquet",
+        "rows": 2,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "original_response_observed_at_utc": "2026-10-22T04:41:20.112509+00:00",
+      "raw_bytes": 230,
+      "raw_sha256": "23d9b142f21463c6fe396b04d2038bd8682dd5bc429343de00be503e76435e07",
+      "reader_authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+      "reader_purpose": "INSPECTION",
+      "receipt_id": "241f4315a507983d70306d7159bccf2c61ebede61ba0ebc5cfc38aa5cd3114cb",
+      "receipt_path": "receipts/forex-bars/2026-10-22/93e3ef8404b94227-23d9b142f21463c6fe396b04.json",
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=4hour&startDate=2026-10-22",
+      "rows": 2
+    }
+  },
+  "vendor_immutability_proven": false,
+  "verification_completed_at_utc": "2026-10-22T04:41:54.742181+00:00",
+  "vintage_comparisons": {
+    "1min": {
+      "changed_prior_rows": 1,
+      "changes": [
+        {
+          "equal_fields": {
+            "close": false,
+            "high": true,
+            "low": false,
+            "open": true
+          },
+          "present_in_new_capture": true,
+          "prior_source_row_ordinal": 169,
+          "vendor_label": "2026-10-22T02:49:00.000Z"
+        }
+      ],
+      "new_rows": 282,
+      "original_raw_sha256": "5307dc5ac46fcee569b0b892a09f211a991722e7acbc890682605effc1c9b1de",
+      "original_receipt_id": "3d3d7256f357a60a1764be794ee31f562b0a88c9d83dd920df65915608d05afa",
+      "original_response_preserved": true,
+      "original_rows": 170,
+      "prior_labels_compared": 170
+    },
+    "4hour": {
+      "changed_prior_rows": 1,
+      "changes": [
+        {
+          "equal_fields": {
+            "close": false,
+            "high": false,
+            "low": true,
+            "open": true
+          },
+          "present_in_new_capture": true,
+          "prior_source_row_ordinal": 0,
+          "vendor_label": "2026-10-22T00:00:00.000Z"
+        }
+      ],
+      "new_rows": 2,
+      "original_raw_sha256": "559d5bab079dfe3717badcc237bfe7c978ecfa6cdb02114796b4f03aeb07d6bc",
+      "original_receipt_id": "b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283",
+      "original_response_preserved": true,
+      "original_rows": 1,
+      "prior_labels_compared": 1
+    }
+  }
+}

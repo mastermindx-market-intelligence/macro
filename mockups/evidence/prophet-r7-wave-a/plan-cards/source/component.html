@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prophet R7 Wave A1 plan-card record states specimen</title>
+<link rel="stylesheet" href="/site/theme.css">
+<script src="/site/theme.js"></script>
+
+<style>
+.pvcard{position:relative;display:flex;flex-direction:column;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--text);min-width:0;transition:transform .12s,box-shadow .12s,border-color .12s}
+.pvcard:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.22);border-color:color-mix(in srgb,var(--pvh) 55%,var(--line))}
+.pv-buy{--pvh:var(--pv-buy);--pvh-ink:var(--ink-pv-buy,var(--pvh))}.pv-near{--pvh:var(--pv-near);--pvh-ink:var(--ink-pv-near,var(--pvh))}.pv-wait{--pvh:var(--pv-wait);--pvh-ink:var(--ink-pv-wait,var(--pvh))}.pv-hold{--pvh:var(--pv-hold);--pvh-ink:var(--pv-hold)}.pv-avoid{--pvh:var(--pv-avoid);--pvh-ink:var(--ink-pv-avoid,var(--pvh))}
+
+.pv-noread{--pvh:var(--muted);--pvh-ink:var(--muted)}
+
+.pv-chip[data-noread]{border-style:dashed;background:transparent}
+.pvcard::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:3;pointer-events:none;border-radius:12px 12px 0 0;background:linear-gradient(90deg,var(--pvh),color-mix(in srgb,var(--pvh) 12%,transparent) 90%);box-shadow:0 1px 8px color-mix(in srgb,var(--pvh) 45%,transparent)}
+.pvcard.pv-triage::before{box-shadow:0 1px 12px color-mix(in srgb,var(--pvh) 70%,transparent)}
+
+
+.pvcard.pv-featured{background:color-mix(in srgb,var(--pv-buy) 2.5%,var(--panel2));
+  border-color:color-mix(in srgb,var(--pv-buy) 38%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 24%,transparent),
+             0 0 16px -6px color-mix(in srgb,var(--pv-buy) 32%,transparent),
+             0 10px 26px -14px rgba(0,0,0,.7)}
+
+.pvcard.pv-featured:hover{border-color:color-mix(in srgb,var(--pv-buy) 48%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 30%,transparent),
+             0 0 20px -6px color-mix(in srgb,var(--pv-buy) 40%,transparent),
+             0 8px 22px -8px rgba(0,0,0,.5)}
+.pvcard.pv-featured::before{background:linear-gradient(90deg,var(--pvh),color-mix(in srgb,var(--pvh) 55%,transparent));
+  box-shadow:0 1px 10px color-mix(in srgb,var(--pvh) 40%,transparent)}
+
+html[data-theme="light"] .pvcard.pv-featured{background:#fff;
+  border-color:color-mix(in srgb,var(--pv-buy) 30%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 16%,transparent),
+             0 0 12px -6px color-mix(in srgb,var(--pv-buy) 22%,transparent),
+             0 8px 20px -14px rgba(24,58,40,.22)}
+html[data-theme="light"] .pvcard.pv-featured:hover{border-color:color-mix(in srgb,var(--pv-buy) 40%,var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--pv-buy) 22%,transparent),
+             0 0 16px -6px color-mix(in srgb,var(--pv-buy) 30%,transparent),
+             0 8px 20px -10px rgba(24,58,40,.18)}
+
+.pvcard:has(.pv-cau:hover),.pvcard:has(.pv-cau:focus-within){overflow:visible;z-index:40}
+.pv-chart{position:relative;min-width:0;border-radius:11px 11px 0 0;background:color-mix(in srgb,var(--pvh) 3%,transparent)}
+.pv-chart svg{display:block;width:100%;height:74px;border-radius:11px 11px 0 0}
+
+.pv-chart svg *{stroke:var(--pvh)!important}
+.pv-chart svg [fill]:not([fill="none"]){fill:var(--pvh)!important;stroke:none!important}
+.pv-nochart{height:74px}
+.pv-ov{position:absolute;top:8px;display:flex;gap:5px;align-items:center;z-index:2;max-width:70%}
+
+.pv-ov.pv-ovl{flex-wrap:wrap;row-gap:3px}
+.pv-ovl{left:9px}.pv-ovr{right:9px}
+.pv-chip{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;line-height:1.35;padding:2px 9px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--pvh,var(--muted)) 13%,var(--panel,#fff));color:var(--pvh-ink,var(--pvh,var(--muted)));border:1px solid color-mix(in srgb,var(--pvh-ink,var(--pvh,var(--muted))) 40%,transparent)}
+/* solid Buy chip: ink-grade fill + panel ink — white on the raw hue was 3.61:1
+   light / 2.51:1 dark at 10px/800 (the worst white-on-hue chip in the estate
+   audit); panel-on-ink clears 4.5 in both themes and keeps the solid identity. */
+.pv-buy .pv-chip{background:var(--pvh-ink,var(--pvh,var(--up)));color:var(--panel,#fff);border-color:transparent}
+.pvcard .pv-quote{display:inline-flex;align-items:baseline;gap:6px;background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--line);border-radius:7px;padding:1px 6px;white-space:nowrap}
+.pvcard .nb-px.pv-px,.pvcard .nb-chg.pv-chg{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.35;white-space:nowrap;margin:0}
+.pvcard .nb-px.pv-px{color:var(--text)}
+.pvcard .pv-ovr>.nb-px.pv-px{background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--line);border-radius:7px;padding:1px 6px}
+.pvcard .pv-quote .pv-chg{color:var(--muted)}
+
+.pvcard .pv-quote .pv-chg.up{color:var(--ink-up,var(--up))}
+.pvcard .pv-quote .pv-chg.down{color:var(--ink-down,var(--down))}
+.pvcard .pv-quote .pv-chg.stale{color:var(--muted);font-weight:700}
+.pv-bd{padding:8px 11px 9px;display:flex;flex-direction:column;min-width:0;flex:1}
+.pv-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.pv-idw{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:hidden}
+.pv-tk{font-size:13px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.pv-flg{font-size:12px;flex:none}
+.pv-nm{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pv-edge{display:inline-flex;align-items:baseline;gap:4px;flex:none}
+.pv-edl{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pv-edn{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--pvh-ink,var(--pvh));line-height:1}
+.pv-edn.pv-edna{color:var(--muted);font-weight:600;font-size:12px}
+.pv-ind{font-size:10.5px;color:var(--muted);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+
+.pv-mk{display:flex;flex-wrap:wrap;align-items:center;gap:3px 4px;margin-top:4px;min-width:0;min-height:18px}
+.pv-mk-i{font-size:9.5px;font-weight:700;line-height:1.45;padding:1px 6px;border-radius:6px;
+  white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  color:var(--muted);background:color-mix(in srgb,var(--muted) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--muted) 22%,transparent)}
+.pv-mk-feat{font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--pv-buy) 60%,var(--text));
+  background:color-mix(in srgb,var(--pv-buy) 16%,var(--panel2));
+  border-color:color-mix(in srgb,var(--pv-buy) 44%,transparent)}
+.pv-mk-new{font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--info) 60%,var(--text));
+  background:color-mix(in srgb,var(--info) 13%,var(--panel2));
+  border-color:color-mix(in srgb,var(--info) 38%,transparent)}
+.pv-mk-warm{color:color-mix(in srgb,var(--warn) 60%,var(--text));
+  background:color-mix(in srgb,var(--warn) 15%,var(--panel2));
+  border-color:color-mix(in srgb,var(--warn) 38%,transparent)}
+.pv-mk-theme{color:color-mix(in srgb,var(--muted) 55%,var(--text));
+  border-color:color-mix(in srgb,var(--muted) 34%,transparent)}
+
+
+.pv-mk-blow{font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-warn,var(--warn));
+  background:color-mix(in srgb,var(--warn) 8%,var(--panel));
+  border-color:color-mix(in srgb,var(--ink-warn,var(--warn)) 50%,transparent)}
+
+.pv-mk-adj{font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--prov-ink) 42%,var(--muted));
+  background:color-mix(in srgb,var(--prov) 7%,transparent);
+  border-color:color-mix(in srgb,var(--prov) 30%,transparent)}
+
+.pv-mk-nck{background:transparent;color:var(--muted);
+  border-style:dashed;border-color:color-mix(in srgb,var(--muted) 42%,transparent)}
+
+.pv-mk-i[data-tip-en]{cursor:help}
+.pv-stp{display:flex;align-items:center;margin:7px 1px 0}
+.pv-dot{width:6.5px;height:6.5px;border-radius:50%;background:var(--line);flex:none}
+.pv-seg{flex:1;height:2px;background:var(--line);opacity:.75}
+.pv-dot.pa,.pv-seg.pa{background:color-mix(in srgb,var(--pvh) 45%,var(--line));opacity:1}
+.pv-dot.on{background:var(--pvh);box-shadow:0 0 0 3px color-mix(in srgb,var(--pvh) 18%,transparent)}
+.pv-stl{display:flex;justify-content:space-between;gap:3px;margin-top:3px;min-width:0}
+.pv-stl span{font-size:9.5px;color:var(--muted);opacity:.7;white-space:nowrap}
+.pv-stl span.on{color:var(--pvh);opacity:1;font-weight:700}.pv-zn{display:flex;flex-wrap:wrap;align-items:center;gap:2px 5px;background:color-mix(in srgb,var(--panel) 55%,var(--bg));border-top:1px solid var(--line);padding:6px 10px 7px;font-size:10.5px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;margin-top:auto}
+.pv-znl{font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pvh-ink,var(--pvh));flex:none}
+.pv-znr{font-weight:700;flex:none;max-width:100%;overflow:hidden;text-overflow:ellipsis}.pv-znm{color:var(--muted);flex:none;max-width:100%;overflow:hidden;text-overflow:ellipsis}.pv-dt{margin-left:auto;color:var(--muted);flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:9.5px;padding-left:5px}.pv-added{margin-left:auto;color:var(--muted);flex:0 0 auto;font-size:9.5px;line-height:1.3}
+.pv-dt+.pv-added{margin-left:5px}
+.pv-trg{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:800;line-height:1.35;padding:2px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--pvh) 9%,var(--panel));color:var(--pvh-ink,var(--pvh));border:1px solid color-mix(in srgb,var(--pvh-ink,var(--pvh)) 45%,transparent)}
+.pv-trg.pv-trg-soon{border-style:dashed;opacity:.92}
+.pv-cau{position:relative;display:inline-flex}
+.pv-cau-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;line-height:1.35;padding:2px 7px;border-radius:999px;cursor:pointer;background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--ink-warn,var(--warn));border:1px solid color-mix(in srgb,var(--ink-warn,var(--warn)) 40%,transparent);font-family:inherit}
+
+.pv-cau-pop{display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:264px;max-width:min(264px,78vw);max-height:min(300px,58vh);overflow-y:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 11px 10px;box-shadow:var(--popover-shadow);white-space:normal;text-align:left}
+.pv-cau:hover .pv-cau-pop,.pv-cau:focus-within .pv-cau-pop{display:block}
+.pv-cau-hd{display:block;margin:0 0 7px;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-warn, var(--warn))}
+
+.pv-cau-row{position:relative;display:block;padding-left:12px;font-size:10.5px;line-height:1.5;color:var(--text)}
+.pv-cau-row::before{content:"";position:absolute;left:2px;top:6.5px;width:4px;height:4px;border-radius:50%;background:var(--warn);opacity:.7}
+.pv-cau-row + .pv-cau-row{margin-top:7px}
+
+.pv-live{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;line-height:1.35;padding:2px 8px;border-radius:999px;white-space:nowrap;--plvc:#62a0e8;background:color-mix(in srgb,var(--plvc) 12%,var(--panel));color:var(--plvc);border:1px solid color-mix(in srgb,var(--plvc) 44%,transparent)}
+
+.pv-live[hidden]{display:none}
+html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
+
+.pv-live--close{background:color-mix(in srgb,var(--plvc) 18%,var(--panel));border-color:color-mix(in srgb,var(--plvc) 70%,transparent)}
+.pv-live--drop,.pv-live--over{--plvc:var(--pv-wait)}
+[data-showmore-rows] .pvcard .pv-chart svg,[data-showmore-rows] .pvcard .pv-nochart{height:56px}
+[data-showmore-rows] .pvcard .pv-tk{font-size:11.5px}
+[data-showmore-rows] .pvcard .pv-stl span{font-size:9px}
+[data-showmore-rows] .pvcard .pv-mk{margin-top:3px}
+@media (min-width:681px){
+  .nbgrid:has(> .pvcard),.cards:has(> .pvcard),.rip-grid:has(> .pvcard){grid-template-columns:repeat(auto-fill,minmax(246px,1fr))!important}
+}
+@media (max-width:680px){
+  .pvcard .pv-chart svg,.pvcard .pv-nochart{height:58px}
+
+  .pv-hd{align-items:flex-start}
+  .pv-idw{flex:1 1 auto;flex-wrap:wrap;row-gap:1px;overflow:visible}
+  .pv-nm{flex-basis:100%;width:100%}
+  .pv-stl span{font-size:9px}
+  .pv-zn{font-size:10px}
+  /* narrow cards: trigger chip collapses to the bare ⚡ glyph (the board copy
+     teaches "marked ⚡"); !important outranks the html[data-lang] l-en/l-zh
+     visibility rules, which otherwise win at any width. The overlay's own
+     flex-wrap now applies at EVERY width (promoted above — it was a desktop
+     clipping bug), so it is no longer repeated here. */
+  .pv-trg .l-en,.pv-trg .l-zh{display:none!important}
+  .pv-trg{padding:2px 5px;gap:0}
+  /* same collapse-to-glyph rule for the ◐ live chip */
+  .pv-live .l-en,.pv-live .l-zh{display:none!important}
+  .pv-live{padding:2px 5px;gap:0}
+  /* marks chips do NOT collapse to a glyph — "Featured" and the theme name are
+     the words that make the row non-colour-only; they get one size UP instead,
+     because a phone is where 9.5px stops being readable. */
+  .pv-mk-i{font-size:10px;padding:2px 7px}
+}
+/* Opt-in Prophet detail. Existing non-opted card geometry/semantics are unchanged. */
+.pvcard.pv-has-setup{position:relative}.pv-setup-stock-link{position:absolute;inset:0;z-index:4;border-radius:inherit}.pv-setup-inline{position:relative;z-index:5;margin-top:10px}.pv-setup-inline>summary{width:fit-content;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 10px;color:var(--text);font-size:12px;list-style:none;background:var(--panel2,var(--panel))}.pv-setup-inline>summary:focus-visible,.pv-setup-stock-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pv-setup-inline[open]{z-index:6}.pv-setup-inline[open]>.pv-setup-body{margin-top:12px}
+.pvs-availability{font-size:12px;line-height:1.5;padding:10px 12px;border-inline-start:2px solid var(--muted);background:var(--panel2,var(--panel));color:var(--muted)}.pvs-audit{margin:14px 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:0 12px}.pvs-audit>summary{padding:12px 0;cursor:pointer;color:var(--text);font-size:12px;font-weight:650}.pvs-audit>summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}.pvs-audit>.pvs-section:last-child{border-bottom:0}
+.pv-setup-body,.pv-setup-body *{box-sizing:border-box}.pvs-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px}.pvs-grid>div{min-width:0}.pvs-section{padding:14px 0;border-bottom:1px solid var(--line)}.pvs-section h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}.pvs-section p{line-height:1.55;margin:8px 0;overflow-wrap:anywhere}.pvs-note{font-size:12px;color:var(--muted)}.pvs-read{font-size:16px;font-weight:750;color:var(--text)}.pvs-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0}.pvs-levels .pvs-field{padding:10px;background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px)}.pvs-field dt{font-size:11px;color:var(--muted);margin-bottom:4px}.pvs-field dd{margin:0;font-size:14px;color:var(--text);overflow-wrap:anywhere}.pvs-levels dd{font-size:17px;font-weight:750}.pvs-facts{margin:0}.pvs-facts .pvs-field{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}.pvs-facts dt{flex:1}.pvs-facts dd{flex:1;text-align:right;font-size:12px}.pvs-chart-slot{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:12px;margin:14px 0}.pvs-chart-slot>svg{display:block;width:100%;height:150px}.pvs-chart-slot>p{font-size:10px;color:var(--muted);margin:8px 0 0}
+html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text);width:min(1040px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;overflow:auto;overscroll-behavior:contain;box-shadow:var(--pv-dialog-shadow)}.pv-setup-dialog::backdrop{background:var(--pv-dialog-backdrop)}.pv-setup-dialog *{box-sizing:border-box}.pvs-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:sticky;top:0;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel);z-index:8}.pvs-dialog-head h2{font-size:23px;line-height:1.2;margin:0;overflow-wrap:anywhere}.pvs-dialog-head p{font-size:12px;color:var(--muted);margin:5px 0}.pvs-close{border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;background:var(--panel2,var(--panel));color:var(--text);cursor:pointer}.pvs-close:focus-visible,.pvs-native-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pvs-dialog-content{padding:4px 22px 20px}.pvs-dialog-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:12px}.pvs-native-link{color:var(--link)}.pvs-dialog-content>.pv-setup-body{margin:0}.pv-setup-dialog .pv-record-detail{position:static!important}
+@media(max-width:680px){.pvs-grid{grid-template-columns:1fr;gap:0}.pv-setup-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.pvs-dialog-head{padding:16px}.pvs-dialog-content{padding:0 16px 16px}.pvs-dialog-foot{padding:12px 16px;flex-wrap:wrap}.pvs-levels{gap:7px}.pvs-levels dd{font-size:15px}.pvs-chart-slot>svg{height:120px}}
+
+</style>
+
+<style>
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
+.spec{max-width:1120px;margin:0 auto;padding:24px 16px 48px}
+.spec-h1{font-size:var(--fs-h1);margin:0 0 6px}
+.spec-lede{font-size:var(--fs-sm);line-height:1.5;color:var(--muted);margin:0 0 20px;max-width:76ch}
+.spec-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.spec-cell{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.spec-cell-h{font-size:var(--fs-body);font-weight:600;margin:0}
+.spec-cap{font-size:var(--fs-sm);line-height:1.45;color:var(--muted);margin:0}
+.spec-cell .nbgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+</style>
+</head>
+<body>
+<main class="spec">
+  <h1 class="spec-h1"><span class="l-en">US plan records: R7 Wave A record-state marks</span><span class="l-zh">美股计划记录：R7 第一波记录状态标记</span></h1>
+  <p class="spec-lede"><span class="l-en">Each card is templates/_us_prophet_plan_cards.html.j2 rendered alone through the same include that dashboard.html.j2 uses, with pv_css(setup_detail=true). The marks are dated history text only: no verb, stage or glyph. Fixture data for design review, not live plans.</span><span class="l-zh">每张卡片都由 templates/_us_prophet_plan_cards.html.j2 单独渲染，使用与 dashboard.html.j2 相同的 include 和 pv_css(setup_detail=true)。标记仅为带日期的历史文字：没有动作词、阶段或图标。固定样例数据，供设计评审，并非实时计划。</span></p>
+  <div class="spec-board">
+    <figure class="spec-cell" data-spec-state="plain">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Plain record (control)</span><span class="l-zh">普通记录（对照）</span></p>
+        <p class="spec-cap"><span class="l-en">Live origination, tier-event date basis: only the screen-date mark.</span><span class="l-zh">实时生成、以分层事件日期为基准：只有筛查日期标记。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-AVGO-BULL-20261017" data-ticker="AVGO" data-life="watch" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 70; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：70；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#AVGO" aria-label="AVGO" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">AVGO</span><span class="pv-nm"><span class="l-en">Broadcom</span><span class="l-zh">Broadcom</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--watch" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Watch</span><span class="l-zh">观察</span></span></div>
+    <details class="pv-record-detail" data-plan-id="AVGO-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>AVGO-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-10-17</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Watch</span><span class="l-zh">观察</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$100.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$92.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$112.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$124.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$98.00–$101.50</span><span class="pv-added" data-created="2026-10-17"><span class="l-en">Created Oct 17</span><span class="l-zh">建立 10-17</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+    <figure class="spec-cell" data-spec-state="recon">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Reconstructed, dated</span><span class="l-zh">重建，有日期</span></p>
+        <p class="spec-cap"><span class="l-en">origination_mode outage_backfill_*, recorded_at 2026-08-09: dated reconstruction mark.</span><span class="l-zh">origination_mode 为 outage_backfill_*，recorded_at 为 2026-08-09：带日期的重建标记。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-ANET-BULL-20261017" data-ticker="ANET" data-life="entered" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 66; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：66；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#ANET" aria-label="ANET" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">ANET</span><span class="pv-nm"><span class="l-en">Arista Networks</span><span class="l-zh">Arista Networks</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Technology</span><span class="l-zh">科技</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Reconstructed from the Aug 9 plan</span><span class="l-zh">依据 8月9日计划重建</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--entered" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Entered</span><span class="l-zh">入场</span></span></div>
+    <details class="pv-record-detail" data-plan-id="ANET-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>ANET-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-08-09</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Entered</span><span class="l-zh">入场</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$110.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$102.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$122.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$134.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$108.00–$111.50</span><span class="pv-added" data-created="2026-08-09"><span class="l-en">Created Aug 9</span><span class="l-zh">建立 08-09</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+    <figure class="spec-cell" data-spec-state="recon-nodate">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Reconstructed, date not supplied</span><span class="l-zh">重建，日期未提供</span></p>
+        <p class="spec-cap"><span class="l-en">recorded_at 2026-13-40 fails the strict date check: the fallback copy, never a guessed date.</span><span class="l-zh">recorded_at 为 2026-13-40，未通过严格日期校验：显示兜底文案，不猜测日期。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-VRT-BULL-20261017" data-ticker="VRT" data-life="invalidated" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 62; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：62；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#VRT" aria-label="VRT" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">VRT</span><span class="pv-nm"><span class="l-en">Vertiv Holdings</span><span class="l-zh">Vertiv Holdings</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Industrials</span><span class="l-zh">工业</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Reconstructed plan, original date not supplied</span><span class="l-zh">重建的计划，原始日期未提供</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--invalidated" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span></div>
+    <details class="pv-record-detail" data-plan-id="VRT-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>VRT-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-10-17</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$120.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$112.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$132.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$144.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$118.00–$121.50</span><span class="pv-added" data-created="2026-10-17"><span class="l-en">Created Oct 17</span><span class="l-zh">建立 10-17</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+    <figure class="spec-cell" data-spec-state="older">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Older signal only</span><span class="l-zh">仅有旧信号</span></p>
+        <p class="spec-cap"><span class="l-en">signal_date_basis legacy_formation_alias and the ticker is not a current candidate: dashed absence mark.</span><span class="l-zh">signal_date_basis 为 legacy_formation_alias 且该代码不在当前候选中：虚线缺失标记。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-CRDO-BULL-20261017" data-ticker="CRDO" data-life="overtime" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 58; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：58；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#CRDO" aria-label="CRDO" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">CRDO</span><span class="pv-nm"><span class="l-en">Credo Technology</span><span class="l-zh">Credo Technology</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span><span class="pv-mk-i pv-mk-nck" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Older signal only</span><span class="l-zh">仅有旧信号</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--overtime" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Overtime</span><span class="l-zh">超时</span></span></div>
+    <details class="pv-record-detail" data-plan-id="CRDO-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>CRDO-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-10-17</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Overtime</span><span class="l-zh">超时</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$130.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$122.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$142.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$154.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$128.00–$131.50</span><span class="pv-added" data-created="2026-10-17"><span class="l-en">Created Oct 17</span><span class="l-zh">建立 10-17</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+    <figure class="spec-cell" data-spec-state="older-cand">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Legacy basis, still a candidate</span><span class="l-zh">旧基准，但仍是候选</span></p>
+        <p class="spec-cap"><span class="l-en">Same legacy basis, but the ticker is in the candidate map: no Older signal only mark.</span><span class="l-zh">同样是旧基准，但该代码在候选映射中：不显示“仅有旧信号”。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-ALAB-BULL-20261017" data-ticker="ALAB" data-life="ready" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 54; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：54；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#ALAB" aria-label="ALAB" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">ALAB</span><span class="pv-nm"><span class="l-en">Astera Labs</span><span class="l-zh">Astera Labs</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--ready" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span></div>
+    <details class="pv-record-detail" data-plan-id="ALAB-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>ALAB-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-10-17</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Ready</span><span class="l-zh">就绪</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$140.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$132.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$152.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$164.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$138.00–$141.50</span><span class="pv-added" data-created="2026-10-17"><span class="l-en">Created Oct 17</span><span class="l-zh">建立 10-17</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+    <figure class="spec-cell" data-spec-state="both">
+      <figcaption>
+        <p class="spec-cell-h"><span class="l-en">Both marks</span><span class="l-zh">两个标记同时出现</span></p>
+        <p class="spec-cap"><span class="l-en">A reconstructed row whose basis is also legacy and not a candidate: both marks, in record order.</span><span class="l-zh">既是重建、又是旧基准且不在候选中的记录：两个标记按记录顺序同时出现。</span></p>
+      </figcaption>
+      <div class="nbgrid">
+<article class="pvcard pv-noread pv-record" data-record-only="1" id="pv-SMCI-BULL-20261017" data-ticker="SMCI" data-life="resolved" data-tip-en="Historical model setup, not a current entry instruction or your brokerage position. Original priority: 50; saved when created, not a current rank. See Candidates for the latest screening read." data-tip-zh="历史模型计划，并非当前入场指令或您的实际持仓。建立时优先级：50；不是当前排名。最新筛查请查看候选。">
+  <a class="pv-record-link" href="stock.html#SMCI" aria-label="SMCI" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a><div class="pv-chart">
+    <div class="pv-nochart" data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"><span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span></div>
+    <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Tracking only</span><span class="l-zh">仅作跟踪</span></span>
+      
+    </span>
+    
+  </div>
+  <div class="pv-bd">
+    <div class="pv-hd">
+      <span class="pv-idw"><span class="pv-tk">SMCI</span><span class="pv-nm"><span class="l-en">Super Micro Computer</span><span class="l-zh">Super Micro Computer</span></span></span>
+      
+    </div>
+    <div class="pv-ind"><span class="l-en">Technology</span><span class="l-zh">科技</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Last screen 2026-10-20</span><span class="l-zh">上次筛查 2026-10-20</span></span><span class="pv-mk-i pv-mk-lane" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Reconstructed from the Aug 5 plan</span><span class="l-zh">依据 8月5日计划重建</span></span><span class="pv-mk-i pv-mk-nck" style="white-space:normal;overflow:visible;text-overflow:clip"><span class="l-en">Older signal only</span><span class="l-zh">仅有旧信号</span></span></div>
+    <div class="pv-life" style="flex-wrap:wrap"><span class="mx-mark mx-mark--resolved" aria-hidden="true"></span><span class="pv-life-w"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span></div>
+    <details class="pv-record-detail" data-plan-id="SMCI-BULL-20261017" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px"><span class="l-en">Plan details</span><span class="l-zh">计划详情</span></summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div><span class="l-en">System model plan — not your holdings or fills.</span><span class="l-zh">系统模型计划——并非您的实际持仓或成交。</span></div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)"><span class="l-en">Plan ID</span><span class="l-zh">计划 ID</span></b><br>SMCI-BULL-20261017</span>
+          <span><b style="color:var(--text)"><span class="l-en">Plan created</span><span class="l-zh">计划建立</span></b><br>2026-08-05</span>
+          <span><b style="color:var(--text)"><span class="l-en">Current lifecycle</span><span class="l-zh">当前生命周期</span></b><br><span class="l-en">Resolved</span><span class="l-zh">已结</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Horizon</span><span class="l-zh">周期</span></b><br>20 <span class="l-en">days</span><span class="l-zh">天</span></span>
+          <span><b style="color:var(--text)"><span class="l-en">Original entry</span><span class="l-zh">原始入场</span></b><br>$150.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original invalidation</span><span class="l-zh">原始失效位</span></b><br>$142.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T1</span><span class="l-zh">原始 T1</span></b><br>$162.00</span>
+          <span><b style="color:var(--text)"><span class="l-en">Original T2</span><span class="l-zh">原始 T2</span></b><br>$174.00</span>
+        </div>
+        
+        <div><span class="l-en">This record preserves model-plan terms; it does not restate management actions or infer a user position.</span><span class="l-zh">此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。</span></div>
+        
+        <div data-history-state="unavailable"><b style="color:var(--text)"><span class="l-en">Outcome history</span><span class="l-zh">结果历史</span></b><br><span class="l-en">Not connected in this view yet.</span><span class="l-zh">此视图暂未接入。</span></div>
+        
+      </div>
+    </details>
+  </div>
+  <div class="pv-zn"><span class="pv-znl"><span class="l-en">Original zone</span><span class="l-zh">原始区间</span></span><span class="pv-znm">$148.00–$151.50</span><span class="pv-added" data-created="2026-08-05"><span class="l-en">Created Aug 5</span><span class="l-zh">建立 08-05</span></span>
+  </div>
+</article>
+
+</div>
+    </figure>
+  </div>
+</main>
+</body>
+</html>

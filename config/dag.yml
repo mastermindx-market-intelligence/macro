@@ -2275,6 +2275,16 @@ lanes:
           step timeout 12 min, continue-on-error; committed by the oracle Time
           Machine commit step.
           outputs: [data/theme_graph/shadow_theme_state.v1.json]
+      - id: build_activity_membership_state
+        module: scripts.build_thematic_state
+        note: >
+          GMI M2 — `--mode ACTIVITY_MEMBERSHIP_STATE`: the A2 activity-membership history fold +
+          edges.v1 projection over data/theme_graph/probation/activity_history_events.jsonl (absent =
+          honest empty state), atomic write of data/theme_graph/activity_membership_state.v1.json ONLY.
+          NOT_QUALIFIED by construction (D2E unsealed); authority all-false. Fail-open: one
+          ::warning title=gmi-activity-membership-state:: and the prior artifact stands; step
+          timeout 5 min, continue-on-error; committed by the oracle Time Machine commit step.
+          outputs: [data/theme_graph/activity_membership_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -3216,6 +3226,13 @@ lanes:
           Insider+ payload site/premiumdata/china_special_situations.json
           (docs/TIER_PREVIEW_PATTERN.md) — they must never be rebuilt apart.
           Display-only; CONST-ART2 authority: false.
+      - id: build_baskets_china_redirect_stub
+        module: scripts.build_baskets_china
+        args: [--page-only]
+        note: >
+          Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
+          Returns before collectors, market computation, session clocks or payload
+          writes; the full China basket build remains in its existing daily lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >

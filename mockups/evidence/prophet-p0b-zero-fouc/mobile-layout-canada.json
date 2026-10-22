@@ -13,7 +13,7 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "155.0.8059.85"
+    "version": "151.0.7922.34"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -294,7 +294,6 @@
     "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
     "site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
     "site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
-    "site/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
     "site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
     "site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
     "site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
@@ -314,7 +313,7 @@
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "94935dc10fad8ab399bdcd419f99e208ea101436c56e1f6026683b5698feb0fb",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
-    "site/theme.css": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7",
+    "site/theme.css": "a922b22c08ca57ef81a6352e56a1cef18e1173cbb7029c685035f5d7e3a8a11a",
     "site/theme.js": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6"
   },
   "viewport": {

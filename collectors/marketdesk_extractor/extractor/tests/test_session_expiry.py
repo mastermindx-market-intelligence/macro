@@ -22,6 +22,7 @@ from marketdesk_extractor.config import Config
 from marketdesk_extractor.marketdesk import (
     DownloadCapExhausted,
     MarketDeskClient,
+    MarketDeskError,
     SessionExpired,
     _as_id_list,
 )
@@ -334,3 +335,167 @@ def test_run_trickle_records_authenticated_without_inventing_download_activity(
     assert health["state"] == db.AUTHENTICATED
     assert health["observed_at"] == NOW.isoformat()
     assert health["required_at"] == ""
+
+
+# Metadata rejection must not become an empty or partially hydrated report set.
+class _ProvisionResponsesRequest(FakeRequest):
+    def __init__(self, responses, *, authenticated=True):
+        super().__init__(feed_payload=[] if authenticated else LOGGED_OUT_PAYLOAD)
+        self.responses = iter(responses)
+        self.provision_calls = 0
+
+    def post(self, url, **kwargs):
+        if url.endswith("items/provision"):
+            self.provision_calls += 1
+            return FakeResponse(payload=next(self.responses))
+        return super().post(url, **kwargs)
+
+
+@pytest.mark.parametrize("payload", [LOGGED_OUT_PAYLOAD, None, {}, "invalid", 7])
+@pytest.mark.parametrize("authenticated", [True, False])
+def test_provision_rejection_uses_one_fresh_auth_control(
+    tmp_path, monkeypatch, payload, authenticated,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _ProvisionResponsesRequest([payload], authenticated=authenticated)
+    client = MarketDeskClient(FakeContext(request), cfg)
+    monkeypatch.setattr("marketdesk_extractor.marketdesk.jitter_sleep", lambda: None)
+    expected = MarketDeskError if authenticated else SessionExpired
+
+    with pytest.raises(expected) as error:
+        client.provision(["report-1"])
+
+    assert type(error.value) is expected
+    assert "items/provision" in str(error.value)
+    assert request.provision_calls == 1
+    assert request.probe_calls == 1
+
+
+@pytest.mark.parametrize("payload", [[], [{"pathId": "report-1", "name": "Report"}]])
+def test_provision_valid_array_has_no_extra_auth_request(tmp_path, monkeypatch, payload):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _ProvisionResponsesRequest([payload])
+    client = MarketDeskClient(FakeContext(request), cfg)
+    monkeypatch.setattr("marketdesk_extractor.marketdesk.jitter_sleep", lambda: None)
+
+    assert client.provision(["report-1"]) == payload
+    assert request.provision_calls == 1
+    assert request.probe_calls == 0
+
+
+def test_provision_later_chunk_rejection_does_not_return_partial_metadata(
+    tmp_path, monkeypatch,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _ProvisionResponsesRequest([
+        [{"pathId": "report-0", "name": "Earlier chunk"}],
+        LOGGED_OUT_PAYLOAD,
+    ])
+    client = MarketDeskClient(FakeContext(request), cfg)
+    monkeypatch.setattr("marketdesk_extractor.marketdesk.jitter_sleep", lambda: None)
+
+    with pytest.raises(MarketDeskError) as error:
+        client.provision([f"report-{index}" for index in range(51)])
+
+    assert type(error.value) is MarketDeskError
+    assert request.provision_calls == 2
+    assert request.probe_calls == 1
+
+
+_ID_READERS = [
+    ("latest", (), "latest/latest"),
+    ("picks", (), "latest/picks"),
+    ("saved", (), "latest/saved"),
+    ("viewed", (), "latest/viewed"),
+    ("browse_current", (), "library/browse/current"),
+    ("browse", ("folder-1",), "library/browse/folder-1"),
+]
+
+
+class _EndpointControlRequest:
+    def __init__(self, endpoint_payload, *, authenticated=True, endpoint_status=200):
+        self.endpoint_payload = endpoint_payload
+        self.control_payload = [] if authenticated else LOGGED_OUT_PAYLOAD
+        self.endpoint_status = endpoint_status
+        self.calls = []
+
+    def _response(self, method, url, kwargs):
+        self.calls.append((method, url, kwargs))
+        if len(self.calls) == 1:
+            return FakeResponse(payload=self.endpoint_payload, status=self.endpoint_status)
+        assert method == "post" and url.endswith("latest/latest")
+        assert len(self.calls) == 2, "the rejected request must not be retried inline"
+        return FakeResponse(payload=self.control_payload)
+
+    def get(self, url, **kwargs):
+        return self._response("get", url, kwargs)
+
+    def post(self, url, **kwargs):
+        return self._response("post", url, kwargs)
+
+
+@pytest.mark.parametrize("method,args,endpoint", _ID_READERS)
+@pytest.mark.parametrize("authenticated", [True, False])
+def test_id_reader_rejection_classifies_one_fresh_control(
+    tmp_path, monkeypatch, method, args, endpoint, authenticated,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(LOGGED_OUT_PAYLOAD, authenticated=authenticated)
+    client = MarketDeskClient(FakeContext(request), cfg)
+    expected = MarketDeskError if authenticated else SessionExpired
+
+    with pytest.raises(expected) as error:
+        getattr(client, method)(*args)
+
+    assert type(error.value) is expected
+    assert request.calls[0][1] == cfg.api(endpoint)
+    assert len(request.calls) == 2
+    assert request.calls[1][0:2] == ("post", cfg.api("latest/latest"))
+    if authenticated:
+        assert "endpoint failure" in str(error.value)
+
+
+@pytest.mark.parametrize("method,args,endpoint", _ID_READERS)
+@pytest.mark.parametrize("payload", [[], ["report-1"], None])
+def test_id_reader_valid_legacy_payload_has_no_extra_control(
+    tmp_path, monkeypatch, method, args, endpoint, payload,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(payload)
+    client = MarketDeskClient(FakeContext(request), cfg)
+
+    assert getattr(client, method)(*args) == (payload or [])
+    assert len(request.calls) == 1
+    assert request.calls[0][1] == cfg.api(endpoint)
+
+
+def test_id_reader_http_error_does_not_issue_auth_control(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(LOGGED_OUT_PAYLOAD, endpoint_status=403)
+    client = MarketDeskClient(FakeContext(request), cfg)
+
+    with pytest.raises(MarketDeskError) as error:
+        client.browse_current()
+
+    assert type(error.value) is MarketDeskError
+    assert len(request.calls) == 1
+
+
+@pytest.mark.parametrize("authenticated", [True, False])
+def test_discovery_rejection_parks_only_after_negative_control(
+    tmp_path, monkeypatch, authenticated,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(LOGGED_OUT_PAYLOAD, authenticated=authenticated)
+    client = MarketDeskClient(FakeContext(request), cfg)
+    state = trickle.AccountState(profile=cfg.profiles[0], authed=True, client=client)
+
+    def rejected_discovery(cfg, conn, client, **kwargs):
+        client.browse_current()
+        raise AssertionError("rejected discovery must not return a success summary")
+
+    monkeypatch.setattr(discover, "discover", rejected_discovery)
+    trickle._refresh_queue(cfg, None, [state])
+
+    assert state.authed is authenticated
+    assert len(request.calls) == 2
