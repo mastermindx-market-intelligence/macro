@@ -35,8 +35,10 @@ Run: python3 scripts/gmi_coverage_proof.py --master ... --receipt ... \
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import json
+import re
 import sys
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -49,9 +51,15 @@ from engine.theme_graph import probation, store  # noqa: E402
 from engine.theme_graph.membership_evidence import _activity_target_definition  # noqa: E402
 
 REPORT_DIRNAME = "gmi_coverage_proof"
+_ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 MANIFEST_SCHEMA = "gmi.coverage_universe_manifest/v1"
 REPORT_SCHEMA = "gmi.coverage_report/v1"
 DECLARED_MICRO_COUNT = 68
+# The frozen acceptance tier is every micro asserted BEFORE this date; micros at or
+# after it are display-tier expansion and never enter an acceptance denominator.
+FROZEN_TIER_CUTOFF = "2026-10-21"
+FROZEN_TIER = "FROZEN_ACCEPTANCE"
+EXPANSION_TIER = "DISPLAY_EXPANSION"
 ACTIVITY_GATE_PCT = 95
 
 CORE_MARKETS = ("us", "cn")
@@ -1033,7 +1041,10 @@ def _taxonomy_gate(taxonomy: dict) -> dict:
                          "declared_micro_count": DECLARED_MICRO_COUNT,
                          "discrepancy": taxonomy["discrepancy"],
                          "micros_without_scope_version": missing_scope,
-                         "owner_reviewed": reviewed},
+                         "owner_reviewed": reviewed,
+                         "tier_cutoff": FROZEN_TIER_CUTOFF,
+                         "expansion_micro_count": taxonomy["expansion_micro_count"],
+                         "owner_review_gap": taxonomy["owner_review"]["gap"]},
             "verdict": "PASS" if ok else "FAIL"}
 
 
@@ -1051,6 +1062,27 @@ def _gates(market_views: dict, activity_by_market: dict, taxonomy: dict) -> list
 # ---------------------------------------------------------------------------
 # Taxonomy view
 # ---------------------------------------------------------------------------
+
+def _micro_tier(entry: dict) -> str:
+    """The acceptance tier of one crosswalk micro (fail-closed on purpose).
+
+    DISPLAY_EXPANSION only for a well-formed ``YYYY-MM-DD`` ``asserted_on`` at or
+    after FROZEN_TIER_CUTOFF; everything else — earlier date, missing, empty,
+    malformed — stays FROZEN_ACCEPTANCE, so a row can never leave the acceptance
+    gate by omitting or garbling its date. YAML may parse an unquoted date into a
+    ``datetime.date``; such values are normalised through ``.isoformat()`` first.
+    """
+    value = entry.get("asserted_on")
+    if hasattr(value, "isoformat") and not isinstance(value, str):
+        value = value.isoformat()
+    if not isinstance(value, str) or not _ISO_DATE_RE.match(value):
+        return FROZEN_TIER
+    try:
+        parsed = datetime.date.fromisoformat(value)
+    except ValueError:
+        return FROZEN_TIER
+    return EXPANSION_TIER if parsed.isoformat() >= FROZEN_TIER_CUTOFF else FROZEN_TIER
+
 
 def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
               graph: _GraphContext, repo_root: Path) -> dict:
@@ -1090,7 +1122,8 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
         dst = str(row.get("dst"))
         for theme_id in sorted(expressing.get(dst, ())):
             vendor_companies.setdefault(theme_id, set()).add(str(row.get("src")))
-    micros = []
+    micros: list[dict] = []
+    expansion_micros: list[dict] = []
     for micro_id in sorted(hierarchy["micros"]):
         entry = hierarchy["micros"][micro_id]
         admitted = admitted_by_theme.get(micro_id, 0)
@@ -1108,7 +1141,7 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
             disposition = "VENDOR_ONLY"
         else:
             disposition = "EMPTY"
-        micros.append({
+        record = {
             "id": micro_id,
             "name_en": _s(entry.get("name_en")),
             "scope_version": _entry_scope_version(entry),
@@ -1121,8 +1154,10 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
                        "vendor_member_companies": len(vendor_companies.get(micro_id, ()))},
             "disposition": disposition,
             "owner_reviewed": False,
-        })
-    observed = len(hierarchy["micros"])
+            "tier": _micro_tier(entry),
+        }
+        (micros if record["tier"] == FROZEN_TIER else expansion_micros).append(record)
+    observed = len(micros)  # the frozen acceptance tier is the only denominator
     return {
         "observed_micro_count": observed,
         "declared_micro_count": DECLARED_MICRO_COUNT,
@@ -1130,6 +1165,15 @@ def _taxonomy(hierarchy_path: Path, research_paths: list[Path], activity: dict,
                         else f"observed {observed} != declared {DECLARED_MICRO_COUNT}"),
         "micros": micros,
         "unknown_research_micro_ids": sorted(unknown_ids),
+        "tier_cutoff": FROZEN_TIER_CUTOFF,
+        "total_micro_count": len(micros) + len(expansion_micros),
+        "expansion_micro_count": len(expansion_micros),
+        "expansion_admitted_total": sum(record["counts"]["admitted"]
+                                        for record in expansion_micros),
+        "frozen_micro_ids_sha256": hashlib.sha256(
+            "\n".join(record["id"] for record in micros).encode("utf-8")).hexdigest(),
+        "owner_review": {"source": None, "gap": "NO_OWNER_DISPOSITION_CONTRACT"},
+        "expansion_micros": expansion_micros,
     }
 
 
@@ -1261,7 +1305,27 @@ def render_markdown(report: dict, manifest: dict) -> str:
                      f"| {counts['proposed']} "
                      f"| {sum(counts['research_records'].values())} "
                      f"| {counts['vendor_expressing_routes']} |")
+    lines.append(f"Frozen acceptance tier: {taxonomy['observed_micro_count']} micros "
+                 f"(asserted_on before {taxonomy['tier_cutoff']}); display expansion: "
+                 f"{taxonomy['expansion_micro_count']} micros (not an acceptance "
+                 f"denominator).")
+    lines.append(f"Owner review: {taxonomy['owner_review']['gap']} "
+                 f"(owner_reviewed is false for every micro).")
     lines.append("")
+    if taxonomy["expansion_micro_count"] > 0:
+        lines.append("### Display-expansion micros (not an acceptance denominator)")
+        lines.append("")
+        lines.append("| id | scope_version | disposition | admitted | proposed | research "
+                     "| vendor routes |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+        for micro in taxonomy["expansion_micros"]:
+            counts = micro["counts"]
+            lines.append(f"| {_cell(micro['id'])} | {_cell(micro['scope_version'][:12])} "
+                         f"| {_cell(micro['disposition'])} | {counts['admitted']} "
+                         f"| {counts['proposed']} "
+                         f"| {sum(counts['research_records'].values())} "
+                         f"| {counts['vendor_expressing_routes']} |")
+        lines.append("")
     lines.append("## Wider-market ledger (not a denominator)")
     lines.append("")
     lines.append("| market | graph company nodes | by resolution state | master securities "

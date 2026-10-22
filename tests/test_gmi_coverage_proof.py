@@ -576,3 +576,95 @@ def test_retired_node_is_not_qualified(tmp_path):
     ledger = report["graph_side_ledger"]["us"]
     assert ledger["RESOLVED/retired"] == 1 and ledger["GRAPH_ONLY/canonical"] == 1
     assert ledger["NOT_IN_MASTER/canonical"] == 1
+
+
+# --- 15 (PIPE-M3T: frozen acceptance tier vs display expansion) ---------------
+def _rewrite_hierarchy(fixture: SimpleNamespace, extra_micros: list[dict]) -> None:
+    """Append micros (and one parents row each) to the fixture crosswalk in place."""
+    doc = yaml.safe_load(fixture.hierarchy.read_text(encoding="utf-8"))
+    for entry, parent in extra_micros:
+        doc["hierarchy"]["micro_themes"].append(entry)
+        doc["hierarchy"]["parents"].append({"parent": parent, "child": entry["id"],
+                                            "asserted_on": entry["asserted_on"]})
+    fixture.hierarchy.write_text(yaml.safe_dump(doc, allow_unicode=True), encoding="utf-8")
+
+
+def test_expansion_micro_is_display_tier_never_an_acceptance_denominator(tmp_path):
+    fixture = _build(tmp_path)
+    _rewrite_hierarchy(fixture, [
+        ({"id": "theme:fixture_expansion_micro", "name_en": "Expansion",
+          "name_zh": "Expansion", "asserted_on": "2026-10-21"}, "theme:fixture_cat_a"),
+    ])
+    report, _, markdown = _run(fixture)
+    taxonomy = report["taxonomy"]
+    assert taxonomy["observed_micro_count"] == 3
+    assert taxonomy["total_micro_count"] == 4
+    assert taxonomy["expansion_micro_count"] == 1
+    assert taxonomy["discrepancy"] == "observed 3 != declared 68"
+    frozen_ids = [micro["id"] for micro in taxonomy["micros"]]
+    assert "theme:fixture_expansion_micro" not in frozen_ids
+    assert all(micro["tier"] == gcp.FROZEN_TIER for micro in taxonomy["micros"])
+    assert taxonomy["frozen_micro_ids_sha256"] == hashlib.sha256(
+        "\n".join(sorted(frozen_ids)).encode("utf-8")).hexdigest()
+    expansion = taxonomy["expansion_micros"]
+    assert [micro["id"] for micro in expansion] == ["theme:fixture_expansion_micro"]
+    assert expansion[0]["tier"] == gcp.EXPANSION_TIER
+    assert expansion[0]["owner_reviewed"] is False
+    assert taxonomy["expansion_admitted_total"] == 0
+    assert taxonomy["tier_cutoff"] == "2026-10-21"
+    assert taxonomy["owner_review"] == {"source": None,
+                                        "gap": "NO_OWNER_DISPOSITION_CONTRACT"}
+    heading = "### Display-expansion micros (not an acceptance denominator)"
+    assert heading in markdown
+    assert "theme:fixture_expansion_micro" not in markdown.split(heading)[0]
+    assert "theme:fixture_expansion_micro" in markdown.split(heading)[1]
+
+
+def test_68_frozen_plus_expansion_has_no_discrepancy_but_gate_still_fails_on_owner_review(
+        tmp_path):
+    fixture = _build(tmp_path)
+    extra = [(f"theme:fixture_frozen_{n:02d}", "2026-10-08") for n in range(1, 66)]
+    extra += [(f"theme:fixture_expansion_{n:02d}", "2026-10-21") for n in range(1, 3)]
+    _rewrite_hierarchy(fixture, [
+        ({"id": micro_id, "name_en": micro_id, "name_zh": micro_id,
+          "asserted_on": asserted_on}, "theme:fixture_cat_a")
+        for micro_id, asserted_on in extra])
+    report, _, _ = _run(fixture)
+    taxonomy = report["taxonomy"]
+    assert taxonomy["observed_micro_count"] == 68
+    assert taxonomy["expansion_micro_count"] == 2
+    assert taxonomy["total_micro_count"] == 70
+    assert taxonomy["discrepancy"] is None
+    gate = _gate(report, "Taxonomy coverage")
+    assert gate["verdict"] == "FAIL"  # owner_reviewed is false for every micro
+    assert gate["measured"]["owner_reviewed"] is False
+    assert gate["measured"]["expansion_micro_count"] == 2
+    assert gate["measured"]["owner_review_gap"] == "NO_OWNER_DISPOSITION_CONTRACT"
+
+
+def test_missing_or_malformed_asserted_on_stays_in_the_frozen_tier():
+    import datetime
+    assert gcp._micro_tier({}) == gcp.FROZEN_TIER
+    assert gcp._micro_tier({"asserted_on": ""}) == gcp.FROZEN_TIER
+    assert gcp._micro_tier({"asserted_on": "garbage"}) == gcp.FROZEN_TIER
+    assert gcp._micro_tier({"asserted_on": "2026-10-20"}) == gcp.FROZEN_TIER
+    assert gcp._micro_tier({"asserted_on": "2026-10-21"}) == gcp.EXPANSION_TIER
+    assert gcp._micro_tier({"asserted_on": "2027-01-01"}) == gcp.EXPANSION_TIER
+    assert gcp._micro_tier({"asserted_on": datetime.date(2026, 10, 21)}) \
+        == gcp.EXPANSION_TIER
+
+
+def test_expansion_never_changes_the_taxonomy_gate_verdict(tmp_path):
+    fixture_zero = _build(tmp_path / "zero")
+    report_zero, _, _ = _run(fixture_zero)
+    gate_zero = _gate(report_zero, "Taxonomy coverage")
+    fixture_five = _build(tmp_path / "five")
+    _rewrite_hierarchy(fixture_five, [
+        ({"id": f"theme:fixture_expansion_{n}", "name_en": f"exp{n}",
+          "name_zh": f"exp{n}", "asserted_on": "2026-10-21"}, "theme:fixture_cat_a")
+        for n in range(5)])
+    report_five, _, _ = _run(fixture_five)
+    gate_five = _gate(report_five, "Taxonomy coverage")
+    assert report_five["taxonomy"]["expansion_micro_count"] == 5
+    assert gate_five["verdict"] == gate_zero["verdict"]
+    assert report_five["taxonomy"]["micros"] == report_zero["taxonomy"]["micros"]
