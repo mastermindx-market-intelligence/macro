@@ -5176,9 +5176,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_600),
+    ("templates/index.html", 136, 5_862),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_834),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_606),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5186,6 +5186,158 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 visual-evidence correction composes protected8c23f6 and
+    native-plan Brief coverage without removing any suite. Actual compiler
+    114.88s: index136/5862, free-content135/5834, Prophet128/5606, ten packs.
+    The retained incoming ticker-news-qbus native-plan suites add exactly
+    four units to the previously measured free-content5830 ceiling. Fund
+    only5834; every other job/weight/pack/time bound stays unchanged.
+
+    2026-10-22 Movers + missing-cap code coverage composes protected Treasury
+    main1f0b19fb without removing any existing suite. The existing code-gated
+    data-base-shim command adds three hermetic files (+6 estimator units):
+    Movers page-only plus intel/premium missing-cap regressions. Its incumbent
+    data-gated coverage remains. Actual compiler on this composed source:
+    index136/5862, free-content135/5830, Prophet128/5606; all ten packs.
+    Fund only measured excess5862/5830/5606; retain job ceilings136/136/130,
+    ten-pack limit, execution timeouts, selectors and every prior check.
+    The calculator job/closure is unchanged; no guessed free-probe arithmetic.
+
+    2026-10-22 composition with protected 79e35150 retains its two
+    Treasury suites and native-plan Brief coverage. Preserve all protected
+    weight, job-count and ten-pack ceilings. Native-plan coverage remains
+    the sole code-step delta versus that main: ticker-news-qbus 98 -> 102,
+    four estimator units on free-content only. Actual composed probes:
+    index 136 jobs / 5,856, free-content 135 / 5,828 and plan-book 128 /
+    5,600, all ten packs with identical selected IDs versus protected main.
+    All protected ceilings and prior causal histories remain unchanged.
+
+    2026-10-22 composition with protected d9b26904 retains its CAGR
+    truthful-copy handler coverage and the native-plan Brief suites.
+    Actual composed-tree probes measure index 136 jobs / 5,852,
+    free-content 135 / 5,824 and plan-book 128 / 5,596, all ten packs
+    with identical selected IDs versus protected main. Native-plan coverage
+    adds only four free-content estimator units (5,820 -> 5,824), already
+    within protected main's 5,825 ceiling. Retain every protected weight,
+    job-count and pack bound and both prior causal histories. These are
+    planner estimates, not execution timings.
+
+    2026-10-22 composition with protected 9b48e798 retains its Prophet B21
+    journey-notification suite and the native-plan Brief validation suites.
+    Canonical probes measure index 135 jobs / 5,847, free-content 135 /
+    5,824 and plan-book 128 / 5,596, all ten packs with unchanged job IDs.
+    Native-plan coverage remains the sole step delta versus protected main:
+    ticker-news-qbus 98 -> 102. Compose only its four-unit contribution into
+    free-content 5,820 -> 5,824; keep protected index/plan-book bounds,
+    all job/pack ceilings and every existing test. These are planner estimates.
+
+    2026-10-22 composition with protected 64ef5131 preserves the GMI
+    micro-theme expansion coverage and native-plan Brief tests. Canonical
+    measurement: index 135 jobs / 5,844, free-content 135 / 5,821,
+    plan-book 128 / 5,593, all ten packs. The only manifest step delta
+    versus that main is the accepted native-plan suites in ticker-news-qbus
+    (98 -> 102); its four units compose free-content 5,817 -> 5,821.
+    Preserve protected index/plan-book, all job/pack bounds and all suites.
+    These are planner estimates, not measured execution times.
+
+    2026-10-22 composition with protected 7bb2f72 preserves its two genuine
+    Shared Shell suites (data-base-shim 12 -> 16) and native-plan validation
+    coverage (ticker-news-qbus 98 -> 102). Canonical scoped measurement:
+    index 135 jobs / 5,841, free-content 135 / 5,818 and plan-book 128 /
+    5,590, each at ten packs, with the same selected job IDs. Compose only
+    free-content's four-unit native coverage contribution, 5,814 -> 5,818;
+    retain protected index 5,841, prophet 5,600, all job/pack bounds and
+    every prior suite. Both earlier causal measurements remain below.
+
+    2026-10-22 native Prophet-plan Brief validation adds two suites to the
+    incumbent code-gated ticker-news-qbus job: estimated weight 98 -> 102.
+    Register each new suite once there; remove only its new duplicate in the
+    data-gated press-lane, whose estimated weight returns from 43 to 38.
+    The scoped planner on aa5bd135 plus this deduplication measures index
+    135 jobs / 5,837, free-content 135 / 5,814 and plan-book 128 / 5,586,
+    all at ten packs, with no newly selected jobs. Fund only free-content's
+    necessary four-unit code-coverage cost, 5,810 -> 5,814. Preserve index,
+    plan-book, job-count and pack ceilings and every previous registration.
+    These are planning estimates, not measured execution times.
+    Current-main d54f24d4 plus the two Treasury suites composes to
+    5,856/5,829 weight with 136 jobs in both probes. Preserve the new
+    CAGR handler coverage, Treasury coverage, and all pack limits.
+
+    Current-main 9b48e798 also retains Prophet journey notifications (+3).
+    Compose that accepted coverage with Treasury (+4 over main): index
+    5,847 -> 5,851 and free-content 5,820 -> 5,824. No other bound changes.
+
+    Treasury/current-main composition (2ebafe80) retains the GMI micro-theme
+    step below plus the two Treasury suites: +4 units on main, hence
+    index 5,844 -> 5,848 and free-content 5,817 -> 5,821. Job counts,
+    selectors, all suites, plan-book and ten-pack ceilings stay unchanged.
+    2026-10-22 CAGR truthful-copy integration adds the actual handler pytest
+    to calculator-input-integrity (+5 estimator units). It newly selects
+    that existing job on the free-content probe (135 -> 136 jobs); index
+    stays136. Actual measured weights5849/5822 fund only these +5 units.
+    Incoming protectedmain adds3 units independently; compose its5847/5820
+    with this exact+5 to5852/5825. Preserve prophet5600, ten packs,
+    execution timeouts and every check.
+
+    2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
+    pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
+    2026-10-21 display-tier rows; frozen 68 intact), to the existing
+    unrun-intl-libraries job directly under the W-C4 hierarchy-population
+    step. That job was already selected on the index and free-content
+    probes, so no job joins any probe; the step costs exactly 3 estimator
+    units (one command plus one tests/test_ path). Local check_contract_delta
+    on the merge with main dabf745b (after the fixed-redirect and API-composition
+    funds) measured:
+
+        templates/index.html          135 jobs, 5,841 -> 5,844 weight
+        scripts/build_free_content.py 135 jobs, 5,814 -> 5,817 weight
+        engine/prophet/plan_book.py    128 jobs, 5,590 -> 5,593 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,841 -> 5,844 and build 5,814 -> 5,817, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
+    the ten-pack limit, selector code and every prior suite remain unchanged.
+    Planning weights are not measured execution times.
+
+    2026-10-21 Prophet B21 U2 journey notifications adds one pytest step,
+    tests/test_prophet_journey_notifications.py (the pure producer half:
+    identity, eligibility, correction table, tier), to the existing
+    code-gated prophet-lab job and declares the new module and the suite in
+    that job's paths. The job was already selected on all three probes, so
+    no job joins any probe; the step costs exactly 3 estimator units (one
+    command plus one tests/test_ path). Composed with main 64ef5131a5f5 (which
+    already carries the 2026-10-22 micro-theme +3 above, so both +3 steps
+    stack), packing_probe_measurements on the exported merge tree measured:
+
+        templates/index.html          135 jobs, 5,844 -> 5,847 weight
+        scripts/build_free_content.py 135 jobs, 5,817 -> 5,820 weight
+        engine/prophet/plan_book.py   128 jobs, 5,593 -> 5,596 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,844 -> 5,847 and build 5,817 -> 5,820, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count
+    ceiling, the ten-pack limit, selector code and every prior suite remain
+    unchanged. Planning weights are not measured execution times;
+    current-head CI must execute this assertion.
+
+    Native refresh e0b639a composes Treasury with protected dabf745b.
+    Main now includes both HK lookup and fixed-redirect regression coverage.
+    The two unchanged Treasury suites add four estimator units beyond main:
+    local red measures index 5,845 > 5,841 and free-content 5,818 > 5,814.
+    Import closure passes; job counts, plan-book weight, ten-pack limit,
+    selectors, execution budgets and all suites remain unchanged.
+
+    Current-main ae93436a composition preserves all accepted main coverage.
+    The two unchanged Treasury suites add exactly four estimator units:
+    index 5,837 -> 5,841; free-content 5,810 -> 5,814. Local red measured
+    only those two weight breaches; job/pack ceilings and selectors stay fixed.
+
+    Same-carrier Treasury integration with main35321d4c preserves the B04-A0
+    step below and adds its own two suites. Exact local packing RED measured
+    only weight breaches: index 5,829 > 5,825 and build 5,802 > 5,798.
+    Fund those four Treasury units on top of main, with no new job, selector,
+    pack, or test-coverage changes. All job and ten-pack ceilings stay fixed.
 
     2026-10-21 qualified Today and Research API composition adds exactly five
     estimator units to research-vault-api (7 -> 12) for the two mandatory API
@@ -5245,6 +5397,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Compose that measured +7 with the incoming news allowance below: change
     only free-content's 5,795 -> 5,802. Keep its 135-job ceiling, the other
     probe ceilings, ten packs, selectors, declarations and suites unchanged.
+
+    Same-carrier integration with protected main0bd1bedcff40 measures exactly
+    +4 Treasury-suite estimator units beyond current-main bounds: index
+    5822 -> 5826, build_free_content 5795 -> 5799. The discriminating local
+    red records precisely those two four-unit weight breaches, no job/pack
+    breach. Preserve current-main Press coverage, all job ceilings, plan-book
+    weight5600 and ten packs. No source/test invocation is removed.
+
+    2026-10-20 Treasury internal input (MO-DELTA-014, PR9880) adds two
+    focused composer/transport suites to the existing prophet-lab invocation.
+    Hosted contract-delta39430792073/job118655030591 measured no new selected
+    jobs: templates/index.html 5822 -> 5826 and build_free_content 5697 ->
+    5701, exactly four estimator units for those two suites. Fund only that
+    measured work. Preserve every job-count ceiling, the plan-book weight,
+    the ten-pack ceiling, all scope/closure audits and every suite/assertion.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
