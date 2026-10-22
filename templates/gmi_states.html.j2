@@ -1,0 +1,12 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Data states{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Data states | Mastermind' %}{% set seo_desc = 'How each explorer surface reads when data is late, missing or held: what failed, what still works, and one next step.' %}{% set seo_path = 'gmi-states.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{{ head([('Research','研究'),('Theme map','主题地图')], 'Data states', '数据状态',
+        'How each surface reads when data is late, missing or held.',
+        '数据延迟、缺失或暂缓时，各页面如何呈现。') }}
+<section class="gmi-sec" data-gmi-surface="states"></section>
+{% endblock %}

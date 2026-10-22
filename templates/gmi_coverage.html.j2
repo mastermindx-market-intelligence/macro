@@ -1,0 +1,20 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Coverage &amp; receipts{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Coverage & receipts | Mastermind' %}{% set seo_desc = 'How many companies are admitted to a theme, out of honest denominators, and the plain-word reason for every company not yet admitted.' %}{% set seo_path = 'gmi-coverage.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{% set N = model.coverage.us.numerator_issuers + model.coverage.cn.numerator_issuers %}
+{% if N == 0 %}
+{% set sub_en = 'No company is admitted to a theme yet. Here is why.' %}
+{% set sub_zh = '尚无公司获准纳入任何主题。原因如下。' %}
+{% elif N == 1 %}
+{% set sub_en = 'Only 1 company is admitted to a theme so far. Here is why.' %}
+{% set sub_zh = '目前仅有 1 家公司获准纳入主题。原因如下。' %}
+{% else %}
+{% set sub_en = 'Only ' ~ N ~ ' companies are admitted to a theme so far. Here is why.' %}
+{% set sub_zh = '目前仅有 ' ~ N ~ ' 家公司获准纳入主题。原因如下。' %}
+{% endif %}
+{{ head([('Research','研究'),('Coverage','覆盖率')], 'Coverage & receipts', '覆盖率与凭证', sub_en, sub_zh) }}
+<section class="gmi-sec" data-gmi-surface="coverage"></section>
+{% endblock %}

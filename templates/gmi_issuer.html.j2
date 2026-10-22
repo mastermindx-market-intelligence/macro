@@ -1,0 +1,29 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — {{ issuer.display_name }}{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — ' ~ issuer.display_name ~ ' | Mastermind' %}{% set seo_desc = issuer.display_name ~ "'s theme links: proposed or admitted, with the source and review receipt behind each one." %}{% set seo_path = 'gmi-issuer-' ~ issuer.ticker|lower ~ '.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{% set n = issuer.links | length %}
+{% set all_admitted = namespace(ok=true) %}
+{% for link in issuer.links %}
+{% if link.curation.decision != 'ACCEPT' or model.micros[link.micro_id].counts.admitted < 1 %}
+{% set all_admitted.ok = false %}
+{% endif %}
+{% endfor %}
+{% if n == 1 and all_admitted.ok %}
+{% set sub_en = 'One theme link, admitted after review.' %}
+{% set sub_zh = '一条主题关联，经审核已纳入。' %}
+{% elif n == 1 %}
+{% set sub_en = 'One proposed theme link, not yet a member.' %}
+{% set sub_zh = '一个拟议主题关联，尚未成为成员。' %}
+{% elif all_admitted.ok %}
+{% set sub_en = n ~ ' theme links, admitted after review.' %}
+{% set sub_zh = n ~ ' 条主题关联，经审核已纳入。' %}
+{% else %}
+{% set sub_en = n ~ ' proposed theme links, not yet members.' %}
+{% set sub_zh = n ~ ' 个拟议主题关联，尚未成为成员。' %}
+{% endif %}
+{{ head([('Research','研究'),('Companies','公司')], issuer.display_name, issuer.display_name, sub_en, sub_zh) }}
+<section class="gmi-sec" data-gmi-surface="issuer"></section>
+{% endblock %}

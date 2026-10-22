@@ -1,0 +1,21 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Theme map{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Theme map | Mastermind' %}{% set seo_desc = 'All 371 micro-themes on one census sheet: which hold an admitted company, which hold a proposed link, by category and by value-chain position.' %}{% set seo_path = 'gmi.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{% set A = model.totals.admitted_micros %}
+{% set M = model.totals.micros %}
+{% if A == 0 %}
+{% set sub_en = M ~ ' micro-themes mapped. None has an admitted company yet.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，尚无公司获准纳入。' %}
+{% elif A == 1 %}
+{% set sub_en = M ~ ' micro-themes mapped. 1 has an admitted company.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，其中 1 个已有获准纳入的公司。' %}
+{% else %}
+{% set sub_en = M ~ ' micro-themes mapped. ' ~ A ~ ' have an admitted company.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，其中 ' ~ A ~ ' 个已有获准纳入的公司。' %}
+{% endif %}
+{{ head([('Research','研究'),('Theme map','主题地图')], 'Theme map', '主题地图', sub_en, sub_zh) }}
+<section class="gmi-sec" data-gmi-surface="map"></section>
+{% endblock %}

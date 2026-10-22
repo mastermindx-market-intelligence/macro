@@ -1,0 +1,11 @@
+{#- GMI explorer shared macros. t() matches ontology's dual-language span pair
+    (theme.css hides the inactive language). tip() is the Tier-2 lens trigger:
+    text lives in data-tip-* attributes, NEVER in title= (doctrine §13);
+    theme.js already owns .lens-q popover behaviour, so no JS here. -#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+
+{% macro tip(en, zh) -%}
+<button class="lens-q gmi-tip" type="button" data-tip-en="{{ en }}" data-tip-zh="{{ zh }}"><span aria-hidden="true">?</span><span class="gmi-vh">{{ t("More detail","更多说明") }}</span></button>
+{%- endmacro %}

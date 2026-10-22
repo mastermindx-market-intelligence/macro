@@ -1,0 +1,20 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Documented relationships{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Documented relationships | Mastermind' %}{% set seo_desc = 'Supplier, customer and licensing links a company names in its own filings, each with its source and review status.' %}{% set seo_path = 'gmi-relationships.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{% set E = model.edges | length %}
+{% if model.edges_state == 'empty' %}
+{% set sub_en = 'Links a company names in its own filings. None documented yet.' %}
+{% set sub_zh = '公司在自身申报文件中披露的关联。目前尚无记录。' %}
+{% elif E == 1 %}
+{% set sub_en = 'Links a company names in its own filings. One documented so far.' %}
+{% set sub_zh = '公司在自身申报文件中写明的关联。目前已记录一条。' %}
+{% else %}
+{% set sub_en = 'Links a company names in its own filings. ' ~ E ~ ' documented so far.' %}
+{% set sub_zh = '公司在自身申报文件中写明的关联。目前已记录 ' ~ E ~ ' 条。' %}
+{% endif %}
+{{ head([('Research','研究'),('Relationships','关系')], 'Documented relationships', '已记录的关系', sub_en, sub_zh) }}
+<section class="gmi-sec" data-gmi-surface="relationships"></section>
+{% endblock %}
