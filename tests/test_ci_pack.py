@@ -5202,7 +5202,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_870),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_842),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_846),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_614),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5211,6 +5211,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 Tiingo News held PR #8697 combined with current main
+    a40c6c8101e27cc886a074556ee03e27f621ac58: the existing
+    ticker-news-qbus exclusive job gains tests/test_tiingo_news.py and
+    previously unrun tests/test_news_llm.py in its established test step.
+    Hosted predecessor CI39732644252 and independent read-only source
+    review verified this adds exactly +4 estimated weight units (98 -> 102)
+    with no new selected jobs or runner packs. Main's accepted
+    scripts/build_free_content.py ceiling was 5,842; fund precisely
+    5,846 for the merged cohort while preserving 136 job ceiling,
+    ten-pack limit, other two probes (136 / 5,870 and 130 / 5,614),
+    all suite commands, manifests and closure checks. This is a
+    planner-weight forecast; hosted exact-merge CI is still required.
+
 
     2026-10-22 merge protected D04-A2 source-clock coverage (dc3a) and
     autosave adoption: actual compiler measures index136/5870, free135/5842,

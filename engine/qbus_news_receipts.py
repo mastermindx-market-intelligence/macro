@@ -119,6 +119,7 @@ def parse_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str | None = None,
 ) -> QualifiedNewsRights:
     """Qualify an owner-issued source receipt for the current product use."""
 
@@ -127,8 +128,17 @@ def parse_rights_receipt(
         raise NewsReceiptError("rights_schema")
     if _text(obj.get("status"), "rights_status", maximum=32).lower() != "approved":
         raise NewsReceiptError("rights_not_approved")
+    requested_source = source
     source = _text(obj.get("source"), "rights_source", maximum=260).lower()
-    if source != _SOURCE and re.fullmatch(
+    if requested_source is not None:
+        requested_source = _text(
+            requested_source, "rights_source_requested", maximum=64
+        ).lower()
+        if requested_source not in ("benzinga", "tiingo"):
+            raise NewsReceiptError("rights_source_unsupported")
+        if source != requested_source:
+            raise NewsReceiptError("rights_source")
+    elif source != _SOURCE and re.fullmatch(
         r"massive:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", source
     ) is None:
         raise NewsReceiptError("rights_source")
@@ -170,6 +180,14 @@ def parse_rights_receipt(
         if not _bool(caps, required):
             raise NewsReceiptError(f"capability_{required}_required")
 
+    # This Tiingo consumer runs deterministic quality ranking, event clustering,
+    # and provider-article normalization. Those are derivative uses, not merely
+    # headline display. Deny Tiingo activation unless the contract owner
+    # explicitly licenses this processing; Benzinga\u0027s historic rules stay unchanged.
+    if source == "tiingo" and not _bool(
+        caps, "derivative_processing", default=False
+    ):
+        raise NewsReceiptError("capability_derivative_processing_required")
     allow_url = _bool(caps, "source_link_display", default=False)
     allow_teaser = _bool(caps, "teaser_display", default=False)
 
@@ -204,13 +222,14 @@ def load_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str | None = None,
 ) -> QualifiedNewsRights | None:
     """Read an owner-provided receipt; every read/parse/qualification fault denies."""
 
     receipt_path = Path(path)
     try:
         raw = json.loads(receipt_path.read_text(encoding="utf-8"))
-        return parse_rights_receipt(raw, now=now, audience=audience)
+        return parse_rights_receipt(raw, now=now, audience=audience, source=source)
     except (OSError, ValueError, TypeError, NewsReceiptError):
         return None
 
