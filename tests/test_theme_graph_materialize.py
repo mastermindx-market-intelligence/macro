@@ -1847,7 +1847,9 @@ def _activity_event(*, source: str, target: str, use: str = "GRANTED",
         "lifecycle": "planned",
         "evidence_lineage": {
             "proposal_id": "actprop:" + "a" * 24,
-            "fact_id": "fixture:activity-fact-1", "fact_revision": 1,
+            # activity_membership_history.v1 (sibling PR #9975) constrains fact_id to
+            # ^(integration|activity):[0-9a-f]{64}$ — stay inside that shape.
+            "fact_id": "integration:" + "0" * 64, "fact_revision": 1,
             "source_sha256": "b" * 64, "span_text_sha256": "c" * 64,
             "owner_bindings": {"spec": "d" * 64, "purpose": "e" * 64,
                                "adoption": "f" * 64},
