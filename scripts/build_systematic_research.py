@@ -33,7 +33,7 @@ Point it at a source that actually carries opens, or the loader refuses with
 ``<INPUT_DIR>/metadata.json`` declares point-in-time and provenance facts::
 
     {
-      "as_of": "2026-10-21",
+      "as_of": "2026-10-21T21:00:00-04:00",
       "expected_last_session": "2026-10-21",
       "data_revision": "<opaque revision string>",
       "sessions_per_year": 252,
@@ -41,7 +41,7 @@ Point it at a source that actually carries opens, or the loader refuses with
       "source": "local export",
       "instruments": {
         "AAA": {
-          "available_at": ["2026-01-02T21:05:00", ...],   # per session, aligned
+          "available_at": ["2026-01-02T21:05:00-05:00", ...],   # aware, per session
           "adjustment_basis": {"open": "split_adj", "high": "split_adj",
                                "low": "split_adj", "close": "split_adj",
                                "volume": "split_adj"},
@@ -50,17 +50,24 @@ Point it at a source that actually carries opens, or the loader refuses with
       }
     }
 
-``available_at`` is REQUIRED per session. A bar whose ``available_at`` is after
-``as_of`` is excluded, so appending future data cannot alter reported history.
+``available_at`` is REQUIRED per session and must be TIMEZONE-AWARE. A naive
+receipt is refused rather than assumed to be UTC: an ambiguous instant is not a
+knowability fact. A bar whose ``available_at`` is after ``as_of`` is excluded,
+so appending future data cannot alter reported history. ``as_of`` must likewise
+be an aware instant; a bare date is ambiguous between an instant and a session
+label and is refused. ``expected_last_session`` is a session LABEL and stays a
+bare date, which is what a session is.
+
 ``adjustment_basis`` may be one string for every column or a per-column mapping,
-but the values must agree.
+but the values must agree. Agreement is an internal consistency check, not a
+corporate-action qualification.
 
 USAGE
 -----
     python3 scripts/build_systematic_research.py \
         --input-dir /path/to/prices \
         --output /path/to/systematic_research.json \
-        --as-of 2026-10-21 --generated-at 2026-10-22T09:00:00Z \
+        --as-of 2026-10-21T21:00:00-04:00 --generated-at 2026-10-22T09:00:00Z \
         --code-revision "$(git rev-parse HEAD)" \
         --expected-last-session 2026-10-21 \
         --cost-bps 10
@@ -72,6 +79,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -90,10 +98,41 @@ from engine.systematic_research import (
 
 METADATA_FILENAME = "metadata.json"
 _DATE_COLUMNS = ("date", "session", "session_date", "Date", "timestamp", "ts")
+_ET = ZoneInfo("America/New_York")
 
 
 class InputRefused(RuntimeError):
     """The inputs cannot support an honest report. Writes nothing."""
+
+
+def _no_duplicate_keys(pairs):
+    """Reject a JSON object that repeats a key.
+
+    A permissive parser silently keeps the LAST value for a duplicated key, so a
+    sidecar carrying two ``available_at`` blocks — or two ``instruments`` maps —
+    would be read as whichever the writer happened to put last. That is an
+    unreproducible input, not a convenience.
+    """
+    seen: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in seen:
+            raise InputRefused(f"duplicate_json_key:{key}")
+        seen[key] = value
+    return seen
+
+
+def _reject_non_finite(token: str):
+    """Refuse the NaN/Infinity extensions the strict report never emits."""
+    raise InputRefused(f"non_finite_json_token:{token}")
+
+
+def load_strict_json(text: str, *, what: str):
+    """Parse JSON with duplicate keys and non-finite literals both refused."""
+    try:
+        return json.loads(text, object_pairs_hook=_no_duplicate_keys,
+                          parse_constant=_reject_non_finite)
+    except json.JSONDecodeError as exc:
+        raise InputRefused(f"{what}_is_not_valid_json:{exc.msg}") from exc
 
 
 def _read_price_table(path: Path) -> pd.DataFrame:
@@ -115,7 +154,12 @@ def _read_price_table(path: Path) -> pd.DataFrame:
             raise InputRefused(f"session_index_is_not_a_date:{path.name}")
         df = df.copy()
         df.index = pd.DatetimeIndex(parsed)
-    df.index = pd.DatetimeIndex(df.index).tz_localize(None).normalize()
+    df.index = pd.DatetimeIndex(df.index)
+    if df.index.tz is not None:
+        # A session LABEL is an exchange date, not a UTC arrival instant, so an
+        # offset-aware index is resolved to the New York calendar date it names.
+        df.index = df.index.tz_convert(_ET).tz_localize(None)
+    df.index = df.index.normalize()
     return df
 
 
@@ -129,10 +173,9 @@ def load_inputs(input_dir: Path) -> tuple[dict[str, PriceFrame], dict[str, Any]]
     meta_path = input_dir / METADATA_FILENAME
     if not meta_path.is_file():
         raise InputRefused(f"metadata_sidecar_not_found:{METADATA_FILENAME}")
-    try:
-        meta = json.loads(meta_path.read_text())
-    except json.JSONDecodeError as exc:
-        raise InputRefused(f"metadata_sidecar_not_valid_json:{exc.msg}") from exc
+    meta = load_strict_json(meta_path.read_text(), what="metadata_sidecar")
+    if not isinstance(meta, dict):
+        raise InputRefused("metadata_sidecar_is_not_a_json_object")
 
     declared = meta.get("instruments")
     if not isinstance(declared, dict) or not declared:
@@ -162,10 +205,18 @@ def load_inputs(input_dir: Path) -> tuple[dict[str, PriceFrame], dict[str, Any]]
         if not isinstance(available, list) or len(available) != len(table):
             raise InputRefused(
                 f"available_at_must_be_declared_for_every_session:{ticker}")
+        # Availability must be TIMEZONE-AWARE. A naive receipt is ambiguous about
+        # which instant it names, and normalising it by assuming UTC would invent
+        # a knowability fact the writer never stated.
+        naive = [v for v in available
+                 if not isinstance(v, str) or pd.Timestamp(v).tzinfo is None]
+        if naive:
+            raise InputRefused(
+                f"available_at_must_be_timezone_aware:{ticker}:{naive[0]}")
         # NOTE: build from the parsed VALUES. Re-wrapping the parsed Series with
         # `pd.Series(parsed, index=...)` would ALIGN on the parsed RangeIndex
         # against the session DatetimeIndex and silently produce all-NaT.
-        parsed = pd.to_datetime(pd.Series(available), errors="coerce").to_numpy()
+        parsed = pd.to_datetime(pd.Series(available), errors="coerce", utc=True).to_numpy()
         available_at = pd.Series(parsed, index=table.index)
         if available_at.isna().any():
             raise InputRefused(f"available_at_not_parseable:{ticker}")
@@ -194,10 +245,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", required=True, type=Path,
                    help="Explicit output path. Nothing is written elsewhere.")
     p.add_argument("--as-of", default=None,
-                   help="ISO cutoff. Defaults to metadata.json 'as_of'.")
+                   help="TIMEZONE-AWARE ISO cutoff, e.g. "
+                        "2026-10-21T21:00:00-04:00. A bare date is refused. "
+                        "Defaults to metadata.json 'as_of'.")
     p.add_argument("--generated-at", required=True,
-                   help="ISO timestamp stamped into the report. Explicit so the "
-                        "output is reproducible.")
+                   help="TIMEZONE-AWARE ISO timestamp stamped into the report. "
+                        "Must not precede --as-of. Explicit so the output is "
+                        "reproducible.")
     p.add_argument("--code-revision", required=True,
                    help="Source revision this report was compiled from.")
     p.add_argument("--data-revision", default=None,
