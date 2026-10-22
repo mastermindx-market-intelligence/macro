@@ -850,6 +850,32 @@
       sourceField: state.sourceField, sourceContext: state.sourceContext, outcomeLens: intent.outcomeLens, catalogOffset: intent.catalogOffset };
   }
 
+  /* A complete historical/current reference is syntactically self-describing:
+   * query, subject, generation pin, registered method, exact cutoff and
+   * context. The retained endpoint validates every one of them against the
+   * response owner, so the discovery catalog is not needed as authority.
+   * Saved output keeps requiring the catalog because its capture id is
+   * published only there; nothing else may substitute for a missing field. */
+  function completeCompareRef(intent) {
+    if (!intent || (intent.mode !== 'historical' && intent.mode !== 'current')) return false;
+    if (!isToken(intent.query) || !isToken(intent.subject) || !isToken(intent.gen)
+        || !isToken(intent.method) || !isToken(intent.context)) return false;
+    if (typeof intent.genSha !== 'string' || !SHA256_RE.test(intent.genSha)) return false;
+    return isUtc(intent.cutoff);
+  }
+
+  /* Open a pinned comparison straight from its own exact reference: exactly
+   * one retained read, no catalog request dispatched before or alongside it,
+   * and no invented selected catalog entry. The picker keeps telling the
+   * truth — the saved-capture list simply has not been loaded. */
+  function runExactReference(intent) {
+    state.selected = null;
+    state.referenceInvalid = false;
+    renderCatalogDependentControls();
+    if (!writeUrlIntent(publishableIntent(intent))) return;
+    return runCompare(intent);
+  }
+
   /* Saved output mode: exact operational PIT playback only. No retained
    * analysis, no legacy recomputed substitution, ever. */
   function runSaved(intent) {
@@ -906,7 +932,10 @@
       }
       state.committed = { kind: 'compare', intent: intent, data: compare };
       if (state.sourceContext) {
-        if (!compare.sourceCards[state.sourceContext]) return renderTypedUnavailable('missing_exact_capture', 'source_context_not_in_selected_comparison');
+        var selectedSource = state.sourceContext === intent.context || compare.neighbors.some(function (neighbor) {
+          return neighbor.contextId === state.sourceContext;
+        });
+        if (!selectedSource || !compare.sourceCards[state.sourceContext]) return renderTypedUnavailable('missing_exact_capture', 'source_context_not_in_selected_comparison');
         state.sourceCase = { contextId: state.sourceContext, data: compare.sourceCards[state.sourceContext] };
       }
       renderCommitted();
@@ -967,6 +996,7 @@
     else if (notice.kind === 'request') renderRequestFailureNotice(notice);
     else if (notice.kind === 'signed_out') renderSignedOutNotice(notice);
     else if (notice.kind === 'prompt') renderCatalogPromptNotice();
+    else if (notice.kind === 'catalog_not_loaded') renderCatalogNotLoadedNotice();
     else if (notice.kind === 'loading') {
       ui.status.setAttribute('data-mmr-state', 'loading');
       ui.status.textContent = copy('Loading saved evidence', '正在加载已保存依据');
@@ -1110,6 +1140,23 @@
       '在上方选择一条已保存的 SPY 记录，然后打开或比较它。');
   }
 
+  function renderCatalogNotLoaded() {
+    state.notice = { kind: 'catalog_not_loaded' };
+    renderNotice();
+  }
+
+  /* Stated only when no catalog is held: an unloaded list is a loading fact,
+   * never a sign-in requirement and never evidence about any reference. */
+  function renderCatalogNotLoadedNotice() {
+    ui.status.setAttribute('data-mmr-state', 'idle');
+    ui.status.textContent = copy('Saved captures not loaded', '已保存记录尚未加载');
+    ui.resultBody.innerHTML = banner('catalog_not_loaded',
+      'The saved-capture list is not loaded', '已保存记录列表尚未加载',
+      'No saved-capture list has been loaded, so no other registered method can be offered here. Browse the saved captures to choose one.',
+      '尚未加载已保存记录列表，因此这里无法提供其他注册方法。请浏览已保存记录以选择。',
+      actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
+  }
+
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
@@ -1212,7 +1259,19 @@
 
   function renderSelectedClock() {
     var entry = state.selected;
-    if (!entry) { ui.originalClock.hidden = true; return; }
+    if (!entry) {
+      /* A pinned citation opened without the catalog has no selected catalog
+       * entry to quote. Only the comparison's own validated source card may
+       * be shown, and the absent list is never presented as freshness. */
+      var card = state.committed && state.committed.kind === 'compare'
+        ? state.committed.data.sourceCards[state.committed.intent.context] : null;
+      if (!card) { ui.originalClock.hidden = true; ui.originalClock.innerHTML = ''; return; }
+      ui.originalClock.hidden = false;
+      ui.originalClock.innerHTML = esc(copy('Original packet cutoff', '原始记录截至')) + ': <strong>' +
+        esc(clockLabel(card.asKnownAt)) + '</strong>' +
+        (card.capturedAt ? ' · ' + esc(copy('captured ', '捕获于 ')) + esc(clockLabel(card.capturedAt)) : '');
+      return;
+    }
     ui.originalClock.hidden = false;
     ui.originalClock.innerHTML = esc(copy('Original packet cutoff', '原始记录截至')) + ': <strong>' +
       esc(clockLabel(entry.asKnownAt)) + '</strong>' +
@@ -1426,6 +1485,9 @@
       '</div>' +
       '<p class="mmr-lead">' + esc(copy('Compare the house readings; a match does not establish what comes next.',
         '比较内部解读；相似案例不代表未来结果。')) + '</p>' + staleNoticeIfNeeded({ intent: committed.intent });
+    if (!state.catalog) {
+      body += '<p class="mmr-note">' + actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select') + '</p>';
+    }
     if (compare.status === 'VALID_EMPTY' || compare.status === 'ABSTAINED' || !returned) {
       body += banner('valid_empty',
         'No comparable saved cases', '暂无可比的已保存案例',
@@ -1524,7 +1586,12 @@
       return applyIntent(restored.intent, {persist:false});
     }
     var intent = currentIntent();
-    if (!state.catalog) return loadCatalog(intent);
+    if (!state.catalog) {
+      /* A manual retry reissues the pinned reference itself — never a catalog
+       * read followed by re-derived defaults. */
+      if (completeCompareRef(intent)) return runCompare(intent);
+      return loadCatalog(intent);
+    }
     if (!state.selected) return renderCatalogPrompt();
     if (state.mode === 'saved') return runSaved(intent);
     return runCompare(intent);
@@ -1537,7 +1604,23 @@
     state.mode = mode;
     renderModeButtons();
     renderCutoffControl();
-    if (!state.catalog) { writeUrlIntent(publishableIntent(currentIntent())); return; }
+    if (!state.catalog) {
+      if (!changed) { writeUrlIntent(publishableIntent(currentIntent())); return; }
+      /* No catalog is held, so no per-mode method can be derived here and the
+       * previous mode's registered method may never be reused: the pinned
+       * reference cannot be dispatched from this mode. Say so plainly and
+       * offer the explicit browse instead of guessing a method. */
+      beginIntent();
+      state.selected = null;
+      state.sourceContext = null; state.sourceField = null;
+      ui.sourceBody.innerHTML = ''; closeSourcePanel();
+      ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
+      if (state.intent) state.intent.method = null;
+      renderCatalogDependentControls();
+      writeUrlIntent(publishableIntent(currentIntent()));
+      renderCatalogNotLoaded();
+      return;
+    }
     if (!state.selected) { writeUrlIntent(publishableIntent(currentIntent())); renderCatalogPrompt(); return; }
     if (changed || !state.committed) {
       state.intent.method = defaultMethodId(mode);
@@ -1561,7 +1644,14 @@
     state.outcomeLens = intent.outcomeLens || null;
     state.sourceField = intent.sourceField || null;
     state.sourceContext = intent.sourceContext || null;
-    if (!state.catalog || (intent.gen && state.catalog.generation.generationId !== intent.gen)
+    if (!state.catalog) {
+      /* A complete pinned reference opens through the retained endpoint
+       * itself. The catalog is neither awaited nor speculatively requested,
+       * and its absence is never read as evidence about the reference. */
+      if (completeCompareRef(state.intent)) return runExactReference(state.intent);
+      return loadCatalog(state.intent);
+    }
+    if ((intent.gen && state.catalog.generation.generationId !== intent.gen)
         || (intent.genSha && state.catalog.generation.generationSha256 !== intent.genSha)
         || (intent.context && !state.catalog.entries.some(function (entry) { return entry.contextId === intent.context && entry.catalogOffset === String(intent.catalogOffset || '0'); }))) {
       return loadCatalog(intent);
@@ -1747,6 +1837,9 @@
     });
     ui.primaryButton.addEventListener('click', function () {
       if (!state.selected) {
+        /* With no catalog held, a pinned reference is still actionable: the
+         * primary action routes it instead of focusing a disabled picker. */
+        if (!state.catalog && completeCompareRef(currentIntent())) return runCurrentIntent();
         ui.captureSelect.focus();
         return;
       }
@@ -1787,6 +1880,9 @@
       return;
     }
     applyIntent(parsed.intent, { persist: false });
+    /* Name the picker's real state once the requested mode is known: an
+     * unloaded list is a loading fact, not a sign-in requirement. */
+    renderCatalogDependentControls();
   }
 
   /* Bounded test hook: pure helpers only, registered by a test runner
@@ -1804,6 +1900,7 @@
       differenceRows: differenceRows,
       summarizeDifferences: summarizeDifferences,
       parseUrlIntent: parseUrlIntent,
+      completeCompareRef: completeCompareRef,
       commitGate: commitGate,
       isUtc: isUtc,
       formatUtc: formatUtc,
