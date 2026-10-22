@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-02T21:17:46Z",
+ "accession": "0001694028-26-000006",
+ "cik": "0001694028",
+ "doc_byte_length": 1696137,
+ "doc_sha256": "71468c15584c32a177b843a021a81eff3fc17047e16fae72b5a46a4c2f485ea6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-02",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lbrt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1392046,
+  "byte_start": 1390919,
+  "normalized": "As of December 31, 2024, customer A and customer B accounted for 14% and 10%, respectively, of total consolidated accounts receivable and unbilled revenue. During the year ended December 31, 2025, customer A and customer C accounted for 11% and 11%, respectively, of consolidated revenues. During the years ended December 31, 2024, customer C accounted for 12% of consolidated revenues.",
+  "normalized_sha256": "2697361b5621f9293529f79d840f85ad156c0cc7e7c7843b57bd9cb2e6e22a72",
+  "raw": " As of December 31, 2024, customer A and customer B accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-142\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-745\">14</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-143\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-746\">10</ix:nonFraction>%, respectively, of total consolidated accounts receivable and unbilled revenue. During the year ended December 31, 2025, customer A and customer C accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-144\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-747\">11</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-145\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-748\">11</ix:nonFraction>%, respectively, of consolidated revenues. During the years ended December 31, 2024, customer C accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-146\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-749\">12</ix:nonFraction>% of consolidated revenues.",
+  "raw_sha256": "a370846e000c3e64dc5b197166f20e828543f39247aa62fba386e3312adccb49"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1694028/000169402826000006/lbrt-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 69873,
+   "byte_start": 69212,
+   "context_ref": "c-144",
+   "raw": "<xbrli:context id=\"c-144\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001694028</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lbrt:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "98ff8e1dfe0d9feaa1012b55b4b86f479f8b0f3aaae492af9fc985b16ff9b58e"
+  },
+  {
+   "byte_end": 70534,
+   "byte_start": 69873,
+   "context_ref": "c-145",
+   "raw": "<xbrli:context id=\"c-145\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001694028</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lbrt:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "10e20b732c31cc221103c8220fe61ed18c20c80f025150816a4414ec3487b36d"
+  }
+ ]
+}

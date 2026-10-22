@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T21:46:08Z",
+ "accession": "0001193125-26-067292",
+ "cik": "0000315852",
+ "doc_byte_length": 5624400,
+ "doc_sha256": "810d8854eef8d606841eff15256bdf38c723bf68180ce6c8b9a61cf2593c45a6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "rrc-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3563704,
+  "byte_start": 3562852,
+  "normalized": "Customer B represented 10% of sales in 2024. We believe that the loss of any one customer would not have an adverse effect on our ability to sell our natural gas, NGLs and oil production.",
+  "normalized_sha256": "0564b44e4a5e6c8df01b30653e197f9e956a48455e4e56608c1ac9aae0393d5d",
+  "raw": " Customer B represented </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_4e19c126-c9bd-419f-a95a-390d82403ed7\" contextRef=\"C_e5521057-801e-43fa-9bc5-830200d9bc12\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">10</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% of sales in 2024. We believe that the loss of any one customer would not have an adverse effect on our ability to sell our natural gas, NGLs and oil production.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "cf92071d451fd44e09092e40248c5580e52c65134a0b43411ee1d48dd7bb1ec7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/315852/000119312526067292/rrc-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 69606,
+   "byte_start": 68897,
+   "context_ref": "C_e5521057-801e-43fa-9bc5-830200d9bc12",
+   "raw": "<xbrli:context id=\"C_e5521057-801e-43fa-9bc5-830200d9bc12\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000315852</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">rrc:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "c364b9043bf0ad1479d8bed02a273938ec63209576d295e74f186142f0fc5e1a"
+  }
+ ]
+}

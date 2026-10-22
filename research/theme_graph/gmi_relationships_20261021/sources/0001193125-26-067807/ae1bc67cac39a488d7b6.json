@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T23:47:52Z",
+ "accession": "0001193125-26-067807",
+ "cik": "0001724965",
+ "doc_byte_length": 5678099,
+ "doc_sha256": "65287718fc8ac81de8d0dbeb0c9aa8c7813b5e8d812161d6f12aa8d2e2727329",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "talo-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3297935,
+  "byte_start": 3296977,
+  "normalized": "Shell Trading (US) Company 35",
+  "normalized_sha256": "addf6210d32ab2f90598ed4e5c1feff4e324d01e5a0d17c77a33df5b05ef1c53",
+  "raw": "Shell Trading (US) Company</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:nowrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_595c56b6-33fd-42df-8b8e-a4fc19e90d07\" contextRef=\"C_ef9bfd50-b7a4-4eee-a853-9e18aa8b2da6\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">35",
+  "raw_sha256": "ae1bc67cac39a488d7b6540f0ff69b2669069ac05e84bdae262d3dc3a55080c1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1724965/000119312526067807/talo-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 129639,
+   "byte_start": 128933,
+   "context_ref": "C_ef9bfd50-b7a4-4eee-a853-9e18aa8b2da6",
+   "raw": "<xbrli:context id=\"C_ef9bfd50-b7a4-4eee-a853-9e18aa8b2da6\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001724965</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">talo:ShellTradingUSCompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "99d6ddd2217bddc27376503f65f49b5725713117da90a6d4385055a6a0001ff0"
+  }
+ ]
+}
