@@ -4,4 +4,4 @@ changed_paths:
   - templates/commodity-workspace.css
   - templates/commodity-workspace.js
   - site/commodities.html
-manifest: mockups/evidence/commodities-revamp-20261022/overview/manifest.json
+manifest: mockups/evidence/commodities-revamp-20261022/integration-overview/manifest.json

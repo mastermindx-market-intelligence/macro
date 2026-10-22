@@ -102,7 +102,7 @@ def verify(receipt: Path) -> None:
                     if date:
                         assert date in physical.inner_text()
             physical.locator("summary").click()
-            checks.append("dated physical synthesis preserves broad inventory tightness, release uncertainty and independent inflation check")
+            checks.append("exact published physical headline, clocks, dates and downstream context")
             page.locator('[data-cw-hypothesis="oil"] input[value="supply"]').check()
             page.locator("#cw-tab-relationships").click()
             assert "Supply disruption" in page.locator("#cw-investigation-title").inner_text()

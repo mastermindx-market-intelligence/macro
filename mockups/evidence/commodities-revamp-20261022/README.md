@@ -29,3 +29,7 @@ python3 scripts/verify_commodity_workspace_browser.py --receipt mockups/evidence
 ```
 
 Local review bytes, source/visual review, GitHub CI, covering normal render, exact served cohort and authenticated live journey are separate acceptance facts. Production acceptance remains pending until independently observed after publication.
+
+## Integrated release candidate
+
+Main advanced to `64ef5131a5f50fb65f0ad25a049a457e18258495` with a newer accepted payload and shared assets. The conflict was resolved by preserving that exact payload and reconstructing only the presentation. Current captures are `integration-overview/` and `integration-views/`; current checks are `integration-checks.json`, `integration-browser-journey.json` and `integration-dom-journeys.json`. The earlier directories remain dated pre-integration evidence. See `reviews.md` for the actual independent review scopes and `integration-render-receipt.json` for the payload-preservation proof. Production and Paper acceptance remain separate.
