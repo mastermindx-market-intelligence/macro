@@ -402,6 +402,8 @@ def test_t9_source_shape():
         "engine.neuralweb.theme_state_generation", "engine.neuralweb.theme_state_adapter",
         "engine.theme_graph.theme_state",
         "engine.theme_graph.theme_state_owner_readers",
+        # M2 B2a (ORCH-PIPE 2026-10-22): ACTIVITY_MEMBERSHIP_STATE fold mode — amendment ratified by the seat's merge.
+        "engine.theme_graph.materialize", "engine.theme_graph.store", "hashlib",
     }
     seen = set()
     for node in ast.walk(tree):
