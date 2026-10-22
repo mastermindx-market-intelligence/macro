@@ -1,0 +1,75 @@
+cd '/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27'
+.venv-shared-shell/bin/python - <<'PY'
+from pathlib import Path
+import subprocess,sys,json,re,hashlib,datetime,difflib,yaml
+repo=Path.cwd();root=Path('/tmp/shared-shell-css-visual-20261019T1107');outdir=root/'merge-candidates';base='69dd6e774cc48223005426765e74aed193d55954';ours='0905751badd88752cbab19ffedac51e610488035';theirs='fc44c814c19228d1d19964a34dcf40ce0593eb87'
+def git(*args):
+ p=subprocess.run(['git',*args],capture_output=True,cwd=repo,timeout=90);assert p.returncode==0,(args,p.stderr.decode());return p.stdout
+assert git('rev-parse','HEAD').decode().strip()==ours and not git('status','--porcelain=v1','--untracked-files=all').strip()
+sys.path.insert(0,str(repo));from lib.shared_shell import inject_shared_shell_text,BLOCK
+sha=lambda b:hashlib.sha256(b).hexdigest()
+for p,expected in [('templates/shared_shell.css','b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e'),('templates/shared_shell_bridge.js','048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d')]: assert sha((repo/p).read_bytes())==expected
+receipt={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':base,'ours':ours,'theirs':theirs,'source_effect':False,'files':[]}
+auth="try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }";auth_shell="if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } "+auth
+rules={
+'site/etfs.html':[(auth,auth_shell,1)],
+'site/special_situations.html':[(auth,auth_shell,1),('navigation-refresh.css?v=ef068fe1','navigation-refresh.css?v=edfd821b',2),('theme.js?v=46939917','theme.js?v=31df78a0',1)],
+'site/us_stocks.html':[("location.href = 'stock.html#' + encodeURIComponent(tk);","var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }",1),("    window.addEventListener('hashchange', fromHash);","    window.addEventListener('hashchange', fromHash);\n    window.addEventListener('mmx:shell-location', fromHash);",1),("          try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }","          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }\n          try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }",1)]}
+for path,ops in rules.items():
+ b=git('show',base+':'+path).decode();o=git('show',ours+':'+path).decode();t=git('show',theirs+':'+path).decode()
+ def forward(s):
+  for before,after,count in ops:
+   assert s.count(before)==count,(path,before,s.count(before),count)
+   s=s.replace(before,after)
+  return inject_shared_shell_text(s,version='048314d5',css_version='b1918cca')
+ assert forward(b)==o,('old_ours_not_reconstructed',path)
+ result=forward(t);assert inject_shared_shell_text(result,version='048314d5',css_version='b1918cca')==result
+ reverse=BLOCK.sub('',result,count=1)
+ for before,after,count in reversed(ops):
+  assert reverse.count(after)==count,(path,after,reverse.count(after));reverse=reverse.replace(after,before)
+ assert reverse==t,('incoming_reconstruction_failed',path)
+ dest=outdir/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(result.encode())
+ receipt['files'].append({'path':path,'base_sha256':sha(b.encode()),'ours_sha256':sha(o.encode()),'theirs_sha256':sha(t.encode()),'resolved_sha256':sha(result.encode()),'resolved_bytes':len(result.encode()),'adapters':len(ops),'ours_exactly_reconstructed':True,'incoming_exactly_reconstructed':True,'canonical_injector_idempotent':True})
+p='.github/ci/legacy-jobs.yml';b=git('show',base+':'+p).decode();o=git('show',ours+':'+p).decode();t=git('show',theirs+':'+p).decode();m=git('show','93cd248644eb654f7d766a49380c5ce3e07b7625:'+p).decode();seen=[]
+def resolve(match):
+ a,c=match.groups();assert a in ['      - "lib/shared_shell.py"\n      - "lib/site_assets.py"\n','      - "lib/shared_shell.py"\n'];assert c in ['      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"\n','      - contracts/theme_graph/activity_membership_proposal.v1.schema.json\n'];seen.append({'ours':a,'theirs':c});return a+c
+m=re.sub(r'(?ms)^<<<<<<< HEAD\n(.*?)^=======\n(.*?)^>>>>>>> origin/main\n',resolve,m);assert len(seen)==7 and not re.search(r'(?m)^(<<<<<<< |=======|>>>>>>> )',m)
+def delta(a,c):
+ aa=a.splitlines(keepends=True);cc=c.splitlines(keepends=True);return [(aa[i:j],cc[k:l]) for tag,i,j,k,l in difflib.SequenceMatcher(None,aa,cc,autojunk=False).get_opcodes() if tag!='equal']
+assert delta(b,o)==delta(t,m),'incoming_to_resolved_deltas_not_equal_base_to_ours'
+bj,oj,tj,mj=[yaml.safe_load(v) for v in [b,o,t,m]]
+assert set(bj['jobs'])==set(oj['jobs'])==set(tj['jobs'])==set(mj['jobs'])
+for job,j in mj['jobs'].items():
+ assert set(j.get('paths',[])) == set(tj['jobs'][job].get('paths',[]))|set(oj['jobs'][job].get('paths',[]))
+dest=outdir/p;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(m.encode());receipt['files'].append({'path':p,'base_sha256':sha(b.encode()),'ours_sha256':sha(o.encode()),'theirs_sha256':sha(t.encode()),'resolved_sha256':sha(m.encode()),'resolved_bytes':len(m.encode()),'conflicts':len(seen),'old_ours_deltas_equal_new_delta':True,'paths_union_verified':True,'job_count':len(mj['jobs']),'jobs_added_or_removed':0})
+receipt['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();assert not git('status','--porcelain=v1','--untracked-files=all').strip();(root/'fresh-main-four-conflict-candidates.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))
+PY
+
+python3 - <<'PY'
+from pathlib import Path
+import subprocess,json,datetime,hashlib
+w=Path('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27');r=Path('/tmp/shared-shell-css-visual-20261019T1107');old='0905751badd88752cbab19ffedac51e610488035';incoming='fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd';branch='sol/market-os-shared-shell-design-20260924';c=json.loads((r/'fresh-main-four-conflict-candidates.json').read_text());paths=sorted(x['path'] for x in c['files']);sha=lambda b:hashlib.sha256(b).hexdigest()
+def run(args):
+ p=subprocess.run(args,cwd=w,capture_output=True,timeout=180);return {'args':args,'exit':p.returncode,'stdout':p.stdout.decode(errors='replace'),'stderr':p.stderr.decode(errors='replace')}
+def ok(args):
+ p=run(args);assert p['exit']==0,p;return p['stdout'].strip()
+assert ok(['git','rev-parse','HEAD'])==old and ok(['git','branch','--show-current'])==branch and not ok(['git','status','--porcelain=v1','--untracked-files=all'])
+assert ok(['git','rev-parse','origin/main'])==incoming and ok(['git','merge-base',old,incoming])==c['base']
+for lock in ['index.lock','MERGE_HEAD','rebase-merge','rebase-apply']:
+ p=Path(ok(['git','rev-parse','--git-path',lock]));assert not p.exists(),str(p)
+remote=ok(['git','ls-remote','origin','refs/heads/'+branch]).split()[0];pr=json.loads(ok(['gh','api','repos/mastermindx-market-intelligence/macro/pulls/7949']));assert remote==old==pr['head']['sha'] and pr['state']=='open' and not pr['merged'] and not pr['labels'] and not pr['auto_merge']
+for x in c['files']:
+ for ref,key in [(c['base'],'base_sha256'),(old,'ours_sha256'),(incoming,'theirs_sha256')]:
+  z=subprocess.run(['git','show',ref+':'+x['path']],cwd=w,capture_output=True,timeout=90);assert z.returncode==0 and sha(z.stdout)==x[key],(x['path'],ref)
+ assert sha((r/'merge-candidates'/x['path']).read_bytes())==x['resolved_sha256']
+receipt={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'head_before':old,'incoming':incoming,'candidate_source_main':c['theirs'],'pr_head_before':pr['head']['sha'],'armed':False,'source_operation':'same original worktree merge; no renderer or host action'};(r/'fresh-main-actual-merge.json').write_text(json.dumps(receipt,indent=2)+'\n')
+result=run(['git','merge','--no-ff','--no-commit',incoming]);receipt['merge']=result;(r/'fresh-main-actual-merge.json').write_text(json.dumps(receipt,indent=2)+'\n');assert result['exit']==1,result
+unmerged=sorted(ok(['git','diff','--name-only','--diff-filter=U']).splitlines());assert unmerged==paths,(unmerged,paths)
+for x in c['files']:
+ p=x['path']
+ for stage,key in [('1','base_sha256'),('2','ours_sha256'),('3','theirs_sha256')]:
+  z=subprocess.run(['git','show',':'+stage+':'+p],cwd=w,capture_output=True,timeout=90);assert z.returncode==0 and sha(z.stdout)==x[key],(p,stage)
+ (w/p).write_bytes((r/'merge-candidates'/p).read_bytes())
+ok(['git','add','--']+paths);assert not ok(['git','ls-files','-u']);assert not ok(['git','diff','--name-only']);tree=ok(['git','write-tree']);preview='0c80d48f81406970cc3990c01bb4c635062e4e24';assert sorted(ok(['git','diff','--name-only',preview,tree]).splitlines())==paths
+receipt.update({'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'resolved_paths':paths,'resolutions':c['files'],'index_tree':tree,'unmerged_after':[],'unstaged_after':[],'only_resolved_paths_differ_from_preview':True,'staged_paths_count':len(ok(['git','diff','--cached','--name-only']).splitlines()),'head_after':ok(['git','rev-parse','HEAD']),'merge_head':ok(['git','rev-parse','MERGE_HEAD']),'committed':False,'pushed':False});(r/'fresh-main-actual-merge.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))
+PY

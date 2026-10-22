@@ -11,7 +11,7 @@
     {
       "clusters": [
         {
-          "n_events": 21,
+          "n_events": 23,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []

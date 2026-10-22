@@ -4363,6 +4363,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
     "options-nbbo-cohort",
     "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.
@@ -4733,6 +4734,10 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM17 transmission-evidence contract: edges, qualified transmission
+    # events and the US relevance ordering; the frozen contagion models are
+    # read by the test alone, so its curated scope must pin their closure.
+    "international-transmission-evidence",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
@@ -4902,6 +4907,11 @@ CURATED_EXCLUSIVE = {
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
     # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
     "china-altdata-catalysts",
+    # 2026-10-21 W33-LA: the Macro Signals reader-repair render suites. As a step
+    # in unrun-builders-render they moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes; its own exclusive job keeps
+    # the page template, its includes and the suites; ceilings stay fixed.
+    "macro-signals-conditions",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -4995,6 +5005,10 @@ CURATED_EXCLUSIVE = {
     # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
+    # Options R1 W2A: exact import/read closure of the relative-trend suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-rotation-relative-trend",
+    # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-sector-holdings-coverage",
 }
 
 
@@ -5162,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_798),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5172,6 +5186,35 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 qualified Today and Research API composition adds exactly five
+    estimator units to research-vault-api (7 -> 12) for the two mandatory API
+    suites. Actual composed planner: index 135 / 5,837; free-content 135 /
+    5,810. No jobs were added or removed. Fund only these +5 weight deltas;
+    preserve all job-count, plan-book and pack ceilings and every check.
+
+    2026-10-21 fixed-redirect producer integration adds the page-only regression
+    to the same data-base-shim command (+2 estimator units, no new jobs).
+    Actual planner measures index135/5841 and free-content135/5814;
+    retain prophet5600, all job/pack bounds and execution timeouts.
+
+    2026-10-21 HK lookup full-template regression (PR9997, base ecd8540):
+    the existing data-base-shim command gains one meaningful pytest suite.
+    Exact hosted contract-delta measured index 135 jobs / 5,839 units and
+    free-content 135 / 5,812, each +2 with no newly selected jobs; prophet
+    remains 128 / 5,588 below its existing ceiling. Rebase only the two
+    demonstrated accounting ceilings; execution budgets and selection stay intact.
+
+    2026-10-21 Shared Shell integration with protected 53eefbe142c8c:
+    the canonical planner on f75612e0 measures index 135 jobs / 5,832 weight,
+    free-content 135 / 5,805 and plan-book 128 / 5,581, all at ten packs.
+    The retained Shared Shell steps add exactly seven estimator units:
+    data-base-shim 7 -> 12 and unrun-nav-chrome 30 -> 32. Compose this +7
+    with main's already accepted Prophet Lab coverage rather than dropping
+    either contribution. Fund only index 5,825 -> 5,832 and free-content
+    5,798 -> 5,805; retain every job-count bound, the plan-book weight bound,
+    ten-pack limit, suite, selector and exclusive-scope contract unchanged.
+    Planning weights are not measured execution times.
 
     2026-10-21 Prophet Lab evidence dossier B04-A0 (PR #9935) adds one pytest
     step, tests/test_prophet_lab_dossier_b04a.py (closed reason map,
@@ -5191,6 +5234,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
     the ten-pack limit, selector code and every prior suite remain unchanged.
     Planning weights are not measured execution times.
+    2026-10-20 Shared Shell composition with protected df3cba80: the actual
+    canonical planner on the composed tree measured index 135 jobs / 5,829,
+    free-content 135 / 5,802 and plan-book 128 / 5,578, all at ten packs.
+    Applying the incoming manifest's weights to those same selected job IDs
+    gives 5,822 / 5,795 / 5,571. The only weight differences are the retained
+    data-base-shim 7 -> 12 and unrun-nav-chrome 30 -> 32. Free-content also
+    selects the incoming ticker-news-qbus job at its unchanged weight of 98.
+    This same-ID attribution is not a fresh incoming-tree selection replay.
+    Compose that measured +7 with the incoming news allowance below: change
+    only free-content's 5,795 -> 5,802. Keep its 135-job ceiling, the other
+    probe ceilings, ten packs, selectors, declarations and suites unchanged.
 
     2026-10-20 private company-news drafts bind the existing Press run/writer
     suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
@@ -5269,6 +5323,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
     job/pack bound and both other probe ceilings stay unchanged.
 
+    Shared Shell composition (2026-10-20, PR7949) retains the new bridge
+    coverage in data-base-shim (weight 7 -> 12: one command and two suites)
+    and unrun-nav-chrome (30 -> 32: one suite). Hosted contract-delta
+    run39352502392/job118399691090 measures the same 134 jobs / 10 packs,
+    base5,642 -> merge5,649. The Python3.12 two-check reproduction on b98c5d1
+    merged with d52827f independently reports 134/329 jobs and the same
+    5,649 total. Preserve the incoming W23 four-unit change above and fund
+    only this separate seven-unit increase: 5,642 -> 5,649. These are planner
+    estimator units, not a measured seven-second runtime. All commands,
+    suites, selectors, job/pack bounds and other weight ceilings stay fixed.
+
     SPR page JODI vintage + zh assess badges (2026-10-19, W23-L9) give
     tests/test_strategic_reserves.py (off the unrun baseline),
     tests/test_spr_jodi_vintage.py and tests/test_spr_assess_badge_zh.py
@@ -5295,6 +5360,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
 
+    Shared Shell/current-main composition (2026-10-20, PR7949):
+    the four existing scope/packing checks on 0f058428 plus this branch
+    measure index.html 135 jobs / 5,793, build_free_content 134 / 5,668,
+    and plan_book 128 / 5,542, with ten packs and the same selected job
+    IDs as the prior f54 composition. That prior composition measured
+    5,665 while the vector suite was still pending. Incoming 0f058428
+    now includes its exact unrun-vector-baskets 31 -> 34 (+3) change.
+    On these same selected IDs, incoming-manifest command weight is
+    5,661; the retained Shared Shell data-base-shim +5 and nav-chrome +2
+    produce 5,668. Fund only that measured seven-unit excess, 5,661 ->
+    5,668. Preserve both incoming histories above, all suites, selectors,
+    job and pack bounds, and the other two weight ceilings.
+
     The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
     2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
     in unrun-vector-baskets right after W23-L11's (job weight 34 -> 37,
@@ -5303,6 +5381,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     base that already holds #9819, so fund 5,661 -> 5,664. index.html and
     plan_book stay under their ceilings even if they select this job
     (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    Shared Shell/current-main92c51 composition (2026-10-20, PR7949):
+    the four existing scope/packing checks measure index.html 135 jobs /
+    5,796, build_free_content 134 / 5,671, and plan_book 128 / 5,545,
+    all in ten packs. Selected IDs/order match the prior 0f05 composition;
+    each weight rises exactly three with the incoming scorecard step.
+    Incoming command weights on those same IDs are 5,789 / 5,664 / 5,538.
+    The retained Shell data-base-shim +5 and nav-chrome +2 explain the
+    entire seven-unit excess. Fund only 5,664 -> 5,671; keep all previous
+    histories, suites, selectors, job/pack bounds and other ceilings.
 
     SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
     tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
@@ -6119,6 +6207,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+
+    2026-10-20 (original PR #7949, accepted 5c2d0a04 integration):
+    The actual four-node run on frozen combined index
+    1a008b73af0ef56634ce89bb07c62b7a5e0a5988 passed all three scope
+    contracts and reproduced the two packing-weight breaches below.
+    Applying incoming-main manifest weights to those SAME candidate-selected
+    IDs gives the left column; this is not an incoming-tree selection run.
+
+        templates/index.html          135 jobs, 5,822 -> 5,829 weight
+        scripts/build_free_content.py 134 jobs, 5,697 -> 5,704 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,578 weight
+
+    All three use ten packs. The only changed declared weights are retained
+    Shared Shell coverage: data-base-shim 7 -> 12 (+5) and unrun-nav-chrome
+    30 -> 32 (+2). Both jobs are present in every measured row. Fund only
+    the two breached weight ceilings: 5,822 -> 5,829 and 5,697 -> 5,704.
+    Preserve the plan-book ceiling 5,600, every job-count and pack bound,
+    all suites, selectors, scope/closure audits and duration overrides.
+    These are deterministic planning weights, not execution timings.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
