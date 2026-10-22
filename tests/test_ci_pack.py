@@ -1583,6 +1583,31 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_m
     assert "unowned path" not in reason, reason
 
 
+def test_autosave_adoption_contracts_execute_in_existing_code_job(real_manifest_scopes) -> None:
+    job = _yaml(MANIFEST)["jobs"]["biocatalyst-deploy-integration"]
+    suites = {
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_caddy_autosave_driver.py",
+        "tests/test_macro_caddy_overlay.py",
+        "tests/test_macro_caddy_publication.py",
+    }
+    inputs = suites | {
+        "app/deploy/update.sh", "app/deploy/reconcile-caddy-autosave.py",
+        "app/deploy/macro_caddy_overlay.py", "app/deploy/macro_caddy_publication.py",
+    }
+    assert job["gate"] == "code"
+    assert job.get("scope") != "exclusive"  # retain incumbent inferred closure
+    assert inputs <= set(job["paths"])
+    commands = "\n".join(str(step.get("run") or "") for step in job["steps"])
+    assert all(suite in commands for suite in suites)
+    jobs, _ = real_manifest_scopes
+    code_jobs = [item for item in jobs if item.gate == "code"]
+    for path in sorted(inputs):
+        selected, reason = PACK.select_jobs(code_jobs, [path])
+        assert "biocatalyst-deploy-integration" in {item.job_id for item in selected}, (path, reason)
+        assert "unowned path" not in reason, (path, reason)
+
+
 def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """P0B's hermetic first-frame contract must run in the merge gate.
 
@@ -5181,9 +5206,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_864),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_836),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_608),
+    ("templates/index.html", 136, 5_870),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_842),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_614),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5191,6 +5216,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 merge protected D04-A2 source-clock coverage (dc3a) and
+    autosave adoption: actual compiler measures index136/5870, free135/5842,
+    Prophet128/5614, identical selected IDs and ten packs. Retain incoming
+    status suite (+2) and adoption suites (+6); fund measured bounds only.
+
+    2026-10-22 autosave adoption adds three hermetic suites to the existing
+    code-gated biocatalyst-deploy-integration job, preserving its inferred
+    closure and all old execution. Actual compiler93.59s measures selected
+    index136/5868, free135/5840, Prophet128/5612, all ten packs. Fund only
+    six added estimator units per probe; no job/pack/runtime limit changes.
 
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler

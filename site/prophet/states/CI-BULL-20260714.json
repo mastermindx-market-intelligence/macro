@@ -11,21 +11,21 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 40.7,
+    "progress": 45.8,
     "pace": 11.3,
-    "retention": 91.5,
-    "overlay": 53.0
+    "retention": 100.0,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.755,
-    "dist_to_t1_r": 0.745,
-    "dist_to_t2_r": 2.245,
+    "dist_to_stop_r": 1.885,
+    "dist_to_t1_r": 0.615,
+    "dist_to_t2_r": 2.115,
     "horizon_pct_used": 131.1,
-    "p1": 0.5036,
-    "p2": 0.2518,
+    "p1": 0.5901,
+    "p2": 0.295,
     "p3": null,
-    "move_r": 0.755,
-    "mfe_r": 0.826,
+    "move_r": 0.885,
+    "mfe_r": 0.885,
     "mae_r": -0.387
   },
   "rr_ratio": 1.5,
@@ -39,9 +39,9 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 26.100006103515625,
+  "_mfe": 27.970001220703125,
   "_mae": -12.230010986328125,
-  "_max_p1": 0.5506330401585577,
+  "_max_p1": 0.5900844139388848,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,

@@ -12300,6 +12300,10 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -13248,6 +13252,8 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright
       - name: install ontology browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
@@ -22114,6 +22120,15 @@ jobs:
     # with the repository's deploy invariants.  It was previously co-run here;
     # giving it its own bounded command keeps that coverage without borrowing
     # time from evidence replay.
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "tests/test_deploy_update_self_heal.py"
+      - "tests/test_caddy_autosave_driver.py"
+      - "tests/test_macro_caddy_overlay.py"
+      - "tests/test_macro_caddy_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22126,7 +22141,10 @@ jobs:
       - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_caddy_autosave_driver.py
+          tests/test_macro_caddy_overlay.py
+          tests/test_macro_caddy_publication.py -q
 
   deploy-git-history:
     if: ${{ false }}
@@ -30601,6 +30619,8 @@ jobs:
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
       - name: install Brain browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
