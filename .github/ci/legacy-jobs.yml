@@ -1304,8 +1304,13 @@ jobs:
       - "lib/store.py"
       - "research/market_navigator/**"
       - "scripts/research/market_navigator_*.py"
+      - "templates/market_navigator_view.css"
+      - "templates/market_navigator_mount.js"
+      - "templates/market_navigator_view.js"
       - "templates/market_navigator_client.js"
       - "tests/__init__.py"
+      - "tests/market_navigator_mount_harness.js"
+      - "tests/market_navigator_view_harness.js"
       - "tests/market_navigator_client_harness.js"
       - "tests/test_market_navigator*.py"
     timeout-minutes: 5
@@ -1319,9 +1324,9 @@ jobs:
       - name: install pure foundation test dependencies
         run: pip install pytest pyyaml
       - name: explicit client and harness syntax ownership
-        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js
+        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js && node --check templates/market_navigator_view.js && node --check tests/market_navigator_view_harness.js && node --check templates/market_navigator_mount.js && node --check tests/market_navigator_mount_harness.js
       - name: Navigator clocks, owner binding, numerical audit and inert design study
-        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q
+        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py tests/test_market_navigator_view.py tests/test_market_navigator_price_confirmation.py tests/test_market_navigator_mount.py -q
 
   microstructure-pressure-response-r0:
     if: ${{ false }}

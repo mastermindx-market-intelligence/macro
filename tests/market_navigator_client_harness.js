@@ -1,15 +1,23 @@
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const {createHash} = require('node:crypto');
 const client = require('../templates/market_navigator_client.js');
 const wire = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const copy = x => JSON.parse(JSON.stringify(x));
-const request = {request_id: wire.request_id, subject:'SPY:ARCX', horizon:wire.horizon, as_of:wire.requested_as_of};
+const digest=subject=>createHash('sha256').update(subject,'utf8').digest('hex');
+const request = {request_id: wire.request_id, subject:'SPY:ARCX',
+  subject_binding_sha256:digest('SPY:ARCX'), horizon:wire.horizon, as_of:wire.requested_as_of};
 let checks=0;
 function ok(fn) {fn();checks++;}
 function refuse(change) {ok(()=>{const w=copy(wire);change(w);assert.throws(()=>client.validate(w,request));});}
 ok(()=>assert.equal(client.validate(wire,request).readiness,'research_only'));
 ok(()=>assert.equal(Object.isFrozen(client.validate(wire,request).scenarios[0].triggers[0]),true));
+refuse(w=>w.subject_binding_sha256='0'.repeat(64));
+refuse(w=>{delete w.subject_binding_sha256;});
+refuse(w=>w.schema='market_navigator.response/v1');
+ok(()=>assert.throws(()=>client.validate(wire,{...request,
+   subject_binding_sha256:digest('QQQ:XNAS') })));
 refuse(w=>w.request_id='another-request');
 refuse(w=>w.horizon='swing');
 refuse(w=>w.data.horizon='swing');
@@ -40,25 +48,44 @@ ok(()=>{const w=copy(wire);const result=client.validate(w,request);w.data.observ
 (async()=>{
   let pending=[],states=[];
   const c=client.createController({read:(r,signal)=>new Promise((resolve,reject)=>pending.push({r,signal,resolve,reject})),render:s=>states.push(s)});
+  async function untilPending(n) {
+    for (let i=0;i<70;i++) {
+      if (pending.length>=n) return;
+      await new Promise(resolve=>setTimeout(resolve,1));
+    }
+    throw new Error('Subject digest / read did not become available');
+  }
   function response(r){return {...copy(wire),request_id:r.request_id,requested_as_of:r.as_of,horizon:r.horizon};}
   const q={subject:'SPY:ARCX',horizon:'intraday',as_of:wire.requested_as_of};
-  const first=c.load(q);
+  const first=c.load(q);await untilPending(1);
   assert.equal(states.at(-1).status,'loading');assert.equal(states.at(-1).data,null);
-  const second=c.load({...q,subject:'QQQ:XNAS'});
+  const second=c.load({...q,subject:'QQQ:XNAS'});await untilPending(2);
   assert.equal(pending[0].signal.aborted,true);
+  // Identical clock/horizon/epoch-local correlation cannot disguise a replay
+  // from a different instrument: this is now a first-class falsifier.
   pending[1].resolve(response(pending[1].r));await second;
-  assert.equal(states.at(-1).status,'recorded_context');
+  assert.equal(states.at(-1).status,'invalid_response');checks++;
   const count=states.length;pending[0].resolve(response(pending[0].r));await first;
   assert.equal(states.length,count);checks++;
-  const third=c.load(q);assert.equal(states.at(-1).data,null);
-  pending[2].reject(new Error('secret source failure'));await third;
-  assert.deepEqual(states.at(-1),{status:'unavailable',data:null});assert.equal(pending.length,3);checks++;
-  const fourth=c.load(q);const malformed=response(pending[3].r);malformed.data.authority.sizing=true;
-  pending[3].resolve(malformed);await fourth;assert.equal(states.at(-1).status,'invalid_response');checks++;
-  const fifth=c.load(q);c.clear();const afterClear=states.length;
-  pending[4].resolve(response(pending[4].r));await fifth;assert.equal(states.length,afterClear);
+  const third=c.load(q);await untilPending(3);
+  pending[2].resolve(response(pending[2].r));await third;
+  assert.equal(states.at(-1).status,'recorded_context');checks++;
+  const fourth=c.load(q);await untilPending(4);
+  assert.equal(states.at(-1).data,null);
+  pending[3].reject(new Error('secret source failure'));await fourth;
+  assert.deepEqual(states.at(-1),{status:'unavailable',data:null});
+  assert.equal(pending.length,4);checks++;
+  const fifth=c.load(q);await untilPending(5);
+  const malformed=response(pending[4].r);malformed.data.authority.sizing=true;
+  pending[4].resolve(malformed);await fifth;
+  assert.equal(states.at(-1).status,'invalid_response');checks++;
+  const sixth=c.load(q);await untilPending(6);c.clear();
+  const afterClear=states.length;
+  pending[5].resolve(response(pending[5].r));await sixth;
+  assert.equal(states.length,afterClear);
   assert.equal(states.at(-1).data,null);checks++;
   c.dispose();await assert.rejects(()=>c.load(q),/disposed/);checks++;
   assert.equal(JSON.stringify(states).includes('secret source failure'),false);checks++;
-  console.log(JSON.stringify({checks,late_response_ignored:true,loading_clears_prior:true,no_retry:true}));
+  console.log(JSON.stringify({checks,wrong_subject_ignored:true,
+    late_response_ignored:true,loading_clears_prior:true,no_retry:true}));
 })().catch(err=>{console.error(err);process.exitCode=1;});

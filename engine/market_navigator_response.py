@@ -2,10 +2,11 @@
 from __future__ import annotations
 import json
 import re
+from hashlib import sha256
 from typing import Mapping
 from engine.market_navigator import ContractError, HORIZONS, _clock, _ref, public_projection
 
-SCHEMA='market_navigator.response/v1'
+SCHEMA='market_navigator.response/v2'
 _REQUEST_ID=re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,95}\Z')
 MAX_BYTES=80*1024
 
@@ -28,7 +29,12 @@ def bind_response(packet: Mapping, *, request_id: str, expected_subject: str,
     if (packet.get('subject')!=expected_subject or packet.get('horizon')!=expected_horizon
             or _clock(packet.get('as_of'))!=cutoff):
         raise ContractError('context does not match exact requested subject/horizon/cutoff')
+    # Non-authoritative subject correlation: the public packet strips raw
+    # internal subject IDs, while the client must still reject wrong-subject
+    # cache reuse even when horizon, cutoff and an epoch-local ID coincide.
+    # The digest is NOT a source receipt, credential or permission grant.
     out={'schema':SCHEMA,'request_id':request_id,'requested_as_of':requested_as_of,
+         'subject_binding_sha256':sha256(expected_subject.encode('utf-8')).hexdigest(),
          'horizon':expected_horizon,'data':public_projection(packet)}
     if len(json.dumps(out,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode())>MAX_BYTES:
         raise ContractError('public response exceeds its consumer byte budget')

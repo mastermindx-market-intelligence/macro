@@ -189,3 +189,78 @@ without weakening the assertion, selection ceilings, timeouts or reviews.
 Targeted local checks for curated-membership, explicit-scope coverage and
 exclusive-scope replacement: 3 passed. The new candidate still owes
 hosted CI and independent review. No merge or production claim follows.
+
+## W3 presentation increment (source-only)
+
+The new isolated `templates/market_navigator_view.js` and `.css` are an actual DOM presentation consumer of the incumbent validated response shape, not a newly admitted source. They render condition status, original rule/deadline clocks, support and counterevidence without probabilities or trade effects. Controls switch EN/ZH and dark/light with keyboard focus and disclosure state preserved; a new response/error withdraws old content. `VIEW_BROWSER_REPORT.json` records eight synthetic real Chromium viewports with no observed network/storage, horizontal overflow or browser errors. The Python->JS zero-browser-dependency harness was run under `tests/test_market_navigator_view.py`. These are not Paper, signed-in or production proofs.
+
+
+## Completed-bar confirmation and composer-to-browser proof (22 October 2026)
+
+The W3 source now implements `engine/market_navigator_price_confirmation.py`,
+not a second market regime or data feed. Its exact typed bar/window/receipt
+contract prevents a single quote from counting as a crossing or hold. A
+completed-bar mathematical event can enter the existing read-only compositor
+only via `qualified_observation` with an application-bound source verifier and
+a separate derived receipt that cannot extend the original source validity.
+The closed output does not expose raw subject/definition/generation references,
+and all trade/signal/probability/rank/size/alert flags remain false.
+
+The new `tests/test_market_navigator_price_confirmation.py` passes **64**
+synthetic deterministic cases. The cross-layer visual proof now exercises
+three synthetic completed swing bars -> event confirmation ratio -> existing
+`compose` -> `bind_response` -> exact-request JS validator -> bilingual DOM.
+Eight Chromium desktop/mobile, English/Chinese, dark/light cases passed.
+The W3 responsive illustrations were regenerated from that test; they remain
+synthetic, not signed-in operational evidence. The full local Navigator
+target `python -m pytest tests/test_market_navigator*.py -q` passed
+**257 tests**. The shared 350-job CI manifest validated, and two scoped
+curated-membership/scope tests ran successfully without changing any CI
+ceiling, job identity or release gate.
+
+Evidence class: BUILT_NOT_PROVEN. The owner verifier used in synthetic
+tests does NOT prove a real source generation. Rights admission, real owner
+bar/sequence receipts, operational prices, predictive performance, live
+route/mount, Paper-native design, user-account save/restore and release
+remain outstanding. Existing PR #10055 and its held independent review
+are unchanged by this separate W3 source increment.
+
+
+## W3 exact instrument/account-scope binding (2026-10-22)
+
+The W3 integration fixes a distinct wrong-instrument response-replay risk:
+the initial response/v1 bound instrument identity before publication but
+removed it from the browser wire; unrelated controllers could both use
+the same local `navigator-1` correlation, horizon and cutoff. New
+`market_navigator.response/v2` adds the SHA-256 of the exact request
+subject. The request-bound browser consumer computes this digest using
+secure-origin WebCrypto before dispatch and rejects mismatched subjects,
+extra/missing envelope keys, and old v1 wire. This digest is *correlation*,
+NOT an authenticator, entitlement record, audience disclosure permission,
+or evidence that the source is current.
+
+A separate `templates/market_navigator_mount.js` is a no-URL,
+no-automatic-read, no-storage host interface: the existing authenticated
+application must supply the exact subject, time, horizon, principal and
+entitlement scope key and its already-admitted source reader. The mounted
+component checks that scope before read, after read and before render.
+Principal or instrument rebind atomically withdraws prior content, and
+a response resolved after scope change cannot be published. Node and
+Chromium tests include wrong-subject replay, unavailable WebCrypto,
+account switch during transport, absent source, late reply, no
+auto-read and visual state withdrawal. The implementation creates no new
+authentication, source admission, endpoint, account store or alert owner.
+
+Verification at this W3 candidate before commit:
+`python3 -m pytest tests/test_market_navigator*.py -q`: **259 passed**.
+`python3 scripts/research/market_navigator_view_browser_check.py
+--output research/market_navigator/VIEW_BROWSER_REPORT.json`: **8/8**
+Chromium desktop/mobile + EN/ZH + dark/light, using a locally intercepted
+secure origin and one synthetic read per permitted activation.
+The incumbent legacy CI manifest validator recognizes **350** job
+definitions, without adding a new job or relaxing controls. The
+existing Navigator job owns both added mount scripts and its two tests.
+These checks are synthetic code/browser verification, NOT authenticated
+production, Paper-native design, operational market data or a forecast
+success record. Source-use scope remains independently gated by the
+incumbent owner.

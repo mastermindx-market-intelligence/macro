@@ -1,0 +1,94 @@
+/* Market Navigator W3 — isolated static view. Never styles the document shell.
+ * Supports the incumbent theme switch and its own self-contained dark/light tokens.
+ * Research-only; no signal, trade, data transport or native Paper claim.
+ */
+.mnv {
+  --mnv-bg: #0d1016; --mnv-fg: #e9eef6; --mnv-muted: #9aa8b9;
+  --mnv-card: #171d26; --mnv-soft: #202837; --mnv-line: #344050;
+  --mnv-glow: rgba(109,141,185,.12); --mnv-accent: #d9ac68;
+  --mnv-up: #85d2b7; --mnv-down: #e6a6a8;
+  box-sizing: border-box; width: 100%; min-width: 0;
+  background: var(--mnv-bg); color: var(--mnv-fg);
+  font-family: var(--font-ui, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+  line-height: 1.5; font-size: 14px;
+  color-scheme: dark;
+}
+.mnv[data-theme="light"] {
+  --mnv-bg: #f5f7fb; --mnv-fg: #192436; --mnv-muted: #56667a;
+  --mnv-card: #fff; --mnv-soft: #eef1f6; --mnv-line: #c9d2df;
+  --mnv-glow: rgba(65,91,139,.06); --mnv-accent: #815c20;
+  --mnv-up: #176e56; --mnv-down: #98414b; color-scheme: light;
+}
+.mnv *, .mnv *::before, .mnv *::after {box-sizing: border-box}
+.mnv [hidden] {display:none!important}
+.mnv button,.mnv summary {font:inherit}
+.mnv button:focus-visible,.mnv summary:focus-visible {outline:3px solid var(--mnv-accent);outline-offset:3px}
+.mnv button {cursor:pointer}
+.mnv-shell {margin:0 auto;max-width:1300px;padding:0 clamp(16px,3.4vw,46px)}
+.mnv-toolbar {min-height:91px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--mnv-line)}
+.mnv-brand {display:flex;align-items:center;gap:15px}
+.mnv-brand > div {display:flex;flex-direction:column}
+.mnv-brand-name {font-size:17px;font-weight:720;letter-spacing:-.035em}
+.mnv-mark {display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:#19222d;
+ background:linear-gradient(145deg,#eac792,#bc9169);font-size:18px;font-weight:820;box-shadow:0 4px 24px var(--mnv-glow)}
+.mnv-eyebrow,.mnv-kicker {display:block;text-transform:uppercase;letter-spacing:.115em;font-size:10px;font-weight:750;color:var(--mnv-muted)}
+.mnv-controls {display:flex;gap:8px}
+.mnv-control {min-height:44px;padding:10px 16px;border:1px solid var(--mnv-line);border-radius:10px;background:transparent;color:var(--mnv-fg)}
+.mnv-control:hover {background:var(--mnv-soft)}
+.mnv-body {padding:clamp(25px,5vw,60px) 0 38px}
+.mnv-intro {padding:0 0 35px;border-bottom:1px solid var(--mnv-line)}
+.mnv-intro .mnv-kicker,.mnv-empty .mnv-kicker {color:var(--mnv-accent)}
+.mnv-title {font-weight:650;letter-spacing:-.058em;line-height:1.10;font-size:clamp(32px,4.2vw,58px);margin:14px 0 16px;max-width:840px}
+.mnv-meta {font-size:13px;color:var(--mnv-muted);overflow-wrap:anywhere}
+.mnv-disclaimer {display:inline-block;margin-top:24px;border:1px solid var(--mnv-line);padding:8px 11px;border-radius:6px;color:var(--mnv-muted);font-size:11px}
+.mnv-top-grid {display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:28px 0 45px}
+.mnv-state-card {background:var(--mnv-card);border:1px solid var(--mnv-line);border-radius:16px;padding:30px 32px;min-width:0;box-shadow:0 12px 36px var(--mnv-glow)}
+.mnv-regime {margin:15px 0 12px;font-size:clamp(26px,2.6vw,38px);font-weight:630;letter-spacing:-.045em}
+.mnv-regime-risk_on {color:var(--mnv-up)}
+.mnv-regime-risk_off {color:var(--mnv-down)}
+.mnv-regime-mixed {color:var(--mnv-accent)}
+.mnv-muted {color:var(--mnv-muted)}
+.mnv-state-card .mnv-muted {font-size:12px;line-height:1.8;margin:7px 0 0;overflow-wrap:anywhere}
+.mnv-metrics {display:flex;gap:clamp(26px,4vw,70px);padding-top:8px}
+.mnv-metrics > div {display:flex;flex-direction:column;gap:5px}
+.mnv-metrics strong {font-variant-numeric:tabular-nums;font-size:38px;font-weight:590;letter-spacing:-.05em}
+.mnv-metrics span {font-size:11px;color:var(--mnv-muted)}
+.mnv-section-header {display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:18px}
+.mnv-section-title {font-size:clamp(22px,2.4vw,29px);letter-spacing:-.045em;font-weight:640;margin:0}
+.mnv-section-header > .mnv-muted {font-size:11px}
+.mnv-path-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mnv-path {background:var(--mnv-card);min-width:0;border:1px solid var(--mnv-line);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px var(--mnv-glow);padding:23px 22px 0}
+.mnv-path-top {display:flex;gap:12px;align-items:center;justify-content:space-between}
+.mnv-path-index {color:var(--mnv-muted);font-size:11px;font-variant-numeric:tabular-nums}
+.mnv-path-state {border-radius:6px;background:var(--mnv-soft);padding:5px 8px;color:var(--mnv-fg);font-size:11px;text-align:right}
+.mnv-path-title {font-size:22px;font-weight:640;letter-spacing:-.035em;overflow-wrap:anywhere;margin:26px 0 9px;line-height:1.25}
+.mnv-path > .mnv-muted {font-size:12px;line-height:1.6;min-height:38px}
+.mnv-path-details {margin-top:23px}
+.mnv-summary {border-top:1px solid var(--mnv-line);margin:0 -22px;padding:17px 22px;color:var(--mnv-fg);cursor:pointer;font-size:12px;font-weight:650;list-style:revert}
+.mnv-path-details[open] .mnv-summary {background:var(--mnv-soft)}
+.mnv-condition-group {padding:17px 0 8px;border-top:1px solid var(--mnv-line)}
+.mnv-condition-group .mnv-kicker {margin:0 0 12px}
+.mnv-condition-list,.mnv-evidence-list {margin:0 0 6px 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:12px;line-height:1.7}
+.mnv-condition-list li {border-left:2px solid var(--mnv-line);padding:3px 0 3px 12px;overflow-wrap:anywhere}
+.mnv-evidence-row {display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between}
+.mnv-evidence-key {font-weight:650;overflow-wrap:anywhere}
+.mnv-evidence-current {color:var(--mnv-up);font-variant-numeric:tabular-nums}
+.mnv-evidence-muted {color:var(--mnv-muted)}
+.mnv-rule-foot {display:flex;gap:6px;flex-direction:column;margin:17px 0;padding:14px 0;border-top:1px solid var(--mnv-line);font-size:11px;color:var(--mnv-muted);overflow-wrap:anywhere}
+.mnv-rule-notice {font-size:11px;line-height:1.65;color:var(--mnv-muted);margin-bottom:20px}
+.mnv-footer {border-top:1px solid var(--mnv-line);padding:22px 0 0;margin-top:36px;color:var(--mnv-muted);font-size:11px;line-height:1.9}
+.mnv-empty {max-width:820px;margin:30px auto 70px;text-align:left;padding:62px 0 45px}
+.mnv-empty-title {font-size:clamp(31px,4.2vw,55px);letter-spacing:-.055em;line-height:1.14;font-weight:640;margin:15px 0}
+.mnv-empty .mnv-muted {font-size:15px;line-height:1.65}
+@media(max-width:950px) {.mnv-path-grid {grid-template-columns:repeat(2,minmax(0,1fr))} .mnv-top-grid {gap:12px}.mnv-state-card {padding:24px}}
+@media(max-width:620px) {
+ .mnv-toolbar {min-height:80px}.mnv-brand {gap:10px}.mnv-brand-name {font-size:15px}
+ .mnv-mark {width:33px;height:33px}.mnv-control {padding:8px 10px;font-size:12px}
+ .mnv-title {font-size:34px;letter-spacing:-.05em}
+ .mnv-top-grid,.mnv-path-grid {grid-template-columns:1fr}
+ .mnv-state-card {padding:24px}.mnv-top-grid {margin:20px 0 34px}
+ .mnv-section-header {align-items:start;flex-direction:column}
+ .mnv-path-title {margin-top:20px}
+ .mnv-empty {margin:0 auto 30px;padding:36px 0}
+}
+@media(prefers-reduced-motion:reduce) {.mnv *, .mnv *::before, .mnv *::after {scroll-behavior:auto!important;animation:none!important;transition:none!important}}
