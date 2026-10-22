@@ -39541,5 +39541,7 @@ jobs:
         with: {node-version: '20'}
       - name: install pure foundation test dependencies
         run: pip install pytest pyyaml
+      - name: explicit client and harness syntax ownership
+        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js
       - name: Navigator clocks, owner binding, numerical audit and inert design study
         run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q

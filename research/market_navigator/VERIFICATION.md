@@ -131,3 +131,19 @@ blocked by the tool's safety checks before execution; no retry or alternate carr
 was used for that SSH action. Browser connector tab access separately required an
 originating connected-browser context. These observations do not establish a source
 outage, and no private source data or credentials were extracted.
+
+
+## Explicit JavaScript CI ownership repair
+
+The actual hosted plan classified `tests/market_navigator_client_harness.js` as
+unowned. The existing Navigator job now names both the client and its harness in
+explicit `node --check` commands. The functional Python-to-JavaScript test remains;
+this adds syntax/path ownership without suppressing other tests or changing CI policy.
+The PR was disarmed and read back OPEN at exact head e6e7fea65d4a32439e1cca4765fe3a30018ee290
+before this repair. Source is not pushed into an armed/possibly merged candidate.
+
+The incumbent planner was exercised with a one-path changed-file JSON containing
+only `tests/market_navigator_client_harness.js`, with `--changed-from origin/main`.
+It selected the Navigator job plus two always-on jobs (3/279), with no unowned-path
+warning. This verifies path selection; it is not a claim those three hosted jobs ran.
+Plan SHA-256: 4dc67261c3ab37434245afe72023611c66fe7219eda4e0abbb2825453d14c50f

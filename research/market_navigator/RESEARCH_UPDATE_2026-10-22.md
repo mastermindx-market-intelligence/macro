@@ -121,3 +121,30 @@ expression stays missing. Stock direction, volatility direction and executable o
 profit are different outcome rulers. A full-looking annotation still earns neither
 trial registration nor a prospective prediction receipt. The function returns hashes
 and completeness reasons, not raw source text or harvested analyst content.
+
+
+## 7. Current methodology and a concrete intraday-source candidate
+
+The current Cboe VIX1D methodology PDF identifies version 2.0, revised February 26,
+2026 (printed page 9). Printed pages 7-9 were visually inspected. It retains the
+60-business-minute near-term persistence rule. It also republishes the last valid
+index when calculation is unavailable. Therefore a newly disseminated timestamp
+cannot alone attest a new calculation; vendor flags and source methodology belong
+in the future intake qualification. No unverified observation is upgraded here.
+https://cdn.cboe.com/api/global/us_indices/governance/Volatility_Index_Methodology_Cboe_1-Day_Volatility_Index.pdf
+
+Databento's October 14, 2026 Core Indices announcement names VIX1D. The specific
+VIX1D catalog advertises history since December 6, 2025; completeness and entitlement
+are unproven. Its dataset-specific CGIF specification says ts_event is gateway packet
+SendingTime, millisecond-native despite its nanosecond container, and ts_recv is
+provider capture. Neither is this application's availability clock. Index updates
+normalized as Trade records are not executable trades. No paid request, credential
+read, new subscription or redistribution permission was inferred.
+https://databento.com/blog/databento-core-indices
+https://databento.com/catalog/dbix/DBIX.CORE/Indices/VIX1D
+https://databento.com/docs/datasets/dbix-cgif
+
+Next: the incumbent data owner must qualify actual dataset/symbol coverage, source
+status and revision semantics, authorized use, original capture availability and
+joint SPY/options records. The stock-data entitlement already recorded in this repo
+must not be misread as a new blanket block, or as proof of this different index feed.
