@@ -1,0 +1,108 @@
+{
+ "accepted_at": "2026-02-26T11:57:51Z",
+ "accession": "0001520006-26-000002",
+ "cik": "0001520006",
+ "doc_byte_length": 3442242,
+ "doc_sha256": "22c0e2aa60cb315e42979179098d7e8f3b25c27568632da3ff63b41d1c220098",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mtdr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2350713,
+  "byte_start": 2349408,
+  "normalized": "three significant purchasers accounted for 72%, 79% and 76%, respectively, of the Company’s total oil, natural gas and NGL revenues: Plains Marketing, L.P. (49%, 53% and 42%, respectively), Exxon Mobil Corporation (13%,",
+  "normalized_sha256": "d1e6d90f0d995b8fb66ddebd1018f5463ef1a03f97229229b611278ed376cbb4",
+  "raw": "three</ix:nonFraction></ix:nonFraction></ix:nonFraction> significant purchasers accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-78\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-543\">72</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-544\">79</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-80\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-545\">76</ix:nonFraction>%, respectively, of the Company&#8217;s total oil, natural gas and NGL revenues: Plains Marketing, L.P. (<ix:nonFraction unitRef=\"number\" contextRef=\"c-81\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-546\">49</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-82\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-547\">53</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-83\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-548\">42</ix:nonFraction>%, respectively), Exxon Mobil Corporation (<ix:nonFraction unitRef=\"number\" contextRef=\"c-84\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-549\">13</ix:nonFraction>%,",
+  "raw_sha256": "e921925fc88aa4e251226eced7eecec6fd21272b8d2b08162d4af427e19c5552"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1520006/000152000626000002/mtdr-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 36889,
+   "byte_start": 36197,
+   "context_ref": "c-78",
+   "raw": "<xbrli:context id=\"c-78\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ThreeSignificantCustomersMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "d4a851766a32aabcb8e0e3ac5fb1806b08c0db9449a6167d0989cbe4ae18083f"
+  },
+  {
+   "byte_end": 37581,
+   "byte_start": 36889,
+   "context_ref": "c-79",
+   "raw": "<xbrli:context id=\"c-79\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ThreeSignificantCustomersMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b24d052ce140285ec363a36e36dc74f2d4ab1a9334841b7c9bac303ff1e8461c"
+  },
+  {
+   "byte_end": 38273,
+   "byte_start": 37581,
+   "context_ref": "c-80",
+   "raw": "<xbrli:context id=\"c-80\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ThreeSignificantCustomersMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f764defea939b39df8dc444fec12530f38bb72dfb912bc9ea6d80ba94499cd47"
+  },
+  {
+   "byte_end": 38959,
+   "byte_start": 38273,
+   "context_ref": "c-81",
+   "raw": "<xbrli:context id=\"c-81\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:PlainsMarketingL.P.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f20c1d071697a4e4b849f1f4904f39bbbb17711ff445c3d70e9f213c6516d58d"
+  },
+  {
+   "byte_end": 39645,
+   "byte_start": 38959,
+   "context_ref": "c-82",
+   "raw": "<xbrli:context id=\"c-82\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:PlainsMarketingL.P.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "5f05d14c9b778b7073e1eb6a30096deafed314c4fc56bec0f3d5bc1797bc45b6"
+  },
+  {
+   "byte_end": 40331,
+   "byte_start": 39645,
+   "context_ref": "c-83",
+   "raw": "<xbrli:context id=\"c-83\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:PlainsMarketingL.P.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "1707d8b34d6c2cb6abee3d12ba2b3b9f9a138fe89e5beecd00d5c80d3b32dd86"
+  },
+  {
+   "byte_end": 41017,
+   "byte_start": 40331,
+   "context_ref": "c-84",
+   "raw": "<xbrli:context id=\"c-84\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ExxonMobilCorporateMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f00b7eb957cc68d09e643c1fda12b9a9ad74e0cfd218681478470ea866774da8"
+  },
+  {
+   "byte_end": 41703,
+   "byte_start": 41017,
+   "context_ref": "c-85",
+   "raw": "<xbrli:context id=\"c-85\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ExxonMobilCorporateMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "41a1eb7473d437c10d2227f54e6811d39e474f9bfabbd42851be4a72146c5b3e"
+  },
+  {
+   "byte_end": 42389,
+   "byte_start": 41703,
+   "context_ref": "c-86",
+   "raw": "<xbrli:context id=\"c-86\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:ExxonMobilCorporateMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "2982ae771f78d24e005e5e10eeae098d28b4ba2c79ce204a8ab64867ff8320c8"
+  },
+  {
+   "byte_end": 43066,
+   "byte_start": 42389,
+   "context_ref": "c-87",
+   "raw": "<xbrli:context id=\"c-87\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:EnterpriseMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "98b020f885e43f36169e24227ee1e17e41c6328e13a45ade62b2d94a6aba6ae9"
+  },
+  {
+   "byte_end": 43743,
+   "byte_start": 43066,
+   "context_ref": "c-88",
+   "raw": "<xbrli:context id=\"c-88\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:EnterpriseMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "42acaf6f1d7724d273ddeb7bc93e18000da099d028d6f2b088cab1beb400fbd8"
+  },
+  {
+   "byte_end": 44420,
+   "byte_start": 43743,
+   "context_ref": "c-89",
+   "raw": "<xbrli:context id=\"c-89\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001520006</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mtdr:EnterpriseMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "1db3cc2fa96c5aadae91917395a528737a4206c3c4a78956a61dc5618240b086"
+  }
+ ]
+}

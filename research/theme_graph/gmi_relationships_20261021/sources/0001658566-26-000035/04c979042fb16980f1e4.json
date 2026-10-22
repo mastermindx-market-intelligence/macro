@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-26T21:06:59Z",
+ "accession": "0001658566-26-000035",
+ "cik": "0001658566",
+ "doc_byte_length": 2715549,
+ "doc_sha256": "93897acd2416e0b9fe98aee78cea53789f04eb6d0e60502d98f256e8ffd83eec",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1624016,
+  "byte_start": 1622874,
+  "normalized": "Enterprise Crude Oil, LLC34 %19",
+  "normalized_sha256": "64969dc2c8c92e06f68bcd929ebc588fa41afd328456ad29a90e55d009ac034c",
+  "raw": "Enterprise Crude Oil, LLC</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:9pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-78\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-527\">34</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:9pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:9pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-528\">19",
+  "raw_sha256": "04c979042fb16980f1e4e80f3e713d119eb226eb63d12846f20aca9c517cf970"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1658566/000165856626000035/pr-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 39838,
+   "byte_start": 39168,
+   "context_ref": "c-79",
+   "raw": "<xbrli:context id=\"c-79\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001658566</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">pr:EnterpriseCrudeOilLLCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "8c5ba8ab26ccc2eb79077e5cc0c71f5c7543eb99b2a7fb7838115eb235fe05f9"
+  }
+ ]
+}

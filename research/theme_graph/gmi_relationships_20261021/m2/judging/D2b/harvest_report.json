@@ -1,0 +1,45 @@
+{
+ "candidates_by_origin": {
+  "amendment_note": 3,
+  "cue": 3,
+  "xbrl": 114
+ },
+ "candidates_by_rank": {
+  "0": 117,
+  "1": 3
+ },
+ "candidates_total": 120,
+ "counters": {
+  "cache_integrity_refetch": 0,
+  "clock_refused": 0,
+  "doc_too_large": 0,
+  "documents_overflow": 0,
+  "excerpt_self_check_failed": 0,
+  "extension_skipped": 0,
+  "overflow_document": 5,
+  "overflow_filing": 486,
+  "span_not_utf8": 0,
+  "span_too_large": 6,
+  "xbrl_context_too_large": 0,
+  "xbrl_fact_hidden": 0,
+  "xbrl_fact_no_counterparty_axis": 101,
+  "xbrl_fact_unanchored": 50
+ },
+ "documents_by_state": {
+  "fetched": 153
+ },
+ "filings_by_state": {
+  "collected": 66,
+  "unavailable": 1
+ },
+ "inputs": {
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
+ },
+ "issuers_total": 65,
+ "leaf": "D2b",
+ "schema": "gmi_rel_m2.harvest_report/v1",
+ "slice": null
+}

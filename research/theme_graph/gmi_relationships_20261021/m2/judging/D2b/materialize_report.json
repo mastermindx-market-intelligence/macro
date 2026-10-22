@@ -1,0 +1,154 @@
+{
+ "assessments": 3,
+ "candidates_total": 120,
+ "codes": {
+  "MAGNITUDE_BENCHMARK_UNSUPPORTED": 6,
+  "MAGNITUDE_XBRL_AVAILABLE": 1
+ },
+ "counters": {
+  "duplicate_span_bytes": 0,
+  "excerpt_self_check_failed": 0,
+  "sources_reused": 74,
+  "sources_written": 0,
+  "subject_name_from_sec_name": 0
+ },
+ "coverage_by_state": {
+  "assessed": 16,
+  "no_supported_result": 48,
+  "unavailable": 1
+ },
+ "dirname": "D2b",
+ "edges": [
+  {
+   "object_issuer_id": "ISS:US-XNYS-CVX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-MUR"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-PSX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-MUR"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-BP",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-NE"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-SHEL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-NE"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TTE",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-NE"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-CAT",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-NMG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-SHEL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-PBF"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-CVX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-TALO"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-FNV",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-TECK"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-BP",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-VAL"
+  }
+ ],
+ "inputs": {
+  "D2b/candidates.jsonl": "943666f62a202394cdb35e94d30528e7afa729c79c185d1b31edb18bcddf2ff8",
+  "D2b/fetch_ledger.jsonl": "131e470e0fbf76344d72d2c0ffe5c95a54c5b70215b65b17afb9ca452ec744c7",
+  "D2b/harvest_report.json": "32644357a2233e7227b30babb1f5dfa750f22ae66768c9ee8e4dff39a3cd34a6",
+  "D2b/packs/index.json": "52752e8293f7083811bf8401c4d4a6338b52e958da1a75290968b5b59aec5b44",
+  "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json": "5977c20a3bfde6280f9835d403579469d2c1252c5deb341f419c89125ca5fbd4",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
+ },
+ "judged": 120,
+ "leaf": "D2b",
+ "non_edge_reason": {
+  "ANONYMOUS_ALIAS": 32,
+  "UNRESOLVED_COUNTERPARTY": 36
+ },
+ "observations": 84,
+ "outcomes": {
+  "admitted": 74,
+  "no_relationship": 40,
+  "refused": 6
+ },
+ "rows_by_species": {
+  "supplier_customer": 84
+ },
+ "schema": "gmi_rel_m2.materialize_report/v1",
+ "unresolved_names": [
+  {
+   "count": 7,
+   "name": "Petrobras"
+  },
+  {
+   "count": 5,
+   "name": "Exxon Mobil Corporation"
+  },
+  {
+   "count": 3,
+   "name": "Azule"
+  },
+  {
+   "count": 3,
+   "name": "Azule Energy"
+  },
+  {
+   "count": 3,
+   "name": "BP plc"
+  },
+  {
+   "count": 3,
+   "name": "Enterprise Crude Oil, LLC"
+  },
+  {
+   "count": 3,
+   "name": "ExxonMobil Corporation"
+  },
+  {
+   "count": 3,
+   "name": "Petróleo Brasileiro S.A."
+  },
+  {
+   "count": 2,
+   "name": "Shell Trading (US) Company"
+  },
+  {
+   "count": 1,
+   "name": "BP America"
+  },
+  {
+   "count": 1,
+   "name": "GE Aerospace"
+  },
+  {
+   "count": 1,
+   "name": "Panasonic Energy"
+  },
+  {
+   "count": 1,
+   "name": "Plains Marketing, L.P."
+  }
+ ]
+}
