@@ -4,10 +4,12 @@
 # two independent reviewers (Reviewer A GLM Fabric lane, Reviewer B Opus READ_ONLY auditor) judge them, not the seat.
 # frozen_sha = the commit whose tree holds every path under proposed_artifact (r3b-2 two-step precedent).
 # Re-frozen 2026-10-21 at 508539c0 (board 22 / node 6W1R-0 added by seat export); the earlier freeze 76d0fb0e held boards 0-21 only.
+# Re-frozen 2026-10-22 at ab1e71ac (repair wave 1, boards 23-31) and again at 5432d5a0 (repair wave 2: boards 32-37, shared shell,
+# one stance vocabulary, provenance drawers, scoped supersession + capability_boards index; round 3 dual review).
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
+  frozen_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
@@ -42,6 +44,12 @@ proposed_artifact:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/29-cycles-desktop-dark-en.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/30-cycles-mobile-dark-zh.png
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/31-cycles-mobile-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/32-brief-desktop-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/33-brief-desktop-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/34-cycles-desktop-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/35-cycles-desktop-dark-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/36-cycles-mobile-light-zh.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/37-brief-mobile-dark-en.png
   - design_refs/sector-paper-20261021/components/COMPONENTS.md
   - design_refs/sector-paper-20261021/components/components.css
   - design_refs/sector-paper-20261021/components/specimen.html
@@ -52,6 +60,13 @@ proposed_artifact:
   - design_refs/sector-paper-20261021/brief_repair/brief.html
   - design_refs/sector-paper-20261021/brief_repair/coverage_matrix.html
   - design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  - design_refs/sector-paper-20261021/components/si_shell.css
+  - design_refs/sector-paper-20261021/components/si_shell.py
+  - design_refs/sector-paper-20261021/cycles_repair/enum_zh.json
+  - design_refs/sector-paper-20261021/brief_repair/README.md
+  - design_refs/sector-paper-20261021/cycles_repair/README.md
+  - design_refs/sector-paper-20261021/brief_repair/capture.log
+  - design_refs/sector-paper-20261021/cycles_repair/capture.log
   - design_refs/sector-paper-20261021/state_matrix.csv
   - design_refs/sector-paper-20261021/state_matrix.md
   screenshots:
@@ -176,6 +191,81 @@ proposed_artifact:
     theme: dark
     locale: EN
     note: 'board 22 R3 · Brief · Desktop · Dark · EN node 6W1R-0 (export, not screenshot; seat export 2026-10-21 after ORCH-PAPER PLATFORM_FAILURE r2); states: fresh, Watch/Watching toggle, partial breadth 9 of 11, overdue leg-end readout'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/23-brief-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 23 R3 · Brief · Desktop · Light · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 1440x2730); states: fresh; Watch — don''t chase stance chip; partial 11 sectors / 49 baskets'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/24-brief-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 24 R3 · Brief · Desktop · Dark · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 1440x2730); states: fresh; Watch — don''t chase stance chip; partial 11 sectors / 49 baskets'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/25-brief-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 25 R3 · Brief · Mobile · Dark · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 390x4511); states: fresh; Watch — don''t chase stance chip; partial 11 sectors / 49 baskets'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/26-brief-mobile-light-en.png
+    viewport: mobile 390
+    theme: light
+    locale: EN
+    note: 'board 26 R3 · Brief · Mobile · Light · EN · locked (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 390x4686); states: fresh; {''no_access (locked)'': ''3 of 26 stand-aside rows + tier gate + Locked chip''}; Watch — don''t chase stance chip'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/27-coverage-matrix-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 27 R3 · Brief · Coverage matrix · viewport × theme × locale (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/coverage_matrix.html; png_px 1440x1026); states: drawn vs renderable cells; locked state frozen once (board 26); wave 2: cells extended to Brief + Cycles — 14 of 16 presentation cells drawn on HTML specimen boards 23-26/28-31/32-37; Paper boards 12/13/22 no longer cited as coverage evidence (PRC-027/PRC-029)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/28-cycles-desktop-light-en.png
+    viewport: desktop 1440
+    theme: light
+    locale: EN
+    note: 'board 28 R4 · Cycles · corrections · Desktop · Light · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 1440x2007); states: pos_v2 + phase_v2 on the card face; legacy cycle-position numerals and projected-turn dates stripped from ''The read'' and kept verbatim in the provenance drawer (SIC-V2-C07/PRC-025); resolved stance + tone + clocks-disagree note (XLF); phase age lower_bound (3 rows)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/29-cycles-desktop-dark-en.png
+    viewport: desktop 1440
+    theme: dark
+    locale: EN
+    note: 'board 29 R4 · Cycles · corrections · Desktop · Dark · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 1440x2007); states: same composition as board 28 on the dark tokens; hazard gap cells + muted ladder on dark; chip/badge contrast on dark'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/30-cycles-mobile-dark-zh.png
+    viewport: mobile 390
+    theme: dark
+    locale: ZH
+    note: 'board 30 R4 · Cycles · corrections · Mobile · Dark · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 390x3992); states: single-column recomposition (cards, methods, grader, events, metadata); ZH deck copy + ZH producer enums (顶部/底部, 板块); phase_age_lower_bound ZH'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/31-cycles-mobile-light-en.png
+    viewport: mobile 390
+    theme: light
+    locale: EN
+    note: 'board 31 R4 · Cycles · corrections · Mobile · Light · EN · incompatible_generation fixture (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 390x4477); states: incompatible_generation state banner (labeled FIXTURE: history 2026-10-16, current read 2026-10-19); fresh row hidden while the state is set; fixture label printed under the banner'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/32-brief-desktop-light-zh.png
+    viewport: desktop 1440
+    theme: light
+    locale: ZH
+    note: 'board 32 R4 · Brief · Desktop · Light · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 1440x2752); states: fresh; ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern); partial 11 sectors / 49 baskets'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/33-brief-desktop-dark-zh.png
+    viewport: desktop 1440
+    theme: dark
+    locale: ZH
+    note: 'board 33 R4 · Brief · Desktop · Dark · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 1440x2752); states: fresh; ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern); partial 11 sectors / 49 baskets'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/34-cycles-desktop-light-zh.png
+    viewport: desktop 1440
+    theme: light
+    locale: ZH
+    note: 'board 34 R4 · Cycles · corrections · Desktop · Light · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 1440x1944); states: ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30; resolved stance chips 立场 from the one doctrine vocabulary; hazard MODEL cells 模型 + parity_failed muting (XLF)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/35-cycles-desktop-dark-zh.png
+    viewport: desktop 1440
+    theme: dark
+    locale: ZH
+    note: 'board 35 R4 · Cycles · corrections · Desktop · Dark · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 1440x1944); states: ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30; resolved stance chips 立场 from the one doctrine vocabulary; hazard MODEL cells 模型 + parity_failed muting (XLF)'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/36-cycles-mobile-light-zh.png
+    viewport: mobile 390
+    theme: light
+    locale: ZH
+    note: 'board 36 R4 · Cycles · corrections · Mobile · Light · ZH (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/cycles_repair/cycles.html; png_px 390x3992); states: single-column recomposition (cards, methods, grader, events, metadata); ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30; resolved stance chips 立场 from the one doctrine vocabulary'
+  - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/37-brief-mobile-dark-en.png
+    viewport: mobile 390
+    theme: dark
+    locale: EN
+    note: 'board 37 R4 · Brief · Mobile · Dark · EN (HTML specimen) (html-specimen-chrome-headless-1x; node_id null; paper_state PAPER_CAPACITY_LIMITED; source design_refs/sector-paper-20261021/brief_repair/brief.html; png_px 390x4903); states: single-column recomposition (hero, lanes, bottoming strip, coverage, track record); fresh; Watch — don''t chase stance chip'
 dispositions:
 - id: SC-001
   disposition: RETAIN
@@ -800,43 +890,42 @@ chrome:
   - PRC-008
 coverage_matrix:
   legend:
-    drawn: board numbers from boards_manifest.yml (0-31)
-    PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the
-      named journey cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
+    drawn: board numbers from boards_manifest.yml (0-37); since wave 2 the Brief and Cycles cells cite the R4 HTML specimen boards only
+      — R3 Paper boards stay layout provenance and instrument homes (boards_manifest.yml capability_boards), not cell evidence (PRC-027/PRC-029)
+    PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the named journey
+      cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
   families:
   - family: Brief
     cells:
       desktop/dark/en:
         drawn:
-        - 22
         - 24
       desktop/light/en:
         drawn:
-        - 12
         - 23
       desktop/dark/zh:
-        drawn: []
-        status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Brief · desktop · dark · zh
+        drawn:
+        - 33
       desktop/light/zh:
-        drawn: []
-        status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Brief · desktop · light · zh
+        drawn:
+        - 32
       mobile/dark/en:
-        drawn: []
-        status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Brief · mobile · dark · en
+        drawn:
+        - 37
       mobile/dark/zh:
         drawn:
-        - 13
         - 25
       mobile/light/en:
         drawn:
         - 26
+        note: state=locked fixture, labeled on the board
       mobile/light/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Brief · mobile · light · zh
+        proof_cell: P10-P18 journey · Brief · mobile · light · zh
+        note: 'declared gap: renderable from brief_repair/brief.html?theme=light&lang=zh; not frozen as a board (board 27)'
+    note: R3 Paper boards 12/13/22 are layout provenance only (superseded_by 23-26/32/33/37 in boards_manifest.yml); no longer cited
+      as cell evidence
   - family: Explore · Rotation
     cells:
       desktop/light/en:
@@ -939,34 +1028,34 @@ coverage_matrix:
     cells:
       desktop/dark/en:
         drawn:
-        - 1
-        - 6
         - 29
       desktop/light/zh:
         drawn:
-        - 2
+        - 34
       desktop/light/en:
         drawn:
-        - 8
         - 28
       mobile/dark/en:
-        drawn:
-        - 3
-        - 5
-      mobile/light/zh:
-        drawn:
-        - 4
-        - 7
-      desktop/dark/zh:
         drawn: []
         status: PAPER_CAPACITY_LIMITED
-        proof_cell: P10-P13 investigation journey · Cycles · desktop · dark · zh
+        proof_cell: P10-P18 journey · Cycles · mobile · dark · en
+        note: 'declared gap: R3 boards 3/5 cover the chart instrument only (semantics superseded, SIC-V2-C05/C12); renderable from cycles_repair/cycles.html?theme=dark&lang=en;
+          not frozen as a board (board 27)'
+      mobile/light/zh:
+        drawn:
+        - 36
+      desktop/dark/zh:
+        drawn:
+        - 35
       mobile/dark/zh:
         drawn:
         - 30
       mobile/light/en:
         drawn:
         - 31
+        note: state=incompatible_generation fixture, labeled on the board
+    note: R3 Paper boards 1-8 remain the normative homes for the chart instrument rows (C01-C13/C22/C25/C26/C28 per capability_boards)
+      but their stance/phase/hazard/rhythm/event/grader semantics are superseded by boards 28-31/34-36; cells cite the R4 boards only
   - family: Research
     cells:
       desktop/light/en:
@@ -1044,8 +1133,8 @@ coverage_matrix:
       desktop/light/en:
         drawn:
         - 20
-        superseded_by: 'board 27 + design_refs/sector-paper-20261021/state_matrix.csv (VTC-008: board 20 marks Brief dark
-          as a gap that board 22 draws)'
+        superseded_by: 'board 27 + design_refs/sector-paper-20261021/state_matrix.csv (VTC-008: board 20 marks Brief dark as a gap that
+          board 22 draws)'
   - family: Authority and contents
     cells:
       desktop/light/en:
@@ -1055,6 +1144,9 @@ coverage_matrix:
   closes:
   - VTC-003
   - VTC-008
+  wave2_summary: '16 presentation cells for Brief + Cycles: 14 drawn on specimen boards 23-26/28-31/32-37 (board 27 re-rendered as the
+    index); 2 declared gaps — Brief mobile/light/zh and Cycles mobile/dark/en — renderable from the specimens via ?theme=&lang= but
+    not frozen as boards'
 routing_contract:
   source: 'templates/si_workspace.js (VIEWS = overview, map, moving, money, explore, confluence; LEGACY_ANCHORS; resolveThemeHash;
     #read-<id>; unknown hash -> overview; scrollIntoView block start). Pinned by tests/test_si_workspace_shell.py. China twin:
@@ -1488,84 +1580,99 @@ revision_mandate_round2:
 - id: VTC-013
   severity: blocker
   condition: SIC-V2-C01
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: 'cycles_repair: map producer resolved_stance (HOLD / HIGH-RISK BOUNCE / SELL / WAIT / GET READY / TRIM / COUNTERTREND ONLY …)
     to the six doctrine stances in a documented table (cycles_ia.md + copy deck); draw only the doctrine chip on the face with
     --ink-ok/--ink-warn/--muted mapping; engine string moves to the provenance drawer; no red instruction ink.'
+  proof: 'STANCE_MAP in cycles_repair/build_cycles.py (BUY→Act; GET READY→Get ready; HOLD, HIGH-RISK BOUNCE→Watch — don''t chase; TRIM, SELL→Protect gains; WAIT, AVOID, COUNTERTREND ONLY→Stand aside; null→Ignore) + cycles_ia.md wave-2 note; boards 28-31/34-36 draw only the doctrine chip (XLF/XLK → Watch, XLC → Protect gains), engine stance + tone in the provenance drawer; Brief lanes carry doctrine titles (C13); Reviewer B + A re-run at 5432d5a0'
 - id: VTC-014
   severity: blocker
   condition: SIC-V2-C02
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: 'brief_repair + cycles_repair: render templates/_sector_central_paper.css.j2 to a static sheet the specimens link; verify
     .si-page-title/.si-workflow styled and the canvas painted per theme; capture.log records pixel samples at (30,300), (30,h/2),
     (w-40,h-60), (300,135) for dark + light, desktop + mobile.'
+  proof: 'components/si_shell.css block 1 = templates/_sector_central_paper.css.j2 rendered static and linked by both specimens; brief_repair/capture.log + cycles_repair/capture.log record (30,300)/(30,h/2)/(w-40,h-60)/(300,135) samples — light (247,248,250), dark (15,17,21) — on boards 23-26/28-37; Reviewer B re-run'
 - id: PRC-029
   severity: blocker
   condition: SIC-V2-C05
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: 'boards_manifest.yml: supersession/correction notes on boards 01-08 (families → 28-31), 12/13/22 (Brief → 23-26), 16 (ages → 28/29)
     naming the replacing board; board 01 capabilities_covered reconciled to the capabilities only it still homes (chart/picker/zoom/sheet);
     one normative board per C01-C28 declared in a capability → board table.'
+  proof: 'boards_manifest.yml: superseded_by + scoped notes on boards 1-8 (→ 28-31/34-36), 12/13/22 (→ 23-26/32/33/37), 16 (→ 28/29/34/35), 20 (→ 27), 21 (→ this manifest); board 1 capabilities_covered trimmed to instrument rows; capability_boards index names one normative board per C01-C28; Reviewer A re-run'
 - id: VTC-015
   severity: major
   condition: SIC-V2-C03
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: switcher draws all six workflows (Brief / Explore / Watches / Rotation / Dossier / Cycles) with aria-current on the board's own workflow.
+  proof: 'components/si_shell.py renders the six workflow links with the current item per surface (Brief on 23-26/32/33/37, Cycles on 28-31/34-36); Reviewer B re-run'
 - id: VTC-016 / PRC-024 / PRC-031
   severity: major
   condition: SIC-V2-C04
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: provenance drawer (details/summary) holds phase_v2/pos_v2/epoch hashes/paths/Built table; the face carries plain EN/ZH labels; ZH boards localize the search placeholder and mono labels.
+  proof: 'identifiers, hashes, paths and the Built table moved into <details> provenance drawers (7 on the Cycles specimen; 0 identifiers outside); cycles_repair/enum_zh.json + ZH nav search placeholder + ZH mono labels on boards 30/32-36; drawers are closed in every capture (declared); Reviewer B + A re-run'
 - id: VTC-017 / PRC-030
   severity: major
   condition: SIC-V2-C05
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: capability → normative-board table in boards_manifest.yml (C01-C13/C22/C25/C26/C28 → 01-08 with correction notes; C14-C21/C23/C24/C27 → 28-31); composite board deferred to the rendered P14-P18 Cycles journey (PAPER_CAPACITY_LIMITED).
+  proof: 'boards_manifest.yml capability_boards: C01-C13/C22/C25/C26/C28 homed on R3 boards 1/5/6 (instrument, trimmed capabilities, scoped supersession notes), C14-C21/C23/C24/C27 on boards 28/34; composite board deferred to the rendered P14-P18 Cycles journey (PAPER_CAPACITY_LIMITED, declared); Reviewer B + A re-run'
 - id: VTC-018
   severity: major
   condition: SIC-V2-C06
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: board-31 banner reflows inside the 390 frame (overflow-wrap, no one-word lines); chips under an incompatible_generation fixture render muted.
+  proof: 'board 31: banner body wraps; ''aligned'' chips muted under the banner and carry the dated qualifier chip; cycles_repair/capture.log overflow probe data-w=390 data-ovf=""; Reviewer B re-run'
 - id: VTC-019 / PRC-025
   severity: minor / major
   condition: SIC-V2-C07
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: strip the legacy position/phase number from the drawn 'The read'; boards_manifest states_shown for 28 reworded to what is drawn.
+  proof: 'legacy cycle-position numerals and projected-turn dates stripped from the drawn ''The read'' (face shows pos_v2 + phase_v2 only); the verbatim producer read kept in the provenance drawer; board 28 states_shown reworded to what is drawn; Reviewer B + A re-run'
 - id: VTC-008 / VTC-001 (boards 12/13/22, 20/21)
   severity: carried
   condition: SIC-V2-C08
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: boards 12/13/22 marked superseded in boards_manifest and removed from board 27 DRAWN evidence; boards 20/21 marked stale in the manifest (Paper re-export frozen).
+  proof: 'boards 12/13/22 superseded_by [23-26, 32, 33, 37] with brief_note and dropped from board 27 evidence; boards 20/21 notes name their replacements (board 27 + state_matrix.csv; boards_manifest.yml rows 32-37); Paper re-exports remain frozen (declared); Reviewer B re-run'
 - id: VTC-002 / VTC-005 (mobile chrome)
   severity: carried
   condition: SIC-V2-C09
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: mobile capture uses the canonical mobile header markup from templates/_site_nav.html.j2 (wordmark, menu entry, settings) via the nav_static capture at 390.
+  proof: 'shared shell at 390px on boards 25/26/30/31/36/37 (probe data-w=390 data-ovf="" in both capture.log files); si_shell.css blocks 4/5 (switcher wrap, as-of wrap at ≤767px) are recorded as proposals, not production CSS; Reviewer B re-run'
 - id: VTC-009
   severity: carried
   condition: SIC-V2-C10
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: components.css:180-183 badge font-size → var(--fs-label) (11px floor).
+  proof: 'MODEL/PRIOR badge at 11px (--fs-label) on boards 28-31/34-36 (commit 1d62cd82, re-rendered in wave 2); Reviewer B re-run'
 - id: PRC-032
   severity: minor
   condition: SIC-V2-C11
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: proj row labelled "Production projection (not the rhythm window)" in EN/ZH, or dropped.
+  proof: 'projection window moved from beside the rhythm into the provenance drawer and labeled as production''s projection (templates/sector_cycles.js), not the rhythm window; Reviewer A re-run'
 - id: PRC-027 / VTC-003
   severity: major
   condition: SIC-V2-C12
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: render Brief ZH desktop light+dark, Cycles ZH desktop light+dark, Cycles mobile light ZH from the specimens; add rows to boards_manifest and board 27.
+  proof: 'boards 32-37 rendered (Brief ZH desktop light/dark, Brief mobile dark EN, Cycles ZH desktop light/dark, Cycles mobile light ZH); board 27 re-rendered: 14 of 16 Brief+Cycles cells drawn, gaps Brief mobile/light/zh + Cycles mobile/dark/en declared; coverage_matrix above updated; Reviewer A + B re-run'
 - id: PRC-026 / PRC-028 / PRC-018
   severity: minor
   condition: SIC-V2-C13
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: README + build_brief.py document stance_act as a builder-side lane label (or add the deck key); Bottoming Watch gate chips drawn per row or declared out of scope in the README.
+  proof: 'stance_act deck key added (copy_deck.json); PRC-028 recorded as a declared gap in brief_repair/README.md (captured dataset chips are [] on every row — the specimen draws no per-row gate chips rather than inventing them); lane titles use the doctrine stance with the production lane label as qualifier; Reviewer A re-run'
 - id: VTC-020
   severity: minor
   condition: SIC-V2-C14
-  disposition: planned_resolved_by_change
+  disposition: cure_in_repair_commit
   cure: plural rule, typed em dashes removed, row glyphs labelled, coverage card full width, lane grid aligned.
+  proof: 'Brief polish: brief.stance_day_one singular copy, full-width coverage card, labeled glyphs, even lane grid; producer em dashes kept verbatim and declared in brief_repair/README.md; Reviewer B re-run'
 - id: PRC-010..016 / VTC-010 / VTC-012
   severity: carried
   condition: SIC-V2-C16

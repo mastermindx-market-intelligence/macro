@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: sector-intelligence-cycles-20261021
 scope: full
-status: revise
+status: in_review
 surface:
   route: sector_central.html
   registry_row: "macro:sector_central"
@@ -21,11 +21,11 @@ lineage:
     - mastermind-xpv2-sector-r3b-2
 reference_files:            # frozen at the commit that lands the exports + specs (set at freeze; never pre-filled)
   - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/
-    frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
-    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-31: Paper exports 0-22 + HTML specimen captures 23-31) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-22 at ab1e71ac after repair wave 1 (round-2 dual review BLOCK/BLOCK → revise)"
+    frozen_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
+    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-37: Paper exports 0-22 + HTML specimen captures 23-37) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-22 at ab1e71ac after repair wave 1 (round-2 dual review BLOCK/BLOCK → revise); re-frozen 2026-10-22 at 5432d5a0 after repair wave 2 (SIC-V2-C01..C16) for the round-3 dual review"
   - path: design_refs/sector-paper-20261021/
-    frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
-    note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs)"
+    frozen_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
+    note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs); wave 2: components/si_shell.css + si_shell.py, brief_repair/ and cycles_repair/ specimens with README, capture.log, enum_zh.json"
 files:
   baseline: baseline.yml
   proposal: proposal.yml
