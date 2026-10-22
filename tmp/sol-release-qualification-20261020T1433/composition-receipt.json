@@ -1,0 +1,91 @@
+{
+  "observed_at": "2026-10-20T14:33:14.192708+00:00",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/catalyst-entry-basis-r3-20261019",
+  "branch": "sol/web-catalyst-entry-basis-r3-20261019",
+  "subject_head": "d4d43810c18f8e48b8cf49fa447392f7901f6b97",
+  "remote_head": "d4d43810c18f8e48b8cf49fa447392f7901f6b97",
+  "pickup_base": "ff1b80af0f5efa5982656a59d63a0c623d5cd531",
+  "current_main": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "dry_merge_rc": 0,
+  "integrated_tree": "d87a0b31aaf0150f8fc6386bc3ba8f876a8e814f",
+  "owned_paths": [
+    {
+      "path": "engine/prophet_entry_availability.py",
+      "head": "100644 blob d5bc0928077e756bad8296db0fffbaead5997f06\tengine/prophet_entry_availability.py",
+      "integrated": "100644 blob d5bc0928077e756bad8296db0fffbaead5997f06\tengine/prophet_entry_availability.py",
+      "equal": true
+    },
+    {
+      "path": "research/catalyst_intelligence/entry_basis_r3/README.md",
+      "head": "100644 blob 0e63be6471f3f4c391ffe6cf935447342855dc3a\tresearch/catalyst_intelligence/entry_basis_r3/README.md",
+      "integrated": "100644 blob 0e63be6471f3f4c391ffe6cf935447342855dc3a\tresearch/catalyst_intelligence/entry_basis_r3/README.md",
+      "equal": true
+    },
+    {
+      "path": "research/catalyst_intelligence/entry_basis_r3/verification.json",
+      "head": "100644 blob c93b6c516593ed6700680939020e7ae4c6896666\tresearch/catalyst_intelligence/entry_basis_r3/verification.json",
+      "integrated": "100644 blob c93b6c516593ed6700680939020e7ae4c6896666\tresearch/catalyst_intelligence/entry_basis_r3/verification.json",
+      "equal": true
+    },
+    {
+      "path": "tests/test_prophet_daily_brief.py",
+      "head": "100644 blob eae60c691b72aea32bb9ce7bb4e418a33a5f439d\ttests/test_prophet_daily_brief.py",
+      "integrated": "100644 blob eae60c691b72aea32bb9ce7bb4e418a33a5f439d\ttests/test_prophet_daily_brief.py",
+      "equal": true
+    },
+    {
+      "path": "tests/test_prophet_strategy_definition.py",
+      "head": "100644 blob 21643ab3a1355919315845d4e9bde3fe25dc82dd\ttests/test_prophet_strategy_definition.py",
+      "integrated": "100644 blob 21643ab3a1355919315845d4e9bde3fe25dc82dd\ttests/test_prophet_strategy_definition.py",
+      "equal": true
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "scripts/run_ci_pack.py",
+      "head": "100644 blob e1624065108ea3cb17057f3aeacb58b7f5054f42\tscripts/run_ci_pack.py",
+      "current_main": "100644 blob f92be10fc37455fd427829f0f964c5ef581b3a80\tscripts/run_ci_pack.py",
+      "integrated": "100644 blob f92be10fc37455fd427829f0f964c5ef581b3a80\tscripts/run_ci_pack.py"
+    },
+    {
+      "path": "scripts/ci_semantic_proof.py",
+      "head": "100644 blob df7e5007413584d8593bfeb69dd9b479daa99147\tscripts/ci_semantic_proof.py",
+      "current_main": "100644 blob df7e5007413584d8593bfeb69dd9b479daa99147\tscripts/ci_semantic_proof.py",
+      "integrated": "100644 blob df7e5007413584d8593bfeb69dd9b479daa99147\tscripts/ci_semantic_proof.py"
+    },
+    {
+      "path": "scripts/ci_scope_dependencies.py",
+      "head": "100644 blob 4c4779479f5bb41741fe7a5db114dfe304350a8a\tscripts/ci_scope_dependencies.py",
+      "current_main": "100644 blob 4c4779479f5bb41741fe7a5db114dfe304350a8a\tscripts/ci_scope_dependencies.py",
+      "integrated": "100644 blob 4c4779479f5bb41741fe7a5db114dfe304350a8a\tscripts/ci_scope_dependencies.py"
+    },
+    {
+      "path": "scripts/check_contract_delta.py",
+      "head": "100644 blob deefde717818f4be641097a24c2f5b01e55cddbd\tscripts/check_contract_delta.py",
+      "current_main": "100644 blob deefde717818f4be641097a24c2f5b01e55cddbd\tscripts/check_contract_delta.py",
+      "integrated": "100644 blob deefde717818f4be641097a24c2f5b01e55cddbd\tscripts/check_contract_delta.py"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "head": "100644 blob b90c0a54fbce4a35f20d6a3ca4ae7d09a56de843\t.github/workflows/ci.yml",
+      "current_main": "100644 blob 12b2275ab88bafddd97feacfb2f03b406bee6cb2\t.github/workflows/ci.yml",
+      "integrated": "100644 blob 12b2275ab88bafddd97feacfb2f03b406bee6cb2\t.github/workflows/ci.yml"
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "head": "100644 blob 63a9b45ee5f1ba8ff9cf6913d43ade63482b0de5\t.github/ci/legacy-jobs.yml",
+      "current_main": "100644 blob 58a7ecb519c1e300f4fe90114430cc71cfc6c2e3\t.github/ci/legacy-jobs.yml",
+      "integrated": "100644 blob 58a7ecb519c1e300f4fe90114430cc71cfc6c2e3\t.github/ci/legacy-jobs.yml"
+    },
+    {
+      "path": "lib/dataos/identity.py",
+      "head": "100644 blob c49df9121172d74102d1deb9fe118b2203bf7ae5\tlib/dataos/identity.py",
+      "current_main": "100644 blob e1a5093aec8d7d787202db077bce47f61734e01d\tlib/dataos/identity.py",
+      "integrated": "100644 blob e1a5093aec8d7d787202db077bce47f61734e01d\tlib/dataos/identity.py"
+    }
+  ],
+  "tracked_clean": true,
+  "untracked_count": 0,
+  "worktree_unchanged": true,
+  "state": "COMPLETE_READ_ONLY_COMPOSITION"
+}
