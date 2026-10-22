@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/commodities.html.j2
+  - templates/_commodity_decision_workspace.html.j2
+  - templates/commodity-workspace.css
+  - templates/commodity-workspace.js
+  - site/commodities.html
+manifest: mockups/evidence/commodities-r3/relationships/manifest.json

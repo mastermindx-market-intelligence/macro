@@ -1,7 +1,39 @@
 # MastermindX — Bonds × Forex Transmission R33
-## Current cumulative handoff · 19 October 2026
+## Current cumulative handoff · 22 October 2026
 
-## Current receiver delta · 19 October 2026
+## Current receiver delta · 22 October 2026
+
+**MISSION_COMPLETE: false. R33 production integration remains BUILT_NOT_PROVEN.** This section supersedes older next-action, CI and renderer-wait prose below. It preserves the accepted design, source and historical validation; it does not recreate them.
+
+The Chairman commissioned autonomous completion of both Forex and Bonds with durable recovery. [Joint plan/checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815); [R33 current recovery ownership](https://github.com/mastermindx-market-intelligence/macro/pull/9578#issuecomment-6336047980). The source-backed joint plan is `research/forex_r26_2026-10-20/MASTER_PLAN.md` in the Forex candidate-policy continuation. Protected compatible Skillpack pin: `230e9a301ed774e79410829f1b5c049226fa59f1`.
+
+### Concrete source recovery
+
+- Original carrier remains PR #9578, branch `design/bonds-transmission-r30-20261018-sol001`, workspace `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-transmission-r33-20261018-c4`. The bounded custody read found clean local accepted 8ee, no matching cwd process, no Git lock or merge/rebase state. Its 116 ignored cache paths remain retained. This is a custody observation, not a new lease.
+- Fast-forwarded the same workspace to the exact controller head `134a58b6fbb99db5f845eb0cbeceabcecc9bd8aa`. Its failed CI 39408392221 and refusal 6289375858 remain historical evidence. No unchanged CI replay.
+- Composed inspected main `790990a28c3350ea3e05895e2bffaa9d21c0fd46` without conflicts. Automatic composition tree: `0647c29b5f9afc74da3857fcecfa021d59282647`. Main's existing explicit-null/date-qualified Forex selector change in the shared publisher is preserved; the Bonds consumer/includes are unchanged.
+- The canonical closure diagnostic on that composition found 41 reached dependencies absent from the existing Bonds job; the canonical ancestor census found 3 package initializers. The repair adds exactly those 44 finite paths, retains all 876 original paths (920 total), all six suites/commands and all other current-main job definitions. No selector, assertion, ceiling, workflow or review rule is weakened.
+- Four existing curation/import-closure/packing/ancestor-growth guards passed on source tree `82f21a8871615b634bde20d3a28724d86a1d35d9`: **4 passed in 233.05s**, process 37547 exit 0. The manifest stayed unchanged through execution. Fourteen warnings concern older unrelated temporary-directory cleanup. The existing publisher/consumer contract suites separately passed **22 tests in 5.83s**, process58778 exit0, with their exact result in the same receipt.
+- [Current repair and validation receipt](verification/integration/current-main-closure-repair-20261022.json) owns exact parents, paths, source tree, commands and actual results. Documentation/receipt additions after the source tests are not misrepresented as tested code bytes.
+- `merge-on-green` was visibly removed before repair; `merge-blocked` remains and native auto-merge is null. Root retains source/release responsibility. Publish the resulting commit to this same PR, consume proportionate exact-delta review and new-head required CI, then use the actual existing controller's hold/freshness/proof decision.
+
+### Product acceptance and independent lanes
+
+The old render wait is superseded: run 39380754583 completed SUCCESS on 20 October at 10:06:37 UTC; 39382256318 completed CANCELLED. Neither covers unmergedR33. After source merge, consume a normal covering render, resolve its source/watermark, prove both existing builders ran, identify generated and served page/companion bytes, and verify the protected real Bonds inspector in a permitted authorized session. Preserve the earlier browser policy denial; never change carrier to evade it. Local 54-case/24-capture evidence is retained for its unchanged runtime scope, not called production proof.
+
+Parent issue #8147 remains correctly COMPLETE for research/unified-v1 (#8326 merged); do not reopen its 60/60 and 13/13 accepted dispositions. R11 #8241 (Draft/HOLD,33824eb…) and CDI #9590 (Draft,4074adb…) remain distinct overlapping carriers. CDI's passed pricing validation, 148 local tests and 32 synthetic cases do not establish the missing native build or five-session issuer outcomes. Preserve original raw/ignored data. Typed retained cases remain with Investigation v2/#804; compound rules/evaluation/delivery with existing Alerts; probabilities with qualified point-in-time evidence and calibration. No replacement owner, account, evaluator, queue or publication plane.
+
+Forex inactive CRUD is PROVEN_LIVE; Macro #9996/ render 39688064251/ migration0038 and source #10024 are DO_NOT_REDO. Tiingo licensing/product use is COMPLETE by Chairman attestation: no licensing email or reopened approval. Terminal #1106 remains Draft/HOLD because its original repair-review ended without a verdict and cannot lawfully continue; a new review needs a specific amendment to the original-review-only restriction. The separately safety-refused Terminal deployment must not be retried.
+
+### Successor's first actions
+
+1. Read the latest #9578 checkpoint, this section and the joint plan; refresh a compatible protected Skillpack pin.
+2. Reconcile the exact current PR/local head, writer/lease, pending original review/CI/process and uncertain effects. Do not reset, clean, move or replace this workspace.
+3. Consume existing returns; fix only an actual new finding. Release only through existing gates, then finish the generated → protected served → browser receipt. An old green head or render is not the current proof.
+4. Continue remaining source/case/monitoring capabilities through incumbents while a dependent gate waits. Update this same checkpoint with accepted outcome, exact next action and real blocker; no new watcher or automatic wake is claimed.
+
+
+## Historical receiver delta · 19 October 2026
 
 **MISSION_COMPLETE: false. Current capability: R33 production-path source integration BUILT_NOT_PROVEN.**
 

@@ -1,33 +1,62 @@
 {
-  "appended": 0,
-  "asof": "2026-10-14",
+  "appended": 20,
+  "asof": "2026-10-20",
   "candidates": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 1,
+    "T": 30,
+    "W": 23
   },
   "deduped": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 1,
+    "T": 10,
+    "W": 23
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-10-21",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 45
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "E-commerce": {
+          "theme_thrust_frac": 0.1613,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Environmental Sustainability": {
+          "theme_thrust_frac": 0.1818,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "FinTech": {
+          "theme_thrust_frac": 0.1429,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Real Estate & REITs": {
+          "theme_thrust_frac": 0.1765,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 120,
+      "tickers_read": 165
     },
     "keys": [
       "relay_count_3d",
@@ -45,10 +74,21 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 188,
+      "n_covered": 143,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-10-20",
+      "n_tickers": 1549,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
@@ -77,7 +117,28 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [],
+    "T": [
+      "VICI",
+      "EGP",
+      "ELS",
+      "GLPI",
+      "KIM",
+      "KRC",
+      "MAC",
+      "O",
+      "REG",
+      "RHP",
+      "SPG",
+      "FDX",
+      "AOS",
+      "CWST",
+      "NEE",
+      "ICE",
+      "TRUP",
+      "AXP",
+      "DAVE",
+      "GWRE"
+    ],
     "W": []
   },
   "n_universe": 1491,
@@ -86,41 +147,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-20 09:07:04",
-  "runtime_s": 130.4,
+  "run_utc": "2026-10-21 19:59:36",
+  "runtime_s": 105.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-10-14",
-    "n_members": 115,
+    "age_days": -1,
+    "asof": "2026-10-21",
+    "n_members": 188,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.343,
+        "emerging_score": 3.175,
         "rank": 1,
-        "theme": "Social Media"
+        "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.761,
+        "emerging_score": 2.365,
         "rank": 2,
-        "theme": "Healthy Food & Nutrition"
+        "theme": "Real Estate & REITs"
       },
       {
-        "emerging_score": 2.358,
+        "emerging_score": 2.088,
         "rank": 3,
-        "theme": "Consumer Goods"
-      },
-      {
-        "emerging_score": 2.18,
-        "rank": 4,
         "theme": "E-commerce"
       },
       {
-        "emerging_score": 2.107,
+        "emerging_score": 1.96,
+        "rank": 4,
+        "theme": "Environmental Sustainability"
+      },
+      {
+        "emerging_score": 1.888,
         "rank": 5,
-        "theme": "Biometrics"
+        "theme": "FinTech"
       }
     ]
   },
@@ -129,19 +190,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 9,
-    "asof_max": "2026-10-14",
+    "aligned": 23,
+    "asof_max": "2026-10-20",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-14",
+    "asof_run": "2026-10-20",
     "evaluated": 712,
-    "fresh": 10,
+    "fresh": 26,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.0,
+    "runtime_s": 20.2,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 60,
+    "state_turn": 66,
     "universe_n": 717
   }
 }

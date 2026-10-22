@@ -1,5 +1,11 @@
 # R33 — existing Bonds consumer integration · 19 October 2026
 
+## Current recovery update · 22 October 2026
+
+The [current cumulative handoff](SESSION_HANDOFF_2026-10-18.md) supersedes older next-step and renderer-wait status below. Original PR #9578 now integrates inspected main `790990a28c3350ea3e05895e2bffaa9d21c0fd46` with controller head `134a58b6fbb99db5f845eb0cbeceabcecc9bd8aa`, preserving the original workspace and branch. Forty-one newly reached dependencies and three ancestor initializers repair the existing finite Bonds job scope, from 876 to 920 paths. All other jobs match integrated main, and existing suites/commands/guards/ceilings remain. Four affected canonical guards passed (233.05s, process 37547 exit 0); see [exact source/validation receipt](verification/integration/current-main-closure-repair-20261022.json).
+
+The known old `brain_visuals.py` failure is repaired in source; final hosted proof must belong to the resulting new head. The PR is visibly disarmed with `merge-blocked` retained until review/required checks/controller gates qualify it. Earlier successful render 39380754583 does not cover this unmerged source. Production publisher → protected served bytes → actual authorized Bonds inspector evidence remains owed. The accepted local design/browser evidence remains at its original scope; no production, case, monitoring or model acceptance is inferred.
+
 ## Capability and acceptance
 
 **State: BUILT_NOT_PROVEN. Parent mission complete: false.**

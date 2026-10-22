@@ -1105,6 +1105,21 @@ def test_denominator_has_no_hardcoded_universe_size():
         assert lit not in src, f"found hard-coded universe literal {lit!r} in topup module"
 
 
+# ── Live-flow anchor retention (native resolver regression) ─────────────────
+def test_daily_universe_keeps_live_flow_anchor_etfs_exactly_once(monkeypatch):
+    """Live-flow commodity/rate anchors survive the native daily resolver,
+    including case-normalized duplicates from the independently owned basket.
+    Existing index and basket members retain their first-seen ordering.
+    """
+    monkeypatch.setattr("engine.options_universe.gex_symbols",
+                        lambda: ["gld", "AAPL", "MSFT", "SPY"])
+    roots = topup._daily_universe()
+    for root in ("GLD", "SLV", "TLT", "HYG", "SPY", "SPX", "SPXW", "AAPL", "MSFT"):
+        assert roots.count(root) == 1
+    assert roots.index("HYG") < roots.index("SPX") < roots.index("SPXW")
+    assert roots.index("SPXW") < roots.index("AAPL") < roots.index("MSFT")
+
+
 # ═════════════════════════ DEADLINE (F2) ════════════════════════════════════
 def test_deadline_exceeded_stops_new_dispatch_and_drains(store, monkeypatch):
     import time as _time
@@ -1822,3 +1837,28 @@ def test_hardening_backfill_oserror_opening_lock_is_failed_not_traceback(tmp_pat
     monkeypatch.setattr(topup, "open", _boom, raising=False)
     rc = bf.main()
     assert rc == 1
+
+
+@pytest.mark.parametrize('setting,root,expected',[
+ ('','SPY',{}),('SPY','SPY',{'version':'1'}),('SPY','QQQ',{}),
+ ('SPY, QQQ','QQQ',{'version':'1'}),('SPY,QQQ','AAPL',{})])
+def test_dated_version_opt_in_keeps_other_roots_and_default_unchanged(monkeypatch,setting,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS',setting)
+ assert topup._dated_greek_request_options(root)==expected
+
+
+def test_invalid_dated_version_root_config_stops_before_source_work(monkeypatch):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,AAPL')
+ monkeypatch.setattr(topup,'_daily_main',lambda **kw:pytest.fail('Invalid config reached acquisition'))
+ with pytest.raises(SystemExit):topup.main(['--daily'])
+
+
+@pytest.mark.parametrize('root,expected',[('SPY',{'version':'1'}),('QQQ',{'version':'1'}),('AAPL',{})])
+def test_daily_owner_forwards_version_only_for_explicit_opt_in(store,monkeypatch,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,QQQ')
+ fake=FakeTd();calls=[]
+ def greeks(r,exp,start,end,order=3,**kwargs):
+  calls.append(kwargs);return fake._get('greeks',r,start)
+ fake.bulk_greeks=greeks
+ result=topup._ensure_daily_root(store,root,S_MID,D_MID,fake)
+ assert result.state=='complete' and calls==[expected]
