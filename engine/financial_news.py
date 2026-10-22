@@ -27,7 +27,9 @@ Nothing here is ever a scoring or trade input.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+from dataclasses import asdict
 import logging
 import re
 from contextvars import ContextVar
@@ -147,7 +149,8 @@ _PROVIDER_TQ: dict[str, str] = {
     "finnhub": "PUBLISHER_STATED",
     "rss": "PUBLISHER_STATED",
     "quiver": "PUBLISHER_STATED",
-    "tiingo": "PUBLISHER_STATED",
+    # Tiingo may substitute its discovery time for the publisher timestamp.
+    "tiingo": "CRAWL_BOUNDED",
 }
 _BACKDATE_LIMIT_H = 48.0   # pubDate > 48h behind crawl time → suspect_backdated
 
@@ -173,7 +176,8 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
                provider: str, relevance: float, now: datetime,
                _crawled_at: str = "", _desk: str = "financial_news",
                _themes: list[str] | None = None,
-               _emit_qbus: bool = True) -> dict | None:
+               _emit_qbus: bool = True,
+               _collect_rejection: bool = True) -> dict | None:
     """Build a scored headline dict, or None if it should be dropped (off-allowlist
     GDELT). Provider-tagged items keep a tier-3 floor so PR-wire domains survive.
 
@@ -193,7 +197,7 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
     # listicles whose picks live untaggably in the body, and personal-finance advice
     # columns. These otherwise outrank real reporting (a fresh tier-1 syndicated
     # column scores ~86). Provider items have no byline here, so title+domain decide.
-    _col = _reject_collector.get()
+    _col = _reject_collector.get() if _collect_rejection else None
     if nc.is_blocked(domain):
         if _col is not None and len(_col) < 200:
             _col.append({"title": title, "domain": domain, "reason": "blocked_source"})
@@ -268,7 +272,102 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
 # One bounded global crawl, not one request per ticker.  Off unless an owner-
 # backed source-specific receipt, activation flag and token are ALL present.
 # --------------------------------------------------------------------------- #
-def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> tuple[list[dict], str, dict]:
+_TIINGO_BINDING_SCHEMA = "financial_news.tiingo_binding.v1"
+
+
+def _current_tiingo_context(now: datetime):
+    """Requalify the existing owner receipt; never infer permission from a cache."""
+    if config.secret("TIINGO_NEWS_ENABLED") != "1":
+        return None
+    path = config.secret("TIINGO_NEWS_RIGHTS_FILE")
+    if not path:
+        return None
+    from engine.qbus_news_receipts import load_rights_receipt
+    grant = load_rights_receipt(path, now=now, source="tiingo")
+    if grant is None or not grant.rights.allows("tiingo", "title"):
+        return None
+    return path, grant
+
+
+def _tiingo_binding(context) -> dict:
+    """Opaque lineage for all qualified fields, not a second rights authority."""
+    digest = None
+    if context is not None:
+        def encode(value):
+            if isinstance(value, datetime):
+                return value.astimezone(timezone.utc).isoformat()
+            if isinstance(value, (set, frozenset)):
+                return sorted(value)
+            raise TypeError("unsupported qualified-rights field")
+        encoded = json.dumps(
+            asdict(context[1]), sort_keys=True, separators=(",", ":"),
+            default=encode, allow_nan=False,
+        )
+        digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return {"schema": _TIINGO_BINDING_SCHEMA, "grant_sha256": digest}
+
+
+def _has_tiingo_material(value) -> bool:
+    if isinstance(value, dict):
+        if value.get("provider") == "tiingo":
+            return True
+        if "Data sourced by Tiingo" in str(value.get("disclaimer", "")):
+            return True
+        return any(_has_tiingo_material(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_tiingo_material(v) for v in value)
+    return False
+
+
+def financial_snapshot_reusable(snapshot: object, *, now: datetime | None = None) -> bool:
+    """Withdraw an entire mixed snapshot when its qualified Tiingo use changes.
+
+    Display sections are ranked, capped and duplicated. They cannot reconstruct
+    raw/tagged counts after row pruning. Unbound Tiingo-era snapshots also carry
+    unmarked rejected titles, so they must be rebuilt rather than re-stamped.
+    """
+    if not isinstance(snapshot, dict):
+        return False
+    try:
+        context = _current_tiingo_context(now or datetime.now(timezone.utc))
+        binding = snapshot.get("tiingo_binding")
+        if binding is None:
+            # Clearly pre-Tiingo artifacts retain the incumbent fallback behavior.
+            legacy_tiingo = (
+                "tiingo_quality_sample" in snapshot
+                or "tiingo" in (snapshot.get("providers_detail") or {})
+                or _has_tiingo_material(snapshot)
+            )
+            return context is None and not legacy_tiingo
+        return (
+            binding == _tiingo_binding(context)
+            and (context is not None or not _has_tiingo_material(snapshot))
+        )
+    except (TypeError, ValueError, OSError):
+        return False
+
+
+def withdrawn_financial_snapshot(*, now: datetime | None = None) -> dict:
+    """Known-empty projection used when a mixed snapshot cannot be published."""
+    current = now or datetime.now(timezone.utc)
+    return {
+        "schema": "financial_news.v1", "is_context_only": True,
+        "fetched_at": current.isoformat(), "asof": current.date().isoformat(),
+        "tiingo_binding": _tiingo_binding(_current_tiingo_context(current)),
+        "sources": [],
+        "providers": {"polygon": False, "finnhub": False, "quiver": False, "gdelt": False},
+        "providers_detail": {"tiingo": "rights_changed"},
+        "tiingo_quality_sample": {},
+        "counts": {"raw": 0, "tagged": 0, "tickers_covered": 0, "tickers_excluded": 0},
+        "market": [], "sectors": {}, "mag7": {}, "baskets": {}, "by_ticker": {},
+        "rejected": [], "disclaimer": DISCLAIMER_TEXT, "disclaimer_zh": DISCLAIMER_TEXT_ZH,
+        "degraded_reason": "financial_snapshot_withheld_tiingo_rights_changed",
+    }
+
+
+def _tiingo_articles(
+    now: datetime, *, _received_at: datetime | None = None, _entity_map: dict | None = None,
+) -> tuple[list[dict], str, dict]:
     if config.secret("TIINGO_NEWS_ENABLED") != "1":
         return [], "disabled", {}
     rights_path = config.secret("TIINGO_NEWS_RIGHTS_FILE")
@@ -276,8 +375,9 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
         return [], "rights_missing", {}
     from engine.qbus_news_receipts import load_rights_receipt
     rights = load_rights_receipt(rights_path, now=now, source="tiingo")
-    if rights is None:
+    if rights is None or not rights.rights.allows("tiingo", "title"):
         return [], "rights_denied", {}
+    initial_context = (rights_path, rights)
     token = config.secret("TIINGO_API_KEY")
     if not token:
         return [], "no_key", {}
@@ -287,13 +387,17 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
     # Never stamp availability at build-start: the HTTP fetch itself may take
     # seconds. Observation/rights are verified after the response arrives.
     observed_at = _received_at or datetime.now(timezone.utc)
-    refreshed_rights = load_rights_receipt(rights_path, now=observed_at, source="tiingo")
-    if refreshed_rights is None or refreshed_rights.receipt_id != rights.receipt_id:
+    refreshed_context = _current_tiingo_context(observed_at)
+    if refreshed_context != initial_context:
         return [], "rights_changed", {}
+    rights = refreshed_context[1]
     audit = _tiingo_news_api.audit_sample(raw, received_at=observed_at)
+    entity_map = _entity_map if _entity_map is not None else nc.build_entity_map()
+    ticker_index = _tiingo_news_api._ticker_lookup_index(entity_map.get("tickers", {}))
     out: list[dict] = []
     qbus_batch: list[dict] = []
-    filtered_source = filtered_validation = filtered_untagged = 0
+    filtered_source = filtered_validation = filtered_untagged = filtered_quality = 0
+    unresolved_tags = ambiguous_tags = 0
     for item in raw:
         try:
             article = _tiingo_news_api.normalize_article(item, received_at=observed_at)
@@ -314,18 +418,23 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
         if not trusted or nc.is_blocked(host):
             filtered_source += 1
             continue
-        tickers = [vendor_join_key(t) for t in article["tickers"] if vendor_join_key(t)]
+        resolution = _tiingo_news_api._resolve_ticker_tags(article["tickers"], ticker_index)
+        tickers = resolution["tickers"]
+        unresolved_tags += len(resolution["unresolved"])
+        ambiguous_tags += len(resolution["ambiguous"])
         if not tickers:
             filtered_untagged += 1
             continue
         h = _normalise(
             article["title"], article["url"], article["source"],
             article["published_at"], article["source"], tickers,
-            article["description"] if rights.rights.allow_teaser else "",
+            article["description"] if rights.rights.allows("tiingo", "teaser") else "",
             None, "tiingo", 1.0, now,
             _crawled_at=article["received_at"], _emit_qbus=False,
+            _collect_rejection=False,  # aggregate-only; no shared unbound rejection titles
         )
         if h is None:
+            filtered_quality += 1
             continue
         # Build one qbus v1 keep-FIRST batch; writing once avoids O(n²)
         # Parquet rewrites.  v1 first receipt does NOT establish vendor-crawl
@@ -335,7 +444,7 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
             "url": article["url"], "title": article["title"],
             "seendate": article["published_at"],
             "_crawled_at": article["received_at"],
-            "timestamp_quality": "PUBLISHER_STATED",
+            "timestamp_quality": "CRAWL_BOUNDED",
             "entities": tickers, "themes": [],
             "importance_raw": 1.0, "lang": "en",
         })
@@ -343,28 +452,45 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
             "provider": "tiingo",
             "provider_id": article["provider_id"],
             "provider_crawled_at": article["provider_crawled_at"],
-            "first_available_at": article["first_available_at"],
-            "availability_basis": "first_local_receipt",
+            "first_available_at": article["first_available_at"],  # compatibility alias
+            "observation_received_at": article["received_at"],
+            "publication_time_basis": article["publication_time_basis"],
+            "availability_basis": "current_local_receipt",
             "historical_backfill": article["is_historical_backfill"],
             "data_attribution": "Data sourced by Tiingo",
             "data_attribution_url": "https://www.tiingo.com",
         })
-        if not rights.rights.allow_url:
+        if not rights.rights.allows("tiingo", "url"):
             h["url"] = ""
         out.append(h)
-    if qbus_batch:
-        try:
-            _qbus.append_items(qbus_batch)
-        except Exception:  # qbus is a separate existing best-effort owner
-            pass
     audit.update({
-        "eligible_articles": len(out),
+        "eligible_articles": 0,
         "filtered_source": filtered_source,
         "filtered_validation": filtered_validation,
         "filtered_untagged": filtered_untagged,
-        "display_links_licensed": rights.rights.allow_url,
-        "display_teasers_licensed": rights.rights.allow_teaser,
+        "filtered_quality": filtered_quality,
+        "unresolved_ticker_tags": unresolved_tags,
+        "ambiguous_ticker_tags": ambiguous_tags,
+        "display_links_licensed": rights.rights.allows("tiingo", "url"),
+        "display_teasers_licensed": rights.rights.allows("tiingo", "teaser"),
+        "persistence_state": "not_needed",
     })
+    # Qualification may change while normalizing or writing. Keep the existing
+    # qbus owner; a completed append is not undone, but it cannot confer display.
+    if _current_tiingo_context(_received_at or datetime.now(timezone.utc)) != initial_context:
+        return [], "rights_changed", audit
+    if qbus_batch:
+        try:
+            persisted = _qbus.append_items(qbus_batch)
+        except Exception:  # the owner's failure contract includes None and raises
+            persisted = None
+        if persisted is None:  # success is a DataFrame; never test its truthiness
+            audit["persistence_state"] = "failed"
+            return [], "persistence_failed", audit
+        audit["persistence_state"] = "committed"
+    if _current_tiingo_context(_received_at or datetime.now(timezone.utc)) != initial_context:
+        return [], "rights_changed", audit
+    audit["eligible_articles"] = len(out)
     return out, ("ok" if out else "filtered"), audit
 
 
@@ -790,7 +916,9 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     if use_cache and cache.exists():
         try:
             if datetime.now(timezone.utc).timestamp() - cache.stat().st_mtime < ttl:
-                return json.loads(cache.read_text())
+                cached = json.loads(cache.read_text())
+                if financial_snapshot_reusable(cached):
+                    return cached
         except Exception:  # noqa: BLE001
             pass
 
@@ -799,6 +927,7 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     _tok = _reject_collector.set(_fin_rejected)
 
     now = datetime.now(timezone.utc)
+    tiingo_binding = _tiingo_binding(_current_tiingo_context(now))
     emap = nc.build_entity_map()
     top_market = int(cfg.get("top_market", 18))
     top_sector = int(cfg.get("top_sector", 8))
@@ -809,7 +938,7 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     # POLY-003 / GDELT-002: unpack new (items, detail) / (mkt, co, detail) signatures.
     poly, _poly_detail = _polygon_news(cfg, now)
     fh_market, fh_company, _fh_detail = _finnhub_news(cfg, now)
-    tiingo, _tiingo_detail, _tiingo_audit = _tiingo_articles(now)
+    tiingo, _tiingo_detail, _tiingo_audit = _tiingo_articles(now, _entity_map=emap)
     quiver = _quiver_news(cfg, emap, now)            # folded Quiver press-release tail
     gd = _gdelt_thematic(cfg, emap, now)
     rss = _rss_news(cfg, emap, now)                  # PRIMARY: top-tier wires & press
@@ -970,6 +1099,7 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
         # providers_detail: POLY-003 / GDELT-002 tri-state additive field.
         "providers_detail": _providers_detail,
         "tiingo_quality_sample": _tiingo_audit,
+        "tiingo_binding": tiingo_binding,
         # counts is additive-safe; tickers_excluded is the hygiene receipt for the key gate.
         "counts": {"raw": len(all_items), "tagged": len(tagged),
                    "tickers_covered": len(by_ticker),
@@ -982,6 +1112,8 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
         "disclaimer_zh": DISCLAIMER_TEXT_ZH,
         "degraded_reason": _degraded_reason,
     }
+    if not financial_snapshot_reusable(out):
+        out = withdrawn_financial_snapshot()
     try:
         cache.write_text(json.dumps(out))
     except Exception:  # noqa: BLE001
@@ -999,7 +1131,7 @@ def _tiingo_compact_provenance(headline: dict) -> dict:
         "provider_crawled_at": headline.get("provider_crawled_at"),
         # This legacy field is the current response receipt, not a proven
         # first-ever observation. Do not export a misleading first-seen label.
-        "observation_received_at": headline.get("first_available_at"),
+        "observation_received_at": headline.get("observation_received_at", headline.get("first_available_at")),
         "publication_time_basis": _tiingo_news_api.PUBLICATION_TIME_BASIS,
         "model_processing_allowed": False,
         "data_attribution": "Data sourced by Tiingo",

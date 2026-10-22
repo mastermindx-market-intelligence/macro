@@ -264,6 +264,13 @@ def build(write: bool = True) -> dict:
     vm["sector_etfs"] = nc.SECTOR_ETFS
     vm["mag7_order"] = nc.MAG7
 
+    # Enrichment can outlive or change a grant. HTML and JSON share the same
+    # qualified snapshot; an invalid mixed snapshot cannot be pruned accurately.
+    from engine import financial_news as fnews
+    _financial_withdrawal = fin is not None and not fnews.financial_snapshot_reusable(fin)
+    if _financial_withdrawal:
+        fin = fnews.withdrawn_financial_snapshot()
+    vm["fin"] = fin
     if not write:
         return vm
 
@@ -276,44 +283,55 @@ def build(write: bool = True) -> dict:
     outdir = site / "news"
     outdir.mkdir(parents=True, exist_ok=True)
 
-    def _write(name: str, payload) -> None:
+    def _write(name: str, payload, *, required: bool = False) -> None:
         try:
             (outdir / name).write_text(json.dumps(payload, default=str))
-        except Exception as e:  # noqa: BLE001 — one artifact must never block the others
+        except Exception as e:  # noqa: BLE001
+            if required:
+                # A successful build cannot leave a revoked projection in place.
+                raise
             log.warning("news artifact %s failed (%s)", name, e)
 
+    # Rights eligibility precedes the 36-hour coverage preference. Read the old
+    # artifact even when the candidate is None so a failed collector cannot
+    # leave revoked financial/compact/rejected projections on disk.
+    _existing = None
+    _fin_out_path = outdir / "financial.json"
+    try:
+        if _fin_out_path.exists():
+            _existing = json.loads(_fin_out_path.read_text())
+            if not fnews.financial_snapshot_reusable(_existing):
+                _financial_withdrawal = True
+                _existing = None
+    except Exception as _guard_exc:  # noqa: BLE001
+        _financial_withdrawal = True
+        log.warning("financial fallback could not be qualified (%s)", _guard_exc)
+
+    if fin is not None and not fnews.financial_snapshot_reusable(fin):
+        _financial_withdrawal = True
+        fin = None
+    if _existing is not None and (fin is None or _should_keep_existing(_existing, fin)):
+        _existing["refresh_skipped_reason"] = "existing qualified feed has healthier coverage"
+        fin = _existing
+    if fin is None and _financial_withdrawal:
+        fin = fnews.withdrawn_financial_snapshot()
+    # Re-read after fallback selection, immediately before serialization.
+    if fin is not None and not fnews.financial_snapshot_reusable(fin):
+        _financial_withdrawal = True
+        fin = fnews.withdrawn_financial_snapshot()
+    vm["fin"] = fin
+
     if fin:
-        # NEVER-DARKEN GUARD: read the on-disk artifact before overwriting. A keyless
-        # re-render (engine-render.yml) must not replace a healthy keyed-build output
-        # with a darker feed. If the existing artifact is fresh (<36 h) AND strictly
-        # healthier (more providers live OR materially more tickers covered), keep it
-        # and stamp refresh_skipped_reason so the JSON state remains honest.
-        _fin_out_path = outdir / "financial.json"
-        _fin_to_write = fin
+        _write("financial.json", fin, required=_financial_withdrawal)
         try:
-            if _fin_out_path.exists():
-                _existing = json.loads(_fin_out_path.read_text())
-                if _should_keep_existing(_existing, fin):
-                    _skip_reason = (
-                        f"existing feed healthier (providers={_existing.get('providers')} "
-                        f"tickers_covered={(_existing.get('counts') or {}).get('tickers_covered')})"
-                        f" vs candidate (providers={fin.get('providers')} "
-                        f"tickers_covered={( fin.get('counts') or {}).get('tickers_covered')})"
-                    )
-                    log.warning("never-darken guard: keeping existing financial.json — %s",
-                                _skip_reason)
-                    _existing["refresh_skipped_reason"] = _skip_reason
-                    _fin_to_write = _existing
-        except Exception as _guard_exc:  # noqa: BLE001 — guard must never block the build
-            log.warning("never-darken guard read failed (%s) — writing candidate", _guard_exc)
-        _write("financial.json", _fin_to_write)
-        try:
-            from engine import financial_news as fnews
-            bt = fnews.mastermind_by_ticker(_fin_to_write)
+            bt = fnews.mastermind_by_ticker(fin)
             _write("by_ticker.json", {"schema": "news_flow.v1", "is_context_only": True,
-                                      "asof": vm["built_date"], "tickers": bt})
+                                      "asof": vm["built_date"], "tickers": bt},
+                   required=_financial_withdrawal)
             log.info("news by_ticker: %d tickers", len(bt))
         except Exception as e:  # noqa: BLE001
+            if _financial_withdrawal:
+                raise
             log.warning("by_ticker artifact failed (%s)", e)
     if macro:
         _write("macro.json", macro)
@@ -364,10 +382,12 @@ def build(write: bool = True) -> dict:
                 "financial": fin_rejected,
                 "rss": rss_rejected,
             },
-        })
+        }, required=_financial_withdrawal)
         log.info("news reject log: %d total (%d macro / %d fin / %d rss)",
                  n_total, len(macro_rejected), len(fin_rejected), len(rss_rejected))
     except Exception as e:  # noqa: BLE001
+        if _financial_withdrawal:
+            raise
         log.warning("rejected.json artifact failed (%s)", e)
 
     # ---- W4: persist kept events + reject sample (fire-and-forget) ----------

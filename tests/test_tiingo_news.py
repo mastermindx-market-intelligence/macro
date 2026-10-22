@@ -203,7 +203,7 @@ def test_audit_records_bad_rows_without_article_text():
 def test_tiingo_rights_require_explicit_product_derivatives_and_audience():
     assert rights.parse_rights_receipt(receipt(), now=NOW, source="tiingo").source == "tiingo"
     assert rights.parse_rights_receipt(receipt(), now=NOW, source="tiingo").rights.allowed_sources == frozenset({"tiingo"})
-    # Existing Benzinga call sites continue to assume Benzinga by default.
+    # Tiingo still requires explicit qualification; incumbent source rules stay intact.
     with pytest.raises(rights.NewsReceiptError, match="rights_source"):
         rights.parse_rights_receipt(receipt(), now=NOW)
     caps = dict(receipt()["capabilities"], derivative_processing=False)
@@ -256,7 +256,9 @@ def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkey
     ]
     monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: (raw, "ok"))
     stored = []
-    monkeypatch.setattr(fin._qbus, "append_items", lambda rows: stored.append(rows))
+    import pandas as pd
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: {"tickers": {"MU": {}, "AMD": {}}})
+    monkeypatch.setattr(fin._qbus, "append_items", lambda rows: (stored.append(rows), pd.DataFrame(rows))[1])
     items, state, audit = fin._tiingo_articles(NOW, _received_at=NOW)
     assert state == "ok" and len(items) == 1
     assert items[0]["provider_id"] == 81234
@@ -307,7 +309,9 @@ def test_tiingo_stories_flow_into_ticker_index_without_changing_other_provider_s
         "_id": nc.event_id("Chipmaker reports strong new demand for next-generation memory", "reuters.com"),
         "provider": "tiingo", "data_attribution": "Data sourced by Tiingo",
     }
-    monkeypatch.setattr(fin, "_tiingo_articles", lambda now: ([h], "ok", {"eligible_articles": 1}))
+    grant = rights.parse_rights_receipt(receipt(), now=NOW, source="tiingo")
+    monkeypatch.setattr(fin, "_current_tiingo_context", lambda now: ("synthetic-section-test", grant))
+    monkeypatch.setattr(fin, "_tiingo_articles", lambda now, **kw: ([h], "ok", {"eligible_articles": 1}))
     monkeypatch.setattr(fin, "_polygon_news", lambda *a: ([], "no_key"))
     monkeypatch.setattr(fin, "_finnhub_news", lambda *a: ([], [], "no_key"))
     monkeypatch.setattr(fin, "_quiver_news", lambda *a: [])
@@ -657,3 +661,346 @@ def test_quality_snapshot_empty_or_rejected_data_has_no_apparent_age_estimate():
     assert report["observed_within_60m_of_provider_crawl_share"] is None
     assert report["duplicate_provider_id_rows"] == 0
     assert report["largest_source_share"] is None
+
+
+# Withdrawal regressions exercise the existing collector/cache/static artifacts.
+# Every provider call and state path below is synthetic and isolated.
+@pytest.fixture
+def tiingo_runtime(monkeypatch, tmp_path):
+    from datetime import timedelta
+    import pandas as pd
+    from engine import financial_news as fin
+    now = datetime.now(UTC)
+    grant = receipt(
+        effective_at=(now - timedelta(days=1)).isoformat(),
+        expires_at=(now + timedelta(days=1)).isoformat(),
+    )
+    path = tmp_path / "synthetic-tiingo-rights.json"
+    path.write_text(json.dumps(grant))
+    env = {"TIINGO_NEWS_ENABLED": "1", "TIINGO_NEWS_RIGHTS_FILE": str(path),
+           "TIINGO_API_KEY": "synthetic-not-a-credential"}
+    monkeypatch.setattr(fin.config, "secret", lambda key: env.get(key))
+    monkeypatch.setattr(fin.config, "ROOT", tmp_path)
+    monkeypatch.setattr(fin.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(fin, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setattr(fin, "_cache_path", lambda day: tmp_path / "feed.json")
+    universe = {
+        "tickers": {t: {"name": t} for t in ("MU", "AMD", "MSFT", "SPY", "JPM", "BRK-B", "TPC", "TpC")},
+        "sectors": {"XLK": {"tickers": ["MU", "MSFT"]}},
+        "baskets": {"memory": {"tickers": ["MU", "MSFT"], "name": "Memory"}},
+    }
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: universe)
+    raw = [article(
+        publishedDate=(now - timedelta(hours=1)).isoformat(),
+        crawlDate=(now - timedelta(minutes=30)).isoformat(),
+        tickers=["MU", "MSFT", "SPY"],
+    )]
+    calls = []
+    def fetch(*args, **kwargs):
+        calls.append("fetch")
+        return raw, "ok"
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", fetch)
+    real_append, real_read = fin._qbus.append_items, fin._qbus.read_items
+    monkeypatch.setattr(fin._qbus, "append_items", lambda rows: pd.DataFrame(rows))
+    monkeypatch.setattr(fin._qbus, "read_items", lambda: None)
+    other = {
+        "title": "Bank reports quarterly capital and operating results",
+        "url": "https://reuters.com/test-other", "source": "reuters.com",
+        "domain": "reuters.com", "seendate": now.isoformat(), "summary": "",
+        "tickers": ["JPM"], "tier": 1, "quality": 70, "sentiment": None, "_id": "other",
+    }
+    monkeypatch.setattr(fin, "_polygon_news", lambda *a: ([dict(other)], "ok"))
+    monkeypatch.setattr(fin, "_finnhub_news", lambda *a: ([], [], "no_key"))
+    monkeypatch.setattr(fin, "_quiver_news", lambda *a: [])
+    monkeypatch.setattr(fin, "_rss_news", lambda *a: {"market": [], "company": [], "sectors": {}})
+    monkeypatch.setattr(fin, "_gdelt_thematic", lambda *a: {"market": [], "sectors": {}, "detail": "no_rows"})
+    return {"fin": fin, "now": now, "path": path, "env": env, "grant": grant,
+            "raw": raw, "calls": calls, "root": tmp_path,
+            "real_append": real_append, "real_read": real_read}
+
+
+def _change_tiingo_context(ctx, change):
+    from datetime import timedelta
+    grant = json.loads(ctx["path"].read_text())
+    if change == "disabled":
+        ctx["env"]["TIINGO_NEWS_ENABLED"] = "0"
+    elif change == "path":
+        alternate = ctx["root"] / "same-grant-new-path.json"
+        alternate.write_text(json.dumps(grant))
+        ctx["env"]["TIINGO_NEWS_RIGHTS_FILE"] = str(alternate)
+    elif change == "denied":
+        grant["status"] = "denied"
+    elif change == "expired":
+        grant["expires_at"] = (ctx["now"] - timedelta(seconds=1)).isoformat()
+    elif change in ("source_link_display", "teaser_display"):
+        grant["capabilities"][change] = True
+    elif change == "derivative_processing":
+        grant["capabilities"][change] = False
+    elif change in ("owner_ref", "product_id"):
+        grant[change] += "-changed"
+    else:
+        raise AssertionError(change)
+    ctx["path"].write_text(json.dumps(grant))
+
+
+@pytest.mark.parametrize("failure", ["none", "exception"])
+def test_withdrawal_persistence_failure_cannot_return_display_success(tiingo_runtime, monkeypatch, failure):
+    ctx = tiingo_runtime
+    def append(rows):
+        if failure == "exception":
+            raise OSError("synthetic persistence failure")
+        return None
+    monkeypatch.setattr(ctx["fin"]._qbus, "append_items", append)
+    rows, state, audit = ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])
+    assert rows == []
+    assert state == "persistence_failed"
+    assert audit["eligible_articles"] == 0
+    assert not (ctx["root"] / "data" / "qbus" / "items.parquet").exists()
+
+
+def test_withdrawal_real_persistence_preserves_first_receipt_and_honest_clocks(tiingo_runtime, monkeypatch):
+    from datetime import timedelta
+    import pandas as pd
+    ctx = tiingo_runtime
+    monkeypatch.setattr(ctx["fin"]._qbus, "append_items", ctx["real_append"])
+    monkeypatch.setattr(ctx["fin"]._qbus, "read_items", ctx["real_read"])
+    rows, state, audit = ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])
+    assert state == "ok" and audit["eligible_articles"] == 1
+    assert rows[0]["publication_time_basis"] == tn.PUBLICATION_TIME_BASIS
+    assert rows[0]["provider_crawled_at"] != rows[0]["observation_received_at"]
+    later = ctx["now"] + timedelta(minutes=15)
+    assert ctx["fin"]._tiingo_articles(later, _received_at=later)[1] == "ok"
+    stored = ctx["real_read"]()
+    assert len(stored) == 1
+    assert stored.iloc[0]["timestamp_quality"] == "CRAWL_BOUNDED"
+    assert pd.to_datetime(stored.iloc[0]["_crawled_at"], utc=True) == pd.Timestamp(ctx["now"])
+
+
+@pytest.mark.parametrize("change", [
+    "disabled", "path", "denied", "expired", "source_link_display",
+    "teaser_display", "derivative_processing", "owner_ref", "product_id",
+])
+def test_withdrawal_whole_context_change_during_fetch_prevents_append(tiingo_runtime, monkeypatch, change):
+    ctx = tiingo_runtime
+    def fetch(*args, **kwargs):
+        _change_tiingo_context(ctx, change)
+        return ctx["raw"], "ok"
+    monkeypatch.setattr(ctx["fin"]._tiingo_news_api, "fetch_articles", fetch)
+    monkeypatch.setattr(ctx["fin"]._qbus, "append_items", lambda rows: pytest.fail("changed grant appended"))
+    rows, state, _ = ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])
+    assert rows == [] and state == "rights_changed"
+
+
+def test_withdrawal_nested_source_fields_change_is_not_hidden_by_same_receipt_id(tiingo_runtime, monkeypatch):
+    from dataclasses import replace
+    from engine.qbus_news_store import SourceReadRights
+    ctx = tiingo_runtime
+    grant = rights.parse_rights_receipt(ctx["grant"], now=ctx["now"], source="tiingo")
+    current = [grant]
+    monkeypatch.setattr(rights, "load_rights_receipt", lambda *a, **kw: current[0])
+    def fetch(*args, **kwargs):
+        current[0] = replace(grant, rights=replace(
+            grant.rights, source_fields=(SourceReadRights("tiingo", True, False, False),)
+        ))
+        return ctx["raw"], "ok"
+    monkeypatch.setattr(ctx["fin"]._tiingo_news_api, "fetch_articles", fetch)
+    monkeypatch.setattr(ctx["fin"]._qbus, "append_items", lambda rows: pytest.fail("nested grant change appended"))
+    assert ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])[1] == "rights_changed"
+
+
+@pytest.mark.parametrize("boundary", ["normalization", "append"])
+def test_withdrawal_rechecks_after_normalization_and_persistence(tiingo_runtime, monkeypatch, boundary):
+    import pandas as pd
+    ctx = tiingo_runtime
+    if boundary == "normalization":
+        original = ctx["fin"]._normalise
+        def normalize(*args, **kwargs):
+            row = original(*args, **kwargs)
+            _change_tiingo_context(ctx, "disabled")
+            return row
+        monkeypatch.setattr(ctx["fin"], "_normalise", normalize)
+        monkeypatch.setattr(ctx["fin"]._qbus, "append_items", lambda rows: pytest.fail("revoked before append"))
+    else:
+        def append(rows):
+            _change_tiingo_context(ctx, "disabled")
+            return pd.DataFrame(rows)
+        monkeypatch.setattr(ctx["fin"]._qbus, "append_items", append)
+    rows, state, audit = ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])
+    assert rows == [] and state == "rights_changed"
+    assert audit["eligible_articles"] == 0
+
+
+def test_withdrawal_real_collector_routes_unique_lowercase_tags_only(tiingo_runtime):
+    ctx = tiingo_runtime
+    ctx["raw"][0]["tickers"] = ["mu", "brk.b", "tpc", "unknown"]
+    rows, state, audit = ctx["fin"]._tiingo_articles(ctx["now"], _received_at=ctx["now"])
+    assert state == "ok"
+    assert rows[0]["tickers"] == ["BRK-B", "MU"]
+    assert audit["ambiguous_ticker_tags"] == 1
+    assert audit["unresolved_ticker_tags"] == 1
+
+
+def _without_observation_clock(value):
+    # Separate builds necessarily have different local receipt instants.
+    if isinstance(value, dict):
+        return {k: _without_observation_clock(v) for k, v in value.items()
+                if k not in ("first_available_at", "observation_received_at")}
+    if isinstance(value, list):
+        return [_without_observation_clock(v) for v in value]
+    return value
+
+
+def _assert_no_tiingo_material(snapshot):
+    def walk(value):
+        if isinstance(value, dict):
+            assert value.get("provider") != "tiingo"
+            for nested in value.values():
+                walk(nested)
+        elif isinstance(value, list):
+            for nested in value:
+                walk(nested)
+    walk(snapshot)
+    assert "Data sourced by Tiingo" not in json.dumps(snapshot)
+    assert "Chipmaker reports strong" not in json.dumps(snapshot)
+
+
+@pytest.mark.parametrize("change", [
+    "disabled", "denied", "expired", "source_link_display",
+    "teaser_display", "derivative_processing", "owner_ref", "product_id", "legacy",
+])
+def test_withdrawal_fresh_cache_rebuilds_all_sections_and_counts(tiingo_runtime, change):
+    ctx = tiingo_runtime
+    before = ctx["fin"].feed(use_cache=False)
+    assert before["market"] and before["sectors"]["XLK"]["headlines"]
+    assert before["mag7"]["MSFT"]["headlines"] and before["baskets"]["memory"]["headlines"]
+    assert "MU" in before["by_ticker"]
+    if change == "legacy":
+        before.pop("tiingo_binding", None)
+        before["rejected"] = [{"title": "Old unmarked Tiingo rejection", "domain": "cnbc.com"}]
+        (ctx["root"] / "feed.json").write_text(json.dumps(before))
+        _change_tiingo_context(ctx, "disabled")
+    else:
+        _change_tiingo_context(ctx, change)
+    # A changed-but-still-valid grant must rebuild, not relabel cached rows.
+    previous_fetches = len(ctx["calls"])
+    after = ctx["fin"].feed()
+    baseline = ctx["fin"].feed(use_cache=False)
+    for key in ("market", "sectors", "mag7", "baskets", "by_ticker", "sources", "counts", "rejected", "disclaimer"):
+        assert _without_observation_clock(after[key]) == _without_observation_clock(baseline[key])
+    if change in ("source_link_display", "teaser_display", "owner_ref", "product_id"):
+        assert len(ctx["calls"]) == previous_fetches + 2
+        assert after["tiingo_binding"] != before["tiingo_binding"]
+    else:
+        _assert_no_tiingo_material(after)
+        assert after["counts"] == {"raw": 1, "tagged": 1, "tickers_covered": 1, "tickers_excluded": 0}
+    assert "Old unmarked Tiingo rejection" not in json.dumps(after)
+
+
+def test_withdrawal_unchanged_bound_cache_never_refetches_or_appends(tiingo_runtime, monkeypatch):
+    ctx = tiingo_runtime
+    before = ctx["fin"].feed(use_cache=False)
+    monkeypatch.setattr(ctx["fin"]._tiingo_news_api, "fetch_articles", lambda *a, **kw: pytest.fail("cache refetched"))
+    monkeypatch.setattr(ctx["fin"]._qbus, "append_items", lambda *a, **kw: pytest.fail("cache appended"))
+    assert ctx["fin"].feed() == before
+
+
+def test_withdrawal_rejected_tiingo_titles_are_not_exported(tiingo_runtime, monkeypatch):
+    ctx = tiingo_runtime
+    title = ctx["raw"][0]["title"]
+    monkeypatch.setattr(ctx["fin"].nc, "low_value_reason", lambda t, d: "synthetic_preview" if t == title else None)
+    result = ctx["fin"].feed(use_cache=False)
+    assert title not in json.dumps(result)
+    assert result["tiingo_quality_sample"]["filtered_quality"] == 1
+
+
+def _static_builder(ctx, monkeypatch, candidate):
+    import sys
+    import types
+    import engine
+    from scripts import build_news as build
+    modules = {
+        "macro_news": dict(macro_headlines=lambda: None, upcoming_catalysts=lambda **kw: [],
+                           DISCLAIMER_TEXT="", DISCLAIMER_TEXT_ZH="", THEME_LABEL={}),
+        "news_rss": dict(start_reject_log=lambda: ([], None), stop_reject_log=lambda token: None),
+        "news_ai_feed": dict(enabled=lambda: False),
+        "china_news": dict(panel=lambda: None),
+        "news_vector": dict(enabled=lambda: False, recent_panel=lambda: None),
+        "macro_surprise": dict(build_release_cards=lambda **kw: None),
+        "news_event_ledger": dict(persist_kept_events=lambda *a, **kw: 0,
+                                 persist_reject_sample=lambda *a, **kw: 0),
+    }
+    for name, members in modules.items():
+        module = types.ModuleType("engine." + name)
+        module.__dict__.update(members)
+        monkeypatch.setitem(sys.modules, "engine." + name, module)
+        monkeypatch.setattr(engine, name, module, raising=False)
+    monkeypatch.setattr(build.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    monkeypatch.setattr(ctx["fin"], "feed", lambda: candidate)
+    monkeypatch.setattr(build, "_enrich", lambda sections: "")
+    outdir = ctx["root"] / "site" / "news"
+    outdir.mkdir(parents=True, exist_ok=True)
+    return build, outdir
+
+
+def _retain_unsafe_static(ctx, outdir, snapshot):
+    legacy = dict(snapshot)
+    legacy.pop("tiingo_binding", None)
+    legacy["rejected"] = [{"title": "Old unmarked Tiingo rejection", "domain": "cnbc.com"}]
+    (outdir / "financial.json").write_text(json.dumps(legacy))
+    (outdir / "by_ticker.json").write_text(json.dumps({"tickers": ctx["fin"].mastermind_by_ticker(snapshot)}))
+    (outdir / "rejected.json").write_text(json.dumps({"feeds": {"financial": legacy["rejected"]}}))
+
+
+@pytest.mark.parametrize("candidate_missing", [False, True])
+def test_withdrawal_static_never_darken_cannot_restore_revoked_rows(tiingo_runtime, monkeypatch, candidate_missing):
+    ctx = tiingo_runtime
+    old = ctx["fin"].feed(use_cache=False)
+    _change_tiingo_context(ctx, "disabled")
+    candidate = None if candidate_missing else ctx["fin"].feed(use_cache=False)
+    build, outdir = _static_builder(ctx, monkeypatch, candidate)
+    _retain_unsafe_static(ctx, outdir, old)
+    vm = build.build(write=True)
+    published = json.loads((outdir / "financial.json").read_text())
+    assert vm["fin"] == published
+    _assert_no_tiingo_material(published)
+    assert published["counts"]["raw"] == (0 if candidate_missing else 1)
+    for name in ("by_ticker.json", "rejected.json"):
+        text = (outdir / name).read_text()
+        assert "Chipmaker reports strong" not in text
+        assert "Old unmarked Tiingo rejection" not in text
+    if candidate_missing:
+        assert json.loads((outdir / "by_ticker.json").read_text())["tickers"] == {}
+
+
+@pytest.mark.parametrize("write", [False, True])
+def test_withdrawal_grant_change_during_enrichment_withholds_html_and_json(tiingo_runtime, monkeypatch, write):
+    ctx = tiingo_runtime
+    candidate = ctx["fin"].feed(use_cache=False)
+    build, outdir = _static_builder(ctx, monkeypatch, candidate)
+    def enrich(sections):
+        _change_tiingo_context(ctx, "teaser_display")
+        return ""
+    monkeypatch.setattr(build, "_enrich", enrich)
+    vm = build.build(write=write)
+    _assert_no_tiingo_material(vm["fin"])
+    assert vm["fin"]["counts"]["raw"] == 0
+    if write:
+        assert json.loads((outdir / "financial.json").read_text()) == vm["fin"]
+
+
+@pytest.mark.parametrize("failed_name", ["financial.json", "by_ticker.json", "rejected.json"])
+def test_withdrawal_required_artifact_failure_is_not_reported_success(tiingo_runtime, monkeypatch, failed_name):
+    from pathlib import Path
+    ctx = tiingo_runtime
+    old = ctx["fin"].feed(use_cache=False)
+    _change_tiingo_context(ctx, "disabled")
+    build, outdir = _static_builder(ctx, monkeypatch, None)
+    _retain_unsafe_static(ctx, outdir, old)
+    original = Path.write_text
+    def fail_required(path, text, *args, **kwargs):
+        if path == outdir / failed_name:
+            raise OSError("synthetic required withdrawal write failure")
+        return original(path, text, *args, **kwargs)
+    monkeypatch.setattr(Path, "write_text", fail_required)
+    with pytest.raises(OSError, match="required withdrawal"):
+        build.build(write=True)

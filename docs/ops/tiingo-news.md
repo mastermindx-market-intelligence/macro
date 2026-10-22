@@ -17,7 +17,7 @@ publication system, or signal engine is introduced.
 The first source slice makes one global bounded `/tiingo/news` crawl
 (`sortBy=crawlDate`, up to 250 rows), never 500 ticker-specific pollers.
 It preserves the provider source/ID, published and crawled clocks, our
-received clock and conservative first availability. Only ticker-tagged,
+received clock and explicit observation-time basis. Only ticker-tagged,
 allowlisted publisher stories enter the existing display feed. The shared
 `news_common` scorer, clickbait exclusions, qbus keep-FIRST history, ticker
 validation and news section/ticker routing remain in control. Tiingo data
@@ -25,7 +25,9 @@ are **context only**, not a licensed alpha score or entry instruction.
 
 ### Rights / activation
 
-A working API token and plan description **do not**, alone, qualify news display.
+The Chairman confirmed commercial business/public-display/redistribution permission
+on 2026-10-12; that decision is accepted. A working token still does not fill the
+field, audience, effective/expiry and runtime receipt values needed by this consumer.
 The owning commercial document/order and current valid product schedule must
 explicitly establish *Tiingo News*, licensed audience(s), retention duration,
 historical downloads, publisher content/source-link/description display,
@@ -91,8 +93,8 @@ TIINGO_NEWS_RIGHTS_FILE=<absolute path to validated private receipt>
 
 No one should take these steps based solely on the sample API result.
 Do not reuse the Benzinga root-only key file or expand its product scope.
-The explicit source switch preserves the Benzinga default and its
-independent rights. If not all gates pass, existing Polygon, Finnhub,
+The explicit Tiingo source switch preserves the incumbent Benzinga and
+qualified Massive publisher receipt rules and their independent rights. If not all gates pass, existing Polygon, Finnhub,
 RSS, Quiver and GDELT feeds continue to operate normally.
 
 ### Quality probe: 2026-10-09
@@ -132,9 +134,13 @@ sources by *independent stories*, not raw article counts.
 
 ### PIT and storage honesty
 
-- `published_at` = publisher's statement; historical, **not first access**.
+- `published_at` = publisher timestamp **or Tiingo discovery fallback**, not
+  independently proven publisher time and **not first access**. Both normalization
+  and the qbus batch therefore use `CRAWL_BOUNDED`.
 - `provider_crawled_at` = Tiingo's capture time; **not first access by Mastermind**.
-- `received_at` = Mastermind's first local observation in this batch.
+- `received_at` / `observation_received_at` = the current response receipt.
+  It does not prove first-ever observation. Existing v1 qbus keeps the first
+  successfully persisted observation; subsequent observations do not rewrite it.
 - `first_available_at=max(received_at,provider_crawled_at)` =
   conservative machine availability for this ingestion; not a claim
   that Tiingo had retrospective coverage at that time.
@@ -151,15 +157,15 @@ sources by *independent stories*, not raw article counts.
 
 ### Before production activation (still outstanding)
 
-1. Obtain an owner-backed News-specific Tiingo redistribution/storage/
-   derivative/audience grant with start/expiry, and establish whether
-   individual publisher content requires separate agreements.
+1. Bind the accepted commercial permission to authentic owner-issued runtime
+   receipt values for this exact product, fields, audience and effective/expiry
+   window. Do not manufacture missing values or reopen the accepted business decision.
 2. Qualify the exact host and authorized storage path (especially the
    requested external 4 TB data volume); configure key/receipt via the
    existing secret and source-rights owners. No token in repo/CI logs.
 3. Verify full source integration tests, existing financial-news/feed,
-   build contract and receipt tests. Reconcile concurrent
-   `engine/financial_news.py` PR #7982; no blind overwrite.
+   build contract and receipt tests. Current main was merged on 2026-10-22,
+   preserving newer Massive receipt qualification and inventory behavior.
 4. Exercise a private shadow build and confirm Tiingo health/reason
    fields, source diversity and 100% legacy-provider compatibility.
    Verify stable provider IDs and article updates across several runs.
@@ -173,3 +179,66 @@ sources by *independent stories*, not raw article counts.
 
 No new CI secrets, production flags, authorization paths or retention
 services are created by the feature branch.
+
+
+### Withdrawal and durability repair — 2026-10-22
+
+The collector re-reads the enable flag, configured receipt path and complete
+qualified grant after fetch, before persistence and before returning rows.
+Equality includes nested field permissions, product, audience, owner, validity
+window and derivative permission; a receipt ID alone is insufficient. Current
+field capabilities govern displayed URLs and teasers.
+
+A successful nonempty collector result requires the existing qbus append owner
+to return a non-None result. None or an exception yields no display rows,
+zero eligible articles and an explicit persistence-failed state. A grant change
+during an already completed append withholds display; it does not rewrite or
+undo the qbus owner's history.
+
+Financial snapshots carry a versioned opaque digest of the complete qualified
+grant. The live receipt loader remains the permission authority. A fresh cache
+with a changed grant is a cache miss. Unbound Tiingo-era snapshots are rebuilt,
+including snapshots whose only licensed text is in an old rejected-title log.
+The whole snapshot is invalidated because capped/deduplicated display rows
+cannot reconstruct pre-ranking raw and tagged counts.
+
+The static builder qualifies both candidate and retained financial artifacts
+before applying its 36-hour coverage preference, rechecks after enrichment and
+before publication, and uses one selected snapshot for HTML, financial JSON,
+compact ticker output and ledger/rejection inputs. If no safe financial
+snapshot exists, it publishes empty sections and truthful zero counts.
+Required withdrawal writes for financial.json, by_ticker.json and rejected.json
+must succeed; failures fail the build. These are build/read boundaries,
+not a claim of instantaneous revocation on already deployed static files.
+
+Tiingo rejected titles do not enter the shared rejection log; quality refusals
+remain aggregate counts. Ticker tags use the existing display universe's unique
+case-folded/dot-hyphen matches. Unknown or ambiguous tags do not create or
+select securities. This routing is not a dated DataOS identity grant.
+
+### Premium evidence and Terminal scope — 2026-10-22
+
+The source-filter repair in Macro PR #10027 merged as
+`9f643105ec260da4c0b59864c98061061718f41b`. New archive requests use HTTP
+`source` singular, while historical receipt/plan queries retain their original
+bytes. This does not broaden source admission.
+
+A bounded Bloomberg/CNBC query observed 77 valid unique metadata records
+(17 Bloomberg, 60 CNBC). The newest-250 global feed had largely hidden that
+cohort. In the common 24-hour comparison, vendor-tag candidates were present
+for MSFT, AAPL, NVDA, MU and JPM; no selected candidate was observed for DE,
+NEE or WST. These counts are neither complete coverage nor direct relevance.
+
+A later latest-per-ticker/domain metadata selection contained six unique
+articles covering seven ticker/domain slots. Two Bloomberg headlines were
+plausible direct-company candidates; four CNBC items indicated other-company
+news, a market preview or portfolio commentary. Public publisher pages were
+inaccessible, so zero original reports were independently verified. This
+small recency-biased selection is not a provider precision estimate.
+
+This draft still targets legacy Macro financial_news/qbus-v1. Terminal's
+existing single writer and curated transport admission do not yet implement
+Tiingo. Repairing this draft does not deliver premium Terminal reporting.
+Runtime-qualified rights, dated canonical identity, direct company relevance
+and the existing Terminal writer/read-path integration remain release gates.
+The draft stays held and production activation remains off.
