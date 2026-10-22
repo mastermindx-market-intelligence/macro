@@ -19,6 +19,9 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
     begin = source.index("\t# Shared Shell presentation admission changes framing only.")
     end = source.index("\n}\n\nwww.mastermind-x.com {", begin)
     headers = source[begin:end]
+    redirect_begin = source.index("\t# Consolidated-away page with real Google demand")
+    redirect_end = source.index("\t# Daily Movers is no longer", redirect_begin)
+    redirect = source[redirect_begin:redirect_end]
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
@@ -26,8 +29,17 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
         "{\n admin off\n auto_https off\n}\n"
         + f"http://127.0.0.1:{port} {{\n"
         + headers
+        + "\n" + redirect
         + """
     route {
+        @baskets_region_denied {
+            path /baskets_china.html
+            query region=blocked
+        }
+        handle @baskets_region_denied {
+            header Cache-Control "no-store"
+            respond "existing region gate" 403
+        }
         @blocked path /blocked.html
         handle @blocked {
             header Cache-Control "no-store"
@@ -53,6 +65,25 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
         ("/blocked.html?mmx_shell=1", "https://beta.mastermind-x.com/", True, 403),
         ("/blocked.html", None, False, 403),
     ]
+    # Keep redirects observable: following the SEO hop would hide the original
+    # route/generation mismatch that prevents the stub bridge from running.
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            return None
+
+    opener = urllib.request.build_opener(NoRedirect)
+    cases.extend([
+        ("/baskets_china.html", None, False, 301),
+        ("/baskets_china.html?mmx_shell=1", None, False, 301),
+        ("/baskets_china.html?mmx_shell=1", "https://example.test/", False, 301),
+        ("/baskets_china.html?mmx_shell=1", "https://beta.mastermind-x.com.evil.test/", False, 301),
+        ("/baskets_china.html?mmx_shell=1", "http://beta.mastermind-x.com/", False, 301),
+        ("/baskets_china.html?mmx_shell=0", "https://beta.mastermind-x.com/", False, 301),
+        ("/baskets_china.html", "https://beta.mastermind-x.com/", False, 301),
+        ("/baskets_china.html?mmx_shell=1", "https://beta.mastermind-x.com/", True, 200),
+        ("/baskets_china.html?filter=a%20b&mmx_shell=1", "https://beta.mastermind-x.com/baskets_china.html", True, 200),
+        ("/baskets_china.html?mmx_shell=1&region=blocked", "https://beta.mastermind-x.com/", True, 403),
+    ])
     receipts = []
     with tempfile.TemporaryDirectory(prefix="shared-shell-caddy-proof-") as temp:
         root = Path(temp)
@@ -78,7 +109,7 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
                     if referer:
                         request.add_header("Referer", referer)
                     try:
-                        response = urllib.request.urlopen(request, timeout=3)
+                        response = opener.open(request, timeout=3)
                     except urllib.error.HTTPError as error:
                         response = error
                     with response:
@@ -90,13 +121,19 @@ def verify(caddyfile: Path, caddy: str) -> list[dict]:
                     assert status == expected_status, (path, status)
                     assert actual.get("Content-Security-Policy") == expected_csp, (path, dict(actual))
                     assert actual.get("X-Frame-Options") == (None if embedded else "DENY"), (path, dict(actual))
+                    if path.startswith("/baskets_china.html"):
+                        assert actual.get("Location") == ("/sector_central_china.html" if status == 301 else None), (path, dict(actual))
+                        if embedded and status == 200:
+                            assert body == b"existing product document"
+                    if path.split("?", 1)[0].endswith(".html") and "mmx_shell=1" in path:
+                        assert actual.get("Cache-Control") == "private, no-store", (path, dict(actual))
                     if embedded:
                         assert actual.get("Cache-Control") == "private, no-store", (path, dict(actual))
                         assert "Cookie" in actual.get("Vary", ""), (path, dict(actual))
                     if expected_status == 403:
                         assert body == b"existing region gate"
                         assert "no-store" in actual.get("Cache-Control", "")
-                    receipts.append({"path": path, "referer": referer, "embedded": embedded, "status": status})
+                    receipts.append({"path": path, "referer": referer, "embedded": embedded, "status": status, "location": actual.get("Location")})
             finally:
                 process.terminate()
                 try:

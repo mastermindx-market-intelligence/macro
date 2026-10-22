@@ -167,6 +167,13 @@ def _observe_admitted_read(tag: str):
     try:
         yield seq
         success = True
+    except BaseException as exc:
+        # Observed while the entry is still registered, so the existing read
+        # sequence and native thread link the event; the bare raise re-raises
+        # the original exception unchanged.
+        with suppress(BaseException):
+            _read_observation_failure(seq, exc)
+        raise
     finally:
         _read_observation_finish(seq, success)
 
@@ -185,6 +192,70 @@ def _read_observation_busy(tag: str) -> None:
         ])
     except Exception:
         pass
+
+
+# Diagnostics are closed constants, never exception text or caller/source data.
+_RETAINED_MACRO_FAILURE_CATEGORIES = frozenset({
+    "SOURCE_USE_NOT_ADMITTED", "CUTOFF_NOT_SUPPORTED", "GENERATION_MISMATCH",
+    "REGISTERED_METHOD_REQUIRED", "EXACT_CAPTURE_NOT_FOUND",
+    "OWNER_READ_BUDGET_EXCEEDED", "EXACT_RETAINED_EVIDENCE_UNAVAILABLE",
+    "OTHER_TECHNICAL", "INTERNAL_UNCLASSIFIED",
+})
+
+
+def _retained_macro_failure_category(exc: BaseException) -> str:
+    """Describe the existing failure boundary without changing its disposition."""
+    from engine.neuralweb import market_memory_episode_features as features
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_operating_cortex_service as evidence
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_retained_use as use
+
+    if not isinstance(exc, Exception):
+        return "INTERNAL_UNCLASSIFIED"
+    if isinstance(exc, (use.RetainedUseError, features.EpisodeFeatureAccessError,
+                        cohort.RetainedContextAccessError)):
+        return "SOURCE_USE_NOT_ADMITTED"
+    if isinstance(exc, market_memory_pit.MarketMemoryContextNotFound):
+        return "EXACT_CAPTURE_NOT_FOUND"
+    if isinstance(exc, market_memory_pit.OwnerReadBudgetError):
+        return "OWNER_READ_BUDGET_EXCEEDED"
+    # Only exact owner classes with a single exact, allowlisted stable reason
+    # receive a narrower category. Never stringify an exception or emit args.
+    reason = None
+    if (type(exc) in (features.EpisodeFeatureError, market_memory_pit.MarketMemoryQueryError)
+            and len(exc.args) == 1 and type(exc.args[0]) is str):
+        reason = exc.args[0]
+    if type(exc) is features.EpisodeFeatureError and reason == "feature_not_available_at_query_cutoff":
+        return "CUTOFF_NOT_SUPPORTED"
+    if type(exc) is market_memory_pit.MarketMemoryQueryError and reason == "exact_retained_generation_mismatch":
+        return "GENERATION_MISMATCH"
+    if (type(exc) is HTTPException and type(exc.detail) is dict
+            and exc.detail == {"state": "REGISTERED_METHOD_REQUIRED"}):
+        return "REGISTERED_METHOD_REQUIRED"
+    if isinstance(exc, (market_memory_pit.MarketMemoryPITError, features.EpisodeFeatureError,
+                        cohort.RetainedContextCohortError, retrieval.EpisodeRetrievalError,
+                        evidence.RealEvidenceError)):
+        return "EXACT_RETAINED_EVIDENCE_UNAVAILABLE"
+    return "OTHER_TECHNICAL"
+
+
+def _read_observation_failure(seq: int | None, exc: BaseException) -> None:
+    """One enum-only event linked to an active admitted macro read."""
+    if type(seq) is not int:
+        return
+    try:
+        with _read_observation_lock:
+            entry = _read_observation_active.get(seq)
+        if entry is None or entry[0] != 'retained_macro':
+            return
+        category = _retained_macro_failure_category(exc)
+        if category not in _RETAINED_MACRO_FAILURE_CATEGORIES:
+            return
+        _read_observation_emit("failure", tag=entry[0], seq=seq,
+                               native_thread_id=entry[2], category=category)
+    except Exception:
+        pass  # A diagnostic cannot change the exception, response or permit.
 
 
 def _shutdown_symbol_fetch_executor() -> None:
