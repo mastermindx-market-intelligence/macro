@@ -1,3 +1,25 @@
+# Current owner checkpoint — response-clock qualification, 22 October 2026
+
+**The response-clock repair is qualified locally; Forex source admission and the broader Forex/Bonds completion gates remain open.** This containing change descends from `3db88469490925ff9ed23eec4a87eb19a0ff0cec` on existing #10052. The original 355-pass count repair, green CI39787499393 and fences39787499203 remain accepted on that head.
+
+The existing collector now samples local UTC immediately after a bounded HTTP body read passes its size check, before HTTP context teardown and archive storage. It supplies that clock through the existing receipt argument. The public two-value fetch API remains compatible, including both BOATS history callers. First-receipt identity and bytes remain immutable. This is not vendor publication, wire-exact arrival, finality or a scheduling-delay guarantee.
+
+Against unchanged source, the new boundary regressions produced **3 failed / 4 passed** in 2.28s. The actual temporary Archive→materializer→bounded reader→candidate path demonstrated that storage delay could falsely satisfy the post-close observation check. After the source repair, **507 tests passed in 15.58s** at 18:15:46 UTC across all seven affected owner/caller suites. See [the exact receipt](evidence/response_clock_qualification_20261022.json). No provider response was acquired and no production archive was rewritten.
+
+## Remaining source work and ordered continuation
+
+1. Reconcile private `.forex-batch-proof/20261022/response-clock-*` intents/results, commit and normally push the qualified source/tests/docs once on the same branch, and consume automatic exact-head CI. Preserve original failed runs and every accepted predecessor result.
+2. Close the timing-provenance distinction in the current acquisition/reader/candidate owners. The unchanged receipt schema does not say whether a timestamp came from legacy storage time, the repaired collect route or another caller. A strict future post-close claim must retain actual acquisition provenance; hash integrity alone is not a measured read-completion clock. Preserve the accepted 04:41 post-boundary acquisition chronology on its own record; do not retrospectively upgrade its receipt semantics or erase that factual operation.
+3. Preserve the real 12:23:40 retained census: 22 entries, selected USDJPY minute/native views, 1,444 rows, missing required 08:00/12:00 support and zero eligibility. Do not repeat unchanged scans, captures or provider calls just to obtain a newer clock. Current source/admission/monitoring flags remain false.
+4. Continue Bonds in existing #9590. The seasoning/composition repair qualified 206 tests and is being published through the same owner. Bounded per-instrument history proceeds through the existing CCW Parquet/validation/CDI chain. Genuine exact-candidate browser evidence remains necessary; a public production read is not candidate qualification.
+5. Preserve original Fabric review operations and consume only their qualified results. Terminal #1106 stays Draft/HOLD; do not replay the429, change carrier/provider, reapply0038 or retry the explicitly refused Terminal deployment. Finish through existing protected owners, exact-head CI and actual product proof.
+
+Fresh protected pin `05a9eb52a54e29fb7bbd0d40813ed12623b176c7` is compatible with the prior loaded procedure blobs. Macro #9996 and its green CI/live CRUD/render39688064251, earlier held carry/COT and every original workspace remain preserved. **Tiingo licensing and intended use are COMPLETE by Chairman special-license attestation; no licensing email or support outreach.**
+
+Publication and later CI are resolved in [#10052's canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600) and the [joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). Native advisory work is not accepted independent Fabric review.
+
+## Retained master plan and earlier accepted evidence
+
 # Forex R26 and Bonds — master completion plan
 
 ## Current recovery checkpoint — 22 October 2026, after 13:24 UTC

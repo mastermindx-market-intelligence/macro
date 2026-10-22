@@ -404,8 +404,9 @@ class Archive:
                 "raw_bytes": len(data), "counts": count}
 
 
-def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
-                     max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str]:
+def _fetch_json_observation(path: str, key: str, *, timeout: float = 30,
+                            max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str, str]:
+    """Return bounded bytes, content type, and the local read-completion clock."""
     # Caller constructs a fixed-origin, documented endpoint via request_path().
     if not path.startswith("/") or "//" in path or "@" in path:
         raise ValueError("unsafe API path")
@@ -419,7 +420,9 @@ def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
             raw = response.read(max_bytes + 1)
             if len(raw) > max_bytes:
                 raise TiingoArchiveError("Tiingo response exceeded bounded archive size")
-            return raw, mime
+            # Capture before HTTP teardown or archive work can cross a UTC boundary.
+            observed_at = utc_now()
+            return raw, mime, observed_at
     except urllib.error.HTTPError as exc:
         # Do not print response body; vendors sometimes echo authentication details.
         raise TiingoArchiveError(f"Tiingo HTTP {exc.code}; source not admitted") from None
@@ -427,8 +430,16 @@ def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
         raise TiingoArchiveError("Tiingo transport unavailable") from None
 
 
+def fetch_json_bytes(path: str, key: str, *, timeout: float = 30,
+                     max_bytes: int = MAX_RESPONSE_BYTES) -> tuple[bytes, str]:
+    """Preserve the public bytes/content-type pair for direct fetch callers."""
+    raw, mime, _ = _fetch_json_observation(path, key, timeout=timeout, max_bytes=max_bytes)
+    return raw, mime
+
+
 def collect_one(archive: Archive, source: str, symbol: str | None, key: str,
                 params: dict[str, Any] | None = None) -> dict[str, Any]:
     path = request_path(source, symbol, params)
-    raw, mime = fetch_json_bytes(path, key)
-    return archive.store_response(source, symbol, path, raw, content_type=mime)
+    raw, mime, observed_at = _fetch_json_observation(path, key)
+    return archive.store_response(source, symbol, path, raw, content_type=mime,
+                                  received_at=observed_at)

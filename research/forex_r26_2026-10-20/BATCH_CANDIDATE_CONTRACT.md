@@ -1,3 +1,17 @@
+# Current response-observation contract — 22 October 2026
+
+The existing `collect_one` acquisition route uses the private `_fetch_json_observation` helper. A successful bounded read and size check precede a local UTC sample; that sample precedes response-context teardown and storage. A newly created receipt therefore does not use storage delay as its observation clock. Oversized bodies are rejected before sampling. Transport/HTTP/teardown failures retain safe error translation and cannot reach storage.
+
+This is a local read-completion sample, not wire-exact arrival, vendor publication, bounded scheduling delay, finality or correction immutability. The public `fetch_json_bytes` signature and ordinary `(raw, content_type)` result remain unchanged. BOATS history routes keep their existing independent storage-clock semantics.
+
+`Archive.store_response` is unchanged. Identical same-request/same-day content reuses its original receipt identity, clock and bytes. No historical receipt is rewritten or upgraded. The current receipt schema alone cannot distinguish the producer timing basis; strict prospective candidate qualification needs actual acquisition provenance. The accepted post-boundary operation chronology remains valid on its own retained capture record.
+
+Actual regression qualification: **3 failed / 4 passed** on original collector blob `631dbfa4d6545ff55aabf56fe17366924fa2d2a8`, then **507 passed** across seven affected suites on repaired collector blob `d3f5f822a794763fac5842a90763193d8e2176b7`. The source-to-candidate test uses the actual temporary archive, materializer, exact bounded reader and unchanged assessor. With a pre-close minute read and post-close storage, grid/OHLC checks pass while the post-close response check fails and candidate eligibility remains empty.
+
+See [response-clock qualification](evidence/response_clock_qualification_20261022.json). The 355-pass count-bound repair, original green 3db8846 CI and real retained census remain evidence on their original identities. Source admission, active monitoring and account/evaluator authority are unchanged.
+
+## Retained batch and count contracts
+
 # Forex R26 — bounded batch candidate contract
 
 ## Strict Parquet count qualification — 22 October 2026

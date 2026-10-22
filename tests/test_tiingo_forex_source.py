@@ -1979,3 +1979,99 @@ def test_census_strict_row_count_refuses_result_over_remaining_budget(
     assert len(evidence["scans"]) == 1
     assert evidence["assessment"] is None
     _assert_census_no_admission(evidence)
+
+
+def test_response_observation_storage_delay_cannot_close_a_forex_candidate(census_lake, monkeypatch):
+    lake, _retain = census_lake
+    minute_rows = _census_rows(start="2026-10-21T00:00:00Z")
+    native_rows = _census_native_rows(minute_rows)
+    bodies = [json.dumps(rows, allow_nan=False).encode()
+              for rows in (minute_rows, native_rows)]
+    # The minute response is complete before 04:00; storage finishes after it.
+    # The native request follows that storage and is observed after 04:00.
+    phases = [
+        ("2026-10-21T03:59:59.900000+00:00", "2026-10-21T04:00:00.100000+00:00",
+         "2026-10-21T04:00:01+00:00"),
+        ("2026-10-21T04:00:02+00:00", "2026-10-21T04:00:02.100000+00:00",
+         "2026-10-21T04:00:03+00:00"),
+    ]
+    clock = {"now": phases[0][0], "response": None}
+    requests = []
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __init__(self, index):
+            self.index = index
+
+        def __enter__(self):
+            return self
+
+        def read(self, limit):
+            assert limit == archive_owner.MAX_RESPONSE_BYTES + 1
+            clock["now"] = phases[self.index][0]
+            return bodies[self.index]
+
+        def __exit__(self, *args):
+            clock["now"] = phases[self.index][1]
+
+    def open_response(req, timeout):
+        index = len(requests)
+        assert index < len(bodies)
+        requests.append(req.full_url)
+        clock["response"] = index
+        return Response(index)
+
+    def delayed_storage_check(root, *, floor):
+        clock["now"] = phases[clock["response"]][2]
+
+    monkeypatch.setattr(archive_owner.urllib.request, "urlopen", open_response)
+    monkeypatch.setattr(archive_owner, "utc_now", lambda: clock["now"])
+    monkeypatch.setattr(archive_owner, "require_space", delayed_storage_check)
+    retained_responses = [
+        archive_owner.collect_one(lake, "forex-bars", "usdjpy", "synthetic-test-key",
+                                  {"resampleFreq": frequency})
+        for frequency in ("1min", "4hour")
+    ]
+    assert len(requests) == 2
+    assert requests[0].endswith("resampleFreq=1min")
+    assert requests[1].endswith("resampleFreq=4hour")
+    assert clock["now"] == "2026-10-21T04:00:03+00:00"
+
+    references = []
+    for saved, limit in zip(retained_responses, (240, 128)):
+        day = archive_owner.capture_day(saved["observed_at_utc"])
+        stem = Path(saved["path"]).name.removesuffix(".raw.gz")
+        receipt_path = lake.root / "receipts" / "forex-bars" / day / (stem + ".json")
+        receipt = json.loads(receipt_path.read_text())
+        assert materialize_one(lake.root, receipt, free_floor=0)["status"] == "WRITTEN"
+        references.append((saved, limit, day, receipt_path))
+
+    views = []
+    with BoundedTiingoRead(lake.root, check_mount=False) as context:
+        for saved, limit, day, receipt_path in references:
+            view = read_research_view(
+                "forex-bars", day, saved["receipt_id"], root=lake.root,
+                check_mount=False, receipt_path=receipt_path, read_context=context,
+                max_rows=limit,
+            )
+            views.append((view, saved["receipt_id"]))
+        context.verify_bindings()
+
+    result = candidate_assessment(
+        views, verified_at_utc="2026-10-21T04:00:04Z",
+        assessed_at_utc="2026-10-21T04:00:05Z",
+    )
+    window = result["windows"][0]
+    assert window["checks"]["valid_comparison"] is True
+    assert window["checks"]["dense_minute_grid"] is True
+    assert window["checks"]["normalized_ohlc_agreement"] is True
+    assert window["checks"]["both_responses_observed_after_interval_end"] is False
+    assert window["failed_checks"] == ["both_responses_observed_after_interval_end"]
+    assert window["candidate_checks_satisfied"] is False
+    assert views[0][0].source_observed_at_utc == phases[0][0]
+    assert views[1][0].source_observed_at_utc == phases[1][0]
+    assert result["eligible_observations"] == []
+    assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    for flag in _CENSUS_ADMISSION_FLAGS:
+        assert result[flag] is False
