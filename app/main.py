@@ -2585,6 +2585,11 @@ app.include_router(medtech_router)
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
 
+# Same-box input only: public edge requests are denied before auth or file I/O.
+# Terminal retains holdings and computes derived risk metrics in its own compiler.
+from app.treasury_history import router as treasury_history_router  # noqa: E402
+app.include_router(treasury_history_router)
+
 # B03 reads the existing uncapped observation input only after site_full auth.
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402
 app.include_router(prophet_observations_router)
