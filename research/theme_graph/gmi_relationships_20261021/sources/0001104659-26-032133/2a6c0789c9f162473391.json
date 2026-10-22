@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 4756365,
+ "doc_sha256": "87ebb619af5e6fc7f1cd5fa3c351004ae63195a47b0f964c32558e4c9e803b26",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3441303,
+  "byte_start": 3441086,
+  "normalized": "The stream agreement applies to 100% of the property, but only with respect to the ownership interest of Teck Resources Limited which indirectly owns a 22.5% interest in Compañía Minera Antamina S.A.",
+  "normalized_sha256": "f0f285bb715cc98ae89d1e5e7e4a3c90b932dc104aef407e4817fb189a2dc101",
+  "raw": "The stream agreement applies to 100% of the property, but only with respect to the ownership interest of Teck Resources Limited which indirectly owns a 22.5% interest in Compa&#241;&#237;a Minera Antamina S.A. &#160; ",
+  "raw_sha256": "2a6c0789c9f162473391ebf95b232e44bf0a3a06f32fbec76582ade854e61639"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}
