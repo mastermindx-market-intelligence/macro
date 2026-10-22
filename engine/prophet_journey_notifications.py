@@ -117,7 +117,6 @@ from __future__ import annotations
 import re
 import uuid as _uuid_mod
 from dataclasses import dataclass, field, replace
-from datetime import date
 from typing import Any
 
 SCHEMA = "prophet.b21.journey_notifications/v1"
@@ -1068,11 +1067,10 @@ def derive_events(inputs: JourneyInputs) -> tuple[list[JourneyEvent], dict[str, 
 def _session_end(calendar_rows: list[dict], market_session: str | None) -> str | None:
     """The end of the session following `market_session`, VERBATIM from the
     calendar: the row for that session when its value is one RFC3339 UTC
-    instant; for a Saturday or Sunday (a date that is no session) the latest
-    earlier session's next-session end when that end lies after the date.
-    Anything else — no session, a weekday with no row (holiday or calendar
-    gap), conflicting or unparsable values — is None (fail closed,
-    `not_after_unresolvable`)."""
+    instant. Anything else — no row for that session (weekend, holiday or a
+    calendar gap), conflicting or unparsable values — is None (fail closed,
+    `not_after_unresolvable`; seat ruling F28 R2 — no neighbouring-session
+    fallback)."""
     session = str(market_session or "")
     if not _LEADING_DATE_RE.fullmatch(session):
         return None
@@ -1092,19 +1090,7 @@ def _session_end(calendar_rows: list[dict], market_session: str | None) -> str |
 
     if session in by_session:
         return _single(by_session[session])
-    try:
-        weekend = date.fromisoformat(session).weekday() >= 5
-    except ValueError:
-        return None
-    if not weekend:
-        return None
-    earlier = [row_session for row_session in by_session if row_session < session]
-    if not earlier:
-        return None
-    value = _single(by_session[max(earlier)])
-    if value is None or value[:10] <= session:
-        return None
-    return value
+    return None
 
 
 # ---------------------------------------------------------------------------
