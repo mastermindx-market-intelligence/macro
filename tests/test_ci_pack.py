@@ -5171,8 +5171,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_837),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_840),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_813),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5181,6 +5181,25 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
+    pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
+    2026-10-21 display-tier rows; frozen 68 intact), to the existing
+    unrun-intl-libraries job directly under the W-C4 hierarchy-population
+    step. That job was already selected on the index and free-content
+    probes, so no job joins any probe; the step costs exactly 3 estimator
+    units (one command plus one tests/test_ path). Local check_contract_delta
+    on 12f666b3 against base a46365b2 measured:
+
+        templates/index.html          135 jobs, 5,837 -> 5,840 weight
+        scripts/build_free_content.py 135 jobs, 5,810 -> 5,813 weight
+        engine/prophet/plan_book.py    128 jobs, 5,586 -> 5,589 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,837 -> 5,840 and build 5,810 -> 5,813, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
+    the ten-pack limit, selector code and every prior suite remain unchanged.
+    Planning weights are not measured execution times.
 
     2026-10-21 qualified Today and Research API composition adds exactly five
     estimator units to research-vault-api (7 -> 12) for the two mandatory API
