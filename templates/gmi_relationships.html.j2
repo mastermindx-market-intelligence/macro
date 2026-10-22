@@ -1,9 +1,18 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_macros.html.j2" import t, tip, ic, arrow_long, mark, d, asof, sec, chain, tip_adm, tip_held with context %}
 {% from "_gmi_head.html.j2" import head %}
 {% block title %}GMI Explorer — Documented relationships{% endblock %}
 {% block seo %}{% set seo_title = 'GMI Explorer — Documented relationships | Mastermind' %}{% set seo_desc = 'Supplier, customer and licensing links a company names in its own filings, each with its source and review status.' %}{% set seo_path = 'gmi-relationships.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
+{#- S3 documented relationships (specimen s3_relationships). TWO states, one
+    template: edges present -> the full specimen layout; no edges -> the
+    honest empty state. Company identities render from the model (display
+    name, else the ticker itself — the model's own fallback rule; seat GAP 25
+    keeps them English in BOTH languages). Edge lineage/clocks come from the
+    edge record only; unset fields print the SPECS §10 plain words. Verbatim
+    source text is never printed: the model carries none and excerpt display
+    rights are not GRANTED, so #excerpt renders the withheld state
+    (describe_premises rule QUOTE_UNVERIFIED). -#}
 {% set E = model.edges | length %}
 {% if model.edges_state == 'empty' %}
 {% set sub_en = 'Links a company names in its own filings. None documented yet.' %}
@@ -15,6 +24,178 @@
 {% set sub_en = 'Links a company names in its own filings. ' ~ E ~ ' documented so far.' %}
 {% set sub_zh = '公司在自身申报文件中写明的关联。目前已记录 ' ~ E ~ ' 条。' %}
 {% endif %}
-{{ head([('Research','研究'),('Relationships','关系')], 'Documented relationships', '已记录的关系', sub_en, sub_zh) }}
-<section class="gmi-sec" data-gmi-surface="relationships"></section>
+{{ head([('Research','研究'),('Relationships','关系')], 'Documented relationships', '已记录的关系', sub_en, sub_zh, side=asof(model.asof)) }}
+{#- identity helpers: issuer id -> display name, else the ticker (model rule) -#}
+{% set by_tk = namespace(m={}) %}
+{% for iss in model.issuers %}{% set _ = by_tk.m.update({iss.ticker: iss}) %}{% endfor %}
+{% macro pname(eid) -%}{% set tk = eid.rsplit(':', 1)[-1].rsplit('-', 1)[-1] %}{{ by_tk.m[tk].display_name if tk in by_tk.m else tk }}{%- endmacro %}
+{% macro mono(x) -%}{% set m %}<span class="gmi-mono">{{ x }}</span>{% endset %}{{ m }}{%- endmacro %}
+{% macro fy_en(lab) -%}{{ lab|replace('FY20', 'FY') }}{%- endmacro %}
+{% macro fy_zh(lab) -%}{{ lab[2:] ~ '财年' if lab.startswith('FY') else lab }}{%- endmacro %}
+{% set MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+{% macro mth(iso) -%}{{ MONS[iso[5:7]|int - 1] }} {{ iso[:4] }}{%- endmacro %}
+{% macro mth_zh(iso) -%}{{ iso[:4] }}年{{ iso[5:7]|int }}月{%- endmacro %}
+{#- plain words for the edge-record enums that carry them (fixture/contract
+    values); anything else prints the §10 unknown. GAP: the relationship
+    contract publishes no word table for these slugs yet. -#}
+{% set SPECIES = [
+    ('supplier_customer', 'Supplier → customer', '供应商 → 客户'),
+    ('contract_manufacturing', 'Contract manufacturing (foundry, CDMO)', '代工制造（晶圆代工、CDMO）'),
+    ('licensing', 'Licensing', '授权许可'),
+    ('distribution', 'Distribution', '分销'),
+    ('component_dependency', 'Component dependency', '零部件依赖')] %}
+{% set VERBS = {'SUPPLIES': ('supplies', '供货', ' supplies ', '向', '供货')} %}
+{% set ROLES = {'supplier': ('Supplier', '供应商'), 'customer': ('Customer', '客户')} %}
+{% set LIFECYCLE = {'planned': ('Planned', '计划中')} %}
+{% set USES = {'NOT_GRANTED': ('Not permitted yet', '暂不允许'), 'GRANTED': ('Permitted', '允许')} %}
+{% set REL_REASON = {'part_iii_only_amendment': ('Part III only amendment', '仅修订第三部分')} %}
+{% set unset = t('Not set yet', '尚未设定') %}
+{#- the species strip: counts from the package manifest; the first species with
+    a documented edge is --on (the specimen's single-edge state), zero counts
+    are --zero (seat GAP 9). -#}
+{% set sp_counts = model.edge_package.counts.edges_by_species if E else {} %}
+{% set on_k = namespace(k=none) %}
+{% if E %}{% for k, en, zh in SPECIES %}{% if on_k.k is none and sp_counts.get(k, 0) > 0 %}{% set on_k.k = k %}{% endif %}{% endfor %}{% endif %}
+<div class="gmi-species">{% for k, en, zh in SPECIES %}{% set c = sp_counts.get(k, 0) if E else 0 %}{% set on = on_k.k == k %}<button type="button" class="gmi-spec{% if on %} gmi-spec--on{% elif c == 0 %} gmi-spec--zero{% endif %}" aria-pressed="{{ 'true' if on else 'false' }}">{{ t(en, zh) }}<b>{{ c }}</b></button>{% endfor %}</div>
+<p class="gmi-foot">{{ t('Zero means none documented yet, not none exist.', '为零表示尚未记录，而非不存在。') }}</p>
+{#- the one theme-link panel: kind held -> held words, kind adm -> admitted
+    words (orchestrator ruling G-UI-9); link facts come from the issuer's
+    matching link row. Admitted AND not-permitted are both shown as they are
+    (G-UI-10) — the copy resolves neither. -#}
+{% macro link_panel() -%}
+{% if not model.theme_links %}
+<section class="gmi-panel">{{ sec('Held for review', '待审核', tipx=tip_held()) }}
+<p class="gmi-note">{{ t('Nothing is waiting for review.', '暂无可待审核的关联。') }}</p></section>
+{% else %}
+{% set link = model.theme_links[0] %}
+{% set lrow = namespace(l=none) %}
+{% if link.ticker in by_tk.m %}{% for L in by_tk.m[link.ticker].links %}{% if L.micro_id == link.micro_id %}{% set lrow.l = L %}{% endif %}{% endfor %}{% endif %}
+{% if link.kind == 'held' %}
+{% set hd = sec('Held for review', '待审核', tipx=tip_held()) %}
+{% set sts = t('A proposed theme link, not a member. Not shown on the map.', '拟议主题关联，尚非成员，不在主题地图上显示。') %}
+{% set mk = 'held' %}
+{% else %}
+{% set hd = sec('Admitted', '已纳入', tipx=tip_adm()) %}
+{% set sts = t('Admitted after review.', '经审核已纳入。') %}
+{% set mk = 'adm' %}
+{% endif %}
+<section class="gmi-panel">{{ hd }}
+<div class="gmi-status">{{ mark(mk, xl=true) }}<div><div class="gmi-status-t">{{ t(link.name ~ ' → ' ~ link.micro_en, link.name ~ ' → ' ~ link.micro_zh) }}</div>
+<div class="gmi-status-s">{{ sts }}</div></div></div>
+<dl class="gmi-dl">{% set cp = lrow.l.scope.counterparty_display_name if lrow.l else none %}
+{% set plat = lrow.l.scope.platform if lrow.l else none %}
+<div><dt>{{ t('Named customer', '所提及客户') }}</dt><dd>{% if cp and plat and plat.startswith(cp) %}{{ t(plat ~ ' platform', plat ~ ' 平台') }}{% elif cp and plat %}{{ t(cp ~ ' · ' ~ plat ~ ' platform', cp ~ ' · ' ~ plat ~ ' 平台') }}{% elif cp or plat %}{{ t(cp or plat) }}{% else %}{{ unset }}{% endif %}</dd></div>
+{% set lc = lrow.l.lifecycle if lrow.l else none %}
+{% set lcw = LIFECYCLE.get(lc) if lc else none %}
+<div><dt>{{ t('Stage', '阶段') }}</dt><dd>{{ t(lcw[0], lcw[1]) if lcw else unset }}</dd></div>
+{% set amt = lrow.l.magnitude_states.get('amount') if lrow.l else none %}
+<div><dt>{{ t('Size', '规模') }}</dt><dd>{{ t('Size withheld', '规模暂不显示') if amt == 'WITHHELD' else t('Not disclosed', '未披露') }}</dd></div>
+{% set use = lrow.l.graph_membership_use if lrow.l else none %}
+{% set usew = USES.get(use) if use else none %}
+<div><dt>{{ t('Use on the map', '用于主题地图') }}</dt><dd>{{ t(usew[0], usew[1]) if usew else unset }}</dd></div></dl>
+<div><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}{{ link.href }}">{{ t('Open ' ~ link.name, '查看 ' ~ link.name) }}{{ ic('arrow', 16) }}</a></div></section>
+{% endif %}
+{%- endmacro %}
+{#- the coverage side panel: coverage is not measured per company yet -#}
+{% macro cov_panel() -%}
+<section class="gmi-panel">{{ sec('How complete is this?', '覆盖程度') }}
+<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
+<div class="mx-empty-why">{{ t('Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前仅读取了一家公司的申报文件。其他处为零，表示尚未记录，而非不存在。') }}</div></div></section>
+{%- endmacro %}
+{% if E %}
+{% set edge = model.edges[0] %}
+{% set cm = edge.current_magnitudes[0] if edge.current_magnitudes else none %}
+{% set src = cm.source_ref if cm else (edge.source_refs[0] if edge.source_refs else none) %}
+{% set party_a = pname(edge.from.issuer_id) %}
+{% set party_b = pname(edge.to.issuer_id) %}
+{% set spw = namespace(en='', zh='') %}
+{% for k, en, zh in SPECIES %}{% if k == edge.species %}{% set spw.en = en %}{% set spw.zh = zh %}{% endif %}{% endfor %}
+{% set vb = VERBS.get(edge.theme_graph_mapping) %}
+{% set conds = edge.conditions | length %}
+<section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
+<div class="gmi-relgrid"><div class="gmi-relgrid-a">
+<div class="gmi-rel-head" id="rel-h"><span class="gmi-party">{{ t(party_a) }}</span>
+<span class="gmi-arrow">{{ arrow_long() }}{{ t(vb[0], vb[1]) if vb else '' }}</span><span class="gmi-party">{{ t(party_b) }}</span>
+<span class="gmi-kind">· {{ t(spw.en, spw.zh) if spw.en else unset }}</span></div>
+<div class="gmi-ident"><span class="gmi-ink-info gmi-ident-st">{{ t('Proposed · not reviewed yet', '拟议 · 尚未审核') if edge.admission_state == 'proposed' else unset }}</span>
+<span class="gmi-chip gmi-chip--upd">{{ ic('refresh', 14) }}{% if edge.last_assessed_at %}{{ t('Read updated · ' ~ (edge.last_assessed_at|de), '读取已更新 · ' ~ (edge.last_assessed_at|dz)) }}{% else %}{{ t('Update history not tracked yet', '尚未跟踪更新记录') }}{% endif %}</span></div>
+<div class="gmi-mag"><div>{% if cm and cm.value is not none %}{% set pct = (cm.value * 100)|round|int %}{% set per = cm.period.label %}
+<div class="gmi-mag-num">{{ pct }}<small>%</small></div>
+<div class="gmi-mag-cap">{{ t('of ' ~ party_a ~ '’ revenue came from ' ~ party_b ~ ' in ' ~ per, party_a ~ ' ' ~ fy_zh(per) ~ '营收来自 ' ~ party_b ~ ' 的占比') }}</div></div>
+<div class="gmi-hist" aria-hidden="true">{% set hist = namespace(dd={}) %}{% for h in edge.magnitude_history %}{% set _ = hist.dd.update({h.period.label: h.value}) %}{% endfor %}{% for lab, v in hist.dd.items() %}<div class="gmi-hist-col{% if loop.last %} gmi-hist-col--now{% endif %}"><span class="gmi-hist-v">{{ (v * 100)|round|int }}%</span><span class="gmi-hist-bar" style="height:{{ (v * 90)|round|int }}px"></span><span class="gmi-hist-p">{{ t(fy_en(lab), fy_zh(lab)) }}</span></div>{% endfor %}</div>
+{% else %}
+<div class="gmi-mag-num">—</div>
+<div class="gmi-mag-cap">{{ t('Size withheld', '规模暂不显示') }}</div></div>
+{% endif %}</div>
+<p class="gmi-scope">{% if cm and cm.value is not none %}{% set per = cm.period.label %}{% set sent_en = model.deck.magnitude[cm.kind].en|fill(party=party_a, numerator_scope=cm.numerator_scope, pct=pct|string, denominator_scope=cm.denominator_scope, period=per) %}{% set sent_zh = model.deck.magnitude[cm.kind].zh|fill(party=party_a, numerator_scope=cm.numerator_scope, pct=pct|string, denominator_scope=cm.denominator_scope, period=fy_zh(per)) %}{{ t(sent_en, sent_zh) }}{% else %}{{ t(model.deck.magnitude.undisclosed.en|fill(party=party_a), model.deck.magnitude.undisclosed.zh|fill(party=party_a)) }}{% endif %}<span class="l-zh"> {{ model.deck.scope_note.zh }}</span></p>
+</div><div class="gmi-relgrid-b"><dl class="gmi-dl">
+<div><dt>{{ t('Direction', '方向') }}</dt><dd>{% if vb %}<span class="l-en">{{ party_a ~ vb[2] ~ party_b }}</span><span class="l-zh">{{ party_a ~ vb[3] ~ party_b ~ vb[4] }}</span>{% else %}{{ unset }}{% endif %}</dd></div>
+{% set ap = edge.asserted_period %}
+<div><dt>{{ t('Period covered', '覆盖期间') }}</dt><dd>{% if ap and ap.start and ap.end %}{{ t(mth(ap.start) ~ ' – ' ~ mth(ap.end), mth_zh(ap.start) ~ ' – ' ~ mth_zh(ap.end)) }}{% else %}{{ unset }}{% endif %}</dd></div>
+<div><dt>{{ t('Conditions', '条件') }}</dt><dd>{% if conds == 0 %}{{ t('None stated in the filing', '申报文件未列明条件') }}{% else %}{{ t(conds ~ ' condition stated in the filing', '申报文件列明 ' ~ conds ~ ' 项条件') }}{% endif %}</dd></div>
+<div><dt>{{ t('First known', '首次获知') }}</dt><dd>{{ d(edge.first_known_at) if edge.first_known_at else unset }}</dd></div>
+<div><dt>{{ t('Last stated', '最近一次陈述') }}</dt><dd>{{ d(edge.last_asserted_at) if edge.last_asserted_at else unset }}</dd></div>
+<div><dt>{{ t('Last checked', '最近核对') }}</dt><dd>{{ d(edge.last_assessed_at) if edge.last_assessed_at else unset }}</dd></div>
+<div><dt>{{ t('Source', '来源') }}</dt><dd>{% if src %}<a href="#excerpt">{{ src.form }} <span class="gmi-mono">{{ src.accession }}</span> {{ ic('ext', 14) }}</a>{% else %}{{ t('Not in the source', '来源未披露') }}{% endif %}</dd></div></dl></div></div>
+{% set src0 = edge.source_refs[0] if edge.source_refs else none %}
+{% set ex_granted = edge.get('rights', {}).get('excerpt_display') == 'GRANTED' and edge.get('excerpt_text') %}
+<details class="mx-disc" id="excerpt"><summary>{{ t('The filing’s words', '申报文件原文') }}{% if src %}<small>{{ src.form }} <span class="gmi-mono">{{ src.accession }}</span></small>{% endif %}</summary>
+<div class="mx-disc-body">{% if ex_granted %}
+<blockquote class="gmi-quote"><span class="gmi-quote-lead">{{ t(model.deck.lead_in.en, model.deck.lead_in.zh) }}</span>“{{ edge.excerpt_text }}”</blockquote>
+{% else %}
+<p class="gmi-note gmi-note--lead">{{ t('Display rights for this figure are still being confirmed. The source filing is linked.', '该数值的展示权限仍在确认中。已附来源申报文件链接。') }}</p>
+{% if src0 and src0.url %}<div><a class="gmi-btn gmi-btn--quiet" href="{{ src0.url }}" rel="noopener" target="_blank">{{ t('Open the filing', '打开申报文件') }}{{ ic('ext', 16) }}</a></div>{% endif %}
+{% endif %}
+<p class="gmi-foot gmi-foot--gap">{{ t(model.deck.footer.en, model.deck.footer.zh) }}{% if src %} <span class="gmi-mono">{{ src.accession }} · bytes {{ src.byte_start|num }}–{{ src.byte_end|num }}</span>{% endif %}</p></div></details>
+</div></section>
+<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel">{{ sec('How this figure was read over time', '该数值的历次读取') }}
+{% if edge.last_assessed_at %}
+<p class="gmi-note gmi-note--lead">{{ t(model.deck.corrections.as_known_at.en|fill(as_of=edge.last_assessed_at|de), model.deck.corrections.as_known_at.zh|fill(as_of=edge.last_assessed_at|dz)) }}</p>
+<ul class="gmi-thread">{% for h in edge.magnitude_history %}{% set acc = h.source_ref.accession %}
+{% set mono_acc %}<span class="gmi-mono">{{ acc }}</span>{% endset %}
+{% set hv = ((h.value * 100)|round|int) ~ '%' %}
+{%- if h.revision_kind == 'new_period' -%}
+{% set s_en = model.deck.corrections.first_published.en|fill(party=party_a, value=hv, period=h.period.label, form=h.source_ref.form, accession=acc, date=h.known_at|de) %}
+{% set s_zh = model.deck.corrections.first_published.zh|fill(party=party_a, value=hv, period=fy_zh(h.period.label), form=h.source_ref.form, accession=acc, date=h.known_at|dz) %}
+{#- |safe only re-wraps the accession (digits/dash) in a gmi-mono span -#}
+{% set li_en %}{{ s_en|replace(acc, mono_acc)|safe }}{% endset %}
+{% set li_zh %}{{ s_zh|replace(acc, mono_acc)|safe }}{% endset %}
+<li><span class="gmi-node"></span><div><time>{{ d(h.known_at[:10]) }}</time><span class="l-en">{{ li_en }}</span><span class="l-zh">{{ li_zh }}</span></div></li>
+{%- elif h.revision_kind == 'reassertion' -%}
+{% set s_en = model.deck.corrections.reassertion.en|fill(form=h.source_ref.form, accession=acc, date=h.known_at|de, value=hv) %}
+{% set s_zh = model.deck.corrections.reassertion.zh|fill(form=h.source_ref.form, accession=acc, date=h.known_at|dz, value=hv) %}
+{% set li_en %}{{ s_en|replace(acc, mono_acc)|safe }}{% endset %}
+{% set li_zh %}{{ s_zh|replace(acc, mono_acc)|safe }}{% endset %}
+<li><span class="gmi-node gmi-node--re"></span><div><time>{{ d(h.known_at[:10]) }}</time><span class="l-en">{{ li_en }}</span><span class="l-zh">{{ li_zh }}</span></div></li>
+{%- endif -%}
+{% endfor %}{% for cl in edge.correction_lineage %}{% set rw = REL_REASON.get(cl.reason, (cl.reason, cl.reason)) %}
+{% set s_en = model.deck.corrections.amendment_not_restated.en|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[0]) %}
+{% set s_zh = model.deck.corrections.amendment_not_restated.zh|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[1]) %}
+{% set li_en %}{{ s_en|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
+{% set li_zh %}{{ s_zh|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
+<li><span class="gmi-node gmi-node--am"></span><div><time>{{ d(cl.known_at[:10]) }}</time><span class="l-en">{{ li_en }}</span><span class="l-zh">{{ li_zh }}</span></div></li>
+{% endfor %}</ul>
+{% else %}
+<p class="gmi-note gmi-note--lead">{{ t('Update history not tracked yet', '尚未跟踪更新记录') }}</p>
+{% endif %}
+</section>
+<section class="gmi-panel">{{ sec('Where this link leads', '关联路径') }}
+{% set ra = ROLES.get(edge.direction.from_role) %}
+{% set rb = ROLES.get(edge.direction.to_role) %}
+{% if vb and conds == 0 %}{% set e1 = t(vb[0] ~ ' · no condition stated', vb[1] ~ ' · 未列明条件') %}{% elif vb %}{% set e1 = t(vb[0] ~ ' · stated in the filing', vb[1] ~ ' · 申报文件列明条件') %}{% else %}{% set e1 = '' %}{% endif %}
+{{ chain([
+    dict(pip='doc', lvl=t(ra[0], ra[1]) if ra else unset, name=t(party_a), edge=e1),
+    dict(cls=('to-none',), pip='doc', lvl=t(rb[0], rb[1]) if rb else unset, name=t(party_b), edge=t('next step', '下一步')),
+    dict(cls=('none',), pip='none', name=t('No documented links from ' ~ party_b ~ ' yet', '尚无 ' ~ party_b ~ ' 的已记录关联')),
+], kind='edges') }}
+<p class="gmi-note">{{ t('Paths list documented links only. They do not estimate how far an effect spreads.', '路径仅列出已记录的关联，不估算影响的传导范围。') }}</p></section></div><div class="gmi-col-side">{{ link_panel() }}{{ cov_panel() }}</div></div>
+{% else %}
+<section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
+<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line" id="rel-h">{{ t('No documented relationships yet', '尚无已记录的关系') }}</div>
+<p class="mx-empty-why">{{ t('The company’s themes and filings still show.', '该公司的主题与申报文件仍可查看。') }}</p>
+{% if model.theme_links %}<div><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}{{ model.theme_links[0].href }}">{{ t('Open the company', '打开公司页') }}{{ ic('arrow', 16) }}</a></div>{% endif %}
+</div>
+</div></section>
+<div class="gmi-cols"><div class="gmi-col-main">{{ link_panel() }}</div><div class="gmi-col-side">{{ cov_panel() }}</div></div>
+{% endif %}
 {% endblock %}

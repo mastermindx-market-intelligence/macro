@@ -494,4 +494,17 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 /* == gmi:s1s5 (W2B) == */
 /* == /gmi:s1s5 == */
 /* == gmi:s3s4 (W2C) == */
+/* The specimen's non-data inline styles as classes (R7): lead notes, the S3
+   ident line, the wide hero caption, the flush stack note, the S4 strong
+   figures, the excerpt footer gap, and the numerator fill (zero was the only
+   state the specimen drew). */
+.gmi-note--lead{ color:var(--text); font-weight:600; }
+.gmi-note--flush{ margin-top:4px; }
+.gmi-foot--gap{ margin-top:8px; }
+.gmi-ident-st{ font-weight:600; font-size:var(--fs-sm); }
+.gmi-mag-cap--wide{ max-width:none; }
+.gmi-tally-lab--strong{ color:var(--text); }
+.gmi-num-strong{ color:var(--text); }
+.gmi-track-fill{ position:absolute; left:0; top:0; bottom:0; min-width:2px;
+  border-radius:var(--r-gmi-md); background:var(--gmi-mark); }
 /* == /gmi:s3s4 == */
