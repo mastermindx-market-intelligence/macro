@@ -589,3 +589,48 @@ The incoming tracked `site/product-nav-icons.css` was materialized in the existi
 A new, ordinary-admission Subagent Fabric source review is required for the complete immutable integrated candidate. The reserved aa38 review identity was never submitted; the historical failed 3a and 44e requests remain under their recorded no-replay dispositions. No historical approval is inherited. Integrated-head packing, focused checks and exact hosted CI must be attributed to their actual later receipts. The News mission-owned premerge barrier remains until applicable source review, current green checks and compatible integration are established. Native repair rollout already completed separately; production acceptance remains owed after protected merge and the normal covering render/deploy.
 
 Two older GitHub checkpoint writes still have uncertain outcomes and must not be replayed. A new independent verdict is a distinct action and cannot imply either old write failed. Existing source-rights holds and other carrier reservations remain scoped to their original work.
+
+## Protected 7bb packing composition — 2026-10-22
+
+A bounded read-only check at 03:10 UTC measured the actual new protected-main
+interval from `c6bbf9bf7a046ef911202c9025f0d0f1879505aa` to
+`7bb2f72e45d48b526efba8c5311e862efe1ff95b`: five commits and 19 changed paths.
+The immutable predecessor remained
+`f07ba3c2e5a4143b850fdb210f3f88af7af58169`, tree
+`30428a1abf358d46404dd40a217691f42761d1c3`, with a clean workspace.
+The measured merge had exactly one conflict, in `tests/test_ci_pack.py`.
+This is a genuine source-integration repair.
+
+The composition retains protected PR9997's two additional Shared Shell
+regression suites, the missing-dependency fixes in ten legacy CI jobs,
+render/heartbeat/DAG fixes, HK lookup template and redirect-producer changes,
+and unrelated research/workstream records. It preserves all existing News
+source and artifacts. Only the two packing weight ceilings are composed:
+index 5,847 to 5,851 and free-content 5,820 to 5,824, accounting for the two
+new data-base-shim suites' four estimator units. Job-count ceilings, plan-book
+5,600, ten-pack ceiling, selectors, exclusive ownership, tests and execution
+budgets remain unchanged. This candidate requires a fresh canonical
+tracked-tree measurement on its frozen head before publication; the
+accounting derivation alone is not a measured pass.
+
+The predecessor's independent Fabric commission was actually submitted once:
+`news-9612-f07ba3-source-review-20261022`, with the original News mission as
+root and direct parent. It returned terminal rc1, verified terminal lineage,
+`QWEN_FINAL_RESPONSE_UNCONFIRMED`, unknown usage and
+`continuation_evidence_unqualified`. Acceptance is
+`UNVERIFIED / EXECUTION_NOT_ELIGIBLE`; execution absence is not proven and
+`retry_allowed=false`. The 690-byte response SHA256 is
+`f1e25c8b8ff2d1098488bb403c8be468bcfb4b067860eb0154e8499b99a9911f`.
+Its wrapper `kind=429` is not a retained provider HTTP receipt or proof of
+pre-task rejection. No source verdict was returned, and no retry, alternate
+commission, provider probe, acceptance or release followed.
+The distinct execution return was posted once and exact-body verified at
+[comment 6331698472](https://github.com/mastermindx-market-intelligence/macro/pull/9612#issuecomment-6331698472).
+
+The source revision change does not itself reset that failed review's retry
+owner or budget. Applicable independent review remains outstanding and
+requires supported disposition of the existing logical operation. The
+mission-owned premerge hold remains in force; green CI cannot replace it.
+The earlier uncertain checkpoint writes, frozen review identities and source
+rights reservations retain their existing dispositions. No production
+acceptance is claimed.

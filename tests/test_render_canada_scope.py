@@ -102,7 +102,7 @@ def test_canada_is_in_the_dirty_region_loop():
 
 
 def test_canada_is_a_dispatchable_scope():
-    assert "options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits]" in RENDER
+    assert "options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits, stubs]" in RENDER
 
 
 # ------------------------------------------------------------- render wiring

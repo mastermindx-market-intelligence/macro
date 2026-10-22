@@ -5171,8 +5171,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_847),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_820),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_851),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_824),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5181,6 +5181,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 News #9612 composition with protected 7bb2f72e45d4:
+    retain the News collector-registry allowance and both new Shared Shell
+    regressions from PR9997. HK lookup and fixed redirects add four
+    estimator units to data-base-shim, funding only index 5,847 -> 5,851
+    and free-content 5,820 -> 5,824. All selected-job ceilings, plan-book
+    5,600, ten packs, execution budgets and existing checks stay intact.
+    The frozen candidate must pass the canonical tracked-tree measurement
+    before publication; estimator units are not observed execution time.
 
     2026-10-21 News #9612 Shared Shell composition at bed14796a39c
     (protected base 96444fd8a329) measured index 135 / 5,847, free-content
@@ -5210,6 +5219,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     suites. Actual composed planner: index 135 / 5,837; free-content 135 /
     5,810. No jobs were added or removed. Fund only these +5 weight deltas;
     preserve all job-count, plan-book and pack ceilings and every check.
+
+    2026-10-21 fixed-redirect producer integration adds the page-only regression
+    to the same data-base-shim command (+2 estimator units, no new jobs).
+    Actual planner measures index135/5841 and free-content135/5814;
+    retain prophet5600, all job/pack bounds and execution timeouts.
+
+    2026-10-21 HK lookup full-template regression (PR9997, base ecd8540):
+    the existing data-base-shim command gains one meaningful pytest suite.
+    Exact hosted contract-delta measured index 135 jobs / 5,839 units and
+    free-content 135 / 5,812, each +2 with no newly selected jobs; prophet
+    remains 128 / 5,588 below its existing ceiling. Rebase only the two
+    demonstrated accounting ceilings; execution budgets and selection stay intact.
 
     2026-10-21 Shared Shell integration with protected 53eefbe142c8c:
     the canonical planner on f75612e0 measures index 135 jobs / 5,832 weight,
