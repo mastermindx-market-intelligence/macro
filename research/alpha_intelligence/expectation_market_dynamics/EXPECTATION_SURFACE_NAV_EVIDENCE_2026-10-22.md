@@ -216,6 +216,72 @@ Round 1's G1–G3 stand unchanged.
 4. The seat's R1/R2 line positions ("currently line 136/line 164") matched the file exactly; no deviation in the edit itself. The four numbered items here continue round 1's DEVIATIONS numbering: D4 is that the guarded visual-delegation helper returned a typed refusal (`GLM_VISION_DELEGATION_REFUSED reason=controller_minimax_lease_required`), so the crop's same-family judgment rests on DOM facts (identical 58×58 tiles, identical `icon-drawing` markup shape) and deterministic pixel statistics instead of a second model's visual read.
 5. D5: the first 390 capture pass ran against the correct built page and passed its own assertions, but did not assert row visibility; all four 390 shots were re-captured with an explicit visibility/in-viewport assert (values above) before commit. The 1440 shots from the first pass needed no re-capture (their row facts were already asserted and recorded).
 
+## Round 3 (release-key bump)
+
+Round 3 is mechanical: move the hand-written nav release key so round 2's two `nav_market.js` bridge lines reach returning visitors (the chain `theme.js → account.js → nav_market.js` is served `immutable, max-age=31536000` at the fixed key), and re-pin the two test constants that guard the move. No rendering changes (R5): round 2's PNGs stay byte-identical, no recapture.
+
+### Head / base
+
+- Base (round-2 head, commissioned): `66a6eb2cfefc1374a103cfcb70d711b83c0ed064` — verified `git rev-parse HEAD` at session start, clean tree, branch `lane/itp-es-nav-20261022-r3`.
+- Pushed head: see `ES_NAV_RECORD_R3.md` (untracked record); branch push `claude/itp-es-nav-2026-10-22` (fast-forward descendant of the base, fence-verified before push).
+
+### The key move
+
+Old key `20261018-shared-shell-source-join` → new key `20261022-expectation-surface-nav` (seat ruling R1, frozen; matches the digest redaction regex `\d{8}-[\w-]+`). The five pins (R2):
+
+1. `templates/theme.js:527` — `account.js?v=` fetch key
+2. `templates/account.js:1283` — `nav_market.js?v=` fetch key
+3. `tests/test_nav_hover_bridge.py:24` — `NAV_RELEASE_KEY`
+4. `tests/test_account_actions.py:80` — `RELEASE_KEY`
+5. `tests/test_shared_theme_progressive_loader.cjs:22` — `RELEASE_KEY`
+
+The two derived files: `site/theme.js` (deterministic `emit_theme_js` bake of the template — 1 insertion / 1 deletion, key-only) and `site/account.js` (byte copy of the template, `cmp` silent). Baseline grep listed exactly the R2 five lines; after the edits the old key greps clean (`templates tests scripts lib config` → no hits) and the new key greps exactly 7 lines across `templates tests site/theme.js site/account.js`.
+
+### Digest (item 5, seat ruling R3)
+
+With `NAV_RELEASE_KEY` moved and the old digest still pinned, the commissioned single run FAILED exactly as designed and printed:
+
+```
+E       AssertionError: templates/nav_market.js or templates/account.js changed, but they are served `immutable, max-age=31536000` at the fixed key '20261022-expectation-surface-nav' -- returning visitors would keep the year-cached OLD nav menu and never see this change. Bump the key in templates/theme.js, site/theme.js, templates/account.js and site/account.js (and NAV_RELEASE_KEY above), then set NAV_PAYLOAD_DIGEST = '79c21f28'. Both constants move together or the bump did not happen.
+E       assert '79c21f28' == 'a967578e'
+```
+
+Printed value `79c21f28` matches seat ruling R3 (and repairs main's drift from `a967578e`/`151ec2e6`). Re-run after pinning: `1 passed, 12 deselected`.
+
+### Tests
+
+7a (six commissioned suites, verbatim tail): **`184 passed, 4 warnings in 4.40s`** — includes `test_nav_release_key_moves_with_the_payload_it_busts` (round-2 G4, now green), `tests/test_expectation_surface_nav.py` 9/9, and all of `test_account_actions.py` (t8 + the theme pair test). Failure-id file: empty.
+
+7b: `node tests/test_shared_theme_progressive_loader.cjs` → rc 0, tail:
+
+```
+ok   real Promise: native ready resolution releases the loader
+ok   real Promise: native ready rejection releases the loader
+14 passed, 0 failed
+```
+
+7c (base-vs-lane comm, commissioned six files): lane failure set = **∅** vs round-2 recorded base set {G1 ×3 + G4} — **G4 gone, nothing new.** The G1 trio lives in `tests/test_nav_submenu_icons.py`, outside the commissioned six, so it was verified in a report-only addendum run of that one suite: the three recorded G1 ids fail unchanged (template-vs-test drift, pre-dating this lane); the two further failures in that suite are sparse-lane artifacts, not base drift and not reachable from this round's key-only diff (see G6). `lane_fail.txt` (empty) deleted before committing, per commission.
+
+7d: `python -m scripts.sync_chat_nav` → `chat nav sync OK (templates/chat.html header == _site_nav.html.j2)`, rc 0.
+
+7e: `check_design_system.py --mode enforce-added` on the round-3 templates+site diff (`--diff-file -`; the script documents `--diff-file`, not `--base`) → `design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25373)`.
+
+7f: `check_ui_visual_evidence.py --diff-file <round-3 diff>` → **rc 0, no findings, no receipt demanded** (the checker prints findings only; the key-string lines are not material runtime JS by its detector — same class as round 2's JS table entries). R5 holds: no receipt created or regenerated, round 2's PNGs byte-identical.
+
+7g: post-check `git status --short` = exactly the seven owned files modified, nothing else; `ES_NAV_RECORD_R3.md` untracked.
+
+### Round 3 GAPS
+
+5. **G5 (checker refuses sparse trees by design):** `python -m scripts.check_template_site_sync` → `template↔site sync REFUSED: sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full`, rc 1. Both documented remedies are forbidden by this commission (`full` materializes `data/`; `add site` materializes the whole site tree). Scoped compensation with the checker's own law: its `check(root, fix=False)` on this tree — where `find_pairs` yields exactly the two materialized pairs — reported `pairs checked: ['account.js', 'theme.js']`, `diverged: []` (account.js byte-equal via `cmp`; theme.js equal to the `emit_theme_js` bake). The full-tree in-sync confirmation lands with CI on the pushed branch.
+6. **G6 (report-only addendum context, outside the commissioned six):** `tests/test_nav_submenu_icons.py` shows 5 failures in this lane vs round 2's recorded 3. The G1 trio fails unchanged (same 3 ids). The 2 extras are sparse-materialization artifacts, not base drift: `test_template_and_site_share_the_same_submenu_icon_markup` → `FileNotFoundError ... site/chat.html` (page not materialized in this lane); `test_all_rendered_menus_preserve_custom_icon_markup` → `assert 2 >= 3000` (icon-span floor counted over `site/**/*.html`, of which this lane materializes 2). Neither test's output mentions the release key (grep count 0), and both read only files this round never touches.
+
+### Round 3 DEVIATIONS
+
+6. D6: the packet's materialization command `git checkout -- site/theme.js site/account.js` was refused — both files carry the sparse `skip-worktree` bit (`git ls-files -v` → `S`), so git answers `error: pathspec 'site/theme.js' did not match any file(s) known to git`. Remedy performed in-session: `git update-index --no-skip-worktree` on exactly the authorized paths, then the checkout. The script's own opt-in (`worktree_sparse.py add site`) was rejected as dir-granular (whole site tree).
+7. D7: materialized 7 further read-only HEAD-exact site files beyond the packet's two (`site/start.html`, `site/macro.html`, `site/navigation-refresh.css`, `site/nav_market.js`, `site/logo_config.js`, `site/stock-logos.js`, `site/product-nav-icons.css`) because the commissioned test modules read them at collection or assert them as byte pairs. All are `git checkout --`-materialized, tracked-unmodified (post-check status clean), never staged; committed site paths remain exactly `site/theme.js` + `site/account.js`.
+8. D8: installed `fastapi` + `httpx` into the lane Python env via pip (matching `.github/workflows/ci-main-heartbeat.yml`'s install line, unpinned) — `tests/test_account_actions.py` imports fastapi at module level and the lane env lacked it; no repo file changed.
+9. D9: item 7c's literal baseline ("round 2's recorded set (G1 ×3 + G4)") is not reproducible within the commissioned six-file command because the G1 trio's suite is not among them. Resolved conservatively: ran 7a verbatim (empty failure set) and verified the G1 trio separately in a labeled report-only addendum run (G6). Acceptance intent honored: G4 gone, nothing new in the commissioned set.
+
 ## VERDICT
 
 See `ES_NAV_RECORD.md` at the worktree root (untracked, per commission). Copy appended below at commit time if not already present.
