@@ -27,6 +27,13 @@ _SURFACES = frozenset({"brain", "mcp"})
 _SEARCH_FILTER_KEYS = frozenset({"institution", "date_from", "date_to"})
 _FETCH_SELECTOR_KEYS = frozenset({"segment_start", "max_segments"})
 _HEX = frozenset("0123456789abcdef")
+# Guard verdicts that name a provider rather than the whole vault. They are
+# reported as PRODUCER_STALE plus the matching degradation code, so the public
+# SOURCE_STATES vocabulary stays closed while the provider stays identifiable.
+_PROVIDER_SOURCE_VERDICTS = {
+    "MARKETDESK_STALE": "MARKETDESK_STALE",
+    "MARKETDESK_CLOCK_MISSING": "MARKETDESK_CLOCK_MISSING",
+}
 
 SEARCH_LIMIT_MAX = 50
 QUERY_MAX_CHARS = 500
@@ -249,10 +256,20 @@ class ResearchReadService:
         )
         if catalog is None:
             return unavailable
+        provider: str | None = None
         try:
             report = self._classifier()(catalog, now=now, source="catalog")
             status = report["status"]
-            if status not in read_port.SOURCE_STATES:
+            # A provider-specific guard verdict (the vault-wide max stayed young
+            # while MarketDesk went silent) is a real source-content staleness
+            # event, so it reports PRODUCER_STALE inside the existing closed
+            # vocabulary and carries its provider type as a degradation. Mapping
+            # it to CATALOG_UNAVAILABLE would be false -- the catalog is
+            # perfectly readable, its provider is just overdue.
+            provider = _PROVIDER_SOURCE_VERDICTS.get(status)
+            if provider is not None:
+                status = "PRODUCER_STALE"
+            elif status not in read_port.SOURCE_STATES:
                 return unavailable
         except Exception:
             return unavailable
@@ -260,6 +277,8 @@ class ResearchReadService:
         degradation: list[str] = []
         if status == "PRODUCER_STALE":
             degradation.append("PRODUCER_STALE")
+        if provider is not None:
+            degradation.append(provider)
         try:
             if catalog_mod.health(dict(catalog), now)["state"] == "stale":
                 if "PRODUCER_STALE" not in degradation:

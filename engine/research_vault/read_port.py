@@ -80,6 +80,12 @@ DEGRADATION_CODES = frozenset({
     "METADATA_PARTIAL",
     "SCAN_NO_TEXT",
     "INDEX_REBUILD_PENDING",
+    # Provider-scoped source verdicts from the freshness guard. These are
+    # DEGRADATIONS, not new SOURCE_STATES: the public read vocabulary stays
+    # closed, and a consumer learns WHICH provider is stale by reading
+    # known_degradation alongside a PRODUCER_STALE state.
+    "MARKETDESK_STALE",
+    "MARKETDESK_CLOCK_MISSING",
 })
 
 _MAX_TEXT_BYTES = 24_000
