@@ -1026,3 +1026,719 @@ def test_batch_unequal_scan_identity_sets_withhold_without_retry_or_truncation()
 def test_batch_refuses_ambiguous_clocks_future_captures_or_unknown_policy(field, value):
     with pytest.raises(TiingoViewRefusal):
         batch_assessment(**{field: value})
+
+
+
+import gzip
+import io
+import json
+import os
+from pathlib import Path
+
+import pytest
+
+import collectors.tiingo_archive as archive_module
+from lib.dataos.tiingo_reader import read_research_view
+from scripts.tiingo_materialize import (
+    BoundedTiingoRead,
+    materialize_one,
+)
+
+
+@pytest.fixture
+def bounded_root(tmp_path, monkeypatch):
+    # A canonical fixture root; separate tests supply an actual symlink spelling.
+    mount = tmp_path.resolve()
+    monkeypatch.setattr(archive_module, "EXTERNAL_MOUNT", mount)
+    root = mount / "archive"
+    root.mkdir()
+    return root
+
+
+def test_held_directory_distinguishes_absence_and_keeps_all_names(bounded_root):
+    folder = bounded_root / "receipts"
+    folder.mkdir()
+    for name in ("one.json", ".incoming-x", "not-json"):
+        (folder / name).write_bytes(b"{}")
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        with context.directory(("receipts",)) as fd:
+            with os.scandir(fd) as entries:
+                assert {entry.name for entry in entries} == {
+                    "one.json", ".incoming-x", "not-json"
+                }
+        with pytest.raises(FileNotFoundError):
+            with context.directory(("absent",)):
+                pytest.fail("missing directory unexpectedly opened")
+        context.verify_bindings()
+
+
+@pytest.mark.parametrize("position", ["root", "ancestor", "leaf"])
+def test_no_follow_refuses_even_valid_symlink_target(bounded_root, position):
+    outside = bounded_root.parent / "outside"
+    outside.mkdir()
+    (outside / "item.json").write_bytes(b'{"value":1}')
+    if position == "root":
+        alias = bounded_root.parent / "root-alias"
+        alias.symlink_to(bounded_root, target_is_directory=True)
+        with pytest.raises(OSError):
+            BoundedTiingoRead(alias, check_mount=False)
+        return
+    if position == "ancestor":
+        (bounded_root / "alias").symlink_to(outside, target_is_directory=True)
+        selected = ("alias", "item.json")
+    else:
+        (bounded_root / "alias.json").symlink_to(outside / "item.json")
+        selected = ("alias.json",)
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        with pytest.raises(OSError) as caught:
+            context.read_metadata(selected)
+        assert not isinstance(caught.value, FileNotFoundError)
+        assert context.used["metadata"] == 0
+
+
+def test_fifo_is_refused_without_a_blocking_read(bounded_root):
+    os.mkfifo(bounded_root / "pipe.json")
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        with pytest.raises(archive_module.TiingoArchiveError, match="regular file"):
+            context.read_metadata(("pipe.json",))
+        assert context.used["metadata"] == 0
+
+
+def test_metadata_budget_counts_actual_repeated_reads(bounded_root):
+    (bounded_root / "one.json").write_bytes(b"{}")
+    with BoundedTiingoRead(bounded_root, check_mount=False, metadata_limit=4) as context:
+        assert context.read_metadata(("one.json",)) == {}
+        assert context.read_metadata(("one.json",)) == {}
+        assert context.used["metadata"] == 4
+        with pytest.raises(archive_module.TiingoArchiveError, match="allowance"):
+            context.read_metadata(("one.json",))
+
+
+@pytest.mark.parametrize("body", [b'{"same":1,"same":2}', b'{"x":NaN}', b"[]"])
+def test_ambiguous_or_nonobject_metadata_is_not_a_receipt(bounded_root, body):
+    (bounded_root / "bad.json").write_bytes(body)
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        with pytest.raises(archive_module.TiingoArchiveError):
+            context.read_metadata(("bad.json",))
+
+
+def test_absent_optional_file_cannot_appear_unnoticed(bounded_root):
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        assert context.read_metadata(("later.json",), missing_ok=True) is None
+        (bounded_root / "later.json").write_bytes(b"{}")
+        with pytest.raises(archive_module.TiingoArchiveError, match="binding changed"):
+            context.verify_bindings()
+
+
+def test_identical_bytes_at_replacement_inode_are_disclosed(bounded_root):
+    selected = bounded_root / "one.json"
+    selected.write_bytes(b"{}")
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        assert context.read_metadata(("one.json",)) == {}
+        replacement = bounded_root / "replacement"
+        replacement.write_bytes(b"{}")
+        os.replace(replacement, selected)
+        with pytest.raises(archive_module.TiingoArchiveError, match="binding changed"):
+            context.verify_bindings()
+
+
+def test_in_place_mutation_during_read_is_refused(bounded_root, monkeypatch):
+    selected = bounded_root / "one.json"
+    selected.write_bytes(b'{"x":0}')
+    with BoundedTiingoRead(bounded_root, check_mount=False) as context:
+        original = context._bounded_stream
+
+        def mutate_after_read(fp, kind, limit):
+            result = original(fp, kind, limit)
+            selected.write_bytes(b'{"x":1000}')
+            return result
+
+        monkeypatch.setattr(context, "_bounded_stream", mutate_after_read)
+        with pytest.raises(archive_module.TiingoArchiveError, match="while being read"):
+            context.read_metadata(("one.json",))
+
+
+def test_raw_budget_is_aggregate_across_distinct_files(bounded_root):
+    for name in ("one.gz", "two.gz"):
+        (bounded_root / name).write_bytes(gzip.compress(b"1234", mtime=0))
+    with BoundedTiingoRead(bounded_root, check_mount=False, raw_limit=7) as context:
+        assert context.read_raw_gzip(("one.gz",), expected_raw_bytes=4) == b"1234"
+        with pytest.raises(archive_module.TiingoArchiveError, match="remaining allowance"):
+            context.read_raw_gzip(("two.gz",), expected_raw_bytes=4)
+        assert context.used["raw"] == 4
+
+
+def test_claimed_small_raw_length_cannot_hide_expansion(bounded_root, monkeypatch):
+    (bounded_root / "raw.gz").write_bytes(gzip.compress(b"A" * 100_000, mtime=0))
+    # Measure actual decoded data below GzipFile's buffering layer. Merely
+    # checking the wrapper's returned-byte count would miss decoded read-ahead.
+    decoded_lengths = []
+    original = gzip._GzipReader.read
+
+    def observe_decoder(self, size=-1):
+        decoded = original(self, size)
+        decoded_lengths.append(len(decoded))
+        return decoded
+
+    monkeypatch.setattr(gzip._GzipReader, "read", observe_decoder)
+    with BoundedTiingoRead(bounded_root, check_mount=False, raw_limit=8) as context:
+        with pytest.raises(archive_module.TiingoArchiveError, match="allowance"):
+            context.read_raw_gzip(("raw.gz",), expected_raw_bytes=4)
+        assert context.used["raw"] == 5  # four allowed bytes plus one refusal sentinel
+        assert sum(decoded_lengths) == 5
+
+
+def test_compressed_guard_precedes_decompression(bounded_root):
+    body = gzip.compress(b"1234", mtime=0)
+    (bounded_root / "raw.gz").write_bytes(body)
+    with BoundedTiingoRead(
+        bounded_root, check_mount=False, compressed_limit=len(body) - 1
+    ) as context:
+        with pytest.raises(archive_module.TiingoArchiveError, match="allowance"):
+            context.read_raw_gzip(("raw.gz",), expected_raw_bytes=4)
+        assert context.used["raw"] == 0
+
+
+def test_encoded_normalized_budget_is_separate_and_aggregate(bounded_root):
+    (bounded_root / "one.parquet").write_bytes(b"123")
+    (bounded_root / "two.parquet").write_bytes(b"456")
+    with BoundedTiingoRead(bounded_root, check_mount=False, normalized_limit=5) as context:
+        assert context.read_normalized(("one.parquet",)) == b"123"
+        with pytest.raises(archive_module.TiingoArchiveError, match="allowance"):
+            context.read_normalized(("two.parquet",))
+        assert context.used["normalized"] == 3
+        assert context.used["raw"] == 0
+
+
+@pytest.fixture
+def materialized_view(bounded_root):
+    archive = archive_module.Archive(bounded_root, check_mount=False, free_floor=0)
+    saved = archive.store_response(
+        "eod-bars", "AMD", archive_module.request_path("eod-bars", "AMD"),
+        b'[{"date":"2019-01-03","close":22,"adjClose":18}]',
+        received_at="2026-10-09T05:00:00+00:00",
+    )
+    receipt_path = next((bounded_root / "receipts").rglob("*.json"))
+    receipt = json.loads(receipt_path.read_text())
+    assert materialize_one(bounded_root, receipt, free_floor=0)["status"] == "WRITTEN"
+    return bounded_root, saved, receipt_path, receipt
+
+
+def test_optional_reader_preserves_the_legacy_exact_view(materialized_view):
+    root, saved, receipt_path, _receipt = materialized_view
+    legacy = read_research_view(
+        "eod-bars", "2026-10-09", saved["raw_sha256"],
+        root=root, check_mount=False,
+    )
+    with BoundedTiingoRead(root, check_mount=False) as context:
+        strict = read_research_view(
+            "eod-bars", "2026-10-09", saved["receipt_id"],
+            root=root, check_mount=False, receipt_path=receipt_path,
+            read_context=context,
+        )
+        context.verify_bindings()
+        assert strict == legacy
+        assert strict.authority == "RESEARCH_ONLY_VENDOR_SOURCE"
+        assert strict.pit_backtest_eligible is False
+
+
+def test_parquet_parser_consumes_verified_snapshot_and_later_change_withholds(
+    materialized_view, monkeypatch
+):
+    import pyarrow.parquet as pq
+
+    root, saved, receipt_path, _receipt = materialized_view
+    target = next((root / "normalized").rglob("*.parquet"))
+    original = pq.ParquetFile
+
+    def replace_after_snapshot(source, *args, **kwargs):
+        assert isinstance(source, io.BytesIO)
+        target.write_bytes(b"not the verified parquet")
+        return original(source, *args, **kwargs)
+
+    monkeypatch.setattr(pq, "ParquetFile", replace_after_snapshot)
+    with BoundedTiingoRead(root, check_mount=False) as context:
+        result = read_research_view(
+            "eod-bars", "2026-10-09", saved["receipt_id"],
+            root=root, check_mount=False, receipt_path=receipt_path,
+            read_context=context,
+        )
+        assert result.rows[0]["close_raw"] == 22
+        with pytest.raises(archive_module.TiingoArchiveError, match="binding changed"):
+            context.verify_bindings()
+
+# Bounded archive census regressions use real temporary retained artifacts.
+from pathlib import Path
+import os
+import lib.dataos.tiingo_forex as census_fx
+import scripts.tiingo_materialize as census_materializer
+
+
+_CENSUS_ASSESSED = "2026-10-21T08:04:00Z"
+_CENSUS_ADMISSION_FLAGS = (
+    "monitoring_admitted", "dataos_identity_admitted",
+    "pit_backtest_eligible", "redistribution_admitted",
+)
+
+
+@pytest.fixture
+def census_lake(tmp_path, monkeypatch):
+    """Temporary retained evidence, with one explicit private assessment clock."""
+    mount = tmp_path.resolve()
+    monkeypatch.setattr(archive_owner, "EXTERNAL_MOUNT", mount)
+    monkeypatch.setattr(census_fx, "_census_now_utc", lambda: _CENSUS_ASSESSED)
+    lake = archive_owner.Archive(mount / "lake", check_mount=False, free_floor=0)
+
+    def retain(rows, *, pair="USDJPY", frequency="1min",
+               observed_at="2026-10-21T08:01:00Z", params=None, materialize=True):
+        query = {"resampleFreq": frequency, **(params or {})}
+        raw = json.dumps(rows, allow_nan=False).encode()
+        saved = lake.store_response(
+            "forex-bars", pair.lower(),
+            archive_owner.request_path("forex-bars", pair.lower(), query),
+            raw, received_at=observed_at,
+        )
+        day = archive_owner.capture_day(saved["observed_at_utc"])
+        stem = Path(saved["path"]).name.removesuffix(".raw.gz")
+        receipt_path = lake.root / "receipts" / "forex-bars" / day / (stem + ".json")
+        receipt = json.loads(receipt_path.read_text())
+        output = materialize_one(lake.root, receipt, free_floor=0) if materialize else None
+        return {"saved": saved, "receipt": receipt, "receipt_path": receipt_path,
+                "materialized": output, "raw": raw}
+
+    return lake, retain
+
+
+def _census_rows(count=240, *, start="2026-10-21T04:00:00Z", pair="USDJPY",
+                 step_minutes=1, base=149.0):
+    origin = datetime.fromisoformat(start.replace("Z", "+00:00"))
+    return [{
+        "ticker": pair.lower(),
+        "date": (origin + timedelta(minutes=index * step_minutes)).isoformat(),
+        "open": base + index / 1000,
+        "high": base + .02 + index / 1000,
+        "low": base - .02 + index / 1000,
+        "close": base + .005 + index / 1000,
+    } for index in range(count)]
+
+
+def _census_native_rows(minutes):
+    assert len(minutes) % 240 == 0
+    result = []
+    for offset in range(0, len(minutes), 240):
+        block = minutes[offset:offset + 240]
+        result.append({
+            "ticker": block[0]["ticker"], "date": block[0]["date"],
+            "open": block[0]["open"], "high": max(row["high"] for row in block),
+            "low": min(row["low"] for row in block), "close": block[-1]["close"],
+        })
+    return result
+
+
+def _census_seed_closed(fixture, *, pair="USDJPY"):
+    _lake, retain = fixture
+    minutes = _census_rows(pair=pair)
+    minute = retain(minutes, pair=pair)
+    native = retain(_census_native_rows(minutes), pair=pair, frequency="4hour",
+                    observed_at="2026-10-21T08:02:00Z")
+    return minutes, minute, native
+
+
+def _census_run(lake, *, pair="USDJPY", count=1):
+    return census_fx.read_forex_source_batch_candidate(
+        expected_pair=pair, consecutive=count,
+        policy_version=census_fx.BATCH_CANDIDATE_POLICY_VERSION,
+        root=lake.root, check_mount=False,
+    )
+
+
+def _census_file_hashes(root):
+    return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob("*") if path.is_file() and not path.is_symlink()}
+
+
+def _assert_census_no_admission(evidence):
+    assert evidence["eligible_observations"] == []
+    for flag in _CENSUS_ADMISSION_FLAGS:
+        assert evidence[flag] is False
+    for claim in ("atomic_census_proven", "global_inventory_completeness_proven",
+                  "owner_quiescence_independently_verified", "historical_availability_proven"):
+        assert evidence[claim] is False
+    assert evidence["product_use_approval"]["state"] == "COMPLETE"
+    assessment = evidence["assessment"]
+    if assessment is not None:
+        assert assessment["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+        assert assessment["eligible_observations"] == []
+        for flag in _CENSUS_ADMISSION_FLAGS:
+            assert assessment[flag] is False
+        assert assessment["inventory_evidence"]["atomic_census_proven"] is False
+    json.dumps(evidence, allow_nan=False)
+
+
+def test_observed_census_reads_dense_retained_views_without_admitting_or_writing(census_lake):
+    lake, _retain = census_lake
+    _minutes, minute, native = _census_seed_closed(census_lake)
+    before = _census_file_hashes(lake.root)
+
+    evidence = _census_run(lake)
+
+    assert evidence["state"] == "observed_census_complete_policy_unadopted"
+    assert evidence["schema"] == census_fx.BATCH_CENSUS_SCHEMA
+    assert evidence["capture_dates"] == ["2026-10-21"]
+    assert evidence["fixed_latest_interval_end_utc"] == "2026-10-21T08:00:00+00:00"
+    assert evidence["observed_scans_equal"] is True
+    assert len(evidence["scans"]) == 2
+    assert {scan["entry_count_before_filter"] for scan in evidence["scans"]} == {2}
+    assert evidence["scans"][0]["snapshot_sha256"] == evidence["scans"][1]["snapshot_sha256"]
+    assert {view["receipt_id"] for view in evidence["selected_views"]} == {
+        minute["saved"]["receipt_id"], native["saved"]["receipt_id"],
+    }
+    assert all(view["state"] == "exact_view_verified" for view in evidence["selected_views"])
+    assert evidence["selected_row_references"] == 241
+    assert all(evidence["byte_reads"][kind] > 0
+               for kind in ("metadata", "raw", "compressed", "normalized"))
+    assert evidence["assessment"]["batch_checks_satisfied"] is True
+    assert evidence["assessment"]["inventory_evidence"]["inventory_selection_consistent"] is True
+    assert _census_file_hashes(lake.root) == before
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_n10_scans_three_utc_capture_days_and_preserves_offset(census_lake):
+    lake, retain = census_lake
+    minutes = _census_rows(2400, start="2026-10-19T16:00:00Z")
+    natives = _census_native_rows(minutes)
+    retain(minutes)
+    # Literal date is October 20; its actual UTC capture partition is October 19.
+    first = retain(natives[:1], frequency="4hour", observed_at="2026-10-20T00:10:00+02:00")
+    retain(natives[1:7], frequency="4hour", observed_at="2026-10-20T23:59:00Z")
+    retain(natives[7:], frequency="4hour", observed_at="2026-10-21T08:02:00Z")
+
+    evidence = _census_run(lake, count=10)
+
+    assert evidence["capture_dates"] == ["2026-10-19", "2026-10-20", "2026-10-21"]
+    assert evidence["assessment"]["batch_checks_satisfied"] is True
+    assert len(evidence["assessment"]["slots"]) == 10
+    assert evidence["selected_row_references"] == 2410
+    assert [entry["state"] for entry in evidence["scans"][0]["directories"]] == ["observed"] * 3
+    for scan in evidence["scans"]:
+        item = next(item for item in scan["entries"]
+                    if item["receipt_id"] == first["saved"]["receipt_id"])
+        assert item["capture_day"] == "2026-10-19"
+        assert "/2026-10-19/" in item["path"]
+        assert item["source_observed_at_utc"] == "2026-10-20T00:10:00+02:00"
+    for slot in evidence["assessment"]["slots"][:-1]:
+        assert slot["role"] == "supporting"
+        assert slot["candidate_assessment"]["candidate_checks_satisfied"] is False
+        assert slot["supporting_checks_satisfied"] is True
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_counts_257_other_pair_entries_before_metadata_or_filtering(census_lake, monkeypatch):
+    lake, retain = census_lake
+    for index in range(257):
+        retain(_census_rows(1, pair="EURUSD", base=1.0 + index / 1000),
+               pair="EURUSD", materialize=False)
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("entry ceiling must be enforced before metadata or source-view reads")
+
+    monkeypatch.setattr(census_materializer.BoundedTiingoRead, "read_metadata", forbidden)
+    monkeypatch.setattr(census_fx, "read_research_view", forbidden)
+    with pytest.raises(TiingoViewRefusal, match="entry cap") as caught:
+        _census_run(lake)
+
+    evidence = caught.value.census_evidence
+    assert evidence["state"] == "refused"
+    assert evidence["scans"][0]["entry_count_before_filter"] == 257
+    assert evidence["scans"][0]["entries"] == []
+    assert evidence["selected_views"] == []
+    assert evidence["byte_reads"]["metadata"] == 0
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_cannot_filter_away_malformed_other_pair_receipt(census_lake, monkeypatch):
+    lake, retain = census_lake
+    _census_seed_closed(census_lake)
+    other = retain(_census_rows(1, pair="EURUSD"), pair="EURUSD")
+    record = dict(other["receipt"])
+    record["raw_bytes"] = "not-an-integer"
+    record["receipt_id"] = archive_owner.receipt_identity(record)
+    other["receipt_path"].write_text(json.dumps(record))
+    monkeypatch.setattr(census_fx, "read_research_view",
+                        lambda *_a, **_k: pytest.fail("malformed census reached view acquisition"))
+
+    with pytest.raises(TiingoViewRefusal, match="metadata") as caught:
+        _census_run(lake)
+
+    evidence = caught.value.census_evidence
+    assert evidence["scans"][0]["entry_count_before_filter"] == 3
+    relative = other["receipt_path"].relative_to(lake.root).as_posix()
+    assert any(item["path"] == relative and item["state"] == "unverified"
+               for item in evidence["scans"][0]["entries"])
+    assert evidence["selected_views"] == []
+    _assert_census_no_admission(evidence)
+
+
+@pytest.mark.parametrize("frequency", ["1min", "4hour"])
+def test_observed_census_refuses_tenth_selected_reference_before_any_view(census_lake, monkeypatch, frequency):
+    lake, retain = census_lake
+    for index in range(10):
+        retain(_census_rows(1, base=149 + index / 1000), frequency=frequency)
+    monkeypatch.setattr(census_fx, "read_research_view",
+                        lambda *_a, **_k: pytest.fail("selected reference cap was enforced after a view read"))
+
+    with pytest.raises(TiingoViewRefusal, match="selected-reference cap") as caught:
+        _census_run(lake)
+
+    evidence = caught.value.census_evidence
+    assert len(evidence["scans"][0]["entries"]) == 10
+    assert all(item["selection"] == "selected" for item in evidence["scans"][0]["entries"])
+    assert evidence["selected_views"] == []
+    assert evidence["byte_reads"]["metadata"] > 0
+    assert evidence["byte_reads"]["raw"] == evidence["byte_reads"]["normalized"] == 0
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_passes_native_128_row_cap_into_the_real_reader(census_lake, monkeypatch):
+    lake, retain = census_lake
+    retain(_census_rows(129, start="2026-09-01T00:00:00Z", step_minutes=240), frequency="4hour")
+    real_read = census_fx.read_research_view
+    caps = []
+
+    def observe_read(*args, **kwargs):
+        caps.append(kwargs["max_rows"])
+        assert kwargs["read_context"] is not None
+        return real_read(*args, **kwargs)
+
+    monkeypatch.setattr(census_fx, "read_research_view", observe_read)
+    with pytest.raises(TiingoViewRefusal, match="row cap") as caught:
+        _census_run(lake)
+
+    assert caps == [128]
+    evidence = caught.value.census_evidence
+    assert evidence["selected_row_references"] == 0
+    assert evidence["byte_reads"]["normalized"] > 0
+    assert evidence["byte_reads"]["raw"] > 0
+    assert evidence["selected_views"][0]["state"] == "acquiring"
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_passes_remaining_row_budget_into_each_real_read(census_lake, monkeypatch):
+    lake, retain = census_lake
+    retain(_census_rows(3))
+    retain(_census_rows(3, base=150))
+    monkeypatch.setattr(census_fx, "MAX_BATCH_INPUT_ROWS", 5)
+    real_read = census_fx.read_research_view
+    caps = []
+
+    def observe_read(*args, **kwargs):
+        caps.append(kwargs["max_rows"])
+        return real_read(*args, **kwargs)
+
+    monkeypatch.setattr(census_fx, "read_research_view", observe_read)
+    with pytest.raises(TiingoViewRefusal, match="row cap") as caught:
+        _census_run(lake)
+
+    assert caps == [5, 2]
+    evidence = caught.value.census_evidence
+    assert evidence["selected_row_references"] == 3
+    assert [item["state"] for item in evidence["selected_views"]] == ["exact_view_verified", "acquiring"]
+    assert evidence["assessment"] is None
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_retains_late_correction_despite_misleading_request_dates(census_lake):
+    lake, retain = census_lake
+    minutes, original, _native = _census_seed_closed(census_lake)
+    corrected = copy.deepcopy(minutes)
+    corrected[100]["close"] += .001  # Same aggregate OHLC; a real closed-minute change.
+    correction = retain(corrected, observed_at="2026-10-21T08:03:00Z",
+                        params={"startDate": "2010-01-01", "endDate": "2010-01-02"})
+
+    evidence = _census_run(lake)
+
+    correction_id = correction["saved"]["receipt_id"]
+    assert evidence["state"] == "observed_census_complete_policy_unadopted"
+    assert evidence["assessment"]["batch_checks_satisfied"] is False
+    assert any(item["receipt_id"] == correction_id and item["selection"] == "selected"
+               for item in evidence["scans"][0]["entries"])
+    inventory = {item["source"]["source_receipt_id"]: item["source"]
+                 for item in evidence["assessment"]["input_inventory"]}
+    assert "startDate=2010-01-01" in inventory[correction_id]["source_request_path"]
+    assert inventory[correction_id]["source_observed_at_utc"] == "2026-10-21T08:03:00Z"
+    minute_check = evidence["assessment"]["slots"][0]["minute_vintage_check"]
+    assert {original["saved"]["receipt_id"], correction_id} <= set(minute_check["compared_closed_receipt_ids"])
+    assert minute_check["conflicting_closed_receipt_ids"]
+    assert minute_check["supplied_closed_minute_values_consistent"] is False
+    assert evidence["assessment"]["comparison_semantics"]["correction_selection"] is False
+    _assert_census_no_admission(evidence)
+
+
+@pytest.mark.parametrize("mutation", ["add", "remove", "change"])
+def test_observed_census_second_scan_records_real_inventory_mutation(census_lake, monkeypatch, mutation):
+    lake, retain = census_lake
+    _census_seed_closed(census_lake)
+    other = retain(_census_rows(1, pair="EURUSD"), pair="EURUSD")
+    old_bytes = other["receipt_path"].read_bytes()
+    old_hash = hashlib.sha256(old_bytes).hexdigest()
+    real_scan = census_fx._scan_forex_receipts
+    scans = 0
+    added = []
+
+    def observe_scan(*args, **kwargs):
+        nonlocal scans
+        scans += 1
+        if scans == 2:
+            if mutation == "add":
+                added.append(retain(_census_rows(1, pair="GBPUSD"), pair="GBPUSD",
+                                    observed_at="2026-10-21T08:03:00Z", materialize=False))
+            elif mutation == "remove":
+                other["receipt_path"].unlink()
+            else:
+                changed = dict(other["receipt"])
+                changed["record_count_hint"] += 1
+                changed["receipt_id"] = archive_owner.receipt_identity(changed)
+                other["receipt_path"].write_text(json.dumps(changed, sort_keys=True))
+        return real_scan(*args, **kwargs)
+
+    monkeypatch.setattr(census_fx, "_scan_forex_receipts", observe_scan)
+    monkeypatch.setattr(census_fx, "assess_forex_source_batch_candidate",
+                        lambda *_a, **_k: pytest.fail("unstable observed evidence reached candidate assessment"))
+    if mutation == "add":
+        evidence = _census_run(lake)
+        assert evidence["state"] == "withheld"
+        assert "observed_receipt_inventory_changed" in evidence["withheld_reasons"]
+        assert evidence["observed_scans_equal"] is False
+        assert [scan["entry_count_before_filter"] for scan in evidence["scans"]] == [3, 4]
+        added_id = added[0]["saved"]["receipt_id"]
+        assert added_id not in {item["receipt_id"] for item in evidence["scans"][0]["entries"]}
+        assert added_id in {item["receipt_id"] for item in evidence["scans"][1]["entries"]}
+    else:
+        # The descriptor-bound reader may refuse before a second complete digest;
+        # that refusal must still expose the observations actually made.
+        with pytest.raises(TiingoViewRefusal, match="changed|disappeared") as caught:
+            _census_run(lake)
+        evidence = caught.value.census_evidence
+        assert evidence["state"] == "refused"
+        assert evidence["scans"][0]["entry_count_before_filter"] == 3
+        relative = other["receipt_path"].relative_to(lake.root).as_posix()
+        original_item = next(item for item in evidence["scans"][0]["entries"] if item["path"] == relative)
+        original_record = json.loads(old_bytes)
+        canonical_hash = hashlib.sha256(json.dumps(original_record, sort_keys=True,
+            separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+        assert original_item["receipt_metadata_sha256"] == canonical_hash
+        if mutation == "remove":
+            assert not other["receipt_path"].exists()
+            assert evidence["scans"][1]["entry_count_before_filter"] == 2
+            assert relative not in {item["path"] for item in evidence["scans"][1]["entries"]}
+            assert evidence["observed_scans_equal"] is False
+        else:
+            assert hashlib.sha256(other["receipt_path"].read_bytes()).hexdigest() != old_hash
+            assert evidence["scans"][1]["entry_count_before_filter"] == 3
+            assert any(item["path"] == relative and item["state"] == "unverified"
+                       for item in evidence["scans"][1]["entries"])
+    assert scans == 2
+    assert len(evidence["scans"]) == 2
+    assert evidence["assessment"] is None
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_withholds_if_assessment_crosses_its_fixed_boundary(census_lake, monkeypatch):
+    lake, retain = census_lake
+    minutes = _census_rows(start="2026-10-21T00:00:00Z")
+    retain(minutes, observed_at="2026-10-21T04:01:00Z")
+    retain(_census_native_rows(minutes), frequency="4hour", observed_at="2026-10-21T04:02:00Z")
+    # Invocation, both scan boundaries and verification precede 08:00;
+    # assessment reaches the next slot. No older-window fallback is allowed.
+    clocks = iter(["2026-10-21T07:59:59Z"] * 6 + ["2026-10-21T08:00:00Z"])
+    monkeypatch.setattr(census_fx, "_census_now_utc", lambda: next(clocks))
+    monkeypatch.setattr(census_fx, "assess_forex_source_batch_candidate",
+                        lambda *_a, **_k: pytest.fail("a shifted anchor reached candidate assessment"))
+
+    evidence = _census_run(lake)
+
+    assert evidence["state"] == "withheld"
+    assert evidence["fixed_latest_interval_end_utc"] == "2026-10-21T04:00:00+00:00"
+    assert evidence["assessed_at_utc"] == "2026-10-21T08:00:00Z"
+    assert evidence["observed_scans_equal"] is True
+    assert evidence["withheld_reasons"] == ["assessment_crossed_fixed_four_hour_boundary"]
+    assert evidence["assessment"] is None
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_does_not_synthesize_a_view_for_retained_empty_raw(census_lake):
+    lake, retain = census_lake
+    empty = retain([])
+    assert empty["materialized"]["status"] == "EMPTY_NORMALIZED"
+    before = _census_file_hashes(lake.root)
+
+    evidence = _census_run(lake)
+
+    assert evidence["state"] == "withheld"
+    assert evidence["withheld_reasons"] == ["selected_materialized_view_unavailable"]
+    assert evidence["selected_row_references"] == 0
+    assert evidence["selected_views"] == [{
+        "path": empty["receipt_path"].relative_to(lake.root).as_posix(),
+        "receipt_id": empty["saved"]["receipt_id"], "frequency": "1min",
+        "state": "materialized_view_unavailable", "empty_payload_proven": False,
+    }]
+    assert evidence["assessment"] is None
+    assert evidence["byte_reads"]["raw"] == evidence["byte_reads"]["normalized"] == 0
+    assert _census_file_hashes(lake.root) == before
+    _assert_census_no_admission(evidence)
+
+
+def test_observed_census_preserves_literal_cnh_and_excludes_cny_without_aliasing(census_lake):
+    lake, retain = census_lake
+    _minutes, minute, native = _census_seed_closed(census_lake, pair="USDCNH")
+    cny = retain(_census_rows(1, pair="USDCNY"), pair="USDCNY")
+
+    evidence = _census_run(lake, pair="USDCNH")
+
+    assert evidence["assessment"]["batch_checks_satisfied"] is True
+    assert evidence["pair_candidate"] == "USDCNH"
+    assert {item["receipt_id"] for item in evidence["selected_views"]} == {
+        minute["saved"]["receipt_id"], native["saved"]["receipt_id"],
+    }
+    item = next(item for item in evidence["scans"][0]["entries"]
+                if item["receipt_id"] == cny["saved"]["receipt_id"])
+    assert item["pair"] == "USDCNY"
+    assert item["selection"] == "other_literal_pair_or_frequency"
+    projection = evidence["assessment"]["slots"][0]["candidate_projection"]
+    assert projection["literal_pair"] == "USDCNH"
+    assert projection["quote_units_per_base_unit"] == "CNH per USD"
+    _assert_census_no_admission(evidence)
+
+
+@pytest.mark.parametrize("kind", ["directory", "fifo", "symlink_file", "symlink_directory"])
+def test_observed_census_rejects_nonregular_entries_before_metadata(census_lake, monkeypatch, kind):
+    lake, _retain = census_lake
+    parent = lake.root / "receipts" / "forex-bars" / "2026-10-21"
+    parent.mkdir(parents=True, exist_ok=True)
+    entry = parent / ("0" * 16 + "-" + "0" * 24 + ".json")
+    if kind == "directory":
+        entry.mkdir()
+    elif kind == "fifo":
+        os.mkfifo(entry)
+    elif kind == "symlink_file":
+        target = lake.root.parent / "outside-receipt.json"
+        target.write_text("{}")
+        entry.symlink_to(target)
+    else:
+        target = lake.root.parent / "outside-receipt-directory"
+        target.mkdir()
+        entry.symlink_to(target, target_is_directory=True)
+    monkeypatch.setattr(census_materializer.BoundedTiingoRead, "read_metadata",
+                        lambda *_a, **_k: pytest.fail("nonregular entry reached metadata read"))
+
+    with pytest.raises(TiingoViewRefusal, match="nonregular") as caught:
+        _census_run(lake)
+
+    evidence = caught.value.census_evidence
+    assert evidence["scans"][0]["entry_count_before_filter"] == 1
+    assert evidence["scans"][0]["entries"] == [{
+        "path": entry.relative_to(lake.root).as_posix(), "state": "unverified",
+    }]
+    assert evidence["selected_views"] == []
+    assert evidence["byte_reads"]["metadata"] == 0
+    _assert_census_no_admission(evidence)

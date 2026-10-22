@@ -1,5 +1,35 @@
 # Forex R26 — bounded batch candidate contract
 
+## Observed exact-reader census — implemented and qualified on 22 October 2026
+
+Entry: read_forex_source_batch_candidate(expected_pair, consecutive, policy_version, root, check_mount). Evidence schema: mastermind.tiingo.forex_batch_observed_census.v1. It calls the unchanged pure assessor only after successful bounded acquisition. Existing reader/materializer behavior with read_context=None is preserved.
+
+The existing materializer owner now exposes BoundedTiingoRead. It opens the original absolute lexical root and components with directory descriptors and no symlink following, then applies the incumbent mount policy. All later directory/leaf access is descriptor-relative, regular-file and same-device checked. Strict JSON refuses duplicate keys/nonfinite values/non-object metadata. Exact Parquet verification and parsing use the same byte snapshot; no subsequent pathname reopen supplies the parser. Gzip uses bounded decoded read1 calls. Before/after file identity and final named-binding observations detect the covered replacement cases; they create no lock or transaction.
+
+| Acquisition boundary | Contract |
+| --- | --- |
+| Capture-date scope | Real start clock fixes the current UTC4H end. Scan earliest required end's date through the current UTC date; at most3 capture dates for consecutive1–10. Request market dates do not prune late-captured corrections. |
+| Entries | Count every directory entry before filtering/deduplication; maximum256 per scan. Unexpected temporary names, special files and invalid receipt metadata refuse instead of disappearing from the census. Validate every observed entry before excluding another literal pair/frequency. |
+| Metadata bytes | At most16MiB aggregate and1,000,000 bytes per metadata file. |
+| Other evidence bytes | Separate64MiB budgets for decoded raw, compressed raw and encoded normalized input. At most one refusal sentinel is charged beyond a limit. These are not process-memory, CPU or decoded-Parquet-allocation bounds. |
+| Selected views | All observed literal-pair1min/4hour receipts; maximum9 per frequency before deduplication. Exact receipt path and identity, never a glob fallback. At most20,000 minute rows,128 native rows,100,000 selected row references total. |
+| Unavailable materialization | A raw-only/missing normalized view stays explicitly unavailable. No materializer is run and empty_payload_proven stays false. |
+| Concurrent publication | A second observed scan includes full paths and metadata identity fingerprints; actual final binding, verification and assessment clocks follow. Changed observations or a4H boundary crossing withhold. No automatic rescan or older-sequence fallback. |
+
+Every scan's entry dispositions and original response clocks are retained. Equal scans cannot exclude a transient change between scans, later publication, out-of-scope evidence or an omitted vendor correction. Final binding checks do not reread every byte. atomic_census_proven, global_inventory_completeness_proven, owner_quiescence_independently_verified and historical_availability_proven remain false.
+
+### Executed qualification and actual outcome
+
+The four source suites passed328 tests in9.11s (9.778s command wall time), completed12:21:12UTC. The separate existing-owner closure check passed1 test in146.34s, completed12:28:07UTC. Source stayed unchanged through both runs and the actual acquisition. The pure batch-assessor parent prefix is byte-identical. These tests qualify the implementation boundary; they are not accepted independent source review.
+
+The single actual retained-archive acquisition began12:23:40.208249UTC and completed12:23:40.457022UTC. Both scans observed22 entries for capture date2026-10-22. One1min receipt supplied1438rows and one4hour receipt supplied6rows. Actual verification was12:23:40.287017UTC; assessment12:23:40.287033UTC. Required ends08:00 and12:00 were unsupported. State observed_census_complete_policy_unadopted describes acquisition completion; batch checks remained false, eligible observations empty and monitoring false. This does not establish that Tiingo lacks current data elsewhere.
+
+Actual evidence-byte counters: metadata45,490; decoded raw167,152; compressed16,872; normalized37,365. No provider call, capture, materializer invocation or archive mutation occurred. Compact receipts preserve all22 metadata dispositions per scan and exact identities without licensed price rows.
+
+See evidence/observed_census_qualification_20261022.json and evidence/observed_census_readback_20261022.json. The original failed Fabric review remains unqualified; it was not replayed. Licensing/intended product use is COMPLETE by Chairman attestation. Source adoption, genuine current-slot support and revision-safe downstream admission remain separate existing-owner gates.
+
+## Retained pure-assessment contract and earlier qualification
+
 Policy: tiingo-forex-local-close-batch-candidate/1
 Result schema: mastermind.tiingo.forex_source_batch_candidate.v1
 Inventory declaration: mastermind.tiingo.forex_batch_inventory_evidence.v1
@@ -44,7 +74,7 @@ selected_receipt_ids must exactly match the supplied unique views by1min/4hour f
 
 Missing declaration reports selection consistency and two-scan equality as unknown. Equal declared sets report their equality only. atomic_census_proven, global_inventory_completeness_proven and owner_quiescence_independently_verified remain false. Changed scan sets withhold batch checks. The pure function cannot detect a receipt omitted from both the declaration and input views.
 
-A future exact-reader census needs the capture-day, path, metadata, raw-byte and concurrent-publication boundaries in MASTER_PLAN.md before any wider completeness claim.
+The observed exact-reader census above implements these acquisition boundaries; it still makes no wider completeness claim.
 
 ## Authority
 

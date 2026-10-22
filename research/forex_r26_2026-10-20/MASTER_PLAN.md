@@ -1,5 +1,43 @@
 # Forex R26 and Bonds — master completion plan
 
+## Current recovery checkpoint — 22 October 2026, after 12:28 UTC
+
+**Both broader projects remain open. The bounded Forex census is implemented and source-qualified; it has not admitted a source or monitoring.** Tiingo licensing and intended R26 product use remain COMPLETE by Chairman special-license attestation. No licensing email or support outreach is required.
+
+The protected compatible procedure pin remains Mastermind@230e9a301ed774e79410829f1b5c049226fa59f1. Continue the same owner PRs, workspaces and original operations. The canonical comments linked below resolve later publication/CI state; historical sections preserve earlier accepted evidence without claiming it covers changed source.
+
+| Existing owner | Current evidence and exact next step |
+| --- | --- |
+| Forex #10052 | Parent537dfc4124731d704770aa6e110943ee220809fc has green CI39765457291. This descendant appends the observed census and opts exact reads into bounded descriptor-based acquisition; the pure assessor prefix is byte-identical. Four source suites passed328 tests in9.11s; the separate incumbent closure guard passed1 test in146.34s. Publish this exact descendant to the same branch, consume its automatic CI once, retain the unqualified original Fabric review. |
+| Forex retained acquisition | Actual read-only call at12:23:40UTC scanned capture day2026-10-22 twice:22 entries each, identical metadata/path fingerprint6320b69cb9832e4b64beade4dc6d5a814679e19f0c2851d27bd14a08588d9696. One1min view1438rows and one4hour view6rows were selected. Neither required08:00/12:00 close qualified. Eligible observations remain empty; monitoring/adoption remain false. |
+| R11 #8241 | Published04b13fbbae71f109f23f8b43ad1a5fa59ee75151 preserves the243-test source/artifact union and native491-input proof. Current-main ce93903889ea50056e9f4890422dad044c31c65a is being composed in the same isolated workspace; unchanged runtime and retained artifact are separately recorded. The first guard run passed4 and failed packing only: plan-book5602>5600. Move the whole credit-cycle suite to the existing compatible render-contract job; preserve every suite, ceiling and estimator. Finish that guard before committing/pushing the pending merge. |
+| CDI #9590 | Remote24bc32a9c480906801daaab03c4267e0dc10efba; local checkpointc1b122743e1c7164bc861208af117ca61a53d78c composes R11/CDI/R33 with300 source tests and5 guards passing. Its current CI39773798380 confirms earnings, design and import packs passed; contract and pack1 expose the same missing app/treasury_history.py and lib/treasury_daily_history.py paths. Merge the qualified R11 current-main descendant, add those two exact closure paths, qualify the resulting composition, then perform one actual combined native build. |
+| R33 #9578 | Exact03e2bbf1f2f5aacb86e21eca33dba8cacbeb0f1c and CI39751798516 remain accepted. Original independent review returned unqualified429; no replay/provider change. Its combined source is retained in CDI. |
+| Terminal #1106 | Draft/HOLD remains binding pending qualified continuation/review from the original repair-review operation. Its terminal unqualified429 is not such a review. The prior deployment safety refusal remains binding. Migration0038 is already applied and must not be replayed. |
+
+### Exact continuation sequence
+
+1. Reconcile the canonical PR head, current automatic CI, local HEAD/index/MERGE_HEAD and existing effect receipts before any mutation. Consume completed operations; never replay a merge, push, capture, render or review merely to recover output. Pin the already inspected ce939 current-main composition instead of repeatedly chasing data-only commits.
+2. Preserve this Forex census source and compact evidence on #10052, consume the ordinary CI, and retain candidate/research-only authority. The observed acquisition is complete for its stated scope; current-slot support is absent. Re-reading the same receipts cannot create the missing support.
+3. Finish R11's current-main packing repair, document the retained failure and exact passing tree, commit the pending merge and normally push the same #8241 branch. No force push, ceiling increase, suite removal or fabricated runtime receipt.
+4. Compose that qualified R11 descendant into existing CDI localc1b. Add the two actual Treasury dependency paths. Preserve the latest-maturity helper, independent CDI render, one explanation view for page and bond_health.json, canonical yield object, ordinal curve gaps/default output, R33 adapter order and all source-currentness withholding.
+5. Build the exact final Bonds composition once in a new private proof directory using the502 already manifested input files:16 retained originals plus486 immutable1b3166c7 fallbacks. Verify every input byte/hash; preserve dates. Optional data/transmission/latest.json and data/regime/latest.json remain absent. Do not reuse old generated HTML as new proof. Verify all four UI surfaces, every local resource and both committed-artifact contracts; publish only the qualified source/artifacts to the same #9590 owner. No browser action is authorized while the existing administrator denial stands.
+6. Continue the existing-owner technical source-adoption contract: literal pair/observable/reported-close meaning, normalized precision, supported calendar/UTC slots, correction revisions, fixed freshness and current-decision supporting history. A broader inventory claim additionally needs actual existing-owner publication/concurrency evidence. Vendor finality, historical knowability and global corrections remain unproved.
+7. Obtain genuinely qualifying current-slot evidence only through the incumbent source owner and actual observation clocks. Then satisfy the existing review/adoption gates and saved-account revision-bound feed/observable/calendar contract. Any activation must use the incumbent evaluator/outbox with atomic exact-revision/expiry/source eligibility and idempotency. This plan authorizes no new account, evaluator, queue, retry, watch, lifecycle or publication plane.
+8. Broader Bonds CDS, prospective21/63/126-session evidence, typed Investigationv2 owner contract and production/browser gates remain open under the existing owners. Do not fabricate future observations or interpret source tests as product acceptance.
+
+### Census proof and limits
+
+The receipt records all22 per-scan metadata dispositions, including excluded literal pairs/frequencies, original response clocks, exact receipt/raw identifiers, both scan intervals, actual verification/assessment clocks and measured byte counters. Equal scans prove their observed equality only. Atomic census, global completeness, independently verified quiescence, historical availability, DataOS/PIT/redistribution admission and monitoring remain false. Byte budgets do not bound total process RSS, CPU or decoded Parquet allocation.
+
+See evidence/observed_census_qualification_20261022.json and evidence/observed_census_readback_20261022.json. Full licensed rows stay in the incumbent private proof directory. The source/test hashes bind the328-pass run separately from the1-pass closure run. The initial new-test EOF preflight failure and all earlier evidence remain retained.
+
+The immutable Macro #9996 head, green CI, covering render39688064251, public HTML and accepted genuine signed-in inactive-condition save/reload/edit/delete proof remain accepted. No additional render, migration0038 application, refused deployment, browser-carrier workaround, Fabric replay, support email or modification of held carry/COT/RiskRadar/original dirty workspaces is part of this continuation.
+
+## Retained earlier checkpoint — historical scope
+
+The following records the earlier10:38UTC checkpoint. Current-state and continuation statements above supersede its pending-step descriptions; its historical evidence and constraints remain retained.
+
 Updated 22 October 2026 after the retained batch readback at10:32UTC and R11 curation run at10:36UTC. **Both broader projects remain open.** This document records the execution sequence and recovery evidence for existing owners. The latest canonical comment resolves later state changes.
 
 Accountable receiver: the Chairman-assigned recovery session. Protected compatible procedure pin: Mastermind@230e9a301ed774e79410829f1b5c049226fa59f1; protected=true, INDEX1.0.1/bootstrap major1. A replacement session refreshes a compatible protected pin and resumes the same operations.

@@ -995,3 +995,239 @@ def assess_forex_source_batch_candidate(
         "dataos_identity_admitted": False, "pit_backtest_eligible": False,
         "redistribution_admitted": False,
     }
+
+
+BATCH_CENSUS_SCHEMA = "mastermind.tiingo.forex_batch_observed_census.v1"
+
+
+def _census_now_utc() -> str:
+    """Actual invocation clock; tests may replace this private clock only."""
+    return pd.Timestamp.now(tz="UTC").isoformat()
+
+
+def _census_clock() -> tuple[str, pd.Timestamp]:
+    value = _census_now_utc()
+    stamp = _clock(value)
+    if stamp is None:
+        raise TiingoViewRefusal("Census clock is not an aware bounded UTC instant")
+    return value, stamp
+
+
+def _scan_forex_receipts(context: Any, dates: tuple[str, ...], expected_pair: str,
+                        evidence: dict[str, Any]) -> dict[str, Any]:
+    """Observe bounded leaf entries before selecting a pair or frequency."""
+    import hashlib
+    import json
+    import os
+    import stat
+    from urllib.parse import parse_qs, urlsplit
+    from collectors.tiingo_archive import capture_day, validate_receipt
+
+    started, start = _census_clock()
+    scan = {"started_at_utc": started, "completed_at_utc": None,
+            "directories": [], "entry_count_before_filter": 0, "entries": []}
+    evidence["scans"].append(scan)
+    entries = []
+    for day in dates:
+        relative = ("receipts", "forex-bars", day)
+        directory = {"path": "/".join(relative), "state": "observing", "entries": 0}
+        scan["directories"].append(directory)
+        try:
+            with context.directory(relative) as fd:
+                with os.scandir(fd) as listing:
+                    for entry in listing:
+                        scan["entry_count_before_filter"] += 1
+                        directory["entries"] += 1
+                        if scan["entry_count_before_filter"] > MAX_BATCH_INVENTORY_ENTRIES:
+                            raise TiingoViewRefusal("Census entry cap exceeded before filtering or deduplication")
+                        # No glob or type/extension/pair filter can hide an entry.
+                        entries.append((day, entry.name, entry.stat(follow_symlinks=False).st_mode))
+                directory["state"] = "observed"
+        except FileNotFoundError:
+            # Only an absent leaf directory counts as absence. A file vanishing
+            # after enumeration is an unstable acquisition, not an empty leaf.
+            if directory["entries"]:
+                raise TiingoViewRefusal("Census entry disappeared during enumeration") from None
+            directory["state"] = "absent"
+    for day, name, mode in sorted(entries):
+        relative = ("receipts", "forex-bars", day, name)
+        item = {"path": "/".join(relative), "state": "unverified"}
+        scan["entries"].append(item)
+        if (not stat.S_ISREG(mode)
+                or not re.fullmatch(r"[0-9a-f]{16}-[0-9a-f]{24}\.json", name)):
+            raise TiingoViewRefusal("Census contains an unexpected temporary, nonregular or named receipt entry")
+        record = context.read_metadata(relative)
+        if (record.get("schema") != "mastermind.tiingo.raw_receipt.v1"
+                or record.get("source") != "forex-bars" or record.get("vendor") != "tiingo"
+                or not isinstance(record.get("symbol"), str)
+                or not re.fullmatch(r"[a-z]{6}", record["symbol"])
+                or not isinstance(record.get("raw_sha256"), str)
+                or not SHA.fullmatch(record["raw_sha256"])
+                or any(type(record.get(key)) is not int or record[key] < 0
+                       for key in ("raw_bytes", "compressed_bytes"))):
+            raise TiingoViewRefusal("Census receipt metadata cannot be safely placed or selected")
+        identity = validate_receipt(record)
+        observed = _clock(record.get("observed_at_utc"))
+        if (record.get("receipt_id") != identity or observed is None
+                or capture_day(record["observed_at_utc"]) != day):
+            raise TiingoViewRefusal("Census receipt identity or UTC capture partition mismatch")
+        request_hash = hashlib.sha256(record["request_path"].encode()).hexdigest()[:16]
+        stem = request_hash + "-" + record["raw_sha256"][:24]
+        expected_raw = "/".join(("raw", "forex-bars", day, record["symbol"], stem + ".raw.gz"))
+        if name != stem + ".json" or record.get("raw_path") != expected_raw:
+            raise TiingoViewRefusal("Census receipt path does not bind its exact original request and raw context")
+        query = parse_qs(urlsplit(record["request_path"]).query, keep_blank_values=True)
+        frequencies = query.get("resampleFreq", [])
+        frequency = frequencies[0] if len(frequencies) == 1 else None
+        if frequency is None:
+            raise TiingoViewRefusal("Census Forex receipt lacks one exact requested frequency")
+        selected = record["symbol"] == expected_pair.lower() and frequency in ("1min", "4hour")
+        item.update(
+            state="metadata_verified", receipt_id=identity,
+            receipt_metadata_sha256=hashlib.sha256(json.dumps(record, sort_keys=True,
+                separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
+            capture_day=day, pair=record["symbol"].upper(), frequency=frequency,
+            source_observed_at_utc=record["observed_at_utc"], raw_sha256=record["raw_sha256"],
+            raw_bytes=record["raw_bytes"], compressed_bytes=record["compressed_bytes"],
+            selection="selected" if selected else "other_literal_pair_or_frequency",
+        )
+    completed, end = _census_clock()
+    scan["completed_at_utc"] = completed
+    if end < start or any(_clock(item["source_observed_at_utc"]) > end for item in scan["entries"]):
+        raise TiingoViewRefusal("Census clocks precede a receipt observation or run backwards")
+    snapshot = {"directories": scan["directories"], "entries": scan["entries"]}
+    scan["snapshot_sha256"] = hashlib.sha256(json.dumps(snapshot, sort_keys=True,
+        separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+    return scan
+
+
+def read_forex_source_batch_candidate(
+    *, expected_pair: str, consecutive: int, policy_version: str,
+    root: Path = DEFAULT_ARCHIVE, check_mount: bool = True,
+) -> dict[str, Any]:
+    """Read a bounded observed census and feed the unchanged candidate assessor.
+
+    Two scans and exact retained byte reads are observations, not a lock or an
+    atomic/global inventory guarantee. No captures, materialization, correction
+    choice, historical knowability, source admission or account effects occur.
+    A refusal carries its compact partial observations as census_evidence.
+    """
+    from collectors.tiingo_archive import TiingoArchiveError
+    from scripts.tiingo_materialize import BoundedTiingoRead
+
+    if (policy_version != BATCH_CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS
+            or type(consecutive) is not int or not 1 <= consecutive <= 10):
+        raise TiingoViewRefusal("Unknown Forex census policy, pair or consecutive-close bound")
+    started_at, started = _census_clock()
+    interval_ns = 240 * MINUTE_NS
+    latest_end_ns = (started.value // interval_ns) * interval_ns
+    try:
+        earliest = pd.Timestamp(latest_end_ns - interval_ns * (consecutive - 1), tz="UTC")
+        dates = tuple(day.date().isoformat() for day in pd.date_range(
+            earliest.normalize(), started.normalize(), freq="D"))
+    except (ValueError, OverflowError):
+        raise TiingoViewRefusal("Census target sequence exceeds supported clock bounds") from None
+    if not 1 <= len(dates) <= 3:
+        raise TiingoViewRefusal("Census capture-date bound exceeded")
+    evidence = {
+        "schema": BATCH_CENSUS_SCHEMA, "state": "acquiring", "policy_version": policy_version,
+        "pair_candidate": expected_pair, "consecutive": consecutive,
+        "capture_dates": list(dates), "started_at_utc": started_at,
+        "fixed_latest_interval_end_utc": pd.Timestamp(latest_end_ns, tz="UTC").isoformat(),
+        "scans": [], "selected_views": [], "byte_reads": {}, "selected_row_references": 0,
+        "observed_scans_equal": None, "assessment": None,
+        "atomic_census_proven": False, "global_inventory_completeness_proven": False,
+        "owner_quiescence_independently_verified": False,
+        "historical_availability_proven": False, "eligible_observations": [],
+        "monitoring_admitted": False, "dataos_identity_admitted": False,
+        "pit_backtest_eligible": False, "redistribution_admitted": False,
+        "product_use_approval": {"state": "COMPLETE", "authority": "Chairman attestation",
+                                 "reference": PRODUCT_USE_APPROVAL_REFERENCE},
+        "bounds": {"entries_before_filter_per_scan": MAX_BATCH_INVENTORY_ENTRIES,
+                   "capture_dates": 3, "metadata_bytes": 16 * 1024 * 1024,
+                   "decompressed_raw_bytes": 64 * 1024 * 1024,
+                   "compressed_raw_bytes": 64 * 1024 * 1024,
+                   "encoded_normalized_bytes": 64 * 1024 * 1024,
+                   "total_process_memory_bound_claimed": False,
+                   "minute_references": MAX_BATCH_MINUTE_VINTAGES,
+                   "native_references": MAX_BATCH_NATIVE_VINTAGES,
+                   "selected_row_references": MAX_BATCH_INPUT_ROWS},
+    }
+    context = None
+    try:
+        with BoundedTiingoRead(root, check_mount=check_mount) as context:
+            first = _scan_forex_receipts(context, dates, expected_pair, evidence)
+            selected = [item for item in first["entries"] if item["selection"] == "selected"]
+            for frequency, limit in (("1min", MAX_BATCH_MINUTE_VINTAGES),
+                                     ("4hour", MAX_BATCH_NATIVE_VINTAGES)):
+                if sum(item["frequency"] == frequency for item in selected) > limit:
+                    raise TiingoViewRefusal("Census selected-reference cap exceeded before deduplication")
+            views = {"1min": [], "4hour": []}
+            for item in selected:
+                acquired = {"path": item["path"], "receipt_id": item["receipt_id"],
+                            "frequency": item["frequency"], "state": "acquiring"}
+                evidence["selected_views"].append(acquired)
+                remaining = MAX_BATCH_INPUT_ROWS - evidence["selected_row_references"]
+                if remaining < 1:
+                    raise TiingoViewRefusal("Census selected row-reference budget exhausted")
+                limit = MAX_ROWS if item["frequency"] == "1min" else MAX_RECONCILIATION_NATIVE_ROWS
+                try:
+                    view = read_research_view(
+                        "forex-bars", item["capture_day"], item["receipt_id"], root=root,
+                        purpose="INSPECTION", receipt_path=Path(root) / item["path"],
+                        max_rows=min(limit, remaining), check_mount=check_mount, read_context=context,
+                    )
+                except TiingoViewRefusal as exc:
+                    if str(exc) != "source view lacks artifact-bound evidence":
+                        raise
+                    acquired.update(state="materialized_view_unavailable", empty_payload_proven=False)
+                    continue
+                evidence["selected_row_references"] += len(view.rows)
+                acquired.update(state="exact_view_verified", rows=len(view.rows),
+                                raw_sha256=view.source_sha256)
+                views[item["frequency"]].append((view, item["receipt_id"]))
+            second = _scan_forex_receipts(context, dates, expected_pair, evidence)
+            evidence["observed_scans_equal"] = first["snapshot_sha256"] == second["snapshot_sha256"]
+            context.verify_bindings()
+            verified_at, verified = _census_clock()
+            assessed_at, assessed = _census_clock()
+            evidence.update(verified_at_utc=verified_at, assessed_at_utc=assessed_at,
+                            byte_reads=context.used)
+            if (verified < _clock(second["completed_at_utc"]) or assessed < verified
+                    or _clock(first["started_at_utc"]) < started
+                    or _clock(second["started_at_utc"]) < _clock(first["completed_at_utc"])):
+                raise TiingoViewRefusal("Census readback/assessment clocks are not ordered")
+            reasons = []
+            if not evidence["observed_scans_equal"]:
+                reasons.append("observed_receipt_inventory_changed")
+            if assessed.value // interval_ns * interval_ns != latest_end_ns:
+                reasons.append("assessment_crossed_fixed_four_hour_boundary")
+            if any(item["state"] != "exact_view_verified" for item in evidence["selected_views"]):
+                reasons.append("selected_materialized_view_unavailable")
+            if reasons:
+                evidence.update(state="withheld", withheld_reasons=reasons)
+                return evidence
+            declaration = {
+                "schema": BATCH_INVENTORY_SCHEMA,
+                "selected_receipt_ids": {frequency: sorted({identity for _view, identity in items})
+                                         for frequency, items in views.items()},
+                "scans": [{"started_at_utc": scan["started_at_utc"],
+                           "completed_at_utc": scan["completed_at_utc"],
+                           "receipt_ids": sorted({item["receipt_id"] for item in scan["entries"]})}
+                          for scan in (first, second)],
+            }
+            evidence["assessment"] = assess_forex_source_batch_candidate(
+                tuple(views["1min"]), tuple(views["4hour"]), expected_pair=expected_pair,
+                consecutive=consecutive, policy_version=policy_version,
+                verified_at_utc=verified_at, assessed_at_utc=assessed_at,
+                inventory_evidence=declaration,
+            )
+            evidence["state"] = "observed_census_complete_policy_unadopted"
+            return evidence
+    except (TiingoViewRefusal, TiingoArchiveError, OSError, ValueError, TypeError, KeyError) as exc:
+        evidence.update(state="refused", refusal_type=type(exc).__name__, refusal_reason=str(exc))
+        if context is not None:
+            evidence["byte_reads"] = context.used
+        refusal = TiingoViewRefusal("Forex observed census refused: " + str(exc))
+        refusal.census_evidence = evidence
+        raise refusal from exc
