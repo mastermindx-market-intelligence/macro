@@ -703,3 +703,326 @@ def test_candidate_empty_input_remains_empty_without_global_pair_claim(pair):
     assert result["eligible_observations"] == []
     assert {"USDBRL", "USDCNH"} <= set(result["requested_pair_inventory"])
     assert result["comparison_semantics"]["global_inventory_completeness_proven"] is False
+
+
+
+from lib.dataos.tiingo_forex import (
+    assess_forex_source_batch_candidate, BATCH_CANDIDATE_POLICY_VERSION,
+    BATCH_INVENTORY_SCHEMA, MAX_BATCH_MINUTE_VINTAGES,
+)
+
+
+def batch_views(count=3):
+    minutes = minute_fixture(240 * count)
+    native = []
+    for index in range(count):
+        start = datetime(2026, 10, 19, tzinfo=timezone.utc) + timedelta(hours=4 * index)
+        native.extend(native_fixture(minutes[240 * index:240 * (index + 1)], label=start.isoformat()))
+    end = datetime(2026, 10, 19, tzinfo=timezone.utc) + timedelta(hours=4 * count)
+    return (
+        view_for(minutes, observed_at=(end + timedelta(minutes=1)).isoformat()),
+        view_for(native, frequency="4hour", observed_at=(end + timedelta(minutes=2)).isoformat()),
+    ), end
+
+
+def batch_assessment(views=None, *, count=3, extra_minutes=(), extra_native=(), **kwargs):
+    if views is None:
+        views, end = batch_views(count)
+    else:
+        end = datetime(2026, 10, 19, tzinfo=timezone.utc) + timedelta(hours=4 * count)
+    options = {
+        "expected_pair": "USDJPY", "consecutive": count,
+        "policy_version": BATCH_CANDIDATE_POLICY_VERSION,
+        "verified_at_utc": (end + timedelta(minutes=3)).isoformat(),
+        "assessed_at_utc": (end + timedelta(minutes=4)).isoformat(),
+    }
+    options.update(kwargs)
+    return assess_forex_source_batch_candidate(
+        (views[0],) + tuple(extra_minutes), (views[1],) + tuple(extra_native), **options)
+
+
+def batch_inventory(views, end, **changes):
+    minute, native = views
+    ids = [minute[1], native[1]]
+    result = {
+        "schema": BATCH_INVENTORY_SCHEMA,
+        "selected_receipt_ids": {"1min": [minute[1]], "4hour": [native[1]]},
+        "scans": [
+            {"started_at_utc": (end + timedelta(minutes=2, seconds=10)).isoformat(),
+             "completed_at_utc": (end + timedelta(minutes=2, seconds=20)).isoformat(),
+             "receipt_ids": ids},
+            {"started_at_utc": (end + timedelta(minutes=2, seconds=30)).isoformat(),
+             "completed_at_utc": (end + timedelta(minutes=2, seconds=40)).isoformat(),
+             "receipt_ids": list(reversed(ids))},
+        ],
+    }
+    result.update(changes)
+    return result
+
+
+@pytest.mark.parametrize("count", [1, 2, 3, 10])
+def test_batch_older_supporting_slots_keep_expired_individual_verdicts(count, monkeypatch):
+    views, end = batch_views(count)
+    before = copy.deepcopy(views)
+    monkeypatch.setattr("lib.dataos.tiingo_forex.read_research_view",
+                        lambda *a, **k: pytest.fail("pure batch performed I/O"))
+    out = batch_assessment(views, count=count)
+    assert views == before
+    assert out["batch_checks_satisfied"] is True
+    assert len(out["slots"]) == count
+    for slot in out["slots"][:-1]:
+        assert slot["role"] == "supporting"
+        assert slot["supporting_checks_satisfied"] is True
+        assert slot["candidate_assessment"]["candidate_checks_satisfied"] is False
+        assert slot["candidate_assessment"]["checks"]["verification_before_candidate_expiry"] is False
+        assert slot["latest_freshness_required"] is False
+        assert slot["latest_freshness_satisfied"] is None
+    assert out["slots"][-1]["role"] == "latest"
+    assert out["slots"][-1]["latest_freshness_satisfied"] is True
+    assert out["required_interval_ends_utc"][-1] == end.isoformat()
+    for slot in out["slots"]:
+        projection = slot["candidate_projection"]
+        assert projection["candidate_available_at_utc"] == (end + timedelta(minutes=3)).isoformat()
+        assert not {"status", "feed", "revision", "observation_id", "available_at"} & projection.keys()
+    assert out["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    assert out["eligible_observations"] == []
+    assert out["product_use_approval"]["state"] == "COMPLETE"
+    for flag in ("monitoring_admitted", "dataos_identity_admitted", "pit_backtest_eligible", "redistribution_admitted"):
+        assert out[flag] is False
+    assert out["inventory_evidence"]["inventory_selection_consistent"] is None
+    assert out["inventory_evidence"]["atomic_census_proven"] is False
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize("count", [0, 11, True, 1.0, "2", None])
+def test_batch_refuses_outside_incumbent_consecutive_rule_bound(count):
+    with pytest.raises(TiingoViewRefusal):
+        batch_assessment(consecutive=count)
+
+
+def test_batch_charges_reference_and_row_budgets_before_deduplication(monkeypatch):
+    views, end = batch_views(1)
+    with pytest.raises(TiingoViewRefusal, match="before deduplication"):
+        batch_assessment(views, count=1, extra_minutes=(views[0],) * MAX_BATCH_MINUTE_VINTAGES)
+    monkeypatch.setattr("lib.dataos.tiingo_forex.MAX_BATCH_INPUT_ROWS", 400)
+    with pytest.raises(TiingoViewRefusal, match="row-reference budget"):
+        batch_assessment(views, count=1, extra_minutes=(views[0],))
+
+
+def test_batch_duplicate_full_identity_is_reported_without_changing_slot_results():
+    views, end = batch_views()
+    original = batch_assessment(views)
+    duplicate = batch_assessment(views, extra_minutes=(views[0],), extra_native=(views[1],))
+    assert duplicate["slots"] == original["slots"]
+    assert duplicate["checks"] == original["checks"]
+    assert duplicate["input_inventory"] == original["input_inventory"]
+    assert duplicate["duplicate_supplied_references"] == {views[0][1]: 1, views[1][1]: 1}
+
+
+@pytest.mark.parametrize("difference", ["extra_field", "row_order", "number_type", "source_request"])
+def test_batch_one_identity_cannot_hide_different_full_content(difference):
+    views, end = batch_views(1)
+    view, ident = views[0]
+    original = copy.deepcopy(view)
+    rows = copy.deepcopy(view.rows)
+    if difference == "extra_field":
+        rows[0]["unrelated_source_metadata"] = "changed"
+        other = replace(view, rows=rows)
+    elif difference == "row_order":
+        other = replace(view, rows=tuple(reversed(rows)))
+    elif difference == "number_type":
+        first = copy.deepcopy(view.rows)
+        first[0]["extra_numeric"] = 1
+        rows[0]["extra_numeric"] = 1.0
+        original, other = replace(view, rows=first), replace(view, rows=rows)
+    else:
+        other = replace(view, source_request_path=view.source_request_path + "&startDate=2026-10-18")
+    with pytest.raises(TiingoViewRefusal):
+        batch_assessment(((original, ident), views[1]), count=1, extra_minutes=((other, ident),))
+
+
+def test_batch_collection_order_does_not_select_a_winner():
+    views, end = batch_views(1)
+    same = view_for(minute_fixture(), observed_at="2026-10-19T04:01:30Z")
+    conflict_data = [dict(minute_fixture()[50]), dict(minute_fixture()[51])]
+    conflict_data[0]["close"] += 0.001
+    conflict_data[1]["close"] -= 0.001
+    conflict = view_for(conflict_data, observed_at="2026-10-19T04:02:30Z")
+    kwargs = dict(expected_pair="USDJPY", consecutive=1, policy_version=BATCH_CANDIDATE_POLICY_VERSION,
+                  verified_at_utc="2026-10-19T04:03:00Z", assessed_at_utc="2026-10-19T04:04:00Z")
+    a = assess_forex_source_batch_candidate((views[0], same, conflict), (views[1],), **kwargs)
+    b = assess_forex_source_batch_candidate((conflict, views[0], same), (views[1],), **kwargs)
+    assert a == b
+    assert not a["batch_checks_satisfied"]
+    assert a["slots"][0]["minute_vintage_check"]["conflicting_closed_receipt_ids"] == [conflict[1]]
+
+
+def test_batch_closed_partial_cancelling_minute_changes_cannot_hide_behind_aggregate_ohlc():
+    views, end = batch_views(1)
+    original = minute_fixture()
+    changed = copy.deepcopy(original)
+    changed[50]["close"] += 0.001
+    changed[51]["close"] -= 0.001
+    assert native_fixture(changed) == native_fixture(original)
+    conflict = view_for(changed[50:52], observed_at="2026-10-19T04:02:30Z")
+    out = batch_assessment(views, count=1, extra_minutes=(conflict,))
+    slot = out["slots"][0]
+    assert slot["candidate_assessment"]["checks"]["normalized_ohlc_agreement"] is True
+    assert conflict[1] in slot["minute_vintage_check"]["partial_closed_receipt_ids"]
+    assert conflict[1] in slot["minute_vintage_check"]["conflicting_closed_receipt_ids"]
+    assert not out["batch_checks_satisfied"]
+
+
+def test_batch_matching_partial_receipt_corroborates_but_does_not_fill_a_grid():
+    views, end = batch_views(1)
+    first = view_for(minute_fixture()[:120], observed_at="2026-10-19T04:01:30Z")
+    second = view_for(minute_fixture()[120:], observed_at="2026-10-19T04:02:30Z")
+    out = batch_assessment(views, count=1, extra_minutes=(first, second))
+    assert out["batch_checks_satisfied"]
+    check = out["slots"][0]["minute_vintage_check"]
+    assert check["complete_reference_receipt_ids"] == [views[0][1]]
+    assert set(check["partial_closed_receipt_ids"]) == {first[1], second[1]}
+    no_complete = batch_assessment((first, views[1]), count=1, extra_minutes=(second,))
+    assert not no_complete["batch_checks_satisfied"]
+    assert no_complete["slots"][0]["minute_vintage_check"]["complete_reference_receipt_ids"] == []
+
+
+def test_batch_open_vintage_difference_is_not_a_closed_correction():
+    views, end = batch_views(1)
+    partial = minute_fixture()[50:52]
+    partial[0]["close"] += 0.001
+    opened = view_for(partial, observed_at="2026-10-19T03:59:59Z")
+    out = batch_assessment(views, count=1, extra_minutes=(opened,))
+    assert out["batch_checks_satisfied"]
+    check = out["slots"][0]["minute_vintage_check"]
+    assert check["open_receipt_ids_not_compared_as_corrections"] == [opened[1]]
+    assert check["conflicting_closed_receipt_ids"] == []
+
+
+@pytest.mark.parametrize("defect", ["duplicate_offset", "subminute", "unplaced", "bad_ohlc"])
+def test_batch_closed_minute_ambiguity_withholds_even_with_a_good_reference(defect):
+    views, end = batch_views(1)
+    row = dict(minute_fixture()[50])
+    data = [row]
+    if defect == "duplicate_offset":
+        data.append(dict(row, date="2026-10-19T01:50:00+01:00"))
+    elif defect == "subminute":
+        row["date"] = "2026-10-19T00:50:00.000000001Z"
+    elif defect == "unplaced":
+        pass  # The real reader rejects this earlier; exercise the pure boundary below.
+    else:
+        row["close"] = None
+    extra = view_for(data, observed_at="2026-10-19T04:02:30Z")
+    if defect == "unplaced":
+        changed_rows = copy.deepcopy(extra[0].rows)
+        changed_rows[0]["bar_at_vendor"] = "unplaceable"
+        extra = (replace(extra[0], rows=changed_rows), extra[1])
+    out = batch_assessment(views, count=1, extra_minutes=(extra,))
+    assert not out["batch_checks_satisfied"]
+    assert extra[1] in out["slots"][0]["minute_vintage_check"]["invalid_closed_receipt_ids"]
+
+
+def test_batch_placeable_value_defect_outside_target_slot_does_not_poison_it():
+    views, end = batch_views(1)
+    outside = dict(minute_fixture()[0], date="2026-10-18T23:59:00Z", close=None)
+    extra = view_for([outside], observed_at="2026-10-19T04:02:30Z")
+    out = batch_assessment(views, count=1, extra_minutes=(extra,))
+    assert out["batch_checks_satisfied"]
+    assert out["slots"][0]["minute_vintage_check"]["invalid_closed_receipt_ids"] == []
+
+
+def test_batch_checks_lineage_outside_target_slots_before_filtering():
+    views, end = batch_views(1)
+    row = dict(views[0][0].rows[0], bar_at_vendor="2026-10-18T23:59:00Z", ticker_vendor="eurusd")
+    bad = replace(views[0][0], rows=views[0][0].rows + (row,))
+    with pytest.raises(TiingoViewRefusal, match="lineage"):
+        batch_assessment(((bad, views[0][1]), views[1]), count=1)
+
+
+def test_batch_all_supplied_closed_native_vintages_remain_required():
+    views, end = batch_views(1)
+    native = native_fixture(minute_fixture())
+    native[0]["high"] += 1
+    conflict = view_for(native, frequency="4hour", observed_at="2026-10-19T04:02:30Z")
+    out = batch_assessment(views, count=1, extra_native=(conflict,))
+    assert not out["batch_checks_satisfied"]
+    check = out["slots"][0]["candidate_assessment"]["native_vintage_check"]
+    assert check["conflicting_closed_receipt_ids"]
+
+
+def test_batch_assessment_boundary_changes_anchor_without_an_older_window_fallback():
+    views, end = batch_views(1)
+    earlier = batch_assessment(views, count=1, verified_at_utc="2026-10-19T07:59:59.999999999Z",
+                               assessed_at_utc="2026-10-19T07:59:59.999999999Z")
+    assert earlier["batch_checks_satisfied"]
+    crossed = batch_assessment(views, count=1, verified_at_utc="2026-10-19T07:59:59.999999999Z",
+                               assessed_at_utc="2026-10-19T08:00:00Z")
+    assert crossed["required_interval_ends_utc"] == ["2026-10-19T08:00:00+00:00"]
+    assert not crossed["batch_checks_satisfied"]
+
+
+def test_batch_late_readback_of_open_capture_cannot_create_the_current_close():
+    minutes = minute_fixture(281)
+    native = native_fixture(minutes[:240]) + native_fixture(minutes[240:], label="2026-10-19T04:00:00Z")
+    views = (view_for(minutes, observed_at="2026-10-19T04:41:00Z"),
+             view_for(native, frequency="4hour", observed_at="2026-10-19T04:41:02Z"))
+    out = batch_assessment(views, count=2, verified_at_utc="2026-10-19T09:14:00Z",
+                           assessed_at_utc="2026-10-19T09:14:01Z")
+    assert out["slots"][0]["supporting_checks_satisfied"]
+    assert not out["slots"][0]["candidate_assessment"]["candidate_checks_satisfied"]
+    assert not out["slots"][-1]["slot_checks_satisfied"]
+    assert not out["batch_checks_satisfied"]
+
+
+def test_batch_equal_inventory_scans_are_only_unattested_declarations():
+    views, end = batch_views(1)
+    evidence = batch_inventory(views, end, owner_quiescence_reference="existing owner receipt")
+    out = batch_assessment(views, count=1, inventory_evidence=evidence)
+    assert out["batch_checks_satisfied"]
+    inv = out["inventory_evidence"]
+    assert inv["inventory_selection_consistent"] is True
+    assert inv["two_scan_identity_sets_equal"] is True
+    assert inv["atomic_census_proven"] is False
+    assert inv["owner_quiescence_independently_verified"] is False
+    assert out["eligible_observations"] == []
+
+
+@pytest.mark.parametrize("defect", ["omitted_view", "extra_view", "duplicate_declaration", "future_scan", "boolean_authority"])
+def test_batch_declared_inventory_correspondence_and_clocks_cannot_be_faked(defect):
+    views, end = batch_views(1)
+    evidence = batch_inventory(views, end)
+    extra = ()
+    if defect == "omitted_view":
+        evidence["selected_receipt_ids"]["1min"].append("a" * 64)
+    elif defect == "extra_view":
+        extra = (view_for(minute_fixture()[:2], observed_at="2026-10-19T04:01:30Z"),)
+    elif defect == "duplicate_declaration":
+        evidence["scans"][0]["receipt_ids"].append(views[0][1])
+    elif defect == "future_scan":
+        evidence["scans"][1]["completed_at_utc"] = "2026-10-19T04:03:01Z"
+    else:
+        evidence["owner_quiescence_reference"] = True
+    with pytest.raises(TiingoViewRefusal):
+        batch_assessment(views, count=1, extra_minutes=extra, inventory_evidence=evidence)
+
+
+def test_batch_unequal_scan_identity_sets_withhold_without_retry_or_truncation():
+    views, end = batch_views(1)
+    evidence = batch_inventory(views, end)
+    evidence["scans"][1]["receipt_ids"].append("a" * 64)
+    out = batch_assessment(views, count=1, inventory_evidence=evidence)
+    assert out["slots"][0]["slot_checks_satisfied"]
+    assert out["inventory_evidence"]["two_scan_identity_sets_equal"] is False
+    assert not out["batch_checks_satisfied"]
+
+
+@pytest.mark.parametrize("field,value", [
+    ("verified_at_utc", "2026-10-19T12:00:00Z"),
+    ("verified_at_utc", "2026-10-19T12:03:00"),
+    ("assessed_at_utc", "2026-10-19T12:02:59Z"),
+    ("assessed_at_utc", "2026-10-19T12:04:00.0000000001Z"),
+    ("policy_version", "admitted"),
+])
+def test_batch_refuses_ambiguous_clocks_future_captures_or_unknown_policy(field, value):
+    with pytest.raises(TiingoViewRefusal):
+        batch_assessment(**{field: value})

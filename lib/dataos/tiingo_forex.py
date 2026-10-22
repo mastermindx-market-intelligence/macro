@@ -635,3 +635,363 @@ def assess_forex_source_candidate(
         "dataos_identity_admitted": False, "pit_backtest_eligible": False,
         "redistribution_admitted": False,
     }
+
+
+BATCH_CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-batch-candidate/1"
+BATCH_CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_batch_candidate.v1"
+BATCH_INVENTORY_SCHEMA = "mastermind.tiingo.forex_batch_inventory_evidence.v1"
+MAX_BATCH_MINUTE_VINTAGES = 9
+MAX_BATCH_NATIVE_VINTAGES = MAX_CANDIDATE_NATIVE_VINTAGES + 1
+MAX_BATCH_INPUT_ROWS = 100_000
+MAX_BATCH_IDENTITY_BYTES = 64 * 1024 * 1024
+MAX_BATCH_INVENTORY_ENTRIES = 256
+BATCH_SUPPORTING_CHECKS = (
+    "utc_four_hour_slot",
+    "valid_comparison",
+    "dense_minute_grid",
+    "normalized_ohlc_agreement",
+    "both_responses_observed_after_interval_end",
+    "interval_ended_before_verification",
+    "supplied_closed_native_vintages_consistent",
+)
+
+
+def _batch_view_identity(view: TiingoView, budget: dict[str, int]) -> str:
+    """Fingerprint every declared view field with type-sensitive ordered rows."""
+    import hashlib
+    import json
+    from dataclasses import fields
+
+    def typed(value: Any, depth: int = 0) -> Any:
+        budget["nodes"] += 1
+        if depth > 16 or budget["nodes"] > 10_000_000:
+            raise TiingoViewRefusal("Batch identity structure budget exceeded")
+        if value is None:
+            return ["none"]
+        if type(value) is bool:
+            return ["bool", value]
+        if type(value) is int:
+            return ["int", str(value)]
+        if type(value) is float:
+            return ["float", value.hex()]
+        if type(value) is str:
+            return ["str", value]
+        if type(value) in (list, tuple):
+            return [type(value).__name__, [typed(item, depth + 1) for item in value]]
+        if type(value) is dict and all(type(key) is str for key in value):
+            return ["dict", [[key, typed(value[key], depth + 1)] for key in sorted(value)]]
+        raise TiingoViewRefusal("Batch identity contains unsupported source value types")
+
+    content = typed({field.name: getattr(view, field.name) for field in fields(TiingoView)})
+    digest = hashlib.sha256()
+    for part in json.JSONEncoder(ensure_ascii=True, separators=(",", ":")).iterencode(content):
+        encoded = part.encode("utf-8")
+        budget["bytes"] += len(encoded)
+        if budget["bytes"] > MAX_BATCH_IDENTITY_BYTES:
+            raise TiingoViewRefusal("Batch full-content identity byte budget exceeded")
+        digest.update(encoded)
+    return digest.hexdigest()
+
+
+def _batch_inventory_declaration(
+    evidence: dict[str, Any] | None, inventory: dict[str, dict[str, Any]],
+    verified: pd.Timestamp,
+) -> dict[str, Any]:
+    """Validate correspondence of a supplied declaration, never attest a census."""
+    result = {
+        "state": "not_supplied",
+        "inventory_selection_consistent": None,
+        "two_scan_identity_sets_equal": None,
+        "atomic_census_proven": False,
+        "global_inventory_completeness_proven": False,
+    }
+    if evidence is None:
+        return result
+    if (not isinstance(evidence, dict)
+            or evidence.get("schema") != BATCH_INVENTORY_SCHEMA
+            or set(evidence) - {"schema", "scans", "selected_receipt_ids", "owner_quiescence_reference"}):
+        raise TiingoViewRefusal("Batch inventory declaration schema refused")
+
+    def identities(value: Any) -> list[str]:
+        if (not isinstance(value, (list, tuple))
+                or len(value) > MAX_BATCH_INVENTORY_ENTRIES
+                or any(not isinstance(item, str) or not SHA.fullmatch(item) for item in value)
+                or len(set(value)) != len(value)):
+            raise TiingoViewRefusal("Batch inventory requires bounded unique exact receipt identities")
+        return sorted(value)
+
+    selected = evidence.get("selected_receipt_ids")
+    if not isinstance(selected, dict) or set(selected) != {"1min", "4hour"}:
+        raise TiingoViewRefusal("Batch inventory requires selected identities by frequency")
+    selected = {frequency: identities(selected[frequency]) for frequency in ("1min", "4hour")}
+    actual = {frequency: sorted(key for key, item in inventory.items()
+                               if item["frequency"] == frequency)
+              for frequency in ("1min", "4hour")}
+    if selected != actual:
+        raise TiingoViewRefusal("Batch supplied views do not match declared selected inventory")
+    scans = evidence.get("scans")
+    if not isinstance(scans, (list, tuple)) or len(scans) != 2:
+        raise TiingoViewRefusal("Batch inventory requires exactly two explicit scan declarations")
+    normalized, previous = [], None
+    for scan in scans:
+        if not isinstance(scan, dict) or set(scan) != {"started_at_utc", "completed_at_utc", "receipt_ids"}:
+            raise TiingoViewRefusal("Batch scan declaration fields refused")
+        started, completed = _clock(scan["started_at_utc"]), _clock(scan["completed_at_utc"])
+        if (started is None or completed is None or completed < started
+                or completed > verified or (previous is not None and started < previous)):
+            raise TiingoViewRefusal("Batch scan declarations require ordered bounded clocks")
+        ids = identities(scan["receipt_ids"])
+        if not set(inventory) <= set(ids):
+            raise TiingoViewRefusal("A supplied selected receipt is absent from a declared scan")
+        if any(_clock(item["view"].source_observed_at_utc) > completed for item in inventory.values()):
+            raise TiingoViewRefusal("A declared scan precedes a selected response observation")
+        normalized.append({"started_at_utc": scan["started_at_utc"],
+                           "completed_at_utc": scan["completed_at_utc"], "receipt_ids": ids})
+        previous = completed
+    quiescence = evidence.get("owner_quiescence_reference")
+    if quiescence is not None and (not isinstance(quiescence, str) or len(quiescence) > 2048):
+        raise TiingoViewRefusal("Owner quiescence evidence must be a bounded reference, not an authority flag")
+    return {
+        **result, "schema": BATCH_INVENTORY_SCHEMA, "state": "supplied_declaration_only",
+        "inventory_selection_consistent": True,
+        "two_scan_identity_sets_equal": normalized[0]["receipt_ids"] == normalized[1]["receipt_ids"],
+        "selected_receipt_ids": selected, "scans": normalized,
+        "owner_quiescence_reference": quiescence,
+        "owner_quiescence_independently_verified": False,
+    }
+
+
+def _batch_minute_slot(
+    minute_inventory: dict[str, dict[str, Any]], start: pd.Timestamp, end: pd.Timestamp,
+) -> tuple[dict[str, Any], str | None]:
+    """Compare all supplied closed overlapping minutes without stitching grids."""
+    grids, invalid, opened = {}, [], []
+    for receipt, item in sorted(minute_inventory.items()):
+        diagnostic = item["diagnostic"]
+        if _clock(item["view"].source_observed_at_utc) < end:
+            opened.append(receipt)
+            continue
+        values, bad = {}, False
+        for row in diagnostic["candidate_observations"]:
+            stamp = _clock(row["bar_at_vendor"])
+            if stamp is None:
+                bad = True  # An unplaceable instant cannot be excluded from this slot.
+                continue
+            if not start <= stamp < end:
+                continue
+            if stamp.value % MINUTE_NS or stamp.value in values or row["issues"]:
+                bad = True
+            values.setdefault(stamp.value, row["vendor_ohlc"])
+        grids[receipt] = values
+        if bad:
+            invalid.append(receipt)
+    required = set(range(start.value, end.value, MINUTE_NS))
+    complete = [receipt for receipt in sorted(grids)
+                if receipt not in invalid and set(grids[receipt]) == required]
+    partial = [receipt for receipt in sorted(grids) if set(grids[receipt]) != required]
+    reference = complete[0] if complete else None
+    conflicts = []
+    if reference is not None:
+        baseline = grids[reference]
+        for receipt, values in sorted(grids.items()):
+            if any(stamp not in baseline or ohlc != baseline[stamp] for stamp, ohlc in values.items()):
+                conflicts.append(receipt)
+    return {
+        "complete_reference_receipt_ids": complete,
+        "selected_complete_reference_receipt_id": reference,
+        "compared_closed_receipt_ids": sorted(grids),
+        "open_receipt_ids_not_compared_as_corrections": opened,
+        "partial_closed_receipt_ids": partial,
+        "conflicting_closed_receipt_ids": conflicts,
+        "invalid_closed_receipt_ids": invalid,
+        "closed_overlapping_minute_counts": {receipt: len(values) for receipt, values in sorted(grids.items())},
+        "supplied_closed_minute_values_consistent": bool(reference) and not conflicts and not invalid,
+        "partial_matching_receipts_do_not_establish_completeness": True,
+        "all_possible_corrections_examined": False,
+    }, reference
+
+
+def assess_forex_source_batch_candidate(
+    minute_vintages: tuple[tuple[TiingoView, str], ...],
+    four_hour_vintages: tuple[tuple[TiingoView, str], ...], *,
+    expected_pair: str, consecutive: int, policy_version: str,
+    verified_at_utc: str, assessed_at_utc: str,
+    inventory_evidence: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Assess the exact current adjacent slots as unadopted research evidence.
+
+    Older supporting slots retain the individual policy's expired verdict while
+    using the existing evaluator's current-decision availability semantics. Only
+    the newest slot must remain within its fixed expiry. One complete minute
+    view must witness each slot; partial views are compared, never stitched.
+
+    This pure function authenticates neither disk bytes nor caller clocks or an
+    archive census. Equal supplied scan declarations are not an atomic snapshot.
+    No result admits a feed, account binding, historical availability or bars.
+    """
+    from urllib.parse import parse_qs, urlsplit
+
+    if (policy_version != BATCH_CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS
+            or type(consecutive) is not int or not 1 <= consecutive <= 10):
+        raise TiingoViewRefusal("Unknown Forex batch policy, pair or consecutive-close bound")
+    verified, assessed = _clock(verified_at_utc), _clock(assessed_at_utc)
+    if verified is None or assessed is None or assessed < verified:
+        raise TiingoViewRefusal("Batch assessment requires ordered explicit UTC clocks")
+    supplied = (("1min", minute_vintages, MAX_BATCH_MINUTE_VINTAGES),
+                ("4hour", four_hour_vintages, MAX_BATCH_NATIVE_VINTAGES))
+    for _frequency, views, limit in supplied:
+        if not isinstance(views, (list, tuple)) or len(views) > limit:
+            raise TiingoViewRefusal("Batch input-reference cap exceeded before deduplication")
+    inventory, duplicates = {}, Counter()
+    budget = {"rows": 0, "nodes": 0, "bytes": 0}
+    for frequency, views, _limit in supplied:
+        for item in views:
+            if not isinstance(item, (list, tuple)) or len(item) != 2:
+                raise TiingoViewRefusal("Batch inputs require exact view/receipt pairs")
+            view, receipt = item
+            if not isinstance(view, TiingoView) or not isinstance(view.rows, tuple):
+                raise TiingoViewRefusal("Batch inputs require exact reader views with ordered tuple rows")
+            budget["rows"] += len(view.rows)
+            if (budget["rows"] > MAX_BATCH_INPUT_ROWS
+                    or (frequency == "4hour" and len(view.rows) > MAX_RECONCILIATION_NATIVE_ROWS)):
+                raise TiingoViewRefusal("Batch row-reference budget exceeded; no truncation")
+            diagnostic = diagnose_forex_view(view, expected_pair=expected_pair, receipt_id=receipt)
+            query = parse_qs(urlsplit(view.source_request_path).query, keep_blank_values=True)
+            if (query.get("resampleFreq") != [frequency]
+                    or any(row["requested_resample_frequency"] != frequency
+                           for row in diagnostic["candidate_observations"])):
+                raise TiingoViewRefusal("Batch view frequency does not match its exact request")
+            if _clock(view.source_observed_at_utc) > verified:
+                raise TiingoViewRefusal("Batch verification precedes a supplied response observation")
+            fingerprint = _batch_view_identity(view, budget)
+            if receipt in inventory:
+                if (inventory[receipt]["fingerprint"] != fingerprint
+                        or inventory[receipt]["frequency"] != frequency):
+                    raise TiingoViewRefusal("Conflicting full content for one batch receipt identity")
+                duplicates[receipt] += 1
+                continue
+            inventory[receipt] = {"view": view, "diagnostic": diagnostic,
+                                  "frequency": frequency, "fingerprint": fingerprint}
+    inventory = dict(sorted(inventory.items()))
+    declaration = _batch_inventory_declaration(inventory_evidence, inventory, verified)
+    minutes = {key: item for key, item in inventory.items() if item["frequency"] == "1min"}
+    natives = {key: item for key, item in inventory.items() if item["frequency"] == "4hour"}
+    interval_ns = 240 * MINUTE_NS
+    try:
+        latest_end_ns = (assessed.value // interval_ns) * interval_ns
+        ends = [pd.Timestamp(latest_end_ns - interval_ns * offset, tz="UTC")
+                for offset in reversed(range(consecutive))]
+        starts = [pd.Timestamp(end.value - interval_ns, tz="UTC") for end in ends]
+        expiries = [pd.Timestamp(end.value + interval_ns, tz="UTC") for end in ends]
+    except (ValueError, OverflowError):
+        raise TiingoViewRefusal("Batch target sequence exceeds supported nanosecond clock bounds") from None
+
+    cache, slots = {}, []
+    for index, (start, end, expiry) in enumerate(zip(starts, ends, expiries)):
+        minute_check, minute_receipt = _batch_minute_slot(minutes, start, end)
+        native_choices = []
+        for receipt, item in natives.items():
+            rows = [row for row in item["diagnostic"]["candidate_observations"]
+                    if (stamp := _clock(row["bar_at_vendor"])) is not None and stamp == start]
+            if rows:
+                preferred = (_clock(item["view"].source_observed_at_utc) >= end
+                             and len(rows) == 1 and not rows[0]["issues"])
+                native_choices.append((not preferred, receipt))
+        native_receipt = min(native_choices)[1] if native_choices else None
+        candidate = None
+        if minute_receipt is not None and native_receipt is not None:
+            key = (minute_receipt, native_receipt)
+            if key not in cache:
+                # At most one deterministic pair per required slot (ten total),
+                # not a retained Cartesian product of all supplied receipts.
+                cache[key] = assess_forex_source_candidate(
+                    minutes[minute_receipt]["view"], natives[native_receipt]["view"],
+                    expected_pair=expected_pair, minute_receipt_id=minute_receipt,
+                    four_hour_receipt_id=native_receipt,
+                    policy_version=CANDIDATE_POLICY_VERSION,
+                    verified_at_utc=verified_at_utc, assessed_at_utc=assessed_at_utc,
+                    known_native_vintages=tuple((item["view"], receipt) for receipt, item in natives.items()
+                                               if receipt != native_receipt),
+                )
+            matches = [window for window in cache[key]["windows"]
+                       if _clock(window["candidate_projection"]["interval_start_utc"]) == start]
+            candidate = matches[0] if matches else None
+        supporting = (candidate is not None
+                      and all(candidate["checks"][name] for name in BATCH_SUPPORTING_CHECKS)
+                      and minute_check["supplied_closed_minute_values_consistent"])
+        latest = index == consecutive - 1
+        fresh = (candidate is not None
+                 and candidate["checks"]["verification_before_candidate_expiry"]
+                 and candidate["checks"]["assessment_before_candidate_expiry"])
+        projection = (dict(candidate["candidate_projection"]) if candidate is not None else {
+            "literal_pair": expected_pair,
+            "quote_units_per_base_unit": expected_pair[3:] + " per " + expected_pair[:3],
+            "interval_start_utc": start.isoformat(), "interval_end_utc": end.isoformat(),
+            "utc_slot_index": start.value // interval_ns,
+            "native_reported_close": None, "candidate_expires_at_utc": expiry.isoformat(),
+        })
+        projection["candidate_available_at_utc"] = verified_at_utc
+        slots.append({
+            "role": "latest" if latest else "supporting",
+            "candidate_assessment": candidate,
+            "selected_minute_receipt_id": minute_receipt,
+            "selected_native_receipt_id": native_receipt,
+            "supporting_checks_satisfied": bool(supporting),
+            "latest_freshness_required": latest,
+            "latest_freshness_satisfied": bool(fresh) if latest else None,
+            "minute_vintage_check": minute_check, "candidate_projection": projection,
+            "slot_checks_satisfied": bool(supporting and (not latest or fresh)),
+        })
+    checks = {
+        "all_required_adjacent_slots_supported": all(slot["supporting_checks_satisfied"] for slot in slots),
+        "latest_slot_within_fixed_expiry": slots[-1]["latest_freshness_satisfied"],
+        "supplied_two_scan_identity_sets_equal": declaration["two_scan_identity_sets_equal"],
+    }
+    satisfied = all(slot["slot_checks_satisfied"] for slot in slots) and declaration["two_scan_identity_sets_equal"] is not False
+    return {
+        "schema": BATCH_CANDIDATE_POLICY_SCHEMA, "policy_version": policy_version,
+        "policy_state": "CANDIDATE_NOT_ADOPTED", "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pair_candidate": expected_pair, "requested_pair_inventory": list(CANDIDATE_PAIRS),
+        "consecutive": consecutive, "required_interval_ends_utc": [end.isoformat() for end in ends],
+        "clocks": {
+            "verified_at_utc": verified_at_utc, "assessed_at_utc": assessed_at_utc,
+            "meaning": "caller-supplied readback completion and assessment; no independent attestation",
+            "latest_anchor_from": "assessment UTC four-hour boundary; no older-window fallback",
+            "supporting_availability": "current decision only; not historical availability",
+            "reread_extends_newest_freshness": False,
+        },
+        "input_inventory": [
+            {"source": item["diagnostic"]["source"], "frequency": item["frequency"],
+             "full_view_identity_sha256": item["fingerprint"]}
+            for item in inventory.values()
+        ],
+        "duplicate_supplied_references": dict(sorted(duplicates.items())),
+        "inventory_evidence": declaration,
+        "inventory_scope": "only supplied views and declarations; neither an authenticated nor atomic archive census",
+        "slots": slots, "checks": checks,
+        "batch_checks_satisfied": bool(satisfied),
+        "assessment_state": "checks_satisfied_policy_unadopted" if satisfied else "checks_failed",
+        "failed_checks": [key for key, passed in checks.items() if passed is False],
+        "comparison_semantics": {
+            "normalized_ohlc_equality_only": True,
+            "raw_arbitrary_precision_equality_proven": False,
+            "vendor_immutability_proven": False, "correction_selection": False,
+            "global_inventory_completeness_proven": False,
+            "atomic_census_proven": False,
+        },
+        "owner_decisions_required": [
+            "adopt_exact_pair_identity_and_supported_calendar_scope",
+            "adopt_reported_close_and_normalized_numeric_comparison",
+            "qualify_actual_readback_clock_and_inventory_concurrency_boundary",
+            "adopt_supporting_history_and_newest_slot_freshness_policy",
+            "qualify_observation_revision_and_explicit_account_feed_binding",
+        ],
+        "product_use_approval": {
+            "state": "COMPLETE", "authority": "Chairman attestation",
+            "reference": PRODUCT_USE_APPROVAL_REFERENCE,
+            "scope": "R26 Tiingo Forex product use; technical source admission remains separate",
+        },
+        "eligible_observations": [], "monitoring_admitted": False,
+        "dataos_identity_admitted": False, "pit_backtest_eligible": False,
+        "redistribution_admitted": False,
+    }
