@@ -930,6 +930,10 @@ jobs:
       - "tests/test_bea_gvc_browser.py"
       - "tests/test_bea_gvc_current_descriptive.py"
       - "tests/test_bea_gvc_view_contract.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -2786,6 +2790,10 @@ jobs:
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
       - "tests/__init__.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3708,6 +3716,10 @@ jobs:
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
       - "engine/fundamental_forensics/latency.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5968,6 +5980,10 @@ jobs:
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
       - "engine/company_intelligence/rms_segment_profile.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9974,6 +9990,10 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11526,6 +11546,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12643,6 +12664,10 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -15513,6 +15538,10 @@ jobs:
       - "tests/test_rotation_events_v2.py"
       - "tests/test_rotation_flow_pit.py"
       - "tests/test_rotation_role_retention.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19207,6 +19236,10 @@ jobs:
       - "site/neuralwebdata/bottom_sensors.json"
       - "site/neuralwebdata/theme_state.json"
       - "site/vol/regime.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -19709,6 +19742,10 @@ jobs:
       - "tests/test_research_vault_source_layout.py"
       - "tests/test_research_vault_strict_store.py"
       - "tests/test_research_vault_subjects.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -22228,6 +22265,10 @@ jobs:
       - "site/marketdata/subsector_rotation.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -23517,6 +23558,10 @@ jobs:
       - "site/government-revenue-data/research-state.json"
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27269,6 +27314,10 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -28727,6 +28776,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -32256,6 +32308,10 @@ jobs:
       - scripts/tiingo_materialize.py
       - lib/dataos/tiingo_reader.py
       - lib/dataos/tiingo_views.py
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35200,6 +35256,10 @@ jobs:
       - "site/factordata/attention.json"
       - "site/factordata/tech_confluence.json"
       - "site/marketdata/sp500_heatmap.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -36019,6 +36079,7 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
