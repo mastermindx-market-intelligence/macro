@@ -4363,6 +4363,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
     "options-nbbo-cohort",
@@ -5178,7 +5179,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_847),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 135, 5_820),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_602),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5186,6 +5187,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 Catalyst opportunity composition (PR #9552), hosted contract-
+    delta job 119715681724 on exact tested merge 71a2aec6283a over main
+    790990a28c33, measured index 135/5847 and free-content 135/5820
+    unchanged; plan-book moves from 128/5596 to 129/5602, all at ten
+    packs. The newly selected catalyst-opportunity owner contributes six
+    planning weight-seconds through the existing app.main import closure.
+    Fund only the demonstrated excess: plan-book ceiling 5600 -> 5602.
+    Job-count and pack ceilings, weights, selection rules and execution
+    timeouts are unchanged. These are planning estimates, not timings.
 
     2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
     pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
