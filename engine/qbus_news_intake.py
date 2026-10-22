@@ -33,6 +33,7 @@ class SupplementalNewsIntake:
         self._expected_cursor = None
         self._checkpoint = None
         self._since = None
+        self._submitted_publishers = ()
         self._next_poll = 0.0
         self.state = "waiting"
         self.last_successful_poll = None
@@ -82,7 +83,10 @@ class SupplementalNewsIntake:
                     "since": self._since.isoformat(),
                     "through": batch.through.isoformat(),
                     "next_url": None if batch.complete else batch.next_url,
-                    "publishers": list(self.publishers),
+                    # A continuation only covers the publishers admitted when
+                    # this acquisition started. New grants must replay earlier
+                    # pages; drain-time rights still govern every report write.
+                    "publishers": list(self._submitted_publishers),
                 }, sort_keys=True, separators=(",", ":"))
                 receipt = self.store.commit(
                     routed, expected_cursor=self._expected_cursor, next_cursor=next_cursor,
@@ -135,10 +139,11 @@ class SupplementalNewsIntake:
             return
         self._checkpoint = checkpoint.isoformat()
         self._since = since
+        self._submitted_publishers = self.publishers
         self.state = "catching_up"
         self._pending = self._pool.submit(
             self.client.poll, since=since, next_url=resume_url, through=through,
-            allowed_publishers=frozenset(self.publishers),
+            allowed_publishers=frozenset(self._submitted_publishers),
         )
 
     def health(self):

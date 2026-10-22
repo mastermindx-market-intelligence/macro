@@ -138,6 +138,42 @@ def test_no_permission_means_no_supplemental_request(tmp_path):
         task.close()
 
 
+def test_new_publisher_during_acquisition_restarts_incomplete_coverage(tmp_path):
+    rights = [parse_rights_receipt(policy(), now=T0)]
+    prior = T0 - timedelta(hours=3)
+    with NewsStore(tmp_path/"q.db", source_key="extra") as store:
+        store.commit((), expected_cursor=None, next_cursor=json.dumps({
+            "checkpoint": prior.isoformat(), "next_url": None,
+            "publishers": ["reuters.com"],
+        }))
+        task = intake(store, rights)
+        try:
+            task.pump()
+            first = task._pool.calls[-1]
+            rights.append(parse_rights_receipt({
+                **policy(), "receipt_id": "fixture-massive-ft", "source": "massive:ft.com",
+            }, now=T0))
+            continuation = "https://api.massive.com/v2/reference/news?cursor=page11"
+            task._pool.future.set_result(PollBatch((article(),), T0, False, 10, continuation))
+            task.pump()
+            cursor = json.loads(store.current_cursor())
+            assert cursor["checkpoint"] == prior.isoformat()
+            # Current rights may change while a page is acquired. A continuation
+            # only covers the publisher set whose earlier pages were observed.
+            assert cursor["publishers"] == ["reuters.com"]
+            assert task.health()["publishers"] == ["ft.com", "reuters.com"]
+            task._next_poll = 0
+            task.pump()
+            restarted = task._pool.calls[-1]
+            assert restarted["next_url"] is None
+            assert restarted["through"] is None
+            assert restarted["allowed_publishers"] == frozenset({"ft.com", "reuters.com"})
+            assert restarted["since"] == first["since"]
+            assert json.loads(store.current_cursor())["checkpoint"] == prior.isoformat()
+        finally:
+            task.close()
+
+
 def test_revoked_duplicate_cannot_leave_older_grant_active(tmp_path):
     first, second = tmp_path/"first.json", tmp_path/"second.json"
     first.write_text(json.dumps(policy()))
