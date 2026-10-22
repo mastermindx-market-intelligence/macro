@@ -1487,6 +1487,11 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
             values=[it.get("pages")], url=url,
             source_name="Mastermind Research vault",
         ))
+        # These dates describe the report's release. Its measurements can refer
+        # to an earlier period declared in the source; never relabel this clock
+        # as an observation date at the writer boundary.
+        for fact in facts:
+            fact["date_role"] = "publication"
         facts.extend(stats)
 
         ctx = chronicle_context(as_of, topics=[inst], root=root)
