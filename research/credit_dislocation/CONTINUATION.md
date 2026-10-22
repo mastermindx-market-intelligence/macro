@@ -1,5 +1,25 @@
 # CDI continuation - resume the existing implementation
 
+## October 22 accountable recovery — current next action
+
+This section supersedes the stopping reason and next-step text in the October 18 records below; their accepted results and original failures remain evidence. Chris assigned completion of both Forex and Bond programs to the current recovery owner. Protected compatible Skillpack pin: `230e9a301ed774e79410829f1b5c049226fa59f1`. Joint navigation: [Macro #9996 checkpoint 6336042815](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). CDI takeover/readback: [comment 6337092277](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277).
+
+**Recovered completion:** the original 22-file missing-input hydration finished, and its bytes still match. The original native build v3 finished exit0 in 2.96 seconds; 437,877-byte HTML SHA256 `cbf7836fae70dbf0de0e60c8b3f7ae4e10651d0cf2e459924ae145a508339694` still matches. It shows the October 15 CDI source and no eligible five-session comparisons. Preserve this pre-integration local native-build proof; it is not browser/production acceptance. Do not replay the old hydration or earlier failed builds.
+
+**Source advanced:** the original #9589 head `270380d8aeefc4e5458c6cb74bb84be4c39745aa` integrates cleanly with source head `4074adb0aeb2d5029dbaacdda4de5bf4e81f19ab`, retaining original provenance. It fixes latest same-date maturity holdings, adds the actual holdings date, labels fund holdings honestly and removes the unsupported universal zero-maturity claim. Only its four original source/research paths changed. All 775 previously modified/untracked/ignored paths survived with matching fingerprints. The composed tree before this documentation is `12b3dad162d1423baff3264a65e58ccb16e09c00`. The affected corporate-credit VM and CDI view suites passed **119 tests in 2.67 seconds**, with source hashes unchanged during execution. See [evidence/recovery_20261022.json](evidence/recovery_20261022.json).
+
+**Optimization reconciliation:** the retained 280.95-second run failed its exact comparison after writing outputs. The original FAILED receipt stays unchanged. Read-only comparison found the 10,376-row bond-price panel and 6,750-row maturity table byte-identical; only matched spread-change floats in four aggregate tables differ, at most 2.2737367544323206e-13 bp. This explains the comparison failure; it is not a new hash-bound pricing PASS or a retroactive successful execution receipt. No solver/collector was rerun.
+
+### Ordered continuation
+
+1. Finish this original-source merge and retain its exact commit/readback. Keep this PR Draft; the original data-bearing workspace remains canonical and must never be reset/cleaned/stashed wholesale.
+2. Serialize current-main/R33 integration and required R11 repairs in shared builder/template/CI files. Preserve #8780's unavailable state for unreadable credit roots; do not replace current files with stale branch copies. Current-main integration must preserve the accepted local data; use an admitted isolated source composition if the dirty data would otherwise collide.
+3. Validate only affected composed-source contracts, then obtain actual native-route EN/ZH/light/dark/desktop/mobile and keyboard/accessibility acceptance through an admitted path. Original browser/platform refusals remain binding; source/section tests cannot clear them. The recovered old HTML does not prove the new maturity-integrated page.
+4. Consume required source review/exact-head CI, existing controller decision, normal covering render and actual protected served-route/machine-consumer proof. No duplicate render, new workflow or alternate deployment carrier.
+5. Continue the existing masterplan's W4–W6 history/comparables, financing and case memory. Genuine CDS and prospective 21/63/126-session outcomes remain separately bounded evidence obligations; do not fabricate missing sessions or promote model authority.
+
+Tiingo special licensing/product-use approval is **COMPLETE by Chairman attestation**; no Tiingo licensing/support email is needed. No new worker, watcher, queue, retry, evaluator, store or publication plane is created. This is active continuation, not a claim of a background wake. Full program completion remains false.
+
 ## October 18 qualification continuation (supersedes pricing PENDING below)
 
 The existing source/workspace/PR were retained. The first requested pricing blocker is resolved in the isolated October 15 generation, not yet in production.

@@ -514,6 +514,48 @@ class TestMaturityWall:
                 assert seg["flex"] > 0
 
 
+    def test_maturity_wall_uses_one_latest_snapshot(self, tmp_path: Path) -> None:
+        """An older bucket may not masquerade as the latest holdings distribution."""
+        cm_dir = tmp_path / "corp_bonds"
+        (cm_dir / "series").mkdir(parents=True)
+        cm_path = cm_dir / "credit_momentum.json"
+        _write_cm(cm_path, _minimal_cm("2026-10-16"))
+        rows = [
+            {"as_of": "2026-07-14", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 0.0, "n_bonds": 0},
+            {"as_of": "2026-07-14", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "1_3y", "par_total": 1_000_000.0, "n_bonds": 1},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 2_000_000.0, "n_bonds": 1},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "1_3y", "par_total": 0.0, "n_bonds": 0},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "neocloud_credit",
+             "bucket": "1_3y", "par_total": 3_000_000.0, "n_bonds": 1},
+        ]
+        pd.DataFrame(rows).to_parquet(cm_dir / "series" / "maturity_wall.parquet")
+        snapshot = _build_maturity_wall(cm_path)
+        hyperscaler = next(x for x in snapshot if x["slug"] == "hyperscaler_credit")
+        assert hyperscaler["as_of"] == "2026-10-16"
+        assert [x["css_class"] for x in hyperscaler["segs"]] == ["seg-0"]
+        assert all(x["as_of"] == "2026-10-16" for x in snapshot)
+
+        html = _render_credit_section(build_corp_credit_vm(data_root=tmp_path))
+        assert "Tracked bond-fund holdings by maturity" in html
+        assert "face values held by five tracked funds" in html
+        assert "2026-10-16" in html
+        assert "All themes had zero bonds maturing" not in html
+
+    def test_maturity_wall_missing_dates_fail_closed(self, tmp_path: Path) -> None:
+        """Malformed as-of dates cannot silently produce a current-seeming chart."""
+        cm_dir = tmp_path / "corp_bonds"
+        (cm_dir / "series").mkdir(parents=True)
+        pd.DataFrame([
+            {"as_of": None, "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 2_000_000.0, "n_bonds": 1}
+        ]).to_parquet(cm_dir / "series" / "maturity_wall.parquet")
+        assert _build_maturity_wall(cm_dir / "credit_momentum.json") == []
+
+
 # ---------------------------------------------------------------------------
 # 7. FINRA breadth vm
 # ---------------------------------------------------------------------------

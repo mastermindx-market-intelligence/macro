@@ -1,5 +1,15 @@
 # Credit Dislocation Intelligence - recovered implementation status
 
+## Current recovery status — October 22
+
+The original missing-input hydration and native build completed; the retained HTML and all 22 restored inputs still match their receipts. The pricing qualification remains PASS for its exact October 15 source binding, with zero eligible five-session issuer comparisons. These recovered results supersede the historical pending/build-incomplete statements below.
+
+The original maturity correction #9589 now composes with this source without conflicts. Its same-date holdings selection, visible holdings date and accurate fund-holdings labels are covered by **119 passing corporate-credit VM and CDI view tests**. All 775 existing modified, untracked and ignored paths were preserved. The old local native HTML predates this source integration and is not acceptance of the changed page.
+
+The retained optimization run's exact-comparison failure remains recorded. A read-only comparison isolated differences to matched spread-change floating values (maximum 2.2737367544323206e-13 bp); the bond-price panel and maturity table are byte-identical. No solver, collector or original failed operation was repeated.
+
+See [CONTINUATION.md](CONTINUATION.md) for the ordered current-main/R33/R11 integration, actual native-route/browser, review/CI and production steps, and [the recovery receipt](evidence/recovery_20261022.json) for exact source and evidence identities. This PR stays Draft; program completion and production acceptance remain false. Tiingo licensing/product-use approval is complete by Chairman attestation; no licensing outreach is needed.
+
 ## October 18 qualification continuation (supersedes pricing PENDING below)
 
 The existing source/workspace/PR were retained. The first requested pricing blocker is resolved in the isolated October 15 generation, not yet in production.

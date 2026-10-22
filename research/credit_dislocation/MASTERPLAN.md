@@ -1,5 +1,23 @@
 # Credit Dislocation Intelligence - implementation masterplan
 
+## Current execution ledger — October 22
+
+The original operation and PR #9590 remain the delivery carrier. The compatible procedure pin is now `230e9a301ed774e79410829f1b5c049226fa59f1`; the older pins below identify historical work. [CONTINUATION.md](CONTINUATION.md) is the current step-by-step handoff, and [Macro #9996 checkpoint 6336042815](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) connects this plan to Forex and the other Bond owners.
+
+| Slice | Current evidence | Next action / completion gate |
+| --- | --- | --- |
+| Qualified October 15 cash-credit source | Pricing PASS remains hash-bound; 311 mapped holdings, zero eligible five-session comparisons | Preserve truthful dates, coverage and missing states; no synthetic comparisons |
+| Original native Bonds build | Original 22-file hydration completed; native v3 HTML hash recovered and verified | Preserve this pre-integration result; validate the changed composed route and obtain admitted browser acceptance |
+| Maturity truth correction | Original #9589 source integrated cleanly; 119 affected VM/view tests pass; 775 local paths preserved | Commit this exact integration, then retain the correction through current-main/R33 composition |
+| R33 and R11 integration | R33 repair is published on #9578; R11 retains distinct source/repair and browser gates | Serialize shared builder/template/CI adoption; preserve accepted unavailable states and shared renderer ownership |
+| Deployment and actual use | This implementation remains Draft and not production-proven | Required review/CI, existing controller decision, covering normal render, protected page and machine-consumer proof |
+| W4–W6 research workflow | Original scope below remains active | Existing history/comparables, financing and saved-case owners; no duplicate stores or lifecycle |
+| CDS / prospective evaluation | No genuine CDS series or mature 21/63/126-session outcome claim | Actual entitled source and elapsed eligible observations; no fabricated data or predictive promotion |
+
+Tiingo licensing and intended product-use approval are **complete by Chairman attestation of special licensing**. Do not reopen that approval or email Tiingo. Technical source qualification and any other vendor's actual evidence/rights remain separately scoped. The original optimization comparison failure is retained with its bounded floating-point diagnosis in [evidence/recovery_20261022.json](evidence/recovery_20261022.json); no old capture, build or solver was replayed.
+
+The execution order is source integration → affected source proof → admitted native-route/browser evidence → existing release gates → genuine production proof, while independent W4–W6 work continues. Accepted work is preserved across session replacement; a checkpoint or successful build does not complete the parent program.
+
 Status: first issuer-comparison backend, Bonds component and pipeline wiring implemented locally and preserved in draft PR #9590. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for observed tests and remaining gates. No deployment, live CDS access, calibrated forecasts or subscriber data rights are claimed.
 
 Owner: existing Corporate Credit Watch (CCW), Macro repository. Operation: `web-ccw-dislocation-20261018-sol001`.
