@@ -625,6 +625,18 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
     assert "redir /baskets_china.html " not in CADDY
 
 
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
+
+
 def test_fail_closed_and_browser_hardening_are_present():
     assert 'rewrite /api/regwall/check' in CADDY
     assert 'rewrite /api/paywall/check' in CADDY
