@@ -577,6 +577,11 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "scripts.audit_china_gold_premium",
             ["--strict-render"],
         ),
+        (
+            "checkpoint_core_commodity_recovery",
+            "scripts.check_commodity_publication",
+            ["--heal-from", "$COMMODITY_ACCEPTED"],
+        ),
         ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
         ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
         ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
@@ -584,6 +589,11 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "checkpoint_core_postrebase_check_template_site_sync",
             "scripts.check_template_site_sync",
             ["--fix"],
+        ),
+        (
+            "checkpoint_core_commodity_candidate",
+            "scripts.check_commodity_publication",
+            ["--accepted-ref", "$COMMODITY_ACCEPTED", "--candidate-ref", "$qledger_push_candidate"],
         ),
     ]
 
@@ -601,6 +611,38 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
     ]
     assert [step.get("module") for step in declared] == actual_modules
     assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
+
+
+
+@pytest.mark.parametrize(
+    ("workflow", "job", "expected_count"),
+    [
+        ("daily.yml", "engine", 4),
+        ("engine-render.yml", "engine-render", 2),
+        ("render.yml", "render", 3),
+    ],
+)
+def test_each_commodity_publication_guard_is_declared(workflow, job, expected_count):
+    """The general DAG parser caps repeated modules; these guards must be exact."""
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    lane = next(
+        lane for lane in dag["lanes"]
+        if lane["workflow"] == f".github/workflows/{workflow}" and lane["job"] == job
+    )
+    declared = [
+        step for step in lane["steps"]
+        if step.get("module") == "scripts.check_commodity_publication"
+    ]
+    workflow_doc = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / workflow).read_text()
+    )
+    actual = [
+        call for step in workflow_doc["jobs"][job]["steps"]
+        for call in _extract_steps_from_run(resolve_run_source(step.get("run", ""), REPO_ROOT))
+        if call.module == "scripts.check_commodity_publication"
+    ]
+    assert len(declared) == len(actual) == expected_count
+    assert len({step["id"] for step in declared}) == expected_count
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():

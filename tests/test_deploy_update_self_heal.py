@@ -327,6 +327,8 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Today contract validator caches the source schema across requests.
+    "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
@@ -520,6 +522,7 @@ MUST_RESTART = [
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.
 MUST_NOT_RESTART = [
+    "site/macrodata/workspaces/manifest.json",
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
     # rendered site + data artifacts are read from disk per request

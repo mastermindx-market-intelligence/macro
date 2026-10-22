@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-20",
+  "as_of": "2026-10-22",
   "universe_coverage": {
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-22",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -170,11 +170,11 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-20",
+      "as_of": "2026-10-22",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
-      "positive": 1,
+      "positive": 0,
       "denominator": 3,
       "basis": "reported_30d_return_positive",
       "available": false,
@@ -185,12 +185,12 @@
     }
   },
   "market": {
-    "stance": "Market cap is little changed",
-    "total_state": "Steady",
-    "dominance_state": "Rising",
-    "fear_state": "Neutral",
+    "stance": "Market cap is lower",
+    "total_state": "Falling",
+    "dominance_state": "Steady",
+    "fear_state": "Greedy",
     "breadth_state": "Building history",
-    "cap_move": "share_or_flat",
+    "cap_move": "valuation",
     "cap_splices": [
       {
         "date": "2026-06-13",
@@ -461,21 +461,21 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 4,
-        "support_after": 1,
-        "level_ratio": 1.0929342935351363,
+        "support_after": 3,
+        "level_ratio": 0.9792013096092357,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
-    "etf": "Rising",
+    "etf": "Unavailable",
     "stablecoins": "Steady",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "zero",
+      "observation": "stale",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
@@ -500,13 +500,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,794 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,796 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,952 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,954 daily observations from Coinbase daily OHLCV."
     }
   }
 }

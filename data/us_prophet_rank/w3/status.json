@@ -74,13 +74,17 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-10-19"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-10-20"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-19",
+    "board_as_of": "2026-10-20",
     "coverage": {
       "identical": 0,
       "matured": 0,
@@ -101,11 +105,11 @@
     "n_family_rows": 8,
     "n_paired_rows": 1931,
     "paired": {
-      "identical": 1696,
-      "matured": 192,
+      "identical": 1814,
+      "matured": 74,
       "revisions_refused": 0,
-      "stamps": 3,
-      "written": 192
+      "stamps": 1,
+      "written": 74
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -124,9 +128,10 @@
       "2026-10-09",
       "2026-10-13",
       "2026-10-15",
-      "2026-10-16"
+      "2026-10-16",
+      "2026-10-19"
     ],
-    "require_stamp": "2026-10-19",
+    "require_stamp": "2026-10-20",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 30,
@@ -138,11 +143,11 @@
   "latest_session": {
     "liveness": "degraded_or_unpaired",
     "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
-    "stamp_date": "2026-10-19"
+    "stamp_date": "2026-10-20"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
-  "n_degraded_or_unpaired": 18,
+  "n_degraded_or_unpaired": 19,
   "n_missing": 0,
   "paired_sessions_accrued": 30,
   "same_stamp_revisions_refused": [

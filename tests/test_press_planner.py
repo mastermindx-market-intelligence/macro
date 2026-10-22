@@ -595,6 +595,16 @@ def test_research_raw_document_is_the_vault_summary_not_the_source_pdf(tmp_path)
     assert F.SOURCE_DOC.split(":")[0] in slot["raw_documents"][0]["text"]
 
 
+def test_research_fact_dates_identify_publication_not_observation(tmp_path):
+    root = F.fixture_root(tmp_path)
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+    report_facts = [f for f in slot["facts"] if f["ref"] in slot["sources"]]
+    assert report_facts and all(f["date_role"] == "publication" for f in report_facts)
+    assert all(f["dated"] == "2026-07-25" for f in report_facts)
+    engine_facts = [f for f in slot["facts"] if f["ref"] not in slot["sources"]]
+    assert all(f.get("date_role") != "publication" for f in engine_facts)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # planner hygiene: it must not hand the writer forbidden vocabulary
 # ─────────────────────────────────────────────────────────────────────────────

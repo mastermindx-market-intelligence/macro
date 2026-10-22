@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VRT-BULL-20260903",
-  "asof": "2026-10-20",
+  "asof": "2026-10-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.6,
@@ -17,20 +17,20 @@
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.126,
+    "dist_to_stop_r": -0.065,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -0.7507,
-    "p2": -0.3754,
+    "horizon_pct_used": 106.7,
+    "p1": -0.7103,
+    "p2": -0.3552,
     "p3": null,
-    "move_r": -1.126,
+    "move_r": -1.065,
     "mfe_r": 0.161,
-    "mae_r": -1.126
+    "mae_r": -1.199
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 10.329986572265625,
-  "_mae": -72.24000549316406,
+  "_mae": -76.94000244140625,
   "_max_p1": 0.10735241956108726,
   "_first_trigger_ts": "2026-09-05",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 48,
+  "tau": 1.0667
 }

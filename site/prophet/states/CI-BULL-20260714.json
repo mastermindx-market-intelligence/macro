@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CI-BULL-20260714",
-  "asof": "2026-10-20",
+  "asof": "2026-10-22",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 42.3,
@@ -11,26 +11,26 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 41.9,
-    "pace": 14.0,
-    "retention": 100.0,
-    "overlay": 59.0
+    "progress": 40.7,
+    "pace": 11.3,
+    "retention": 91.5,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.786,
-    "dist_to_t1_r": 0.714,
-    "dist_to_t2_r": 2.214,
-    "horizon_pct_used": 126.7,
-    "p1": 0.5243,
-    "p2": 0.2621,
+    "dist_to_stop_r": 1.755,
+    "dist_to_t1_r": 0.745,
+    "dist_to_t2_r": 2.245,
+    "horizon_pct_used": 131.1,
+    "p1": 0.5036,
+    "p2": 0.2518,
     "p3": null,
-    "move_r": 0.786,
-    "mfe_r": 0.786,
+    "move_r": 0.755,
+    "mfe_r": 0.826,
     "mae_r": -0.387
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 24.850006103515625,
+  "_mfe": 26.100006103515625,
   "_mae": -12.230010986328125,
-  "_max_p1": 0.5242617321416801,
+  "_max_p1": 0.5506330401585577,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 59,
+  "tau": 1.3111
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FIBK-BULL-20260918",
-  "asof": "2026-10-20",
+  "asof": "2026-10-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.4,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.435,
+    "dist_to_stop_r": -1.392,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 71.1,
-    "p1": -1.6235,
-    "p2": -0.8118,
+    "horizon_pct_used": 75.6,
+    "p1": -1.595,
+    "p2": -0.7975,
     "p3": null,
-    "move_r": -2.435,
+    "move_r": -2.392,
     "mfe_r": 0.0,
     "mae_r": -4.244
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 32,
-  "tau": 0.7111
+  "days_elapsed": 34,
+  "tau": 0.7556
 }

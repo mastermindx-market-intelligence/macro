@@ -1393,9 +1393,11 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
@@ -1415,10 +1417,12 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
     inputs: [vendor.tiingo.raw.forex_bars]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
