@@ -635,7 +635,13 @@ def test_cli_refused_outcome_prints_plan_exits_3_and_writes_nothing(
         proposed, curator=CURATOR_SEAT, decision="ACCEPT", decided_at=DECIDED_AT,
         receipt_bytes=bytes_)
     ledger = _write_ledger(tmp_path, [proposed, terminal])
+    # An EMPTY receipts dir under tmp_path: the fixture shares its proposal_id with
+    # the real C01 row, so the repo default dir may hold the seat's real receipt and
+    # this refusal must never depend on what the repository currently contains.
+    empty_receipts = tmp_path / "no_receipts"
+    empty_receipts.mkdir()
     rc = cli.main(["--recorded-at", RECORDED_AT, "--ledger", str(ledger),
+                   "--receipts-dir", str(empty_receipts),
                    "--use-ruling",
                    str(_write_ruling(tmp_path, proposed, original_ruling,
                                      original_ruling_sha)),
