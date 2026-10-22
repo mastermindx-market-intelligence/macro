@@ -8925,8 +8925,24 @@ jobs:
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
+          # A full unfiltered base fetch took 367s on two independent CI heads,
+          # consuming the entire browser-test budget. Fetch a bounded, blobless
+          # history first; never omit the base or soften the frozen-file guard.
+          base_ref="${{ github.base_ref || 'main' }}"
+          if ! git fetch --no-tags --filter=blob:none --depth=512 origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"; then
+            echo "::error title=international-workspace-browser::canonical bounded origin/$base_ref fetch failed; the frozen-file comparison must not be skipped."
+            exit 1
+          fi
+          if ! git merge-base "origin/$base_ref" HEAD >/dev/null; then
+            # Older PRs may need more ancestry. One bounded deepening preserves
+            # the required real merge base without refetching every R2/data blob.
+            if ! git fetch --no-tags --filter=blob:none --deepen=512 origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"; then
+              echo "::error title=international-workspace-browser::canonical base deepening failed."
+              exit 1
+            fi
+          fi
+          if ! git merge-base "origin/$base_ref" HEAD >/dev/null; then
+            echo "::error title=international-workspace-browser::no exact merge base after bounded fetch; frozen-file guard unavailable, failing closed."
             exit 1
           fi
       - name: Actual International builder and template contracts
@@ -13262,7 +13278,23 @@ jobs:
       - name: install ontology browser
         phase: browser_setup
         timeout-minutes: 10
-        run: python -m playwright install --with-deps chromium
+        # Exact reviewed no-apt variant: actual Chromium smoke still runs
+        # inside the same bounded phase. The runner must whitelist precisely
+        # this installer+smoke shape; arbitrary setup shell remains refused.
+        run: |
+          set -euo pipefail
+          python -m playwright install chromium
+          python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as playwright:
+              browser = playwright.chromium.launch(headless=True)
+              try:
+                  page = browser.new_page()
+                  page.goto("data:text/html,<main>ontology-browser-ready</main>")
+                  assert page.locator("main").inner_text() == "ontology-browser-ready"
+              finally:
+                  browser.close()
+          PY
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell

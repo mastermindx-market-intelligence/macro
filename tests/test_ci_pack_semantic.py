@@ -2249,6 +2249,58 @@ def test_browser_setup_is_infrastructure_but_remains_digest_bound(tmp_path):
     assert PACK.semantic_job_digest(job) != PACK.semantic_job_digest(smaller)
 
 
+def test_approved_ontology_browser_setup_is_exact_smoke_and_digest_bound(tmp_path):
+    """A no-apt variant is allowed only with a real, bounded Chromium smoke."""
+    command = PACK._BROWSER_SETUP_VERIFIED_CHROMIUM
+    assert command.startswith("set -euo pipefail\npython -m playwright install chromium\n")
+    assert "playwright.chromium.launch(headless=True)" in command
+    assert 'assert page.locator("main").inner_text() == "ontology-browser-ready"' in command
+
+    steps = [_browser_setup_step(command), {"name": "actual proof", "run": "true"}]
+    job = _job("ontology-fixture", steps, timeout=10)
+    assert len(PACK.load_legacy_jobs(_write_manifest(tmp_path / "approved.yml", [job]))) == 1
+    assert [s.display_name for s in PACK.semantic_step_specs(job)] == ["actual proof"]
+    original = _job("ontology-fixture", [_browser_setup_step(), {"name": "actual proof", "run": "true"}], timeout=10)
+    assert PACK.semantic_job_digest(job) != PACK.semantic_job_digest(original)
+
+    # Any weakened or arbitrary shell statement is refused, even when the
+    # exact installer remains present and the original job deadline survives.
+    altered = [
+        command.replace("set -euo pipefail", "set +e"),
+        command.replace("chromium.launch(headless=True)", "chromium.launch(headless=False)"),
+        command.replace('assert page.locator("main").inner_text()', 'print(page.locator("main").inner_text()) #'),
+        command + "\necho unaudited-extra",
+        "python -m playwright install chromium",
+    ]
+    for n, raw in enumerate(altered):
+        invalid = _job("ontology-fixture", [_browser_setup_step(raw), {"name": "actual proof", "run": "true"}], timeout=10)
+        with pytest.raises(PACK.ManifestError, match="browser setup"):
+            PACK.load_legacy_jobs(_write_manifest(tmp_path / f"refused-{n}.yml", [invalid]))
+
+    actual = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]["ontology-explorer"]
+    assert actual["timeout-minutes"] == 10
+    assert actual["steps"][3]["run"].strip() == command
+    assert actual["steps"][3]["timeout-minutes"] == 10
+    assert actual["steps"][-1]["run"].startswith("MM_REQUIRE_BROWSER=1 ")
+
+
+def test_international_canonical_fetch_is_bounded_and_still_fails_closed():
+    """Preserve the actual merge-base guard while avoiding full remote history."""
+    jobs = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]
+    command = next(
+        s["run"] for s in jobs["international-workspace-browser"]["steps"]
+        if s.get("name") == "canonical base for the frozen-file guard (fail closed)"
+    )
+    assert jobs["international-workspace-browser"]["timeout-minutes"] == 12
+    assert "git fetch --no-tags --filter=blob:none --depth=512" in command
+    assert "git fetch --no-tags --filter=blob:none --deepen=512" in command
+    assert command.count('git merge-base "origin/$base_ref" HEAD') == 2
+    assert "exit 1" in command
+    assert "git fetch origin " not in command
+    source = command.replace("${{ github.base_ref || 'main' }}", "main")
+    assert subprocess.run(["bash", "-n"], input=source, text=True, capture_output=True).returncode == 0
+
+
 @pytest.mark.parametrize("command", [
     "python -m playwright install --with-deps chromium && python -m pytest tests/test_subject.py",
     "python -m playwright install --with-deps chromium; false",

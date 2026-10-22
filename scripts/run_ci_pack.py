@@ -593,6 +593,32 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     )
 
 
+# Exact alternate to Playwright's system-package installer, used where the
+# hosted apt dependency acquisition stalled for the full logical-job deadline.
+# The Python smoke is part of the same bounded setup operation: it proves a real
+# Chromium process can launch and render before any product/browser test runs.
+# Do not allow an arbitrary setup shell: source selection is a closed contract.
+_BROWSER_SETUP_VERIFIED_CHROMIUM = (
+    "set -euo pipefail\n"
+    "python -m playwright install chromium\n"
+    "python - <<'PY'\n"
+    "from playwright.sync_api import sync_playwright\n"
+    "with sync_playwright() as playwright:\n"
+    "    browser = playwright.chromium.launch(headless=True)\n"
+    "    try:\n"
+    "        page = browser.new_page()\n"
+    '        page.goto("data:text/html,<main>ontology-browser-ready</main>")\n'
+    '        assert page.locator("main").inner_text() == "ontology-browser-ready"\n'
+    "    finally:\n"
+    "        browser.close()\n"
+    "PY"
+)
+_BROWSER_SETUP_ALLOWED = frozenset((
+    "python -m playwright install --with-deps chromium",
+    _BROWSER_SETUP_VERIFIED_CHROMIUM,
+))
+
+
 def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
@@ -603,11 +629,11 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         step.get("phase") != "browser_setup"
         or set(step) - {"name", "phase", "timeout-minutes", "run"}
         or not isinstance(step.get("run"), str)
-        or step["run"].strip() != "python -m playwright install --with-deps chromium"
+        or step["run"].strip() not in _BROWSER_SETUP_ALLOWED
         or type(step.get("timeout-minutes")) is not int
         or not 1 <= step["timeout-minutes"] <= 10
     ):
-        raise ManifestError("browser setup must be the exact standalone installer with a finite <=10 minute bound")
+        raise ManifestError("browser setup requires an approved exact installer or verified installer+smoke with a finite <=10 minute bound")
     return {
         "phase": "browser_setup", "command": step["run"],
         "timeout_minutes": step["timeout-minutes"],
