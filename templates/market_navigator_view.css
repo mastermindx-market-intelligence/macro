@@ -73,6 +73,7 @@
 .mnv-lens-row {padding:11px 0;border-top:1px solid var(--mnv-line);display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;overflow-wrap:anywhere}
 .mnv-lens-key {font-size:12px;font-weight:650}
 .mnv-lens-value {font-size:12px;color:var(--mnv-up);font-variant-numeric:tabular-nums}
+.mnv-lens-estimate {font-size:12px;color:var(--mnv-accent);font-variant-numeric:tabular-nums}
 .mnv-lens-absent,.mnv-lens-clock {font-size:11px;color:var(--mnv-muted)}
 .mnv-lens-clock {flex:0 0 100%}
 .mnv-path-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}

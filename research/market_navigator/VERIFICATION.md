@@ -296,3 +296,18 @@ widening ordinary PR packing ceilings. Eight independent local Chromium
 combinations passed (1440/390, EN/ZH, dark/light) on synthetic data.
 The committed screenshots are design/DOM evidence, NOT a Paper-native
 file or authenticated production result.
+
+
+## Observed-versus-estimated investor honesty (2026-10-22)
+
+The existing v2 fixture is copied in the isolated JS unit harness with
+a price observation reclassified from quality observed to estimated,
+then passed back through the request-bound client validator. The
+view explicitly prints `100 USD · estimated` and returns to
+`100 USD · observed` after the immutable original state is restored.
+The regression also checks that the sole unresolved condition is named,
+that absent source categories stay compact, and that no recommendation
+or unsupported probability appears. All 310 Navigator tests and eight
+desktop/mobile EN/ZH dark/light Chromium tests passed after this change.
+These results concern synthetic fixtures only, not production source
+receipts or investor comprehension measurement.

@@ -217,3 +217,36 @@ so `accepted_for_write=false`. The old shared Paper document also
 warns further edits risk data loss. No Paper edits were made.
 The legitimate same-carrier write-schema acceptance and new-file
 target grant must be demonstrated before design mutation.
+
+
+## Parent CI closure root cause and current source state (2026-10-22)
+
+The parent Foundation branch was advanced from reviewed-repair
+`3b4d33516eae6a72a19446d962c52e1733a7d135` to
+`60be55b024ccaf7cb3b390ef1847e42ff76defa1` on **the original
+parent PR #10055 and its original source workspace**. Its hosted
+failures were traced precisely to four fixture-probe filenames added
+to `tests/test_ci_pack.py` without the official
+`# ci-trigger-closure: data` marker. Because those paths are names
+passed to a planner, not files the test reads, the closure scanner
+falsely inferred 13 dependencies of the unrelated
+`ci-control-plane-contracts` job. The original parent source
+now has per-line markers and both of the formerly failing
+curated-exclusive tests pass (2 passed, 204.62 seconds) without
+widening any CI paths or ceilings. This **corrects** the earlier
+description of the failure as an unrelated infrastructure regression;
+the prior change in our own F1 test caused it. The new parent-head
+fences check is green, main CI was still in progress at the last
+observation, and independent semantic review is still absent.
+No merge or production admission occurred.
+
+The source-only W3 child PR #10076 now carries a compact
+seven-family evidence view and explicit observed-versus-estimated
+qualifier, with named single unresolved scenario inputs. Source
+version remains response/v2 and there is no additional network,
+entitlement, signal, trade or statistical scoring owner. The W3
+child remains DRAFT on its original stacked PR because the
+earlier parent integration operation was denied pre-dispatch by
+platform safety checks. Do not replay that denied merge. Reconcile
+only through a duly authorized release process that preserves
+its same exact PR/source identity and required proof.

@@ -155,6 +155,11 @@ def main() -> None:
                     assert page.locator(".mnv-path-diagnosis").count() == 3
                     summaries=page.locator(".mnv-path-diagnosis").all_inner_texts()
                     assert all(summaries)
+                    assert any("breadth" in summary.lower() for summary in summaries)
+                    assert any("price" in summary.lower() for summary in summaries)
+                    values=page.locator(".mnv-lens-value:visible").all_inner_texts()
+                    assert values and any(("observed" if language=="en" else "实测") in value
+                                          for value in values)
                     assert not any("buy" in summary.lower() or "%" in summary
                                    for summary in summaries)
                     assert "probability" not in page.locator(".mnv-regime").inner_text().lower()

@@ -158,3 +158,23 @@ The fixed taxonomy is not a weighting, confidence, confluence score,
 bull/bear vote, probability or ranking. Expanded states survive a theme
 or language toggle, but not an instrument/account rebind. Desktop/mobile,
 EN/ZH, dark/light browser fixtures use entirely synthetic source records.
+
+
+## Evidence quality and missing-observation explanation (2026-10-22)
+
+The view now labels each current observation explicitly as **observed**
+or **estimated**, using the owner-approved quality field that was already
+validated by the request-bound v2 client. An available estimated gamma,
+volatility or cross-asset reading is therefore never presented to readers as
+a direct measurement of executed dealer orders. The estimated label also
+follows current scenario condition detail and current support/counterevidence.
+Unavailable, stale, user-claim and synthetic observations do not obtain a
+numerical current-value badge, and no new market quality rule is invented.
+
+When an unresolved, invalidated or waiting path contains exactly one
+distinct failed/unknown observation key, its concise bilingual explanation
+names that existing key (for example breadth), instead of only a count.
+Multiple distinct keys remain a count: the UI cannot manufacture a
+ranked "most important" condition. Full original conditions and clocks
+remain expandable. Nothing here makes an estimate into a trading signal,
+probability, dealer flow observation or backtested rule.

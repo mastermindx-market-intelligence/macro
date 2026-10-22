@@ -55,6 +55,7 @@
       lensInspect: 'Inspect observations', lensAvailable: 'available',
       lensAbsent: 'Not supplied for this family', lensKnown: 'Available since',
       lensEmptySuffix: 'evidence families without observations',
+      quality: {observed:'observed',estimated:'estimated'},
       families: {price:'Price',volatility:'Volatility',positioning:'Positioning',
         breadth:'Breadth',macro:'Macro',liquidity:'Liquidity',event:'Events'},
       horizons: {intraday:'Intraday',swing:'Swing',position:'Position'},
@@ -103,6 +104,7 @@
       lensInspect: '查看观察记录', lensAvailable: '条可用',
       lensAbsent: '此类别尚未提供观察记录', lensKnown: '可用时间',
       lensEmptySuffix: '个类别暂无观察记录',
+      quality: {observed:'实测',estimated:'估算'},
       families: {price:'价格',volatility:'波动率',positioning:'仓位与衍生品',
         breadth:'市场广度',macro:'宏观',liquidity:'流动性',event:'事件'},
       horizons: {intraday:'日内',swing:'波段',position:'中期'},
@@ -142,7 +144,8 @@
   function conditionText(item, rows, t) {
     const itemRow = rows.get(item.observation);
     const value = itemRow && itemRow.status === 'current'
-      ? String(itemRow.value) + ' ' + itemRow.unit + ' · ' : '';
+      ? String(itemRow.value) + ' ' + itemRow.unit +
+        (itemRow.quality === 'estimated' ? ' (' + t.quality.estimated + ')' : '') + ' · ' : '';
     const result = item.met === true ? t.met : item.met === false ? t.unmet : t.unknown;
     return prettyKey(item.observation) + ': ' + value + t.op[item.op] + ' ' +
       String(item.threshold) + ' ' + item.unit + ' — ' + result +
@@ -164,7 +167,11 @@
       : scenario.status === 'unresolved' ? t.diagUnknown : t.diagWaiting;
     // Count only the supplied research condition population; no precision,
     // ranking or default focus on an arbitrary named threshold.
-    return prefix+' '+String(relevant.length);
+    // Name a unique missing/false condition when the supplied rule has one.
+    // Otherwise retain the explicit count rather than choosing a "top" signal.
+    const distinct = [...new Set(relevant.map(item=>item.observation))];
+    return prefix+' '+String(relevant.length)+
+      (distinct.length===1 ? ' · '+prettyKey(distinct[0]) : '');
   }
   function evidenceRow(item, rows, t) {
     const source = rows.get(item.key);
@@ -174,7 +181,8 @@
         ? 'mnv-evidence-current' : 'mnv-evidence-muted',
       evidenceName(item.status, t) + (source && source.value !== null &&
         source.status === 'current' && item.status === 'current'
-        ? ' · ' + source.value + ' ' + source.unit : '')));
+        ? ' · ' + source.value + ' ' + source.unit +
+          (source.quality === 'estimated' ? ' (' + t.quality.estimated + ')' : '') : '')));
     return row;
   }
   function createView(mount, options) {
@@ -286,8 +294,8 @@
             const current=row.status==='current';
             const item=elem('li','mnv-lens-row');
             add(item,elem('span','mnv-lens-key',prettyKey(row.key)),
-              elem('span',current?'mnv-lens-value':'mnv-lens-absent',
-                current ? String(row.value)+' '+row.unit : evidenceName(row.status,t)));
+              elem('span',current ? (row.quality==='estimated'?'mnv-lens-estimate':'mnv-lens-value') : 'mnv-lens-absent',
+                current ? String(row.value)+' '+row.unit+' · '+t.quality[row.quality] : evidenceName(row.status,t)));
             // Missing/stale and future-unavailable source clocks are not exposed.
             if (current) add(item,elem('span','mnv-lens-clock',
               t.lensKnown+': '+row.available_at));

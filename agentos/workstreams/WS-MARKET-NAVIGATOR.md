@@ -185,3 +185,16 @@ Foundation PR #10055 remains held by repository CI
 the earlier Qwen return was 429/unconfirmed, not findings.
 Paper Studio reports `accepted_for_write=false` for its current
 catalog; no paper content mutated.
+
+## Hosted CI closure causal repair and evidence honesty (2026-10-22)
+
+Original Foundation PR #10055 head `60be55b` carries exact
+ci-trigger-closure data annotations correcting our F1 fixture
+regression's false owned-import readings. The formerly failing
+CI tests pass locally; hosted CI/review/merge remain unaccepted.
+W3 draft #10076 preserves its exact source custody, adds
+observed-versus-estimated display and names one unknown
+condition when uniquely determined. 310 Navigator focused tests,
+8 synthetic Chromium browser states pass; no licensed live
+source use, deployment, Paper-native file acceptance or
+trading authority has been claimed.
