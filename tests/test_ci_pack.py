@@ -5176,9 +5176,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_864),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_836),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_608),
+    ("templates/index.html", 136, 5_867),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_839),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_611),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5186,6 +5186,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 Expectation Surface nav row (ITP-ES wave 2, #10077) adds
+    tests/test_expectation_surface_nav.py as one run: step of the existing
+    `unrun-nav-chrome` navigation owner (contract-delta's unrun-suite gate;
+    no new job, no second navigation owner). Composed on protected main
+    d81eb778: index 136 jobs / 5,867, free-content 135 / 5,839, plan-book
+    128 / 5,611, all ten packs with identical selected IDs versus main
+    (136/5,864, 135/5,836, 128/5,608); newly selected: none. The +3 per
+    probe is the new step's estimator weight on the already-selected job.
+    Fund only 5,867/5,839/5,611; job ceilings 136/136/130, the ten-pack
+    limit and every other bound stay unchanged.
 
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler
