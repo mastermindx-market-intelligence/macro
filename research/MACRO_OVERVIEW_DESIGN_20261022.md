@@ -82,3 +82,9 @@ asset detector flags the existing `stock.html#` navigation literal in `theme.js`
 The corresponding implementation files are unchanged by this UI work. Intentional
 copy expectations were updated; generated-asset checks are run after the normal
 post-render transforms, not against the raw development render.
+
+The main-branch rebase retained upstream news translations, current data, and the
+complete unchanged detail-dialog region. It removed only the duplicated glance
+copy at the conflict sites. Canonical escaping and current asset hashes were
+retained after reconciling the generated page; measured score projection was not
+replaced with the raw market-state artifact.
