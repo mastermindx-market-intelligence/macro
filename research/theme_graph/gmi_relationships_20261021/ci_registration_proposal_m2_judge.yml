@@ -1,0 +1,25 @@
+# CI registration PROPOSAL — GMI ORCH-REL M2 judge (REL-M2-JUDGE lane, 2026-10-22).
+#
+# FRAGMENT for the GMI COMPLETION seat to fold into job
+# `company-intelligence-relationships` (the M1 proposal in
+# ci_registration_proposal.yml).  Registration is a CI-authority change owned
+# by the seat, NOT by this lane: this file proposes `paths_add:` / `steps_add:`
+# and touches no .github/ or config/ path.
+#
+# `paths_add` lists every repo path the M2 judge suite imports or opens that is
+# NOT already in the M1 `paths:` (contracts, engine relationships clock/
+# package_v2/replay, lib/dataos, the producer, the M1 extraction/sources, the
+# manifest, conftest) or the M2 harvest paths_add (edgar.py, harvest.py,
+# scripts/__init__.py, relationship_m2_harvest.py, the four m2_inputs pins).
+# Proven by exporting exactly the M1 paths + harvest paths_add + these
+# paths_add with `git archive` at the lane commit and running
+# tests/test_relationship_m2_judge.py inside that export (rc 0 — see the
+# lane return).
+paths_add:
+  - "engine/company_intelligence/relationships/resolve.py"
+  - "engine/company_intelligence/relationships/judge.py"
+  - "scripts/relationship_m2_judge.py"
+  - "tests/test_relationship_m2_judge.py"
+steps_add:
+  - name: Relationship M2 judge pack/verify/materialize
+    run: python -m pytest tests/test_relationship_m2_judge.py -q
