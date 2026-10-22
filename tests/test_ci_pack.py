@@ -5201,9 +5201,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_628),
+    ("templates/index.html", 136, 5_885),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_857),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_629),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5211,6 +5211,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 Research Desk CI reliability repair on the exact current Macro
+    composition: the approved no-apt Ontology Chromium installer adds one
+    real smoke command inside its existing 10-minute, digest-bound browser
+    setup phase. This is not a new job, retry, test bypass or higher runtime
+    grant. The canonical planner raised precisely one weight unit in each
+    selected probe and the guard originally failed on the actual candidate:
+    index 136/5,885 against 5,884; free 135/5,857 against 5,856; Prophet
+    128/5,629 against 5,628. Fund only +1/+1/+1. Preserve all three job
+    ceilings 136/136/130, their selectors, every test step, the ten-pack
+    limit and all logical-job/phase deadlines. The International improvement
+    replaces a slow canonical-base fetch with bounded blobless history and
+    still requires the actual merge base; it adds no job or proof exemption.
+    These are deterministic planner estimates, not timed runner results.
 
     2026-10-22 recovered final composition joins featurece4664f6 and
     protected main7a8f690d. Canonical measurements on this actual merged
