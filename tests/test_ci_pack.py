@@ -5176,7 +5176,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_852),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_854),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
@@ -5186,6 +5186,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 D04-A2 status source-clock projection (PR #10004; head = the merge of
+    main 98da0dacfae8 into the PR branch, 2117a10f3b53): the existing
+    prelaunch-hardening pytest command gains one suite,
+    tests/test_status_live_projection_wiring.py, and three main-side jobs
+    declare app/live_status_projection.py (no new jobs, no selection change).
+    Lane-measured contract-delta on that merge against base main 98da0dacfae8:
+    1 introduced, newly selected none, 10 packs; weight-seconds:
+    - index: 136 jobs, base 5,852, head 5,854; ceiling 5,852 -> 5,854.
+    - free-content: 135 jobs, base 5,820, head 5,822; ceiling 5,825 kept.
+    - plan-book: 128 jobs, base 5,596, head 5,598; ceiling 5,600 kept.
+    Only a breached ceiling moves, to its measured head weight, no padding;
+    job-count ceilings, the pack limit, selectors and every prior suite stay
+    unchanged. Planning weights are not measured execution times.
 
     2026-10-22 CAGR truthful-copy integration adds the actual handler pytest
     to calculator-input-integrity (+5 estimator units). It newly selects
