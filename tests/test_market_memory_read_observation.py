@@ -8,7 +8,7 @@ import subprocess
 import sys
 from contextlib import ExitStack
 from concurrent.futures import ThreadPoolExecutor
-from threading import Barrier
+from threading import Barrier, get_native_id
 
 import pytest
 
@@ -108,8 +108,46 @@ def test_stage_fields_are_bounded_and_require_an_active_catalog_read(caplog):
     api._read_observation_stage(seq, 'projections', 1, 1)
     stages = [r.args[1] for r in caplog.records if '.stage ' in r.getMessage()]
     assert stages == [{'tag': 'retained_catalog', 'seq': seq, 'stage': 'projections',
+                       'native_thread_id': get_native_id(),
                        'elapsed_ms': 12.5, 'thread_cpu_ms': 3.25}]
     assert 'private-user/path' not in caplog.text
+
+
+def test_concurrent_reads_keep_their_own_thread_in_every_event(caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    barrier = Barrier(2)
+
+    def run(_):
+        with api._observe_admitted_read('retained_catalog') as seq:
+            barrier.wait(timeout=10)
+            api._read_observation_stage(seq, 'projections', 12.5, 3.25)
+            api._read_observation_busy('retained_saved')
+            barrier.wait(timeout=10)
+            return seq, get_native_id()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        observed = dict(pool.map(run, range(2)))
+    assert len(set(observed.values())) == 2
+    events = [(record.args[0], record.args[1]) for record in caplog.records]
+    for seq, native_thread_id in observed.items():
+        own = [(event, fields) for event, fields in events if fields.get('seq') == seq]
+        assert [event for event, _ in own] == ['start', 'stage', 'finish']
+        assert all(fields['native_thread_id'] == native_thread_id for _, fields in own)
+    for event, fields in events:
+        if event == 'busy':
+            assert {holder['seq']: holder['native_thread_id']
+                    for holder in fields['holders']} == observed
+
+
+def test_thread_lookup_failure_does_not_change_the_read(monkeypatch):
+    def fail():
+        raise RuntimeError('thread lookup failed')
+
+    monkeypatch.setattr(api.threading, 'get_native_id', fail)
+    with api._observe_admitted_read('retained_catalog') as seq:
+        assert seq is None
+        api._read_observation_stage(seq, 'projections', 12.5, 3.25)
+        assert not api._read_observation_active
 
 
 def test_info_events_reach_the_default_server_handler():
