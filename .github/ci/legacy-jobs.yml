@@ -261,6 +261,11 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -358,6 +363,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -2156,6 +2162,11 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -2302,6 +2313,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3110,6 +3122,11 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -3216,6 +3233,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -5610,6 +5628,11 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "tests/test_ipo_prospectus_terms.py"
       - "data/ipo/lockups.parquet"
@@ -6979,6 +7002,11 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -8213,6 +8241,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -8548,6 +8581,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
@@ -9469,6 +9507,11 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -9687,6 +9730,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -11738,6 +11782,9 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -12296,6 +12343,15 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -12880,6 +12936,10 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - ".github/workflows/**"
@@ -14116,7 +14176,9 @@ jobs:
       # would put the qledger promotion monitor in a job that does not own its subject,
       # which is the failure mode that left it unowned in the first place.
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        # The thematic original-result fixtures load build_allocation, whose
+        # real rendering imports require Jinja2; keep that owner path exercised.
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2
       - name: qledger cluster-honest Wilson CI unit tests
         run: python -m pytest tests/test_qledger_cluster_honest_ci.py -q
       - name: qledger US nightly batch-registration contract (W2)
@@ -16751,6 +16813,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -17003,6 +17070,11 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -17335,6 +17407,11 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -20151,6 +20228,11 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -20702,6 +20784,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
@@ -21502,6 +21589,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -22031,6 +22123,15 @@ jobs:
     # with the repository's deploy invariants.  It was previously co-run here;
     # giving it its own bounded command keeps that coverage without borrowing
     # time from evidence replay.
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "tests/test_deploy_update_self_heal.py"
+      - "tests/test_caddy_autosave_driver.py"
+      - "tests/test_macro_caddy_overlay.py"
+      - "tests/test_macro_caddy_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22043,7 +22144,10 @@ jobs:
       - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_caddy_autosave_driver.py
+          tests/test_macro_caddy_overlay.py
+          tests/test_macro_caddy_publication.py -q
 
   deploy-git-history:
     if: ${{ false }}
@@ -23038,6 +23142,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "scripts/build_risk_envelope.py"
@@ -23212,6 +23319,7 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_auth.py
+          tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
       # authenticated operator identity, a fixed admin iframe, Caddy's real
@@ -23548,6 +23656,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -23709,6 +23822,7 @@ jobs:
       - app/intelligence_hub_market_pulse.py
       - app/mailer.py
       - app/main.py
+      - app/live_status_projection.py
       - app/market_memory.py
       - app/marketing_emails.py
       - app/observability.py
@@ -24496,6 +24610,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
@@ -25279,6 +25398,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -26088,6 +26210,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -27261,6 +27388,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -27331,6 +27463,7 @@ jobs:
       - "engine/close_pass/**"
       - "engine/quant_lab/**"
       - "app/tape_symbols.py"
+      - "app/live_status_projection.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -28740,6 +28873,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/intl_global_universe.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
@@ -31790,6 +31928,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -32307,6 +32450,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -32524,6 +32672,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -35365,6 +35514,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
@@ -35545,6 +35699,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -37026,6 +37181,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -38592,6 +38750,11 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -38859,6 +39022,11 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"

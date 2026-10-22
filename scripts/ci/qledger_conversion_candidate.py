@@ -17,11 +17,15 @@ from dataclasses import dataclass
 from hashlib import sha1, sha256
 from pathlib import Path
 import re
+import sys
 
-from engine.qledger_store_conversion import plan_legacy_conversion
-from engine.qledger_store_protocol import ROOT_PATH, ProtocolLimits, SnapshotIntegrityError
-from engine.qledger_store_sources import GitTreeSource, read_legacy_claims_blob, verify_source_snapshot
-from scripts.ci import qledger_publication as publication
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
+from engine.qledger_store_conversion import plan_legacy_conversion  # noqa: E402
+from engine.qledger_store_protocol import ROOT_PATH, ProtocolLimits, SnapshotIntegrityError  # noqa: E402
+from engine.qledger_store_sources import GitTreeSource, read_legacy_claims_blob, verify_source_snapshot  # noqa: E402
+from scripts.ci import qledger_publication as publication  # noqa: E402
 
 
 @dataclass(frozen=True)
