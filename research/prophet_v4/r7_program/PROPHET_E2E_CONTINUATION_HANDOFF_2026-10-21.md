@@ -642,3 +642,25 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
 - **Blocked lanes (owned, not the seat's):** U1 → #9774 custody (`lib/user_prefs.py`); U3 after U1+U2; U8 human-only `ALERT_DRAIN_ENABLE` (asked once in F24, never re-ask). #9495/#8444 custodians own Wave B absorption.
 - **Orchestrators/reviewers:** ALL COMPLETED — never re-spawn; message by id only if a return asks.
 - **Then:** after U5 merges → Stage 6 adjudication: DONE_WHEN §14.4 dispositions (B00–B28, Q01–Q24, D01–D12) assembled from the filed returns; report each rung at the evidence it reaches (Today-surface = DEPENDENT on Wave B absorption; U1/U3/U8 = BLOCKED-CUSTODY / HUMAN GATE).
+
+#### Addendum 08:5xZ to CP 08:3xZ — U5 lane RETURNED, #10062 OPENED (draft), review + watcher running
+- Lane `pro-source-b21u4u5-20261022-r1` (ubuntu2, glm-5.3-flash) `DONE rc=0 signal=ok` at 08:45Z; return
+  `$S/pro-source-b21u4u5-20261022-r1.out` (STATUS DONE, `SESSION END: PROVEN_OUTCOME`, DEVIATIONS none).
+  Commit **af255c2fd720da49c1432a7a2f0ee1132cf44301** on BASE 790990a2, exactly the 4 OWNED FILES, +152/−5
+  (engine +31, tests +110/−0 append-only, watchlist +1 line at :483 inside the ≤720px block, NOTES +15/−5).
+  Recovered by host-side bundle (`git bundle create ~/lanes/ext/u5_b21.bundle lane/<id> --not 790990a2`,
+  scp, `git fetch <bundle> "${L}:refs/pro/b21u5"`; zsh trap: `"$L:refs/..."` is the `:r` modifier — brace it).
+- Seat inspection: block sits after `entitlement_lapsed`, before `quiet_note == "unparsed"`; literals
+  `mandatory_fact_stale` / `not_after_unparsable` exactly once each; run loop diff 0 lines; the 8 named tests
+  present (test 5 parametrized ×4 → 87 collected).
+- Lane GAPS (not ours): 3 pre-existing `washout-turn-organ` failures reproduce at BASE
+  (`test_prophet_card_shared.py` 21F, `test_vps_live_orchestration.py` 3F, `test_p0_prophet_candidate_board.py::test_c4_*`).
+- Shipped: fence intact (6306863736) → `refs/pro/b21u5` pushed as `claude/prophet-r7-b21-u5-drain-guard` →
+  **PR #10062** (draft, head af255c2f, base main). Checks watcher task `bkjvr1scu` → `$S/../tasks/bkjvr1scu.output`
+  (180 s interval; consume once at return). PR bound to the session.
+- Review: ONE native Opus reviewer (READ_ONLY, ROUTE: review) spawned 08:5xZ against `refs/pro/b21u5` with the
+  packet + contract §5/§12 + producer-format alignment as standards; file its verbatim return under
+  `reviews/U5_10062_REVIEW_af255c2f_2026-10-22.md`. Seat re-run of the suites: task `bbdrl0nf2` (export `$S/u5export`).
+- Next: review PASS/PASS_WITH_NOTES + full-table green → reviewDecision read → MAIN captured in-op → merge-tree clean →
+  fence → `gh pr merge 10062 --squash --match-head-commit af255c2fd720da49c1432a7a2f0ee1132cf44301` → records → Stage 6.
+  FAIL → one fix lane on a NEW id (`pro-source-b21u5-fix-20261022-r1`), never relaunch r1.
