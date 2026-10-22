@@ -38,6 +38,7 @@ import json
 import logging
 import math
 import os
+import ssl
 import threading
 import time
 import urllib.error
@@ -384,8 +385,26 @@ def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
         ) from exc
     except http.client.InvalidURL as exc:  # our own base URL cannot be requested
         raise _EntitlementStoreInvalid("entitlement store URL is unusable") from exc
-    except (urllib.error.URLError, http.client.HTTPException, OSError) as exc:
-        # Genuine I/O: DNS, connect/read timeout, reset, TLS, truncated response.
+    except (FileNotFoundError, PermissionError, ssl.SSLCertVerificationError) as exc:
+        # Missing cert/config files, denied local resources or a rejected trust
+        # chain cannot be fixed by retrying the same user request.
+        raise _EntitlementStoreInvalid(
+            f"entitlement store configuration failed ({type(exc).__name__})"
+        ) from exc
+    except urllib.error.URLError as exc:
+        # urllib wraps both actual socket failures and local configuration
+        # defects. Inspect its structured reason before enabling outage grace.
+        if isinstance(exc.reason, (
+            ValueError, FileNotFoundError, PermissionError,
+            ssl.SSLCertVerificationError,
+        )):
+            raise _EntitlementStoreInvalid(
+                f"entitlement store configuration failed ({type(exc.reason).__name__})"
+            ) from exc
+        log.warning("paywall: entitlement store unavailable (%s)", exc)
+        return None, False
+    except (http.client.HTTPException, OSError) as exc:
+        # Genuine I/O: read/connect timeout, reset, truncated response.
         # TimeoutError and ConnectionError are OSError subclasses.
         log.warning("paywall: entitlement store unavailable (%s)", exc)
         return None, False

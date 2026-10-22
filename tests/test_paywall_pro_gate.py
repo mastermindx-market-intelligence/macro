@@ -19,6 +19,7 @@ import http.client
 import json
 import re
 import shutil
+import ssl
 import subprocess
 import time
 import urllib.error
@@ -495,6 +496,34 @@ _TRANSPORT_FAULTS = [
     http.client.IncompleteRead(b"partial"),
     http.client.BadStatusLine("not an http response"),
 ]
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        FileNotFoundError("missing trusted CA bundle"),
+        PermissionError("service configuration unreadable"),
+        ssl.SSLCertVerificationError("certificate verification failed"),
+        urllib.error.URLError(ssl.SSLCertVerificationError("untrusted CA")),
+        urllib.error.URLError(FileNotFoundError("missing CA bundle")),
+        urllib.error.URLError(ValueError("invalid local URL configuration")),
+    ],
+    ids=[
+        "missing-local-file", "denied-local-config", "direct-tls-verification",
+        "wrapped-tls-verification", "wrapped-missing-file", "wrapped-invalid-url",
+    ],
+)
+def test_local_configuration_errors_never_become_retryable_vendor_outages(monkeypatch, fault):
+    monkeypatch.setattr("app.billing._pg", _pg_raises(fault))
+    with pytest.raises(paywall._EntitlementStoreInvalid):
+        paywall._store_entitlement(UID)
+    _signed_in(monkeypatch)
+    response = _check()
+    assert response.status_code == 500
+    assert response.json()["error"] == "membership_verification_error"
+    assert response.headers["x-paywall"] == "error"
+    assert "retry-after" not in response.headers
+    assert UID not in paywall._ENT_CACHE
 
 
 @pytest.mark.parametrize(

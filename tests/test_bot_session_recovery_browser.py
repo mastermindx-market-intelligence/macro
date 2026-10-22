@@ -244,6 +244,27 @@ def test_closed_admission_cannot_escape_through_theme_or_sdk(recovery, case):
         assert r.count("client") == 0, r.events
 
 
+def test_external_theme_client_request_after_deadline_cannot_restart_auth(recovery):
+    """Even an explicit late consumer cannot reopen the shared auth broker."""
+    r = recovery("late_theme")
+    r.advance(13000)
+    r.unavailable()
+    r.release_script("theme")
+    r.page.wait_for_function("typeof window.getSupabaseClient === 'function'")
+    denied = r.page.evaluate("""async () => {
+        try { await window.getSupabaseClient(); return 'incorrectly-opened'; }
+        catch (error) { return String(error && error.message); }
+    }""")
+    assert denied in ("auth-disabled", "recovery-closed")
+    r.advance(35000)
+    assert r.count("client") == 0, r.events
+    assert r.count("fetch") == 0, r.events
+    assert r.count("cookie-write") == 0, r.events
+    assert r.count("broadcast") == 0, r.events
+    assert r.value() == cookie_value(OLD_SESSION)
+    assert r.documents == [r.url]
+
+
 @pytest.mark.parametrize("case", ["timeout", "unavailable", "network", "invalid", "other_signin", "other_signout", "blocked_cookie"])
 def test_late_or_failed_refresh_has_no_shared_session_effect(recovery, case):
     r = recovery(case)
