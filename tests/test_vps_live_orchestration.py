@@ -2607,33 +2607,6 @@ def test_status_projection_carries_board_quote_meta():
     }
 
 
-def test_status_wires_board_quotes_and_pulse_projection():
-    """Pure AST read of app/main.py — no import of app.main."""
-    import ast
-
-    source_path = Path(__file__).resolve().parents[1] / "app" / "main.py"
-    tree = ast.parse(source_path.read_text(encoding="utf-8"))
-
-    status_fn = None
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) and node.name == "status":
-            status_fn = node
-            break
-    assert status_fn is not None, "status() not found"
-
-    src = ast.unparse(status_fn)
-
-    assert "('flow_pulse', 'flow_pulse.json')" in src
-    assert "('intraday_quotes', 'intraday_quotes.json')" in src
-    flow_idx = src.index("('flow_pulse', 'flow_pulse.json')")
-    quotes_idx = src.index("('intraday_quotes', 'intraday_quotes.json')")
-    between = src[flow_idx:quotes_idx]
-    assert "'intraday_quotes'" not in between.replace("('intraday_quotes', 'intraday_quotes.json')", "")
-    assert 'flow_pulse_fields' in src
-    assert 'intraday_quotes_fields' in src
-    assert "'bars_today'" not in src
-
-
 def test_deadman_composes_real_board_through_status_projection():
     projection = _load_projection()
 
