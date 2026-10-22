@@ -157,3 +157,19 @@ auth/rights owner, live endpoint, saved-state writer or alert plane
 was created.** W3 is not live or production-proven. Parent PR #10055
 and its review/release gate remain separate, and W3 PR #10076 remains
 draft because its stack base is unsupported by current ci-authority.
+
+## W3 scenario diagnosis and release reconciliation (2026-10-22)
+
+Source UI displays one deterministic bilingual reason for each
+validated status without a probability, ranking, sizing or order,
+with expanded exact conditions and source clocks preserved. 259
+focused tests and 8 Chromium cases passed at the W3 continuation
+source candidate. Foundation PR #10055 changed to `3b4d335`
+after F1 fixture-selector/F2 immutable-authority repairs. The
+review was CHANGES_REQUESTED, accepted as review evidence only;
+independent rereview operation `market-navigator-review-3b4d335-20261022`
+is pending verified worker result. W3 still has an older
+stack-base ancestry; a merge attempt was blocked before effect by
+platform safety checks and was not retried/failed-over. The
+existing Paper file warns of destructive oversize and remains
+unchanged. This is an incomplete product.

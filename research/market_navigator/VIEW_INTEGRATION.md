@@ -63,8 +63,13 @@ The responsive layout keeps the incumbent canonical market verdict visible
 only when the owner declares it current. The measurement coverage tile counts
 eligible and unavailable observations without turning missingness into zero.
 Tracked scenarios render as **unranked** conditional paths, with explicit
-current statuses, trigger AND conditions, invalidation OR conditions, support
-and counterevidence, rule-availability clock and deadline on expansion.
+current statuses, deterministic bilingual "why this status" explanations
+(number of unfulfilled triggers / unverified comparisons / met invalidations),
+trigger AND conditions, invalidation OR conditions, support and
+counterevidence, rule-availability clock and deadline on expansion.
+The short diagnosis is computed only from the validated condition statuses,
+without re-evaluating source values, projecting an expected return, or ranking
+which condition the investor should trade.
 The view does not invent a market price map, analyst narrative, expected return,
 probability, saved account state or a default recommended path.
 

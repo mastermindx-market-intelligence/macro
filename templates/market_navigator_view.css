@@ -61,6 +61,7 @@
 .mnv-path-top {display:flex;gap:12px;align-items:center;justify-content:space-between}
 .mnv-path-index {color:var(--mnv-muted);font-size:11px;font-variant-numeric:tabular-nums}
 .mnv-path-state {border-radius:6px;background:var(--mnv-soft);padding:5px 8px;color:var(--mnv-fg);font-size:11px;text-align:right}
+.mnv-path-diagnosis {margin:8px 0 6px;max-width:64ch;font-size:13px;line-height:1.6;color:var(--mnv-text);font-weight:500}
 .mnv-path-title {font-size:22px;font-weight:640;letter-spacing:-.035em;overflow-wrap:anywhere;margin:26px 0 9px;line-height:1.25}
 .mnv-path > .mnv-muted {font-size:12px;line-height:1.6;min-height:38px}
 .mnv-path-details {margin-top:23px}

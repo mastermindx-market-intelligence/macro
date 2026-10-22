@@ -146,6 +146,11 @@ def main() -> None:
                     assert not failures and not requests, (failures, requests)
                     assert page.locator(".mnv-path").count() == 3
                     assert page.locator(".mnv-path-state").count() == 3
+                    assert page.locator(".mnv-path-diagnosis").count() == 3
+                    summaries=page.locator(".mnv-path-diagnosis").all_inner_texts()
+                    assert all(summaries)
+                    assert not any("buy" in summary.lower() or "%" in summary
+                                   for summary in summaries)
                     assert "probability" not in page.locator(".mnv-regime").inner_text().lower()
                     assert page.locator(".mnv-regime").count() == 1
                     assert 'SPY' in page.locator('.mnv-meta').inner_text()

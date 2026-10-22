@@ -264,3 +264,20 @@ These checks are synthetic code/browser verification, NOT authenticated
 production, Paper-native design, operational market data or a forecast
 success record. Source-use scope remains independently gated by the
 incumbent owner.
+
+
+## Investor comprehension: status explanation increment (22 October 2026)
+
+The W3 investor-facing conditional paths now expose an unranked bilingual
+diagnosis describing why a scenario is waiting, unresolved, invalidated,
+conditions-met, expired, or out of scope. The count uses only the admitted
+boolean/null condition results; unknown does not become zero or false, and
+no arbitrary trigger is promoted as a preferred action. The expanded exact
+conditions, original deadline, source availability and research-only
+non-signal status remain available unchanged.
+
+Tests exercise the three distinct fixture paths (conditions met, waiting,
+unresolved) in both languages and all eight Chromium layout/theme/view
+configurations. This is a readability improvement, not a source, probability,
+forecast, recommendation or live-user validation. It remains
+BUILT_NOT_PROVEN until authenticated real-path proof is obtained.

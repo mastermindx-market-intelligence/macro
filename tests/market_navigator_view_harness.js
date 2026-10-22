@@ -64,6 +64,12 @@ assert.equal(mount.querySelector('.mnv-empty-title').textContent,'No validated c
 view.render({status:'recorded_context',data});
 assert.equal(mount.querySelectorAll('.mnv-path').length,3);
 assert.equal(mount.querySelectorAll('.mnv-path-state').length,3);
+assert.equal(mount.querySelectorAll('.mnv-path-diagnosis').length,3);
+const explanations=mount.querySelectorAll('.mnv-path-diagnosis').map(n=>n.textContent);
+assert(explanations.some(t=>t.includes('Defined trigger conditions hold')));
+assert(explanations.some(t=>t.includes('Specified trigger conditions not yet met: 1')));
+assert(explanations.some(t=>t.includes('Required condition comparisons not established: 1')));
+assert(explanations.every(t=>!t.toLowerCase().includes('buy')&&!t.includes('%')));
 assert.equal(mount.querySelector('.mnv-regime').textContent,'Mixed');
 assert(mount.querySelector('.mnv-meta').textContent.includes('SPY'));
 assert.equal(mount.querySelector('.mnv').attrs.lang,'en');
@@ -76,6 +82,8 @@ view.setLanguage('zh');
 assert.equal(mount.querySelector('.mnv').attrs.lang,'zh');
 assert.equal(mount.querySelectorAll('.mnv-path-details[open]').length,1);
 assert(mount.walk().some(x=>x.textContent.includes('仅供研究参考')));
+assert(mount.querySelectorAll('.mnv-path-diagnosis').some(n=>
+  n.textContent.includes('尚未满足的既定触发条件')));
 view.setTheme('light');
 assert.equal(mount.querySelector('.mnv').attrs['data-theme'],'light');
 assert.equal(mount.querySelectorAll('.mnv-path-details[open]').length,1);

@@ -50,7 +50,14 @@
         not_yet_available:'not yet available',unqualified:'not qualified',
         subject_mismatch:'instrument mismatch',horizon_mismatch:'horizon mismatch'},
       op: {gt:'>',gte:'≥',lt:'<',lte:'≤'},
-      horizons: {intraday:'Intraday',swing:'Swing',position:'Position'}
+      horizons: {intraday:'Intraday',swing:'Swing',position:'Position'},
+      diagnosis: 'Why this status',
+      diagMatched: 'Defined trigger conditions hold at this cutoff; future movement is unknown.',
+      diagWaiting: 'Specified trigger conditions not yet met:',
+      diagUnknown: 'Required condition comparisons not established:',
+      diagInvalid: 'Specified invalidation conditions currently met:',
+      diagExpired: 'The original rule deadline has passed.',
+      diagMismatch: 'This rule is outside the selected instrument or horizon.'
     },
     zh: {
       app: '市场导航', subtitle: '证据观察台', context: '市场背景',
@@ -85,7 +92,14 @@
         not_yet_available:'当时尚不可用',unqualified:'未获认可',
         subject_mismatch:'标的不一致',horizon_mismatch:'周期不一致'},
       op: {gt:'>',gte:'≥',lt:'<',lte:'≤'},
-      horizons: {intraday:'日内',swing:'波段',position:'中期'}
+      horizons: {intraday:'日内',swing:'波段',position:'中期'},
+      diagnosis: '当前状态原因',
+      diagMatched: '截至该时点，既定触发条件成立；后续价格走势仍未知。',
+      diagWaiting: '尚未满足的既定触发条件：',
+      diagUnknown: '尚未得到确认的必要条件：',
+      diagInvalid: '当前成立的既定失效条件：',
+      diagExpired: '原始研究规则的截止时间已过。',
+      diagMismatch: '该规则不适用于当前选择的标的或周期。'
     }
   });
 
@@ -120,6 +134,24 @@
     return prettyKey(item.observation) + ': ' + value + t.op[item.op] + ' ' +
       String(item.threshold) + ' ' + item.unit + ' — ' + result +
       (item.reason === 'current' ? '' : ' (' + evidenceName(item.reason, t) + ')');
+  }
+  function diagnosisText(scenario, t) {
+    // Explain statuses, never re-run market logic in the presentation layer.
+    // This contains neither a ranked next trade nor a probability estimate.
+    if (scenario.status === 'conditions_met') return t.diagMatched;
+    if (scenario.status === 'expired') return t.diagExpired;
+    if (scenario.status === 'subject_mismatch' ||
+        scenario.status === 'horizon_mismatch') return t.diagMismatch;
+    const relevant = scenario.status === 'invalidated'
+      ? scenario.invalidations.filter(item=>item.met===true)
+      : scenario.status === 'unresolved'
+        ? [...scenario.triggers,...scenario.invalidations].filter(item=>item.met===null)
+        : scenario.triggers.filter(item=>item.met===false);
+    const prefix = scenario.status === 'invalidated' ? t.diagInvalid
+      : scenario.status === 'unresolved' ? t.diagUnknown : t.diagWaiting;
+    // Count only the supplied research condition population; no precision,
+    // ranking or default focus on an arbitrary named threshold.
+    return prefix+' '+String(relevant.length);
   }
   function evidenceRow(item, rows, t) {
     const source = rows.get(item.key);
@@ -228,6 +260,8 @@
             add(topline,elem('span','mnv-path-index',String(index+1).padStart(2,'0')),
               elem('span','mnv-path-state',statusName(scenario.status,t)));
             add(card,topline,elem('h3','mnv-path-title',prettyKey(scenario.key)),
+              elem('p','mnv-path-diagnosis',diagnosisText(scenario,t),
+                {'aria-label':t.diagnosis}),
               elem('p','mnv-muted',t.expected));
             const details = elem('details','mnv-path-details');
             if (openKeys && openKeys.has(scenario.key)) details.open = true;

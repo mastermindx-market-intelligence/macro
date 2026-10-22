@@ -148,3 +148,47 @@ Original parent #10055 and current Fabric independent review
 identities/effect custody. Do not duplicate the review, force-merge
 or retarget W3 prematurely; qualification and signed-in proof are
 distinct.
+
+
+## Resume frontier after Foundation F1/F2 review repair (2026-10-22)
+
+Original parent PR #10055 now carries review-remediation head
+`3b4d33516eae6a72a19446d962c52e1733a7d135`. The existing Fabric
+result against old `e05fbe3` was consumed with disposition
+CHANGES_REQUESTED and accepted **as review artifact only**.
+New independent rereview request `market-navigator-review-3b4d335-20261022`
+was created under the original root, but its worker START/return is
+not yet verified. The foundation was proven to pass 193 focused local
+Navigator + narrow CI contract tests at the repaired head. An
+unrelated sparse-tree CI-control-plane closure test failed; do not
+reinterpret that as fixture-scope passing or reset any ceiling.
+
+W3 PR #10076 remains **DRAFT** on branch
+`sol/web-market-navigator-w3-ui-20261022-sol`. Its immutable UI/consumer
+and read-only bar-confirmation checks passed 259 focused tests and
+eight synthetic Chromium combinations. An additional bilingual
+why-this-status line now exposes confirmed/waiting/unresolved/
+invalidated/expired reasons directly without assigning odds or
+a recommended trade.
+
+The original W3 child's base is still the earlier parent head;
+the source merge of the new parent was blocked *before dispatch*
+by platform safety checks. Do not replay that denied merge using
+an alternate tool, provider, account, session, PR retarget or
+force path. This does not prohibit independent disjoint
+research/UI/test work. Before any later release, reconcile the
+child's exact head and target base through a legitimately available
+source integration/release process and rerun required review and
+checks. If safety restriction persists, preserve the exact
+integration gate; no claim of a clean composed candidate.
+
+Paper Desktop is connected, but the existing `MASTERMIND PAGES`
+design file reports 'file is too large, further changes will
+result in data loss'; do not mutate that file. The separate
+Market Memory Paper page can be studied read-only, but no
+Navigator-native Paper artboard has been created. A new
+approved Paper design file must be bound by its exact ID before
+canvas work can safely resume. No live source-use grant,
+authenticated Navigator HTTP route, signed-in production proof,
+Paper-native visual acceptance or forecast track record is
+present. The user outcome remains incomplete.
