@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T20:12:53Z",
+ "accession": "0001178913-26-001595",
+ "cik": "0001419612",
+ "doc_byte_length": 3695422,
+ "doc_sha256": "2de9d2e45c17fa457e489e2a6094f18fb4943ea4d92985e725f7be51b634991e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "zk2634863.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 261842,
+  "byte_start": 261443,
+  "normalized": "SolarEdge Technologies, Inc. (“SolarEdge,” the “Company,” “we,” “us,” or “our”) is filing this Amendment No. 1 on Form 10-K/A (“Amendment”) to its Annual Report on Form 10-K for the year ended December 31, 2025, as filed with the Securities and Exchange Commission on February 25, 2026 (“Form 10-K”).",
+  "normalized_sha256": "fbbd4c5be1cd75867006460ab46213c90e712a8d9bdaad6e73fc6c3f8fc26db2",
+  "raw": "SolarEdge Technologies, Inc. (&#8220;SolarEdge,&#8221; the &#8220;Company,&#8221; &#8220;we,&#8221; &#8220;us,&#8221; or &#8220;our&#8221;) is filing this Amendment No.&#160;1 on Form 10-K/A (&#8220;Amendment&#8221;) to its Annual Report on Form&#160;10-K for the year ended December 31, 2025, as filed with the Securities and Exchange Commission on February 25, 2026 (&#8220;Form&#160;10-K&#8221;).",
+  "raw_sha256": "979a1453a90561481cd068f675840b1b172f33aef0a82227a1cc045e1b096475"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1419612/000117891326001595/zk2634863.htm",
+ "xbrl_contexts": []
+}

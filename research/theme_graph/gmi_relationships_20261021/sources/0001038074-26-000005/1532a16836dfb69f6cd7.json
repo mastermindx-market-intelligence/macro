@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-02-10T21:08:36Z",
+ "accession": "0001038074-26-000005",
+ "cik": "0001038074",
+ "doc_byte_length": 1674294,
+ "doc_sha256": "9e341102c42a9d25e6b7507e3d306292400c077473fc161e3272f9cb4f397ac4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "slab-20260103.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1212181,
+  "byte_start": 1210191,
+  "normalized": "Edom Technology21 %16 %15 %",
+  "normalized_sha256": "d0e2127a81fa7095e3066540344a9adbfa0990ae6825f3c00674600b3b6e7054",
+  "raw": "<tr><td colspan=\"3\" style=\"padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">Edom Technology</span></td><td colspan=\"2\" style=\"padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-92\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-603\">21</ix:nonFraction>&#160;</span></td><td style=\"padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">%</span></td><td colspan=\"3\" style=\"padding:0 1pt\"/><td colspan=\"2\" style=\"padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-93\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-604\">16</ix:nonFraction>&#160;</span></td><td style=\"padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">%</span></td><td colspan=\"3\" style=\"padding:0 1pt\"/><td colspan=\"2\" style=\"padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-94\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-605\">15</ix:nonFraction>&#160;</span></td><td style=\"padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">%</span></td></tr>",
+  "raw_sha256": "1532a16836dfb69f6cd79a5011a18dce23a6371e16929abccd5f1bd38613e22a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1038074/000103807426000005/slab-20260103.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 44373,
+   "byte_start": 43708,
+   "context_ref": "c-92",
+   "raw": "<xbrli:context id=\"c-92\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001038074</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">slab:EdomTechnologyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">slab:DistributorsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-12-29</xbrli:startDate><xbrli:endDate>2026-01-03</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "cd94c3b0058ab738012c9221f320135ede04342fb6a8df37d4208efadbebeaa8"
+  },
+  {
+   "byte_end": 45038,
+   "byte_start": 44373,
+   "context_ref": "c-93",
+   "raw": "<xbrli:context id=\"c-93\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001038074</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">slab:EdomTechnologyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">slab:DistributorsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4513b0a2cfa1f7b20f83658a5fc9cb0bfe6b74b01d1af1d6415316df60d7bd93"
+  },
+  {
+   "byte_end": 45703,
+   "byte_start": 45038,
+   "context_ref": "c-94",
+   "raw": "<xbrli:context id=\"c-94\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001038074</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">slab:EdomTechnologyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">slab:DistributorsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "27f2a74a287e02f41460e2c610083f7e15b1d1a01f99537b1aebfd8ee6aa7a16"
+  }
+ ]
+}

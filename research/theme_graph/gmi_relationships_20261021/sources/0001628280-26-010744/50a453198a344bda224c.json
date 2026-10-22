@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-02-23T22:26:07Z",
+ "accession": "0001628280-26-010744",
+ "cik": "0001275014",
+ "doc_byte_length": 1969048,
+ "doc_sha256": "f5075f2f3a9444dfe5d38075229b6098d4a34430abe68f36837ae9c2e2a500c0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-26",
+ "primary_document": "uctt-20251226.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1600928,
+  "byte_start": 1599065,
+  "normalized": "Applied Materials, Inc.21.7 22.6 23.4",
+  "normalized_sha256": "2da7b6ddffecdfe37e863919674129621a1969c5af443ebb4f7c17fa79b7989c",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Applied Materials, Inc.</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-251\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1088\">21.7</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:middle\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-252\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1089\">22.6</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:middle\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-253\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1090\">23.4</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:middle\"/></tr>",
+  "raw_sha256": "50a453198a344bda224c8834439611e8900f159b4569ca36018577feb87ae113"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1275014/000162828026010744/uctt-20251226.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 108714,
+   "byte_start": 108043,
+   "context_ref": "c-251",
+   "raw": "<xbrli:context id=\"c-251\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001275014</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">uctt:AppliedMaterialsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-12-28</xbrli:startDate><xbrli:endDate>2025-12-26</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "184c00496a28b8d95b8bd079dbe19587e1698a4639108a8cea42ace648a74106"
+  },
+  {
+   "byte_end": 109385,
+   "byte_start": 108714,
+   "context_ref": "c-252",
+   "raw": "<xbrli:context id=\"c-252\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001275014</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">uctt:AppliedMaterialsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-30</xbrli:startDate><xbrli:endDate>2024-12-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7317571b10e53b3b3ffb20fdf69f17ab361068d133f009dd39c35ddf95a0bcd5"
+  },
+  {
+   "byte_end": 110056,
+   "byte_start": 109385,
+   "context_ref": "c-253",
+   "raw": "<xbrli:context id=\"c-253\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001275014</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">uctt:AppliedMaterialsIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-12-31</xbrli:startDate><xbrli:endDate>2023-12-29</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "34e9480691c8f96cb25370bbc02222b1f126af1b6a19fe4384cf3440fe49a31f"
+  }
+ ]
+}
