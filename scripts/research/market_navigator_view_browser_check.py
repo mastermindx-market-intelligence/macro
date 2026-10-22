@@ -14,6 +14,7 @@ sys.path.insert(0, str(_ROOT))
 
 from engine.market_navigator import Condition, Observation, Receipt, Scenario, compose
 from engine.market_navigator_response import bind_response
+from engine.market_navigator_price_confirmation import ClosedBar, LevelRule, qualified_observation
 
 
 def synthetic_wire() -> dict:
@@ -21,14 +22,48 @@ def synthetic_wire() -> dict:
     receipt = Receipt("fixture:visual", "fixture-v1", "2026-10-21T20:00:00Z",
                       "2026-10-21T20:00:01Z", "2026-10-21T20:00:02Z",
                       "2026-10-21T20:05:00Z")
+    # The first scenario is a complete end-to-end deterministic confirmation:
+    # three wholly synthetic completed daily bars -> typed owner-verifier
+    # fixture -> binary ratio observation -> the existing Python compositor
+    # -> request-bound wire -> JS admission -> bilingual DOM. This intentionally
+    # does not validate any operational market receipt or real strategy.
+    sample_closes = (99.0, 101.0, 102.0)
+    sample_days = ("2026-10-19", "2026-10-20", "2026-10-21")
+    original_bars = tuple(
+        ClosedBar(
+            subject="SPY:ARCX", horizon="swing", generation_ref="fixture:visual-generation",
+            receipt_ref=f"fixture:bar:{index}", revision="fixture:visual-generation",
+            session_ref=f"fixture:session:{day}", sequence=17 + index,
+            begins_at=f"{day}T19:55:00Z", ends_at=f"{day}T20:00:00Z",
+            available_at=f"{day}T20:00:02Z", valid_until="2026-10-21T20:05:00Z",
+            open=sample_closes[index-1] if index else sample_closes[0],
+            high=max(sample_closes[index-1] if index else sample_closes[0],
+                     sample_closes[index])+0.5,
+            low=min(sample_closes[index-1] if index else sample_closes[0],
+                    sample_closes[index])-0.5,
+            close=sample_closes[index], unit="USD", completed=True,
+        ) for index, day in enumerate(sample_days)
+    )
+    level_rule = LevelRule("SPY:ARCX", "swing", "cross_above", 100, "USD", 2,
+                           "fixture:reclaim-original", "2026-10-18T13:00:00Z",
+                           "2026-10-21T20:04:00Z")
+    derived = Receipt("fixture:completed-bar-proof", "fixture:visual-generation",
+                      "2026-10-21T20:00:00Z", "2026-10-21T20:00:01Z",
+                      "2026-10-21T20:00:02Z", "2026-10-21T20:05:00Z")
+    confirmed_reclaim = qualified_observation(
+        rule=level_rule, as_of=cutoff, bars=original_bars, expected_last_sequence=19,
+        verify_owner=lambda *_: True, receipt=derived, key="confirmed_reclaim")
+    assert confirmed_reclaim is not None and confirmed_reclaim.value == 1.0
     observations = (
         Observation("price", "SPY:ARCX", "price", 100.00, "USD", ("swing",), receipt),
+        confirmed_reclaim,
         Observation("breadth", "SPY:ARCX", "breadth", None, "percent", ("swing",), receipt),
     )
     scenarios = (
-        Scenario("holding", "SPY:ARCX", "swing", "2026-10-21T19:00:00Z", "fixture:rule1",
-                 "2026-10-21T20:04:00Z", (Condition("price", "gte", 99, "USD"),),
-                 (Condition("price", "lt", 98, "USD"),), ("price",), ("breadth",)),
+        Scenario("holding", "SPY:ARCX", "swing", "2026-10-18T13:00:00Z", "fixture:rule1",
+                 "2026-10-21T20:04:00Z", (Condition("confirmed_reclaim", "gte", 1, "ratio"),),
+                 (Condition("confirmed_reclaim", "lt", 1, "ratio"),),
+                 ("confirmed_reclaim",), ("breadth",)),
         Scenario("extension", "SPY:ARCX", "swing", "2026-10-21T19:00:00Z", "fixture:rule2",
                  "2026-10-21T20:04:00Z", (Condition("price", "gt", 102, "USD"),),
                  (Condition("price", "lt", 98, "USD"),), ("price",), ()),
@@ -46,6 +81,8 @@ def synthetic_wire() -> dict:
         market_state_receipt=receipt, expected_market_session="2026-10-21",
         canonical_session_complete=True,
     )
+    assert next(row for row in context["observations"] if row["key"] == "confirmed_reclaim")["value"] == 1.0
+    assert next(row for row in context["scenarios"] if row["key"] == "holding")["status"] == "conditions_met"
     return bind_response(context, request_id="navigator-1", expected_subject="SPY:ARCX",
                          expected_horizon="swing", requested_as_of=cutoff)
 
@@ -100,7 +137,9 @@ def main() -> None:
                     if args.screenshots is not None:
                         args.screenshots.mkdir(parents=True,exist_ok=True)
                         page.screenshot(path=str(args.screenshots / f"{width}-{language}-{theme}.png"),full_page=True)
-                    page.locator(".mnv-summary").first.click()
+                    page.locator('.mnv-path[data-scenario-key="holding"] .mnv-summary').click()
+                    assert "confirmed reclaim" in page.locator(
+                        '.mnv-path[data-scenario-key="holding"] .mnv-condition-list').first.inner_text().lower()
                     assert page.locator(".mnv-condition-list li").count() >= 2
                     assert page.locator(".mnv-evidence-list").count() >= 2
                     page.get_by_role("button",name=("Switch to Chinese" if language=="en" else "Switch to English")).click()

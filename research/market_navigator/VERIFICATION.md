@@ -193,3 +193,34 @@ hosted CI and independent review. No merge or production claim follows.
 ## W3 presentation increment (source-only)
 
 The new isolated `templates/market_navigator_view.js` and `.css` are an actual DOM presentation consumer of the incumbent validated response shape, not a newly admitted source. They render condition status, original rule/deadline clocks, support and counterevidence without probabilities or trade effects. Controls switch EN/ZH and dark/light with keyboard focus and disclosure state preserved; a new response/error withdraws old content. `VIEW_BROWSER_REPORT.json` records eight synthetic real Chromium viewports with no observed network/storage, horizontal overflow or browser errors. The Python->JS zero-browser-dependency harness was run under `tests/test_market_navigator_view.py`. These are not Paper, signed-in or production proofs.
+
+
+## Completed-bar confirmation and composer-to-browser proof (22 October 2026)
+
+The W3 source now implements `engine/market_navigator_price_confirmation.py`,
+not a second market regime or data feed. Its exact typed bar/window/receipt
+contract prevents a single quote from counting as a crossing or hold. A
+completed-bar mathematical event can enter the existing read-only compositor
+only via `qualified_observation` with an application-bound source verifier and
+a separate derived receipt that cannot extend the original source validity.
+The closed output does not expose raw subject/definition/generation references,
+and all trade/signal/probability/rank/size/alert flags remain false.
+
+The new `tests/test_market_navigator_price_confirmation.py` passes **64**
+synthetic deterministic cases. The cross-layer visual proof now exercises
+three synthetic completed swing bars -> event confirmation ratio -> existing
+`compose` -> `bind_response` -> exact-request JS validator -> bilingual DOM.
+Eight Chromium desktop/mobile, English/Chinese, dark/light cases passed.
+The W3 responsive illustrations were regenerated from that test; they remain
+synthetic, not signed-in operational evidence. The full local Navigator
+target `python -m pytest tests/test_market_navigator*.py -q` passed
+**257 tests**. The shared 350-job CI manifest validated, and two scoped
+curated-membership/scope tests ran successfully without changing any CI
+ceiling, job identity or release gate.
+
+Evidence class: BUILT_NOT_PROVEN. The owner verifier used in synthetic
+tests does NOT prove a real source generation. Rights admission, real owner
+bar/sequence receipts, operational prices, predictive performance, live
+route/mount, Paper-native design, user-account save/restore and release
+remain outstanding. Existing PR #10055 and its held independent review
+are unchanged by this separate W3 source increment.

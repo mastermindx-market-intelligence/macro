@@ -63,9 +63,13 @@ and reduced-motion handling. The module does not inject global styles.
 
 ## Actual proof and limits
 
-- Python-owned synthetic `compose` + `bind_response` -> real JS client's
-  `validate` -> DOM renderer -> Node test harness: source, units, clocks and
-  all-no-authority flags preserved.
+- Python-owned synthetic **completed-bar cross** (three source-timestamped
+  fixture bars and an explicit non-production verifier) ->
+  `qualified_observation` binary condition -> existing `compose` +
+  `bind_response` -> JS client's `validate` -> DOM renderer -> Node test:
+  typed clocks, units, source generation, condition status and all-no-authority
+  flags preserved. This proves deterministic end-to-end *math and rendering*
+  only, not real source authentication or a profitable signal.
 - Eight actual Chromium combinations: 1440/390px × EN/ZH × dark/light;
   evidence disclosure, focus return, language/theme toggling and disclosure
   state preservation, no viewport overflow, no page errors, no observed
@@ -77,6 +81,17 @@ and reduced-motion handling. The module does not inject global styles.
 The native Paper file is still edit-held. Paper Desktop was connected but its
 approved write catalog was incompatible and its active canvas was oversize.
 These sources are not claimed to be Paper-extracted JSX.
+
+## Conditional confirmation semantics
+
+W3 can now consume a binary source-qualified completed-bar condition from
+`engine.market_navigator_price_confirmation.qualified_observation`. One
+means the specifically defined event occurred at this cutoff; zero means
+the defined event did not occur. Neither number is a probability. The
+historical/source rules and original scenario remain attached to the existing
+compositor, not a JS heuristic or an options order. Any missing, expired,
+future or unauthorized evidence causes an unresolved condition instead of
+a fabricated numeric zero. See `PRICE_CONFIRMATION.md`.
 
 ## Existing-owner delivery gates
 

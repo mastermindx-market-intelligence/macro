@@ -121,3 +121,24 @@ The source release remains OPEN, not user-proven. Contract-delta exposed the Nav
 ## W3 UI composability (22 October 2026)
 
 Separate managed attended source branch `sol/web-market-navigator-w3-ui-20261022-sol` adds a user-inspectable read-only bilingual evidence region with condition, clock and contradictory-evidence drilldown. It has no source, auth, alert, ranking or trade owner; all dynamic text uses DOM textContent. The prior W1 source PR #10055 remains separately owned, open/merge-blocked. Actual Paper and signed-in production integration still outstanding; no duplicate reviewer or worker was spawned. See research/market_navigator/VIEW_INTEGRATION.md and VIEW_BROWSER_REPORT.json.
+
+## Completed-bar price-rule source increment (22 October 2026)
+
+W3 draft PR #10076 adds a deterministic non-predictive price-rule confirmation
+subengine, integrated as a binary observation into the incumbent scenario
+compositor and displayed through its existing request-bound client. 64 new
+targeted synthetic checks, 257 total focused Navigator tests and eight
+Chromium configurations passed. It accepts only 2-16 completed owner-calendar
+bars with contiguous bar ordinals, a legitimate as-known cutoff, no mixed
+generation or intraday session crossing, verified source receipts and an
+unextended derived receipt; otherwise status stays unresolved. Source owner
+verification is a **test fixture**, not production proof. No dark-pool/gamma
+dealer claims or trading authority were added. The source authorization
+limit on legacy Market Memory original endpoints remains in effect; no new
+endpoint or storage path was created.
+
+Foundation PR #10055 remains a separate open code/review/release gate.
+UI PR #10076 remains draft because current CI authority rejects the
+non-main stack base (`unsupported_base_ref`). Both original carriers are
+preserved; do not bypass, force retarget or conflate this new local proof
+with a completed/approved production capability.
