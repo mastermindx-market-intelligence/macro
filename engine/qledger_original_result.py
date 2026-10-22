@@ -18,7 +18,7 @@ import re
 import stat
 from types import MappingProxyType
 
-from engine.qledger_store import NativeClaimsWrite
+from engine.qledger_store import NativeClaimsWrite, _NativeClaimsBinding
 from engine.qledger_store_native import NativeClaimsIntent, NativeClaimsSession, _sync_dir, _sync_file, _write_all
 from engine.qledger_store_protocol import (
     ROOT_PATH, InMemorySource, ProtocolLimits, SnapshotIntegrityError,
@@ -66,6 +66,9 @@ class RetainedOriginalResult:
     write: NativeClaimsWrite
     native_operation_receipt: NativeOperationReceipt
     candidate_oid: str
+    accepted_tip_oid: str
+    commit_metadata: git_candidate.CandidateCommitMetadata
+    target_ref: str
     limits: ProtocolLimits
     _seal: object
 
@@ -357,7 +360,8 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
         retained = object.__new__(RetainedOriginalResult)
         for key, value in dict(owner_root=owner_root, result_path=result_path, result_id=expected_result_id,
             manifest_digest=expected_manifest_digest, write=write, native_operation_receipt=receipt,
-            candidate_oid=git["candidate_oid"], limits=limits, _seal=_SEAL).items():
+            candidate_oid=git["candidate_oid"], accepted_tip_oid=git["accepted_tip_oid"],
+            commit_metadata=metadata, target_ref=git["target_ref"], limits=limits, _seal=_SEAL).items():
             object.__setattr__(retained, key, value)
         return retained
     except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
@@ -391,3 +395,113 @@ def apply_retained_original(session, write, retained):
             or session.location != write.claims_path.parents[2] or session.intent != write.intent):
         _fail("native session differs from retained target/intent")
     return session.apply_prepared(write.plan)
+
+
+@dataclass(frozen=True)
+class OriginalResultTarget:
+    """Owner-predeclared location/source/metadata for ONE explicit write intent."""
+
+    owner_root: Path
+    result_path: Path
+    result_id: str
+    accepted_tip_oid: str
+    accepted_ref: str
+    target_ref: str
+    commit_metadata: git_candidate.CandidateCommitMetadata
+
+
+class OriginalResultClaimsBinding(_NativeClaimsBinding):
+    """Inactive owner bridge; no factories, source retargeting or enrollment.
+
+    The finite mapping is explicit caller input. Host/retention/launch policy,
+    original budget and real failure consumption remain owner obligations.
+    Prepared-result facts are task-local, not another durable operation ledger.
+    """
+
+    def __init__(self, explicit_claims_path, *, operation_id, lane_id, limits,
+                 original_result_targets, lock_timeout=30):
+        from contextvars import ContextVar
+
+        git_candidate.publication._profile(limits)
+        super().__init__(explicit_claims_path, operation_id=operation_id,
+                         lane_id=lane_id, limits=limits, lock_timeout=lock_timeout)
+        if (type(original_result_targets) not in (dict, MappingProxyType)
+                or len(original_result_targets) > limits.history_operations):
+            _fail("finite predeclared original-result targets required; no factory")
+        targets, paths = {}, set()
+        for intent, target in original_result_targets.items():
+            self._check_intent(intent)
+            if type(target) is not OriginalResultTarget:
+                _fail("explicit immutable original-result target required")
+            root, path = _absolute(target.owner_root), _absolute(target.result_path)
+            if (path.parent != root or path.name != target.result_id
+                    or type(target.result_id) is not str or not _RESULT_ID.fullmatch(target.result_id)
+                    or root.is_relative_to(self.repo_root) or path in paths):
+                _fail("foreign, duplicate or unsafe original-result target")
+            git_candidate.publication._native_binding(git_candidate.publication.NativePublicationBinding(
+                operation_id, lane_id, target.target_ref, target.accepted_tip_oid, "0" * 64))
+            if (type(target.accepted_ref) is not str or not target.accepted_ref.startswith("refs/")
+                    or type(target.commit_metadata) is not git_candidate.CandidateCommitMetadata):
+                _fail("exact accepted source and fixed metadata required")
+            target.commit_metadata.git_identity()
+            targets[intent] = target
+            paths.add(path)
+        self.original_result_targets = MappingProxyType(targets)
+        self._prepared_results = ContextVar("qledger_owner_prepared_results", default=())
+
+    @property
+    def prepared_original_results(self):
+        return self._prepared_results.get()
+
+    def _target_for(self, intent):
+        try:
+            return self.original_result_targets[intent]
+        except (KeyError, TypeError):
+            _fail("write intent has no predeclared original-result target")
+
+    def _admit(self, intent, *, original=None):
+        super()._admit(intent, original=original)
+        self._target_for(intent)
+
+    def _apply_original_write(self, session, write):
+        target = self._target_for(write.intent)
+        receipt = NativeOperationReceipt(write.intent.operation_id, write.intent.lane_id,
+            write.plan._before, write.plan.snapshot, (write.intent.transaction_id,), self.limits)
+        candidate = git_candidate.prepare_native_operation_candidate(
+            self.repo_root, accepted_tip_oid=target.accepted_tip_oid,
+            accepted_ref=target.accepted_ref, native_operation_receipt=receipt,
+            commit_metadata=target.commit_metadata, target_ref=target.target_ref, limits=self.limits)
+        prepared = prepare_original_result(write, candidate=candidate,
+                                            result_id=target.result_id, limits=self.limits)
+        self._prepared_results.set(self.prepared_original_results + ((write, prepared),))
+        retained = retain_original_result(owner_root=target.owner_root,
+                                         result_path=target.result_path, prepared=prepared)
+        return apply_retained_original(session, write, retained)
+
+    def reconcile_original_write(self, write, *, retained_original=None):
+        """Read the SAME result; never re-prepare claims/candidates/locations.
+
+        After process loss the owner must supply explicit retained readback with
+        original custody/budget; this does not mint a fresh binding or discover
+        a replacement. Missing/partial retention remains unproven.
+        """
+        if type(write) is not NativeClaimsWrite:
+            _fail("explicit original write required")
+        validate_plan(write.plan, limits=self.limits)
+        self._check_intent(write.intent)
+        target = self._target_for(write.intent)
+        if retained_original is None:
+            prepared = next((value for previous, value in reversed(self.prepared_original_results)
+                             if self._same_original_write(previous, write)), None)
+            if prepared is None:
+                _fail("original retention unknown; explicit owner readback required")
+            retained_original = read_original_result(owner_root=target.owner_root,
+                result_path=target.result_path, expected_result_id=target.result_id,
+                expected_manifest_digest=prepared.manifest_digest,
+                expected_claims_path=self.claims_path, expected_intent=write.intent, limits=self.limits)
+        checked = require_retained_original(write, retained_original)
+        if (checked.owner_root != target.owner_root or checked.result_path != target.result_path
+                or checked.result_id != target.result_id or checked.accepted_tip_oid != target.accepted_tip_oid
+                or checked.commit_metadata != target.commit_metadata or checked.target_ref != target.target_ref):
+            _fail("retained original differs from exact predeclared owner target/source")
+        return super().reconcile_original_write(write)

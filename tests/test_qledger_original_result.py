@@ -296,3 +296,163 @@ def test_growth_during_read_never_allocates_an_extra_probe_byte(tmp_path, monkey
     finally:
         os.close(fd)
     assert sum(observed) <= 1
+
+
+def owner_bridge(original, monkeypatch, *, intents=("bridge",)):
+    from engine import qledger as q, qledger_store as store
+    write, _, root, _, limits, candidate = original
+    repo = write.claims_path.parents[2]
+    for relative, payload in {**write.plan._before._members, p.ROOT_PATH: write.plan._before.root_bytes}.items():
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(payload)
+    monkeypatch.setattr(q, "_prepare_claim", lambda claim: dict(claim))
+    clocks = []
+    monkeypatch.setattr(q, "_start_control_clocks_for", lambda rows, root, today=None: clocks.append(list(rows)))
+    identities = [n.NativeClaimsIntent(write.intent.operation_id, write.intent.lane_id, tag) for tag in intents]
+    targets = {intent: result.OriginalResultTarget(root, root / tag, tag,
+        candidate.continuity.accepted_tip_oid, candidate.accepted_ref, "refs/heads/main", candidate.commit_metadata)
+        for intent, tag in zip(identities, intents)}
+    binding = result.OriginalResultClaimsBinding(write.claims_path,
+        operation_id=write.intent.operation_id, lane_id=write.intent.lane_id, limits=limits,
+        original_result_targets=targets)
+    return q, store, binding, identities, root, clocks
+
+
+def test_owner_bridge_requires_retention_before_registrar_native_apply(original, monkeypatch):
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch)
+    intent = identities[0]
+    apply = n.NativeClaimsSession.apply_prepared
+    seen = []
+    def only_after_retention(session, plan):
+        assert (root / "bridge" / "manifest.json").exists()
+        assert binding.prepared_original_results
+        seen.append(plan.transaction.transaction_id)
+        return apply(session, plan)
+    monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", only_after_retention)
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        assert q.register({"claim_id": "new"}, binding.repo_root, dedupe=False, native_intent=intent) == {"claim_id": "new"}
+    assert seen == [intent.transaction_id] and clocks == [[{"claim_id": "new"}]]
+    assert binding.last_outcome.status == "materialized"
+    assert len(binding.prepared_original_results) == 1
+
+
+def test_owner_bridge_has_no_result_target_or_identity_factory(original, monkeypatch):
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch)
+    before = (binding.repo_root / p.ROOT_PATH).read_bytes()
+    unknown = replace(identities[0], transaction_id="not-predeclared")
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        with pytest.raises(p.SnapshotIntegrityError, match="predeclared"):
+            q.register({"claim_id": "new"}, binding.repo_root, dedupe=False, native_intent=unknown)
+    assert not binding.attempts and not list(root.iterdir()) and not clocks
+    assert (binding.repo_root / p.ROOT_PATH).read_bytes() == before
+
+
+def test_owner_bridge_refuses_stale_later_mapping_without_retarget(original, monkeypatch):
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch, intents=("one", "two"))
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        q.register({"claim_id": "one"}, binding.repo_root, dedupe=False, native_intent=identities[0])
+        after_one = (binding.repo_root / p.ROOT_PATH).read_bytes()
+        with pytest.raises(p.SnapshotIntegrityError, match="original operation base"):
+            q.register({"claim_id": "two"}, binding.repo_root, dedupe=False, native_intent=identities[1])
+    assert (binding.repo_root / p.ROOT_PATH).read_bytes() == after_one
+    assert (root / "one" / "manifest.json").exists() and not (root / "two").exists()
+    assert clocks == [[{"claim_id": "one"}]]
+
+
+@pytest.mark.parametrize("complete", [False, True])
+def test_owner_bridge_retention_failure_never_applies_or_replaces_original(original, monkeypatch, complete):
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch)
+    native_before = (binding.repo_root / p.ROOT_PATH).read_bytes()
+    sync_file, sync_dir = result._sync_file, result._sync_dir
+    if complete:
+        def lost(fd):
+            sync_dir(fd)
+            if (root / "bridge" / "manifest.json").exists() and os.fstat(fd).st_ino == root.stat().st_ino:
+                raise OSError("fixture original-result return lost")
+        monkeypatch.setattr(result, "_sync_dir", lost)
+    else:
+        monkeypatch.setattr(result, "_sync_file", lambda fd: (_ for _ in ()).throw(OSError("fixture retention barrier failed")))
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        with pytest.raises(p.SnapshotIntegrityError):
+            q.register({"claim_id": "new"}, binding.repo_root, dedupe=False, native_intent=identities[0])
+    assert (binding.repo_root / p.ROOT_PATH).read_bytes() == native_before and not clocks
+    original_attempt = binding.attempts[0]
+    assert original_attempt.outcome is None
+    monkeypatch.setattr(result, "_sync_file", sync_file)
+    monkeypatch.setattr(result, "_sync_dir", sync_dir)
+    monkeypatch.setattr(q, "_prepare_claim", lambda *a: pytest.fail("recovery re-prepared claims"))
+    monkeypatch.setattr(result.git_candidate, "prepare_native_operation_candidate", lambda *a, **k: pytest.fail("recovery created replacement Git candidate"))
+    if complete:
+        assert binding.reconcile_original_write(original_attempt.write).status == "materialized"
+    else:
+        with pytest.raises(p.SnapshotIntegrityError):
+            binding.reconcile_original_write(original_attempt.write)
+        assert (binding.repo_root / p.ROOT_PATH).read_bytes() == native_before
+    assert list(root.iterdir()) == [root / "bridge"] and not clocks
+    assert binding.attempts[0] == original_attempt
+
+
+def test_owner_bridge_reconciles_uncertain_native_effect_from_retained_original_after_git_loss(original, monkeypatch):
+    import json
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch)
+    real_replace = n.os.replace
+    def uncertain(source, target, *args, **kwargs):
+        value = real_replace(source, target, *args, **kwargs)
+        if str(target) == Path(p.ROOT_PATH).name:
+            raise OSError("fixture native root return lost")
+        return value
+    monkeypatch.setattr(n.os, "replace", uncertain)
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        with pytest.raises(n.ClaimsStorageError) as caught:
+            q.register({"claim_id": "new"}, binding.repo_root, dedupe=False, native_intent=identities[0])
+    assert caught.value.outcome.status == "root_effect_uncertain" and not clocks
+    original_attempt = binding.attempts[0]
+    candidate_oid = json.loads((root / "bridge" / "manifest.json").read_bytes())["git"]["candidate_oid"]
+    (binding.repo_root / ".git/objects" / candidate_oid[:2] / candidate_oid[2:]).unlink()
+    monkeypatch.setattr(n.os, "replace", real_replace)
+    monkeypatch.setattr(q, "_prepare_claim", lambda *a: pytest.fail("recovery re-prepared claims"))
+    monkeypatch.setattr(result.git_candidate, "prepare_native_operation_candidate", lambda *a, **k: pytest.fail("recovery created replacement candidate"))
+    # A restored sealed plan has artifact provenance instead of pretending to
+    # be the original locked-local source; exact raw inputs still reconcile.
+    _, prepared = binding.prepared_original_results[0]
+    restored = result.read_original_result(owner_root=root, result_path=root / "bridge",
+        expected_result_id="bridge", expected_manifest_digest=prepared.manifest_digest,
+        expected_claims_path=binding.claims_path, expected_intent=identities[0], limits=binding.limits)
+    outcome = binding.reconcile_original_write(restored.write, retained_original=restored)
+    assert outcome.status == "already_applied" and outcome.clock_status == "uncertain"
+    assert binding.attempts[0] == original_attempt and not clocks
+
+
+def test_owner_bridge_constructor_rejects_factories_duplicate_targets_and_foreign_identity(original, monkeypatch):
+    _, _, binding, identities, _, _ = owner_bridge(original, monkeypatch)
+    intent = identities[0]
+    target = binding.original_result_targets[intent]
+    base = dict(explicit_claims_path=binding.claims_path, operation_id=binding.operation_id,
+                lane_id=binding.lane_id, limits=binding.limits)
+    invalid = [lambda intent: target, {intent: True},
+        {intent: target, replace(intent, transaction_id="other"): target},
+        {replace(intent, operation_id="foreign"): target},
+        {intent: replace(target, owner_root=binding.repo_root, result_path=binding.repo_root / target.result_id)}]
+    for values in invalid:
+        with pytest.raises(p.SnapshotIntegrityError):
+            result.OriginalResultClaimsBinding(**base, original_result_targets=values)
+    with pytest.raises(p.SnapshotIntegrityError):
+        result.OriginalResultClaimsBinding(**{**base, "limits": replace(binding.limits, history_operations=1)},
+            original_result_targets={intent: target, replace(intent, transaction_id="other"):
+                replace(target, result_path=target.owner_root / "other", result_id="other")})
+
+
+def test_owner_bridge_rejects_foreign_retained_location_even_for_identical_original(original, monkeypatch):
+    q, store, binding, identities, root, _ = owner_bridge(original, monkeypatch)
+    with store._synthetic_claims_binding(binding.claims_path, binding):
+        q.register({"claim_id": "new"}, binding.repo_root, dedupe=False, native_intent=identities[0])
+    write, prepared = binding.prepared_original_results[0]
+    foreign_root = root.parent / "foreign-evidence"
+    foreign_root.mkdir(mode=0o700)
+    foreign = result.retain_original_result(owner_root=foreign_root,
+        result_path=foreign_root / "bridge", prepared=prepared)
+    before = (binding.repo_root / p.ROOT_PATH).read_bytes()
+    with pytest.raises(p.SnapshotIntegrityError, match="predeclared owner target"):
+        binding.reconcile_original_write(write, retained_original=foreign)
+    assert (binding.repo_root / p.ROOT_PATH).read_bytes() == before and len(binding.attempts) == 1

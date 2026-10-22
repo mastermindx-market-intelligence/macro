@@ -292,12 +292,27 @@ class _NativeClaimsBinding:
         if (intent.operation_id, intent.lane_id) != (self.operation_id, self.lane_id):
             raise SnapshotIntegrityError("CONFLICT", "write intent differs from explicit binding owner")
 
+    @staticmethod
+    def _same_original_write(left, right):
+        # Callers validate retained plans before this comparison. Artifact
+        # readback truthfully has a new source receipt; match exact original
+        # bytes/transactions, never assert that it is the old live source.
+        return (
+            type(left) is NativeClaimsWrite and type(right) is NativeClaimsWrite
+            and left.intent == right.intent and left.claims_path == right.claims_path
+            and left.plan._before.root_bytes == right.plan._before.root_bytes
+            and left.plan._before._members == right.plan._before._members
+            and left.plan.snapshot.root_bytes == right.plan.snapshot.root_bytes
+            and left.plan.snapshot._members == right.plan.snapshot._members
+            and left.plan.transaction == right.plan.transaction
+        )
+
     def _admit(self, intent, *, original=None):
         from engine.qledger_store_protocol import SnapshotIntegrityError
 
         self._check_intent(intent)
         unresolved = self._unresolved.get()
-        if unresolved is not None and original != unresolved:
+        if unresolved is not None and not self._same_original_write(original, unresolved):
             raise SnapshotIntegrityError("CONFLICT", "original native write remains unsettled; reconcile its exact inputs")
         if original is None and len(self.attempts) >= self.limits.history_operations:
             raise SnapshotIntegrityError("LIMIT", "task-local native attempt budget")
@@ -335,6 +350,12 @@ class _NativeClaimsBinding:
         self._last_outcome.set(outcome)
         self._unresolved.set(write if outcome.status == "root_effect_uncertain" else None)
         return outcome
+
+    def _apply_original_write(self, session, write):
+        # Inactive synthetic binding. An actual owner uses the explicit
+        # OriginalResultClaimsBinding retention boundary, never this fixture
+        # path as production enrollment.
+        return session.apply_prepared(write.plan)
 
     def read_snapshot(self):
         with self._new_session() as session:
@@ -434,7 +455,7 @@ class _NativeClaimsWriter:
             raise SnapshotIntegrityError("CONFLICT", "existing transaction requires original-input reconciliation")
         self.write = NativeClaimsWrite(self.intent, plan, self.binding.claims_path)
         self.binding._begin(self.write)
-        return self._record(self.session.apply_prepared(plan))
+        return self._record(self.binding._apply_original_write(self.session, self.write))
 
     def append_serialized_rows(self, rows):
         self.binding._admit(self.intent)
