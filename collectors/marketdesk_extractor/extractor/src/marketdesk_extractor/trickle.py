@@ -532,7 +532,7 @@ def _record_producer_auth_health(conn, states: list[AccountState], observed_at: 
 
     Process presence is not authentication, and positive authentication does not
     establish successful discovery. A browser startup failure or an empty profile
-    set is UNKNOWN; only negative session results retain AUTH_REQUIRED.
+    set is UNKNOWN; other unauthenticated fallbacks retain AUTH_REQUIRED.
     """
     stamp = observed_at.isoformat()
     if not states:

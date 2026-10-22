@@ -93,7 +93,7 @@ Each diagnostic closed before restoring the canonical launch agent. After the fi
 
 ### Adapter corrections and acceptance
 
-The source repair distinguishes an unexpected endpoint response from a freshly confirmed negative authentication check. A positive control keeps the account eligible for the existing discovery cadence while surfacing the endpoint error. It never converts a rejected response into an empty or successful discovery. Real negative controls retain the existing conservative expiration path; a negative boolean can still reflect transport failure.
+The source repair distinguishes an unexpected endpoint response from a freshly confirmed negative authentication check. A positive control keeps the account eligible for the existing discovery cadence while surfacing the endpoint error. It never converts a rejected response into an empty or successful discovery. Negative controls retain the existing conservative expiration path; a negative boolean can still reflect transport failure. Unexpected post-start probe/client-construction exceptions also retain the legacy unauthenticated fallback. This repair does not make every possible `AUTH_REQUIRED` observation definitive proof of cookie expiry.
 
 Browser-entry failure must report `UNKNOWN / BROWSER_START_FAILED` through the existing metadata and dry-run plan. Partial entry must close any created context and stop its driver while preserving the original error. No new scheduler, health database or authentication ceremony is introduced.
 
@@ -171,7 +171,7 @@ On the actual checkout:
 - The full standalone extractor suite passed **412 tests**.
 - The installer/lineage and Research Desk page suites passed **61 tests** (25 lineage plus 36 page tests, including the existing wrapper around seven Node VM cases).
 - The current source verifier passed before and after tests: exactly **58 payload files**, no missing, extra, mismatched or symlinked payloads.
-- Current release: `marketdesk-endpoint-auth-discrimination-20261022-v1`; current manifest SHA-256: `032bffa5001dfcd802caa96a5c078c90da94bbe38777f6f6eabb67dead4c1f1c`. The immutable recovery manifest and historical import receipt were preserved.
+- Current release: `marketdesk-endpoint-auth-discrimination-20261022-v1`; current manifest SHA-256: `9808e50683c65728c73fed5d40f7d3f358994b01a22160de2e446249c3d60132`. The immutable recovery manifest and historical import receipt were preserved.
 
 The paid implementation contribution was a three-file blueprint validated only against excerpt-derived fixtures. Its returned inline diff contained a joined-line formatting defect and did not include its claimed test-file bytes. The parent integrated the functions against the real files, added the approved provision discriminator, and supplied the real regression tests above. No fixture-only pass is treated as checkout or runtime evidence.
 

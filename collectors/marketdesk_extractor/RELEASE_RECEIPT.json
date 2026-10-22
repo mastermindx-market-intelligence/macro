@@ -5,7 +5,7 @@
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "032bffa5001dfcd802caa96a5c078c90da94bbe38777f6f6eabb67dead4c1f1c",
+  "manifest_sha256": "9808e50683c65728c73fed5d40f7d3f358994b01a22160de2e446249c3d60132",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
