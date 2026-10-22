@@ -520,3 +520,6 @@ Rulings (binding on the repair; each is a test):
   the B4 nightly capture step). Both orchestrators messaged: fixes must be CLEAN on
   `git merge-tree --write-tree origin/main <fix>` and accepted on the exported merge tree. #9955/#9956 merge clean.
   #9999 CI was GREEN on 6e6798aa (watcher bzb3z80dl consumed); #9951 UNSTABLE, watcher b63o19edc running.
+- **02:4xZ:** **#9951 (B01 relocation + re-home) MERGED → dc9c4fc08250** (01:57:57Z; head 4a47aac2 exact; full table green,
+  only merge-queue-pilot red; review F25 PASS_WITH_NOTES; fence unchanged). Watcher b63o19edc consumed. main=dc9c4fc0;
+  conflicts unchanged (A1 legacy-jobs.yml step adjacency; U2 test_ci_pack.py ceilings) — orchestrators already briefed.
