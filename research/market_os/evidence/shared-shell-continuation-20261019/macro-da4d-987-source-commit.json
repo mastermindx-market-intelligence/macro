@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-10-20T18:46:38.175904+00:00",
+  "state": "SOURCE_COMMITTED_LOCAL_ONLY",
+  "head_before": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "remote_before": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "source_tree": "b0f7a0741674509745401aded2c112434e9b4130",
+  "changed_paths_vs_incoming": 805,
+  "test_receipt_sha256": "cf2992969611eddaf0e98702f7d4a305873b321b0d7a5b52ecf57feee0b785c7",
+  "message_sha256": "a54c80c96c479d4282295f27001f56341e587f406c640a44e9a5d78270117acf",
+  "commit_exit": 0,
+  "log_bytes": 113,
+  "log_sha256": "d75e4f7f53c1c1faac381a8a1750b89b52608a36c1093b6be403a8ec94336ee6",
+  "head_after": "6d56650ea21395e7ffb0412bde73881b58dd1a66",
+  "parents": [
+    "da4df7d1e1ac709055c6fa1d482304a875e81824",
+    "9875169102cc6f36a64d465fe7c06f6bb8fb0220"
+  ],
+  "clean": true,
+  "pushed": false,
+  "finished_at": "2026-10-20T18:46:50.201191+00:00"
+}

@@ -595,6 +595,16 @@ def test_research_raw_document_is_the_vault_summary_not_the_source_pdf(tmp_path)
     assert F.SOURCE_DOC.split(":")[0] in slot["raw_documents"][0]["text"]
 
 
+def test_research_fact_dates_identify_publication_not_observation(tmp_path):
+    root = F.fixture_root(tmp_path)
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+    report_facts = [f for f in slot["facts"] if f["ref"] in slot["sources"]]
+    assert report_facts and all(f["date_role"] == "publication" for f in report_facts)
+    assert all(f["dated"] == "2026-07-25" for f in report_facts)
+    engine_facts = [f for f in slot["facts"] if f["ref"] not in slot["sources"]]
+    assert all(f.get("date_role") != "publication" for f in engine_facts)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # planner hygiene: it must not hand the writer forbidden vocabulary
 # ─────────────────────────────────────────────────────────────────────────────
@@ -725,6 +735,13 @@ def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path)
     assert 'display' in fact['context_relevance']
     assert 'not executed prices or achieved returns' in fact['context_relevance']
     assert 'not an instruction to trade' in fact['context_relevance']
+    assert slot['native_plan_scope'] == fact['native_plan_scope']
+    assert slot['native_plan_scope']['recorded_at'] == '2026-10-01'
+    assert slot['native_plan_scope']['price_basis_date'] == '2026-09-30'
+    assert slot['native_plan_scope']['close_date'] == row['close_date']
+    assert slot['native_plan_scope']['entry_status'] == 'bounce_wait'
+    assert slot['native_plan_scope']['authority_tier'] == 'display'
+    assert slot['native_plan_scope']['confirmed_date'] is None
     assert slot['source_revisions']['artifact:site/prophet/plans/' + path.name] == (
         'sha256:' + hashlib.sha256(original).hexdigest())
     _, prompt = writer.build_prompt(slot, P.load_config(root))

@@ -220,11 +220,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -611,6 +615,32 @@ def test_no_source_maps_secrets_or_server_source_in_site_tree():
     assert bad == []
 
 
+def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
+    # The moved stub must run its bridge.navigate before the parent commits a
+    # successor generation. Query-preserving HTTP redirects still fail READY.
+    match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /baskets_china.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
+    assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
+
+
 def test_fail_closed_and_browser_hardening_are_present():
     assert 'rewrite /api/regwall/check' in CADDY
     assert 'rewrite /api/paywall/check' in CADDY
@@ -804,3 +834,12 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_internal_document_denials_match_the_canonical_policy():
+    """A Caddy-only denial must never be advertised by the route registry."""
+    matcher = re.search(r"@never_site\s*\{\s*path ([^\n]+)", CADDY)
+    assert matcher, "internal-document serving denial missing"
+    declared = set(POLICY["deny"]["exact"])
+    declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
+    assert set(shlex.split(matcher.group(1))) == declared

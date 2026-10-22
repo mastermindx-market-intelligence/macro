@@ -2465,6 +2465,10 @@ except Exception as _government_revenue_exc:  # noqa: BLE001
 from app.research import router as research_router  # noqa: E402
 app.include_router(research_router)
 
+# Registered-user Macro Command reads use the qualified served publication.
+from app.macro_command import router as macro_command_router  # noqa: E402
+app.include_router(macro_command_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing
@@ -2580,6 +2584,11 @@ app.include_router(medtech_router)
 # BioCatalyst above.
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
+
+# Same-box input only: public edge requests are denied before auth or file I/O.
+# Terminal retains holdings and computes derived risk metrics in its own compiler.
+from app.treasury_history import router as treasury_history_router  # noqa: E402
+app.include_router(treasury_history_router)
 
 # B03 reads the existing uncapped observation input only after site_full auth.
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402
