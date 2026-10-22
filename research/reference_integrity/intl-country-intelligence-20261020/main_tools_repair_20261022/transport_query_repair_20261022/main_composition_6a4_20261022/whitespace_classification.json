@@ -1,0 +1,779 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "parent": "20d22192613f1f5eb062d85e9aca1b2bb3e48036",
+      "exit_code": 2,
+      "warnings": 138,
+      "paths": [
+        {
+          "path": "site/congress_trades.html",
+          "count": 96,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/demand.html",
+          "count": 2,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/factors.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/news.html",
+          "count": 6,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/ABT.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/BANR.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/BKU.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/CME.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/CSX.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/DHR.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/EGP.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/EPAC.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/FAF.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/FR.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/GTY.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/IBM.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/JBHT.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/MEDP.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/MHO.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/NTRS.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/OFG.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/OII.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/ONB.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/PGR.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/PKG.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/PNFP.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/REXR.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/RS.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/SLG.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/SON.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/T.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/TFIN.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/TMO.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/UAL.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/WGO.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/WH.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        },
+        {
+          "path": "site/stocks/WINA.html",
+          "count": 1,
+          "byte_identical_parents": [
+            "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+          ]
+        }
+      ],
+      "log_sha256": "bf7e7af4e662c667225420e594636f9a25c0e136abef61c1d2d47e906511a738",
+      "uncompressed_sha256": "09144bc43f736a5f68b86af24bc8d4c74be2d7ccad63cad4722109dda7763f96"
+    },
+    {
+      "parent": "6a4c0079d1aec13b08cb554f6f7424b775165d09",
+      "exit_code": 2,
+      "warnings": 137969,
+      "paths": [
+        {
+          "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/final_country_and_public_tests.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/partial_withdrawal_tests.log",
+          "count": 5,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_attempt1.log",
+          "count": 6,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/fx_coverage_20261020/tests_capture_boundary_before.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/branch_activity_page1.http",
+          "count": 27,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/expected_commit.http",
+          "count": 26,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_branch_activity.http",
+          "count": 27,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/publisher_reconciliation_20261020/terminal_expected_commit.http",
+          "count": 26,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/before_final_ui/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_after.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_qualification_helpers.txt",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_reconciliation_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/bis_reconstruction_after.log",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/build_before.log",
+          "count": 3,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/dated_kr.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/monthly_review_gb.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/partial_jp.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/degraded_states/unavailable_kr.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/forecast_before.log",
+          "count": 9,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/fresh_ci_step_2.log",
+          "count": 3,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/history_legend_after.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/history_legend_before.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/deterministic_clock_test_with_declared_deps.log",
+          "count": 9,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/hosted_ci_triage/receipt_and_first_frame_tests.log",
+          "count": 2,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_after.html",
+          "count": 331,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_before.html",
+          "count": 331,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/navigation_final.html",
+          "count": 338,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_after.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_before.html",
+          "count": 63,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/partial_final.html",
+          "count": 64,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/preview/intl_integrated_preview.html",
+          "count": 210,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/preview/intl_stocks_integrated_preview.html",
+          "count": 15,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/retained_reconciliation_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/paper_international_wave1_wave2/review_repair_20261020/retained_restore_fragment.py",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_ci_base_historical.log",
+          "count": 20,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/coverage_followup/INTEGRATION_HANDOFF.md",
+          "count": 3,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/coverage_followup/SOURCE_FIXTURE_HANDOFF.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/inherited_main_whitespace_check.log",
+          "count": 273,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PR_BODY_PRIOR_20261022.md",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.log",
+          "count": 4,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_REVIEW_CORRECTION.diff",
+          "count": 10,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.log",
+          "count": 6,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/proposed_shelltools20261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/regressions_integrated/international_browser.log",
+          "count": 2,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/canonical_bake.log",
+          "count": 2,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/access_caddy_since_review.diff",
+          "count": 6,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/access_tests_against_main.diff",
+          "count": 3,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/access_tests_since_review.diff",
+          "count": 2,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/main6a4_theme_ci.diff",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/proposed_main90df20261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_base.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_branch.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_conflicts/3_main.html",
+          "count": 22,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/screener_canonical_bake.diff",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/production/intl.html",
+          "count": 11855,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed/intl.html",
+          "count": 12187,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_composition20261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock2_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock3_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_dock4_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_final_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair/intl.html",
+          "count": 12244,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/proposed_ui_repair/intl.html",
+          "count": 12187,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/repair_pass_product.yml",
+          "count": 1,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        },
+        {
+          "path": "research/reference_integrity/intl-country-intelligence-20261020/source_principal/REVIEW.md",
+          "count": 4,
+          "byte_identical_parents": [
+            "20d22192613f1f5eb062d85e9aca1b2bb3e48036"
+          ]
+        }
+      ],
+      "log_sha256": "1701ed1581c5eede80777fa3ff95abe61128cc5a17a4b3e3cccf95497242bf36",
+      "uncompressed_sha256": "424c7bd5ea087ed75b47ba727f67ee6c8f8951a7e1cbd9a503f7bc4872260404"
+    }
+  ]
+}
