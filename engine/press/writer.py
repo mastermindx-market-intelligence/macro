@@ -454,9 +454,10 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     # every evidence line as untrusted data at the final prompt boundary; the
     # shared sanitizer is intentionally narrower than rewriting the evidence.
     from engine.chronicle.earnings_calls import sanitize_untrusted_prose  # noqa: PLC0415
+    from engine.press.native_plan_scope import receipt_facts, scope_fragments  # noqa: PLC0415
 
     facts_lines: list[str] = []
-    for f in (slot.get("facts") or []):
+    for f in receipt_facts(slot):
         if not isinstance(f, dict):
             continue
         fact_text = sanitize_untrusted_prose(f.get("text"), max_len=2000)
@@ -527,6 +528,25 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
             "rejects missing, unknown, or lexically unrelated attribution."
         )
     parts.append("")
+
+    native_disclosures = scope_fragments(slot)
+    if native_disclosures:
+        parts.append(
+            "NATIVE PLAN SCOPE: only the bound story lead and historical plan "
+            "can support this story's receipts or anchored share. Unrelated "
+            "context earns no receipt credit, including coincidentally equal "
+            "numbers. Receipt-bearing quantitative clauses must match the "
+            "visible bound source clauses exactly; surrounding commentary "
+            "does not create additional receipts. Keep the following short source-derived disclosures "
+            "visible in the body, integrated into your own prose; do not "
+            "merge them into a boilerplate paragraph:")
+        parts.extend(f"  - {fragment}" for fragment in native_disclosures)
+        parts.append(
+            "CONTINUATION: include an actual link to the plan asset's exact "
+            "existing stock dossier under LINKING. A bare URL is insufficient. "
+            "Do not invent a dossier, execution, achieved target, confirmation "
+            "or issuer-event cause. The plan is historical; this is not a "
+            "new signal or trading instruction.")
 
     # SOURCE LAW (masterplan §0 W1 gate 2, amended at W1 review). Only an
     # EXTERNAL source gets the above-the-fold named+linked treatment; a
@@ -709,6 +729,12 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
         not single_provider_attempt or not admitted_token_cap or attempt != 0
     ):
         return _fail(state, "invalid_private_admission_call_shape", charge=False, record=False)
+
+    from engine.press.validators import native_plan_preflight  # noqa: PLC0415
+    readiness = native_plan_preflight(slot, cfg)
+    if not readiness['ok']:
+        return _fail(state, readiness['reason'], charge=False, record=False,
+                     native_plan_preflight=readiness)
 
     system_prompt, user_prompt = build_prompt(
         slot, cfg, attempt=attempt, prior_failures=prior_failures)
