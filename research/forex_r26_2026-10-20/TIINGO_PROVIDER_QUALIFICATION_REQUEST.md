@@ -54,3 +54,12 @@ The current bridge remains a diagnostic surface: all 17,011 candidates stay outs
 - [Provider Forex API overview](https://www.tiingo.com/blog/forex-api/): distinguishes quotes from interval bars and notes that FX daily-close conventions require a choice; it does not settle the historical 4H, correction or availability contract above.
 
 No message has been sent to the provider. This is a prepared packet for the existing source owner, not a provider response.
+
+
+## Additional exact probe for the provider — 21 October 2026
+
+The first native EURUSD `4hour` request was observed at 22:45:21 UTC on 21 October: `/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19`. It returned seven rows, first date label `2026-10-19T20:00:00.000Z`, last `2026-10-20T20:00:00.000Z`, every adjacent observed label four hours apart. All receipt/raw checks passed. No raw prices or credentials are included.
+
+Please explain why the first returned label occurs late on the requested start date, including any retention/window, account, row-limit, sparse-data, bucket-completeness or request-boundary rules. These are alternative hypotheses, not diagnosed causes. Confirm whether labels denote bucket starts or ends and how original publication, corrections and finality should be represented. This evidence narrows the question; it does not qualify the returned rows for monitoring.
+
+The packet remains **UNSENT**. A bounded search of the connected mailbox found no prior Forex/4hour technical correspondence. The separate existing News-rights draft is not evidence of Forex semantics or an authority to change the account. No external message, credential transfer, purchase or account change occurred.
