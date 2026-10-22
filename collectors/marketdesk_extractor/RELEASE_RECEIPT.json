@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.marketdesk_extractor.release.v1",
-  "release_id": "marketdesk-endpoint-auth-discrimination-20261022-v1",
-  "capability": "distinguish authenticated endpoint rejection and browser startup failure while preserving existing discovery and download admission",
+  "release_id": "marketdesk-bounded-backfill-admission-20261022-v2",
+  "capability": "Qualify capped backfill admission using existing 70-per-account rolling ledger and fresh discovery evidence, retaining fresh-first selection and rejecting upstream-blind recovery",
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "9808e50683c65728c73fed5d40f7d3f358994b01a22160de2e446249c3d60132",
+  "manifest_sha256": "d6ca4f29738eee684979955761e00ee9ebbf87a879ffc8b27211a93dad21e9f8",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
@@ -32,7 +32,11 @@
     "Classify malformed feed and browse arrays with one fresh raw session control; positive authentication preserves the existing discovery retry cadence without accepting the rejected response.",
     "Reject non-list provision metadata, including null and later failed chunks, instead of returning empty or partial success.",
     "Report browser construction or entry failures as UNKNOWN/BROWSER_START_FAILED in the existing health projection and dry-run plan; clear the flag after successful browser entry.",
-    "Release partial browser contexts and Playwright drivers after startup failures, preserving the original error and idempotent teardown."
+    "Release partial browser contexts and Playwright drivers after startup failures, preserving the original error and idempotent teardown.",
+    "Record typed discovery HEALTHY/FAILED/UNKNOWN in the incumbent SQLite meta table without a new queue, scheduler, publication path, or credential.",
+    "Use one shared per-plan and per-pull backfill admission function; clamp impossible raw demand reservations to a feasible cap share while reporting both raw and effective forecasts.",
+    "Require bounded per-account trailing-24h historical-download budget and recent healthy discovery evidence before backfill; default budget 0 preserves no-backfill production behavior.",
+    "Preserve provider cap, source-driven fresh-first candidate precedence, in-progress sole browser-profile owner, and the explicit Research Vault publication hold."
   ],
   "non_goals": [
     "No MarketDesk re-authentication or browser-profile mutation.",
@@ -40,6 +44,8 @@
     "No queue, database schema table, bucket, scheduler, workflow, or publication-authority change.",
     "No automatic credential refresh; re-authentication remains an explicit human single-writer operation.",
     "No automatic immediate duplicate PDF request or download cap increase.",
-    "No new storage schema, durable retry scheduler, publisher, account credential or profile owner."
+    "No new storage schema, durable retry scheduler, publisher, account credential or profile owner.",
+    "No automatic historical backfill admission; BACKFILL_BUDGET_PER_ACCOUNT_24H remains 0 unless separately configured on the account owner.",
+    "No MarketDesk browse/items entitlement workaround, recovery of report IDs, or re-enabling the held research-ingest workflow."
   ]
 }
