@@ -12,6 +12,8 @@ on:
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
       - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
       - "tests/test_research_vault_fulltext.py"
       - "tests/test_research_pinned_producer_workflow.py"
       - "app/research.py"
