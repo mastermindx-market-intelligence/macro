@@ -11,20 +11,20 @@
   "human_state": "Invalidated",
   "components": {
     "validity": 0.0,
-    "progress": 0.0,
+    "progress": 8.8,
     "pace": 0.0,
-    "retention": 0.0,
+    "retention": 40.5,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.13,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
+    "dist_to_stop_r": -0.901,
+    "dist_to_t1_r": 1.401,
+    "dist_to_t2_r": 2.901,
     "horizon_pct_used": 35.6,
-    "p1": -0.087,
-    "p2": -0.0435,
+    "p1": 0.0657,
+    "p2": 0.0329,
     "p3": null,
-    "move_r": -0.13,
+    "move_r": 0.099,
     "mfe_r": 0.243,
     "mae_r": -0.455
   },
