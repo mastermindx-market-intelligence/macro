@@ -308,6 +308,8 @@
 
 
 
+
+
 <div class="ssx-aurora au-elevated" aria-hidden="true"><div class="au-i"></div></div>
 
 <div class="ssx is-elevated">
@@ -810,13 +812,13 @@
         var a = si.querySelector('[data-act="signin"]');
         if(a) a.addEventListener('click', function(ev){
           ev.preventDefault();
-          try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
+          if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
         });
       }
     });
 })();
 </script>
 
-<script src="theme.js?v=0dc42187" defer></script>
+<script src="theme.js?v=a46f6677" defer></script>
 </body>
 </html>

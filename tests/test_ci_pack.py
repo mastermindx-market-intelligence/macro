@@ -4363,6 +4363,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
     "options-nbbo-cohort",
     "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.

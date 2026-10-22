@@ -867,6 +867,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -2746,6 +2748,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -3697,6 +3701,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -9535,6 +9541,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
@@ -15319,12 +15327,87 @@ jobs:
         run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
-      - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
+      - name: Forex context bus (synthetic inputs, temporary output)
         run: python -m pytest tests/test_forex_context_bus.py -q
       # Shared Shell keeps the existing document producer and finite route
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
         run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py -q
+
+  forex-r26-consumer:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # R26 checks have one narrow PR owner. Keeping these tests on the broad
+    # builder-shim job added unrelated selection weight to every page builder.
+    # The incumbent context-bus suite keeps its existing owner above.
+    paths:
+      - engine/forex*.py
+      - engine/neuralweb/mastermind_context.py
+      - lib/forex*.py
+      - lib/shared_shell.py
+      - lib/site_assets.py
+      - scripts/build_forex.py
+      - scripts/build_macro_context.py
+      - templates/forex*.j2
+      - templates/forex*.js
+      - templates/forex*.css
+      - tests/test_forex*.py
+      - tests/js/forex_watch_client.test.cjs
+      - tests/fixtures/forex_account_owner.js
+      - site/forex_watch_client.js
+      - tests/test_build_forex_stance.py
+      - tests/test_cross_asset_confirm.py
+      - tests/test_b3_forex_consumer.py
+      - config.yml
+      # Actual imported closure, retained by the curated-scope guard.
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/china_pboc_stance.py
+      - engine/commodity_conviction.py
+      - engine/commodity_inputs.py
+      - engine/commodity_mtf.py
+      - engine/commodity_signals.py
+      - engine/conditions.py
+      - engine/cycles.py
+      - engine/global_liquidity.py
+      - engine/i18n.py
+      - engine/indicators.py
+      - engine/ledger_lane.py
+      - engine/market_state.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/envelope.py
+      - engine/neuralweb/synapse.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/session_anchor.py
+      - engine/technicals.py
+      - engine/validation.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/illus.py
+      - lib/nyse_calendar.py
+      - lib/pages.py
+      - lib/store.py
+      - scripts/__init__.py
+      - tests/__init__.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install Forex fixture dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn playwright
+      - name: install isolated Forex browser
+        run: python -m playwright install --with-deps chromium
+      - name: R26 decision, consumer and shared-window contracts
+        run: python -m pytest tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py tests/test_forex_hero_spark_window.py tests/test_forex_r26_consumer.py tests/test_forex_r26_consumer_freshness.py tests/test_forex_r26_event_display.py tests/test_forex_r26_workspace.py tests/test_forex_watch_client_js.py tests/test_forex_watch_workspace_browser.py -q
 
   quant-q09-venue-concentration:
     if: ${{ false }}
@@ -23419,6 +23502,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
@@ -27024,6 +27109,8 @@ jobs:
       - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/test_us_candidate_episode_recorded_at_clock.py"
       - "config/fundamental_forensics/coverage/**"
       - "contracts/market_os/**"
       - "engine/close_pass/**"
@@ -28077,6 +28164,8 @@ jobs:
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
       - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
         run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
+      - name: US B1 recorded_at writer clock (durable CLI refuses caller clocks; exclusive organ, weight-neutral)
+        run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
@@ -32125,6 +32214,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex.py
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - engine/neuralweb/market_memory_retrieval.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - tests/test_market_memory_operating_cortex_service.py
@@ -34378,6 +34469,7 @@ jobs:
       - tests/test_tiingo_archive.py
       - tests/test_tiingo_views.py
       - tests/test_tiingo_reader.py
+      - tests/test_tiingo_forex_source.py
       - tests/test_tiingo_history.py
       - tests/test_tiingo_research_query.py
       - tests/test_tiingo_boats_tape.py
@@ -34403,13 +34495,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema -r requirements/tiingo.txt
       - name: prospective reference clocks, refusals and consumer compatibility
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
-          tests/test_tiingo_reader.py tests/test_tiingo_history.py
+          tests/test_tiingo_reader.py tests/test_tiingo_forex_source.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
@@ -35012,6 +35104,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Private-news/Press integration also reaches the reviewed release boundary.
+      - "engine/press/adjusted_baseline.py"
+      - "templates/press/press_news.css"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -35119,6 +35214,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).

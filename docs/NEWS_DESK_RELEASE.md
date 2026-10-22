@@ -574,3 +574,18 @@ Mission-owned holds remain until actual premerge gates are satisfied;
 source rights #8697/#7982/#8057 remain. The incumbent merge-on-green path
 is armed last. Protected merge, covering render, normal deployment and
 actual signed-in News workspace acceptance are still outstanding.
+
+
+## Protected c6bb integration and independent-review subject — 2026-10-22
+
+The continuation recovered the original 44e CI observer and the aa38 CI observer: both finished successfully for their exact historical heads. The aa38 branch CI is run 39682432190 (success at 2026-10-21T22:55:58Z). Neither result qualifies a later head.
+
+The original workspace and branch consume protected Macro `c6bbf9bf7a046ef911202c9025f0d0f1879505aa` to resolve a real generated-page collision. Relative to protected 6df, this interval contains 30 commits and 14,906 changed paths. The only textual conflict is `site/news.html`; the CI manifest, packing test and Plans artifact merge without textual conflicts. Accepted Forex R26 registration, retained market-memory scopes, recorded-at clock tests, Press changes and all unrelated incoming content remain included. The incoming packing-test change adds the Forex curated-exclusive owner; it does not change the existing News weight ceilings.
+
+News is composed from the qualified aa38 artifact through `lib.pages.write_page`, `lib.shared_shell.inject_shared_shell_text` and `scripts.optimize_assets.make_optimizer`. Every inline script and all visible text remain exact. The single asset-reference change is `theme.js?v=0dc42187` to `theme.js?v=a46f6677`, consuming the accepted non-self-target navigation fix and current emitted asset. Final News HTML is 322,469 bytes, SHA256 `d68b35719b9b94f7fe8c86332ff31d72d0d06bec85dcd268fd9f7da238c4f798`, and is a canonical-finalization fixed point. This is a source/artifact composition, not a fresh data snapshot or a covering production render.
+
+The incoming tracked `site/product-nav-icons.css` was materialized in the existing sparse include set and verified byte-identical to the incoming index (SHA256 `093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93`). The preserved ignored AAPL cache remains untouched.
+
+A new, ordinary-admission Subagent Fabric source review is required for the complete immutable integrated candidate. The reserved aa38 review identity was never submitted; the historical failed 3a and 44e requests remain under their recorded no-replay dispositions. No historical approval is inherited. Integrated-head packing, focused checks and exact hosted CI must be attributed to their actual later receipts. The News mission-owned premerge barrier remains until applicable source review, current green checks and compatible integration are established. Native repair rollout already completed separately; production acceptance remains owed after protected merge and the normal covering render/deploy.
+
+Two older GitHub checkpoint writes still have uncertain outcomes and must not be replayed. A new independent verdict is a distinct action and cannot imply either old write failed. Existing source-rights holds and other carrier reservations remain scoped to their original work.
