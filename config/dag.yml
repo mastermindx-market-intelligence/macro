@@ -651,6 +651,13 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: capture_stock_liquidity_currency
+        module: scripts.capture_stock_liquidity_currency
+        note: >
+          Bounded MU dated trading-currency intake in the same existing
+          stocks-reference binding; follows the cap refresh before stock-library
+          build. No bar collection or site publication; incomplete input preserves
+          the retained receipt and the native liquidity projection stays unknown.
       - id: build_leader_pullback_coverage
         module: scripts.build_leader_pullback_coverage
         note: >
