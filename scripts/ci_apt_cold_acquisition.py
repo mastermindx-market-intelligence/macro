@@ -53,6 +53,42 @@ _ARCH = re.compile(r"[a-z0-9][a-z0-9-]{0,31}\Z")
 _VERSION = re.compile(r"[0-9][A-Za-z0-9.+:~\-]{0,127}\Z")
 
 
+def _validate_archive_uri(value: str) -> None:
+    """Qualify a native index reference, independently of StoreFilename.
+
+    APT derives its cache filename from the complete Debian version (including
+    epoch), but uses the repository's separate signed-index Filename as the
+    pool URI. That URI need not repeat the cache/version naming convention.
+    The exact selector, archive size/SHA256, native authentication and final
+    fence bind the payload; this check neither downloads a URI nor chooses an
+    endpoint behind the image's incumbent native mirror-list reference.
+    """
+    try:
+        if len(value) > 4096 or any(ord(char) <= 32 or ord(char) > 126 for char in value):
+            raise ValueError
+        uri = urlsplit(value)
+        if uri.username or uri.password or uri.query or uri.fragment or uri.port is not None:
+            raise ValueError
+        if (uri.scheme, uri.hostname) in APPROVED_ORIGINS:
+            prefix = "/ubuntu/pool/"
+        elif uri.scheme == "mirror+file" and not uri.netloc:
+            # Exact indirection installed by configure-apt-sources.sh. Retain
+            # native mirror selection/authentication; do not synthesize a URL
+            # or assert which endpoint APT actually selected.
+            prefix = "/etc/apt/apt-mirrors.txt/pool/"
+        else:
+            raise ValueError
+        if not uri.path.startswith(prefix):
+            raise ValueError
+        parts = uri.path[len(prefix):].split("/")
+        decoded = [unquote(part, errors="strict") for part in parts]
+        if (not decoded or not decoded[-1].endswith(".deb") or
+                any(part in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9+._~:-]+", part) for part in decoded)):
+            raise ValueError
+    except (ValueError, UnicodeError):
+        raise AcquisitionRefused("ARCHIVE_ORIGIN") from None
+
+
 def make_download_plan(archives: tuple[Archive, ...], *, concurrency: int = 4) -> DownloadPlan:
     """Validate the entire native archive inventory without dropping a row."""
     if type(concurrency) is not int or not 1 <= concurrency <= 4:
@@ -85,16 +121,7 @@ def make_download_plan(archives: tuple[Archive, ...], *, concurrency: int = 4) -
             raise AcquisitionRefused("ARCHIVE_TOTAL")
         if not re.fullmatch(r"[0-9a-f]{64}", item.sha256):
             raise AcquisitionRefused("ARCHIVE_HASH")
-        try:
-            uri = urlsplit(item.uri)
-            if (uri.scheme, uri.hostname) not in APPROVED_ORIGINS or uri.port is not None:
-                raise ValueError
-            if uri.username or uri.password or uri.query or uri.fragment:
-                raise ValueError
-            if not uri.path.startswith("/ubuntu/pool/") or unquote(uri.path.rsplit("/", 1)[-1]) != expected_filename:
-                raise ValueError
-        except (ValueError, UnicodeError):
-            raise AcquisitionRefused("ARCHIVE_ORIGIN") from None
+        _validate_archive_uri(item.uri)
     return DownloadPlan(archives, tuple(sorted(range(len(archives)), key=lambda i: (-archives[i].size, i))), concurrency)
 
 

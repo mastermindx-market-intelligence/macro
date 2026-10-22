@@ -26,7 +26,11 @@ def uri_lines(tx):
     for row in tx["packages"]:
         selected = row["versions"]["install"]
         filename = f"{row['name']}_{selected['version'].replace(':', '%3a')}_{selected['architecture']}.deb"
-        uri = f"http://azure.archive.ubuntu.com/ubuntu/pool/main/f/fixture/{filename}"
+        # Native repository Filename is independent and omits Debian epoch;
+        # the cache StoreFilename above retains the complete selected version.
+        pool_version = selected["version"].split(":", 1)[-1]
+        pool_filename = f"{row['name']}_{pool_version}_{selected['architecture']}.deb"
+        uri = f"http://azure.archive.ubuntu.com/ubuntu/pool/main/f/fixture/{pool_filename}"
         digest = hashlib.sha256(row["name"].encode()).hexdigest()
         lines.append(f"'{uri}' {filename} 100 SHA256:{digest}")
     return ("APT summary ignored\n" + "\n".join(lines) + "\n").encode()
@@ -110,3 +114,70 @@ def test_missing_direct_font_is_not_hidden_by_a_valid_transitive_archive_invento
 def test_configuration_paths_cannot_select_live_global_config_or_shell_text(path):
     with pytest.raises(AcquisitionRefused):
         PLAN.no_download_install_argv(hook=path, cache="/tmp/ci-apt-test/archives")
+
+
+def test_native_epoch_cache_name_and_repository_name_are_independent():
+    # Native acquire-item.cc derives StoreFilename from Version.VerStr(), while
+    # Parse.FileName() supplies the signed-index pool path independently.
+    tx = transaction()
+    tx['packages'] = [tx['packages'][2]]
+    raw = ("'http://azure.archive.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7+6build3_amd64.deb' "
+           "xfonts-utils_1%3a7.7+6build3_amd64.deb 100 SHA256:" + 'a' * 64 + '\n').encode()
+    (record,) = PLAN.complete_archive_inventory(tx, raw)
+    assert record.selector == 'xfonts-utils:amd64=1:7.7+6build3'
+    assert record.filename == 'xfonts-utils_1%3a7.7+6build3_amd64.deb'
+    assert record.uri.endswith('/xfonts-utils_7.7+6build3_amd64.deb')
+
+
+def test_native_mirror_file_indirection_is_retained_without_endpoint_substitution():
+    tx = transaction()
+    tx['packages'] = [tx['packages'][0]]
+    raw = ("'mirror+file:/etc/apt/apt-mirrors.txt/pool/main/f/fonts-wqy-zenhei/fonts-wqy-zenhei_0.9.45-8_all.deb' "
+           "fonts-wqy-zenhei_0.9.45-8_all.deb 100 SHA256:" + 'a' * 64 + '\n').encode()
+    (record,) = PLAN.complete_archive_inventory(tx, raw)
+    assert record.uri.startswith('mirror+file:/etc/apt/apt-mirrors.txt/pool/')
+    # Acquisition still invokes native exact-selector APT, never a guessed
+    # mirror URL, a direct URI downloader or a substitute credential context.
+    from scripts.ci_apt_cold_acquisition import download_argv
+    assert download_argv(record)[-1] == 'fonts-wqy-zenhei:amd64=0.9.45-8'
+    assert record.uri not in download_argv(record)
+
+
+@pytest.mark.parametrize("reference", [
+    "mirror+file:/tmp/apt-mirrors.txt/pool/main/x/fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt.evil/pool/main/x/fixture.deb",
+    "mirror+file://foreign/etc/apt/apt-mirrors.txt/pool/main/x/fixture.deb",
+    "mirror+http://foreign.invalid/ubuntu/pool/main/x/fixture.deb",
+    "file:/etc/apt/apt-mirrors.txt/pool/main/x/fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt/pool/../fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt/pool/%2e%2e/fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt/pool/main%2fx/fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt/pool/main//fixture.deb",
+    "mirror+file:/etc/apt/apt-mirrors.txt/pool/main/x/fixture.deb?secret=SECRET",
+    "http://user:SECRET@azure.archive.ubuntu.com/ubuntu/pool/main/x/fixture.deb",
+    "http://azure.archive.ubuntu.com:80/ubuntu/pool/main/x/fixture.deb",
+    "http://azure.archive.ubuntu.com/ubuntu/pool/main/x/fixture.deb#fragment",
+    "http://azure.archive.ubuntu.com/ubuntu/pool/main/x/fixture\\.deb",
+    "http://azure.archive.ubuntu.com/ubuntu/pool/main/x/fixture.deb\n",
+])
+def test_uri_independence_does_not_admit_foreign_indirection_paths_or_credential_text(reference):
+    from dataclasses import replace
+    from scripts.ci_apt_cold_acquisition import make_download_plan
+    tx = transaction(); record = PLAN.complete_archive_inventory(tx, uri_lines(tx))[0]
+    with pytest.raises(AcquisitionRefused, match="ARCHIVE_ORIGIN") as caught:
+        make_download_plan((replace(record, uri=reference),))
+    assert "SECRET" not in str(caught.value)
+
+
+@pytest.mark.parametrize("cache_name", [
+    "xfonts-utils_7.7+6build3_amd64.deb",  # dropped epoch
+    "xfonts-utils_2%3a7.7+6build3_amd64.deb",  # changed epoch
+    "xfonts-utils_1%3a7.7+6build3_arm64.deb",
+    "other-package_1%3a7.7+6build3_amd64.deb",
+    "../xfonts-utils_1%3a7.7+6build3_amd64.deb",
+])
+def test_repo_uri_without_epoch_cannot_hide_misbound_cache_package_version_or_arch(cache_name):
+    tx = transaction(); tx['packages'] = [tx['packages'][2]]
+    raw = ("'http://azure.archive.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7+6build3_amd64.deb' "
+           + cache_name + " 100 SHA256:" + 'a' * 64 + '\n').encode()
+    with pytest.raises(AcquisitionRefused): PLAN.complete_archive_inventory(tx, raw)
