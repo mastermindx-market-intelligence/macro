@@ -1164,7 +1164,7 @@
   }
 
   /* A committed direct pinned comparison stands without a catalog or a
-   * selected entry. While it is the standing result, its validated bound
+   * selected entry. While it is the standing result, its contract-bound
    * source card may be presented read-only; nothing here invents a catalog
    * entry, a selection or a freshness claim, and any new intent, refusal,
    * mode change or sign-out clears the presentation again. */
@@ -1185,7 +1185,7 @@
       var linked = directLinkedCard();
       if (linked) {
         /* Truthful controls above a standing pinned comparison: the picker
-         * names the linked validated source card instead of implying a
+         * names the linked contract-bound source card instead of implying a
          * capture could be chosen, while the unloaded list itself stays
          * stated and browsing remains the explicit way to pick another. */
         var known = linked.asKnownAt !== linked.eventTime
@@ -1251,7 +1251,7 @@
       var linked = directLinkedCard();
       if (linked) {
         /* The standing pinned reference carries its own exact committed
-         * cutoff: present that validated binding read-only instead of asking
+         * cutoff: present that checked binding read-only instead of asking
          * for a capture the unloaded list cannot offer. */
         var cutoff = state.committed.intent.cutoff;
         ui.cutoffSelect.innerHTML = '<option value="' + esc(cutoff) + '">' + esc(clockLabel(cutoff)) + '</option>';
