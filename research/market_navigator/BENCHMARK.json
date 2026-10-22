@@ -1,0 +1,18 @@
+{
+  "schema": "market_navigator.local_benchmark/v1",
+  "evidence_class": "SYNTHETIC_LOCAL_COMPOSITION_ONLY",
+  "python": "3.14.7",
+  "system": "Darwin",
+  "machine": "arm64",
+  "observations": 128,
+  "scenarios": 12,
+  "conditions_per_scenario": 32,
+  "runs": 200,
+  "warmup_runs": 20,
+  "median_ms": 1.214979449287057,
+  "p95_ms": 2.739250077866018,
+  "max_ms": 5.189875024370849,
+  "serialized_bytes": 78467,
+  "includes_network_or_source_fetch": false,
+  "production_latency_proven": false
+}

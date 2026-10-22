@@ -1,0 +1,106 @@
+{
+  "schema": "market_navigator.browser_study/v1",
+  "browser": "151.0.7922.34",
+  "target": "local-file design study",
+  "paper_applied": false,
+  "production_proof": false,
+  "matrix": [
+    {
+      "width": 1440,
+      "language": "en",
+      "theme": "dark",
+      "screenshot": "1440-en-dark.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 1440,
+      "language": "en",
+      "theme": "light",
+      "screenshot": "1440-en-light.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 1440,
+      "language": "zh",
+      "theme": "dark",
+      "screenshot": "1440-zh-dark.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 1440,
+      "language": "zh",
+      "theme": "light",
+      "screenshot": "1440-zh-light.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "screenshot": "390-en-dark.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "screenshot": "390-en-light.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 390,
+      "language": "zh",
+      "theme": "dark",
+      "screenshot": "390-zh-dark.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    },
+    {
+      "width": 390,
+      "language": "zh",
+      "theme": "light",
+      "screenshot": "390-zh-light.png",
+      "horizontal_overflow": false,
+      "js_errors": [],
+      "dialog_escape_focus_return": true,
+      "comparison_toggle": true,
+      "unsupported_horizon_abstains": true,
+      "save_disabled": true
+    }
+  ],
+  "passed": 8
+}
