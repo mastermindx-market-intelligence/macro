@@ -1,0 +1,9 @@
+{# templates/_basket_intelligence_mounts.html.j2 — T10b basket-intelligence aggregator.
+
+  ONE place where every vertical partial that wants to mount intelligence on a
+  basket page lives. Each vertical is pulled in with `ignore missing` so that
+  a per-vertical absent file (or a fresh vertical that has not landed yet)
+  never breaks the incumbent page (L2). The aggregator itself emits no bytes
+  of its own — it is a router, not a renderer.
+#}
+{% include "_theme_research_mount.html.j2" ignore missing %}
