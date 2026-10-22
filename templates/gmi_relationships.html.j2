@@ -28,7 +28,8 @@
 {#- identity helpers: issuer id -> display name, else the ticker (model rule) -#}
 {% set by_tk = namespace(m={}) %}
 {% for iss in model.issuers %}{% set _ = by_tk.m.update({iss.ticker: iss}) %}{% endfor %}
-{% macro pname(eid) -%}{% set tk = eid.rsplit(':', 1)[-1].rsplit('-', 1)[-1] %}{{ by_tk.m[tk].display_name if tk in by_tk.m else tk }}{%- endmacro %}
+{% set pn = model.get('party_names') or {} %}
+{% macro pname(eid) -%}{% set tk = eid.rsplit(':', 1)[-1].rsplit('-', 1)[-1] %}{{ by_tk.m[tk].display_name if tk in by_tk.m else (pn[eid].display_name if eid in pn else tk) }}{%- endmacro %}
 {% macro mono(x) -%}{% set m %}<span class="gmi-mono">{{ x }}</span>{% endset %}{{ m }}{%- endmacro %}
 {% macro fy_en(lab) -%}{{ lab|replace('FY20', 'FY') }}{%- endmacro %}
 {% macro fy_zh(lab) -%}{{ lab[2:] ~ '财年' if lab.startswith('FY') else lab }}{%- endmacro %}

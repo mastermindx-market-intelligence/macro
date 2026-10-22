@@ -101,6 +101,18 @@ def test_s3_edges_state(pages) -> None:
     assert "No documented relationships yet" not in html
 
 
+def test_s3_edge_parties_carry_the_name_rule(pages) -> None:
+    """Seat GAP 21: an edge party reads its directory name, never a bare ticker
+    when the directory knows it — the same rule as an issuer's own name."""
+    names = pages["models"]["edges"]["party_names"]
+    assert names["ISS:US-XNAS-SWKS"]["display_name"].startswith("Skyworks")
+    assert names["ISS:US-XNAS-AAPL"]["display_name"] == "Apple"
+    head = _main(pages[("edges", S3)]).split('id="rel-h"', 1)[1].split("</div>", 1)[0]
+    assert "Skyworks" in head and "Apple" in head
+    assert ">SWKS<" not in head and ">AAPL<" not in head
+    assert pages["models"]["live"]["party_names"] == {}
+
+
 def test_s3_held_link_branch(proof_model, tmp_path) -> None:
     """G-UI-9: kind held -> the held mark, held words, held tip (the specimen state)."""
     site = tmp_path / "held_edges"

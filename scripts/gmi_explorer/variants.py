@@ -9,7 +9,8 @@ against the specimen, and so the S3 "edges present" branch can be rendered
 before the relationships store lands.
 
 NEVER on the production path: ``scripts/build_gmi_explorer.py`` renders
-``build_live_model()`` only. Nothing here writes a file or reads ``data/``.
+``build_live_model()`` only. Nothing here writes a file; the only ``data/``
+read is the edges variant's party names, through the model's own name rule.
 """
 from __future__ import annotations
 
@@ -82,4 +83,7 @@ def edges_variant(model: dict, repo_root: Path | None = None) -> dict:
     out["edge_package"] = copy.deepcopy(fixture["edge_package"])
     out["deck"] = copy.deepcopy(fixture["deck"])
     out["edges_state"] = "present"
+    # party display names by the model's own rule (directory name, else ticker)
+    from scripts.gmi_explorer.model import edge_party_names
+    out["party_names"] = edge_party_names(root, out["edges"], out.get("asof"))
     return out

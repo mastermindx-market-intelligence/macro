@@ -124,6 +124,22 @@ def _display_name(repo_root: Path, ticker: str, asof: str | None) -> tuple[str, 
     return ticker, "ticker"
 
 
+def edge_party_names(repo_root: Path, edges: list, asof: str | None) -> dict:
+    """issuer_id -> display name for every edge party (seat GAP 21).
+
+    Same rule as an issuer's own name (:func:`_display_name`): the directory
+    name, else the ticker. Keyed by the edge's own issuer_id; no new store.
+    """
+    out: dict = {}
+    for edge in edges or []:
+        for side in ("from", "to"):
+            issuer_id = (edge.get(side) or {}).get("issuer_id")
+            if issuer_id and issuer_id not in out:
+                name, source = _display_name(repo_root, _ticker_of(issuer_id), asof)
+                out[issuer_id] = {"display_name": name, "display_name_source": source}
+    return out
+
+
 def _source_case(repo_root: Path) -> dict | None:
     path = Path(repo_root) / SOURCE_CASE_PATH
     if path.exists():
@@ -542,6 +558,7 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "issuers": issuers,
         "edges": edges,
         "edges_state": "present" if edges_path.exists() else "empty",
+        "party_names": edge_party_names(repo_root, edges, asof),
         "deck": deck,
         # relationships package manifest (counts by species); none until the
         # relationships store lands — only the S3 "edges present" branch reads it
