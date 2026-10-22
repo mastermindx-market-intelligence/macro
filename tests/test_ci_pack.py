@@ -4771,6 +4771,9 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.

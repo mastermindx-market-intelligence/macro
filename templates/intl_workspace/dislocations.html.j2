@@ -1,0 +1,244 @@
+{% import 'intl_workspace/_gs_macros.html.j2' as gs %}
+{# INTL-GS-W3U dislocation explorer (spec R14 §10.3/§9.7, rulings R1–R6).
+   Every user-visible string is a payload {en, zh} pair rendered through t();
+   attribute strings are composed plain (bilingual, " · " separated) — never
+   t() markup inside an attribute. No script, no style attribute, no inline
+   handlers; selection is native radios + per-index CSS (12 indices). #}
+{% macro decbar(kind, value) -%}
+{%- set len = (([value|abs, 5]|min) / 5 * 44)|round(1) -%}
+<svg class="intl-dislocations__decbar" viewBox="0 0 88 12" role="img" aria-label="{{ kind }}"><line class="intl-gs__zero-tick" x1="44" y1="0" x2="44" y2="12"></line><rect class="intl-dislocations__leg intl-dislocations__leg--{{ kind }}" data-dir="{{ 'up' if value > 0 else 'down' }}" x="{{ 44 if value > 0 else 44 - len }}" y="2" width="{{ len }}" height="8" rx="2"></rect></svg>
+{%- endmacro %}
+{% call gs.gs_panel_root('dislocations', gs_panel) %}
+{% set p = gs_panel.payload %}
+{% set c = p['copy'] %}
+{% set ranked = p.rows | selectattr('index', 'ne', none) | list %}
+{% set unranked = p.rows | rejectattr('index', 'ne', none) | list %}
+{% set region_pairs = {'asia_pacific': c.region_asia_pacific, 'europe': c.region_europe, 'middle_east_africa': c.region_middle_east_africa, 'americas': c.region_americas} %}
+{% set point_by_market = {} %}
+{% for point in p.scatter.points %}{% if point_by_market.update({point.market_id: point}) %}{% endif %}{% endfor %}
+<div class="intl-dislocations__root">
+  {% for row in ranked %}
+  <input type="radio" class="intl-dislocations__pick" name="{{ gs_panel.context_id }}-pick" id="{{ gs_panel.context_id }}-pick-{{ row.index }}" data-i="{{ row.index }}"{% if row.index == p.selected %} checked{% endif %} aria-label="{{ c.pick_aria.en.format(market=row.name_en) }} · {{ c.pick_aria.zh.format(market=row.name_zh) }}">
+  {% endfor %}
+  <div class="intl-gs__split intl-dislocations__explorer">
+    <div class="intl-gs__split__main intl-dislocations__left">
+      <section class="intl-gs__panel intl-dislocations__scatterpanel">
+        {{ gs.gs_bandhead(t(c.scatter_title.en, c.scatter_title.zh), qnum=t(c.qnum.en, c.qnum.zh), id=gs_panel.context_id ~ '-dislocations-title', clock=(t(p.computed_at_display.en, p.computed_at_display.zh) if p.computed_at_display else '')) }}
+        {% if p.specimen %}{{ gs.gs_specimen_chip() }}{% endif %}
+        <svg class="intl-dislocations__scatter" viewBox="0 0 640 420" role="img" aria-label="{{ c.scatter_aria.en }} · {{ c.scatter_aria.zh }}">
+          <g class="intl-dislocations__grid">
+            <line class="intl-dislocations__gridline" x1="64" y1="24" x2="64" y2="364"></line>
+            <line class="intl-dislocations__gridline" x1="174.4" y1="24" x2="174.4" y2="364"></line>
+            <line class="intl-dislocations__gridline" x1="284.8" y1="24" x2="284.8" y2="364"></line>
+            <line class="intl-dislocations__gridline" x1="395.2" y1="24" x2="395.2" y2="364"></line>
+            <line class="intl-dislocations__gridline" x1="505.6" y1="24" x2="505.6" y2="364"></line>
+            <line class="intl-dislocations__gridline" x1="616" y1="24" x2="616" y2="364"></line>
+          </g>
+          <g class="intl-dislocations__xticks intl-gs__num">
+            <text class="intl-dislocations__ticklabel" x="64" y="382" text-anchor="middle">0</text>
+            <text class="intl-dislocations__ticklabel" x="174.4" y="382" text-anchor="middle">20</text>
+            <text class="intl-dislocations__ticklabel" x="284.8" y="382" text-anchor="middle">40</text>
+            <text class="intl-dislocations__ticklabel" x="395.2" y="382" text-anchor="middle">60</text>
+            <text class="intl-dislocations__ticklabel" x="505.6" y="382" text-anchor="middle">80</text>
+            <text class="intl-dislocations__ticklabel" x="616" y="382" text-anchor="middle">100</text>
+          </g>
+          <text class="intl-dislocations__axislabel" x="340" y="404" text-anchor="middle">{{ t(c.x_axis_title.en, c.x_axis_title.zh) }}</text>
+          <text class="intl-dislocations__axislabel" x="18" y="194" text-anchor="middle" transform="rotate(-90 18 194)">{{ t(c.y_axis_title.en, c.y_axis_title.zh) }}</text>
+          <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="197" text-anchor="end">0</text>
+          <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="33" text-anchor="end">+7</text>
+          <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="367" text-anchor="end">−7</text>
+          <line class="intl-gs__zero-tick" x1="64" y1="194" x2="616" y2="194"></line>
+          <line class="intl-dislocations__attntick" x1="64" y1="109" x2="616" y2="109"></line>
+          <line class="intl-dislocations__attntick" x1="64" y1="279" x2="616" y2="279"></line>
+          <text class="intl-dislocations__attnlabel intl-gs__num" x="68" y="105">{{ t(c.attention_ticks.en, c.attention_ticks.zh) }}</text>
+          <text class="intl-dislocations__attnlabel intl-gs__num" x="68" y="293">{{ t(c.attention_ticks.en, c.attention_ticks.zh) }}</text>
+          <line class="intl-dislocations__threshold" x1="395.2" y1="24" x2="395.2" y2="364"></line>
+          <text class="intl-dislocations__thresholdlabel" x="401.2" y="38">{{ t(c.threshold_label.en, c.threshold_label.zh) }}</text>
+          {% for row in ranked %}{% set point = point_by_market.get(row.market_id) %}
+          {% if point %}
+          <circle class="intl-dislocations__ring" data-i="{{ row.index }}" cx="{{ point.x }}" cy="{{ point.y }}" r="8.5"></circle>
+          {% if point.clamped %}<line class="intl-dislocations__clamp" x1="{{ point.x }}" y1="{{ point.y }}" x2="{{ point.x }}" y2="{{ point.y - 8 if point.direction == 'above' else point.y + 8 }}"></line>{% endif %}
+          <circle class="intl-dislocations__dot intl-dislocations__dot--{{ 'up' if point.direction == 'above' else ('down' if point.direction == 'below' else 'muted') }}" cx="{{ point.x }}" cy="{{ point.y }}" r="5"></circle>
+          <text class="intl-dislocations__ptlabel" x="{{ point.x - 9 if point.label_end else point.x + 9 }}" y="{{ point.y - 9 }}" text-anchor="{{ 'end' if point.label_end else 'start' }}">{{ point.market_id }}</text>
+          {% endif %}{% endfor %}
+          {% if not p.scatter.points %}
+          <text class="intl-dislocations__emptynote" x="340" y="194" text-anchor="middle">{{ t(c.scatter_empty_note.en, c.scatter_empty_note.zh) }}</text>
+          {% endif %}
+        </svg>
+        <table class="intl-dislocations__vh">
+          <caption class="intl-dislocations__vh">{{ t(c.scatter_title.en, c.scatter_title.zh) }}</caption>
+          <tr><th scope="col" class="intl-dislocations__vh">{{ t(c.vh_market.en, c.vh_market.zh) }}</th><th scope="col" class="intl-dislocations__vh">{{ t(c.vh_fragility.en, c.vh_fragility.zh) }}</th><th scope="col" class="intl-dislocations__vh">{{ t(c.vh_z.en, c.vh_z.zh) }}</th></tr>
+          {% for point in p.scatter.points %}
+          <tr><td class="intl-dislocations__vh">{{ point.market_id }}</td><td class="intl-dislocations__vh intl-gs__num">{{ point.fragility }}</td><td class="intl-dislocations__vh intl-gs__num">{{ point.z }}</td></tr>
+          {% endfor %}
+        </table>
+        {% if p.scatter.not_plotted %}
+        <p class="intl-dislocations__notplotted-label">{{ t(c.not_plotted.en, c.not_plotted.zh) }}</p>
+        <div class="intl-dislocations__notplotted">
+          {% for chip in p.scatter.not_plotted %}
+          <span class="intl-gs__chip intl-gs__chip--muted-dashed" title="{{ chip.text.en }} · {{ chip.text.zh }}">{{ chip.market_id }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </section>
+      {% for row in ranked %}
+      <section class="intl-gs__panel intl-dislocations__peers" data-i="{{ row.index }}">
+        {% set region_pair = region_pairs.get(row.region) %}
+        {{ gs.gs_bandhead(t((region_pair.en ~ ' ' ~ c.peers_suffix.en) if region_pair else c.peers_title_none.en, (region_pair.zh ~ c.peers_suffix.zh) if region_pair else c.peers_title_none.zh), sub=t(c.peers_counts.en.format(used=row.peers['used'], offered=row.peers['offered']), c.peers_counts.zh.format(used=row.peers['used'], offered=row.peers['offered']))) }}
+        {% if row.peers['items'] %}
+        <div class="intl-dislocations__peersrow">
+          {% for item in row.peers['items'] %}
+          <div class="intl-dislocations__peer">
+            <span class="intl-dislocations__peer__name">{{ t(item.name_en, item.name_zh) }} <span class="intl-gs__num">{{ item.market_id }}</span></span>
+            <span class="intl-dislocations__peer__value">{{ gs.gs_signed(item.usd_pct, 1, '%', 'up' if item.usd_pct and item.usd_pct > 0 else ('down' if item.usd_pct and item.usd_pct < 0 else 'muted')) }}</span>
+            <time class="intl-dislocations__peer__clock intl-gs__num" datetime="{{ item.clock.at if item.clock }}">{{ t(item.clock.en, item.clock.zh) if item.clock else '—' }}</time>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="intl-dislocations__emptyrow">{{ gs.gs_state_chip('empty') }} {% for reason in row.view_reasons %}<span class="intl-dislocations__reason">{{ t(reason.text.en, reason.text.zh) }}{% if reason.count %} ×{{ reason.count }}{% endif %}</span>{% endfor %}</p>
+        {% endif %}
+      </section>
+      {% endfor %}
+    </div>
+    <aside class="intl-gs__rail intl-dislocations__rail">
+      {% for row in ranked %}
+      <div class="intl-dislocations__insp" data-i="{{ row.index }}">
+        {{ gs.gs_bandhead(t(row.name_en, row.name_zh), sub=t(c.insp_title.en, c.insp_title.zh)) }}
+        <dl class="intl-dislocations__idlist">
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_region.en, c.insp_region.zh) }}</dt><dd class="intl-dislocations__idvalue">{% set region_pair = region_pairs.get(row.region) %}{{ t(region_pair.en, region_pair.zh) if region_pair else '—' }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_horizon.en, c.insp_horizon.zh) }}</dt><dd class="intl-dislocations__idvalue intl-gs__num">{{ t(p.horizon_label.en, p.horizon_label.zh) }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_basis.en, c.insp_basis.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ t(c.basis_value.en, c.basis_value.zh) }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.clock_observation.en, c.clock_observation.zh) }}</dt><dd class="intl-dislocations__idvalue intl-gs__num">{{ t(row.clock_display.observation.display.en, row.clock_display.observation.display.zh) if row.clock_display.observation.display else '—' }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.clock_source.en, c.clock_source.zh) }}</dt><dd class="intl-dislocations__idvalue intl-gs__num">{{ t(row.clock_display.source_publication.display.en, row.clock_display.source_publication.display.zh) if row.clock_display.source_publication.display else '—' }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.clock_ingestion.en, c.clock_ingestion.zh) }}</dt><dd class="intl-dislocations__idvalue intl-gs__num">{{ t(row.clock_display.ingestion.display.en, row.clock_display.ingestion.display.zh) if row.clock_display.ingestion.display else '—' }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.clock_computation.en, c.clock_computation.zh) }}</dt><dd class="intl-dislocations__idvalue intl-gs__num">{{ t(row.clock_display.computation.display.en, row.clock_display.computation.display.zh) if row.clock_display.computation.display else '—' }}</dd></div>
+        </dl>
+        <p class="intl-dislocations__staterow">{{ gs.gs_state_chip(row.view_state) }}{% if row.view_state == 'restricted' %} {{ gs.gs_rights_slot() }}{% endif %}</p>
+        {% if row.view_reasons %}<p class="intl-dislocations__reasonrow">{% for reason in row.view_reasons %}<span class="intl-dislocations__reason">{{ t(reason.text.en, reason.text.zh) }}{% if reason.count %} ×{{ reason.count }}{% endif %}</span>{% endfor %}</p>{% endif %}
+        <dl class="intl-dislocations__idlist">
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_z.en, c.insp_z.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ gs.gs_signed(row.z, 2, '', 'up' if row.direction == 'above' else ('down' if row.direction == 'below' else 'muted')) }}</dd></div>
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_attention.en, c.insp_attention.zh) }}</dt><dd class="intl-dislocations__idvalue">{% if row.attention %}{% set attention_pair = c.attention_outside if row.attention == 'outside_reference_range' else c.attention_within %}{{ gs.gs_chip(t(attention_pair.en, attention_pair.zh)) }}{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</dd></div>
+          {% if row.rank %}
+          <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.insp_state.en, c.insp_state.zh) }}</dt><dd class="intl-dislocations__idvalue">{% if row.direction == 'below' %}{{ t(c.rank_text_below.en.format(above=row.rank.above, n=row.rank.n), c.rank_text_below.zh.format(above=row.rank.above, n=row.rank.n)) }}{% else %}{{ t(c.rank_text_above.en.format(below=row.rank.below, n=row.rank.n), c.rank_text_above.zh.format(below=row.rank.below, n=row.rank.n)) }}{% endif %}</dd></div>
+          {% endif %}
+        </dl>
+        <section class="intl-dislocations__block">
+          <h3 class="intl-dislocations__blocktitle">{{ t(c.decompose_title.en, c.decompose_title.zh) }}</h3>
+          <dl class="intl-dislocations__idlist">
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.leg_local.en, c.leg_local.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ decbar('local', row.local_pct) if row.local_pct is not none else '—' }} {{ gs.gs_signed(row.local_pct, 1, '%') }}</dd></div>
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.leg_fx.en, c.leg_fx.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ decbar('fx', row.fx_pct) if row.fx_pct is not none else '—' }} {{ gs.gs_signed(row.fx_pct, 1, '%') }}</dd></div>
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.leg_cross.en, c.leg_cross.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ decbar('cross', row.interaction_pp) if row.interaction_pp is not none else '—' }} {{ gs.gs_signed(row.interaction_pp, 1, '%') }}</dd></div>
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.leg_total.en, c.leg_total.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ gs.gs_signed(row.usd_pct, 1, '%') }}</dd></div>
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(c.leg_common.en, c.leg_common.zh) }}</dt><dd class="intl-dislocations__idvalue">{{ gs.gs_state_chip('empty') }} <span class="intl-dislocations__reason">{{ t(c.common_reason.en, c.common_reason.zh) }}</span></dd></div>
+          </dl>
+        </section>
+        <section class="intl-dislocations__block">
+          <h3 class="intl-dislocations__blocktitle">{{ t(c.drivers_title.en, c.drivers_title.zh) }}</h3>
+          <p class="intl-dislocations__emptyrow">{{ gs.gs_state_chip('empty') }} <span class="intl-dislocations__reason">{{ t(c.drivers_empty.en, c.drivers_empty.zh) }}</span></p>
+        </section>
+        <section class="intl-dislocations__block">
+          <h3 class="intl-dislocations__blocktitle">{{ t(c.extras_title.en, c.extras_title.zh) }}</h3>
+          <dl class="intl-dislocations__idlist">
+            {% for key, label in [('all_qualified', c.extra_all), ('local', c.extra_local), ('fx', c.extra_fx), ('own', c.extra_own)] %}
+            {% set extra = row.extras[key] %}
+            <div class="intl-dislocations__idrow"><dt class="intl-dislocations__idlabel">{{ t(label.en, label.zh) }}</dt><dd class="intl-dislocations__idvalue">{% if extra.z is not none %}{{ gs.gs_signed(extra.z, 2, '', 'up' if extra.z > 0 else 'down') }}{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span> <span class="intl-dislocations__reason">{% for reason in extra.abstain_reasons %}{{ t(reason.text.en, reason.text.zh) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>{% endif %}</dd></div>
+            {% endfor %}
+          </dl>
+        </section>
+        <section class="intl-dislocations__block">
+          <h3 class="intl-dislocations__blocktitle">{{ t(c.summary_title.en, c.summary_title.zh) }}</h3>
+          <div class="intl-dislocations__summary">
+            {{ gs.gs_question_card(3, t(c.summary_q3.en, c.summary_q3.zh), t(c.summary_a3.en, c.summary_a3.zh)) }}
+            {{ gs.gs_question_card(4, t(c.summary_q4.en, c.summary_q4.zh), t(c.summary_a4.en, c.summary_a4.zh)) }}
+            {{ gs.gs_question_card(5, t(c.summary_q5.en, c.summary_q5.zh), t(c.summary_a5.en, c.summary_a5.zh)) }}
+            {{ gs.gs_question_card(6, t(c.summary_q6.en, c.summary_q6.zh), t(c.summary_a6.en, c.summary_a6.zh)) }}
+          </div>
+        </section>
+        <div class="intl-dislocations__btnrow">
+          {{ gs.gs_btn(t(c.btn_coverage.en, c.btn_coverage.zh), 'secondary', true, 'title="' ~ c.btn_disabled_title.en ~ ' · ' ~ c.btn_disabled_title.zh ~ '"') }}
+          {{ gs.gs_btn(t(c.btn_transmission.en, c.btn_transmission.zh), 'secondary', true, 'title="' ~ c.btn_disabled_title.en ~ ' · ' ~ c.btn_disabled_title.zh ~ '"') }}
+        </div>
+      </div>
+      {% endfor %}
+      {% if not ranked %}
+      <div class="intl-dislocations__insp intl-dislocations__insp--empty">
+        {{ gs.gs_bandhead(t(c.insp_title.en, c.insp_title.zh)) }}
+        <p class="intl-dislocations__emptyrow">{{ gs.gs_state_chip('empty') }} <span class="intl-dislocations__reason">{{ t(c.empty_census.en, c.empty_census.zh) }}</span></p>
+        <ul class="intl-dislocations__census">
+          {% for entry in p.census %}
+          <li class="intl-dislocations__censusrow"><span class="intl-gs__num">{{ entry.count }} ×</span> <span class="intl-dislocations__reason">{{ t(entry.text.en, entry.text.zh) }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+  <section class="intl-gs__panel intl-dislocations__ranking">
+    {{ gs.gs_bandhead(t(c.ranking_title.en, c.ranking_title.zh), sub=t(c.ranking_sub.en.format(ranked=p.counts.ranked, unranked=p.counts.unranked, carried=p.counts.carried), c.ranking_sub.zh.format(ranked=p.counts.ranked, unranked=p.counts.unranked, carried=p.counts.carried))) }}
+    <div class="intl-gs__tablewrap">
+      <table class="intl-gs__table intl-dislocations__table">
+        <colgroup>
+          <col class="intl-dislocations__col intl-dislocations__col--rank">
+          <col class="intl-dislocations__col intl-dislocations__col--market">
+          <col class="intl-dislocations__col intl-dislocations__col--residual">
+          <col class="intl-dislocations__col intl-dislocations__col--z">
+          <col class="intl-dislocations__col intl-dislocations__col--usd">
+          <col class="intl-dislocations__col intl-dislocations__col--local">
+          <col class="intl-dislocations__col intl-dislocations__col--fx">
+          <col class="intl-dislocations__col intl-dislocations__col--fragility">
+          <col class="intl-dislocations__col intl-dislocations__col--state">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="intl-dislocations__th">{{ t(c.header_rank.en, c.header_rank.zh) }}</th>
+            <th class="intl-dislocations__th">{{ t(c.header_market.en, c.header_market.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--centre">{{ t(c.header_residual.en, c.header_residual.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--num">{{ t(c.header_z.en, c.header_z.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--num">{{ t(c.header_usd.en, c.header_usd.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--num">{{ t(c.header_local.en, c.header_local.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--num">{{ t(c.header_fx.en, c.header_fx.zh) }}</th>
+            <th class="intl-dislocations__th intl-dislocations__th--num">{{ t(c.header_fragility.en, c.header_fragility.zh) }}</th>
+            <th class="intl-dislocations__th">{{ t(c.header_state.en, c.header_state.zh) }}</th>
+            <th class="intl-dislocations__th">{{ t(c.header_stance.en, c.header_stance.zh) }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in ranked %}
+          <tr data-i="{{ row.index }}">
+            <td class="intl-dislocations__cell" data-label="#"><span class="intl-dislocations__cl">{{ t(c.header_rank.en, c.header_rank.zh) }}</span><span class="intl-gs__num">{{ row.index + 1 }}</span></td>
+            <td class="intl-dislocations__cell" data-label="MARKET"><span class="intl-dislocations__cl">{{ t(c.header_market.en, c.header_market.zh) }}</span><label class="intl-dislocations__market" for="{{ gs_panel.context_id }}-pick-{{ row.index }}" data-i="{{ row.index }}">{{ t(row.name_en, row.name_zh) }} <span class="intl-gs__num">{{ row.market_id }}</span></label></td>
+            {% set bar_len = (([(row.z | abs), 7] | min) * 20) | round(1) %}
+            <td class="intl-dislocations__cell intl-dislocations__cell--centre" data-label="RESIDUAL"><span class="intl-dislocations__cl">{{ t(c.header_residual.en, c.header_residual.zh) }}</span>{{ gs.gs_signed(row.z, 2, '', 'up' if row.direction == 'above' else ('down' if row.direction == 'below' else 'muted')) }}<svg class="intl-dislocations__resbar" viewBox="0 0 320 24" role="img" aria-label="{{ row.market_id }} · {{ c.y_axis_title.en }} · {{ c.y_axis_title.zh }}"><line class="intl-gs__zero-tick" x1="160" y1="0" x2="160" y2="24"></line><line class="intl-dislocations__tick" x1="90" y1="4" x2="90" y2="20"></line><line class="intl-dislocations__tick" x1="230" y1="4" x2="230" y2="20"></line><rect class="intl-dislocations__resbar__bar" data-dir="{{ 'up' if row.z > 0 else 'down' }}"{% if row.view_state == 'qualified' %} data-q="1"{% endif %} x="{{ 160 if row.z > 0 else 160 - bar_len }}" y="7" width="{{ bar_len }}" height="10" rx="2"></rect>{% if (row.z | abs) > 7 %}<line class="intl-dislocations__clamp" x1="{{ 300 if row.z > 0 else 20 }}" y1="4" x2="{{ 300 if row.z > 0 else 20 }}" y2="20"></line>{% endif %}</svg></td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="Z"><span class="intl-dislocations__cl">{{ t(c.header_z.en, c.header_z.zh) }}</span>{{ gs.gs_signed(row.z, 2, '', 'up' if row.direction == 'above' else ('down' if row.direction == 'below' else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="USD"><span class="intl-dislocations__cl">{{ t(c.header_usd.en, c.header_usd.zh) }}</span>{{ gs.gs_signed(row.usd_pct, 1, '%', 'up' if row.usd_pct and row.usd_pct > 0 else ('down' if row.usd_pct and row.usd_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="LOCAL"><span class="intl-dislocations__cl">{{ t(c.header_local.en, c.header_local.zh) }}</span>{{ gs.gs_signed(row.local_pct, 1, '%', 'up' if row.local_pct and row.local_pct > 0 else ('down' if row.local_pct and row.local_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="FX"><span class="intl-dislocations__cl">{{ t(c.header_fx.en, c.header_fx.zh) }}</span>{{ gs.gs_signed(row.fx_pct, 1, '%', 'up' if row.fx_pct and row.fx_pct > 0 else ('down' if row.fx_pct and row.fx_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num intl-dislocations__cell--fragility" data-label="FRAGILITY"{% if row.fragility is not none and row.fragility >= 60 %} data-above="1"{% endif %}><span class="intl-dislocations__cl">{{ t(c.header_fragility.en, c.header_fragility.zh) }}</span>{% if row.fragility is none %}<span class="intl-gs__num intl-gs__num--muted" title="{{ c.fragility_reason.en }} · {{ c.fragility_reason.zh }}">—</span>{% else %}<span class="intl-gs__num">{{ row.fragility | round(0, 'common') | int }}</span>{% if row.fragility >= 60 %} <span class="intl-dislocations__above">{{ t(c.above_threshold.en, c.above_threshold.zh) }}</span>{% endif %}{% endif %}</td>
+            <td class="intl-dislocations__cell" data-label="DATA STATE"><span class="intl-dislocations__cl">{{ t(c.header_state.en, c.header_state.zh) }}</span>{{ gs.gs_state_chip(row.view_state) }}{% if row.view_state == 'restricted' %} {{ gs.gs_rights_slot() }}{% endif %} <time class="intl-gs__num" datetime="{{ row.clock_display.observation.at }}">{{ t(row.clock_display.observation.display.en, row.clock_display.observation.display.zh) if row.clock_display.observation.display else '—' }}</time></td>
+            <td class="intl-dislocations__cell" data-label="STANCE"><span class="intl-dislocations__cl">{{ t(c.header_stance.en, c.header_stance.zh) }}</span><span class="intl-gs__num intl-gs__num--muted" title="{{ c.stance_reason.en }} · {{ c.stance_reason.zh }}">—</span></td>
+          </tr>
+          {% endfor %}
+          {% for row in unranked %}
+          <tr data-unranked="1">
+            <td class="intl-dislocations__cell" data-label="#"><span class="intl-dislocations__cl">{{ t(c.header_rank.en, c.header_rank.zh) }}</span><span class="intl-gs__num intl-gs__num--muted">—</span></td>
+            <td class="intl-dislocations__cell" data-label="MARKET"><span class="intl-dislocations__cl">{{ t(c.header_market.en, c.header_market.zh) }}</span><span class="intl-dislocations__market intl-dislocations__market--static">{{ t(row.name_en, row.name_zh) }} <span class="intl-gs__num">{{ row.market_id }}</span></span></td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--centre" data-label="RESIDUAL"><span class="intl-dislocations__cl">{{ t(c.header_residual.en, c.header_residual.zh) }}</span><span class="intl-gs__num intl-gs__num--muted">—</span></td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="Z"><span class="intl-dislocations__cl">{{ t(c.header_z.en, c.header_z.zh) }}</span><span class="intl-gs__num intl-gs__num--muted">—</span></td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="USD"><span class="intl-dislocations__cl">{{ t(c.header_usd.en, c.header_usd.zh) }}</span>{{ gs.gs_signed(row.usd_pct, 1, '%', 'up' if row.usd_pct and row.usd_pct > 0 else ('down' if row.usd_pct and row.usd_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="LOCAL"><span class="intl-dislocations__cl">{{ t(c.header_local.en, c.header_local.zh) }}</span>{{ gs.gs_signed(row.local_pct, 1, '%', 'up' if row.local_pct and row.local_pct > 0 else ('down' if row.local_pct and row.local_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num" data-label="FX"><span class="intl-dislocations__cl">{{ t(c.header_fx.en, c.header_fx.zh) }}</span>{{ gs.gs_signed(row.fx_pct, 1, '%', 'up' if row.fx_pct and row.fx_pct > 0 else ('down' if row.fx_pct and row.fx_pct < 0 else 'muted')) }}</td>
+            <td class="intl-dislocations__cell intl-dislocations__cell--num intl-dislocations__cell--fragility" data-label="FRAGILITY"><span class="intl-dislocations__cl">{{ t(c.header_fragility.en, c.header_fragility.zh) }}</span><span class="intl-gs__num intl-gs__num--muted" title="{{ c.fragility_reason.en }} · {{ c.fragility_reason.zh }}">—</span></td>
+            <td class="intl-dislocations__cell" data-label="DATA STATE"><span class="intl-dislocations__cl">{{ t(c.header_state.en, c.header_state.zh) }}</span>{{ gs.gs_state_chip(row.view_state) }}{% if row.view_state == 'restricted' %} {{ gs.gs_rights_slot() }}{% endif %} <time class="intl-gs__num" datetime="{{ row.clock_display.observation.at }}">{{ t(row.clock_display.observation.display.en, row.clock_display.observation.display.zh) if row.clock_display.observation.display else '—' }}</time>{% if row.view_reasons %} <span class="intl-dislocations__reason">{% for reason in row.view_reasons %}{{ t(reason.text.en, reason.text.zh) }}{% if reason.count %} ×{{ reason.count }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}</span>{% endif %}</td>
+            <td class="intl-dislocations__cell" data-label="STANCE"><span class="intl-dislocations__cl">{{ t(c.header_stance.en, c.header_stance.zh) }}</span><span class="intl-gs__num intl-gs__num--muted" title="{{ c.stance_reason.en }} · {{ c.stance_reason.zh }}">—</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% for footnote in p.footnotes %}
+    {{ gs.gs_footnote(t(footnote.en, footnote.zh)) }}
+    {% endfor %}
+  </section>
+</div>
+{% endcall %}

@@ -9359,6 +9359,86 @@ jobs:
       - name: International dollar credit transmission and IM16 acceptance matrix
         run: python -m pytest tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q
 
+  international-dislocation-explorer:
+    # IM15 dislocation explorer UI (INTL-GS-W3U): the production builder over
+    # the W2 seam + the view template/CSS, proven by the pytest and Chromium
+    # suites (fixture observation set, no data/ reads).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_intl_gs_dislocations_view.py"
+      - "tests/intl_gs_dislocations_browser.test.cjs"
+      - "tests/intl_gs_dislocations_fixture.py"
+      - "tests/intl_gs_fixture_site.py"
+      - "lib/intl_gs_dislocations_view.py"
+      - "lib/intl_gs_display.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_macro_mount.py"
+      - "lib/intl_library_mount.py"
+      - "lib/intl_workspace_binding.py"
+      - "lib/intl_library_view.py"
+      - "lib/intl_inspector_mount.py"
+      - "lib/intl_compare_mount.py"
+      - "lib/intl_chart_mount.py"
+      - "lib/intl_workspace_macro.py"
+      - "engine/intl_workspace_overview.py"
+      - "engine/i18n.py"
+      - "engine/intl_global_dislocation.py"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "templates/intl_workspace/dislocations.html.j2"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
+      - "templates/intl.html.j2"
+      - "templates/intl_workspace.js"
+      - "templates/theme.css"
+      - "templates/intl_workspace_surveillance.css"
+      - "site/intl_workspace_surveillance.css"
+      - "scripts/build_intl.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/intl_library_catalogue.json"
+      - "config/theme_sources.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/site_access.yml"
+      - "mockups/evidence/intl-gs-w3u/manifest.json"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install render test dependencies
+        run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+      - name: install browser test dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: canonical base for the frozen-file guard (fail closed)
+        run: |
+          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+            echo "::error title=international-dislocation-explorer::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_dislocations_view.py frozen-seam checks have NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
+            exit 1
+          fi
+      - name: Dislocation explorer view contracts
+        run: python -m pytest tests/test_intl_gs_dislocations_view.py -q
+      - name: Dislocation explorer DOM and selection in Chromium
+        run: node --test tests/intl_gs_dislocations_browser.test.cjs
+
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
     # Scope includes the measured first-party import closure and config input.
