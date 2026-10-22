@@ -21,7 +21,12 @@ Pro-only HOST (bot.mastermind-x.com).  It shares this module's auth and
 entitlement machinery and nothing else: no path classification, no
 ``PAYWALL_ENABLED`` staging.  Its one non-entitlement admission is the operator
 email allowlist that ``/api/me`` already honours (BRAIN_UNLIMITED_ALLOWLIST), so
-the two agree about who a person is.  See the section at the bottom of this file.
+the two agree about who a person is. Bot's expired shared-access-token
+cookie is not a paid-tier verdict: its 401 recovery document reuses the main
+site's existing GoTrue browser client to refresh the parent-domain session,
+then only a NEW verified request can pass the 2xx Caddy gate. Confirmed free
+and anonymous visitors get 403; temporary vendor errors 503; broken application
+config 500. None of these denied responses grants access. See the section below.
 """
 from __future__ import annotations
 
@@ -209,16 +214,29 @@ def _cache_get(key: str) -> _Identity | None:
     return _Identity(None, "", None, "invalid")
 
 
-def _positive_token_ttl(token: str, configured_ttl: float) -> float:
-    """Clamp a reusable positive identity to the JWT's own wall-clock expiry."""
+def _jwt_exp(token: str) -> float | None:
+    """Read *untrusted* exp for TTL/presentation only, never for admission.
+
+    Only Supabase's /auth/v1/user is an identity verdict. The JWT's exp claim
+    may choose a CLOSED session-renewal page instead of a misleading upgrade
+    pitch; a forged exp can never grant access or identity.
+    """
     try:
         payload_part = token.split(".")[1]
         payload_part += "=" * (-len(payload_part) % 4)
         payload = json.loads(base64.urlsafe_b64decode(payload_part.encode("ascii")))
         expires_at = float(payload["exp"])
-        if not math.isfinite(expires_at):
-            return 0.0
+        if math.isfinite(expires_at):
+            return expires_at
     except (IndexError, KeyError, TypeError, ValueError, json.JSONDecodeError, UnicodeError):
+        pass
+    return None
+
+
+def _positive_token_ttl(token: str, configured_ttl: float) -> float:
+    """Clamp a reusable positive identity to the JWT's own wall-clock expiry."""
+    expires_at = _jwt_exp(token)
+    if expires_at is None:
         return 0.0
     return max(0.0, min(configured_ttl, expires_at - time.time()))
 
@@ -557,6 +575,7 @@ def paywall_check(request: Request) -> Response:
 
 PRO_INTERSTITIAL = Path(__file__).with_name("paywall_pro_interstitial.html")
 PRO_UNAVAILABLE = Path(__file__).with_name("paywall_pro_unavailable.html")
+PRO_SESSION_RENEW = Path(__file__).with_name("paywall_pro_session_refresh.html")
 PLANS_CONFIG = REPO / "config" / "plans.yml"
 
 #: Where a denied visitor is sent. Deliberately RELATIVE, matching ``_locked``'s
@@ -694,18 +713,20 @@ def _locked_pro(request: Request, path: str, tier: str) -> Response:
     )
 
 
-def _unavailable_pro(request: Request, path: str) -> Response:
-    """Fail CLOSED without falsely saying the visitor needs to buy Pro.
+def _unavailable_pro(request: Request, path: str, *, busy: bool = False) -> Response:
+    """Vendor outage: deny with a recoverable response, never an upgrade offer.
 
-    Caddy's 2xx-only admission rejects this 503 just as strictly as a 403.
-    Browsers see a self-contained, bounded automatic retry; APIs get retry
-    semantics without any entitlement or identity information in the body.
+    Load-shedding on the shared eight-call Auth semaphore must not drive more
+    automatic attempts. Vendor outages use two jittered/slow retries at most.
     """
     headers = _headers("unavailable")
-    headers["Retry-After"] = "2"
+    headers["Retry-After"] = "5"
     if _is_document(request, path):
         try:
             body = PRO_UNAVAILABLE.read_text(encoding="utf-8")
+            if busy:
+                body = body.replace('name="mm-bot-service-retry" content="enabled"',
+                                    'name="mm-bot-service-retry" content="disabled"')
         except Exception:  # noqa: BLE001
             body = (
                 "<!doctype html><title>Membership check temporarily unavailable</title>"
@@ -714,10 +735,52 @@ def _unavailable_pro(request: Request, path: str) -> Response:
             )
         return HTMLResponse(body, status_code=503, headers=headers)
     return JSONResponse(
-        {"error": "membership_check_unavailable", "retryable": True},
+        {"error": "membership_check_unavailable", "retryable": not busy},
         status_code=503,
         headers=headers,
     )
+
+
+def _reverify_pro_session(request: Request, path: str, *, expired: bool) -> Response:
+    """An unverified token is not proof that a signed-in subscriber is unpaid.
+
+    Expiry is read from UNTRUSTED JWT claims solely to choose the denied renewal
+    experience. Existing GoTrue browser SDK can rotate the cookie; only a new
+    request verified by this server can enter the Bot. All branches deny.
+    """
+    headers = _headers("session-refresh")
+    if _is_document(request, path):
+        try:
+            body = PRO_SESSION_RENEW.read_text(encoding="utf-8")
+            if not expired:
+                body = body.replace('name="mm-bot-renew" content="yes"',
+                                    'name="mm-bot-renew" content="no"')
+        except Exception:  # noqa: BLE001
+            body = (
+                "<!doctype html><title>Sign in to verify membership</title>"
+                "<h1>We could not verify this session</h1>"
+                '<p><a href="https://www.mastermind-x.com/?signin=1">Sign in again</a></p>'
+            )
+        return HTMLResponse(body, status_code=401, headers=headers)
+    return JSONResponse(
+        {"error": "session_reverification_required",
+         "sign_in_url": "https://www.mastermind-x.com/?signin=1"},
+        status_code=401, headers=headers,
+    )
+
+
+def _internal_pro_failure(request: Request, path: str) -> Response:
+    """Permanent application/config fault: closed, observable, NOT retry noise."""
+    headers = _headers("error")
+    if _is_document(request, path):
+        return HTMLResponse(
+            "<!doctype html><title>Membership check unavailable</title>"
+            "<h1>Membership verification is unavailable</h1>"
+            '<p>Please contact support. No change to your subscription is implied.</p>',
+            status_code=500, headers=headers,
+        )
+    return JSONResponse({"error": "membership_verification_error"},
+                        status_code=500, headers=headers)
 
 
 @router.get("/api/paywall/check_pro")
@@ -740,11 +803,26 @@ def paywall_check_pro(request: Request) -> Response:
         token = _mm_supabase_access_token(request)
         if not token:
             return _locked_pro(request, path, "anon")
+        # Supabase access JWTs expire long before the persisted 390-day shared
+        # cookie. Bot has no JS session renewal on its initial server-gated GET.
+        # The exp claim is NOT trusted for authorization: it selects a 401
+        # browser renewal document that grants nothing until we verify again.
+        expires_at = _jwt_exp(token)
+        if expires_at is not None and expires_at <= time.time() + 5:
+            return _reverify_pro_session(request, path, expired=True)
         identity = _resolve_identity(token)
         if identity.status in {"outage", "busy"}:
-            return _unavailable_pro(request, path)
+            try:
+                from lib.commercial_path import emit as _commercial_emit
+                _commercial_emit("auth.502", reason=identity.status)
+            except Exception:  # noqa: BLE001 — alerting must never change a gate
+                pass
+            return _unavailable_pro(request, path, busy=identity.status == "busy")
         if identity.status != "ok" or not identity.uid:
-            return _locked_pro(request, path, "anon")
+            # A rejected session says NOTHING about this user's paid tier.
+            # Do not show a subscription sales wall to an account with stale
+            # or revoked credentials; offer signed-in re-verification instead.
+            return _reverify_pro_session(request, path, expired=False)
         # Preserve the same operator bypass as /api/me.
         if identity.email and _operator_unlimited(identity.email):
             return Response(status_code=204, headers=_headers("allow-unlimited"))
@@ -758,6 +836,6 @@ def paywall_check_pro(request: Request) -> Response:
         return Response(status_code=204, headers=_headers(f"allow-{normalize_tier(tier)}"))
     except _EntitlementStoreUnavailable:
         return _unavailable_pro(request, path)
-    except Exception as exc:  # noqa: BLE001 — never allow on unexpected error
-        log.warning("paywall: pro host verification unavailable (%s)", type(exc).__name__)
-        return _unavailable_pro(request, path)
+    except Exception:  # noqa: BLE001 — unexpected/config faults are not vendor blips
+        log.exception("paywall: unexpected Pro host verification failure")
+        return _internal_pro_failure(request, path)

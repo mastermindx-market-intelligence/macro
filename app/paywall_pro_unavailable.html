@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mm-bot-service-retry" content="enabled">
   <meta name="robots" content="noindex,noarchive">
   <title>Mastermind Bot · Checking membership</title>
   <style>
@@ -27,28 +28,34 @@
   <div class="eyebrow">Mastermind Bot · Account check</div>
   <h1>We're reconnecting to your account.</h1>
   <p>We couldn't verify your membership right now. This is a temporary service issue,
-     not a determination that you need to upgrade. We'll retry a few times automatically.</p>
+     not a determination that you need to upgrade. Please try again shortly.</p>
   <p lang="zh">暂时无法验证您的会员资格，这并不表示您需要升级。我们会自动重试几次。</p>
   <nav>
-    <button type="button" onclick="location.reload()">Try again · 重试</button>
+    <button type="button" id="mm-bot-try-again">Try again · 重试</button>
     <a href="https://www.mastermind-x.com/">Return to Mastermind</a>
   </nav>
 </main>
 <script>
-  // A bounded same-host retry for transient auth/store outages, not an auth
-  // bypass. The server still validates identity and entitlement on EVERY load.
+  // A slow, bounded retry only for vendor outages. A locally saturated auth
+  // semaphore marks this page "disabled": no automatic retry amplification.
+  // The 5s minimum honors Retry-After: 5; the server still revalidates all access.
   (function () {
+    var button = document.getElementById('mm-bot-try-again');
+    if (button) button.addEventListener('click', function () { location.reload(); });
+    var meta = document.querySelector('meta[name="mm-bot-service-retry"]');
+    if (!meta || meta.content !== 'enabled') return;
     try {
-      var key = "mm.bot.pro-check.retry.v1";
-      var now = Date.now();
-      var state = JSON.parse(sessionStorage.getItem(key) || "null");
+      var key = 'mm.bot.pro-check.retry.v2', now = Date.now();
+      var state = JSON.parse(sessionStorage.getItem(key) || 'null');
       if (!state || !Number.isFinite(state.since) || now < state.since ||
-          now - state.since > 30000) state = {since: now, attempts: 0};
-      if (state.attempts >= 3) return;
+          now - state.since > 60000) state = {since: now, attempts: 0};
+      if (state.attempts >= 2) return;
       state.attempts++;
       sessionStorage.setItem(key, JSON.stringify(state));
-      setTimeout(function () { location.reload(); }, 750 + 500 * state.attempts);
-    } catch (e) { /* storage disabled: the manual retry button still works */ }
+      var delay = 5000 * Math.pow(2, state.attempts - 1)
+                + Math.floor(Math.random() * 2000);
+      setTimeout(function () { location.reload(); }, delay);
+    } catch (e) { /* Storage disabled: no automatic retry; manual button works. */ }
   }());
 </script>
 </body>

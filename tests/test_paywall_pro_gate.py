@@ -17,6 +17,9 @@ from __future__ import annotations
 import base64
 import json
 import re
+import shutil
+import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -72,6 +75,13 @@ def _row(monkeypatch, tier, status="active", features=("site_full",), email=EMAI
     )
 
 
+def _jwt(exp: float) -> str:
+    payload = base64.urlsafe_b64encode(
+        json.dumps({"exp": exp, "sub": UID}).encode("utf-8")
+    ).decode("ascii").rstrip("=")
+    return f"header.{payload}.signature"
+
+
 # ---------------------------------------------------------------------------
 # Who gets in
 # ---------------------------------------------------------------------------
@@ -87,15 +97,120 @@ def test_anonymous_is_locked(monkeypatch):
     }
 
 
-def test_signed_in_but_verifiably_invalid_token_is_locked(monkeypatch):
+def test_signed_in_but_verifiably_invalid_token_requires_reauthentication(monkeypatch):
     monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
     monkeypatch.setattr(
         paywall, "_resolve_identity",
         lambda token: paywall._Identity(None, "", None, "invalid"),
     )
     r = _check()
+    assert r.status_code == 401
+    assert r.headers["x-paywall"] == "session-refresh"
+    assert r.json()["error"] == "session_reverification_required"
+    assert "upgrade_url" not in r.json()
+
+
+def test_expired_shared_cookie_recovers_with_canonical_auth_client(monkeypatch):
+    # An expired access JWT from a durable parent-domain cookie is renewal-needed,
+    # not proof that the paid entitlement was revoked.
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: (_ for _ in ()).throw(AssertionError("expired JWT reached upstream")),
+    )
+    r = _check("/desk?symbol=AAPL", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 401
+    assert r.headers["x-paywall"] == "session-refresh"
+    assert r.headers["cache-control"] == "private, no-store"
+    assert r.headers["vary"] == "Cookie"
+    assert 'name="mm-bot-renew" content="yes"' in r.text
+    assert '<base href="https://www.mastermind-x.com/">' in r.text
+    assert 'src="https://www.mastermind-x.com/theme.js"' in r.text
+    assert "window.getSupabaseClient()" in r.text
+    assert "sb.auth.getSession()" in r.text
+    assert "location.reload()" in r.text
+    assert "sessionStorage" in r.text
+    assert "upgrade=1" not in r.text
+    assert "Your membership hasn't been classified as unpaid" in r.text
+
+
+def test_expired_api_session_refuses_without_upgrade_offer(monkeypatch):
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() - 180),
+    )
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: (_ for _ in ()).throw(AssertionError("expired JWT reached upstream")),
+    )
+    r = _check("/api/positions")
+    assert r.status_code == 401
+    assert r.json() == {
+        "error": "session_reverification_required",
+        "sign_in_url": "https://www.mastermind-x.com/?signin=1",
+    }
+    assert r.headers["x-paywall"] == "session-refresh"
+
+
+def test_session_near_expiry_also_renews_without_granting_pro(monkeypatch):
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() + 2),
+    )
+    r = _check()
+    assert r.status_code == 401
+    assert r.json()["error"] == "session_reverification_required"
+
+
+def test_syntactically_valid_future_jwt_is_not_treated_as_authorization(monkeypatch):
+    monkeypatch.setattr(
+        "app.main._mm_supabase_access_token",
+        lambda request: _jwt(time.time() + 3600),
+    )
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "invalid"),
+    )
+    r = _check()
+    assert r.status_code == 401
+    assert r.json()["error"] == "session_reverification_required"
+    assert "upgrade_url" not in r.json()
+
+
+def test_invalid_token_document_has_no_automatic_sdk_retry(monkeypatch):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "bogus")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "invalid"),
+    )
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 401
+    assert 'name="mm-bot-renew" content="no"' in r.text
+    assert "Sign in" in r.text
+    assert "Mastermind Bot comes with Pro" not in r.text
+
+
+def test_busy_vendor_never_autoretries_the_shared_auth_semaphore(monkeypatch):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "busy"),
+    )
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 503
+    assert 'name="mm-bot-service-retry" content="disabled"' in r.text
+    assert r.headers["retry-after"] == "5"
+
+
+def test_reachable_store_without_entitlement_row_is_unpaid_not_unavailable(monkeypatch):
+    _signed_in(monkeypatch)
+    monkeypatch.setattr(paywall, "_store_entitlement", lambda uid: (None, True))
+    r = _check()
     assert r.status_code == 403
-    assert r.json()["tier"] == "anon"
+    assert r.json()["tier"] == "free"
 
 
 @pytest.mark.parametrize("status", ["outage", "busy"])
@@ -108,7 +223,8 @@ def test_temporary_auth_failure_is_not_an_unpaid_verdict(monkeypatch, status):
     r = _check()
     assert r.status_code == 503
     assert r.json()["error"] == "membership_check_unavailable"
-    assert r.headers["retry-after"] == "2"
+    assert r.headers["retry-after"] == "5"
+    assert r.json()["retryable"] is (status != "busy")
     assert r.headers["x-paywall"] == "unavailable"
     assert r.headers["cache-control"] == "private, no-store"
 
@@ -145,8 +261,9 @@ def test_temporary_auth_failure_document_retries_without_paywall_message(monkeyp
     assert "retry" in r.text.lower()
     assert "Mastermind Bot comes with Pro" not in r.text
     assert "sessionStorage" in r.text
-    assert "attempts >= 3" in r.text
-    assert "30" in r.text
+    assert 'name="mm-bot-service-retry" content="enabled"' in r.text
+    assert "attempts >= 2" in r.text
+    assert "5000 * Math.pow(2" in r.text
 
 
 def test_invalid_token_does_not_receive_cached_positive_grace(monkeypatch):
@@ -158,7 +275,7 @@ def test_invalid_token_does_not_receive_cached_positive_grace(monkeypatch):
         paywall, "_resolve_identity",
         lambda token: paywall._Identity(None, "", None, "invalid"),
     )
-    assert _check().status_code == 403
+    assert _check().status_code == 401
 
 
 def test_missing_temporary_outage_document_fails_closed_with_fallback(monkeypatch, tmp_path):
@@ -470,9 +587,9 @@ def test_auth_lookup_raising_remains_closed_but_is_not_a_paywall(monkeypatch):
         lambda token: (_ for _ in ()).throw(RuntimeError("supabase down")),
     )
     r = _check()
-    assert r.status_code == 503
-    assert r.json()["error"] == "membership_check_unavailable"
-    assert r.headers["x-paywall"] == "unavailable"
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
+    assert r.headers["x-paywall"] == "error"
 
 
 def test_entitlement_store_raising_returns_recoverable_closed_response(monkeypatch):
@@ -483,8 +600,8 @@ def test_entitlement_store_raising_returns_recoverable_closed_response(monkeypat
         lambda uid: (_ for _ in ()).throw(RuntimeError("postgrest down")),
     )
     r = _check()
-    assert r.status_code == 503
-    assert r.json()["error"] == "membership_check_unavailable"
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
 
 
 def test_unreadable_catalog_denies_everyone_including_the_uncapped_tier(monkeypatch):
@@ -495,7 +612,7 @@ def test_unreadable_catalog_denies_everyone_including_the_uncapped_tier(monkeypa
     for tier in ("pro", "unlimited"):
         _row(monkeypatch, tier)
         paywall._ENT_CACHE.clear()
-        assert _check().status_code == 503, tier
+        assert _check().status_code == 500, tier
 
 
 def test_catalog_that_no_longer_sells_pro_denies(monkeypatch, tmp_path):
@@ -505,7 +622,7 @@ def test_catalog_that_no_longer_sells_pro_denies(monkeypatch, tmp_path):
     cat.write_text("tier_rank: [free, essential]\n", encoding="utf-8")
     monkeypatch.setattr(paywall, "PLANS_CONFIG", cat)
     _row(monkeypatch, "pro")
-    assert _check().status_code == 503
+    assert _check().status_code == 500
 
 
 @pytest.mark.parametrize("body", ["tier_rank: []\n", "tier_rank: pro\n", "[]\n", "\n"])
@@ -514,7 +631,7 @@ def test_shapeless_catalog_denies(monkeypatch, tmp_path, body):
     cat.write_text(body, encoding="utf-8")
     monkeypatch.setattr(paywall, "PLANS_CONFIG", cat)
     _row(monkeypatch, "pro")
-    assert _check().status_code == 503
+    assert _check().status_code == 500
 
 
 @pytest.mark.parametrize("path", ["//evil.test/x", "/a/../secret", "/bad%00", "/a\\b", ""])
@@ -693,3 +810,98 @@ def test_uptime_probe_watches_the_open_health_path_with_a_real_assertion():
 
     bot = [t for t in TARGETS if t[1].startswith("https://bot.mastermind-x.com")]
     assert bot == [("Brain bot", "https://bot.mastermind-x.com/health", 200)], bot
+
+
+# Shipped Bot expired-cookie renewal script: repeatable Node harness
+DOCUMENT = ROOT / "app" / "paywall_pro_session_refresh.html"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+@pytest.mark.parametrize(
+    "case,mode,result,prior,has_broker,storage_off,expected_calls,expected_reload",
+    [
+        ("renewed", "yes", "fresh", False, True, False, 1, 1),
+        ("refresh_error", "yes", "none", False, True, False, 1, 0),
+        ("stale_session", "yes", "stale", False, True, False, 1, 0),
+        ("invalid_credentials", "no", "fresh", False, True, False, 0, 0),
+        ("bounded_repeat", "yes", "fresh", True, True, False, 0, 0),
+        ("missing_sdk", "yes", "fresh", False, False, False, 0, 0),
+        ("storage_unavailable", "yes", "fresh", False, True, True, 0, 0),
+    ],
+)
+def test_shipping_session_renewal_behavior(
+    case: str,
+    mode: str,
+    result: str,
+    prior: bool,
+    has_broker: bool,
+    storage_off: bool,
+    expected_calls: int,
+    expected_reload: int,
+) -> None:
+    html = DOCUMENT.read_text(encoding="utf-8")
+    scripts = re.findall(r"<script(?:\\s+[^>]*)?>(.*?)</script>", html, re.S)
+    actual = next((s for s in scripts if "function refresh()" in s), "")
+    assert actual, "shipping recovery code missing"
+    fixture = json.dumps(
+        {"mode": mode, "result": result, "prior": prior, "hasBroker": has_broker,
+         "storageOff": storage_off}
+    )
+    harness = r"""
+const vm = require('node:vm');
+const fixture = __FIXTURE__;
+const javascript = __SOURCE__;
+let calls = 0, reloads = 0, status = {textContent:''};
+const key = 'mm.bot.session-renew.v1';
+const memory = new Map();
+if (fixture.prior) memory.set(key, String(Date.now() - 800));
+const document = {
+  readyState:'complete',
+  getElementById(name) { return name==='mm-bot-renew-status' ? status : {addEventListener(){}}; },
+  querySelector(selector) {
+    if(selector!=='meta[name="mm-bot-renew"]') throw Error('Unrecognized selector');
+    return {content:fixture.mode};
+  }
+};
+const window = {};
+if(fixture.hasBroker) window.getSupabaseClient = () => {
+  calls++;
+  let session = fixture.result === 'none' ? null : {
+    access_token:'test-only-not-authenticated',
+    expires_at:Date.now()/1000 + (fixture.result==='fresh' ? 3600 : -300)
+  };
+  return Promise.resolve({auth:{getSession:()=>Promise.resolve({
+    data:{session},error:fixture.result==='none'?{message:'no session'}:null
+  })}});
+};
+vm.runInNewContext(javascript, {
+  window,document,location:{reload(){reloads++;}},
+  sessionStorage:{
+    getItem(k){if(fixture.storageOff)throw Error('storage unavailable');return memory.get(k)||null;},
+    setItem(k,v){if(fixture.storageOff)throw Error('storage unavailable');memory.set(k,v);}
+  },
+  Date,Number,JSON,Math,Promise,console
+});
+setImmediate(()=>setImmediate(()=>{
+  process.stdout.write(JSON.stringify({calls,reloads,prompt:status.textContent.includes('Please sign in again')}));
+}));
+""".replace("__SOURCE__", json.dumps(actual)).replace("__FIXTURE__", fixture)
+    result_proc = subprocess.run(
+        ["node", "-e", harness], text=True, capture_output=True, timeout=10, check=False
+    )
+    assert result_proc.returncode == 0, (case, result_proc.stderr)
+    row = json.loads(result_proc.stdout)
+    assert row["calls"] == expected_calls, case
+    assert row["reloads"] == expected_reload, case
+    assert row["prompt"] is (expected_reload == 0), case
+
+
+def test_recovery_assets_are_first_party_and_no_unclean_redirects() -> None:
+    html = DOCUMENT.read_text(encoding="utf-8")
+    assert '<base href="https://www.mastermind-x.com/">' in html
+    assert '<script src="https://www.mastermind-x.com/theme.js" defer>' in html
+    assert "supabase.co/auth/v1/token" not in html
+    assert "document.cookie" not in html
+    assert "window.location.href =" not in html
+    assert "location.reload()" in html  # Same original URL, re-gated.
+    assert "sessionStorage" in html  # Bounded renewal, no unbounded loop.
