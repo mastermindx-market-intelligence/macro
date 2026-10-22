@@ -585,7 +585,10 @@ class TestNightlyDurability:
         assert 'git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"' in script
         assert 'echo "ready=true" >> "$GITHUB_OUTPUT"' in script
 
-        required = "steps.leader_accepted_source.outputs.ready == 'true'"
+        required = (
+            "steps.leader_accepted_source.outputs.ready == 'true' "
+            "&& steps.signal_gate.outputs.accepted == 'true'"
+        )
         assert steps[dashboard_i].get("if") == required
         assert steps[prophet_i].get("if") == required
         acceptance = next(step for step in steps if step.get("id") == "prophet_board_acceptance")

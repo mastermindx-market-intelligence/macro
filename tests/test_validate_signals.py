@@ -618,7 +618,7 @@ _SIGNAL_FAILURE_SAFE = {
 }
 
 
-def _signal_step_eligible(condition, *, outcome, accepted, job_success, lane="off"):
+def _signal_step_eligible(condition, *, outcome, accepted, job_success, lane="off", leader_ready="true"):
     """Small evaluator for this frozen workflow's scalar conditions, not an Actions runner."""
     expression = str(condition or "success()").strip()
     if expression.startswith("${{"):
@@ -639,6 +639,8 @@ def _signal_step_eligible(condition, *, outcome, accepted, job_success, lane="of
             return repr(outcome)
         if field == "steps.signal_gate.outputs.accepted":
             return repr(accepted)
+        if field == "steps.leader_accepted_source.outputs.ready":
+            return repr(leader_ready)
         if field.endswith(".outcome"):
             return repr("success")
         if field.endswith(".theme_graph_witness"):
@@ -698,3 +700,36 @@ def test_signal_daily_diagnostics_survive_and_later_unrelated_failure_does_not_e
                  "assemble machine-consumable feeds (site/feeds -> R2)",
                  "publish heavy per-ticker stores to R2 (additive; no-op without creds)"]:
         assert _signal_step_eligible(by_name[name].get("if"), outcome="success", accepted="true", job_success=False)
+
+
+@pytest.mark.parametrize("leader_ready", ["true", "false", ""])
+@pytest.mark.parametrize("accepted", ["true", "false", ""])
+def test_signal_acceptance_does_not_bypass_leader_source_readiness(leader_ready, accepted):
+    steps, index = _signal_steps("daily")
+    names = {
+        "run regime engine + build dashboard + daily brief (resilient)",
+        "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)",
+        "prophet-board-acceptance (post-publish alarm, never a gate)",
+    }
+    consumers = [step for step in steps[index + 1:] if step.get("name") in names]
+    assert len(consumers) == len(names)
+    assert {step.get("name") for step in consumers} == names
+    for step in consumers:
+        assert _signal_step_eligible(
+            step.get("if"), outcome="success", accepted=accepted,
+            job_success=True, leader_ready=leader_ready,
+        ) == (leader_ready == "true" and accepted == "true"), step.get("name")
+
+
+@pytest.mark.parametrize("job_success", [False, True])
+def test_signal_acceptance_does_not_bypass_later_render_guard_failure(job_success):
+    steps, index = _signal_steps("engine-render")
+    commits = [
+        step for step in steps[index + 1:]
+        if step.get("name", "").startswith("commit rendered site")
+    ]
+    assert len(commits) == 1
+    assert _signal_step_eligible(
+        commits[0].get("if"), outcome="success", accepted="true",
+        job_success=job_success,
+    ) == job_success

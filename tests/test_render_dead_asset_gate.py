@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 
 import pytest
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -108,12 +109,22 @@ def test_render_lanes_guard_the_finalized_tree_before_commit() -> None:
 
 
 def test_engine_render_never_commits_after_a_failed_guard() -> None:
-    text = _text(ROOT / ".github" / "workflows" / "engine-render.yml")
-    commit = text.index("- name: commit rendered site")
-    commit_header = text[commit : commit + 260]
-
-    assert re.search(r"\n\s+if: \$\{\{ success\(\) \}\}", commit_header)
-    assert "if: always()" not in commit_header
+    workflow = yaml.safe_load(_text(ROOT / ".github" / "workflows" / "engine-render.yml"))
+    steps = workflow["jobs"]["engine-render"]["steps"]
+    commits = [
+        step for step in steps
+        if step.get("name", "").startswith("commit rendered site")
+    ]
+    assert len(commits) == 1
+    guards = [step for step in steps if step.get("name") == "guard — finalized site has no dead references"]
+    assert len(guards) == 1
+    assert not guards[0].get("continue-on-error", False)
+    # The complete condition must retain success(): accepted signals cannot excuse
+    # a later dead-asset guard failure, and missing acceptance cannot authorize a push.
+    assert commits[0].get("if") == (
+        "success() && steps.signal_gate.outcome == 'success' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
 
 
 def test_render_lanes_guard_both_possible_porcelain_push_heads() -> None:
