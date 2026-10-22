@@ -5176,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_845),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_818),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_848),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_821),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5186,6 +5186,31 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Treasury/current-main composition (2ebafe80) retains the GMI micro-theme
+    step below plus the two Treasury suites: +4 units on main, hence
+    index 5,844 -> 5,848 and free-content 5,817 -> 5,821. Job counts,
+    selectors, all suites, plan-book and ten-pack ceilings stay unchanged.
+
+    2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
+    pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
+    2026-10-21 display-tier rows; frozen 68 intact), to the existing
+    unrun-intl-libraries job directly under the W-C4 hierarchy-population
+    step. That job was already selected on the index and free-content
+    probes, so no job joins any probe; the step costs exactly 3 estimator
+    units (one command plus one tests/test_ path). Local check_contract_delta
+    on the merge with main dabf745b (after the fixed-redirect and API-composition
+    funds) measured:
+
+        templates/index.html          135 jobs, 5,841 -> 5,844 weight
+        scripts/build_free_content.py 135 jobs, 5,814 -> 5,817 weight
+        engine/prophet/plan_book.py    128 jobs, 5,590 -> 5,593 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,841 -> 5,844 and build 5,814 -> 5,817, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
+    the ten-pack limit, selector code and every prior suite remain unchanged.
+    Planning weights are not measured execution times.
 
     Native refresh e0b639a composes Treasury with protected dabf745b.
     Main now includes both HK lookup and fixed-redirect regression coverage.

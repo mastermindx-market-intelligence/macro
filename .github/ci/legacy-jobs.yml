@@ -24978,6 +24978,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_withdrawal.py -q
       - name: theme graph — W-C4 production hierarchy population (frozen R-C.3 table, PIT, rights, outputs unchanged)
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_population.py -q
+      - name: theme graph — ratified 2026-10-21 micro expansion (additive display tier; frozen 68 intact)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_micro_expansion_20261021.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
@@ -28053,6 +28055,7 @@ jobs:
       - "site/turn_watch/turn_watch.json"
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
+      - "templates/_prophet_receipts.html.j2"
       - "templates/_prophet_workspace.css.j2"
       - "templates/_prophet_setup_detail.html.j2"
       - "templates/_public_footer.html.j2"
@@ -28070,6 +28073,7 @@ jobs:
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "templates/theme.js"
+      - "templates/watchlist.html.j2"
       - "tests/test_build_live_quotes.py"
       - "tests/test_capture_prophet_b4_same_read.py"
       - "tests/test_catalyst_stock.py"
@@ -28093,10 +28097,12 @@ jobs:
       - "tests/test_prophet_daily_brief.py"
       - "tests/test_prophet_doors.py"
       - "tests/test_prophet_journey_reconcile.py"
+      - "tests/test_prophet_r7_wave_a_guards.py"
       - "tests/test_prophet_live_evaluator.py"
       - "tests/test_prophet_plan_clock.py"
       - "tests/test_prophet_plan_relation.py"
       - "tests/test_prophet_postmortem.py"
+      - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
@@ -28220,8 +28226,12 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+      - name: Prophet R7 Wave A refusal receipts and design guards (A3)
+        run: python -m pytest tests/test_prophet_r7_wave_a_guards.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+      - name: Prophet R7 Wave A plan-card record states (A1)
+        run: python -m pytest tests/test_prophet_r7_wave_a_plan_cards.py -q
       - name: Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       # B4 same-read's first production-shaped caller: the capture-only nightly
