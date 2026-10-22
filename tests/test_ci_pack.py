@@ -4907,6 +4907,11 @@ CURATED_EXCLUSIVE = {
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
     # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
     "china-altdata-catalysts",
+    # 2026-10-21 W33-LA: the Macro Signals reader-repair render suites. As a step
+    # in unrun-builders-render they moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes; its own exclusive job keeps
+    # the page template, its includes and the suites; ceilings stay fixed.
+    "macro-signals-conditions",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -5171,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_837),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_810),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5187,6 +5192,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     suites. Actual composed planner: index 135 / 5,837; free-content 135 /
     5,810. No jobs were added or removed. Fund only these +5 weight deltas;
     preserve all job-count, plan-book and pack ceilings and every check.
+
+    2026-10-21 fixed-redirect producer integration adds the page-only regression
+    to the same data-base-shim command (+2 estimator units, no new jobs).
+    Actual planner measures index135/5841 and free-content135/5814;
+    retain prophet5600, all job/pack bounds and execution timeouts.
+
+    2026-10-21 HK lookup full-template regression (PR9997, base ecd8540):
+    the existing data-base-shim command gains one meaningful pytest suite.
+    Exact hosted contract-delta measured index 135 jobs / 5,839 units and
+    free-content 135 / 5,812, each +2 with no newly selected jobs; prophet
+    remains 128 / 5,588 below its existing ceiling. Rebase only the two
+    demonstrated accounting ceilings; execution budgets and selection stay intact.
 
     2026-10-21 Shared Shell integration with protected 53eefbe142c8c:
     the canonical planner on f75612e0 measures index 135 jobs / 5,832 weight,
