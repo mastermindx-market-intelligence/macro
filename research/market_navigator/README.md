@@ -51,3 +51,21 @@ browser, authenticate, connect market data, save to an account, or create alerts
 The optional daily-data audit has an explicit network flag; it is not run in CI.
 Do not acquire, retain or redistribute additional data without the existing rights
 and budget owners. No raw analyst corpus or uploaded chart is included.
+
+
+## Additional implemented consumer seams
+
+- `engine/market_navigator_memory.py`: lossless incumbent historical evidence and
+  typed comparison; `scripts/research/market_navigator_memory_inspect.py` uses the
+  existing trusted reader without creating a store.
+- `engine/market_navigator_measurement.py`: VIX1D measurement-phase annotation and
+  declared study-coverage gaps; no directional rule.
+- `engine/market_navigator_research.py`: completeness/timing audit over the existing
+  grounded extractor; no model call, corpus writer, trial or forecast score.
+- `engine/market_navigator_response.py` and `templates/market_navigator_client.js`:
+  request-bound closed projection and inert browser consumer; no endpoint or style.
+- [Research update](RESEARCH_UPDATE_2026-10-22.md) and
+  [client browser report](CLIENT_BROWSER_REPORT.json) record the bounded evidence.
+
+No new consumer is activated in production by this package. Existing authentication,
+source rights, native Paper design and real-path acceptance remain required.

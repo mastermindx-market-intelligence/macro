@@ -103,3 +103,13 @@ implemented. The VIX1D measurement-phase and coverage checks are research-only.
 Synthetic trusted-owner integration does not establish live data or forecast quality.
 The two import-pinning CI defects are repaired without weakening their guard.
 Research detail: `research/market_navigator/RESEARCH_UPDATE_2026-10-22.md`.
+
+
+## Research/client delta
+
+The latest source adds grounded analyst-intake checks and an inert browser response
+consumer; 190 focused tests and 10 actual Chromium boundary checks passed. The client
+is not mounted and no endpoint or account write was added. Production SSH inspection
+was safety-blocked and is not retryable through another carrier. Browser connector
+reads require the originating extension context; local trusted source is absent.
+Native Paper and independent review remain unproven. Full product is not accepted.

@@ -103,3 +103,31 @@ No replacement request was made. New source remains awaiting independent accepta
 The previous eight-case browser study was not rerun because its source did not change.
 Native Paper, live data, account save/restore, alert delivery, user study and production
 proof remain outstanding. Measurement metadata is not a forecast or trading authority.
+
+## Research intake and frontend boundary continuation
+
+The extended eleven-file suite passed **190 tests in 5.89 seconds**. It includes
+`test_market_navigator_research.py` (32 synthetic cases) and
+`test_market_navigator_response.py` (13 cases, including the actual Python wire
+through the JavaScript consumer). A subsequent changed-consumer check passed
+45 tests after tightening canonical-state clock presence.
+
+`CLIENT_BROWSER_REPORT.json` records **10 passed Chromium checks**, zero page errors,
+zero observed network requests and zero instrumented browser-storage accesses.
+It exercises the actual inert client with a synthetic transport: loading withdrawal,
+abort, out-of-order response, exact microsecond cutoff, sanitized failure, no retry,
+clear/dispose and authority-false propagation. This is not a deployed endpoint,
+production authentication, account save, Paper design or market-data proof.
+
+The analyst intake reuses the incumbent grounded Research Intelligence extractor;
+it never calls a model or stores a corpus. Source-revision timing, stable source-bound
+claim IDs, complete condition text and externally supplied forecast rulers are checked.
+Unknown/incomplete or retrospective claims remain unscoreable as specified. Even
+complete fields do not prove semantics, source authenticity, prospective capture or
+trial admission. No forecast or trading performance was measured.
+
+The local existing-owner trusted root was absent. A production SSH inspection was
+blocked by the tool's safety checks before execution; no retry or alternate carrier
+was used for that SSH action. Browser connector tab access separately required an
+originating connected-browser context. These observations do not establish a source
+outage, and no private source data or credentials were extracted.

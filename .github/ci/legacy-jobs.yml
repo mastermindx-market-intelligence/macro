@@ -39537,7 +39537,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
       - name: install pure foundation test dependencies
-        run: pip install pytest
+        run: pip install pytest pyyaml
       - name: Navigator clocks, owner binding, numerical audit and inert design study
-        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py -q
+        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q

@@ -87,3 +87,24 @@ owner provides an approved resolver. A local fixture roundtrip is not live proof
 
 Paper remains lane-local pending a safe target file. Do not recreate the program,
 core Greek models, regime engine, calendar, memory store, save owner or alert outbox.
+
+
+## Latest coherent consumer increment
+
+Added source-bound analyst research intake using the existing extractor and an inert
+request-bound frontend client plus Python response binder. Current focused suite:
+190 passed; actual Chromium boundary proof: 10 checks, no observed network/storage.
+Full dossier: VERIFICATION.md, INTEGRATION_CONTRACT.md and RESEARCH_UPDATE_2026-10-22.md.
+The previous W1 candidate was published as e4469fa42df95d765575732329acff676b5fab9c;
+read the new exact PR head after this consumer increment is published.
+
+The original production SSH action was explicitly blocked by platform safety checks.
+Do not rephrase, retry or switch carriers to obtain that denied SSH action. No effect
+was started. The local trusted source root is absent. Browser tab reading separately
+failed because this chat lacks originating browser-extension context. Neither failure
+proves the market source is down. Paper's safe new-file gate remains unchanged.
+
+Next: consume exact-head CI and normal source release; qualify actual entitled source
+binding through an independently approved, non-denied application path; complete safe
+native Paper and existing authenticated Macro/Terminal wiring. No worker START, live
+endpoint, source publication, account save, notification or trading authority exists.

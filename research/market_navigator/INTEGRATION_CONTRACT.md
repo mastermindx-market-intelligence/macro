@@ -170,3 +170,21 @@ missing-only reader's directory-creation behavior is deliberately not selected.
 Application identity, entitlement, actual source generation and current-data proof
 remain with the existing owner. A valid historical context remains historical; no
 current hero, probability, save, alert or trade is enabled by these new adapters.
+
+## 9. Request-bound browser consumer (implemented, not activated)
+
+`engine/market_navigator_response.py::bind_response` checks the exact internal subject,
+horizon and cutoff before calling the incumbent closed public projection. It returns
+an opaque request correlation, not a new identity/auth token. It enforces the 80 KiB
+response budget by refusal, never truncating the supplied population.
+
+`templates/market_navigator_client.js` is an inert UMD consumer. The existing route
+supplies the read function and renderer; this module creates no endpoint, mounts
+nothing, chooses no credentials, writes no storage, retries nothing and adds no style.
+The consumer binds the response to the latest request and exact cutoff (including
+microseconds), validates closed fields, detaches/freezes data, and ignores superseded
+returns. Loading, clearing and denied/unavailable responses withdraw prior content.
+The application must call clear/dispose when its own account/entitlement scope changes.
+
+Native Paper design and the existing authenticated route remain prerequisite to
+production wiring. The old browser design study is not silently made a live product.

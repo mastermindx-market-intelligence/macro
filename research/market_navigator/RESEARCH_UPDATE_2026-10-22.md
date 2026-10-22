@@ -104,3 +104,20 @@ reply lookup returned reply_unavailable. No START or reviewer result is establis
 the original operation was not replayed or replaced. Direct bounded source work
 continued. Native Paper still needs a safe new file, and the full product remains
 unaccepted until live source, design, personal-state and production-path proof exist.
+
+
+## 6. Reuse the existing grounded research extractor
+
+`engine/market_navigator_research.py` consumes the incumbent Research Intelligence
+extractor rather than creating a second corpus/extraction owner. Synthetic tests
+prove a truncated conditional clause, altered modality, wrong source hash and
+annotation attached to a dropped claim are refused. Claim identity binds source
+version and statement, not array position. A current revision cannot be presented as
+known at an earlier decision. Date-only publication remains an unknown exact clock.
+
+The optional ruler is explicitly an external annotation, not semantic truth proved
+by matching a quotation. Missing horizon, target type, trigger, invalidation or option
+expression stays missing. Stock direction, volatility direction and executable option
+profit are different outcome rulers. A full-looking annotation still earns neither
+trial registration nor a prospective prediction receipt. The function returns hashes
+and completeness reasons, not raw source text or harvested analyst content.
