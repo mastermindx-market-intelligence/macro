@@ -8991,6 +8991,11 @@ jobs:
       - "tests/test_prophet_observations_api.py"
       - "tests/test_prophet_observations_browser.py"
       - "engine/us_candidate_episode.py"
+      # B21 U2: the pure Prophet research-journey alert producer half reads
+      # B1/B3 shapes (replicated, not imported) and its suite pins identity,
+      # eligibility, the correction table and the tier literal.
+      - "engine/prophet_journey_notifications.py"
+      - "tests/test_prophet_journey_notifications.py"
       - "engine/us_candidate_episode_intake.py"
       - "scripts/reconcile_us_candidate_episodes.py"
       - "tests/test_us_candidate_episode.py"
@@ -9054,6 +9059,15 @@ jobs:
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
+
+      # B21 U2: the pure producer half over the B1 ledger and B3 projections.
+      # Hermetic — fixtures mint real B1 envelopes through the B1 writer and
+      # B3-shaped rows; imports fif/B1/B3/tiers for pinning only. Belongs in
+      # this gate:code job (never prophet-anticipation-intake, which is
+      # gate:data and packed only post-merge by data-health.yml).
+      - name: Prophet B21 journey notifications — pure producer half (identity, eligibility, correction table, tier)
+        run: python -m pytest tests/test_prophet_journey_notifications.py -q
+
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
