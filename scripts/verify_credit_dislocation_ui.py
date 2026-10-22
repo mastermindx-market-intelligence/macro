@@ -13,15 +13,16 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
 
 from engine.credit_dislocation import compile_snapshot
 from engine.credit_dislocation_view import build_view
-
-ROOT = Path(__file__).resolve().parents[1]
-
 
 def document(view: dict, *, lang: str, theme: str) -> str:
     font400 = (ROOT / 'templates/fonts/Inter-400.woff2').as_uri()
@@ -31,8 +32,8 @@ def document(view: dict, *, lang: str, theme: str) -> str:
     style = f'''@font-face{{font-family:Inter;src:url('{font400}') format('woff2');font-weight:400}}
 @font-face{{font-family:Inter;src:url('{font600}') format('woff2');font-weight:600}}'''
     style += '''
-:root{--bg:#f7f8fa;--card:#fff;--text:#1c2430;--ink:#1c2430;--muted:#5d6b7e;--blue:#285fff;--red:#b23c3d;--amber:#b9791a;--info:#285fff;--ink-down:#b23c3d;--ink-warn:#7d5922}
-html[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--text:#d7dce3;--ink:#d7dce3;--muted:#8b93a1;--blue:#5b9bf0;--red:#e06464;--amber:#e0a030;--info:#5b9bf0;--ink-down:#e06464;--ink-warn:#e0b96b}
+:root{--bg:#f7f8fa;--card:#fff;--text:#1c2430;--ink:#1c2430;--muted:#5d6b7e;--blue:#285fff;--red:#b23c3d;--amber:#b9791a;--info:#285fff;--ink-down:#b23c3d;--ink-warn:#7d5922;--line:#EAECF0;--panel2:#eef1f6;--r-sm:9px}
+html[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--text:#d7dce3;--ink:#d7dce3;--muted:#8b93a1;--blue:#5b9bf0;--red:#e06464;--amber:#e0a030;--info:#5b9bf0;--ink-down:#e06464;--ink-warn:#e0b96b;--line:#242a36;--panel2:#1b2029}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC",sans-serif}.wrap{max-width:1200px;margin:auto;padding:20px 20px 50px}.fixture{font-size:11px;color:var(--muted);border-bottom:1px solid color-mix(in srgb,var(--muted) 30%,var(--card));padding-bottom:10px}
 html:not([data-lang="zh"]) .l-zh{display:none}html[data-lang="zh"] .l-en{display:none}
 '''

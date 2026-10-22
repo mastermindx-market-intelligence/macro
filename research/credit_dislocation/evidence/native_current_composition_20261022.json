@@ -1,0 +1,509 @@
+{
+  "schema": "ccw.cdi.native_current_composition_qualification.v1",
+  "recorded_at_utc": "2026-10-22T11:50:03.577565+00:00",
+  "source_parent": "78f010d58c57c5335351c54c65ef123732491051",
+  "tracked_diff_sha256_at_native_build": "8694d9eb0694fad46fe2093c922fa4c1fcaf8e42a059915cd288a0d43e080101",
+  "protected_skillpack_pin": "230e9a301ed774e79410829f1b5c049226fa59f1",
+  "ci_retained": {
+    "run": 39760013815,
+    "conclusion": "failure",
+    "tested_merge": "324bdac37ae679b2bbfa00726139136f037117f7",
+    "tested_base": "f1beb03010ddb832d39f9715db98afe0c1732635",
+    "head": "78f010d58c57c5335351c54c65ef123732491051",
+    "failed_jobs": {
+      "earnings-economic-dossier_timeout": 119762180707,
+      "dag_conformance": 119762180836,
+      "design_ratchet": 119762180891,
+      "import_hygiene": 119762180864
+    },
+    "contract_delta": "success",
+    "passing_packs": 8,
+    "unresolved": "20-minute earnings-economic-dossier execution timeout; no assertion failure or verified causal diagnosis"
+  },
+  "repair_receipts": {
+    "import-pin-repair.json": {
+      "schema": "bonds.cdi.import_pin_repair.v1",
+      "at": "2026-10-22T10:44:20.248659+00:00",
+      "source_parent": "78f010d58c57c5335351c54c65ef123732491051",
+      "path": "scripts/verify_credit_dislocation_ui.py",
+      "before_sha256": "13b000ddef8ae5a568aaf08bf08797ac8d0ee8302eb60fc4ea75f4c9d9b67455",
+      "after_sha256": "1c00594705bdf33a7544765b483c9bb6ed94872972df376567d36bd4823821d1",
+      "origin_run": 39760013815,
+      "origin_job": 119762180864,
+      "finding": "file-path entry script imports repository modules before repository root pin",
+      "repair": "Reuse existing ROOT before imports and insert it into sys.path; no browser execution",
+      "browser_attempted": false
+    },
+    "import-pin-tests.json": {
+      "schema": "bonds.cdi.import_pin_tests.v1",
+      "at": "2026-10-22T10:45:02.715521+00:00",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-m",
+        "pytest",
+        "tests/test_check_script_import_pinning.py",
+        "-q",
+        "--disable-warnings",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit_code": 0,
+      "seconds": 42.432,
+      "source_sha256": "1c00594705bdf33a7544765b483c9bb6ed94872972df376567d36bd4823821d1",
+      "source_unchanged": true,
+      "log_sha256": "188c520797df1dbce7d0461efd085933268bd09e2b7876a3574b01b4cf9fd06c"
+    },
+    "dag-setup-repair.json": {
+      "schema": "bonds.cdi.dag_setup_declaration_repair.v1",
+      "at": "2026-10-22T11:20:05.693174+00:00",
+      "source_parent": "78f010d58c57c5335351c54c65ef123732491051",
+      "origin_run": 39760013815,
+      "origin_job": 119762180836,
+      "before_sha256": "48914434b01ee30831e1cfa496451c8078a8f82b4912b7172105f260038e0f1c",
+      "after_sha256": "ca0c7290c7232a67af88651e094de8fd16a74af0b3051c74bf92a1f712848a6e",
+      "repair": "Declare the two actual dependency setup invocations before the existing pricing collector; preserve live workflow and parser",
+      "top_level_modules_unchanged": true,
+      "divergences_unchanged": true,
+      "workflow_changed": false,
+      "parser_changed": false,
+      "command_execution_of_setup": false
+    },
+    "dag-conformance-repaired.json": {
+      "schema": "bonds.cdi.dag_setup_validation.v1",
+      "at": "2026-10-22T11:20:08.559769+00:00",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "scripts/check_dag_conformance.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.834,
+      "source_sha256": "ca0c7290c7232a67af88651e094de8fd16a74af0b3051c74bf92a1f712848a6e",
+      "source_unchanged": true,
+      "log_sha256": "1d5554c12a4f62683db2c51baff4858cc3fce5003f4b819eebf7c77abc1e2399"
+    },
+    "design-token-repair.json": {
+      "schema": "bonds.cdi.design_token_repair.v1",
+      "at": "2026-10-22T11:24:43.419563+00:00",
+      "source_parent": "78f010d58c57c5335351c54c65ef123732491051",
+      "origin_run": 39760013815,
+      "origin_job": 119762180891,
+      "path": "templates/_credit_dislocation.html.j2",
+      "before_sha256": "949f59a3279d02519e95ca0c0995b29307b5d1040dbb61f95bae4fcf67510efe",
+      "after_sha256": "7bee795284a928a8a0dcfa827dcb63ca0cdb3afdf5ae10dd576cfe58bfea0ca8",
+      "host_tokens": [
+        "--line",
+        "--panel2",
+        "--ink-warn",
+        "--warn",
+        "--r-sm"
+      ],
+      "introduced_tokens": [],
+      "markup_and_interaction_script_unchanged": true,
+      "normalized_radius": "existing host9px replaces7px and10px",
+      "hover_and_expanded_surface": "both consume existing panel2",
+      "measured_rendered_contrast": false,
+      "browser_attempted": false,
+      "ratchet_or_waiver_changed": false
+    },
+    "design-ratchet-repaired.json": {
+      "schema": "bonds.cdi.design_token_validation.v1",
+      "at": "2026-10-22T11:24:48.366412+00:00",
+      "comparison_base": "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001/.cdi-proof/integration-20261022/design-repaired.diff"
+      ],
+      "exit_code": 0,
+      "seconds": 4.707,
+      "template_sha256": "7bee795284a928a8a0dcfa827dcb63ca0cdb3afdf5ae10dd576cfe58bfea0ca8",
+      "template_unchanged": true,
+      "diff_sha256": "be4abd7d18e1f91a2ee69ab2e738afd7ac1245352400a2ef20206323555e6f3c",
+      "log_sha256": "dfed61e99438ffe15a7fc64b278199e860250309e393b723779f14018c7ba56b"
+    },
+    "fixture-token-alignment.json": {
+      "schema": "ccw.cdi.fixture_token_alignment.v1",
+      "at": "2026-10-22T11:40:11.971052+00:00",
+      "before_sha256": "1c00594705bdf33a7544765b483c9bb6ed94872972df376567d36bd4823821d1",
+      "after_sha256": "a8521de4ab8f4d8443e72eaec9f4e6f3815fb3af814336bcfbea67b27464257c",
+      "changes": "Supply line/panel2/small-radius host tokens now consumed by repaired include; retain existing standalone fixture palette and browser code",
+      "host_token_source": "templates/bonds.html.j2 with scripts/build_bonds.py C.grid",
+      "syntax_compile_passed": true,
+      "browser_executed": false,
+      "render_or_contrast_acceptance": false
+    }
+  },
+  "native_inputs": {
+    "schema": "ccw.cdi.native_input_hydration.v1",
+    "recorded_at_utc": "2026-10-22T11:41:12.870847+00:00",
+    "source_head": "78f010d58c57c5335351c54c65ef123732491051",
+    "config_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "original_head": "4d345a59ac8fb595cc8cfaf4435f51fcd0eae706",
+    "policy": "actual original files preferred; fallback only for absent files; no collector or producer rerun",
+    "destination": "/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001/.cdi-proof/native-20261022",
+    "candidate_count": 502,
+    "count": 502,
+    "bytes": 50156112,
+    "origins": {
+      "immutable_main_fallback_1b3166c7": 486,
+      "retained_original_actual": 16
+    },
+    "absent": [],
+    "all_hashes_match": true,
+    "original_copied_inputs_unchanged": true,
+    "original_git_status_unchanged": true,
+    "original_git_status_sha256": "fa75ed07625e4e333d0a67caec6fdb4b311d76248614b04b4f86b7e1cd8b3433",
+    "network_requests": 0
+  },
+  "native_build": {
+    "schema": "ccw.cdi.native_build.v1",
+    "started_at_utc": "2026-10-22T11:43:05.754517+00:00",
+    "completed_at_utc": "2026-10-22T11:43:12.805344+00:00",
+    "head": "78f010d58c57c5335351c54c65ef123732491051",
+    "tracked_diff_sha256": "8694d9eb0694fad46fe2093c922fa4c1fcaf8e42a059915cd288a0d43e080101",
+    "entry": "scripts.build_bonds.main with private cached absolute storage paths",
+    "exit_code": 0,
+    "error": null,
+    "seconds": 7.051,
+    "source_before": {
+      "scripts/build_bonds.py": "824faa1f9394343fda7c743b33745b3088f54abb76989249e83580ca2f42b9a3",
+      "templates/bonds.html.j2": "a9e100a8eb896474716efa792428a4696180d46b527e7dc426b5eb5b34c25aeb",
+      "templates/_credit_dislocation.html.j2": "7bee795284a928a8a0dcfa827dcb63ca0cdb3afdf5ae10dd576cfe58bfea0ca8",
+      "templates/_state_inks.html.j2": "58e8e0700a66e90fa1b8408bf8eaa0a43b69206af7f30f334ad3706567fc204b",
+      "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+      "engine/credit_dislocation_view.py": "8577b7cb2445ad4b761f9c072d3f0b049bd5d095876677688921736a1f13915b",
+      "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651",
+      "engine/inputs.py": "b322465049397c1d36ff7b4ab07f131b34fd635b6624289f51bdf3b9ec205c65",
+      "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+      "lib/store.py": "7424b19d2a418d6611c6346b20764a89d6ffe34ad9e6f3a115ec78e6a45b826b",
+      "lib/pages.py": "ee50b30dc5cd990e6c07ec433422f1032379d6857e4cd0586ee4de65f3b6c1a5",
+      "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+      "config/dag.yml": "ca0c7290c7232a67af88651e094de8fd16a74af0b3051c74bf92a1f712848a6e",
+      "scripts/verify_credit_dislocation_ui.py": "a8521de4ab8f4d8443e72eaec9f4e6f3815fb3af814336bcfbea67b27464257c"
+    },
+    "source_unchanged": true,
+    "inputs_unchanged": true,
+    "input_manifest_sha256": "3cf85a58c1cd01abb3be7316a713e2c0ac714cae4a06c621b53f5daf513d423b",
+    "outputs": {
+      "site/bonds.html": {
+        "bytes": 590852,
+        "sha256": "3d9b1fc0d25c68a0a096d8d4f9399631cb23161448f8c9a939a49af9699f2870"
+      },
+      "data/bonds/bond_health.json": {
+        "bytes": 96307,
+        "sha256": "8be7db96c6c0d1d26e0ffc013c89927964277ae7e25d14e74599961a76ff56bb"
+      },
+      "data/bonds/latest.json": {
+        "bytes": 347,
+        "sha256": "1f248ba1a843b922116014ce251dc5d92166d2cf894ad551a5bc0cfe6682315a"
+      },
+      "data/bonds/alerts.jsonl": {
+        "bytes": 285250,
+        "sha256": "ee88cefdb6453d8c8e3314ec1d65169be5166c0ae553ba8e4b656be69355911b"
+      }
+    },
+    "denied_operations": [],
+    "browser_or_production_proven": false,
+    "collector_or_producer_rerun": false,
+    "page_facts": {
+      "roots": 1,
+      "issuer_details": 18,
+      "bond_templates": 18,
+      "inert_bond_rows": 311,
+      "paired_yes": 0,
+      "source_date_present": true,
+      "historical_heading": true,
+      "historical_heading_zh": true,
+      "historical_badge": true,
+      "historical_badge_zh": true,
+      "repaired_border_token": true,
+      "repaired_radius_token": true,
+      "host_line_token": true,
+      "host_panel2_token": true,
+      "host_small_radius_token": true,
+      "host_warning_ink_token": true
+    },
+    "view_facts": {
+      "available": true,
+      "status": "stale",
+      "age_sessions": 5,
+      "as_of": null,
+      "source_as_of": "2026-10-15",
+      "observation_id": "cdi:72f4f12f6031a1b58b0c8621",
+      "paired_count": 0,
+      "bond_count": 311,
+      "pricing_qualified": true
+    },
+    "checks": {
+      "entry_completed": true,
+      "required_outputs_created": true,
+      "source_unchanged": true,
+      "input_image_unchanged": true,
+      "no_denied_operation": true,
+      "historical_cdi_render": true,
+      "actual_date_view": true,
+      "machine_population": true,
+      "authority_unchanged": true,
+      "repaired_token_contract": true
+    },
+    "qualified_native": true,
+    "machine_summary": {
+      "schema": "corp_credit.dislocation_context.v1",
+      "source_schema": "corp_credit.dislocation.v1",
+      "source_as_of": "2026-10-15",
+      "status": "stale",
+      "authority": {
+        "rank": false,
+        "size": false,
+        "gate": false,
+        "escalate": false
+      },
+      "display_only": true,
+      "prediction_validated": false,
+      "cds_available": false,
+      "pricing_qualified": true,
+      "paired_issuer_count": 0,
+      "mapped_bond_count": 311,
+      "observation_id": "cdi:72f4f12f6031a1b58b0c8621",
+      "href": "bonds.html#credit-dislocation"
+    },
+    "machine_issuer_count": 18
+  },
+  "native_assets": {
+    "schema": "ccw.cdi.native_asset_package.v1",
+    "completed_at_utc": "2026-10-22T11:47:21.732337+00:00",
+    "externalized_pages": 1,
+    "optimized_files": 1,
+    "initial_reference_count": 20,
+    "final_reference_count": 26,
+    "font_paths": [
+      "fonts/Inter-400.woff2",
+      "fonts/Inter-500.woff2",
+      "fonts/Inter-600.woff2",
+      "fonts/Inter-700.woff2",
+      "fonts/Inter-800.woff2",
+      "fonts/Inter-900.woff2"
+    ],
+    "artifacts": [
+      {
+        "path": "apple-touch-icon.png",
+        "bytes": 23722,
+        "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+      },
+      {
+        "path": "assets/css/080bfc12.css",
+        "bytes": 2298,
+        "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+      },
+      {
+        "path": "assets/css/60993b61.css",
+        "bytes": 13704,
+        "sha256": "60993b61adbb0a403aa1e17ab3bdeac3a7992685727e78f17a97676ec0a0c650"
+      },
+      {
+        "path": "assets/css/b55f14d4.css",
+        "bytes": 5736,
+        "sha256": "b55f14d4f4913184e7dfa97a9e5d79afc0bf2c1c032f06e694a4e7d0a3ee6033"
+      },
+      {
+        "path": "assets/css/c45789fd.css",
+        "bytes": 23542,
+        "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+      },
+      {
+        "path": "assets/css/ebe31e14.css",
+        "bytes": 30254,
+        "sha256": "ebe31e1495cecbd47daf8c8c0f07ad95c461826d99b812be603e1017c3884906"
+      },
+      {
+        "path": "assets/css/fa07e99a.css",
+        "bytes": 7786,
+        "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189"
+      },
+      {
+        "path": "bonds.html",
+        "bytes": 508182,
+        "sha256": "965237fe979a568932b63da419341d83ada51beb3665b49e307cac4ee328cdc4"
+      },
+      {
+        "path": "data_base.js",
+        "bytes": 2367,
+        "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+      },
+      {
+        "path": "favicon.ico",
+        "bytes": 6597,
+        "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+      },
+      {
+        "path": "favicon.svg",
+        "bytes": 2043,
+        "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+      },
+      {
+        "path": "fonts/Inter-400.woff2",
+        "bytes": 23664,
+        "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+      },
+      {
+        "path": "fonts/Inter-500.woff2",
+        "bytes": 24272,
+        "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+      },
+      {
+        "path": "fonts/Inter-600.woff2",
+        "bytes": 24452,
+        "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+      },
+      {
+        "path": "fonts/Inter-700.woff2",
+        "bytes": 24356,
+        "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+      },
+      {
+        "path": "fonts/Inter-800.woff2",
+        "bytes": 24400,
+        "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+      },
+      {
+        "path": "fonts/Inter-900.woff2",
+        "bytes": 23900,
+        "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+      },
+      {
+        "path": "illus.css",
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+      },
+      {
+        "path": "illus.js",
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+      },
+      {
+        "path": "live.js",
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+      },
+      {
+        "path": "live_config.js",
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+      },
+      {
+        "path": "logo_config.js",
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+      },
+      {
+        "path": "navigation-refresh.css",
+        "bytes": 104548,
+        "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+      },
+      {
+        "path": "product-nav-icons.css",
+        "bytes": 40320,
+        "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+      },
+      {
+        "path": "shared_shell.css",
+        "bytes": 467,
+        "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+      },
+      {
+        "path": "shared_shell_bridge.js",
+        "bytes": 51246,
+        "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d"
+      },
+      {
+        "path": "stock-logos.js",
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+      },
+      {
+        "path": "theme.js",
+        "bytes": 271335,
+        "sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6"
+      }
+    ],
+    "native_build_repeated": false,
+    "resumes_asset_attempt_pid": 78294,
+    "inputs_unchanged": true,
+    "original_copied_inputs_unchanged": true,
+    "source_unchanged": true,
+    "denied_operations": [],
+    "dependency": {
+      "name": "rjsmin",
+      "version": "1.2.5",
+      "source": "existing private R11 requirement-pinned dependency, read-only reuse",
+      "module_sha256": "956c4b39adfc479bd8217179b860116a6d4be9836d3d1bd72e57bce48cc2598d"
+    },
+    "repaired_tokens_and_six_fonts_present": true,
+    "closure_scope": "all declared HTML asset references including inline CSS resources, then recursively declared packaged stylesheet resources; dynamic JS fetches remain unproven",
+    "browser_or_production_proven": false
+  },
+  "retained_receipts": {
+    "import-pin-repair.json": {
+      "sha256": "4ef72a8ad4b34f5710699a0e1f09c5f5ce3aefdf649a6cc076c30155e93768e5",
+      "bytes": 664
+    },
+    "import-pin-tests.json": {
+      "sha256": "46ef4382d05ef66cbc52260d91eb9effc299bb506c0fa82db4f0802f097d76b3",
+      "bytes": 549
+    },
+    "dag-setup-repair.json": {
+      "sha256": "43e0846db9334fc03b9e25e0fb070c025d774a3e6616014d134e85e2726bbe0d",
+      "bytes": 706
+    },
+    "dag-conformance-repaired.json": {
+      "sha256": "ecff5f1466b95263bdbc180d51897f400fb779cf31dd1ed88e38181efd2ffe4f",
+      "bytes": 449
+    },
+    "design-token-repair.json": {
+      "sha256": "be5576da20a7873794a04c0a5535687f21f6744a4e66282d3441a4022ba44c30",
+      "bytes": 852
+    },
+    "design-ratchet-repaired.json": {
+      "sha256": "a47d3ef9cd631a77f06350577929f9da1a1635dd492f6feb2e36d6436a8dbb50",
+      "bytes": 809
+    },
+    "fixture-token-alignment.json": {
+      "sha256": "a0a59e76184864ca8c33533763b304d2c1fb9201b6fac511b5e38b9ab9d8022a",
+      "bytes": 613
+    },
+    "earnings-timeout-current-main-comparison.json": {
+      "sha256": "4300b7c947a40ed10eb4a9b5ed39062186563ee0552b5a26f750a8549444265f",
+      "bytes": 684
+    },
+    "native-input-hydration.json": {
+      "sha256": "3cf85a58c1cd01abb3be7316a713e2c0ac714cae4a06c621b53f5daf513d423b",
+      "bytes": 505440
+    },
+    "native-build.json": {
+      "sha256": "8dfa780f9a2a0101b6e58da15025b5361012c1c100ff07a6ca98e5eec7826acc",
+      "bytes": 29409
+    },
+    "native-build-process.json": {
+      "sha256": "58c5e79f54b2d296a429efd8de94cccc3ca8523e0ff5cd9ac21fd2861c0b7851",
+      "bytes": 170
+    },
+    "native-assets-attempt1-failure.json": {
+      "sha256": "2956449bf2608fb0bcb8a3d406d84d4a271e01eeb87132092ad9ed3ec144a806",
+      "bytes": 568
+    },
+    "native-assets.json": {
+      "sha256": "e5c7c9ff5ab98397e97aa99c4accb4a09060ed217d565de35aa1b5f4596d2718",
+      "bytes": 16393
+    }
+  },
+  "native_current_composition_proven": true,
+  "browser_current_composition_proven": false,
+  "production_current_composition_proven": false,
+  "original_optimization_comparison": "FAILED retained; no solver rerun or retroactive PASS",
+  "r33_review_hold": "original 493-byte unqualified429 receipt remains binding; no replay or provider change",
+  "tiingo_licensing": "COMPLETE by Chairman special-license attestation; no outreach",
+  "full_program_complete": false
+}

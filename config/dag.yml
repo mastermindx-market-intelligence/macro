@@ -546,6 +546,18 @@ lanes:
           (stable claim_ids prevent duplicates). Reads data/altdata/theses.jsonl
           from tonight's collect-core commit; runs BEFORE "commit tail data" so
           claims.jsonl rides the same push. Non-fatal (step always exits 0).
+      - id: install_ccw_pricing_dependencies
+        module: pip
+        args: [install, -r, requirements/credit-pricing.txt]
+        note: >
+          Dependency provisioning for the existing CCW pricing collector.
+          This step is not a business collector or data-producing module.
+      - id: install_ccw_pricing_browser
+        module: playwright
+        args: [install, chromium]
+        note: >
+          Provision the existing collector's Chromium runtime.
+          This step is dependency setup and produces no market observations.
       - id: ccw_independent_pricing_sample
         module: scripts.fetch_ishares_validation_sample
         note: >
