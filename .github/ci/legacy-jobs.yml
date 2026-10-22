@@ -13332,8 +13332,8 @@ jobs:
           python-version: "3.12"
       - name: install deps
         run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
-      - name: gmi explorer — model, shared assets, reason-code pin
-        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py -q
+      - name: gmi explorer — model, shared assets, reason-code pin, S1-S5 pages
+        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py -q
 
   research-factory-authority:
     if: ${{ false }}
