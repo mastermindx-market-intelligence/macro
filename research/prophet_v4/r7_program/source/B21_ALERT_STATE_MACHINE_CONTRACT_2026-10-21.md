@@ -113,6 +113,10 @@ contract.
   knowledge is not a journey change. Maturity is pinned UNESTIMABLE by the native read
   (`engine/prophet_candidate_state.py:1433-1443` expects `"maturity_state":
   "UNESTIMABLE"`), so no maturity transition is producible today and none is eligible.
+  Exception (ratified deviation, seat ruling F28 R8): for the `emergence_triggered` diff a
+  prior emergence state that is absent or `UNESTIMABLE` (B3's `SOURCE_NOT_SUPPLIED`
+  default) counts as not triggered, so a later `TRIGGERED` carrying a real relation id is
+  eligible.
 - B1 `REARM_SUPPRESSED` (replay no-op, `engine/us_candidate_episode.py:617-618`) and
   `OBSERVED`/`EXPERT_EVENT_ATTACHED` (engine-internal relations, no user-facing state
   change of record).
