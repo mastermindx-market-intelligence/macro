@@ -1,13 +1,15 @@
 """Offline Forex source diagnostics subordinate to the Tiingo research reader.
 
-No bar aggregation, correction selection, calendar admission, live publication or
-watch evaluation occurs here. Even dense, valid vendor rows yield no eligible
+Only explicitly labelled diagnostic aggregation is allowed. No correction
+selection, calendar admission, publication or watch evaluation occurs here.
+Even dense, valid vendor rows yield no eligible
 final-4H observations. A timestamp delta is an observation, not proof of lost data.
 """
 from __future__ import annotations
 
 import math
 import re
+from bisect import bisect_left
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -26,15 +28,28 @@ QUALIFICATION_GAPS = (
     "finalization_and_correction_contract_unqualified",
     "historical_availability_unverified",
     "live_feed_and_freshness_not_admitted",
-    "product_rights_mapping_not_admitted",
 )
 OHLC = ("open", "high", "low", "close")
 SHA = re.compile(r"^[0-9a-f]{64}$")
 MAX_ROWS = 20_000
+MAX_RECONCILIATION_NATIVE_ROWS = 128
+MAX_RECONCILIATION_ROW_REFERENCES = 100_000
+MINUTE_NS = 60_000_000_000
+INTERVAL_RECONCILIATION_SCHEMA = "mastermind.tiingo.forex_interval_reconciliation.v1"
+PRODUCT_USE_APPROVAL_REFERENCE = "Macro PR #9996 comment 6331071428"
+INTERVAL_HYPOTHESES = (
+    ("start_label_half_open", 0),
+    ("end_label_half_open", -240),
+    ("end_label_inclusive_minute", -239),
+    ("start_label_exclusive_minute", 1),
+)
 
 
 def _clock(value: Any) -> pd.Timestamp | None:
-    if not isinstance(value, str):
+    # pandas can silently truncate comma fractions and fractions beyond 9 digits.
+    # Refuse those forms; preserve supported dot-fraction nanoseconds exactly.
+    if (not isinstance(value, str)
+            or re.search(r"[T ]\d{2}:\d{2}:\d{2}(?:\.\d{10,}|,\d+)", value)):
         return None
     try:
         stamp = pd.Timestamp(value)
@@ -166,6 +181,11 @@ def diagnose_forex_view(view: TiingoView, *, expected_pair: str,
                    "source_request_path": view.source_request_path},
         "dataos_identity_admitted": False, "pit_backtest_eligible": False,
         "redistribution_admitted": False, "monitoring_admitted": False,
+        "product_use_approval": {
+            "state": "COMPLETE", "authority": "Chairman attestation",
+            "reference": PRODUCT_USE_APPROVAL_REFERENCE,
+            "scope": "R26 Tiingo Forex product use; technical source admission remains separate",
+        },
         "candidate_observations": candidates,
         "eligible_observations": [],  # No local flag or apparently perfect data can admit a feed.
         "withheld_reasons": sorted(reasons),
@@ -196,3 +216,239 @@ def read_forex_watch_source(day: str, receipt_id: str, *, expected_pair: str,
                              purpose="INSPECTION", max_rows=max_rows,
                              receipt_path=receipt_path, check_mount=check_mount)
     return diagnose_forex_view(view, expected_pair=expected_pair, receipt_id=receipt_id)
+
+
+def reconcile_forex_intervals(
+    minute_view: TiingoView, four_hour_view: TiingoView, *, expected_pair: str,
+    minute_receipt_id: str, four_hour_receipt_id: str,
+) -> dict[str, Any]:
+    """Compare four interval hypotheses using exact inspection receipt views.
+
+    Obtain both views through read_research_view at the file boundary. This pure
+    diagnostic preserves input order and original row ordinals, but aggregates
+    valid observed rows in timestamp order. It never selects a correction, fills
+    a slot, infers availability, selects a hypothesis or emits admitted bars.
+    Equality is of normalized view values, not arbitrary-precision raw JSON.
+    """
+    from urllib.parse import parse_qs, urlsplit
+
+    inputs = {}
+    for name, view, receipt, frequency in (
+        ("minute", minute_view, minute_receipt_id, "1min"),
+        ("four_hour", four_hour_view, four_hour_receipt_id, "4hour"),
+    ):
+        diagnostic = diagnose_forex_view(
+            view, expected_pair=expected_pair, receipt_id=receipt
+        )
+        query = parse_qs(urlsplit(view.source_request_path).query,
+                         keep_blank_values=True)
+        if (query.get("resampleFreq") != [frequency]
+                or any(row["requested_resample_frequency"] != frequency
+                       for row in diagnostic["candidate_observations"])):
+            raise TiingoViewRefusal(
+                "Interval reconciliation requires exact 1min and 4hour requests"
+            )
+        inputs[name] = diagnostic
+
+    if len(four_hour_view.rows) > MAX_RECONCILIATION_NATIVE_ROWS:
+        raise TiingoViewRefusal("Interval reconciliation native row cap exceeded; no truncation")
+
+    def prepare(diagnostic):
+        entries, groups, unplaced = [], defaultdict(list), []
+        for candidate in diagnostic["candidate_observations"]:
+            ordinal = candidate["source_row_ordinal"]
+            stamp = _clock(candidate["bar_at_vendor"])
+            issues = sorted(candidate["issues"])
+            if stamp is None:
+                unplaced.append(ordinal)
+            else:
+                if stamp.value % MINUTE_NS:
+                    issues.append("timestamp_not_minute_aligned")
+                groups[stamp.value].append(ordinal)
+            entries.append({"ordinal": ordinal, "stamp": stamp,
+                            "ohlc": candidate["vendor_ohlc"], "issues": issues})
+        for ordinals in groups.values():
+            if len(ordinals) > 1:
+                for ordinal in ordinals:
+                    entries[ordinal]["issues"].append("duplicate_vendor_instant")
+        return entries, groups, unplaced
+
+    minutes, minute_groups, unplaced = prepare(inputs["minute"])
+    natives, _, _ = prepare(inputs["four_hour"])
+    ordered = sorted((row for row in minutes if row["stamp"] is not None),
+                     key=lambda row: row["stamp"].value)
+    instants = [row["stamp"].value for row in ordered]
+    minute_clock = _clock(minute_view.source_observed_at_utc)
+    native_clock = _clock(four_hour_view.source_observed_at_utc)
+    separation = native_clock.value - minute_clock.value
+
+    def iso(instant):
+        return pd.Timestamp(instant, tz="UTC").isoformat()
+
+    def missing_ranges(missing):
+        # Compress consecutive expected slots; these are unobserved slots,
+        # never a claim of missing vendor data or authority to fill them.
+        runs = []
+        for instant in missing:
+            if runs and instant == runs[-1][1] + MINUTE_NS:
+                runs[-1][1] = instant
+            else:
+                runs.append([instant, instant])
+        return [{"first_utc": iso(first), "last_utc": iso(last),
+                 "slots": (last - first) // MINUTE_NS + 1}
+                for first, last in runs]
+
+    hypotheses, row_references = [], 0
+    for name, shift in INTERVAL_HYPOTHESES:
+        windows = []
+        for native in natives:
+            row_references += 1  # Native ordinal is emitted even for an invalid window.
+            if row_references > MAX_RECONCILIATION_ROW_REFERENCES:
+                raise TiingoViewRefusal(
+                    "Interval reconciliation row reference cap exceeded; no truncation"
+                )
+            window = {
+                "native_source_row_ordinal": native["ordinal"],
+                "native_vendor_ohlc": dict(native["ohlc"]),
+                "native_issues": list(native["issues"]),
+                "interval_start_utc": None, "interval_end_utc": None,
+                "coverage": None, "edge_rows": None,
+                "observed_minute_ohlc": None,
+                "equal_fields": {field: None for field in OHLC},
+                "all_ohlc_equal": None, "close_equal": None,
+                "blocked_reasons": [],
+            }
+            windows.append(window)
+            if native["stamp"] is None:
+                window["blocked_reasons"] = ["invalid_native_timestamp"]
+                continue
+            start = native["stamp"].value + shift * MINUTE_NS
+            end = start + 240 * MINUTE_NS
+            try:
+                window["interval_start_utc"] = iso(start)
+                window["interval_end_utc"] = iso(end)
+            except (ValueError, TypeError, OverflowError):
+                window["blocked_reasons"] = ["interval_clock_out_of_range"]
+                continue
+
+            left, right = bisect_left(instants, start), bisect_left(instants, end)
+            edges = {
+                "at_interval_start": minute_groups.get(start, ()),
+                "at_interval_end": minute_groups.get(end, ()),
+                "last_before_start": minute_groups.get(instants[left - 1], ()) if left else (),
+                "first_at_or_after_end": minute_groups.get(instants[right], ()) if right < len(instants) else (),
+            }
+            # Bound every ordinal reference copied into window output, including
+            # unplaced rows and boundary witnesses outside the selected interval.
+            cost = right - left + len(unplaced) + sum(map(len, edges.values()))
+            if row_references + cost > MAX_RECONCILIATION_ROW_REFERENCES:
+                raise TiingoViewRefusal(
+                    "Interval reconciliation row reference cap exceeded; no truncation"
+                )
+            selected = ordered[left:right]
+            invalid = [row["ordinal"] for row in selected if row["issues"]]
+            cost += len(invalid)
+            if row_references + cost > MAX_RECONCILIATION_ROW_REFERENCES:
+                raise TiingoViewRefusal(
+                    "Interval reconciliation row reference cap exceeded; no truncation"
+                )
+            row_references += cost
+            observed = {row["stamp"].value for row in selected}
+            expected = [start + n * MINUTE_NS for n in range(240)]
+            missing = [instant for instant in expected if instant not in observed]
+            unexpected = sorted(observed.difference(expected))
+            occupied = [n for n, instant in enumerate(expected) if instant in observed]
+            duplicates = len(selected) - len(observed)
+            dense = (len(selected) == 240 and not missing and not unexpected
+                     and not duplicates and not unplaced
+                     and native["stamp"].value % MINUTE_NS == 0)
+            window["coverage"] = {
+                "observed_minute_rows": len(selected),
+                "observed_unique_instants": len(observed),
+                "observed_source_row_ordinals": [row["ordinal"] for row in selected],
+                "expected_minute_slots": 240,
+                "missing_expected_minute_slots": len(missing),
+                "missing_expected_minute_ranges": missing_ranges(missing),
+                "unexpected_minute_instants_utc": [iso(instant) for instant in unexpected],
+                "unplaced_minute_source_row_ordinals": list(unplaced),
+                "duplicate_instant_rows": duplicates,
+                "leading_unobserved_slots": occupied[0] if occupied else None,
+                "trailing_unobserved_slots": 239 - occupied[-1] if occupied else None,
+                "internal_unobserved_slots": (
+                    sum(occupied[0] < n < occupied[-1] for n, instant in enumerate(expected)
+                        if instant not in observed) if occupied else None
+                ),
+                "dense_240_minute_grid": dense,
+                "observed_grid_state": "dense" if dense else "sparse" if selected else "empty",
+                "first_observed_minute_utc": iso(min(observed)) if observed else None,
+                "last_observed_minute_utc": iso(max(observed)) if observed else None,
+                "missing_slots_prove_missing_vendor_data": False,
+                "interval_end_after_minute_receipt_observed": end > minute_clock.value,
+                "interval_end_after_four_hour_receipt_observed": end > native_clock.value,
+            }
+            window["edge_rows"] = {key: list(refs) for key, refs in edges.items()}
+            blocked = []
+            if native["issues"]:
+                blocked.append("invalid_or_duplicate_native_row")
+            if unplaced:
+                blocked.append("unplaced_minute_timestamps")
+            if invalid:
+                blocked.append("invalid_or_duplicate_minute_rows")
+            if not selected:
+                blocked.append("no_observed_minute_rows")
+            window["invalid_minute_source_row_ordinals"] = invalid
+            window["blocked_reasons"] = blocked
+            if blocked:
+                continue
+
+            aggregate = {
+                "open": selected[0]["ohlc"]["open"],
+                "high": max(row["ohlc"]["high"] for row in selected),
+                "low": min(row["ohlc"]["low"] for row in selected),
+                "close": selected[-1]["ohlc"]["close"],
+            }
+            equal = {field: aggregate[field] == native["ohlc"][field] for field in OHLC}
+            window.update(observed_minute_ohlc=aggregate, equal_fields=equal,
+                          all_ohlc_equal=all(equal.values()), close_equal=equal["close"])
+
+        hypotheses.append({
+            "name": name, "start_offset_minutes_from_native_label": shift,
+            "interval_convention": "[start, end)", "windows": windows,
+            "summary": {
+                "native_rows": len(windows),
+                "compared_windows": sum(w["all_ohlc_equal"] is not None for w in windows),
+                "all_ohlc_equal_windows": sum(w["all_ohlc_equal"] is True for w in windows),
+                "close_equal_windows": sum(w["close_equal"] is True for w in windows),
+                "dense_equal_windows": sum(w["all_ohlc_equal"] is True
+                                          and w["coverage"]["dense_240_minute_grid"] for w in windows),
+                "sparse_equal_windows": sum(w["all_ohlc_equal"] is True
+                                           and not w["coverage"]["dense_240_minute_grid"] for w in windows),
+            },
+        })
+
+    return {
+        "schema": INTERVAL_RECONCILIATION_SCHEMA,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE", "pair_candidate": expected_pair,
+        "inputs": inputs, "hypotheses": hypotheses, "eligible_observations": [],
+        "monitoring_admitted": False, "dataos_identity_admitted": False,
+        "pit_backtest_eligible": False, "redistribution_admitted": False,
+        "comparison_semantics": {
+            "equality": "exact equality of normalized TiingoView numeric values",
+            "raw_arbitrary_precision_equality_proven": False,
+            "aggregation": "observed rows in timestamp order; original row ordinals retained",
+            "gap_filling": False, "correction_selection": False,
+            "hypothesis_selection": False, "vendor_finality_proven": False,
+        },
+        "receipt_observation_clocks": {
+            "minute_source_observed_at_utc": minute_view.source_observed_at_utc,
+            "four_hour_source_observed_at_utc": four_hour_view.source_observed_at_utc,
+            "four_hour_minus_minute_nanoseconds": separation,
+            "absolute_separation_seconds": abs(separation) / 1_000_000_000,
+            "meaning": "original response/receipt observation clocks; not durable availability or a fresh recheck",
+        },
+        "row_issues": {
+            name: [{"source_row_ordinal": row["ordinal"], "issues": list(row["issues"])}
+                   for row in rows if row["issues"]]
+            for name, rows in (("minute", minutes), ("four_hour", natives))
+        },
+    }
