@@ -651,6 +651,13 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: capture_stock_liquidity_currency
+        module: scripts.capture_stock_liquidity_currency
+        note: >
+          Bounded MU dated trading-currency intake in the same existing
+          stocks-reference binding; follows the cap refresh before stock-library
+          build. No bar collection or site publication; incomplete input preserves
+          the retained receipt and the native liquidity projection stays unknown.
       - id: build_leader_pullback_coverage
         module: scripts.build_leader_pullback_coverage
         note: >
@@ -3233,6 +3240,10 @@ lanes:
           Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
           Returns before collectors, market computation, session clocks or payload
           writes; the full China basket build remains in its existing daily lane.
+      - id: build_movers_redirect_stub
+        module: scripts.build_ticker_pages
+        args: [--movers-page-only]
+        note: Fixed zero-data legacy notice in the existing stubs lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
