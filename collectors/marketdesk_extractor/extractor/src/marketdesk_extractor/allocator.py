@@ -29,9 +29,11 @@ trickle runner (``trickle.py``) supplies the clock, the sessions, and the I/O.
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Mapping
 
+from .db import DISCOVERY_HEALTHY, DISCOVERY_UNKNOWN
 from .schemas import Status
 
 # ---------------------------------------------------------------------------
@@ -235,3 +237,191 @@ def next_candidate(
     if back_row is not None:
         return back_row["blob_id"]
     return None
+
+
+# ---------------------------------------------------------------------------
+# Backfill admission — is spending a slot on stale history lawful RIGHT NOW?
+# ---------------------------------------------------------------------------
+# The old gate was one comparison, ``allow_backfill = quota > reserve``, where
+# ``quota`` is bounded by the provider's rolling cap (70) and ``reserve`` was a
+# RAW demand forecast in papers (measured 2026-10-22T07:16:48Z: 206.5 expected
+# arrivals over BACKFILL_RESERVE_HOURS=24). A forecast that exceeds the entire
+# physical allowance can NEVER be overtaken, so ``allow_backfill`` was
+# permanently False and the 7,386-row backlog stalled forever — not conservatively,
+# but UNREACHABLY, with no signal that anything was wrong. The three bounds below
+# make the gate reachable, feasible and evidence-driven without ever raising the
+# cap or inventing an allowance.
+
+
+def _parse_ts(s: str | None) -> datetime | None:
+    """Parse a stored ISO timestamp; anything unparseable is None, never a guess."""
+    if not s:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def effective_reserve(
+    now: datetime,
+    backfill_reserve_hours: float,
+    *,
+    cap: int,
+    feasible_ratio: float,
+    profile: HourlyProfile | None = None,
+) -> tuple[float, float]:
+    """``(forecast, reserve)`` — the demand forecast and the reservation applied.
+
+    A reservation is only meaningful if it is FEASIBLE: you cannot hold back 206
+    pull slots out of a 70-slot rolling budget. Clamping the forecast to
+    ``cap * feasible_ratio`` — the largest share of the CAP that could physically
+    be withheld — keeps the reserve honest (never phantom) and keeps every pull
+    inside the same provider limit. ``feasible_ratio`` is a share of the existing
+    cap, never an addition to it, so this cannot raise the provider allowance.
+
+    The ceiling is ALSO clamped to the cap itself, so a mis-configured ratio
+    cannot produce a reservation larger than the whole allowance: that limit is
+    structural here rather than dependent on an operator typing a sane number.
+    The forecast is returned alongside (never discarded) so the plan line can
+    still report how far above the cap the raw demand actually sat.
+    """
+    forecast = expected_new_next_hours(now, backfill_reserve_hours, profile)
+    cap_f = max(0.0, float(cap))
+    ceiling = min(cap_f, cap_f * max(0.0, float(feasible_ratio)))
+    return forecast, min(forecast, ceiling)
+
+
+def backfill_used_24h(
+    conn: sqlite3.Connection,
+    account: str,
+    now: datetime,
+    *,
+    new_window_hours: float,
+    window_hours: float = 24.0,
+) -> int:
+    """Backfill pulls this account already spent in the trailing window.
+
+    Read from the SAME rolling ledger the quota gauge uses (``account`` +
+    ``downloaded_at``) rather than a new counter, so the ceiling is enforced
+    against downloads that actually happened and no second source of truth is
+    introduced. A NULL ``published_at`` counts as backfill, mirroring
+    :func:`queue_depths` and :func:`next_candidate`.
+    """
+    dl_cutoff = _iso(now - timedelta(hours=window_hours))
+    new_cutoff = new_cutoff_iso(now, new_window_hours)
+    row = conn.execute(
+        "SELECT COUNT(*) c FROM papers WHERE account=? "
+        "AND downloaded_at IS NOT NULL AND downloaded_at >= ? "
+        "AND (published_at IS NULL OR published_at < ?)",
+        (account, dl_cutoff, new_cutoff),
+    ).fetchone()
+    return int(row["c"]) if row else 0
+
+
+def discovery_is_current(
+    health: Mapping[str, str] | None,
+    now: datetime,
+    *,
+    max_age_hours: float,
+) -> tuple[bool, str]:
+    """``(ok, reason)`` — may backfill rely on this discovery evidence?
+
+    Fail-closed at every step: absent, unparseable, FAILED, or merely OLD
+    evidence all refuse. Only a HEALTHY observation inside ``max_age_hours``
+    proves the fresh queue is actually empty, which is the only licence to spend
+    quota on stale backlog. The bound is applied to the ABSOLUTE age so a
+    clock-skewed future stamp cannot grant indefinite freshness.
+    """
+    if not health:
+        return False, "DISCOVERY_UNKNOWN"
+    state = str(health.get("state") or DISCOVERY_UNKNOWN)
+    if state != DISCOVERY_HEALTHY:
+        return False, f"DISCOVERY_{state}"
+    observed = _parse_ts(health.get("observed_at"))
+    if observed is None:
+        return False, "DISCOVERY_UNSTAMPED"
+    age_h = abs((now - observed).total_seconds()) / 3600.0
+    if age_h > max_age_hours:
+        return False, "DISCOVERY_STALE"
+    return True, "OK"
+
+
+@dataclass(frozen=True)
+class BackfillDecision:
+    """Why backfill is (or is not) admissible, with the numbers behind the call."""
+
+    allowed: bool
+    reason: str
+    forecast: float   # raw demand forecast (papers expected over the reserve horizon)
+    reserve: float    # feasible reservation actually applied
+    used_24h: int     # backfill pulls this account already spent in the window
+    budget: int       # configured ceiling (0 = backfill disabled)
+
+    def describe(self) -> str:
+        return (
+            f"{self.allowed}({self.reason}) "
+            f"reserve={self.reserve:.1f}/forecast={self.forecast:.1f} "
+            f"backfill_24h={self.used_24h}/{self.budget}"
+        )
+
+
+def decide_backfill(
+    conn: sqlite3.Connection,
+    now: datetime,
+    *,
+    account: str,
+    quota: int,
+    cap: int,
+    new_window_hours: float,
+    backfill_reserve_hours: float,
+    reserve_feasible_ratio: float = 0.0,
+    backfill_budget: int = 0,
+    profile: HourlyProfile | None = None,
+    discovery: Mapping[str, str] | None = None,
+    discovery_max_age_hours: float = 6.0,
+) -> BackfillDecision:
+    """May this account spend a slot on historical backfill right now?
+
+    Three INDEPENDENT bounds, all of which must pass, each with its own reason:
+
+    1. ``BUDGET`` — an operator-set per-account ceiling on backfill pulls per
+       trailing 24h. Its default is 0, which is exactly the pre-existing
+       (stalled) behaviour: this knob is the ONLY thing here that can enable a
+       backfill pull, so the repair cannot invent an allowance by itself.
+    2. ``DISCOVERY`` — evidence-driven. Only a recent HEALTHY discovery pass proves
+       "no fresh candidates" is real rather than blindness, so an upstream
+       discovery outage never spends the day's quota on stale backlog.
+    3. ``RESERVE`` — the FEASIBLE reservation must still be covered by remaining
+       quota, holding slots for imminent fresh arrivals.
+
+    Fresh-first is NOT this function's job and is never bypassed by it:
+    :func:`next_candidate` returns a new-window paper ahead of any backfill paper
+    whenever one exists, so admitting backfill only changes what happens when the
+    fresh queue is empty.
+    """
+    forecast, reserve = effective_reserve(
+        now, backfill_reserve_hours,
+        cap=cap, feasible_ratio=reserve_feasible_ratio, profile=profile,
+    )
+    budget = max(0, int(backfill_budget))
+    if budget <= 0:
+        return BackfillDecision(False, "BUDGET_DISABLED", forecast, reserve, 0, budget)
+
+    ok, why = discovery_is_current(
+        discovery, now, max_age_hours=discovery_max_age_hours
+    )
+    if not ok:
+        # No ledger probe on the refusal path: a blind collector must not even
+        # pay for the query that a permitted pull would have justified.
+        return BackfillDecision(False, why, forecast, reserve, 0, budget)
+
+    used = backfill_used_24h(
+        conn, account, now, new_window_hours=new_window_hours
+    )
+    if quota <= reserve:
+        return BackfillDecision(False, "RESERVE_HELD", forecast, reserve, used, budget)
+    if used >= budget:
+        return BackfillDecision(False, "BUDGET_SPENT", forecast, reserve, used, budget)
+    return BackfillDecision(True, "OK", forecast, reserve, used, budget)

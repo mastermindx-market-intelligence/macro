@@ -958,3 +958,204 @@ def test_browser_exit_stops_driver_and_is_idempotent(
 
     assert events == ["close", "stop"]
     assert session.context is None and session._pw is None
+
+
+# ---------------------------------------------------------------------------
+# bounded, evidence-driven backfill admission (end to end)
+# ---------------------------------------------------------------------------
+# M1 at 2026-10-22T07:16:48Z: cap=70/24h, BACKFILL_RESERVE_HOURS=24 (a raw
+# forecast of 206.5 papers — larger than the whole allowance, so the old
+# ``quota > reserve`` gate could never fire), 0 known-new, 7,386 backfill
+# pending. Backfill is now admitted only when an operator has granted a budget
+# AND discovery is recent+healthy AND the feasible reserve is covered.
+M1_NOW = datetime(2026, 10, 22, 7, 16, 48, tzinfo=timezone.utc)  # Thursday 03:16 ET
+
+
+def _loop_cfg(tmp_path, monkeypatch, **over) -> Config:
+    env = {
+        "DATABASE_URL": str(tmp_path / "db" / "t.sqlite"),
+        "OUTPUT_DIR": str(tmp_path / "data"),
+        "RAW_PDF_DIR": str(tmp_path / "data" / "raw_pdfs"),
+        "MARKDOWN_DIR": str(tmp_path / "data" / "markdown"),
+        "METADATA_DIR": str(tmp_path / "data" / "metadata"),
+        "MANIFEST_DIR": str(tmp_path / "data" / "manifests"),
+        "LOG_DIR": str(tmp_path / "logs"),
+        "MARKETDESK_PROFILE_DIR": str(tmp_path / "prof"),
+        "R2_ENABLED": "false",
+        "DROPBOX_ENABLED": "false",
+        "VAULT_ENABLED": "false",
+        "PARSER_BACKEND": "none",
+        "DOWNLOAD_CAP_PER_ACCOUNT_24H": "70",
+        "NEW_WINDOW_HOURS": "48",
+        # M1's reserve horizon — the value that made the stall permanent.
+        "BACKFILL_RESERVE_HOURS": "24",
+    }
+    env.update({k: str(v) for k, v in over.items()})
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    cfg = Config.from_env()
+    cfg.ensure_dirs()
+    return cfg
+
+
+def _run_once(cfg):
+    return trickle.run_trickle(
+        cfg, once=True, dry_run=False, now_fn=lambda: M1_NOW, sleep_fn=lambda _s: None,
+    )
+
+
+def _seed_backlog(conn, count, *, prefix="old"):
+    for i in range(count):
+        _seed(conn, f"{prefix}{i}", published_at=M1_NOW - timedelta(hours=400 + i))
+    conn.commit()
+
+
+def test_backfill_pulls_when_the_operator_grants_a_budget_and_discovery_is_healthy(
+    tmp_path, monkeypatch
+):
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="5")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 3)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_new == 0
+    assert results[0].downloaded_backfill == 3
+
+
+def test_no_backfill_is_spent_when_discovery_has_failed(tmp_path, monkeypatch):
+    """The upstream-outage case, end to end: quota is preserved, nothing drains."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="50")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 25)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 0
+    assert results[0].plans[0].backfill_reason == "DISCOVERY_FAILED"
+    assert results[0].plans[0].allow_backfill is False
+
+    conn = db.connect(cfg.database_url)
+    assert db.counts_by_status(conn).get(Status.DISCOVERED.value, 0) == 25
+    conn.close()
+
+
+def test_backfill_stays_off_with_no_budget_even_on_healthy_discovery(tmp_path, monkeypatch):
+    """The default ships disabled: healthy discovery must not create backfill."""
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 5)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 0
+    assert results[0].plans[0].backfill_reason == "BUDGET_DISABLED"
+
+
+def test_backfill_budget_stops_the_drain_instead_of_draining_the_backlog(
+    tmp_path, monkeypatch
+):
+    """A 7,386-row backlog is trickled at the granted rate, not emptied."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="2")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 40)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 2
+
+    # A second tick spends nothing more: the ceiling is per trailing 24h.
+    results2 = _run_once(cfg)
+    assert results2[0].downloaded_backfill == 0
+    assert results2[0].plans[0].backfill_reason == "BUDGET_SPENT"
+
+
+def test_fresh_research_still_drains_before_backfill_end_to_end(tmp_path, monkeypatch):
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="10")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    # A high-scoring stale row must not jump ahead of a low-scoring fresh one.
+    _seed_backlog(conn, 1, prefix="stale_high")
+    conn.execute(
+        "UPDATE papers SET local_priority_score=99 WHERE blob_id='stale_high0'"
+    )
+    _seed(conn, "fresh_low", published_at=M1_NOW - timedelta(hours=1))
+    conn.execute("UPDATE papers SET local_priority_score=0 WHERE blob_id='fresh_low'")
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.commit()
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_new == 1        # the fresh one went first
+    assert results[0].downloaded_backfill == 1    # then the stale one
+
+    conn = db.connect(cfg.database_url)
+    assert db.get_by_blob_id(conn, "fresh_low")["account"] is not None
+    conn.close()
+
+
+def test_the_plan_line_names_why_backfill_is_refused(tmp_path, monkeypatch, capsys):
+    """Operators read this line; the stall must never be silent again."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="5")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 2)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    trickle.run_trickle(cfg, once=True, dry_run=True, now_fn=lambda: M1_NOW,
+                        sleep_fn=lambda _s: None)
+    out = capsys.readouterr().out
+    assert "DISCOVERY_FAILED" in out
+    # Both numbers are visible, so a clamped reserve can never hide the real demand.
+    assert "forecast=206.5" in out
+    assert "reserve=35.0" in out
+
+
+def test_discovery_outcomes_are_recorded_by_the_refresh_pass(tmp_path, monkeypatch):
+    """The evidence the gate reads is actually written by the loop."""
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    state = trickle.AccountState(
+        profile=cfg.profiles[0], authed=True, client=FakeClient(object(), cfg)
+    )
+
+    def exploding_discover(*a, **k):
+        raise RuntimeError("provider is down")
+
+    monkeypatch.setattr("marketdesk_extractor.discover.discover", exploding_discover)
+    trickle._refresh_queue(cfg, conn, [state])
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_FAILED
+
+    class _Result:
+        discovered_new = 7
+
+        def summary(self):
+            return "scanned=7 new=7"
+
+    monkeypatch.setattr(
+        "marketdesk_extractor.discover.discover", lambda *a, **k: _Result()
+    )
+    trickle._refresh_queue(cfg, conn, [state])
+    healthy = db.discovery_health(conn)
+    assert healthy["state"] == db.DISCOVERY_HEALTHY
+    assert healthy["found_new"] == "7"
+    conn.close()
+
+
+def test_no_authenticated_account_records_blindness(tmp_path, monkeypatch):
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    trickle._refresh_queue(cfg, conn, [])
+    health = db.discovery_health(conn)
+    assert health["state"] == db.DISCOVERY_UNKNOWN
+    assert "NO_AUTHENTICATED_ACCOUNT" in health["reason"]
+    conn.close()

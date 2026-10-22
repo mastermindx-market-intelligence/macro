@@ -495,7 +495,14 @@ def test_discovery_rejection_parks_only_after_negative_control(
         raise AssertionError("rejected discovery must not return a success summary")
 
     monkeypatch.setattr(discover, "discover", rejected_discovery)
-    trickle._refresh_queue(cfg, None, [state])
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    trickle._refresh_queue(cfg, conn, [state])
 
     assert state.authed is authenticated
     assert len(request.calls) == 2
+    # A rejected discovery pass is BLINDNESS, and it is now recorded as such:
+    # the backfill gate reads this to refuse spending quota on stale backlog
+    # while the feed cannot be seen.
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_FAILED
+    conn.close()

@@ -160,6 +160,12 @@ class AccountPlan:
     cooldown_until: datetime | None = None
     transient_retry_after: datetime | None = None
     browser_start_failed: bool = False
+    #: The raw demand forecast behind ``reserve``. Reported separately so a
+    #: reserve clamped by the feasibility ceiling never hides how large the
+    #: forecast actually was — that gap is what made the stall invisible.
+    reserve_forecast: float = 0.0
+    #: Why backfill was or was not admitted (see ``allocator.BackfillDecision``).
+    backfill_reason: str = ""
 
     def describe(self) -> str:
         if not self.authed:
@@ -178,8 +184,10 @@ class AccountPlan:
         nxt = self.next_blob_id or "(none eligible)"
         return (
             f"[{self.account}] quota={self.available_quota} "
-            f"(used_24h={self.trailing_24h}) reserve={self.reserve:.1f} "
-            f"allow_backfill={self.allow_backfill} next={self.next_kind}:{nxt} "
+            f"(used_24h={self.trailing_24h}) reserve={self.reserve:.1f}"
+            f"/forecast={self.reserve_forecast:.1f} "
+            f"allow_backfill={self.allow_backfill}:{self.backfill_reason or 'n/a'} "
+            f"next={self.next_kind}:{nxt} "
             f"queue(new={self.new_pending},backfill={self.backfill_pending}){cd}"
         )
 
@@ -209,6 +217,33 @@ class TickResult:
 # ---------------------------------------------------------------------------
 # Planning (pure-ish: reads DB + clock, no downloads) — used by dry-run too
 # ---------------------------------------------------------------------------
+def _decide_backfill(
+    cfg: Config, conn, state: AccountState, now: datetime,
+    quota: int, *, profile: allocator.HourlyProfile | None = None,
+) -> allocator.BackfillDecision:
+    """The ONE backfill gate, shared by ``plan_account`` and ``run_tick``.
+
+    Both call sites previously recomputed ``allow_backfill = quota > reserve``
+    independently. Duplicating a decision is how the two drift, and here the
+    duplicate was itself the defect: the raw forecast it compared against quota
+    exceeded the entire cap, so neither site could ever admit a backfill pull.
+    One pure allocator function now decides, and both sites report its reason.
+    """
+    return allocator.decide_backfill(
+        conn, now,
+        account=state.name,
+        quota=quota,
+        cap=cfg.download_cap_per_account_24h,
+        new_window_hours=cfg.new_window_hours,
+        backfill_reserve_hours=cfg.backfill_reserve_hours,
+        reserve_feasible_ratio=cfg.backfill_reserve_feasible_ratio,
+        backfill_budget=cfg.backfill_budget_per_account_24h,
+        profile=profile,
+        discovery=db.discovery_health(conn),
+        discovery_max_age_hours=cfg.backfill_discovery_max_age_hours,
+    )
+
+
 def plan_account(
     cfg: Config, conn, state: AccountState, now: datetime,
     *, profile: allocator.HourlyProfile | None = None,
@@ -216,8 +251,7 @@ def plan_account(
     prof = profile or allocator.DEFAULT_PROFILE
     used = db.trailing_24h_count(conn, state.name, now)
     quota = max(0, cfg.download_cap_per_account_24h - used)
-    reserve = allocator.expected_new_next_hours(now, cfg.backfill_reserve_hours, prof)
-    allow_backfill = quota > reserve
+    backfill = _decide_backfill(cfg, conn, state, now, quota, profile=prof)
     new_pending, backfill_pending = allocator.queue_depths(
         conn, now, new_window_hours=cfg.new_window_hours
     )
@@ -226,7 +260,7 @@ def plan_account(
     if quota > 0 and state.authed and not state.in_cooldown(now):
         blob_id = allocator.next_candidate(
             conn, now, new_window_hours=cfg.new_window_hours,
-            reserve=reserve, allow_backfill=allow_backfill,
+            reserve=backfill.reserve, allow_backfill=backfill.allowed,
         )
         if blob_id is not None:
             kind = _classify(conn, blob_id, now, cfg.new_window_hours)
@@ -235,8 +269,8 @@ def plan_account(
         authed=state.authed,
         available_quota=quota,
         trailing_24h=used,
-        reserve=reserve,
-        allow_backfill=allow_backfill,
+        reserve=backfill.reserve,
+        allow_backfill=backfill.allowed,
         next_blob_id=blob_id,
         next_kind=kind,
         new_pending=new_pending,
@@ -248,6 +282,8 @@ def plan_account(
             and now < state.transient_retry_after else None
         ),
         browser_start_failed=state.browser_start_failed,
+        reserve_forecast=backfill.forecast,
+        backfill_reason=backfill.reason,
     )
 
 
@@ -324,13 +360,12 @@ def run_tick(
             quota = max(0, cfg.download_cap_per_account_24h - used)
             if quota <= 0:
                 break
-            reserve = allocator.expected_new_next_hours(
-                now, cfg.backfill_reserve_hours, profile or allocator.DEFAULT_PROFILE
-            )
-            allow_backfill = quota > reserve
+            # Same gate, same reason code as the plan line — a per-pull decision
+            # must never be laxer than the tick-level plan that authorised it.
+            backfill = _decide_backfill(cfg, conn, state, now, quota, profile=profile)
             blob_id = allocator.next_candidate(
                 conn, now, new_window_hours=cfg.new_window_hours,
-                reserve=reserve, allow_backfill=allow_backfill,
+                reserve=backfill.reserve, allow_backfill=backfill.allowed,
             )
             if blob_id is None:
                 break
@@ -622,12 +657,22 @@ def _refresh_queue(
     a truncated wide pass silently re-examines nothing older (observed on the
     first production wide pass: exactly ``scanned=300``). Discovery is uncapped,
     so a wide pass costs API calls and wall-clock, never download quota.
+
+    Every outcome is recorded in the meta KV (``db.set_discovery_health``). That
+    record is the EVIDENCE the backfill gate reads: without it, "no known fresh
+    candidates" is indistinguishable from "discovery has been broken since before
+    the backlog formed", and a bounded catch-up trickle would spend the day's
+    quota on stale history precisely when the feed cannot be seen.
     """
     from .discover import discover
 
     authed = next((s for s in states if s.authed and s.client is not None), None)
     if authed is None:
         log.warning("trickle discover: no authenticated account; skipping refresh")
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_UNKNOWN,
+            observed_at=utc_now().isoformat(), reason="NO_AUTHENTICATED_ACCOUNT",
+        )
         return
     if since_hours is None:
         since_hours = cfg.new_window_hours + 24  # a little older than the new window
@@ -643,14 +688,28 @@ def _refresh_queue(
             "trickle discover (via %s, since=%dh): %s",
             authed.name, since_hours, res.summary(),
         )
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_HEALTHY,
+            observed_at=utc_now().isoformat(),
+            found_new=res.discovered_new,
+        )
     except SessionExpired as e:
         # Park the account rather than logging a soft warning: a logged-out
         # discovery returns a clean-looking scanned=0, which is indistinguishable
         # from a quiet news day and is precisely what hid the 2026-08-07 lapse.
         authed.authed = False
         log.error("[%s] SESSION EXPIRED during discovery: %s", authed.name, e)
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_FAILED,
+            observed_at=utc_now().isoformat(), reason="SESSION_EXPIRED",
+        )
     except Exception as e:  # noqa: BLE001
         log.warning("trickle discover failed: %s", e)
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_FAILED,
+            observed_at=utc_now().isoformat(),
+            reason=f"DISCOVER_ERROR:{type(e).__name__}",
+        )
 
 
 def _reset_failed(conn) -> int:
@@ -700,9 +759,12 @@ def run_trickle(
     states = [AccountState(profile=p) for p in cfg.profiles]
     log.info(
         "trickle starting: %d profile(s)=%s cap=%d/24h new_window=%dh "
-        "reserve=%dh interval=%ds discover_every=%ds wide_every=%ds/%dh%s",
+        "reserve=%dh feasible_ratio=%.2f backfill_budget=%d/24h "
+        "discovery_max_age=%.1fh interval=%ds discover_every=%ds wide_every=%ds/%dh%s",
         len(states), [s.name for s in states], cfg.download_cap_per_account_24h,
-        cfg.new_window_hours, cfg.backfill_reserve_hours, cfg.trickle_interval_sec,
+        cfg.new_window_hours, cfg.backfill_reserve_hours,
+        cfg.backfill_reserve_feasible_ratio, cfg.backfill_budget_per_account_24h,
+        cfg.backfill_discovery_max_age_hours, cfg.trickle_interval_sec,
         cfg.discover_every_sec, cfg.trickle_wide_discover_every_sec,
         cfg.trickle_wide_discover_hours, " [DRY-RUN]" if dry_run else "",
     )
