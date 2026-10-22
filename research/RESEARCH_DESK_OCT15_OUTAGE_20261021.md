@@ -4,9 +4,9 @@ Observed October 21, 2026 Central / October 22 UTC. This is incident evidence an
 
 ## Outcome and scope
 
-MarketDesk intake is stopped by an expired persistent browser session. Downstream Research Vault publication is separately held under the existing recovery owner. The public catalog is stale. Repairing the page's stale-state presentation does not restore intake or release publication.
+MarketDesk intake is stopped by rejected browse and metadata responses. The adapter incorrectly treats every malformed feed response as an expired session and parks the account indefinitely, even while other authenticated endpoints work. A separate missing browser dependency was found and repaired. Downstream Research Vault publication remains held under the existing recovery owner. The public catalog is stale; source and display corrections alone do not establish restored intake or released publication.
 
-The existing owner and unresolved-effect record remain [Research Vault #8438](https://github.com/mastermindx-market-intelligence/macro/pull/8438#issuecomment-6199947153). This new October 15 authentication failure does not invalidate the previously accepted source import or the October 11 recovery.
+The existing owner and unresolved-effect record remain [Research Vault #8438](https://github.com/mastermindx-market-intelligence/macro/pull/8438#issuecomment-6199947153). This October 15 intake failure does not invalidate the previously accepted source import or the October 11 recovery.
 
 Source baseline for this incident workspace: Macro `d5d0be27e245833245b792f7e86c437a09be9180`. Governing Mastermind pin: `c9cbee5569ba50e30e28715d930809061a169517`.
 
@@ -25,7 +25,7 @@ Source baseline for this incident workspace: Macro `d5d0be27e245833245b792f7e86c
 | Source distinction | The newest public preview is an internal Mastermind Research report dated October 19. The next two MarketDesk items are dated October 15. An internal addition does not prove MarketDesk recovery. |
 | Existing alert | [Heartbeat run 39702926705](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39702926705), job `119576165538`, failed at 00:58 UTC with `PRODUCER_STALE` (newest overall report 73 hours old). Neither `RESEARCH_VAULT_SOURCE_OUTAGE_ACK` nor a custom maximum age variable was set. |
 
-DB inspection used SQLite read-only mode and query-only. These observations did not change the database, profile, watermark, credentials, launch agents, workflow state, catalog, or corpus.
+The initial DB inspection used SQLite read-only mode and query-only. Subsequent controlled profile diagnostics, browser dependency installation and restoration of the existing launch agent are recorded below. No report rows, watermark, credentials, workflow state, canonical catalog or corpus were manually changed.
 
 ## Immediate display repair
 
@@ -38,28 +38,72 @@ The existing status line owns the actual saved timestamp. The unavailable state,
 
 The open first-paint PR [#8871](https://github.com/mastermindx-market-intelligence/macro/pull/8871) remains held under its own conditions. This incident does not release or supersede that PR.
 
-## M1 authentication recovery
+## Fresh M1 diagnosis and controlled recovery
 
-Canonical installation: `~/mastermind-research/marketdesk_paper_extractor`; existing profile: `/Volumes/STORAGE/MastermindX/marketdesk/browser_profile`.
+Canonical installation: `~/mastermind-research/marketdesk_paper_extractor`; existing profile: `/Volumes/STORAGE/MastermindX/marketdesk/browser_profile`. All profile checks used one owner: unload the existing launch agent, confirm its daemon/driver/browser exited, run a bounded diagnostic, close that diagnostic, then restore the same production plist. No cookies, credentials, DB rows, watermark, quota or disk floor were reset.
 
-The installed `marketdesk auth --help` confirms `--timeout`. Source `auth.py` deliberately opens a headed persistent Chromium context and waits for the user to log in; it never stores a password. `cmd_auth` returns zero only after the API returns an authenticated array response.
+The initial `AUTH_REQUIRED` record was a latched classification, not a fresh request on each tick. Reading the original October 15 log established `latest=25 picks=250 saved=0` immediately before `browse/current` returned `{"success": false}`. The original "session expired" text alone did not establish whole-session expiry.
 
-This procedure requires the operator at the M1 desktop. Do not start a second browser against the profile while the trickle daemon owns it. Do not clear cookies, create a replacement profile, reset the DB or watermark, or lower the disk floor.
+### Missing browser dependency repaired
 
-1. Stop the one existing `com.mastermindx.research-trickle` launch agent and verify that its browser/profile owner has exited.
-2. In Terminal on the M1, from the existing installation, run:
+At `2026-10-22T02:54:14Z`, the supported `trickle --once --dry-run` diagnostic failed before any authentication request: Playwright 1.61.0 could not find its required `chromium_headless_shell-1228` executable. The daemon's broad exception handling had also labeled this startup failure as unauthenticated.
 
-   ```bash
-   cd "$HOME/mastermind-research/marketdesk_paper_extractor"
-   .venv/bin/marketdesk auth --timeout 600
-   ```
+The matching browser was installed through the **existing** runtime interpreter:
 
-3. Complete MarketDesk login in the window it opens. Require the terminal to print `Authenticated.` and return zero. A window opening alone is not success.
-4. Resume only the existing launch agent using its existing production plist after the auth command has closed its browser.
-5. Verify the producer's own DB metadata changes to `AUTHENTICATED` with a new observation, discovery advances past October 15, and a real eligible report progresses through download and vault publication under the existing quota policy.
-6. Keep the downstream workflow disabled until the separate publisher gate below is settled. Local intake into the existing inbox is not permission to publish the canonical catalog.
+```bash
+cd "$HOME/mastermind-research/marketdesk_paper_extractor"
+.venv/bin/python -m playwright install chromium
+```
 
-The agent can handle stopping, resuming and verification when the operator is present; the login itself requires user interaction. No authentication ceremony was started during the diagnostic pass.
+No Python package upgrade or alternate browser/profile was used. Installation completed successfully. A second supported dry-run at `02:55:58–02:56:01Z` reported `session ready`, quota 70, used-in-24-hours 0, and closed without a remaining profile owner. This proves the saved profile could authenticate; it does not prove discovery or publication.
+
+A normal restart at `02:57:06Z` again read latest/picks successfully and failed at browse. No new report was discovered, downloaded or vaulted.
+
+### Endpoint-specific rejection reproduced
+
+A bounded same-context read at `03:01:09–03:01:15Z` produced:
+
+| Request | Result |
+| --- | --- |
+| POST `/api/mobile/latest/latest`, before browse | HTTP 200, JSON array of 25 IDs |
+| GET `/api/mobile/library/browse/current` | HTTP 200, `{"success": false}` |
+| POST `/api/mobile/latest/latest`, after browse | HTTP 200, JSON array of 25 IDs |
+| GET one returned item's `/path` | HTTP 200, `{"success": false}` |
+| Authenticated `/library/browse` HTML | HTTP 200, MarketDesk application shell |
+
+The current authenticated frontend still calls the same browse and metadata endpoints. A request without the session returned `{"success": false}` from latest, confirming that the positive controls depend on authentication.
+
+Further bounded reads through `03:06:58Z` established:
+
+- Latest pages 0, 1 and 2 each return 25 distinct IDs. This is more capable than the July API note, but does not prove date coverage.
+- POST `items/provision` rejects two returned IDs with `{"success": false}`; explicit JSON encoding and the same-origin header do not change the result.
+- GET one returned item's metadata also returns `{"success": false}`.
+- GET `/api/user/limits` returns `previews=true` and `downloads=true`. These booleans are not proof of either remaining quota or a reached cap. The current frontend applies `previews` to an `active` CSS class and only assigns `downloads`; its observed consumers do not establish entitlement semantics.
+- Adding a JSON content-type header does not repair browse. No speculative header patch or latest-only fallback is justified.
+
+These observations establish selective rejection of authenticated data requests. They do **not** distinguish an account-specific provider restriction from an upstream service defect. A valid ID feed without metadata cannot restore research intake. A new login has not been shown to be necessary.
+
+### Normal routing initialization checked
+
+The current authenticated frontend races image loads from `ts1` through `ts5` and posts the selected host to `/api/user/preferences/ts/<host>`. A single controlled reproduction used only those five observed hosts, validated each JPEG by successful image decoding, and selected `ts2`. The one JSON preference POST returned HTTP 200 with `success=true`. Latest still returned 25 IDs before and after; browse and provision still returned `success=false`. The normal routing update was acknowledged but did not restore data access. No other host update or ambiguous-write retry was attempted.
+
+The same frontend's desktop-width bootstrap was read without executing it: the server had already rendered desktop preference `d`, matching the collector's desktop viewport. No device-width preference update was needed. The initial image-validation attempt stopped at an unavailable optional decoder import before any service or account effect; the actual attempt used the existing macOS image decoder.
+
+Each diagnostic closed before restoring the canonical launch agent. After the final frontend read, the sole daemon was PID 24007. The old code still parks on the provider response; process presence is not recovery.
+
+### Adapter corrections and acceptance
+
+The source repair distinguishes an unexpected endpoint response from a freshly confirmed negative authentication check. A positive control keeps the account eligible for the existing discovery cadence while surfacing the endpoint error. It never converts a rejected response into an empty or successful discovery. Real negative controls retain the existing conservative expiration path; a negative boolean can still reflect transport failure.
+
+Browser-entry failure must report `UNKNOWN / BROWSER_START_FAILED` through the existing metadata and dry-run plan. Partial entry must close any created context and stop its driver while preserving the original error. No new scheduler, health database or authentication ceremony is introduced.
+
+Source installation follows the existing post-merge installer/readback contract. Matching browser installation and a supported sole-owner dry-run are runtime readiness checks; source-byte verification and import smoke alone cannot prove readiness. Intake is recovered only after metadata hydration succeeds and an actual eligible report advances through discovery, download and vault publication.
+
+### Ready MarketDesk evidence request
+
+For the existing account, reproduce the application's browse/report-opening behavior and ask the provider to investigate the authenticated sequence above. Supply UTC timestamps, endpoint paths and the nonsensitive response shapes. Ask whether browse/item/provision access is valid for the account and whether these endpoints are experiencing a service fault or require an updated documented request contract. Do not supply cookies, passwords or bearer tokens.
+
+The connected browser interface was unavailable, so actual interactive MarketDesk UI behavior has not been verified. No support message was sent. Keep this boundary open until the data endpoints return usable report metadata and intake proof advances.
 
 ## Separate publication recovery gate
 
@@ -91,13 +135,17 @@ If historical records are unavailable, ask for an authenticated provider-support
 
 Cloudflare's [R2 consistency documentation](https://developers.cloudflare.com/r2/reference/consistency/) explains why an uncertain write is not settled by a subsequent read. [R2 Data Access Logs](https://developers.cloudflare.com/r2/buckets/data-access-logs/) require prior enablement, cannot backfill, have seven-day retention, and are best-effort; absence of a log is not proof of absence.
 
+Cloudflare's [bucket-lock documentation](https://developers.cloudflare.com/r2/buckets/bucket-locks/), updated October 20, provides a real prospective fence: after a successful rule update, protected existing objects cannot be overwritten, including completion of earlier uploads. It does not prevent creation of absent keys and would also block the intended publisher's updates. The documentation does not establish permanent rejection after removing a lock. This is a candidate for canonical-owner containment review, not evidence that the present hold is already cleared.
+
+Ask the provider specifically whether an applied-and-later-removed lock permanently rejects already admitted requests, and what covers creation of previously absent keys. Require the scope, effective timestamp and attributable evidence before treating it as settlement. No lock was applied.
+
 Provider access was not available in this diagnostic surface. No support message was sent. The original request remains unresolved.
 
 After supported settlement, use the existing owner's release procedure: qualify the exact producer and all current admitted attempts, reopen the same noncanceling workflow once, consume that execution, and verify the resulting exact report identities through catalog, search and authenticated PDF opening. No replacement scheduler, replay or duplicate canary is authorized by this note.
 
 ## Acceptance before calling this incident fixed
 
-- The same M1 profile is authenticated and its current metadata proves it.
+- The same M1 profile passes a fresh authentication control, and browse/provision return usable report metadata.
 - At least one newly discovered post-October-15 MarketDesk report reaches the existing inbox under the quota policy.
 - The original publisher uncertainty is settled by supported evidence, or the canonical owner has accepted and proven a containment transition.
 - The existing publication workflow completes with acknowledged outputs.
@@ -112,3 +160,19 @@ Until those conditions are met, the incident remains open. The display repair is
 Integrated onto refreshed main `a1ff21e17ab43872758d653e4295f9a805fca350`; the affected app and page-test source were unchanged from the initial baseline. The local page suite passed **36 tests**, including **seven actual-function Node VM cases** for stale live data, saved fallback, unavailable data, fresh aggregates, missing preview aggregates, known zero, and language change during initial loading. Independent review required the loading no-op before the stale branch; it is included. The existing page suite invokes the Node regression, so it remains inside the established Research Vault CI owner. The only overlap with held #8871 is an appended test function; its existing changes and hold are preserved.
 
 The browser plugin returned `Connection closed`, so these are source/runtime regression results, not a rendered-browser or authenticated product-path proof. Publication and live served-byte verification must be recorded separately. The read-only Fabric audit's excerpt-artifact and unsupported themes-count suggestions were rejected; the implementation contribution was reviewed and tested before scoped acceptance.
+
+
+## Adapter and package validation
+
+The integrated repair adds 65 cases to the existing test files: 46 cover endpoint/provision response classification and failed discovery behavior; 19 cover startup classification, aggregate auth health, reopen, dry-run output and partial browser cleanup. The failed-later-provision-chunk case was first reproduced against the old source, which returned partial success without raising.
+
+On the actual checkout:
+
+- The full standalone extractor suite passed **412 tests**.
+- The installer/lineage and Research Desk page suites passed **61 tests** (25 lineage plus 36 page tests, including the existing wrapper around seven Node VM cases).
+- The current source verifier passed before and after tests: exactly **58 payload files**, no missing, extra, mismatched or symlinked payloads.
+- Current release: `marketdesk-endpoint-auth-discrimination-20261022-v1`; current manifest SHA-256: `032bffa5001dfcd802caa96a5c078c90da94bbe38777f6f6eabb67dead4c1f1c`. The immutable recovery manifest and historical import receipt were preserved.
+
+The paid implementation contribution was a three-file blueprint validated only against excerpt-derived fixtures. Its returned inline diff contained a joined-line formatting defect and did not include its claimed test-file bytes. The parent integrated the functions against the real files, added the approved provision discriminator, and supplied the real regression tests above. No fixture-only pass is treated as checkout or runtime evidence.
+
+The first PR CI run, [39712669527](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39712669527), failed only the logical `admin-js-no-undef` check: both the candidate and its differential base timed out after 180 seconds while invoking the pinned `eslint@8.57.1` through `npx`. The runner was GitHub-hosted `ubuntu-latest` (`GitHub Actions 1000386442`). This identifies a tooling timeout, not a confirmed network cause or an adapter regression. The updated head must pass ordinary CI on its newly allocated runner; no guard bypass is used.

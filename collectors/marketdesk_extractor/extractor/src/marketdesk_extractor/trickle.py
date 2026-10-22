@@ -127,6 +127,7 @@ class AccountState:
     # the driver, and consecutive failed session re-opens.
     driver_dead_ticks: int = 0
     reopen_failures: int = 0
+    browser_start_failed: bool = False
 
     @property
     def name(self) -> str:
@@ -158,9 +159,16 @@ class AccountPlan:
     backfill_pending: int
     cooldown_until: datetime | None = None
     transient_retry_after: datetime | None = None
+    browser_start_failed: bool = False
 
     def describe(self) -> str:
         if not self.authed:
+            if self.browser_start_failed:
+                return (
+                    f"[{self.account}] UNKNOWN — BROWSER_START_FAILED "
+                    "(browser session could not be started; auth state "
+                    "undetermined, account skipped)"
+                )
             return f"[{self.account}] NOT AUTHENTICATED — skipped"
         cd = ""
         if self.cooldown_until is not None:
@@ -239,6 +247,7 @@ def plan_account(
             if state.transient_retry_after is not None
             and now < state.transient_retry_after else None
         ),
+        browser_start_failed=state.browser_start_failed,
     )
 
 
@@ -447,29 +456,51 @@ def run_tick(
 # Session lifecycle
 # ---------------------------------------------------------------------------
 def _open_session(cfg: Config, state: AccountState) -> bool:
-    """Open + auth-probe ONE account's persistent session. Returns whether the
-    account came up authenticated. Non-fatal on failure: a broken/unauthenticated
-    profile is logged, marked not-authed, and skipped by the loop."""
+    """Open one profile and distinguish browser startup from authentication."""
     acct_cfg = _profile_cfg(cfg, state.profile)
+
+    def _release(sess: BrowserSession | None) -> None:
+        if sess is None:
+            return
+        try:
+            sess.__exit__(None, None, None)
+        except Exception as e:  # noqa: BLE001 - preserve the original failure
+            log.warning("[%s] session teardown failed: %s", state.name, e)
+
+    sess: BrowserSession | None = None
     try:
         sess = BrowserSession(acct_cfg)
         sess.__enter__()
-        state.session = sess
+    except Exception as e:  # noqa: BLE001 - only construction/entry is startup
+        log.error("[%s] failed to start browser session: %s", state.name, e)
+        _release(sess)
+        state.session = None
+        state.client = None
+        state.authed = False
+        state.browser_start_failed = True
+        return False
+
+    state.session = sess
+    state.browser_start_failed = False
+    try:
         state.authed = sess.is_authenticated()
         if state.authed:
             state.client = MarketDeskClient(sess.context, acct_cfg)
             log.info("[%s] session ready (%s)", state.name, state.profile.path)
         else:
+            state.client = None
             log.warning(
                 "[%s] NOT authenticated (%s) — skipping this account. "
                 "Run `MARKETDESK_PROFILE_DIR=%s marketdesk auth` to log in.",
                 state.name, state.profile.path, state.profile.path,
             )
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 - post-start probe/client failure
         log.error("[%s] failed to open session: %s", state.name, e)
+        _release(sess)
         state.session = None
         state.client = None
         state.authed = False
+        return False
     return state.authed
 
 
@@ -499,10 +530,9 @@ def _close_sessions(states: list[AccountState]) -> None:
 def _record_producer_auth_health(conn, states: list[AccountState], observed_at: datetime) -> None:
     """Project aggregate auth truth into the existing MarketDesk meta table.
 
-    Process presence is not authentication. If at least one configured profile is
-    authenticated the producer is usable; if profiles exist but none are
-    authenticated, operator re-authentication is required. An empty profile set is
-    UNKNOWN rather than healthy.
+    Process presence is not authentication, and positive authentication does not
+    establish successful discovery. A browser startup failure or an empty profile
+    set is UNKNOWN; only negative session results retain AUTH_REQUIRED.
     """
     stamp = observed_at.isoformat()
     if not states:
@@ -511,6 +541,9 @@ def _record_producer_auth_health(conn, states: list[AccountState], observed_at: 
     elif any(item.authed for item in states):
         state = db.AUTHENTICATED
         reason = ""
+    elif any(item.browser_start_failed for item in states):
+        state = db.AUTH_UNKNOWN
+        reason = "BROWSER_START_FAILED"
     else:
         state = db.AUTH_REQUIRED
         reason = "NO_AUTHENTICATED_PROFILE"
