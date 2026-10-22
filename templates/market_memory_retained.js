@@ -635,9 +635,15 @@
     return '';
   }
   function beginIntent() {
+    var hadLinkedPresentation = !!directLinkedCard();
     state.epoch += 1;
     state.notice = null;
     state.committed = null; state.sourceCase = null;
+    /* A refreshed exact reference has no standing response yet. Clear its
+     * read-only presentation immediately, including during a failed read. */
+    if (hadLinkedPresentation) {
+      renderCatalogDependentControls(); renderSelectedClock(); renderModeButtons();
+    }
     if (state.catalogAbort) { try { state.catalogAbort.abort(); } catch (error) { /* settled */ } }
     state.catalogAbort = null;
     if (state.abort) { try { state.abort.abort(); } catch (error) { /* already gone */ } }
@@ -1157,9 +1163,42 @@
       actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
   }
 
+  /* A committed direct pinned comparison stands without a catalog or a
+   * selected entry. While it is the standing result, its validated bound
+   * source card may be presented read-only; nothing here invents a catalog
+   * entry, a selection or a freshness claim, and any new intent, refusal,
+   * mode change or sign-out clears the presentation again. */
+  function directLinkedCard() {
+    if (state.catalog || state.selected) return null;
+    var committed = state.committed;
+    if (!committed || committed.kind !== 'compare') return null;
+    var intent = committed.intent;
+    if (!intent || intent.mode !== state.mode || !completeCompareRef(intent)) return null;
+    var cards = committed.data ? committed.data.sourceCards : null;
+    var card = cards ? cards[intent.context] : null;
+    return card || null;
+  }
+
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
+      var linked = directLinkedCard();
+      if (linked) {
+        /* Truthful controls above a standing pinned comparison: the picker
+         * names the linked validated source card instead of implying a
+         * capture could be chosen, while the unloaded list itself stays
+         * stated and browsing remains the explicit way to pick another. */
+        var known = linked.asKnownAt !== linked.eventTime
+          ? copy(' · known at ' + clockLabel(linked.asKnownAt), ' · 已知时点 ' + clockLabel(linked.asKnownAt)) : '';
+        ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Linked pinned source · ', '已关联固定来源 · ') + clockLabel(linked.eventTime) + known) + '</option>';
+        ui.captureSelect.setAttribute('disabled', 'disabled');
+        ui.loadMoreButton.hidden = true;
+        ui.scopeLine.textContent = copy(
+          'This comparison is bound to its exact pinned reference. The saved-capture list is not loaded; browse available captures to choose another one.',
+          '此比较绑定其确切的固定引用。已保存记录列表尚未加载；请浏览可用记录以另选。');
+        renderCutoffControl();
+        return;
+      }
       ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Saved captures not loaded', '已保存记录尚未加载')) + '</option>';
       ui.captureSelect.setAttribute('disabled', 'disabled');
       ui.cutoffSelect.innerHTML = '<option value="">' + esc(copy('—', '—')) + '</option>';
@@ -1209,6 +1248,21 @@
     }
     ui.cutoffNote.hidden = true;
     if (!entry) {
+      var linked = directLinkedCard();
+      if (linked) {
+        /* The standing pinned reference carries its own exact committed
+         * cutoff: present that validated binding read-only instead of asking
+         * for a capture the unloaded list cannot offer. */
+        var cutoff = state.committed.intent.cutoff;
+        ui.cutoffSelect.innerHTML = '<option value="' + esc(cutoff) + '">' + esc(clockLabel(cutoff)) + '</option>';
+        ui.cutoffSelect.value = cutoff;
+        ui.cutoffSelect.setAttribute('disabled', 'disabled');
+        ui.cutoffNote.hidden = false;
+        ui.cutoffNote.textContent = copy(
+          'Pinned reference cutoff for this comparison · read-only. Browse available captures to compare at another cutoff.',
+          '此比较的固定引用截至时间 · 只读。请浏览可用记录以在其他截至时间比较。');
+        return;
+      }
       ui.cutoffSelect.innerHTML = '<option value="">' + esc(copy('Choose a capture first', '请先选择记录')) + '</option>';
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
       return;
@@ -1230,9 +1284,11 @@
       button.setAttribute('aria-selected', selected ? 'true' : 'false');
       button.setAttribute('tabindex', selected ? '0' : '-1');
     });
-    var primaryLabel = state.mode === 'saved'
-      ? copy('Open saved output', '打开原始输出')
-      : copy('Compare cases', '比较案例');
+    var primaryLabel = directLinkedCard()
+      ? copy('Refresh linked comparison', '刷新已关联比较')
+      : (state.mode === 'saved'
+        ? copy('Open saved output', '打开原始输出')
+        : copy('Compare cases', '比较案例'));
     ui.primaryButton.textContent = primaryLabel;
     ui.modeNote.textContent = state.mode === 'saved'
       ? copy('Reads the original captured packet and its exact source quotes. No analysis is substituted.',
@@ -1255,6 +1311,11 @@
     renderCutoffControl();
     renderSelectedClock();
     renderCorrectionNotice();
+    /* A direct pinned commit holds neither catalog nor selected entry, so
+     * the pre-request loading copy on the picker must not outlive its own
+     * truth: repaint it from the committed binding. Catalog-selected commits
+     * already repainted the controls upstream. */
+    if (!state.catalog && !state.selected) { renderCatalogDependentControls(); renderModeButtons(); }
   }
 
   function renderSelectedClock() {
