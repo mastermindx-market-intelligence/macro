@@ -355,6 +355,8 @@ def cmd_candidates(args) -> int:
                     for cand in cands:
                         candidate = dict(cand)
                         candidate["_doc_order"] = doc_order
+                        candidate["_doc_index"] = doc_order
+                        candidate["_accession"] = row["accession"]
                         candidate["_row"] = row
                         candidate["_document"] = document
                         candidates.append(candidate)
@@ -371,7 +373,7 @@ def cmd_candidates(args) -> int:
                     "counters": delta,
                 }
             )
-    kept = rel_harvest.apply_filing_caps(candidates, counters)
+    kept = rel_harvest.apply_per_filing_caps(candidates, counters)
     out_rows: list = []
     for cand in kept:
         row = cand["_row"]

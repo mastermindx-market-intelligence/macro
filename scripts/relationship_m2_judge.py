@@ -56,6 +56,25 @@ def _resolve_selection(args):
 # --- pack -----------------------------------------------------------------------
 
 
+def _judged_ids_from_path(path: Path) -> set:
+    """candidate_ids judged in one *.jsonl file (or directory of them)."""
+    paths = (
+        sorted(path.glob("*.jsonl")) if path.is_dir() else [path]
+    )
+    judged: set = set()
+    for jsonl_path in paths:
+        for line in jsonl_path.read_text("utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(record, dict) and record.get("candidate_id"):
+                judged.add(record["candidate_id"])
+    return judged
+
+
 def cmd_pack(args) -> int:
     _inputs, _issuers, dirname = _resolve_selection(args)
     base = Path(args.workdir) / dirname
@@ -79,6 +98,22 @@ def cmd_pack(args) -> int:
             )
             return 2
     candidates = rel_judge.read_jsonl(candidates_path)
+    exclude_judged = getattr(args, "exclude_judged", None)
+    excluded = 0
+    exclude_unknown = 0
+    if exclude_judged:
+        judged: set = set()
+        for raw_path in exclude_judged:
+            judged |= _judged_ids_from_path(Path(raw_path))
+        known_ids = {cand["candidate_id"] for cand in candidates}
+        exclude_unknown = len(judged - known_ids)
+        candidates = [
+            cand for cand in candidates
+            if cand["candidate_id"] not in judged
+        ]
+        excluded = len(known_ids) - len(
+            {cand["candidate_id"] for cand in candidates}
+        )
     packs, index = rel_judge.build_packs(
         candidates, args.leaf, dirname, per_pack=args.per_pack
     )
@@ -87,14 +122,20 @@ def cmd_pack(args) -> int:
         (rel_judge.JUDGING_GUIDE + "\n").encode("utf-8")
     )
     index["candidates_sha256"] = candidates_sha
+    if exclude_judged:
+        index["excluded_judged"] = excluded
     for pack in packs:
         name = f"pack_{pack['pack']:03d}.json"
         (packs_dir / name).write_bytes(rel_judge.canonical_json_bytes(pack))
     index_path.write_bytes(rel_judge.canonical_json_bytes(index))
-    print(
+    summary = (
         f"relationship_m2_judge: packed leaf={args.leaf} dirname={dirname} "
-        f"candidates={len(candidates)} packs={len(packs)} per_pack={args.per_pack}"
+        f"candidates={len(candidates)} packs={len(packs)} "
+        f"per_pack={args.per_pack}"
     )
+    if exclude_judged:
+        summary += f" excluded={excluded} exclude_unknown={exclude_unknown}"
+    print(summary)
     return 0
 
 
@@ -224,6 +265,11 @@ def main(argv=None) -> int:
     common(pack_parser)
     pack_parser.add_argument(
         "--per-pack", type=int, default=rel_judge.PER_PACK_DEFAULT
+    )
+    pack_parser.add_argument(
+        "--exclude-judged", action="append", default=None,
+        help=("a judgments *.jsonl file, or a directory of them; candidates "
+              "already judged there are left out of the packs"),
     )
 
     status_parser = sub.add_parser("status", help="per-pack judged counts")

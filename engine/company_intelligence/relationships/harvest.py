@@ -1185,6 +1185,28 @@ def apply_filing_caps(cands, counters, max_filing: int =
     return kept
 
 
+def apply_per_filing_caps(cands, counters, max_filing: int =
+                          MAX_CANDIDATES_PER_FILING):
+    """Apply the filing cap to each accession's candidates independently.
+
+    Candidates are grouped by ``_accession`` and each group is capped by
+    :func:`apply_filing_caps`, so one huge filing can no longer evict another
+    filing's candidates.  A candidate without ``_accession`` fails closed.
+    """
+    groups: dict = {}
+    for cand in cands:
+        accession = cand.get("_accession")
+        if not accession:
+            raise ValueError("candidate is missing _accession")
+        groups.setdefault(accession, []).append(cand)
+    kept: list = []
+    for accession in sorted(groups):
+        kept.extend(
+            apply_filing_caps(groups[accession], counters, max_filing)
+        )
+    return kept
+
+
 def segment_document(raw: bytes) -> Segment:
     """Cached segmentation helper (kept separate for testability)."""
     return segment(raw)
