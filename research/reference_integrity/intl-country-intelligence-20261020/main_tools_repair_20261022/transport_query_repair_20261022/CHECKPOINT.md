@@ -40,3 +40,13 @@ R2provider task nonstartprovedscopedhistoricadmission; controller/lease/refusale
 
 ## Publication preflight reconciliation
 An unrelated working-copy edit appeared in tests/test_biocatalyst_deploy.py (mtime20:20:42UTC, provenanceunknown). Its exact fullcopy andpatch are preserved in pending_scenario_20261022/UNOWNED_BIOCATALYST_TEST_WORKING_COPY.txt and UNOWNED_BIOCATALYST_TEST_PATCH.patch. Apart from2explanatorycomments it equals existing incomingmaina281's3Caddytest-pathrepair. Hash-fenced restoration to originalbdeb bytes keeps this evidence commit scoped; normalmaincomposition alreadyretains the upstreamfix. See UNOWNED_BIOCATALYST_CHANGE.json. No unknownwork discarded and no upstreamrepairreverted.
+
+## Authority inventory consolidation — 22 October 2026, 4:06 PM America/Chicago
+
+Exact published head remains `ba4466fc170f2f4f3cdfdb131ca6b51508703934` while the existing hosted CI run finishes. The active authority failure is now independently diagnosed as `current_pull_identity_rejected`: the complete PR inventory is 3,080 paths, above the trusted controller's 3,000-file GitHub API ceiling. It is not a logical-CI-pending result. The controller/limit are unchanged.
+
+The owner applied an independently reviewed evidence-only consolidation in this original workspace: 259 superseded post-freeze generated build-copy files are preserved in `evidence_archive_20261022/superseded_build_copies.tar.gz`, with full original path/mode/Git blob/SHA-256 manifest and successful complete byte/mode round trip. Archive SHA-256: `df8e74b13511259675f355ccb05aa86fb0b371ddf98fe656e768cf27cf842c02`. All originals remain available at immutable ba446 history.
+
+The full working inventory is now 2,831 paths at this observation (10 new archive/custody paths). Exactly the reviewed 259 historical copies were removed as ordinary files; no other tracked bytes changed before this checkpoint update. All 114 explicitly checked current/frozen/source bindings still match ba446. Frozen RIG evaluation and full reference registry both pass. The frozen dock4 artifact, all screenshots/raw observations/failures, current Scenario build/v13 proof, source/tests/config/workflows and input archive remain ordinary files.
+
+Publication of this evidence-only correction will trigger a new normal synchronize authority/CI evaluation. Retain the current exact-head CI results as their own evidence. No Ready, merge, production acquisition or served acceptance has occurred. Production website read-only identity access is verified on the existing C2 carrier; normal backfill/render/updater gates remain queued after source acceptance. Failed Fabric and expired GS leases remain unrelaunched.
