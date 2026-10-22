@@ -88,7 +88,7 @@ def read_start(family: str, root: Path | str | None = None) -> dict[str, Any] | 
 
 def record_start(family: str, *, horizon_d: int, horizon_unit: str,
                  git_sha: str | None = None, root: Path | str | None = None,
-                 now: str | None = None) -> dict[str, Any]:
+                 now: str | None = None, strict: bool = False) -> dict[str, Any]:
     """WRITE-ONCE: record `family`'s first prospective-registration instant.
 
     If `family` already has a record, it is returned UNCHANGED — every argument
@@ -101,10 +101,31 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
     matters most; this is a durable ANNOTATION on top of them). A write
     failure is logged loudly and the caller gets back the record it TRIED to
     write (not persisted) so a test/caller can still see what would have been
-    recorded.
+    recorded. Explicit native owners may pass strict=True: unreadable existing
+    records refuse, write failures propagate and returned new records require
+    exact bounded readback. This does not prove crash durability or exclude
+    concurrent legacy clock writers; it never provides a recovery restamp.
     """
     path = _clock_path(family, root)
-    existing = _read(path)
+
+    def checked_read():
+        # Explicit native owner only. Refuse ambiguity; never heal/restamp an
+        # unreadable original. This is bounded visibility, not fsync durability.
+        try:
+            with path.open("rb") as handle:
+                payload = handle.read(65537)
+        except FileNotFoundError:
+            return None
+        if len(payload) > 65536:
+            raise ValueError("evidence clock exceeds explicit readback bound")
+        value = json.loads(payload)
+        if (not isinstance(value, dict)
+                or not isinstance(value.get("first_prospective_registration_utc"), str)
+                or not value["first_prospective_registration_utc"]):
+            raise ValueError("existing evidence clock is unproven; preserve original")
+        return value
+
+    existing = checked_read() if strict else _read(path)
     if existing is not None and existing.get("first_prospective_registration_utc"):
         return existing
     record: dict[str, Any] = {
@@ -125,6 +146,10 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
                  family, exc)
         print(f"::error title={family}-evidence-clock-write-failed::qledger evidence-clock "
              f"start for {family} could not be written: {exc}", flush=True)
+        if strict:
+            raise
+    if strict and checked_read() != record:
+        raise ValueError("evidence clock readback differs; original effect uncertain")
     return record
 
 

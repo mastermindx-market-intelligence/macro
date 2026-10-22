@@ -405,6 +405,15 @@ def _classify_control(claim: dict, *, has_resolver: bool,
     return CONTROL_REFUSAL_SELF_OR_BENCH, None
 
 
+class NativeProspectiveFailure(RuntimeError):
+    """Explicit owner's failure facts; not a retry or clock-effect receipt."""
+
+    def __init__(self, native_intent, stats):
+        self.native_intent = native_intent
+        self.stats = dict(stats)
+        super().__init__(stats.get("error") or "native prospective registration unproven")
+
+
 def register_prospective(rows: Iterable[dict], *, family: str,
                          timestamp_quality: str = "CRAWL_BOUNDED",
                          root: Path | str | None = None,
@@ -470,14 +479,19 @@ def register_prospective(rows: Iterable[dict], *, family: str,
     its family basis is already established and an accruing family is never
     re-anchored), changes.
 
-    Never raises. A `register_batch` failure is caught, printed as a GitHub
+    Legacy calls never raise on `register_batch` failure: it is printed as a GitHub
     `::error` annotation, and returned in `stats["error"]` — the caller's
     build must not die over an accrual step (matches every sibling desk's
     "additive, never fatal" contract), but the failure is no longer silent
     (the prior attempt's blocker: "a total registration failure was silent
-    and, for stock_desk, permanent").
+    and, for stock_desk, permanent"). Explicit native calls instead raise
+    NativeProspectiveFailure with stats and the original exception chained.
+    A native no-write is determined from binding attempts, not accepted rows.
+    Clock response loss stays uncertain even when claims already materialized.
     """
     stats = _empty_stats(family, dry_run=dry_run, source_error=source_error)
+    if native_intent is not None:
+        stats["family_clock_status"] = "not_attempted"
     if source_error:
         print(f"::warning title={family}-qledger-source-unavailable::qledger prospective "
              f"registration for {family} could not read its source rows this run "
@@ -607,6 +621,13 @@ def register_prospective(rows: Iterable[dict], *, family: str,
             with TemporaryDirectory(prefix="qledger_p3_dry_run_") as tmp:
                 results = qledger.register_batch(candidates, root=tmp, dedupe=True, today=today)
         else:
+            if native_intent is not None:
+                from engine.qledger_store import _selected_claims_binding, _NativeClaimsBinding
+                binding = _selected_claims_binding(qledger._root(root) / "data/qledger/claims.jsonl")
+                if not isinstance(binding, _NativeClaimsBinding):
+                    raise ValueError("explicit native claims binding required")
+                binding._check_intent(native_intent)
+                prior_attempts = len(binding.attempts)
             intent_args = {} if native_intent is None else {"native_intent": native_intent}
             results = qledger.register_batch(candidates, root=root, dedupe=True, today=today, **intent_args)
     except Exception as exc:  # noqa: BLE001 — LOUD, never silent (blocker: silent total failure)
@@ -614,18 +635,41 @@ def register_prospective(rows: Iterable[dict], *, family: str,
         print(f"::error title={family}-qledger-register-failed::qledger[{family}] "
              f"register_batch raised: {exc}", flush=True)
         log.error("qledger[%s]: register_batch failed: %s", family, exc)
+        if native_intent is not None:
+            raise NativeProspectiveFailure(native_intent, stats) from exc
         return stats
+
+    if native_intent is not None:
+        attempts = binding.attempts[prior_attempts:]
+        stats["native_write_status"] = "no_write" if not attempts else (
+            attempts[-1].outcome.status if attempts[-1].outcome is not None else "unproven")
+        if (any(not isinstance(row, dict) or row.get("status") == "error" for row in results)
+                or stats["native_write_status"] not in {"no_write", "materialized"}):
+            stats["error"] = "native batch has failed or unproven claim/write results"
+            raise NativeProspectiveFailure(native_intent, stats)
 
     stats["n_accepted"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "open")
     stats["n_rejected"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "rejected")
 
-    if not dry_run and stats["n_accepted"] > 0:
+    if (not dry_run and stats["n_accepted"] > 0
+            and (native_intent is None or stats["native_write_status"] == "materialized")):
         from engine import qledger_evidence_clock as _clock  # local import — avoid a hard
                                                               # dependency for callers that
                                                               # never actually register
-        rec = _clock.record_start(
-            family, horizon_d=candidates[0]["horizon_d"],
-            horizon_unit=qledger.HORIZON_UNIT_TRADING, git_sha=git_sha, root=root)
+        if native_intent is not None:
+            stats["family_clock_status"] = "uncertain"
+        try:
+            rec = _clock.record_start(
+                family, horizon_d=candidates[0]["horizon_d"],
+                horizon_unit=qledger.HORIZON_UNIT_TRADING, git_sha=git_sha, root=root,
+                **({} if native_intent is None else {"strict": True}))
+        except Exception as exc:
+            if native_intent is None:
+                raise
+            stats["error"] = str(exc)
+            raise NativeProspectiveFailure(native_intent, stats) from exc
+        if native_intent is not None:
+            stats["family_clock_status"] = "readback_verified"
         stats["clock_started"] = True
         stats["clock_record"] = rec
 

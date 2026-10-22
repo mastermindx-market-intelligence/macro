@@ -90,3 +90,49 @@ def test_unreadable_clock_file_is_treated_as_absent_not_fatal(tmp_path):
     rec = qclock.record_start("stock_desk", horizon_d=20, horizon_unit="trading_days",
                               root=tmp_path, now="2026-08-14T03:00:00+00:00")
     assert qclock.read_start("stock_desk", root=tmp_path) == rec
+
+
+def test_explicit_strict_clock_failure_is_observable_without_changing_legacy(tmp_path, monkeypatch):
+    from pathlib import Path
+    import pytest
+    write = Path.write_text
+    def refused(path, *a, **k):
+        if path.name.endswith('.json.tmp'):
+            raise OSError('fixture clock persistence refused')
+        return write(path, *a, **k)
+    monkeypatch.setattr(Path, 'write_text', refused)
+    with pytest.raises(OSError, match='persistence refused'):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
+    assert qclock.record_start('stock_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path)
+
+
+def test_explicit_strict_clock_preserves_unreadable_original(tmp_path):
+    import pytest
+    path = qclock._clock_path('thematic_desk', tmp_path)
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b'original malformed clock\n')
+    with pytest.raises(ValueError):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
+    assert path.read_bytes() == b'original malformed clock\n'
+
+
+def test_explicit_strict_clock_returns_exact_existing_without_restamping(tmp_path):
+    first = qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path,
+                                now='2026-01-01T00:00:00+00:00', strict=True)
+    second = qclock.record_start('thematic_desk', horizon_d=99, horizon_unit='different', root=tmp_path,
+                                 now='2026-02-01T00:00:00+00:00', strict=True)
+    assert second == first == qclock.read_start('thematic_desk', tmp_path)
+
+
+def test_explicit_strict_clock_readback_mismatch_is_not_success(tmp_path, monkeypatch):
+    from pathlib import Path
+    import pytest
+    actual_replace = Path.replace
+    def different(path, target):
+        value = actual_replace(path, target)
+        target.write_text('{"first_prospective_registration_utc":"foreign-original"}')
+        return value
+    monkeypatch.setattr(Path, "replace", different)
+    with pytest.raises(ValueError, match="readback differs"):
+        qclock.record_start("thematic_desk", horizon_d=5, horizon_unit="trading_days", root=tmp_path, strict=True)
+    assert qclock.read_start("thematic_desk", tmp_path)["first_prospective_registration_utc"] == "foreign-original"

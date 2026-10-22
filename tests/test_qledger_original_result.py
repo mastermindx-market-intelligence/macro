@@ -456,3 +456,171 @@ def test_owner_bridge_rejects_foreign_retained_location_even_for_identical_origi
     with pytest.raises(p.SnapshotIntegrityError, match="predeclared owner target"):
         binding.reconcile_original_write(write, retained_original=foreign)
     assert (binding.repo_root / p.ROOT_PATH).read_bytes() == before and len(binding.attempts) == 1
+
+
+thematic_source = pytest.mark.parametrize("fixture", [{"raw": b'{"claim_id":"x","status":"open"}\n', "part_bytes": 256}], indirect=True)
+
+
+def thematic_owner(original, monkeypatch):
+    from engine import thematic_desk as td, qledger_desk_adapter as adapter, qledger_evidence_clock as clock
+    from scripts import build_allocation as allocation
+    q, store, binding, identities, root, clocks = owner_bridge(original, monkeypatch)
+    intent = identities[0]
+    prepared = []
+    monkeypatch.setattr(td, 'gather_thematic_state', lambda *a: {'fixture': True})
+    def synthesize(*a):
+        prepared.append('domain')
+        return {'theses': [{'fixture': True}]}
+    monkeypatch.setattr(td, 'synthesize', synthesize)
+    monkeypatch.setattr(td, '_append_ledger', lambda *a, **k: [{'market': 'us', 'lean': 'overweight'}])
+    monkeypatch.setattr(td, 'score_ledger', lambda: pytest.fail('native owner invocation launched unowned grading'))
+    monkeypatch.setattr(adapter, 'translate_row', lambda *a, **k: {'claim_id': 'thematic-new', 'status': 'open', 'horizon_d': 5})
+    monkeypatch.setattr(adapter, 'outcome_not_yet_determined', lambda *a: (True, ''))
+    monkeypatch.setattr(clock, 'git_sha', lambda root: 'fixture-provenance')
+    family_clocks = []
+    monkeypatch.setattr(clock, 'record_start', lambda *a, **k: family_clocks.append('attempted') or {'fixture': True})
+    def invoke():
+        with store._synthetic_claims_binding(binding.claims_path, binding):
+            return allocation.run_native_thematic_owner(['us'], native_intents={'us': intent},
+                                                       root=binding.repo_root, call=object())
+    return td, adapter, clock, binding, intent, root, prepared, family_clocks, invoke
+
+
+@thematic_source
+def test_thematic_owner_success_returns_actual_original_write_and_result(original, monkeypatch):
+    td, _, _, binding, intent, root, prepared, clocks, invoke = thematic_owner(original, monkeypatch)
+    value = invoke()['us']
+    assert isinstance(value, td.NativeThematicResult)
+    assert value.intent == intent and value.claims_status == 'materialized' and value.status == 'returned'
+    assert value.attempts == binding.attempts and len(value.attempts) == 1
+    assert value.original_results == binding.prepared_original_results
+    assert value.written_rows == ({"market": "us", "lean": "overweight"},)
+    assert value.thematic_ledger_status == "returned"
+    assert value.family_clock_status == 'readback_verified' and clocks == ['attempted']
+    assert (root / 'bridge' / 'manifest.json').exists() and prepared == ['domain']
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    assert failure.value.result.attempts == value.attempts
+    assert prepared == ['domain']  # no domain replay or replacement result
+
+
+@pytest.mark.parametrize('uncertain', [False, True])
+@thematic_source
+def test_thematic_owner_propagates_retention_refusal_and_uncertain_root(original, monkeypatch, uncertain):
+    td, adapter, _, binding, intent, root, prepared, clocks, invoke = thematic_owner(original, monkeypatch)
+    before = (binding.repo_root / p.ROOT_PATH).read_bytes()
+    if uncertain:
+        real_replace = n.os.replace
+        def lost(source, target, *args, **kwargs):
+            value = real_replace(source, target, *args, **kwargs)
+            if str(target) == Path(p.ROOT_PATH).name:
+                raise OSError('fixture native ROOT response lost')
+            return value
+        monkeypatch.setattr(n.os, 'replace', lost)
+    else:
+        monkeypatch.setattr(result, '_sync_file', lambda fd: (_ for _ in ()).throw(OSError('fixture original retention refused')))
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    value = failure.value.result
+    assert isinstance(failure.value.__cause__, adapter.NativeProspectiveFailure)
+    assert value.attempts == binding.attempts and len(value.attempts) == 1
+    assert value.original_results == binding.prepared_original_results
+    assert value.family_clock_status == 'not_attempted' and not clocks
+    assert value.claims_status == ('root_effect_uncertain' if uncertain else 'unproven')
+    if not uncertain:
+        assert (binding.repo_root / p.ROOT_PATH).read_bytes() == before
+    assert prepared == ['domain']
+
+
+@thematic_source
+def test_thematic_owner_clock_failure_keeps_applied_claims_and_uncertain_clock(original, monkeypatch):
+    td, adapter, clock, binding, _, root, prepared, clocks, invoke = thematic_owner(original, monkeypatch)
+    def lost(*a, **k):
+        clocks.append('attempted')
+        raise OSError('fixture clock response lost')
+    monkeypatch.setattr(clock, 'record_start', lost)
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    value = failure.value.result
+    assert value.claims_status == 'materialized' and value.family_clock_status == 'uncertain'
+    assert value.attempts == binding.attempts and value.original_results == binding.prepared_original_results
+    assert clocks == ['attempted'] and (root / 'bridge' / 'manifest.json').exists()
+    with pytest.raises(td.NativeThematicFailure):
+        invoke()
+    assert prepared == ['domain'] and clocks == ['attempted']
+
+
+@thematic_source
+def test_thematic_owner_dedupe_is_verified_no_write_not_accepted_count(original, monkeypatch):
+    td, adapter, _, binding, _, root, _, clocks, invoke = thematic_owner(original, monkeypatch)
+    with p.open_logical_bytes(original[0].plan._before) as raw:
+        import json
+        row = json.loads(raw.readline())
+    assert row.get('claim_id')
+    monkeypatch.setattr(adapter, 'translate_row', lambda *a, **k: row)
+    value = invoke()['us']
+    assert value.registration['n_accepted'] == 1
+    assert value.claims_status == 'no_write' and value.attempts == () and value.original_results == ()
+    assert value.family_clock_status == 'not_attempted' and not clocks
+    assert not (root / 'bridge').exists()
+
+
+@thematic_source
+def test_thematic_native_skipped_is_explicit_and_legacy_failure_remains_optional(original, monkeypatch):
+    td, _, _, binding, _, _, prepared, _, invoke = thematic_owner(original, monkeypatch)
+    monkeypatch.setattr(td, 'gather_thematic_state', lambda *a: None)
+    value = invoke()['us']
+    assert value.claims_status == 'not_attempted' and value.status == 'skipped'
+    assert not value.attempts and not prepared
+    monkeypatch.setattr(td, 'gather_thematic_state', lambda *a: (_ for _ in ()).throw(OSError('fixture unavailable')))
+    assert td.run('us', root=binding.repo_root, call=object()) is None
+    with pytest.raises(td.NativeThematicFailure):
+        invoke()
+
+
+@thematic_source
+def test_thematic_owner_real_clock_swallowed_failure_is_not_success(original, monkeypatch):
+    from engine import qledger_evidence_clock as clock
+    actual_record_start = clock.record_start
+    td, _, _, binding, _, root, _, _, invoke = thematic_owner(original, monkeypatch)
+    monkeypatch.setattr(clock, "record_start", actual_record_start)
+    actual_write = Path.write_text
+    def refused(path, *a, **k):
+        if path.name == "thematic_desk.json.tmp":
+            raise OSError("fixture clock persistence refused")
+        return actual_write(path, *a, **k)
+    monkeypatch.setattr(Path, "write_text", refused)
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    assert failure.value.result.claims_status == "materialized"
+    assert failure.value.result.family_clock_status == "uncertain"
+    assert failure.value.result.attempts == binding.attempts
+    assert (root / "bridge" / "manifest.json").exists()
+    assert clock.read_start("thematic_desk", binding.repo_root) is None
+
+
+@thematic_source
+def test_thematic_owner_claim_preparation_error_is_not_empty_success(original, monkeypatch):
+    from engine import qledger as q
+    td, _, _, binding, _, root, _, clocks, invoke = thematic_owner(original, monkeypatch)
+    monkeypatch.setattr(q, "_prepare_claim", lambda *a: (_ for _ in ()).throw(ValueError("fixture invalid claim preparation")))
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    assert failure.value.result.status == "failed"
+    assert failure.value.result.claims_status == "no_write"
+    assert not failure.value.result.attempts and not clocks
+    assert not (root / "bridge").exists()
+
+
+@thematic_source
+def test_thematic_owner_partial_desk_append_is_unknown_not_no_rows(original, monkeypatch):
+    td, _, _, binding, _, root, _, clocks, invoke = thematic_owner(original, monkeypatch)
+    def lost(*a, **k):
+        raise OSError("fixture desk-ledger response lost")
+    monkeypatch.setattr(td, "_append_ledger", lost)
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        invoke()
+    assert failure.value.result.thematic_ledger_status == "uncertain"
+    assert failure.value.result.written_rows == ()
+    assert failure.value.result.claims_status == "not_attempted"
+    assert not binding.attempts and not clocks and not (root / "bridge").exists()

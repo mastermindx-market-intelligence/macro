@@ -8,6 +8,7 @@ desk degrades gracefully; and the brief is display-only (never sized, never scor
 from __future__ import annotations
 
 import json
+import pytest
 
 import numpy as np
 import pandas as pd
@@ -526,16 +527,38 @@ def test_thematic_prospective_path_forwards_only_explicit_owner_intent(tmp_path,
     assert "native_intent" not in calls[1][1]
 
 
-def test_thematic_run_passes_explicit_intent_only_when_persisting(tmp_path, monkeypatch):
+def test_thematic_run_requires_explicit_result_owner_before_preparation(tmp_path, monkeypatch):
     from engine.qledger_store_native import NativeClaimsIntent
     intent = NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write")
-    written = [{"id": "fixture-row"}]
-    calls = []
-    monkeypatch.setattr(td, "gather_thematic_state", lambda *a: {"fixture": True})
-    monkeypatch.setattr(td, "synthesize", lambda *a: {"theses": []})
-    monkeypatch.setattr(td, "_append_ledger", lambda *a: written)
-    monkeypatch.setattr(td, "_register_qledger_claims", lambda rows, root, **kwargs: calls.append((rows, kwargs)))
-    td.run("us", root=tmp_path, call=object(), native_intent=intent)
-    assert calls == [(written, {"native_intent": intent})]
-    td.run("us", persist=False, root=tmp_path, call=object(), native_intent=intent)
-    assert len(calls) == 1
+    monkeypatch.setattr(td, "gather_thematic_state", lambda *a: pytest.fail("unconfigured owner prepared domain inputs"))
+    with pytest.raises(td.NativeThematicFailure) as failure:
+        td.run("us", root=tmp_path, call=object(), native_intent=intent)
+    assert failure.value.result.status == "failed"
+    assert failure.value.result.claims_status == "not_attempted"
+    assert not list(tmp_path.iterdir())
+
+
+def test_explicit_native_ledger_append_failure_is_not_empty_success(tmp_path, monkeypatch):
+    brief = {"theses": [{"falsifier": {}}], "state_asof": "2026-01-01"}
+    monkeypatch.setattr(td, "_entry_levels", lambda *a: {})
+    monkeypatch.setattr(td._ledger_law, "reject_existing_ids", lambda *a: (_ for _ in ()).throw(OSError("fixture append refused")))
+    assert td._append_ledger(brief, tmp_path) == []
+    with pytest.raises(OSError, match="append refused"):
+        td._append_ledger(brief, tmp_path, strict=True)
+
+
+def test_legacy_disabled_does_not_inspect_unused_root(tmp_path, monkeypatch):
+    monkeypatch.setattr(td, 'enabled', lambda: False)
+    assert td.run('us', root=object()) is None
+
+
+def test_native_allocation_owner_requires_finite_explicit_region_intents(tmp_path, monkeypatch):
+    from scripts import build_allocation as allocation
+    from engine.qledger_store_native import NativeClaimsIntent
+    intent = NativeClaimsIntent("operation", "lane", "write")
+    monkeypatch.setattr(td, "run", lambda *a, **k: pytest.fail("invalid invocation launched producer"))
+    for regions, intents in [(["us"], {}), (["us", "china"], {"us": intent, "china": intent}),
+                             (["us"], lambda region: intent), (["invalid"], {"invalid": intent}),
+                             (iter(["us"]), {"us": intent}), (["us"] * 5, {"us": intent})]:
+        with pytest.raises(ValueError):
+            allocation.run_native_thematic_owner(regions, native_intents=intents, root=tmp_path)

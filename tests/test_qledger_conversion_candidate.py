@@ -15,7 +15,7 @@ def git(repo, *args, input=None):
 
 
 @pytest.fixture
-def fixture(tmp_path):
+def fixture(tmp_path, request):
     repo = tmp_path.resolve() / "repo"
     repo.mkdir()
     git(repo, "init", "-q")
@@ -23,7 +23,8 @@ def fixture(tmp_path):
     git(repo, "config", "user.email", "fixture@example.invalid")
     claims = repo / "data/qledger/claims.jsonl"
     claims.parent.mkdir(parents=True)
-    raw = b'{"duplicate":1}\n' * 4 + b"bad-json\n\n\xff\n"
+    specimen = getattr(request, "param", {})
+    raw = specimen.get("raw", b'{"duplicate":1}\n' * 4 + b"bad-json\n\n\xff\n")
     claims.write_bytes(raw)
     (repo / "unrelated").write_bytes(b"accepted\n")
     git(repo, "add", ".")
@@ -31,7 +32,7 @@ def fixture(tmp_path):
     tip = git(repo, "rev-parse", "HEAD").decode()
     git(repo, "update-ref", "refs/remotes/origin/main", tip)
     blob = git(repo, "rev-parse", "HEAD:data/qledger/claims.jsonl").decode()
-    limits = ProtocolLimits(base_bytes=16, part_bytes=32, page_bytes=4096,
+    limits = ProtocolLimits(base_bytes=16, part_bytes=specimen.get("part_bytes", 32), page_bytes=4096,
                             logical_bytes=16384, snapshot_bytes=1048576,
                             git_blob_bytes=16384)
     return repo, tip, blob, raw, limits

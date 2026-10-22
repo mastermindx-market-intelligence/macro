@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -559,7 +560,7 @@ def _entry_levels(check: dict, asof, root) -> dict:
     return out
 
 
-def _append_ledger(brief: dict, root) -> list:
+def _append_ledger(brief: dict, root, *, strict=False) -> list:
     """Append this run's theses to the desk ledger. Returns exactly the rows
     that SURVIVED the id-immutability gate — i.e. the rows actually written
     this run — so the caller (Eval OS P3 qledger registration) mirrors THOSE
@@ -586,6 +587,8 @@ def _append_ledger(brief: dict, root) -> list:
         return rows
     except Exception as e:  # noqa: BLE001
         log.warning("thematic_desk ledger append failed: %s", e)
+        if strict:
+            raise
         return []
 
 
@@ -596,12 +599,15 @@ def _register_qledger_claims(written: list, root, *, native_intent=None) -> dict
     canada/hk/china proxies have no price parquet here, and the CN leg needs
     its own ruling against DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT — both stay
     out of scope. FORWARD-ONLY: a thesis whose graded window has already begun
-    is refused and counted, never filed. Never raises."""
+    is refused and counted, never filed. Explicit native failures propagate;
+    legacy import failure remains optional."""
     try:
         from engine import qledger_desk_adapter as _qadapt
         from engine import qledger_evidence_clock as _qclock
     except Exception as exc:  # noqa: BLE001
         log.warning("thematic_desk: qledger adapter import failed: %s", exc)
+        if native_intent is not None:
+            raise
         return None
     intent_args = {} if native_intent is None else {"native_intent": native_intent}
     return _qadapt.register_prospective(
@@ -609,35 +615,92 @@ def _register_qledger_claims(written: list, root, *, native_intent=None) -> dict
         root=root, git_sha=_qclock.git_sha(root), **intent_args)
 
 
-def run(market: str = "us", persist: bool = True, root=None, call=None, *, native_intent=None) -> dict | None:
-    """Gather → synthesize → persist the public brief + ledger for one market. Additive:
-    returns None (and writes nothing) when disabled / no key / no state. Never raises.
-    An explicit owner may supply native_intent for this run's one prospective
-    claims batch; this function never creates a retry identity or native binding.
+@dataclass(frozen=True)
+class NativeThematicResult:
+    """Owner-visible local facts, not publication/clock recovery authority."""
+
+    intent: object
+    status: str
+    brief: dict | None
+    registration: dict | None
+    written_rows: tuple
+    thematic_ledger_status: str
+    claims_status: str
+    family_clock_status: str
+    attempts: tuple
+    original_results: tuple
+
+
+class NativeThematicFailure(RuntimeError):
+    def __init__(self, result, message):
+        self.result = result
+        super().__init__(message)
+
+
+def run(market: str = "us", persist: bool = True, root=None, call=None, *, native_intent=None):
+    """Gather → synthesize → persist. Legacy remains additive and optional.
+
+    Explicit native owners get NativeThematicResult or NativeThematicFailure,
+    retaining original attempt/result facts. Never re-enter this domain path
+    for recovery: reconcile the original write through its existing binding.
+    This seam does not select/enroll a production binding or generate identity.
     """
     region = (market or "us").lower()
-    if region not in REGION:
-        return None
-    if call is None and not enabled():
-        log.info("thematic_desk[%s]: disabled (ai_desk.enabled=false) — skipping", region)
-        return None
+    if native_intent is None:
+        if region not in REGION:
+            return None
+        if call is None and not enabled():
+            log.info("thematic_desk[%s]: disabled (ai_desk.enabled=false) — skipping", region)
+            return None
     root = Path(root) if root else config.ROOT
+    binding, brief, registration = None, None, None
+    written, ledger_status = [], "not_attempted"
+
+    def owner_result(status):
+        attempts = tuple(a for a in binding.attempts if a.write.intent == native_intent) if binding else ()
+        originals = tuple(item for item in binding.prepared_original_results
+                          if item[0].intent == native_intent) if binding else ()
+        claims = (attempts[-1].outcome.status if attempts[-1].outcome is not None else "unproven") if attempts else (
+            (registration or {}).get("native_write_status", "not_attempted"))
+        return NativeThematicResult(native_intent, status, brief, registration, tuple(written), ledger_status, claims,
+            (registration or {}).get("family_clock_status", "not_attempted"), attempts, originals)
+
     try:
+        if native_intent is not None:
+            from engine.qledger_original_result import OriginalResultClaimsBinding
+            from engine.qledger_store import _selected_claims_binding
+            selected = _selected_claims_binding(root / "data/qledger/claims.jsonl")
+            if type(selected) is not OriginalResultClaimsBinding:
+                raise ValueError("explicit original-result native owner binding required")
+            binding = selected
+            binding._admit(native_intent)  # no charge; refuse replay before domain preparation
+        if native_intent is not None and (region not in REGION or (call is None and not enabled())):
+            return owner_result("skipped")
         state = gather_thematic_state(region, root)
         if state is None:
-            return None
+            return owner_result("skipped") if native_intent is not None else None
         brief = synthesize(state, _cfg(), call)
         if persist:
             site = Path(root) / "site" / "allocationdata"
             site.mkdir(parents=True, exist_ok=True)
             (site / f"ai_desk_{region}.json").write_text(json.dumps(brief, default=str))
-            written = _append_ledger(brief, root)
+            ledger_status = "uncertain"
+            written = (_append_ledger(brief, root, strict=True) if native_intent is not None
+                       else _append_ledger(brief, root))
+            ledger_status = "returned"  # returned rows, not append crash-durability proof
             if written:
                 intent_args = {} if native_intent is None else {"native_intent": native_intent}
-                _register_qledger_claims(written, root, **intent_args)
-        return brief
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+                registration = _register_qledger_claims(written, root, **intent_args)
+                if native_intent is not None and (not isinstance(registration, dict)
+                        or registration.get("error") or registration.get("source_error")):
+                    raise RuntimeError("native prospective registration result unavailable or failed")
+        return owner_result("returned" if persist else "not_persisted") if native_intent is not None else brief
+    except Exception as e:  # legacy additive behavior remains optional
         log.error("thematic_desk run[%s] failed: %s", region, e)
+        if native_intent is not None:
+            if getattr(e, "native_intent", None) == native_intent and isinstance(getattr(e, "stats", None), dict):
+                registration = e.stats
+            raise NativeThematicFailure(owner_result("failed"), str(e)) from e
         return None
 
 

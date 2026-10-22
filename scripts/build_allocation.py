@@ -300,6 +300,36 @@ def _run_thematic_desk(regions: list[str]) -> None:
         log.error("thematic_desk score_ledger failed: %s", e)
 
 
+def run_native_thematic_owner(regions: list[str], *, native_intents, root, call=None):
+    """Explicit inert owner invocation of the existing thematic producer.
+
+    No CLI/env selection, intent factory, optional-error swallowing or grading.
+    Caller must retain returned facts/failures and reconcile original writes;
+    re-running this function is not recovery. Runtime admission remains external.
+    """
+    from engine import thematic_desk as td
+    from engine.qledger_store_native import NativeClaimsIntent
+    if type(regions) not in (list, tuple) or len(regions) > len(td.REGION):
+        raise ValueError("finite explicit thematic regions required")
+    regions = tuple(regions)
+    if (type(native_intents) is not dict or not regions or len(set(regions)) != len(regions)
+            or set(native_intents) != set(regions)
+            or any(r not in td.REGION for r in regions)
+            or any(type(intent) is not NativeClaimsIntent for intent in native_intents.values())
+            or len(set(native_intents.values())) != len(regions)):
+        raise ValueError("explicit distinct native intent required for each declared thematic region")
+    intents = dict(native_intents)  # caller mutation cannot retarget a later region
+    results = {}
+    for region in regions:
+        try:
+            results[region] = td.run(region, root=root, call=call, native_intent=intents[region])
+        except td.NativeThematicFailure as exc:
+            # Preserve completed prior regions; stop before any later producer.
+            exc.completed_regions = dict(results)
+            raise
+    return results
+
+
 def main(
     regions: list[str] | None = None,
     *,

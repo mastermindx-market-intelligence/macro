@@ -892,8 +892,14 @@ def test_explicit_native_intent_is_forwarded_for_exact_prospective_batch(tmp_pat
         observed.append((list(claims), kwargs))
         return []
     monkeypatch.setattr(qda.qledger, "register_batch", register)
-    result = qda.register_prospective([_thematic_desk_row()], family="thematic_desk",
-        today=TODAY, root=tmp_path, native_intent=intent)
+    from engine.qledger_store import _NativeClaimsBinding, _synthetic_claims_binding
+    from engine.qledger_store_protocol import ProtocolLimits
+    path = tmp_path / "data/qledger/claims.jsonl"
+    binding = _NativeClaimsBinding(path, operation_id=intent.operation_id,
+                                  lane_id=intent.lane_id, limits=ProtocolLimits())
+    with _synthetic_claims_binding(path, binding):
+        result = qda.register_prospective([_thematic_desk_row()], family="thematic_desk",
+            today=TODAY, root=tmp_path, native_intent=intent)
     assert result["error"] is None and len(observed) == 1
     assert observed[0][1]["native_intent"] is intent
     assert observed[0][1]["root"] == tmp_path
