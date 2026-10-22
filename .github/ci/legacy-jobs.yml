@@ -8162,6 +8162,46 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Build-failure suite: measured tracked reads and recursive template includes.
+      - "collectors/breadth.py"
+      - "collectors/intl_universe.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "scripts/worktree_sparse.py"
+      - "templates/_all_tools_menu.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_prophet_card.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_stock_decision.css.j2"
+      - "templates/data_base.js"
+      - "templates/intl.html.j2"
+      - "templates/intl_stock.html.j2"
+      - "templates/intl_workspace/history.html.j2"
+      - "templates/intl_workspace/inspector.html.j2"
+      - "templates/intl_workspace/library.html.j2"
+      - "templates/intl_workspace/macro.html.j2"
+      - "templates/intl_workspace/overview.html.j2"
+      - "templates/intl_workspace/risk.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
+      - "templates/shared_shell.css"
+      - "templates/shared_shell_bridge.js"
+      - "tests/__init__.py"
+      - "tests/test_intl_build.py"
       # International R12: measured country-source import closure and verification.
       - "collectors/intl_country_sources.py"
       - "collectors/intl_prices.py"
@@ -8514,6 +8554,8 @@ jobs:
         run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
       - name: International country evidence, outlook and publication custody
         run: python -m pytest tests/test_intl_country_cockpit.py tests/test_intl_forecast_vintages.py tests/test_intl_outlook_interpretation.py tests/test_intl_policy_evidence.py tests/test_intl_currency_observation.py -q
+      - name: International primary build and optional stock isolation
+        run: python -m pytest tests/test_intl_build.py -q
 
   international-workspace-browser:
     if: ${{ false }}

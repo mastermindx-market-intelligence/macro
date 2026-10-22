@@ -1,0 +1,22 @@
+{
+  "schema": "intl.workspace_query_commission.v1",
+  "source": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "task_class": "fix_build",
+  "task_complexity": "C2_COMPLEX_BOUNDED",
+  "dispatch": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_request",
+    "run_id": "intl-20261022-workspace-transport-query-r1",
+    "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "parent_id": "root",
+    "controller_pid": 23994,
+    "delivery": "CONTROLLER_CREATED",
+    "worker_started": null,
+    "worker_start_proven": false,
+    "adapter_exit_code": null,
+    "execution_absence_proven": false,
+    "next_observation": "fabric_status with the same run and root; fabric_controller_output with this PID when needed",
+    "retry_allowed": false
+  },
+  "acceptance": "NOT_ACCEPTED; controller creation alone does not prove worker start; sole integration writer remains root"
+}

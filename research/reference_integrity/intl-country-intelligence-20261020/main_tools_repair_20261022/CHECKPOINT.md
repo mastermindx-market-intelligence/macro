@@ -61,3 +61,8 @@ Predecessor CI39712269996 attempt2 succeeded at04:07:31Z after the one bounded a
 ## Next actions
 
 Independent runtime adjudication is complete. Run repository guards, commit the bounded evidence/knowledge changes with product bytes unchanged, publish the original Draft using expected-head Studio Git, replace stale PR status and follow its exact-head hosted CI. Then continue the concrete shell transport-query warning and parent focus-restoration work, and resolve the final broad data/integration review-evidence obligation. Preserve ordinary render lane ownership and every failed receipt.
+
+
+## Published Tools fix and active next phase — 2026-10-22 07:15Z
+
+Typed publication completed at head14ed4f12f31b71c63bbabd969aebbf9c4305ccaa; the draft PR body was updated. See TOOLS_PUBLICATION_RESULT.json. The current continuation is transport_query_repair_20261022/CHECKPOINT.md: new independent data-contract ACCEPT, actual-parent query/readiness baseline, existing build-regression CI enrollment, and the original active Fabric query-repair run. Earlier pending-push wording above is historical. Full acceptance/release remains pending.

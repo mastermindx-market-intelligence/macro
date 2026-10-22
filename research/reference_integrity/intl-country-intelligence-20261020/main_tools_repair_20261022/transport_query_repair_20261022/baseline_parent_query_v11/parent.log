@@ -1,0 +1,27 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+✓ Ready in 454ms
+
+ GET /intl.html 200 in 750ms (next.js: 386ms, proxy.ts: 120ms, application-code: 244ms)
+ GET /api/shared-shell/status 200 in 76ms (next.js: 67ms, application-code: 9ms)
+ GET /intl.html 200 in 61ms (next.js: 7ms, proxy.ts: 6ms, application-code: 49ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1904µs, application-code: 2ms)
+[analyticsEvents] SUPABASE_SERVICE_ROLE_KEY absent — events held in memory only (dev mode)
+ POST /api/collect 204 in 84ms (next.js: 70ms, application-code: 13ms)
+ GET /api/shared-shell/status 200 in 6ms (next.js: 2ms, application-code: 4ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 1358µs, application-code: 4ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 2ms, application-code: 1983µs)
+ POST /api/collect 204 in 7ms (next.js: 1162µs, application-code: 6ms)
+ GET /intl.html 200 in 70ms (next.js: 6ms, proxy.ts: 23ms, application-code: 41ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 2ms, application-code: 1952µs)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group= 200 in 80ms (next.js: 23ms, proxy.ts: 3ms, application-code: 54ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1208µs, application-code: 3ms)
+ POST /api/collect 204 in 8ms (next.js: 2ms, application-code: 6ms)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group=&unexpected=1 200 in 103ms (next.js: 15ms, proxy.ts: 5ms, application-code: 84ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 1133µs, application-code: 3ms)
+ POST /api/collect 204 in 10ms (next.js: 3ms, application-code: 8ms)
+ GET /intl.html?view=history&market=%54W&pins=&horizon=3m&basis=local&return_basis=price&group=&& 200 in 45ms (next.js: 5ms, proxy.ts: 3ms, application-code: 37ms)
+ GET /api/shared-shell/status 200 in 3ms (next.js: 1586µs, application-code: 1835µs)
+ POST /api/collect 200 in 7ms (next.js: 2ms, application-code: 5ms)
+[?25h
