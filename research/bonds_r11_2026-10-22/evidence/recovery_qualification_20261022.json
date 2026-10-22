@@ -1,0 +1,970 @@
+{
+  "schema": "bonds.r11.recovery_qualification.v1",
+  "recorded_at_utc": "2026-10-22T11:57:45.526331+00:00",
+  "protected_skillpack_pin": "230e9a301ed774e79410829f1b5c049226fa59f1",
+  "owner_pr": 8241,
+  "source_parents": [
+    "33824eb66a76bc6bd2293c9255c5680e54128e9f",
+    "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7"
+  ],
+  "qualified_source_tree": "17961cc8cbbacc0d8ad2a2e17a6568636f52ecdf",
+  "original_workspace_head": "f78f9fbb8fddecf2c859431eb6bbb8da4cf52e1a",
+  "original_file_hashes_rechecked": {
+    "scripts/build_bonds.py": "2d77ab89f5eff26d349a356a2210ae955d218ac31406f6118b1daf38ca59f8e7",
+    "tests/test_bonds_yield_curve_contract.py": "0252c22b9f70b639ce2dc3a094a8a09573936afa99b5d71854203edb63b7d2c9"
+  },
+  "native_source_hashes_still_match": true,
+  "source_artifact_qualified_union": 243,
+  "count_limit": "240 unaffected passes reused plus one corrected SVG assertion and two native artifact checks; not one all-green execution; new five checks overlap and are not added",
+  "native_input_manifest_sha256": "e7d7f237d746cbb56b3051fae159b117d81ad65649a4eae6adb48aba64f4f2f5",
+  "native_inputs_count": 491,
+  "native_input_bytes": 47623064,
+  "optional_explanation_inputs_absent": [
+    "data/transmission/latest.json",
+    "data/regime/latest.json"
+  ],
+  "source_review_accepted": false,
+  "browser_acceptance": false,
+  "production_acceptance": false,
+  "release_admitted": false,
+  "failed_evidence_preserved": true,
+  "records": {
+    "packet-adoption.json": {
+      "sha256": "45867b73837d7777102fd4f9fbd42c1b52e37a819858a07929c09a10f11affd2",
+      "record": {
+        "at": "2026-10-22T09:47:20.575999+00:00",
+        "comments": [
+          6075052823,
+          6192943689,
+          6140552826
+        ],
+        "patches": {
+          "curve.patch": "8b634700c3efbe630f377ad20b2e84f708ba8423ad741d22ecd18cd7db0e2e22",
+          "bis.patch": "23a41d7e3033546948e85d4b5e8d121410846b66742b3aa269c62861ebde9a54",
+          "lens.patch": "db5d821b7291de16b23cfa916a216451e2f21c28145ebb564e14c63f3603f928"
+        },
+        "pre_composition_tree": "2d7b42516affe5f911f3c5619186f8ebb6f85403",
+        "source_before": {
+          "scripts/build_bonds.py": "531d715619b38d3d56649ae8482c8382e42d30b7ab80161a06e418a1f1f62b54",
+          "tests/test_bonds_glance_copy.py": "bda664acd706dac21bef8dc8fcfb12900b6ca51596f89f04ad975fdc6bebd47c",
+          "engine/credit_cycle.py": "539f94a54bf5da1c301f69ef31e4b7cb2a84048b647dee8aeb631469a72bc8cf",
+          "templates/bonds.html.j2": "d2887b513b19aaae3d08860bc5c237e62829a5fd7a5b073de44868cd47d846d3"
+        },
+        "browser_acceptance": false,
+        "review_acceptance": false
+      }
+    },
+    "currentness-adoption.json": {
+      "sha256": "ce1fe12ae2dabe9fb1cdf55f286ece35a13eefbb12a4bad1b2445a7e21161a63",
+      "record": {
+        "at": "2026-10-22T09:54:22.679642+00:00",
+        "source_before": {
+          "engine/output_health.py": "8a2d8395a99c5900489949ec4d683e7e5e66356dd23398c5028ac1b6bc766a06",
+          "scripts/build_bonds.py": "d2dcfd2bfa7b2af6d8797d421b01b14cf6bc654c3099efd50fd32e086184a4cc",
+          "templates/bonds.html.j2": "29cb3e919527174be8b318502d893ce027865c2469f1a37dfcb670e5019ea3b9",
+          "tests/test_bonds_corp_credit_vm.py": "99d49d1b51bc0adaede2a7b1d348db33df6b998e96d67105d10af59b4ce66cc5"
+        },
+        "incumbent_private_policy_unchanged": true,
+        "synapse_contract_modified": false,
+        "source_review_accepted": false,
+        "browser_acceptance": false
+      }
+    },
+    "r19-adoption.json": {
+      "sha256": "cbe600c5d5aefc10b8600f21fd284f39a785983bbffe5d7cd378b36a423bada5",
+      "record": {
+        "at": "2026-10-22T09:55:46.008013+00:00",
+        "original_workspace": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-duration-r11-20260930-sol-c1",
+        "original_head": "f78f9fbb8fddecf2c859431eb6bbb8da4cf52e1a",
+        "original_source_preserved": true,
+        "original_test_sha256": "0252c22b9f70b639ce2dc3a094a8a09573936afa99b5d71854203edb63b7d2c9",
+        "adopted_test_sha256": "63db5ecb1a136b31493b70fc2442b855a38f9abe9e1aca024aab77498d746f30",
+        "helper_sha256": "040206b944aa6d35a7ac09e3d080fcd400ce2b4cbe7445a874f60a865f2a58e5",
+        "change_to_original_test": "Exclude the signature from the no-independent-math guard: its pd.DataFrame type annotation is not executed math. Original untracked test retained intact.",
+        "adopted_source_sha256": "8b304ebf282d364624ce5d22b5d7f78a9b492ade946bd57709310c67513c4054"
+      }
+    },
+    "affected-source-tests.json": {
+      "sha256": "8098b9a3c93d74a3ddba5bb70b2f2d147d9555567ecb7069e9050ddfed57c80a",
+      "record": {
+        "at": "2026-10-22T09:57:02.575705+00:00",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_bonds_corp_credit_vm.py",
+          "tests/test_bonds_divergence_gate.py",
+          "tests/test_bonds_glance_copy.py",
+          "tests/test_bonds_explanation_view.py",
+          "tests/test_bonds_duration_workflow.py",
+          "tests/test_credit_cycle.py",
+          "tests/test_bonds_yield_curve_contract.py",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider",
+          "-k",
+          "not test_committed_bonds_page_matches_contract and not test_committed_bonds_stylesheet_is_fingerprinted"
+        ],
+        "exit_code": 0,
+        "seconds": 17.478,
+        "source_before": {
+          "scripts/build_bonds.py": "8b304ebf282d364624ce5d22b5d7f78a9b492ade946bd57709310c67513c4054",
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "engine/output_health.py": "f89acffc543de39093d1d2a1dc79cbf9e4b7be8118d249e66387c55413b33323",
+          "engine/credit_cycle.py": "a8bfd156c1df92916c3bfb3f86275485a0f177dc70661952ca46d900792771e3",
+          "tests/test_bonds_corp_credit_vm.py": "27fccc3e7dd9090c0dc2952fb8098f997dbe8bec3d4a8daaecde838f6c1d7146",
+          "tests/test_bonds_divergence_gate.py": "12f4673a78dd90048137ab1d6b5c215acc0046718c8e54194fa195c26b33298a",
+          "tests/test_bonds_glance_copy.py": "feb0e27ccd532f58bd7ad2a817cbd0fa3d067a69b24af66531604c2e67bc92e9",
+          "tests/test_bonds_explanation_view.py": "d5cfa9d1ed25f15be4c41f5037500e74dc39b26294d24c8e11050b5cbc85fa92",
+          "tests/test_bonds_duration_workflow.py": "0a652198e6fff47ef15e5b952f5d98f74206ee577590d4ad2d6af1eed474c503",
+          "tests/test_credit_cycle.py": "b027a2154c0ca1ba81b944fc29439e1b7a999e30a0336f2ece79607d85efea10",
+          "tests/test_bonds_yield_curve_contract.py": "63db5ecb1a136b31493b70fc2442b855a38f9abe9e1aca024aab77498d746f30"
+        },
+        "source_unchanged": true,
+        "log_sha256": "34d964ee9609f5294518b6cd5eac88597e9ec6fdab2893e744329570707c286f",
+        "not_yet_proven": [
+          "Two committed-page/stylesheet checks require the new native generated page; they are omitted only from this local source run, not changed or removed from CI.",
+          "Original browser acceptance remains held."
+        ]
+      }
+    },
+    "ordinal-source-adoption.json": {
+      "sha256": "5249de1e7c8307b91dc138788a5a7196cbfd63584874f1a551cf709956be6a7a",
+      "record": {
+        "schema": "bonds.r11.ordinal_domain_source_adoption.v1",
+        "recorded_at_utc": "2026-10-22T10:11:02.349411+00:00",
+        "before": {
+          "lib/illus.py": "983475aff59143c2934541d236121e90ffa342484114b7ce5e0173500fc3fdac",
+          "scripts/build_bonds.py": "8b304ebf282d364624ce5d22b5d7f78a9b492ade946bd57709310c67513c4054",
+          "docs/ILLUSTRATIONS.md": "78aa1e75ea8028487182e9f465985e318e56ef7e6943b5b153572d264d77fa99"
+        },
+        "default_preimage_cases": 8,
+        "risk_radar_preserved_head": "1f93cf99d4cfabaec91c4646c8856e6d242b6f04",
+        "status": "SOURCE_WRITTEN_TESTS_PENDING",
+        "release_admitted": false
+      }
+    },
+    "ordinal-composed-source-tests.json": {
+      "sha256": "b19b6a9fa26ae63a4bf7591673a6dc23ad76139e941a9cfcd1bed058c4e5f1a3",
+      "record": {
+        "schema": "bonds.r11.ordinal_composed_tests.v1",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider",
+          "-k",
+          "not test_committed_bonds_page_matches_contract and not test_committed_bonds_stylesheet_is_fingerprinted",
+          "tests/test_illus.py",
+          "tests/test_bonds_corp_credit_vm.py",
+          "tests/test_bonds_divergence_gate.py",
+          "tests/test_bonds_glance_copy.py",
+          "tests/test_bonds_explanation_view.py",
+          "tests/test_bonds_duration_workflow.py",
+          "tests/test_credit_cycle.py",
+          "tests/test_bonds_yield_curve_contract.py"
+        ],
+        "started_at_utc": "2026-10-22T10:11:56.457382+00:00",
+        "finished_at_utc": "2026-10-22T10:12:18.871618+00:00",
+        "exit_code": 1,
+        "before": {
+          "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+          "scripts/build_bonds.py": "8670ba795e4e0338a364a9d6d816721fbba258824c4a503d05a6b0ff791bcd10",
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "engine/output_health.py": "f89acffc543de39093d1d2a1dc79cbf9e4b7be8118d249e66387c55413b33323",
+          "engine/credit_cycle.py": "a8bfd156c1df92916c3bfb3f86275485a0f177dc70661952ca46d900792771e3",
+          "tests/test_illus.py": "55b212f22664be3c3450adfad92f73e4249bf76fc13cb3c4e1b496d7dfa8091a",
+          "tests/test_bonds_corp_credit_vm.py": "27fccc3e7dd9090c0dc2952fb8098f997dbe8bec3d4a8daaecde838f6c1d7146",
+          "tests/test_bonds_divergence_gate.py": "12f4673a78dd90048137ab1d6b5c215acc0046718c8e54194fa195c26b33298a",
+          "tests/test_bonds_glance_copy.py": "feb0e27ccd532f58bd7ad2a817cbd0fa3d067a69b24af66531604c2e67bc92e9",
+          "tests/test_bonds_explanation_view.py": "d5cfa9d1ed25f15be4c41f5037500e74dc39b26294d24c8e11050b5cbc85fa92",
+          "tests/test_bonds_duration_workflow.py": "0a652198e6fff47ef15e5b952f5d98f74206ee577590d4ad2d6af1eed474c503",
+          "tests/test_credit_cycle.py": "b027a2154c0ca1ba81b944fc29439e1b7a999e30a0336f2ece79607d85efea10",
+          "tests/test_bonds_yield_curve_contract.py": "79812b8c5182d5687b02ce55c9f3a6bbe5d2571798be1a3902c94c04b6908864"
+        },
+        "source_unchanged": true,
+        "log_sha256": "c236bc5209821f36f4a2ae4db3f4261d125f6a3b5ba13f90b65f5b5a8bc7ae59",
+        "native_artifact_tests_remain_enabled_in_ci": true
+      }
+    },
+    "ordinal-test-correction.json": {
+      "sha256": "aa1345b6d9f343a53f1cfef1250f364d4cdcc919d4329bda3d64bb739cd5380a",
+      "record": {
+        "schema": "bonds.r11.ordinal_test_correction.v1",
+        "recorded_at_utc": "2026-10-22T10:12:49.346349+00:00",
+        "reason": "Inspect SVG path geometry; the CSS token --info is not a non-finite coordinate.",
+        "original_result": "240 passed,1 failed,2 deselected; original log retained",
+        "before_sha256": "55b212f22664be3c3450adfad92f73e4249bf76fc13cb3c4e1b496d7dfa8091a",
+        "after_sha256": "dd092312e68f491b0dd77069b387075214c97afec96e3146f35e89e023ddfdca",
+        "product_source_changed": false,
+        "rerun_scope": "Only corrected assertion"
+      }
+    },
+    "ordinal-corrected-assertion.json": {
+      "sha256": "deabc685448bc7e6b2690a3eafdc791305a149f6bdb7be136cafc837184af673",
+      "record": {
+        "schema": "bonds.r11.ordinal_corrected_assertion.v1",
+        "recorded_at_utc": "2026-10-22T10:13:15.656563+00:00",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_illus.py::test_ordinal_shared_gaps_preserve_the_full_domain"
+        ],
+        "exit_code": 0,
+        "test_sha256": "dd092312e68f491b0dd77069b387075214c97afec96e3146f35e89e023ddfdca",
+        "product_source_sha256": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+        "log_sha256": "66bba16cb8034f86f397ca937761e58d5bc804f4959e889ca9c27e18e7525571",
+        "previous_240_passing_cases_reused": "No product-source change; one new assertion corrected to inspect geometry instead of CSS token --info.",
+        "unchanged_artifact_checks_still_pending": 2
+      }
+    },
+    "risk-8721-ordinal-virtual-composition.json": {
+      "sha256": "01015a644545212b2d72d500f03804fab07f6e3219d1e89cc93d2e6a943bccd7",
+      "record": {
+        "schema": "bonds.r11.risk_8721_virtual_composition.v1",
+        "recorded_at_utc": "2026-10-22T10:13:09.319153+00:00",
+        "risk_head": "1f93cf99d4cfabaec91c4646c8856e6d242b6f04",
+        "risk_immutable_sha256": "95e22b8208e105e046705d47ef7bfeb967e265a2bd373abe64dcf966c96cedbe",
+        "ordinal_source_sha256": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+        "virtual_composition_sha256": "af28f38eb67e3d4872caa41c405ffdef761b0fc7acef3b023c7d50e02ab8e664",
+        "only_changed_functions": [
+          "_render_multi",
+          "illus"
+        ],
+        "default_cases_byte_equal": 8,
+        "minus_and_id_prefix_cases_byte_equal": [
+          {
+            "kind": "line",
+            "sha256": "ca991e613909b4af287240d1b26b0a49e86fad7d326eb604dcc42ad671b3a77a",
+            "ids": []
+          },
+          {
+            "kind": "area",
+            "sha256": "14d3463ad99182293d4f92571f7de1432903a35ac649a82e21b79b816ca3c14f",
+            "ids": [
+              "risk-testilxg-7c4b81fb"
+            ]
+          },
+          {
+            "kind": "baseline",
+            "sha256": "c8e30015e271e5528f203770a9a1be7447dab82509ed8c66876ad3324725c648",
+            "ids": [
+              "risk-testilxct-5864f443",
+              "risk-testilxcb-5864f443",
+              "risk-testilxgu-5864f443",
+              "risk-testilxgd-5864f443",
+              "risk-testilxa-5864f443",
+              "risk-testilxl-5864f443"
+            ]
+          },
+          {
+            "kind": "drawdown",
+            "sha256": "22fab722bc341b26dfa7de6863a243ff69d8c989dcacaa788e718a5b45dc65a0",
+            "ids": [
+              "risk-testilxg-8288fb77"
+            ]
+          },
+          {
+            "kind": "bars",
+            "sha256": "c0d814be516954371f611748e2de09787dd523801df4031fe18ee9eca69eb683",
+            "ids": []
+          }
+        ],
+        "ordinal_with_risk_options_equal": true,
+        "initial_validation_failure": "PID93347 asserted an extra hyphen absent from incumbent id_prefix concatenation; corrected validation only, no product source change",
+        "risk_branch_or_workspace_modified": false,
+        "release_admitted": false
+      }
+    },
+    "native-build.json": {
+      "sha256": "ec7370dd65a966a61eabdb67843e24342fc01188e5404402e3a82a1a8c8e0ee5",
+      "record": {
+        "schema": "bonds.r11.native_build.v1",
+        "recorded_at_utc": "2026-10-22T10:19:51.872059+00:00",
+        "entry": "scripts.build_bonds.main with private cached storage paths",
+        "exit_code": 0,
+        "seconds": 11.458,
+        "source_before": {
+          "scripts/build_bonds.py": "8670ba795e4e0338a364a9d6d816721fbba258824c4a503d05a6b0ff791bcd10",
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "engine/output_health.py": "f89acffc543de39093d1d2a1dc79cbf9e4b7be8118d249e66387c55413b33323",
+          "engine/credit_cycle.py": "a8bfd156c1df92916c3bfb3f86275485a0f177dc70661952ca46d900792771e3",
+          "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+          "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+          "config/synapse.yml": "63f117f5dbb5e296bddeb8703f5197680ba0c9b953ff45182e2acf9be6f66e2b"
+        },
+        "source_unchanged": true,
+        "inputs_unchanged": true,
+        "outputs": {
+          "site/bonds.html": {
+            "bytes": 334873,
+            "sha256": "9aeb86d9e03f64e015c0c19ce86875cf4dedcbbedba9566aa3406f86e692f348"
+          },
+          "data/bonds/bond_health.json": {
+            "bytes": 125922,
+            "sha256": "d4b0910089d3fd386ecb2179b79df58413408e64f2c921ce9419e18a9d411323"
+          },
+          "data/bonds/latest.json": {
+            "bytes": 347,
+            "sha256": "1f248ba1a843b922116014ce251dc5d92166d2cf894ad551a5bc0cfe6682315a"
+          },
+          "data/bonds/alerts.jsonl": {
+            "bytes": 285250,
+            "sha256": "ee88cefdb6453d8c8e3314ec1d65169be5166c0ae553ba8e4b656be69355911b"
+          }
+        },
+        "denied_operations": [],
+        "browser_or_production_proven": false,
+        "page_facts": {
+          "Historical recession ordering": true,
+          "Global credit cycle": true,
+          "credit-currentness-unconfirmed": true
+        },
+        "local_asset_refs": [
+          "illus.css",
+          "illus.js",
+          "live.js",
+          "live_config.js",
+          "logo_config.js",
+          "navigation-refresh.css",
+          "product-nav-icons.css",
+          "shared_shell.css",
+          "shared_shell_bridge.js",
+          "stock-logos.js",
+          "theme.js"
+        ],
+        "machine_yield_curve_present": true
+      }
+    },
+    "native-assets.json": {
+      "sha256": "14daec062818d7f1e8c0c80e05009406247b3dfb79900108ad6480d370f04225",
+      "record": {
+        "schema": "bonds.r11.native_asset_package.v1",
+        "recorded_at_utc": "2026-10-22T10:26:32.982066+00:00",
+        "externalized_pages": 1,
+        "optimized_files": 1,
+        "artifacts": [
+          {
+            "path": "bonds.html",
+            "bytes": 263899,
+            "sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626",
+            "index_blob_present": true,
+            "equals_index_bytes": false
+          },
+          {
+            "path": "assets/css/080bfc12.css",
+            "bytes": 2298,
+            "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "assets/css/1820ffed.css",
+            "bytes": 8307,
+            "sha256": "1820ffed2ebbf317745be951261d72109cad9d52c83887386780b16d06d97df0",
+            "index_blob_present": false,
+            "equals_index_bytes": false
+          },
+          {
+            "path": "assets/css/a29822ca.css",
+            "bytes": 29641,
+            "sha256": "a29822ca77818db75541e0fb65e61de7c458a22844bfd5f0d31d575ab02e7c08",
+            "index_blob_present": false,
+            "equals_index_bytes": false
+          },
+          {
+            "path": "assets/css/c45789fd.css",
+            "bytes": 23542,
+            "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "assets/css/fa07e99a.css",
+            "bytes": 7786,
+            "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "illus.css",
+            "bytes": 14335,
+            "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "illus.js",
+            "bytes": 2752,
+            "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "live.js",
+            "bytes": 50731,
+            "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "live_config.js",
+            "bytes": 367,
+            "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "logo_config.js",
+            "bytes": 202,
+            "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "navigation-refresh.css",
+            "bytes": 104548,
+            "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "product-nav-icons.css",
+            "bytes": 40320,
+            "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "shared_shell.css",
+            "bytes": 467,
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "shared_shell_bridge.js",
+            "bytes": 51246,
+            "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "stock-logos.js",
+            "bytes": 16539,
+            "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "theme.js",
+            "bytes": 271335,
+            "sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          },
+          {
+            "path": "data_base.js",
+            "bytes": 2367,
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "index_blob_present": true,
+            "equals_index_bytes": true
+          }
+        ],
+        "source_before": {
+          "templates/bonds.html.j2": "274e56734c92b93f8749f6356e96944281761197a12c5f04a59727838a1973ba",
+          "scripts/build_bonds.py": "8670ba795e4e0338a364a9d6d816721fbba258824c4a503d05a6b0ff791bcd10",
+          "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+          "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+          "templates/theme.js": "4403e51fd4486a1bd9de261dd3e21f6e642fbb9725fa010248f6701df3fe000e"
+        },
+        "source_unchanged": true,
+        "denied_operations": [],
+        "native_only": true,
+        "resumes_partial_asset_stage": 35705,
+        "native_build_repeated": false,
+        "private_dependency": "requirements.txt rjsmin==1.2.5",
+        "browser_or_production_proven": false,
+        "closure_scope": "HTML local stylesheet/script references and recursively declared stylesheet resources; no dynamic runtime claim"
+      }
+    },
+    "native-artifact-tests.json": {
+      "sha256": "b70904bdd03dedc844b0d903e2119e9da2c32e68b016ba87a5ae5d61fa062868",
+      "record": {
+        "schema": "bonds.r11.native_artifact_tests.v1",
+        "at": "2026-10-22T10:28:03.021269+00:00",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_bonds_glance_copy.py::test_committed_bonds_page_matches_contract",
+          "tests/test_bonds_glance_copy.py::test_committed_bonds_stylesheet_is_fingerprinted"
+        ],
+        "exit_code": 0,
+        "log_sha256": "47d0d64d2d38bbd7ae069dfbe186d0083d00d37bc33999e6be85c2c5c3118fa5",
+        "adopted_page_sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626"
+      }
+    },
+    "ci-wiring.json": {
+      "sha256": "fa8d483bcf64f9350280097cac9525d5545d0ad3183657c7df0cf71c44704ba8",
+      "record": {
+        "schema": "bonds.r11.ci_wiring.v1",
+        "at": "2026-10-22T10:31:09.139383+00:00",
+        "changed_jobs": [
+          "ccw-w3-credit-momentum",
+          "ccw-w4-credit-desk"
+        ],
+        "removed_unrun_baseline_entries": [
+          "tests/test_credit_cycle.py",
+          "tests/test_illus.py"
+        ],
+        "all_other_jobs_unchanged": true,
+        "install_commands_unchanged": true,
+        "scope_gates_ceilings_unchanged": true,
+        "manifest_sha256": "84da6e046d8cb64bbe596174e952eeedab52bd12c40afc8820637573b45c6e6a",
+        "staged_owned_paths": [
+          "docs/ILLUSTRATIONS.md",
+          "engine/credit_cycle.py",
+          "engine/output_health.py",
+          "lib/illus.py",
+          "scripts/build_bonds.py",
+          "site/bonds.html",
+          "site/assets/css/1820ffed.css",
+          "site/assets/css/a29822ca.css",
+          "templates/bonds.html.j2",
+          "tests/test_bonds_corp_credit_vm.py",
+          "tests/test_bonds_glance_copy.py",
+          "tests/test_illus.py",
+          "tests/test_bonds_yield_curve_contract.py",
+          ".github/ci/legacy-jobs.yml",
+          "config/unrun_test_baseline.json"
+        ],
+        "index_tree": "c2e5a1aab13d71fafecde1e9e6b6d98f1a5cec09"
+      }
+    },
+    "curation-guards.json": {
+      "sha256": "5deaf702b3ec215ed779a75dfda1b3054b48adf1b29b0b1c129c03bd9069e94f",
+      "record": {
+        "schema": "bonds.r11.curation_guards.v1",
+        "at": "2026-10-22T10:36:09.091572+00:00",
+        "source_tree": "c2e5a1aab13d71fafecde1e9e6b6d98f1a5cec09",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+          "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "seconds": 234.884,
+        "manifest_unchanged": true,
+        "manifest_sha256": "84da6e046d8cb64bbe596174e952eeedab52bd12c40afc8820637573b45c6e6a",
+        "log_sha256": "788f4a6baf14460b9e24f76edc5c11dca840fe8e4d32339bbdf11481b2ee0f89"
+      }
+    },
+    "packing-diagnostic-result.json": {
+      "sha256": "ce5c415e41e2574e0673b9566f40edd8d36fb28d590233eb7ab2c6dbde30745e",
+      "record": {
+        "schema": "bonds.r11.packing_delta_diagnostic.v1",
+        "at": "2026-10-22T11:31:42.773004+00:00",
+        "source_tree": "c2e5a1aab13d71fafecde1e9e6b6d98f1a5cec09",
+        "incoming_main": "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7",
+        "candidate_manifest_sha256": "84da6e046d8cb64bbe596174e952eeedab52bd12c40afc8820637573b45c6e6a",
+        "base_manifest_sha256": "8f52996cd5ac53ca99c757c2d1af094ccfa456bb8d31a31aebc99cbc277f047c",
+        "same_current_source_for_both_manifests": true,
+        "source_or_index_mutation": false,
+        "completed_at": "2026-10-22T11:33:49.794963+00:00",
+        "seconds": 126.463,
+        "manifest_changed_jobs": [
+          "ccw-w3-credit-momentum",
+          "ccw-w4-credit-desk"
+        ],
+        "deltas": [
+          {
+            "probe": "templates/index.html",
+            "incoming_jobs": 136,
+            "candidate_jobs": 136,
+            "incoming_weight": 5852,
+            "candidate_weight": 5858,
+            "delta": 6,
+            "contributions": [
+              {
+                "job": "ccw-w4-credit-desk",
+                "base_selected": true,
+                "candidate_selected": true,
+                "base_weight": 10,
+                "candidate_weight": 16,
+                "delta": 6
+              }
+            ]
+          },
+          {
+            "probe": "scripts/build_free_content.py",
+            "incoming_jobs": 135,
+            "candidate_jobs": 136,
+            "incoming_weight": 5820,
+            "candidate_weight": 5836,
+            "delta": 16,
+            "contributions": [
+              {
+                "job": "ccw-w4-credit-desk",
+                "base_selected": false,
+                "candidate_selected": true,
+                "base_weight": 0,
+                "candidate_weight": 16,
+                "delta": 16
+              }
+            ]
+          },
+          {
+            "probe": "engine/prophet/plan_book.py",
+            "incoming_jobs": 128,
+            "candidate_jobs": 128,
+            "incoming_weight": 5596,
+            "candidate_weight": 5598,
+            "delta": 2,
+            "contributions": [
+              {
+                "job": "ccw-w3-credit-momentum",
+                "base_selected": true,
+                "candidate_selected": true,
+                "base_weight": 10,
+                "candidate_weight": 12,
+                "delta": 2
+              }
+            ]
+          }
+        ],
+        "manifest_unchanged": true,
+        "index_tree_unchanged": true
+      }
+    },
+    "presentation-placement-intent.json": {
+      "sha256": "18911f9d287b730605833db77538720daf05bc72562e8ce0d5bec4f2e166e294",
+      "record": {
+        "schema": "bonds.r11.presentation_ci_placement.v1",
+        "started_at_utc": "2026-10-22T11:45:52.601185+00:00",
+        "source_tree_before": "c2e5a1aab13d71fafecde1e9e6b6d98f1a5cec09",
+        "moved_suites": [
+          "tests/test_bonds_explanation_view.py",
+          "tests/test_bonds_yield_curve_contract.py",
+          "tests/test_illus.py"
+        ],
+        "from_job": "ccw-w4-credit-desk",
+        "to_job": "dashboard-render-contract",
+        "same_named_suite_multiset": true,
+        "duration_and_node20_stay_in_desk": true,
+        "gates_scope_modes_timeouts_dependencies_unchanged": true,
+        "observed_duration_overrides_unchanged": true,
+        "duration_reference_before_sha256": "0a652198e6fff47ef15e5b952f5d98f74206ee577590d4ad2d6af1eed474c503",
+        "duration_reference_after_sha256": "e5167282aca147dce55cc2e5d75af3d3f2796363a8def65e4fa72c6cbbe6878e",
+        "duration_reference_change": "Read the already imported native builder file through BB.__file__; all source assertions retained",
+        "manifest_sha256": "b4af6194ac6c870c69bb54bdf7ac2c3593b7a603aca2419b4056758af16eaa24"
+      }
+    },
+    "presentation-placement-closure.json": {
+      "sha256": "7981a80669d75d6d982e72ee8212bc49f94a68ab328097fc3ac41fa3fc3cce23",
+      "record": {
+        "schema": "bonds.r11.presentation_ci_placement.v1",
+        "started_at_utc": "2026-10-22T11:45:52.601185+00:00",
+        "source_tree_before": "c2e5a1aab13d71fafecde1e9e6b6d98f1a5cec09",
+        "moved_suites": [
+          "tests/test_bonds_explanation_view.py",
+          "tests/test_bonds_yield_curve_contract.py",
+          "tests/test_illus.py"
+        ],
+        "from_job": "ccw-w4-credit-desk",
+        "to_job": "dashboard-render-contract",
+        "same_named_suite_multiset": true,
+        "duration_and_node20_stay_in_desk": true,
+        "gates_scope_modes_timeouts_dependencies_unchanged": true,
+        "observed_duration_overrides_unchanged": true,
+        "duration_reference_before_sha256": "0a652198e6fff47ef15e5b952f5d98f74206ee577590d4ad2d6af1eed474c503",
+        "duration_reference_after_sha256": "e5167282aca147dce55cc2e5d75af3d3f2796363a8def65e4fa72c6cbbe6878e",
+        "duration_reference_change": "Read the already imported native builder file through BB.__file__; all source assertions retained",
+        "manifest_sha256": "b4af6194ac6c870c69bb54bdf7ac2c3593b7a603aca2419b4056758af16eaa24",
+        "closure_findings": {
+          "dashboard-render-contract": [
+            "templates/illus.css"
+          ]
+        },
+        "closure_seconds": 138.948,
+        "completed_at_utc": "2026-10-22T11:48:11.632241+00:00"
+      }
+    },
+    "presentation-placement-repair.json": {
+      "sha256": "d11b7c3e409716bccf26edc0c4daab9842b8dc3e23bcd554f60ec165c6fa48f3",
+      "record": {
+        "schema": "bonds.r11.presentation_ci_placement_closure.v1",
+        "at": "2026-10-22T11:50:50.475727+00:00",
+        "added_exact_closure_path": "templates/illus.css",
+        "dashboard_path_count": 201,
+        "manifest_sha256": "c1cd7d91efe24b35a532454270d657b2517535be4f691cb9964848017bd16fef",
+        "source_tree": "17961cc8cbbacc0d8ad2a2e17a6568636f52ecdf",
+        "prior_failure_retained": true,
+        "all_gates_scope_modes_timeouts_dependencies_unchanged": true
+      }
+    },
+    "curation-guards-repaired.json": {
+      "sha256": "737867a23b9a720f7dbc5c6d931ef9cf6753a92a303ea67a14a9b3ffa23b599f",
+      "record": {
+        "schema": "bonds.r11.presentation_ci_placement_closure.v1",
+        "at": "2026-10-22T11:50:50.475727+00:00",
+        "added_exact_closure_path": "templates/illus.css",
+        "dashboard_path_count": 201,
+        "manifest_sha256": "c1cd7d91efe24b35a532454270d657b2517535be4f691cb9964848017bd16fef",
+        "source_tree": "17961cc8cbbacc0d8ad2a2e17a6568636f52ecdf",
+        "prior_failure_retained": true,
+        "all_gates_scope_modes_timeouts_dependencies_unchanged": true,
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+          "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "tests/test_bonds_duration_workflow.py::test_explanation_view_is_one_object_for_page_and_machine_snapshot",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 0,
+        "seconds": 173.806,
+        "completed_at_utc": "2026-10-22T11:53:44.283512+00:00",
+        "manifest_unchanged": true,
+        "log_sha256": "b7bbfb2b36829b923e0d6929dbdc4f65480da5e5a9ed52864f4dde5fb8da7432"
+      }
+    },
+    "native-declared-resource-attempt1.json": {
+      "sha256": "385792c02ad312a74cb6c4b581bee6e4419250f9a9a32fdcbb9728b37687e423",
+      "record": {
+        "schema": "bonds.r11.native_declared_resource_attempt.v1",
+        "pid": 97725,
+        "exit_code": 1,
+        "reason": "Expanded declared-resource audit expected every missing binary in templates; favicon.ico and apple-touch-icon.png are instead retained as site-only index assets.",
+        "diagnostic_pid": 98874,
+        "html_unchanged_sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626",
+        "missing": [
+          "favicon.ico",
+          "apple-touch-icon.png"
+        ],
+        "both_index_assets_present": true,
+        "native_build_repeated": false,
+        "original_stylesheet_script_proof_preserved": true
+      }
+    },
+    "native-declared-resource-closure.json": {
+      "sha256": "a6623415f9662f2993684c0a586c4bd128a55a4b1dc2e96aa6fe2f4cda6b84a7",
+      "record": {
+        "schema": "bonds.r11.native_declared_resource_closure.v1",
+        "recorded_at_utc": "2026-10-22T11:56:28.850159+00:00",
+        "prior_html_sha256": "7bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626",
+        "prior_18_artifacts_unchanged": true,
+        "final_reference_count": 25,
+        "fonts": [
+          "fonts/Inter-400.woff2",
+          "fonts/Inter-500.woff2",
+          "fonts/Inter-600.woff2",
+          "fonts/Inter-700.woff2",
+          "fonts/Inter-800.woff2",
+          "fonts/Inter-900.woff2"
+        ],
+        "copied_missing_binary_resources": [
+          {
+            "path": "favicon.ico",
+            "source": "index:site/favicon.ico",
+            "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24",
+            "bytes": 6597,
+            "equals_existing_site_index": true
+          },
+          {
+            "path": "apple-touch-icon.png",
+            "source": "index:site/apple-touch-icon.png",
+            "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6",
+            "bytes": 23722,
+            "equals_existing_site_index": true
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "apple-touch-icon.png",
+            "bytes": 23722,
+            "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+          },
+          {
+            "path": "assets/css/080bfc12.css",
+            "bytes": 2298,
+            "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+          },
+          {
+            "path": "assets/css/1820ffed.css",
+            "bytes": 8307,
+            "sha256": "1820ffed2ebbf317745be951261d72109cad9d52c83887386780b16d06d97df0"
+          },
+          {
+            "path": "assets/css/a29822ca.css",
+            "bytes": 29641,
+            "sha256": "a29822ca77818db75541e0fb65e61de7c458a22844bfd5f0d31d575ab02e7c08"
+          },
+          {
+            "path": "assets/css/c45789fd.css",
+            "bytes": 23542,
+            "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+          },
+          {
+            "path": "assets/css/fa07e99a.css",
+            "bytes": 7786,
+            "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189"
+          },
+          {
+            "path": "favicon.ico",
+            "bytes": 6597,
+            "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+          },
+          {
+            "path": "favicon.svg",
+            "bytes": 2043,
+            "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+          },
+          {
+            "path": "fonts/Inter-400.woff2",
+            "bytes": 23664,
+            "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+          },
+          {
+            "path": "fonts/Inter-500.woff2",
+            "bytes": 24272,
+            "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+          },
+          {
+            "path": "fonts/Inter-600.woff2",
+            "bytes": 24452,
+            "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+          },
+          {
+            "path": "fonts/Inter-700.woff2",
+            "bytes": 24356,
+            "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+          },
+          {
+            "path": "fonts/Inter-800.woff2",
+            "bytes": 24400,
+            "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+          },
+          {
+            "path": "fonts/Inter-900.woff2",
+            "bytes": 23900,
+            "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+          },
+          {
+            "path": "illus.css",
+            "bytes": 14335,
+            "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+          },
+          {
+            "path": "illus.js",
+            "bytes": 2752,
+            "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+          },
+          {
+            "path": "live.js",
+            "bytes": 50731,
+            "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+          },
+          {
+            "path": "live_config.js",
+            "bytes": 367,
+            "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+          },
+          {
+            "path": "logo_config.js",
+            "bytes": 202,
+            "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+          },
+          {
+            "path": "navigation-refresh.css",
+            "bytes": 104548,
+            "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+          },
+          {
+            "path": "product-nav-icons.css",
+            "bytes": 40320,
+            "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+          },
+          {
+            "path": "shared_shell.css",
+            "bytes": 467,
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+          },
+          {
+            "path": "shared_shell_bridge.js",
+            "bytes": 51246,
+            "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d"
+          },
+          {
+            "path": "stock-logos.js",
+            "bytes": 16539,
+            "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+          },
+          {
+            "path": "theme.js",
+            "bytes": 271335,
+            "sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6"
+          }
+        ],
+        "native_build_repeated": false,
+        "resumes_resource_attempt_pid": 97725,
+        "externalizer_or_optimizer_repeated": false,
+        "tracked_asset_changes": false,
+        "browser_or_dynamic_runtime_proven": false,
+        "scope": "all declared packaged HTML/inline CSS resources and recursive stylesheet resources; missing declared binary resources copied privately from their exact existing site-index bytes"
+      }
+    }
+  },
+  "hold_constraints": [
+    "original browser administrator denial",
+    "existing-owner source review",
+    "R33 original unqualified429 review cannot be bypassed",
+    "no retry of refused Terminal deployment",
+    "no migration0038 or Forex render replay"
+  ],
+  "full_program_complete": false,
+  "source_commit_preflight_reconciliation": {
+    "pid": 7784,
+    "effect": "NOT_ATTEMPTED",
+    "stage": "commit_preflight_after_explicit_document_staging",
+    "failure": "git diff --cached --check without a base compared the entire incoming main delta to old R11 HEAD and stopped on inherited whitespace findings",
+    "reconciliation_at_utc": "2026-10-22T12:04:06.172586+00:00",
+    "head": "33824eb66a76bc6bd2293c9255c5680e54128e9f",
+    "merge_head": "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7",
+    "index_before_documentation_update": "9b2d639f9774e16ebb7d78351f265e63ecef0377",
+    "difference_from_qualified_tree": [
+      "research/bonds_r11_2026-10-22/MASTER_PLAN.md",
+      "research/bonds_r11_2026-10-22/evidence/recovery_qualification_20261022.json"
+    ],
+    "commit_intent_and_result_absent": true,
+    "source_unchanged": true,
+    "recovery": "check only the new documentation delta against qualified source tree; preserve inherited main and all qualified source bytes"
+  }
+}

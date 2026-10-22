@@ -1,0 +1,158 @@
+{
+  "schema": "bonds.r11_cdi_source_composition_checkpoint.v1",
+  "recorded_at_utc": "2026-10-22T12:22:39.636197+00:00",
+  "parents": [
+    "24bc32a9c480906801daaab03c4267e0dc10efba",
+    "04b13fbbae71f109f23f8b43ad1a5fa59ee75151"
+  ],
+  "qualified_source_tree": "ff1e93c35cbaf36eab0550ac7dd5ef1993445057",
+  "source_tests": {
+    "passed": 300,
+    "artifact_checks_deferred": 2,
+    "reason": "actual combined native build follows current-main reconciliation"
+  },
+  "curation_checks_passed": 5,
+  "receipts": {
+    "r11-composition-resolution.json": {
+      "schema": "bonds.combined_source_composition.v1",
+      "at": "2026-10-22T12:10:18.603175+00:00",
+      "head": "24bc32a9c480906801daaab03c4267e0dc10efba",
+      "incoming": "04b13fbbae71f109f23f8b43ad1a5fa59ee75151",
+      "tree": "ee1fe3877c1f1b8d0ccb49d752d373598bab25f1",
+      "unmerged": [],
+      "manifest_sha256": "9a3fb6e0dab9f961aae8357ca56e722e685421f5c5916dea489137dbba13510e",
+      "named_suite_multiset_equals_parent_union": true,
+      "incumbent_gates_scopes_timeouts_dependencies_preserved": true,
+      "function_owner_equality": {
+        "_build_maturity_wall": true,
+        "build_corp_credit_vm": true,
+        "_build_corp_credit_bond_health": true,
+        "_attach_yield_curve_contract": true,
+        "build_bonds_explanation_vm": true,
+        "chart_curve_now": true,
+        "_multi": true
+      },
+      "source_hashes": {
+        "scripts/build_bonds.py": "f87935b2fa89a87ea960bbfdf96d8a79b77f8b42fe9a68bed964cd41e5579919",
+        "templates/bonds.html.j2": "fe6a60157a70697f1639115dd5fc51a294e0511f056176656ff21ca057c08716",
+        "tests/test_bonds_corp_credit_vm.py": "c35871eb89fb7f36d81d372f661a739a7a7c8b922f10018228f4b52f3269bfb0",
+        "lib/illus.py": "6150f4dda7e729ad3d2b2f0b8cfdf9795a61a716f1bca79d3f9840a7264e595a",
+        "templates/_credit_dislocation.html.j2": "7bee795284a928a8a0dcfa827dcb63ca0cdb3afdf5ae10dd576cfe58bfea0ca8"
+      }
+    },
+    "r11-combined-closure-initial.json": {
+      "schema": "bonds.combined_source_closure.v1",
+      "completed_at_utc": "2026-10-22T12:12:52.841879+00:00",
+      "source_tree": "ee1fe3877c1f1b8d0ccb49d752d373598bab25f1",
+      "seconds": 151.706,
+      "findings": {
+        "ccw-w4-credit-desk": [
+          "engine/output_health.py",
+          "engine/yield_curve.py",
+          "scripts/check_template_site_sync.py",
+          "scripts/externalize_css.py"
+        ]
+      },
+      "original_resolution_preflights": {
+        "34572": "scope comparison refused before writes; receiver exclusive scope retained",
+        "41144": "exact install comparison refused before writes; receiver FastAPI superset retained"
+      },
+      "maturity_test_clock": "explicit aware2026-10-17T12:00UTC; all assertions unchanged"
+    },
+    "r11-combined-closure-repair.json": {
+      "schema": "bonds.combined_source_closure_repair.v1",
+      "at": "2026-10-22T12:14:10.119935+00:00",
+      "tree": "ff1e93c35cbaf36eab0550ac7dd5ef1993445057",
+      "added_exact_paths": [
+        "engine/output_health.py",
+        "engine/yield_curve.py",
+        "scripts/check_template_site_sync.py",
+        "scripts/externalize_css.py"
+      ],
+      "manifest_sha256": "8c04ca12b46327c4333026a06c06cc044fd70288380bc3e02431bf903137a1a7",
+      "scope": "exclusive",
+      "gates_timeouts_ceilings_coverage_unchanged": true
+    },
+    "r11-combined-source-tests.json": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-m",
+        "pytest",
+        "tests/test_bonds_corp_credit_vm.py",
+        "tests/test_bonds_divergence_gate.py",
+        "tests/test_bonds_glance_copy.py",
+        "tests/test_bonds_explanation_view.py",
+        "tests/test_bonds_duration_workflow.py",
+        "tests/test_credit_cycle.py",
+        "tests/test_bonds_yield_curve_contract.py",
+        "tests/test_illus.py",
+        "tests/test_credit_dislocation_view.py",
+        "tests/test_credit_dislocation_wiring.py",
+        "tests/test_macro_decision_publication.py",
+        "tests/test_bonds_source_integration.py",
+        "-q",
+        "--disable-warnings",
+        "-p",
+        "no:cacheprovider",
+        "-k",
+        "not test_committed_bonds_page_matches_contract and not test_committed_bonds_stylesheet_is_fingerprinted"
+      ],
+      "exit_code": 0,
+      "seconds": 21.919,
+      "completed_at_utc": "2026-10-22T12:14:32.041337+00:00",
+      "source_tree": "ff1e93c35cbaf36eab0550ac7dd5ef1993445057",
+      "source_unchanged": true,
+      "log_sha256": "ca8c64ff607b960687f6b559832cf4f15c84a5a10df1368b4a8d717803f609eb"
+    },
+    "r11-combined-curation-guards.json": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+        "tests/test_bonds_duration_workflow.py::test_explanation_view_is_one_object_for_page_and_machine_snapshot",
+        "-q",
+        "--disable-warnings",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit_code": 0,
+      "seconds": 201.872,
+      "completed_at_utc": "2026-10-22T12:17:56.544840+00:00",
+      "source_tree": "ff1e93c35cbaf36eab0550ac7dd5ef1993445057",
+      "source_unchanged": true,
+      "log_sha256": "bbce4768b82bc4dd0aa51ca2aea7f563c08ea287e78616f89383f921bc7fc153"
+    }
+  },
+  "receipt_sha256": {
+    "r11-composition-resolution.json": "9a1f0fdb42235e0f23c08640be698c94349a07c9d9e4d278931981e579b84d59",
+    "r11-combined-closure-initial.json": "fb1586f5740fd6598f9119894be77577452dcf84c87851721d1b5caafff7ac1a",
+    "r11-combined-closure-repair.json": "3b931c8fc991be23a1ee739273f96439ebeae264e6f965b07f3bd3181061a4db",
+    "r11-combined-source-tests.json": "18852e748ac4306c988ffa89b7eef8cd1741704d0e347195564c31cdcdc0f9eb",
+    "r11-combined-curation-guards.json": "ae2cd9546efe927196c79959b40f489d579a3f82f1289d16e87dac204d8b9225"
+  },
+  "current_ci": {
+    "run": 39773798380,
+    "head": "24bc32a9c480906801daaab03c4267e0dc10efba",
+    "tested_merge": "bbed29f795f4582cfcc1d665f90e85ab61aabd7e",
+    "tested_base": "8c23f6b26a36ce20f5842590e41bb9d78bff1bac",
+    "contract_delta": "FAILED",
+    "missing_exclusive_desk_paths": [
+      "app/treasury_history.py",
+      "lib/treasury_daily_history.py"
+    ],
+    "earnings_job": 119808117981,
+    "earnings_result": "SUCCESS_NO_TIMEOUT_OR_COVERAGE_CHANGE",
+    "other_jobs": "consume existing pending run"
+  },
+  "current_main_target": "ce93903889ea50056e9f4890422dad044c31c65a",
+  "source_base_equivalent_to_8c23": true,
+  "combined_native_proven": false,
+  "browser_or_production_proven": false,
+  "release_hold_inherited": true,
+  "original_workspaces_untouched": true,
+  "publication_state": "LOCAL_CHECKPOINT_ONLY_NO_PUSH"
+}

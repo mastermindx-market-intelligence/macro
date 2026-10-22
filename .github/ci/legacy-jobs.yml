@@ -18791,7 +18791,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml openpyxl requests
       - name: CCW-W3 credit momentum tests
-        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py tests/test_credit_window.py -v
+        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py tests/test_credit_window.py tests/test_credit_cycle.py -v
 
   ccw-w4-credit-desk:
     if: ${{ false }}
@@ -18818,18 +18818,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install deps
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         # fastapi: the source integration checks the actual app.paywall classifier.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly fastapi
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py tests/test_bonds_explanation_view.py tests/test_credit_dislocation.py tests/test_credit_dislocation_view.py tests/test_credit_dislocation_wiring.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py tests/test_bonds_duration_workflow.py tests/test_credit_dislocation.py tests/test_credit_dislocation_view.py tests/test_credit_dislocation_wiring.py -v
       - name: R33 publisher-to-Bonds source contract
         run: python -m pytest tests/test_macro_decision_publication.py tests/test_bonds_source_integration.py -q
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
     paths:
+      # Exact additional dependencies reached by the composed R11 duration and builder contracts.
+      - "engine/output_health.py"
+      - "engine/yield_curve.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/externalize_css.py"
       - config/dag.yml
       - engine/corp_credit.py
       - engine/market_os/__init__.py
@@ -18938,10 +18946,13 @@ jobs:
       - "tests/test_bonds_corp_credit_vm.py"
       - "tests/test_bonds_divergence_gate.py"
       - "tests/test_bonds_glance_copy.py"
-      - "tests/test_bonds_explanation_view.py"
       - "tests/test_bonds_source_integration.py"
       - "tests/test_macro_decision_publication.py"
       - "lib/bonds_explanation_view.py"
+      - "tests/test_bonds_duration_workflow.py"
+      - "tests/bonds_duration_workflow.test.mjs"
+      - "templates/_bonds_duration.html.j2"
+      - "templates/_bonds_duration.mjs.j2"
       - "scripts/build_bonds.py"
       - "scripts/build_macro_context.py"
       - "templates/bonds.html.j2"
@@ -37800,6 +37811,12 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "templates/illus.css"
+      # R11 Bonds presentation contracts share this existing render owner.
+      - "tests/test_bonds_explanation_view.py"
+      - "tests/test_bonds_yield_curve_contract.py"
+      - "tests/test_illus.py"
+      - "scripts/build_bonds.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -38049,6 +38066,8 @@ jobs:
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
           tests/test_macro_mtf_sort_key.py -q
+      - name: Bonds explanation, yield-curve and shared illustration presentation contracts
+        run: python -m pytest tests/test_bonds_explanation_view.py tests/test_bonds_yield_curve_contract.py tests/test_illus.py -v
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

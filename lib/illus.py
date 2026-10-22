@@ -362,15 +362,42 @@ _MULTI_FALLBACK = ("var(--info)", "var(--orange)", "var(--warn)")
 
 
 def _render_multi(series_list, *, height, value_fmt, max_points, aria_en, aria_zh,
-                  baseline=None):
+                  baseline=None, ordinal_domain=None):
     """2-3 overlaid lines, per-series colors, HTML end-chips naming each line.
 
     `baseline` (optional): a value (e.g. 0 for signed regime scores) drawn as a
     faint dashed rule under the lines, so the eye reads each series above/below it.
-    Included in the shared value range so the rule is always on canvas."""
+    Included in the shared value range so the rule is always on canvas.
+
+    An explicit ordinal_domain fixes category positions before missing values are
+    dropped. Each considered series must carry that complete ordered label list;
+    malformed opt-in input returns the existing honest-null fragment.
+    """
+    ordinal_positions = None
+    if ordinal_domain is not None:
+        if (not isinstance(ordinal_domain, (list, tuple))
+                or len(ordinal_domain) < 2
+                or any(not isinstance(label, str) or not label.strip()
+                       for label in ordinal_domain)
+                or len(set(ordinal_domain)) != len(ordinal_domain)
+                or not isinstance(series_list, (list, tuple))):
+            return _null_fragment(None, height, aria_en)
+        domain = list(ordinal_domain)
+        for series in series_list[:3]:
+            if (not isinstance(series, dict)
+                    or not isinstance(series.get("dates"), (list, tuple))
+                    or list(series["dates"]) != domain
+                    or not isinstance(series.get("vals"), (list, tuple))
+                    or len(series["vals"]) != len(domain)):
+                return _null_fragment(None, height, aria_en)
+        ordinal_positions = {label: index for index, label in enumerate(domain)}
+
     cleaned = []
     for s in series_list[:3]:
         pairs = _downsample(_clean(s.get("dates"), s.get("vals")), max_points)
+        if ordinal_positions is not None and any(
+                value in (float("inf"), float("-inf")) for _label, value in pairs):
+            return _null_fragment(None, height, aria_en)
         cleaned.append((s, pairs))
     valid = [(s, p) for s, p in cleaned if len(p) >= 4]
     if not valid:
@@ -400,7 +427,9 @@ def _render_multi(series_list, *, height, value_fmt, max_points, aria_en, aria_z
         n = len(pairs)
         xy = []
         for i, (_d, v) in enumerate(pairs):
-            x = 0.0 if n <= 1 else round(i / (n - 1) * _VBW, 2)
+            x = (round(ordinal_positions[_d] / (len(ordinal_positions) - 1) * _VBW, 2)
+                 if ordinal_positions is not None
+                 else 0.0 if n <= 1 else round(i / (n - 1) * _VBW, 2))
             y = round(bot - (v - lo) / (hi - lo) * (bot - top), 2)
             xy.append((x, y))
         plen = _path_len(xy)
@@ -419,7 +448,8 @@ def _render_multi(series_list, *, height, value_fmt, max_points, aria_en, aria_z
             f'<span class="l-en">{le}</span><span class="l-zh">{lz}</span></span>'
         )
 
-    dates0 = valid[0][1]
+    dates0 = ([(ordinal_domain[0], None), (ordinal_domain[-1], None)]
+              if ordinal_positions is not None else valid[0][1])
     corners = _corner_labels(dates0)
     aria = escape(aria_en or "Comparison chart")
     svg = (
@@ -626,17 +656,19 @@ def regime_tape(price, *, allocation=None, regimes=None, events=None, projection
 # --------------------------------------------------------------------------- #
 def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=None,
           baseline=None, reference=None, bands=None, value_fmt="{:,.1f}",
-          max_points=220, aria_en="", aria_zh=None) -> str:
+          max_points=220, aria_en="", aria_zh=None, ordinal_domain=None) -> str:
     """Render a series as an ilx / Signal-Ink SVG+HTML fragment. See module docstring.
 
     Returns an HTML string (a <figure>). Never raises on bad data — an empty or
     too-short series returns the honest-null fragment."""
     height = int(height)
+    if ordinal_domain is not None and kind != "multi":
+        return _null_fragment(accent, height, aria_en)
 
     if kind == "multi":
         return _render_multi(series or [], height=height, value_fmt=value_fmt,
                              max_points=max_points, aria_en=aria_en, aria_zh=aria_zh,
-                             baseline=baseline)
+                             baseline=baseline, ordinal_domain=ordinal_domain)
 
     series = series or {}
     pairs = _downsample(_clean(series.get("dates"), series.get("vals")), max_points)

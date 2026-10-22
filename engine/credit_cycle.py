@@ -77,8 +77,15 @@ def compute(series: dict[str, pd.Series], cfg: dict | None = None) -> dict | Non
     rows.sort(key=lambda r: (r["gap"] if r["gap"] is not None else -99), reverse=True)
     n_elevated = sum(1 for r in rows if r["gap_state"] == "elevated risk")
     top = rows[0]
-    headline = (f"{n_elevated} of {len(rows)} elevated" if n_elevated else
-                f"no credit booms — highest gap {top['label_en']} {top['gap']}pp")
+    if all(r["gap"] is None for r in rows):
+        headline = "Credit-gap reading unavailable"
+    elif any(r["gap"] is None for r in rows):
+        headline = (f"Partial credit-gap coverage — {n_elevated} elevated among available readings"
+                    if n_elevated else
+                    "Partial credit-gap coverage — no elevated gaps among available readings")
+    else:
+        headline = (f"{n_elevated} of {len(rows)} elevated" if n_elevated else
+                    f"no credit booms — highest gap {top['label_en']} {top['gap']}pp")
     return {
         "asof": None if asof is None else str(asof.date()),
         "built": datetime.now(timezone.utc).isoformat(),

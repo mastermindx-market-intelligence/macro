@@ -1,0 +1,103 @@
+{# Paper R11 duration review. Local illustrative preview only; never market/holdings state. #}
+{% macro duration_t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+<style>
+.bonds-duration-open{min-height:44px;margin-top:var(--sp-3,12px)}
+.bonds-duration-dialog .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.bonds-duration-dialog{position:fixed;inset:0 0 0 auto;margin:0;width:min(590px,100vw);height:100vh;height:100dvh;max-width:100vw;max-height:100vh;max-height:100dvh;padding:0;border:0;border-inline-start:1px solid var(--line);background:var(--panel);color:var(--text);font-family:var(--font-ui);font-size:var(--fs-body,14px);box-shadow:var(--popover-shadow);overflow:hidden}
+.bonds-duration-dialog[open]{display:flex;flex-direction:column}
+.bonds-duration-dialog::backdrop{background:var(--glass-bg);backdrop-filter:blur(4px)}
+.bonds-duration-dialog [hidden]{display:none!important}
+.bonds-duration-dialog *{box-sizing:border-box}
+.bonds-duration-dialog .duration-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4,16px);padding:var(--sp-6,24px);padding-top:max(var(--sp-6,24px),env(safe-area-inset-top));flex-shrink:0}
+.bonds-duration-dialog .duration-eyebrow{margin:0;color:var(--ink-link,var(--link));font-size:var(--fs-micro,10px);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.bonds-duration-dialog .duration-scope{color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.55;margin:var(--sp-2,8px) 0 0}
+.bonds-duration-dialog .duration-close{min-width:44px;min-height:44px;padding:0;flex-shrink:0;font-size:var(--fs-h2,17px)}
+.bonds-duration-dialog .duration-body{padding:0 var(--sp-6,24px) var(--sp-6,24px);min-height:0;overflow-y:auto;overscroll-behavior:contain;flex:1}
+.bonds-duration-dialog h2{font-family:var(--font-ui);font-size:var(--fs-h1,28px);font-weight:700;line-height:1.2;letter-spacing:-.02em;margin:0 0 var(--sp-2,8px)}
+.bonds-duration-dialog .duration-intro{margin:0 0 var(--sp-5,20px);line-height:1.6;color:var(--muted)}
+.bonds-duration-dialog .duration-editor{padding:var(--sp-4,16px);margin:0 0 var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
+.bonds-duration-dialog .duration-editor label{display:block;font-weight:600;margin-bottom:var(--sp-2,8px)}
+.bonds-duration-dialog .duration-input-row{display:flex;align-items:center;gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-input-row input{min-width:0;width:100%;min-height:44px;padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--bg);color:var(--text);font:inherit;font-variant-numeric:tabular-nums}
+.bonds-duration-dialog input[aria-invalid="true"]{border-color:var(--act)}
+.bonds-duration-dialog input[type="range"]{width:100%;min-height:44px;margin:0;accent-color:var(--link)}
+.bonds-duration-dialog .duration-small{font-size:var(--fs-sm,12.5px);line-height:1.55;color:var(--muted);margin:var(--sp-2,8px) 0}
+.bonds-duration-dialog .duration-editor-actions{display:flex;gap:var(--sp-2,8px);flex-wrap:wrap}
+.bonds-duration-dialog .duration-error{margin:0 0 var(--sp-4,16px);padding:var(--sp-4,16px);border:1px solid var(--act);border-radius:var(--r-card,12px);background:var(--panel2);color:var(--ink-act,var(--act));line-height:1.55}
+.bonds-duration-dialog .duration-shock{display:flex;justify-content:space-between;gap:var(--sp-4,16px);margin:var(--sp-4,16px) 0;padding-bottom:var(--sp-3,12px);border-bottom:1px solid var(--line);font-size:var(--fs-sm,12.5px)}
+.bonds-duration-dialog .duration-shock strong{font-variant-numeric:tabular-nums;text-align:end;color:var(--ink-link,var(--link))}
+.bonds-duration-dialog .duration-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-position{padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--bg);min-width:0}
+.bonds-duration-dialog .duration-position-label{font-size:var(--fs-micro,10px);line-height:1.5;color:var(--muted);font-weight:600}
+.bonds-duration-dialog .duration-value{display:block;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:var(--fs-h1,28px);line-height:1.4;margin:var(--sp-2,8px) 0;color:var(--text);overflow-wrap:anywhere}
+.bonds-duration-dialog .duration-empty{display:block;font-size:var(--fs-md,15px);line-height:1.6;margin:var(--sp-2,8px) 0;color:var(--muted)}
+.bonds-duration-dialog .duration-percent{display:block;font-variant-numeric:tabular-nums;font-size:var(--fs-sm,12.5px);color:var(--muted)}
+.bonds-duration-dialog .duration-limit{margin:var(--sp-4,16px) 0 0;padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);line-height:1.55}
+.bonds-duration-dialog .duration-limit strong{display:block;font-size:var(--fs-sm,12.5px);font-weight:600;margin-bottom:var(--sp-2,8px)}
+.bonds-duration-dialog .duration-missing{border-color:var(--warn)}
+.bonds-duration-dialog .duration-missing strong{color:var(--ink-warn,var(--warn))}
+.bonds-duration-dialog .duration-limit p{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:0}
+.bonds-duration-dialog .duration-state{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.55;margin:var(--sp-4,16px) 0 0}
+.bonds-duration-dialog .duration-footer{flex-shrink:0;padding:var(--sp-4,16px) var(--sp-6,24px);padding-bottom:max(var(--sp-4,16px),env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--panel)}
+.bonds-duration-dialog .duration-footer-actions{display:flex;gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-footer-actions button{flex:1;min-width:0;white-space:normal}
+.bonds-duration-dialog .duration-edit{order:2}
+.bonds-duration-dialog .duration-footer-note{font-size:var(--fs-micro,10px);line-height:1.5;color:var(--muted);margin:var(--sp-3,12px) 0 0}
+.bonds-duration-dialog button{font-family:var(--font-ui);min-height:44px}
+.bonds-duration-dialog :focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.bonds-duration-dialog button:disabled,.bonds-duration-dialog input:disabled{opacity:.65;cursor:not-allowed}
+html[data-theme="light"] .bonds-duration-dialog{background:var(--panel);border-inline-start:1px solid var(--line);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .bonds-duration-dialog::backdrop{background:var(--glass-brd);backdrop-filter:none}
+html[data-theme="light"] .bonds-duration-dialog .duration-position{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .bonds-duration-dialog .duration-editor,html[data-theme="light"] .bonds-duration-dialog .duration-limit{background:var(--panel2);box-shadow:none}
+html[data-lang="zh"] .bonds-duration-dialog h2,html[data-lang="zh"] .bonds-duration-dialog .duration-eyebrow{letter-spacing:0;text-transform:none}
+@media(min-width:641px) and (max-width:900px){.bonds-duration-dialog{inset:auto 0 0;width:100%;height:80vh;height:80dvh;max-height:100dvh;border:1px solid var(--line);border-radius:var(--r-panel,14px) var(--r-panel,14px) 0 0}}
+@media(max-width:640px){.bonds-duration-dialog{width:100%;border:0}.bonds-duration-dialog .duration-header{padding:var(--sp-4,16px);padding-top:max(var(--sp-4,16px),env(safe-area-inset-top))}.bonds-duration-dialog .duration-body{padding:0 var(--sp-4,16px) var(--sp-4,16px)}.bonds-duration-dialog .duration-footer{padding-inline:var(--sp-4,16px)}.bonds-duration-dialog .duration-results{grid-template-columns:1fr}.bonds-duration-dialog .duration-position{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--sp-3,12px);align-items:center}.bonds-duration-dialog .duration-position-label{grid-column:1}.bonds-duration-dialog .duration-value,.bonds-duration-dialog .duration-empty{grid-column:2;grid-row:1 / 3;font-size:var(--fs-num-lg,22px);margin:0}.bonds-duration-dialog .duration-position .duration-small{grid-column:1;margin:var(--sp-1,4px) 0 0}.bonds-duration-dialog .duration-percent{grid-column:2;text-align:end}.bonds-duration-dialog .duration-footer-actions{flex-direction:column}.bonds-duration-dialog .duration-edit{order:0}.bonds-duration-dialog .duration-footer-actions button{width:100%}}
+@media(prefers-reduced-motion:reduce){.bonds-duration-dialog,.bonds-duration-dialog *,.bonds-duration-dialog *::before,.bonds-duration-dialog *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+<noscript><p class="sub faint">{{ duration_t('The price-impact preview needs JavaScript. The market read is unaffected.', '价格影响预览需要 JavaScript；市场解读不受影响。') }}</p></noscript>
+<dialog id="bonds-duration-dialog" class="bonds-duration-dialog" data-duration-origin="illustrative" data-duration-state="unavailable" aria-labelledby="duration-title" aria-describedby="duration-scope">
+  <header class="duration-header">
+    <div><p class="duration-eyebrow">{{ duration_t('Illustrative duration · scenario preview', '久期示例 · 情景预览') }}</p>
+      <p id="duration-scope" class="duration-scope">{{ duration_t('Example positions, not live holdings. Not a forecast.', '仅为示例，并非实际持仓；不是预测。') }}</p></div>
+    <button type="button" class="gbtn gbtn-quiet duration-close" data-duration-close><span aria-hidden="true">×</span><span class="sr-only">{{ duration_t('Close duration review', '关闭久期预览') }}</span></button>
+  </header>
+  <div class="duration-body">
+    <h2 id="duration-title" tabindex="-1"><span class="l-en" data-duration-title-en>Review the yield shock.</span><span class="l-zh" data-duration-title-zh>查看收益率变动情景。</span></h2>
+    <p class="duration-intro">{{ duration_t('This changes only the scenario preview, never the market read.', '仅调整情景预览，不改变市场解读。') }}</p>
+    <form class="duration-editor" data-duration-editor data-duration-form hidden novalidate>
+      <label for="duration-yield-shock">{{ duration_t('Yield shock · basis points', '收益率变动 · 基点') }}</label>
+      <div class="duration-input-row"><input id="duration-yield-shock" data-duration-input type="text" inputmode="decimal" value="50" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="duration-input-help duration-error" disabled><span>{{ duration_t('bp', '基点') }}</span></div>
+      <label class="duration-small" for="duration-yield-slider">{{ duration_t('Adjust the example shock', '调整示例变动幅度') }}</label>
+      <input id="duration-yield-slider" data-duration-slider type="range" min="-300" max="300" step="any" value="50" disabled>
+      <p id="duration-input-help" class="duration-small">{{ duration_t('100 bp = 1 percentage point. Enter −300 to +300 bp; nothing is silently capped.', '100 基点等于 1 个百分点。可输入 −300 至 +300 基点，不会自动截断。') }}</p>
+      <div class="duration-editor-actions"><button type="submit" class="gbtn">{{ duration_t('Review estimate', '查看估算') }}</button><button type="button" class="gbtn gbtn-quiet" data-duration-reset disabled>{{ duration_t('Reset to +50 bp', '恢复 +50 基点') }}</button></div>
+    </form>
+    <div id="duration-error" class="duration-error" data-duration-error hidden><span class="l-en" data-duration-error-en></span><span class="l-zh" data-duration-error-zh></span></div>
+    <div class="duration-shock"><span>{{ duration_t('Selected yield shock', '所选收益率变动') }}</span><strong><span class="l-en" data-duration-shock-en>Not calculated</span><span class="l-zh" data-duration-shock-zh>未计算</span></strong></div>
+    <div class="duration-results">
+      {% for identity, duration in [('example-intermediate', '5.0'), ('example-long', '14.8')] %}
+      <div class="duration-position" data-duration-row data-position-id="{{ identity }}" data-position-value="10000" data-modified-duration="{{ duration }}">
+        <div class="duration-position-label">{{ duration_t(duration ~ '-year modified duration', duration ~ ' 年修正久期') }}</div>
+        <output class="duration-value" data-duration-value hidden></output>
+        <span class="duration-empty" data-duration-empty>{{ duration_t('Not calculated', '未计算') }}</span>
+        <p class="duration-small">{{ duration_t('$10,000 example position', '10,000 美元示例头寸') }}</p>
+        <span class="duration-percent" data-duration-percent hidden></span>
+      </div>
+      {% endfor %}
+    </div>
+    <section class="duration-limit duration-missing">
+      <strong>{{ duration_t('Missing evidence · partial estimate', '资料不全 · 仅为部分估算') }}</strong>
+      <p>{{ duration_t('Convexity and complete cash flows are unavailable—not zero. These price estimates exclude convexity, coupon income, fees, transaction costs and credit-spread changes.', '缺少凸性与完整现金流资料，不会按零补齐。价格估算不含凸性、票息、费用、交易成本及信用利差变化。') }}</p>
+    </section>
+    <section class="duration-limit">
+      <strong>{{ duration_t('Input and accuracy limits', '输入与精度限制') }}</strong>
+      <p>{{ duration_t('The −300 to +300 bp entry range is not an accuracy guarantee. Linear duration is most useful for small parallel yield moves; large moves and curve twists need a fuller model.', '−300 至 +300 基点只是输入范围，不保证估算精度。线性久期主要适用于小幅、平行的收益率变动；大幅变动与曲线扭转需要更完整的模型。') }}</p>
+    </section>
+    <p class="duration-state" role="status" aria-live="polite" aria-atomic="true"><span class="l-en" data-duration-state-en>Calculator unavailable. Independent rate and credit evidence is unchanged.</span><span class="l-zh" data-duration-state-zh>计算器不可用；独立的利率与信用信息保持不变。</span></p>
+  </div>
+  <footer class="duration-footer">
+    <div class="duration-footer-actions"><button type="button" class="gbtn gbtn-cta duration-edit" data-duration-edit disabled><span class="l-en" data-duration-edit-en>Edit assumptions →</span><span class="l-zh" data-duration-edit-zh>编辑假设 →</span></button><button type="button" class="gbtn gbtn-quiet" data-duration-close>{{ duration_t('Return to Bonds brief', '返回债券简报') }}</button></div>
+    <p class="duration-footer-note">{{ duration_t('Your draft is retained only in this page. No watch, position, trade or market-state changes.', '草稿仅保留在当前页面，不创建监控、不调整持仓、不交易，也不改变市场判断。') }}</p>
+  </footer>
+</dialog>

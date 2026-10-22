@@ -1,3 +1,29 @@
+## Current source composition checkpoint — 22 October 2026
+
+This containing local commit records the qualified R11 + CDI/R33 source composition. It is a source checkpoint before current-main reconciliation and the actual combined native build. The existing PR remains published at24bc32a9c480906801daaab03c4267e0dc10efba until the later canonical publication receipt establishes a descendant. Draft/HOLD and all inherited R33 review/browser/production gates remain.
+
+Parents:24bc32a9c480906801daaab03c4267e0dc10efba + R1104b13fbbae71f109f23f8b43ad1a5fa59ee75151. Qualified source treeff1e93c35cbaf36eab0550ac7dd5ef1993445057. The combined builder retains CDI's latest single maturity snapshot, independently dated historical CDI, R11 currentness withholding, one explanation object for page/machine, the incumbent yield snapshot, ordinal geometry and the R33 inspector. The maturity regression now supplies an explicit compatible aware October17 clock; no policy or assertion was weakened.
+
+**300 focused source tests passed** at12:14:32UTC (21.07pytest seconds), with two generated-artifact checks awaiting the actual combined native build. LogSHA256ca8c64ff607b960687f6b559832cf4f15c84a5a10df1368b4a8d717803f609eb. **All five curation/object checks passed** at12:17:56UTC (201.08pytest seconds); logSHA256bbce4768b82bc4dd0aa51ca2aea7f563c08ea287e78616f89383f921bc7fc153. Source stayed unchanged.
+
+The sole textual conflict was resolved in the existing CI manifest. The combined desk preserves its exclusive scope, FastAPI, Node20, all CDI/R33/duration suites and publisher step. Explanation/yield/illustration suites remain with the existing render owner. Named test occurrences equal the parent union. Its actual derived closure gained only output_health.py, yield_curve.py, check_template_site_sync.py and externalize_css.py. All gates, timeouts, scopes and ceilings remain. Initial preflight comparisons rejected the parents' different scope and dependency installation before any edit; the receiver's stronger exclusive scope and FastAPI superset were retained.
+
+[Compact composition receipt](evidence/r11_source_composition_20261022.json) · [Canonical CDI checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) · [R11 source plan](../bonds_r11_2026-10-22/MASTER_PLAN.md)
+
+### Exact remaining sequence
+
+1. Reconcile this local commit, any pending MERGE_HEAD/process and the canonical comment before another effect. This is not a normal-push receipt.
+2. Consume existing CI39773798380 at published24bc. Pack2/earnings119808117981 passed12:07:10 without changed deadlines, coverage or frozen source; the old timeout remains historical failure. Contract-delta119807583860 failed against bbed29f795f4582cfcc1d665f90e85ab61aabd7e (main8c23f6b26a36ce20f5842590e41bb9d78bff1bac +24bc) for exactly app/treasury_history.py and lib/treasury_daily_history.py missing from the exclusive desk's closure. Current-base packing probes passed.
+3. Compose the current-main R11 descendant on this same isolated CDI carrier after it is qualified. Current pinned maince93903889ea50056e9f4890422dad044c31c65a has the same non-data root objects as8c23; its sole increment is collected data. Preserve incoming source/data and R11's exact runtime. Add the two earned finite Treasury paths after source reconciliation; keep every scope and ceiling.
+4. Perform one actual combined native build only after that composition. Reuse the authenticated502-file retained input manifest as ordinary private copies, preserving16 original artifacts and486 immutable-main fallbacks. Record those exact provenance clocks; this is not a claim to fresh data from ce939. Explicitly record presence/absence of optional transmission/latest.json and regime/latest.json.
+5. The auto-merged R11 generated HTML and each earlier native receipt retain only their original scope. Create new combined HTML/machine outputs/assets; establish independent CDI history under withheld current credit, all four surfaces, owner object equality, original CDI identity/zero paired observations/all authority false, and local resource hashes. Restore the two existing generated-artifact checks with the newly composed artifacts.
+6. Commit only qualified existing-owner source, adopted native page/new CSS, these plans and compact receipts. Keep copied licensed/data inputs, dependencies and full logs private. Reconcile published24bc before one normal same-branch descendant push and exact readback; consume resulting CI.
+7. Keep qualified independent review, original Fabric429/no-replay, administrator browser restriction and existing production gates separate. No release merge, alternate carrier, watcher, account activation, source admission or new publication owner.
+
+Earlier completed24bc native evidence and other historical sections below remain intact and are source-scoped. They do not establish the pending combination. Original775-path CDI custody and all R11/R33 original workspaces remain untouched.
+
+---
+
 # Credit Dislocation Intelligence - recovered implementation status
 
 ## Current checkpoint — October 22, 11:48 UTC
