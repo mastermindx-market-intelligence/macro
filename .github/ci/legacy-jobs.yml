@@ -8214,6 +8214,8 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -8527,6 +8529,8 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "lib/intl_gs_observations.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8545,6 +8549,16 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace/_gs_state_fixture.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -8608,6 +8622,19 @@ jobs:
       - "templates/account.js"
       - "templates/terminal_overlay.js"
       - "scripts/build_intl.py"
+      - "lib/intl_surveillance_mount.py"
+      - "tests/test_intl_gs_foundation.py"
+      - "site/intl_workspace_surveillance.css"
+      - "tests/intl_gs_fixture_site.py"
+      - "tests/intl_gs_foundation_browser.test.cjs"
+      - "lib/intl_gs_display.py"
+      - "lib/intl_gs_observations.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/site_access.yml"
+      - "app/deploy/Caddyfile"
+      - "app/__init__.py"
       - "lib/intl_eod_publication.py"
       - "tests/test_intl_eod_publication.py"
       - "tests/test_intl_eod_publisher_integration.py"
@@ -8865,10 +8892,16 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
+      # W2A (IM13) paths: insert below this line
+      # spacer: keep unchanged
+      # spacer: keep unchanged
+      # W2B (IM14) paths: insert below this line
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -8881,12 +8914,22 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
+      - name: canonical base for the frozen-file guard (fail closed)
+        run: |
+          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
+            exit 1
+          fi
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
+      # W2A (IM13) test steps: insert below this line
+      # spacer: keep unchanged
+      # spacer: keep unchanged
+      # W2B (IM14) test steps: insert below this line
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -11696,6 +11739,8 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -11997,6 +12042,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16956,6 +17004,15 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_sources.yml"
+      - "config/theme_crosswalk.yml"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -17207,6 +17264,10 @@ jobs:
       - site/factordata/basket_washout_state.json
       - tests/test_intl_market_state.py
       - tests/test_intl_rotation.py
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -17275,6 +17336,11 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -18407,6 +18473,10 @@ jobs:
       - "tests/test_gmi_activity_history_bridge.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20635,6 +20705,7 @@ jobs:
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
+      - "engine/intl_global_universe.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -21311,6 +21382,8 @@ jobs:
       - "engine/research_intelligence/selection.py"
       - "engine/research_intelligence/store.py"
       - "scripts/check_research_vault_source_freshness.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27189,6 +27262,11 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -28249,6 +28327,10 @@ jobs:
       - "engine/us_prophet_grades.py"
       - "engine/us_prophet_w3.py"
       - "scripts/capture_prophet_b4_same_read.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -28658,6 +28740,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/intl_global_universe.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -29733,6 +29816,8 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
