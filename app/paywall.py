@@ -346,8 +346,19 @@ def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
     return None, True
 
 
-def _entitled(user_id: str, required_feature: str) -> tuple[bool, str]:
-    """Resolve entitlement with short cache and positive-only outage grace."""
+class _EntitlementStoreUnavailable(RuntimeError):
+    """No usable store verdict or previously verified positive grace."""
+
+
+def _entitled(
+    user_id: str, required_feature: str, *, unavailable_as_error: bool = False,
+) -> tuple[bool, str]:
+    """Resolve entitlement with shared cache and positive-only outage grace.
+
+    Site paths keep their existing fail-closed false verdict on store outage.
+    The Pro host can instead distinguish an outage from a genuine unpaid row,
+    WITHOUT changing the underlying entitlement/grace authority.
+    """
     now = time.monotonic()
     fresh_ttl = _seconds("PAYWALL_ENTITLEMENT_CACHE_SECONDS", 60.0, 5.0, 120.0)
     grace = _seconds("PAYWALL_GRACE_SECONDS", 86400.0, 0.0, 86400.0)
@@ -380,6 +391,8 @@ def _entitled(user_id: str, required_feature: str) -> tuple[bool, str]:
     # the positive before a webhook-triggered downgrade can receive grace.
     if cached and cached.allowed and cached.status in _ACTIVE and cached.grace_until > now:
         return True, cached.tier
+    if unavailable_as_error:
+        raise _EntitlementStoreUnavailable("entitlement backend did not answer")
     return False, "free"
 
 
@@ -543,6 +556,7 @@ def paywall_check(request: Request) -> Response:
 # first would deny an operator the account card says is uncapped.
 
 PRO_INTERSTITIAL = Path(__file__).with_name("paywall_pro_interstitial.html")
+PRO_UNAVAILABLE = Path(__file__).with_name("paywall_pro_unavailable.html")
 PLANS_CONFIG = REPO / "config" / "plans.yml"
 
 #: Where a denied visitor is sent. Deliberately RELATIVE, matching ``_locked``'s
@@ -680,36 +694,70 @@ def _locked_pro(request: Request, path: str, tier: str) -> Response:
     )
 
 
+def _unavailable_pro(request: Request, path: str) -> Response:
+    """Fail CLOSED without falsely saying the visitor needs to buy Pro.
+
+    Caddy's 2xx-only admission rejects this 503 just as strictly as a 403.
+    Browsers see a self-contained, bounded automatic retry; APIs get retry
+    semantics without any entitlement or identity information in the body.
+    """
+    headers = _headers("unavailable")
+    headers["Retry-After"] = "2"
+    if _is_document(request, path):
+        try:
+            body = PRO_UNAVAILABLE.read_text(encoding="utf-8")
+        except Exception:  # noqa: BLE001
+            body = (
+                "<!doctype html><title>Membership check temporarily unavailable</title>"
+                "<h1>Membership check temporarily unavailable</h1>"
+                "<p>Please retry. Your subscription has not been evaluated.</p>"
+            )
+        return HTMLResponse(body, status_code=503, headers=headers)
+    return JSONResponse(
+        {"error": "membership_check_unavailable", "retryable": True},
+        status_code=503,
+        headers=headers,
+    )
+
+
 @router.get("/api/paywall/check_pro")
 def paywall_check_pro(request: Request) -> Response:
-    """Caddy auth subrequest for a Pro-only HOST. Any unhandled failure denies.
+    """Caddy subrequest: only verified Pro gets a 2xx; no accidental paywall on outage.
 
-    Identity rides the shared Supabase session cookie, which is scoped to
-    ``.mastermind-x.com`` (templates/theme.js), so a request to a ``bot.`` URL carries
-    it unchanged. 204 lets Caddy's ``@status 2xx`` matcher continue to the origin;
-    anything else is streamed back to the visitor and the origin is never reached.
+    The shared Supabase cookie authenticates on this host without a new auth plane.
+    Invalid or missing identity stays denied. A vendor/cache overload is NEVER
+    translated into a statement that the caller is unpaid.
     """
     path = "/"
     try:
         path = _normalized_path(request.headers.get("x-original-uri"))
+    except ValueError:
+        return _locked_pro(request, path, "anon")
 
+    try:
         from app.main import _mm_supabase_access_token  # noqa: PLC0415
 
         token = _mm_supabase_access_token(request)
-        uid, email = _fresh_identity(token) if token else (None, "")
-        if not uid:
+        if not token:
             return _locked_pro(request, path, "anon")
-        # The operator bypass, before any entitlement read: /api/me grants `unlimited`
-        # off this same allowlist WITHOUT touching the row, so gating the operator on
-        # his row would make the account pill and this door disagree.
-        if email and _operator_unlimited(email):
+        identity = _resolve_identity(token)
+        if identity.status in {"outage", "busy"}:
+            return _unavailable_pro(request, path)
+        if identity.status != "ok" or not identity.uid:
+            return _locked_pro(request, path, "anon")
+        # Preserve the same operator bypass as /api/me.
+        if identity.email and _operator_unlimited(identity.email):
             return Response(status_code=204, headers=_headers("allow-unlimited"))
-        # Same authority, cache and positive-only outage grace as the macro wall; it
-        # already requires status in {active, trialing}. The tier gate is the extra half.
-        allowed, tier = _entitled(uid, _PRO_FEATURE)
+        # Share the incumbent entitlement/cache/grace authority. On store outage
+        # without a prior positive verdict, return 503 instead of pretending Free.
+        allowed, tier = _entitled(
+            identity.uid, _PRO_FEATURE, unavailable_as_error=True,
+        )
         if not allowed or not _ranks_at_least(tier, _PRO_MIN_TIER):
             return _locked_pro(request, path, normalize_tier(tier) or "free")
         return Response(status_code=204, headers=_headers(f"allow-{normalize_tier(tier)}"))
-    except Exception as exc:  # noqa: BLE001 — fail CLOSED under every error
-        log.warning("paywall: pro host gate failed closed (%s)", exc)
-        return _locked_pro(request, path, "anon")
+    except _EntitlementStoreUnavailable:
+        return _unavailable_pro(request, path)
+    except Exception as exc:  # noqa: BLE001 — never allow on unexpected error
+        log.warning("paywall: pro host verification unavailable (%s)", type(exc).__name__)
+        return _unavailable_pro(request, path)

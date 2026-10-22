@@ -57,7 +57,10 @@ def _check(path="/api/positions", headers=None, cookies=None):
 
 def _signed_in(monkeypatch, email=EMAIL):
     monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
-    monkeypatch.setattr(paywall, "_fresh_identity", lambda token: (UID, email))
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(UID, email, {"id": UID}, "ok"),
+    )
 
 
 def _row(monkeypatch, tier, status="active", features=("site_full",), email=EMAIL):
@@ -84,12 +87,91 @@ def test_anonymous_is_locked(monkeypatch):
     }
 
 
-def test_signed_in_but_unverifiable_token_is_locked(monkeypatch):
+def test_signed_in_but_verifiably_invalid_token_is_locked(monkeypatch):
     monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
-    monkeypatch.setattr(paywall, "_fresh_identity", lambda token: (None, ""))
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "invalid"),
+    )
     r = _check()
     assert r.status_code == 403
     assert r.json()["tier"] == "anon"
+
+
+@pytest.mark.parametrize("status", ["outage", "busy"])
+def test_temporary_auth_failure_is_not_an_unpaid_verdict(monkeypatch, status):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, status),
+    )
+    r = _check()
+    assert r.status_code == 503
+    assert r.json()["error"] == "membership_check_unavailable"
+    assert r.headers["retry-after"] == "2"
+    assert r.headers["x-paywall"] == "unavailable"
+    assert r.headers["cache-control"] == "private, no-store"
+
+
+def test_entitlement_backend_outage_is_not_reported_as_free(monkeypatch):
+    _signed_in(monkeypatch)
+    monkeypatch.setattr(paywall, "_store_entitlement", lambda uid: (None, False))
+    r = _check()
+    assert r.status_code == 503
+    assert r.json()["error"] == "membership_check_unavailable"
+
+
+def test_entitlement_backend_outage_preserves_confirmed_pro_grace(monkeypatch):
+    _row(monkeypatch, "pro")
+    assert _check().status_code == 204
+    monkeypatch.setattr(paywall, "_store_entitlement", lambda uid: (None, False))
+    # Expire the fresh read but retain the accepted grace window.
+    v = paywall._ENT_CACHE[UID]
+    from dataclasses import replace
+    paywall._ENT_CACHE[UID] = replace(v, fetched_at=v.fetched_at - 200)
+    assert _check().status_code == 204
+
+
+def test_temporary_auth_failure_document_retries_without_paywall_message(monkeypatch):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "outage"),
+    )
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 503
+    assert "text/html" in r.headers["content-type"]
+    assert r.headers["cache-control"] == "private, no-store"
+    assert "retry" in r.text.lower()
+    assert "Mastermind Bot comes with Pro" not in r.text
+    assert "sessionStorage" in r.text
+    assert "attempts >= 3" in r.text
+    assert "30" in r.text
+
+
+def test_invalid_token_does_not_receive_cached_positive_grace(monkeypatch):
+    paywall._ENT_CACHE[UID] = paywall._EntitlementVerdict(
+        True, "pro", "active", 1.0, 10**12,
+    )
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok-invalid")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "invalid"),
+    )
+    assert _check().status_code == 403
+
+
+def test_missing_temporary_outage_document_fails_closed_with_fallback(monkeypatch, tmp_path):
+    monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(None, "", None, "busy"),
+    )
+    monkeypatch.setattr(paywall, "PRO_UNAVAILABLE", tmp_path / "missing.html")
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 503
+    assert "Membership check temporarily unavailable" in r.text
+    assert "Upgrade" not in r.text
 
 
 def test_free_is_locked(monkeypatch):
@@ -380,26 +462,29 @@ def test_fresh_uid_contract_is_unchanged_by_the_refactor(monkeypatch):
 # ---------------------------------------------------------------------------
 # Fail closed
 # ---------------------------------------------------------------------------
-def test_auth_lookup_raising_denies(monkeypatch):
+def test_auth_lookup_raising_remains_closed_but_is_not_a_paywall(monkeypatch):
     monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: "tok")
     monkeypatch.setattr(
         paywall,
-        "_fresh_identity",
+        "_resolve_identity",
         lambda token: (_ for _ in ()).throw(RuntimeError("supabase down")),
     )
     r = _check()
-    assert r.status_code == 403
-    assert r.json()["tier"] == "anon"
+    assert r.status_code == 503
+    assert r.json()["error"] == "membership_check_unavailable"
+    assert r.headers["x-paywall"] == "unavailable"
 
 
-def test_entitlement_store_raising_denies(monkeypatch):
+def test_entitlement_store_raising_returns_recoverable_closed_response(monkeypatch):
     _signed_in(monkeypatch)
     monkeypatch.setattr(
         paywall,
         "_store_entitlement",
         lambda uid: (_ for _ in ()).throw(RuntimeError("postgrest down")),
     )
-    assert _check().status_code == 403
+    r = _check()
+    assert r.status_code == 503
+    assert r.json()["error"] == "membership_check_unavailable"
 
 
 def test_unreadable_catalog_denies_everyone_including_the_uncapped_tier(monkeypatch):
@@ -410,7 +495,7 @@ def test_unreadable_catalog_denies_everyone_including_the_uncapped_tier(monkeypa
     for tier in ("pro", "unlimited"):
         _row(monkeypatch, tier)
         paywall._ENT_CACHE.clear()
-        assert _check().status_code == 403, tier
+        assert _check().status_code == 503, tier
 
 
 def test_catalog_that_no_longer_sells_pro_denies(monkeypatch, tmp_path):
@@ -420,7 +505,7 @@ def test_catalog_that_no_longer_sells_pro_denies(monkeypatch, tmp_path):
     cat.write_text("tier_rank: [free, essential]\n", encoding="utf-8")
     monkeypatch.setattr(paywall, "PLANS_CONFIG", cat)
     _row(monkeypatch, "pro")
-    assert _check().status_code == 403
+    assert _check().status_code == 503
 
 
 @pytest.mark.parametrize("body", ["tier_rank: []\n", "tier_rank: pro\n", "[]\n", "\n"])
@@ -429,7 +514,7 @@ def test_shapeless_catalog_denies(monkeypatch, tmp_path, body):
     cat.write_text(body, encoding="utf-8")
     monkeypatch.setattr(paywall, "PLANS_CONFIG", cat)
     _row(monkeypatch, "pro")
-    assert _check().status_code == 403
+    assert _check().status_code == 503
 
 
 @pytest.mark.parametrize("path", ["//evil.test/x", "/a/../secret", "/bad%00", "/a\\b", ""])
