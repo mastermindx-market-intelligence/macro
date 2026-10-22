@@ -597,7 +597,7 @@ def test_group_equality_classes_cannot_split_or_merge(channel, changed, topology
 def test_shared_group_can_be_consistently_renumbered_without_losing_active_ids(channel):
     previous, candidate, active = _previous_source(), _candidate_source(), _active_config()
     for config, names, opt_in in ((previous, ['group8', 'group8', 'group10'], False),
-                                  (candidate, ['group30', 'group30', 'group31'], True),
+                                  (candidate, ['group30', 'group30', 'group10'], True),
                                   (active, ['group81', 'group81', 'group93'], False)):
         inner = [_root_inner(names[0]), _root_inner(names[1]),
                  _movers_inner(names[2], with_not=opt_in)]
