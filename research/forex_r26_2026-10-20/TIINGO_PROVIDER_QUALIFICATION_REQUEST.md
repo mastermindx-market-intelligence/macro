@@ -45,3 +45,9 @@ The existing inactive-condition storage rejects activation. No evaluator, queue,
 - `source_evidence/tiingo-documentation-request-syntax.json`: exact public documentation asset/excerpt provenance for `4hour`, minimum minute frequency and date-filter syntax.
 
 No provider answer is fabricated, no external message has been sent, and licensing/product use must not be reopened.
+
+## Post-boundary evidence added at 04:41 UTC
+
+One bounded follow-up through the incumbent ingestion owner produced a dense 240-minute EURUSD 00:00–04:00 candidate interval whose native OHLC exactly matches the raw-Decimal minute aggregate. The following 04:00–08:00 interval remains partial at 42 minutes, with a differing close across response clocks 1.542572 seconds apart. Original 02:49 responses are preserved; their last open minute and native open interval changed. See SOURCE_QUALIFICATION.md and `source_evidence/tiingo-eurusd-post-boundary-20261022-qualification.json`.
+
+The factual post-boundary observation is now available without provider contact. First publication time, low-latency availability and closed-bar immutability are not established by this one 41-minute-late sample. Continue the documented prospective policy through existing source/runtime owners; no licensing inquiry or product-use approval remains outstanding.

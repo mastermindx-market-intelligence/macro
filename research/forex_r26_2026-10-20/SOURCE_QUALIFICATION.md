@@ -184,3 +184,25 @@ Evidence: `source_evidence/interval-reconciliation-integration.json` (SHA256 `1c
 Independent native source-code review found a real output-budget gap, which was repaired and tested before final qualification. Parent investigation also found pandas silently losing comma-fraction timestamp precision; those unsupported forms now refuse while valid dot-fraction nanoseconds remain exact. The final exact-hash review returned **NO BLOCKING FINDINGS**. Its scoped receipt is `interval-reconciliation-source-review.json`; it grants no source admission or Terminal/Fabric review authority. Earlier test/integration snapshots are preserved with their original hashes.
 
 This advances technical qualification without support contact. It does not admit the candidate policy or supply a live feed. The next source evidence must address actual post-boundary behavior, prospective verified availability/freshness and preserved correction vintages through the existing owners. Licensing is complete and is not part of that remaining work.
+
+## Actual post-boundary observation — 22 October 04:41 UTC
+
+After the 04:00 UTC boundary, the recovery owner used the same existing ingestion owner for **one bounded pair of prospective observations**. Preflight found only the two successful 02:49 responses and no covering post-boundary receipt. Two requests succeeded at **04:41:18–04:41:20 UTC**, with no failures, retries, provider/account changes or new schedule. Both original vintages remain intact. The code/test hashes above are unchanged.
+
+| Candidate UTC interval | Minute rows | Native/minute raw-Decimal equality | Relation to original response clocks |
+|---|---:|---|---|
+| 00:00–04:00 | 240 distinct aligned labels; no reference-grid gap | All four OHLC fields equal | Candidate end precedes both clocks |
+| 04:00–08:00 | 42 labels through 04:41; 198 reference slots still unobserved | Open/high/low equal; close differs | Candidate end remains after both clocks |
+
+The minute response was observed at **04:41:18.569937 UTC** and the native response at **04:41:20.112509 UTC**. Exact receipt/hash checks, incumbent materialization, reader verification, normalized comparison and a separate raw-Decimal comparison completed at **04:41:54.742181 UTC**. That later time is a verification receipt, not backdated vendor publication. This sample was obtained about 41 minutes after the boundary and establishes neither first availability nor low-latency service.
+
+The two retained minute vintages share 170 prior labels: **169 are unchanged**, while the original latest 02:49 row has changed low/close values. The original 00:00 native bar has changed high/close values. Those earlier rows were observed while their candidate intervals were still open. This is evidence of changing open observations; it does not identify a vendor correction policy for closed bars. The 04:00 native close also differs from the partial minute aggregate despite a response separation of only **1.542572 seconds**; timing is a plausible explanation, not an established cause.
+
+New exact receipts:
+
+- Minute: `2bc9f93e5870b780582da71dc5bfb75de8990032e4d11b2982c9d247eb311865`, raw SHA256 `b0f06ffc93a6e71afddc88e2cd7c3745aabaea7e8335c5fa760727a5c2cee872`.
+- Native four-hour: `241f4315a507983d70306d7159bccf2c61ebede61ba0ebc5cfc38aa5cd3114cb`, raw SHA256 `23d9b142f21463c6fe396b04d2038bd8682dd5bc429343de00be503e76435e07`.
+
+Evidence: `source_evidence/tiingo-eurusd-post-boundary-20261022-{preflight,collect,qualification}.json` and exact retained commands. The qualification report SHA256 is `0c74bd6c78d22faa31045c6d8c62f9e6554b4d47d101ce3fd3832d1ca7eaefd9`. These two new responses bring this continuation's bounded capture total to **22 successful requests with zero failures**.
+
+This closes the factual question of whether the previously open EURUSD interval can later appear as a dense, matching local four-hour bucket, while the following interval remains open. It is one observed rollover, not a universal vendor-finality contract. The remaining work is to qualify prospective runtime availability, expiry and correction handling through existing owners, then explicit source binding and the separate activation/evaluation/delivery gates. **Eligible observations remain zero; licensing/product use remains complete.**
