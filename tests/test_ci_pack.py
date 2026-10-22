@@ -4846,6 +4846,11 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-22 GMI explorer (W3): the identity reader names
+    # scripts/build_security_master.py by path, so inference smeared the
+    # gmi-explorer job onto the templates/index.html, build_free_content and
+    # plan_book packing probes. scope: exclusive pins it to its measured closure.
+    "gmi-explorer",
     # GovRev dependency changes must not select GR3 on unrelated page templates.
     "group-linked-outsiders",
     "govrev-program-ontology",
