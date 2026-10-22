@@ -490,6 +490,15 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 
 /* ---------- P. per-surface rules (one anchored block per W2 lane; edit only your own) ---------- */
 /* == gmi:s2 (W2A) == */
+/* W2A conversions of the specimen's S2 inline styles (build_specimens.py lines
+   305/346/355/400) plus the tree's one new depth level. */
+.gmi-note--chain{ padding:8px 12px 0; }
+.gmi-trow-caret--mark{ display:flex; align-items:center; justify-content:center; }
+.gmi-panel--bare{ box-shadow:none; }
+/* l4: micro-themes under a sub-theme — one step deeper than l3 (70px -> 98px; 62px at <=640). */
+.gmi-trow--l4{ padding-left:98px; min-height:40px; }
+.gmi-trow--l4 .gmi-trow-name{ font-weight:400; font-size:var(--fs-sm); }
+@media (max-width:640px){ .gmi-trow--l4{ padding-left:62px; } }
 /* == /gmi:s2 == */
 /* == gmi:s1s5 (W2B) == */
 /* == /gmi:s1s5 == */
