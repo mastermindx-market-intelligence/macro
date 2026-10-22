@@ -966,8 +966,15 @@ def compute_matched_delta(
             isins_t = set(grp_t["isin"])
             common = isins_prev & isins_t
 
-            # Filter: seasoning + not near_par at t
+            # Churn describes the whole population even when no delta is eligible.
+            grp_prev_indexed = grp_prev.set_index("isin")
             grp_t_indexed = grp_t.set_index("isin")
+            total_par_t = grp_t["par"].sum()
+            entered_par = grp_t_indexed.reindex(isins_t - isins_prev)["par"].fillna(0).sum()
+            exited_par = grp_prev_indexed.reindex(isins_prev - isins_t)["par"].fillna(0).sum()
+            comp_change = bool((entered_par + exited_par) > COMPOSITION_MARKER_PAR_SHARE * total_par_t)
+
+            # Filter: seasoning + not near_par at t
             matched_isins = []
             for isin in common:
                 if isin not in grp_t_indexed.index:
@@ -980,16 +987,16 @@ def compute_matched_delta(
                 fs = row_t.get("first_seen", None)
                 if fs is None:
                     continue
-                if seasoning_cutoff is not None and str(fs) > str(seasoning_cutoff):
+                # A short retained store cannot establish five-bar seasoning.
+                if seasoning_cutoff is None or str(fs) > str(seasoning_cutoff):
                     continue
                 matched_isins.append(isin)
 
             if not matched_isins:
-                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": False}
+                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": comp_change}
                 continue
 
             # Par-weighted mean g-spread at t and t_prev
-            grp_prev_indexed = grp_prev.set_index("isin")
             matched_t = grp_t_indexed.loc[matched_isins]
             matched_prev = grp_prev_indexed.reindex(matched_isins)
 
@@ -1000,7 +1007,7 @@ def compute_matched_delta(
             # Only include bonds where both g-spreads are valid
             valid = gs_t.notna() & gs_prev.notna() & par_t.notna() & (par_t > 0)
             if not valid.any():
-                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": False}
+                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": comp_change}
                 continue
 
             gs_t_valid = gs_t[valid]
@@ -1009,12 +1016,6 @@ def compute_matched_delta(
             pw_t = (gs_t_valid * par_valid).sum() / par_valid.sum()
             pw_prev = (gs_prev_valid * par_valid).sum() / par_valid.sum()
             d1 = float(pw_t - pw_prev)
-
-            # Composition change: (entered + exited par) > 0.5% of panel par at t
-            total_par_t = grp_t["par"].sum()
-            entered_par = grp_t_indexed.reindex(isins_t - isins_prev)["par"].fillna(0).sum()
-            exited_par = grp_prev_indexed.reindex(isins_prev - isins_t)["par"].fillna(0).sum()
-            comp_change = bool((entered_par + exited_par) > COMPOSITION_MARKER_PAR_SHARE * total_par_t)
 
             out[str(key)][str(t)] = {
                 "d1": d1,

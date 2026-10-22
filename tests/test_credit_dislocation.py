@@ -77,6 +77,64 @@ def test_correct_relative_comparison_and_authority():
     assert result["cds"]["status"] == "unavailable"
 
 
+def test_produced_issuer_history_withholds_unseasoned_window_then_recovers():
+    from engine.corp_credit import _build_issuer_daily, compute_first_seen
+
+    days = sessions_between(date(2026, 10, 1), END)
+    issuers = [f"TEST{i}" for i in range(6)]
+    registry = {"themes": {"synthetic": {"issuers": {
+        issuer: {"equity_ticker": issuer, "tier": "IG"} for issuer in issuers
+    }}}}
+    panel = pd.DataFrame([
+        {"as_of": day.isoformat(), "isin": cusip(i + 1), "issuer": issuer,
+         "theme": "synthetic", "segment": "ig", "name": f"Synthetic {issuer} bullet",
+         "maturity": "2031-10-16", "coupon": 5.0, "price_clean": 99.0,
+         "ytm_pct": 5.0, "par": 1000.0, "tenor_yrs": 5.0,
+         "g_spread_bp": 100.0 + j * (5.0 if i == 0 else 1.0),
+         "near_par_call_flag": False}
+        for i, issuer in enumerate(issuers)
+        for j, day in enumerate(days[:10])
+    ])
+
+    # A five-session window still includes an unseasoned change at index 8;
+    # index 9 is the first window whose five daily changes are all eligible.
+    for end_idx, expected_change, expected_pairs in [(5, None, 0), (8, None, 0), (9, 25.0, 6)]:
+        cutoff = days[end_idx]
+        observed = panel[panel["as_of"] <= cutoff.isoformat()].copy()
+        observed["first_seen"] = compute_first_seen(observed)
+        source_dates = [day.isoformat() for day in days[:end_idx + 1]]
+        history = _build_issuer_daily(observed, source_dates)
+        latest = observed[observed["as_of"] == cutoff.isoformat()].copy()
+        stocks = {
+            issuer: pd.Series(100.0, index=pd.to_datetime(days[:end_idx + 1]))
+            for issuer in issuers
+        }
+
+        result = compile_snapshot(history, latest, registry, stocks, as_of=cutoff)
+        row = first(result)
+
+        assert result["source_as_of"] == cutoff.isoformat()
+        assert row["change_5"]["value_bp"] == expected_change
+        assert result["coverage"]["paired_comparisons"] == expected_pairs
+        assert result["coverage"]["identified_bond_rows"] == 6
+        assert row["n_bonds"] == 1
+        assert row["level_bp"] == 100.0 + 5.0 * end_idx
+        assert row["bonds"][0]["fund_held_par"] == 1000.0
+        if expected_change is None:
+            assert row["change_5"]["reason"] == "missing_session_or_matched_change"
+            assert row["relative_change_5_bp"] is None
+            assert row["state"] == "insufficient_evidence"
+        else:
+            assert row["change_5"]["min_matched_bonds"] == 1
+            assert row["peer_change_5_bp"] == 5.0
+            assert row["relative_change_5_bp"] == 20.0
+            assert row["state"] == "credit_widening_equity_steadier"
+        assert result["authority"] == AUTHORITY
+        assert not any(result["authority"].values())
+        assert result["point_in_time_qualified"] is False
+        assert result["cds"]["status"] == "unavailable"
+
+
 def test_missing_session_does_not_become_five_observations():
     history, panel, reg, stocks = fixture()
     drop_day = sorted(history.as_of.unique())[-3]

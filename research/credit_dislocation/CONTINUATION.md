@@ -1,3 +1,17 @@
+# Replacement-session entry — matched-panel repair and current browser scope
+
+Continue the same Forex/Bonds mission in the existing owner workspaces and PRs. Start with MASTERPLAN.md, evidence/matched_panel_guards_qualification_20261022.json and the latest canonical CDI comment6337092277 / joint comment6336042815. The prior accepted results below remain evidence on their recorded identities.
+
+Current #9590 source base is `f4dd0bc16543a572fcd32a8595e0df0cd4966d79`. The matched-panel repair has actual RED **4 failed / 1 passed** and GREEN **206 passed**. Read private `.cdi-proof/integration-20261022/matched-panel-guards-{red,green}-{intent,result}.json` and logs; do not replay completed patch applications or tests. Source blob after repair is `0ec00f06312d273b8fd46b57d54ee98b0f789862`.
+
+Reconcile `matched-panel-guards-documentation-*`, `matched-panel-guards-commit-*` and `matched-panel-guards-publication-*` effect receipts against HEAD/index and the existing remote branch before acting. An absent result or interrupted response is not permission to replay. Only explicitly owned paths may be staged.
+
+Next: finish publication/automatic CI, genuine current-candidate browser proof, bounded W4 instrument history and remaining existing-path source contracts. The current Chrome production-baseline read succeeds. September R6/R9 specific prototype denials remain binding for those operations; they were overgeneralized in older text and do not imply all browsers are prohibited. Exact candidate identity and actual captures are still required.
+
+The existing #9590 workspace is `/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001`; local `sol/web-ccw-cdi-source-integration-20261022-sol-001` publishes normally to `claude/ssd-ccw-dislocation-v1-cc87720e59421398`. Do not clean/reset original dirty/untracked/ignored workspaces. Preserve immutable Macro #9996 and its CI/live/render proof, held carry/COT, Terminal #1106 Draft/HOLD/original Fabric repair-review, single-applied0038 and the exact platform-refused Terminal deploy. Tiingo licensing is complete by Chairman attestation.
+
+## Retained prior reconciliation and custody
+
 # Replacement-session entry — current-main generated-page reconciliation
 
 Continue the same Forex/Bonds mission and owners. Read MASTERPLAN.md, evidence/current_main_generated_conflict_20261022.json, OWNER_CONTRACTS_20261022.md and the latest canonical CDI comment6337092277 / joint comment6336042815. Refresh a compatible protected Skillpack pin before a new modifying phase.

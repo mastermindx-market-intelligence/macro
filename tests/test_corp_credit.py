@@ -41,6 +41,7 @@ from engine.corp_credit import (
     _ytm_solve,
     accrued_30_360_us,
     canonicalize_bonds,
+    compute_first_seen,
     compute_g_spread_bp,
     compute_matched_delta,
     compute_near_par_flag,
@@ -485,6 +486,66 @@ class TestMatchedPanelFixture:
         )
 
 
+class TestMatchedPanelGuards:
+    """Entry seasoning and churn are independent of delta availability."""
+
+    def test_cold_store_excludes_first_five_bars_then_admits_mature_delta(self):
+        dates = pd.bdate_range("2026-01-02", periods=6).strftime("%Y-%m-%d").tolist()
+        panel = pd.DataFrame([
+            {"as_of": dt, "isin": "REG", "segment": "ig", "par": 1000.0,
+             "g_spread_bp": 100.0 + 2 * i, "near_par_call_flag": False}
+            for i, dt in enumerate(dates)
+        ])
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert dates[0] not in delta
+        for dt in dates[1:5]:
+            assert delta[dt] == {"d1": None, "matched_n": 0, "comp_change": False}
+        assert delta[dates[5]] == {"d1": 2.0, "matched_n": 1, "comp_change": False}
+
+    def test_complete_turnover_keeps_composition_flag_without_matched_bonds(self):
+        dates = pd.bdate_range("2026-01-02", periods=7).strftime("%Y-%m-%d").tolist()
+        panel = pd.DataFrame([
+            {"as_of": dt, "isin": "OLD" if i < 6 else "NEW", "segment": "ig",
+             "par": 1000.0, "g_spread_bp": 100.0 + 2 * i,
+             "near_par_call_flag": False}
+            for i, dt in enumerate(dates)
+        ])
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert delta[dates[5]] == {"d1": 2.0, "matched_n": 1, "comp_change": False}
+        assert delta[dates[6]] == {"d1": None, "matched_n": 0, "comp_change": True}
+
+    @pytest.mark.parametrize("with_churn", [False, True])
+    def test_invalid_matched_price_does_not_erase_population_churn(self, with_churn):
+        dates = pd.bdate_range("2026-01-02", periods=7).strftime("%Y-%m-%d").tolist()
+        rows = []
+        for i, dt in enumerate(dates):
+            rows.append({
+                "as_of": dt, "isin": "COMMON", "segment": "ig", "par": 1000.0,
+                "g_spread_bp": 100.0 if i < 6 else float("nan"),
+                "near_par_call_flag": False,
+            })
+            if with_churn:
+                rows.append({
+                    "as_of": dt, "isin": "OLD" if i < 6 else "NEW",
+                    "segment": "ig", "par": 1000.0, "g_spread_bp": 300.0,
+                    "near_par_call_flag": False,
+                })
+        panel = pd.DataFrame(rows)
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert delta[dates[6]] == {
+            "d1": None, "matched_n": 0, "comp_change": with_churn,
+        }
+
+
 # ---------------------------------------------------------------------------
 # 5. Dispersion floors
 # ---------------------------------------------------------------------------
@@ -545,13 +606,12 @@ class TestNearParFlag:
 
     def test_near_par_excluded_from_delta_but_present_in_levels(self):
         """Near-par HY bond: absent from matched-panel delta, present in level aggregates."""
-        base_date = date(2026, 1, 2)
-        d0 = base_date.isoformat()
-        d1 = (base_date + timedelta(days=1)).isoformat()
+        sorted_dates = pd.bdate_range("2026-01-02", periods=6).strftime("%Y-%m-%d").tolist()
+        d0, d1 = sorted_dates[0], sorted_dates[-1]
 
-        # Two bonds: regular HY + near-par HY
+        # Both bonds have six observed bars; only the regular HY bond can season in.
         rows = []
-        for dt in [d0, d1]:
+        for dt in sorted_dates:
             # Regular HY bond (spread ~300bp)
             rows.append({
                 "as_of": dt, "isin": "US000000REG1",
@@ -570,7 +630,7 @@ class TestNearParFlag:
             })
 
         panel = pd.DataFrame(rows)
-        sorted_dates = [d0, d1]
+        panel["first_seen"] = compute_first_seen(panel)
 
         # Compute matched delta for "hy" segment
         delta = compute_matched_delta(panel, sorted_dates, "segment", "segment")

@@ -1,3 +1,13 @@
+# Current implementation status — 22 October 2026, matched-panel qualification
+
+The existing CCW matched-panel producer repair is source-qualified: original regressions **4 failed / 1 passed**, repaired corporate-credit/CDI/momentum suites **206 passed in 9.95s**. Initial five-bar seasoning and factual entered/exited-par composition are now preserved on empty/invalid delta paths. Exact identities are in evidence/matched_panel_guards_qualification_20261022.json.
+
+Bonds #9590 remains Draft/HOLD for actual candidate visual proof, qualified review, remaining scoped source work and protected release. Current Chrome can read production; the historical R6/R9 prototype denials are action-specific, not a blanket browser restriction. Prior native HTML remains unchanged and source-scoped; no producer/data refresh or build is claimed here. Bounded W4 history proceeds through the existing panel/validation/CDI chain.
+
+Forex response-clock repair has separately qualified **507 tests**, including BOATS caller compatibility, without provider capture or rewriting historical receipts. Its publication and exact-head CI are recorded in #10052's current checkpoint. Macro #9996, migration0038 and original Fabric/deployment restrictions remain preserved; Tiingo licensing is complete by Chairman attestation.
+
+## Retained implementation history
+
 # Current implementation status — reconciled main, 22 October 2026
 
 **Source/artifact qualification complete on the recorded scope; broader Bonds release remains Draft/HOLD.**

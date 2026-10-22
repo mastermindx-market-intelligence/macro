@@ -1,3 +1,31 @@
+# Current recovery checkpoint — matched-panel repair, 22 October 2026
+
+**The source defect is repaired and qualified; Bonds remains Draft/HOLD while current-candidate visual evidence, review and release proof are completed.** The containing change descends from published `f4dd0bc16543a572fcd32a8595e0df0cd4966d79` on the existing #9590 branch. The [qualification receipt](evidence/matched_panel_guards_qualification_20261022.json) binds the patch, exact source blobs, original failing regressions and passing suites.
+
+## Completed source work
+
+The CCW matched-change calculation now withholds the first five source bars, including when the global cutoff does not yet exist. Its unchanged entered/exited-par composition rule is evaluated even when an empty or invalid match prevents a numerical delta. Existing levels, weighting, near-par behavior and later-entry boundary remain intact. The actual producer-history-to-CDI case withholds unsupported windows and then recovers a mature supported window.
+
+The old source reproduced **4 failures and 1 pass** at 18:08 UTC. After the bounded repair, **206 tests passed in 9.95 seconds** at 18:11 UTC across corporate credit, Credit Dislocation and credit momentum. The native HTML and retained inputs were not rebuilt or refreshed. Prior native/302-test/four-guard evidence stays on its original identities; the changed producer is not retroactively included in the earlier native execution.
+
+## Browser scope correction and next proof
+
+The specific September R6 file URL and R9 prototype-server refusals remain refused operations. Their records do not establish a blanket denial of all current browser use. The current supported Chrome extension successfully opened the public Bonds route during this recovery. That is production-baseline access, not proof of the unmerged candidate. Earlier broader wording in the retained historical notes is superseded by this action-scoped distinction.
+
+The existing `capture_page_evidence.py::serve_site_dir` loopback helper and existing browser-capture receipt format can support a genuine current-candidate check. Bind the exact served HTML/assets and actual source changes, observe all requested viewport/theme/locale and interaction states, preserve original captures and truthful transport provenance, then run the unchanged visual-evidence guard. Do not replay either old prototype target, change browser/provider to evade a denial, assert invented network observations, or relabel the public baseline as candidate proof.
+
+## Ordered continuation under the existing owner
+
+1. Reconcile the `matched-panel-guards-*` effect receipts, commit and normally push only the explicitly qualified source/tests and documentation on existing #9590; consume its automatic exact-head CI. Current `f4dd` CI 39795313833 passed contract and 11 packs; its only pack failure was the missing owning duration/CDI visual receipt. Preserve that failure and the passing fences.
+2. Complete exact-candidate duration/CDI browser evidence, including 1440/390/820 widths, EN/ZH, light/dark, keyboard and focus, input correction/fractional values, reset/close/reopen, overflow and accessibility obligations. Source changes require renewed proof for the affected presentation. R33 protected access and production proof remain separate.
+3. Implement and qualify bounded instrument history through the existing CCW panel and CDI path: at most 22 actual observations for the existing registry-mapped population, strict bytes/rows, retained first-seen/currency/CMT provenance, final-convention consistency, exact Parquet binding and explicit missingness. No new artifact writer, scheduler or service. The current session can resolve this technical contract; architectural ownership is not an additional AI approver.
+4. Continue the existing funding, Terminal saved-object and prospective-evaluation integrations using OWNER_CONTRACTS_20261022.md. Resolve available source contracts directly. Unavailable cash dates, legal terms, current authorization, genuine CDS and historical availability evidence remain specific data/proof gaps; do not fill them with guessed values or substitute authority.
+5. Obtain required qualified review and exact-head CI, then use existing protected release owners and actual route/machine-consumer proof. Preserve R11/R33 and every accepted source/data result. No claim that a native advisory agent is independent accepted review.
+
+Fresh protected Skillpack pin `05a9eb52a54e29fb7bbd0d40813ed12623b176c7` was reconciled against the previous compatible pin; the loaded recovery/delivery/effect laws have identical blobs. Macro #9996, render39688064251, migration0038, original Fabric operations and the expressly refused Terminal deployment remain untouched. Terminal #1106 stays Draft/HOLD. Tiingo licensing/intended use is complete by Chairman attestation; no licensing email or support contact is needed.
+
+## Retained prior source and native checkpoints
+
 # Bonds current-main reconciliation — 22 October 2026
 
 **The source composition is qualified; the broader Bonds project remains Draft/HOLD.** This containing merge joins published `5a184be55ccc62422790c64488d4281949d62b87` with main `2926e83157923c754751818026a4d0ce89a2a977`. The canonical [CDI checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) and [joint recovery checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) record the final publication identity and subsequent CI.
