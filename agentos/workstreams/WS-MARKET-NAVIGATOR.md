@@ -117,3 +117,7 @@ Native Paper and independent review remain unproven. Full product is not accepte
 ## Extra High CI scope correction (2026-10-22)
 
 The source release remains OPEN, not user-proven. Contract-delta exposed the Navigator suite selecting unrelated ordinary changes. Its job now has curated exclusive paths covering 85 actual literal imported/read dependencies and both separately detected ancestor init files; three formerly offending pack probes no longer select it. The current head still owes hosted proof. Paper is CONNECTED but write-schema incompatible and the active file is unsafe; no Paper write or live endpoint was performed. The personal prefs writer is not a Navigator hypothesis store. Continue the original PR, normal source release and later separately approved consumer/design integration.
+
+## W3 UI composability (22 October 2026)
+
+Separate managed attended source branch `sol/web-market-navigator-w3-ui-20261022-sol` adds a user-inspectable read-only bilingual evidence region with condition, clock and contradictory-evidence drilldown. It has no source, auth, alert, ranking or trade owner; all dynamic text uses DOM textContent. The prior W1 source PR #10055 remains separately owned, open/merge-blocked. Actual Paper and signed-in production integration still outstanding; no duplicate reviewer or worker was spawned. See research/market_navigator/VIEW_INTEGRATION.md and VIEW_BROWSER_REPORT.json.

@@ -18,6 +18,8 @@ The initial source is a read-only consumer with every signal/trade/alert authori
 - [Continuation](CONTINUATION.md): source custody, unfinished obligations and next action.
 - [Agent OS workstream](../../agentos/workstreams/WS-MARKET-NAVIGATOR.md).
 
+- [Navigator W3 evidence-view integration](VIEW_INTEGRATION.md): accessible bilingual/light-dark client rendering, non-production proof.
+
 ## Implementation
 
 `engine/market_navigator.py` is a pure deterministic compositor. It preserves input
