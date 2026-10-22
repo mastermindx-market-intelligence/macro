@@ -7,8 +7,12 @@ measure definitions (M0, E1-E8), the refusal paths and rerun determinism.
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
+import importlib.util
+import io
 import json
+import os
 import re
 import subprocess
 import sys
@@ -40,6 +44,15 @@ PACKAGE_PATH = REPO_ROOT / "data/company_intelligence/relationships/observation_
 EDGES_PATH = REPO_ROOT / "data/company_intelligence/relationships/relationship_edges.json"
 EXTRACTION_DIR = REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/extraction"
 INPUTS_DIR = REPO_ROOT / "research/theme_graph/gmi_relationships_20261021"
+M1_EXTRACTION_PATH = (
+    REPO_ROOT
+    / "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+)
+# The accepted M1 byte outputs, copied verbatim from FILE_PKG_PIN /
+# FILE_EDGES_PIN in tests/test_relationship_m2_keys.py (the file-scoped
+# producer run over the M1 extraction file alone).  Never re-pinned here.
+FILE_PKG_PIN = "cc67c2f9c065d04f5029c75157eefad19277fde29d2cbda5b2865c0f5d1307bb"
+FILE_EDGES_PIN = "51434731fb33499e77ece20b9a71a9824cc3a76fa46c0fa5d14a9ccb53f986dd"
 
 
 def _load(path):
@@ -53,6 +66,62 @@ def _load_jsonl_dir(directory: Path) -> list:
             if line.strip():
                 rows.append(json.loads(line))
     return rows
+
+
+def _sha_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+@pytest.fixture(scope="module")
+def m1_reference(tmp_path_factory):
+    """The M1 reference package: the producer's own byte-pinned run over the
+    M1 extraction file alone, with exactly the argument list the file-scoped
+    run in tests/test_relationship_m2_keys.py uses.  The committed package
+    spans every M2 leaf, so the M1-era literals are asserted against this
+    reference instead of the committed default package."""
+    out = tmp_path_factory.mktemp("m1_reference")
+    env_vars = dict(os.environ)
+    env_vars["TZ"] = "UTC"
+    proc = subprocess.run(
+        [sys.executable, "scripts/build_relationship_observations.py",
+         "--as-of", "2026-10-21T00:00:00Z",
+         "--extraction", str(M1_EXTRACTION_PATH),
+         "--out-dir", str(out)],
+        cwd=str(REPO_ROOT),
+        env=env_vars,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    package = out / "observation_package.v2.json"
+    edges = out / "relationship_edges.json"
+    assert _sha_bytes(package.read_bytes()) == FILE_PKG_PIN, (
+        "M1 reference package sha != the accepted FILE_PKG_PIN"
+    )
+    assert _sha_bytes(edges.read_bytes()) == FILE_EDGES_PIN, (
+        "M1 reference edges sha != the accepted FILE_EDGES_PIN"
+    )
+    return {"package": package, "edges": edges}
+
+
+def _eligible_issuers(leaves: dict) -> set:
+    """The module's documented eligibility rule: every issuer in the leaves
+    doc's domain map (``domain_of``) whose domain is one of D1/D2."""
+    return {
+        issuer_id
+        for issuer_id, domain in leaves["domain_of"].items()
+        if domain in ("D1", "D2")
+    }
+
+
+def _load_envelope_script():
+    spec = importlib.util.spec_from_file_location(
+        "relationship_m2_envelope_under_test",
+        REPO_ROOT / "scripts/relationship_m2_envelope.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 # --- synthetic fixtures ---------------------------------------------------------
@@ -186,7 +255,7 @@ def test_panel_issuers_follow_the_hash_rule():
 # --- E1 ------------------------------------------------------------------------
 
 
-def test_e1_every_eligible_issuer_accounted():
+def test_e1_every_eligible_issuer_accounted(m1_reference):
     # synthetic: 3 issuers, one covered
     leaves = {"D1": ["ISS:US-XNAS-I1", "ISS:US-XNAS-I2"], "D2": ["ISS:US-XNYS-J1"]}
     package = _package(coverage=[
@@ -207,8 +276,10 @@ def test_e1_every_eligible_issuer_accounted():
     # missing coverage -> pending, never dropped
     assert e1["state_by_issuer"]["ISS:US-XNYS-J1"] == "pending"
 
-    # the real leaves: every one of the 283 eligible issuers is accounted for
-    real = env.e1_coverage(_load(PACKAGE_PATH), _load(LEAVES_PATH))
+    # the M1 reference package on the real leaves: every one of the 283
+    # eligible issuers is accounted for
+    leaves_real = _load(LEAVES_PATH)
+    real = env.e1_coverage(_load(m1_reference["package"]), leaves_real)
     total = sum(
         sum(states.values())
         for states in (real["domains"]["D1"]["states"],
@@ -223,6 +294,27 @@ def test_e1_every_eligible_issuer_accounted():
     bad_leaves = {"D1": ["ISS:US-XNAS-I1"], "D2": [], "P": ["ISS:US-XNAS-XX"]}
     with pytest.raises(env.EnvelopeError):
         env.e1_coverage(_package(coverage=[]), bad_leaves)
+
+    # full data, re-derived independently of the expected values: the
+    # accounted total equals the eligible issuer count recomputed straight
+    # from leaves_v1.json, the D1 assessed count equals a direct recount of
+    # the committed package's coverage rows, and SWKS stays assessed.
+    # falsifier: an E1 that drops, invents or double-counts any eligible
+    # issuer, or misclassifies SWKS / the D1 assessed coverage rows
+    committed = _load(PACKAGE_PATH)
+    full = env.e1_coverage(committed, leaves_real)
+    full_total = sum(
+        sum(states.values())
+        for states in (full["domains"]["D1"]["states"],
+                       full["domains"]["D2"]["states"])
+    )
+    assert full_total == len(_eligible_issuers(leaves_real))
+    assert full["state_by_issuer"]["ISS:US-XNAS-SWKS"] == "assessed"
+    assert full["domains"]["D1"]["states"]["assessed"] == sum(
+        1 for row in committed["coverage"]
+        if row.get("state") == "assessed"
+        and leaves_real["domain_of"].get(row["issuer_id"]) == "D1"
+    )
 
 
 # --- E2 ------------------------------------------------------------------------
@@ -305,8 +397,8 @@ def test_e2_cell_precedence():
 # --- E3 ------------------------------------------------------------------------
 
 
-def test_e3_m1_pinned_counted():
-    package = _load(PACKAGE_PATH)
+def test_e3_m1_pinned_counted(m1_reference):
+    package = _load(m1_reference["package"])
     leaves = _load(LEAVES_PATH)
     e3 = env.e3_sources(package, leaves, judging_dirs=[], inputs_dir=INPUTS_DIR)
     d1 = e3["per_domain"]["D1"]
@@ -316,6 +408,18 @@ def test_e3_m1_pinned_counted():
     assert e3["per_domain"]["D2"]["issuers"]["pending"] == 137
     assert e3["judging_dirs"] == []
     assert e3["judging_state"] == "ABSENT"
+
+    # full data, against the committed default package: per domain, the
+    # issuer-state counts sum to that domain's leaf count.
+    # falsifier: an E3 that drops or invents any issuer's source state
+    full = env.e3_sources(
+        _load(PACKAGE_PATH), leaves, judging_dirs=[], inputs_dir=INPUTS_DIR
+    )
+    for domain in ("D1", "D2"):
+        leaf_count = sum(
+            1 for d in leaves["domain_of"].values() if d == domain
+        )
+        assert sum(full["per_domain"][domain]["issuers"].values()) == leaf_count
 
 
 # --- E4 ------------------------------------------------------------------------
@@ -611,10 +715,16 @@ def test_rerun_byte_identical(tmp_path):
     assert r1.stdout == (out1 / "envelope_report.txt").read_bytes().decode("utf-8")
 
 
-def test_real_m1_artifacts(tmp_path):
+def test_real_m1_artifacts(m1_reference, tmp_path, monkeypatch):
+    # The M1 reference artifacts: the CLI entry point in-process, with the
+    # script's module package/edges constants pointed at the byte-pinned
+    # reference files (an absolute path joins over the script's REPO_ROOT).
+    script = _load_envelope_script()
+    monkeypatch.setattr(script, "PACKAGE_PATH", str(m1_reference["package"]))
+    monkeypatch.setattr(script, "EDGES_PATH", str(m1_reference["edges"]))
     out = tmp_path / "report"
-    result = _run_cli("--out", str(out))
-    assert result.returncode == 0, result.stderr
+    with contextlib.redirect_stdout(io.StringIO()):
+        assert script.main(["measure", "--out", str(out)]) == 0
     report = _load(out / "envelope_report.json")
     assert report["schema"] == "gmi_rel_m2.envelope_report/v1"
     assert report["as_of"] == "2026-10-21T00:00:00Z"
@@ -639,6 +749,24 @@ def test_real_m1_artifacts(tmp_path):
     assert report["E4"]["state"] == "OWED"
     assert report["E6"]["package_lag"]["state"] == "NOT_MEASURABLE"
     assert report["E7"]["note"] == env.USEFULNESS_LINE
+
+    # full data, the default CLI run (subprocess, as committed today),
+    # re-derived independently: schema/as_of/panel pins, a clean M0 join, E4
+    # OWED, the verbatim E7 note, and an E1 total equal to the eligible leaf
+    # count recomputed from leaves_v1.json.
+    # falsifier: a committed-artifacts run that drops eligible issuers,
+    # breaks the M0 join, or drifts the usefulness note
+    full_out = tmp_path / "report_full"
+    result = _run_cli("--out", str(full_out))
+    assert result.returncode == 0, result.stderr
+    full = _load(full_out / "envelope_report.json")
+    assert full["schema"] == "gmi_rel_m2.envelope_report/v1"
+    assert full["as_of"] == "2026-10-21T00:00:00Z"
+    assert full["panel_sha256"] == env.PANEL_SHA256
+    assert full["M0"]["join"]["join_missing"] == []
+    assert full["E4"]["state"] == "OWED"
+    assert full["E7"]["note"] == env.USEFULNESS_LINE
+    assert full["E1"]["eligible_total"] == len(_eligible_issuers(_load(LEAVES_PATH)))
 
 
 def test_no_network_import():

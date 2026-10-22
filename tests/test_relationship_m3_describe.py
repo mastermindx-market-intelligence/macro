@@ -31,6 +31,21 @@ from engine.company_intelligence.relationships import describe  # noqa: E402
 
 PREMISES_PATH = REPO_ROOT / describe.PREMISES_RELPATH
 SOURCES_DIR = REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/sources"
+DATA_PACKAGE_PATH = (
+    REPO_ROOT / "data/company_intelligence/relationships/observation_package.v2.json"
+)
+DATA_EDGES_PATH = (
+    REPO_ROOT / "data/company_intelligence/relationships/relationship_edges.json"
+)
+M1_EXTRACTION_PATH = (
+    REPO_ROOT
+    / "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+)
+# The accepted M1 byte outputs, copied verbatim from FILE_PKG_PIN /
+# FILE_EDGES_PIN in tests/test_relationship_m2_keys.py (the file-scoped
+# producer run over the M1 extraction file alone).  Never re-pinned here.
+FILE_PKG_PIN = "cc67c2f9c065d04f5029c75157eefad19277fde29d2cbda5b2865c0f5d1307bb"
+FILE_EDGES_PIN = "51434731fb33499e77ece20b9a71a9824cc3a76fa46c0fa5d14a9ccb53f986dd"
 ACC_24 = "0000004127-24-000131"
 ACC_25 = "0000004127-25-000085"
 ACC_26 = "0000004127-26-000003"
@@ -207,6 +222,110 @@ def _tamper_real_excerpt(tmp_path: Path, acc: str = ACC_25) -> Path:
         + b"\n"
     )
     return sources
+
+
+@pytest.fixture(scope="module")
+def m1_reference(tmp_path_factory):
+    """The M1 reference package: the producer's own byte-pinned run over the
+    M1 extraction file alone, with exactly the argument list the file-scoped
+    run in tests/test_relationship_m2_keys.py uses.  The committed package
+    spans every M2 leaf, so the M1-era literals are asserted against this
+    reference instead of the committed default package."""
+    out = tmp_path_factory.mktemp("m1_reference")
+    env = dict(os.environ)
+    env["TZ"] = "UTC"
+    proc = subprocess.run(
+        [sys.executable, "scripts/build_relationship_observations.py",
+         "--as-of", "2026-10-21T00:00:00Z",
+         "--extraction", str(M1_EXTRACTION_PATH),
+         "--out-dir", str(out)],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    package = out / "observation_package.v2.json"
+    edges = out / "relationship_edges.json"
+    assert _sha_bytes(package.read_bytes()) == FILE_PKG_PIN, (
+        "M1 reference package sha != the accepted FILE_PKG_PIN"
+    )
+    assert _sha_bytes(edges.read_bytes()) == FILE_EDGES_PIN, (
+        "M1 reference edges sha != the accepted FILE_EDGES_PIN"
+    )
+    return {"package": package, "edges": edges}
+
+
+def _m1_mirror(m1_reference, tmp_path: Path) -> Path:
+    """A --repo-root mirror for correction-demo: the fixture's two files at
+    the committed relative paths plus symlinks to every other repo path the
+    CLI reads (research/ sources, extraction, resolver, premises)."""
+    repo = tmp_path / "mirror_repo"
+    data = repo / "data/company_intelligence/relationships"
+    data.mkdir(parents=True)
+    (data / "observation_package.v2.json").symlink_to(m1_reference["package"])
+    (data / "relationship_edges.json").symlink_to(m1_reference["edges"])
+    scripts = repo / "scripts"
+    scripts.mkdir()
+    (scripts / "build_relationship_observations.py").symlink_to(
+        REPO_ROOT / "scripts/build_relationship_observations.py"
+    )
+    for name in ("research", "config", "contracts", "engine"):
+        (repo / name).symlink_to(REPO_ROOT / name, target_is_directory=True)
+    return repo
+
+
+def _cited_excerpt_texts(accession: str) -> list:
+    """The normalized span texts the sources dir holds for an accession
+    (flat ``<accession>.json`` or nested ``<accession>/<sha20>.json``),
+    loaded from the pinned bytes the way ``_real_excerpt`` does."""
+    paths = []
+    flat = SOURCES_DIR / f"{accession}.json"
+    if flat.is_file():
+        paths.append(flat)
+    nested = SOURCES_DIR / accession
+    if nested.is_dir():
+        paths.extend(sorted(nested.glob("*.json")))
+    texts = []
+    for path in paths:
+        try:
+            doc = json.loads(path.read_text("utf-8"))
+        except ValueError:
+            continue
+        span = doc.get("span") if isinstance(doc, dict) else None
+        if isinstance(span, dict) and isinstance(span.get("normalized"), str):
+            texts.append(span["normalized"])
+    return texts
+
+
+def _exempt_cited_quotes(entries: list, lead_en: str, lead_zh: str,
+                         banned_en, banned_substrings) -> int:
+    """Remove, from every verbatim line, the quoted span that is a
+    byte-exact substring of the excerpt text that same line cites (the
+    filing's own words); return how many exempted spans contained a banned
+    word.  Quoted spans that verify as no excerpt substring are left in
+    place, so the unchanged check still sees them."""
+    hits = 0
+    for entry in entries:
+        for line in entry["lines"]:
+            if line["display_class"] != "verbatim_excerpt":
+                continue
+            accession = (line.get("citation") or {}).get("accession")
+            excerpt_texts = _cited_excerpt_texts(accession) if accession else []
+            for field, lead in (("en", lead_en), ("zh", lead_zh)):
+                text = line.get(field) or ""
+                cut = text.find(lead)
+                if cut < 0:
+                    continue
+                quote = text[cut + len(lead):].lstrip(" ")
+                if not quote or not any(quote in t for t in excerpt_texts):
+                    continue
+                if banned_en.search(quote) or any(
+                    substring in quote for substring in banned_substrings
+                ):
+                    hits += 1
+                line[field] = text[:cut]
+    return hits
 
 
 # --- premises pin ----------------------------------------------------------------
@@ -437,7 +556,8 @@ def test_every_sentence_comes_from_a_template():
 # --- no inference --------------------------------------------------------------------
 
 
-def test_no_inference_words(tmp_path):
+@pytest.mark.needs_full_checkout("data")
+def test_no_inference_words(m1_reference, tmp_path):
     banned_en = re.compile(r"\b(will|likely|expect)\b", re.IGNORECASE)
     banned_substrings = ("risk score", "probability", "预计", "可能会")
 
@@ -454,12 +574,82 @@ def test_no_inference_words(tmp_path):
     )
     entry, _counters = _render(edge, excerpts)
     _check(describe.report_text([entry]))
-    # The real committed M1 render (json + txt + stdout).
+    # The M1 reference render (json + txt + stdout).
     out = tmp_path / "no_inf"
-    proc = _run_cli("describe", "--out", str(out))
+    proc = _run_cli(
+        "describe", "--package", str(m1_reference["package"]),
+        "--edges", str(m1_reference["edges"]), "--out", str(out),
+    )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     _check(proc.stdout)
     _check((out / "describe_report.json").read_text("utf-8"))
+    _check((out / "describe_report.txt").read_text("utf-8"))
+    # Full-data render: a quoted span that is a byte-exact substring of the
+    # excerpt text its own line cites is the filing's own words, not the
+    # renderer inferring — that span alone is exempt.  Remove exactly those
+    # spans, then run the unchanged check on everything that remains.
+    full_out = tmp_path / "no_inf_full"
+    full = _run_cli("describe", "--out", str(full_out))
+    assert full.returncode == 0, full.stdout + full.stderr
+    report = json.loads((full_out / "describe_report.json").read_text("utf-8"))
+    premises = describe.load_premises_file(PREMISES_PATH)
+    exempted_banned = _exempt_cited_quotes(
+        report["entries"],
+        premises["lead_in"]["en"],
+        premises["lead_in"]["zh"],
+        banned_en,
+        banned_substrings,
+    )
+    # falsifier: an exemption so wide it never fires — a quoted-span
+    # exemption that no longer hides any banned filing word is dead code
+    assert exempted_banned >= 1
+    _check(describe.report_text(report["entries"]))
+    _check(json.dumps(report, sort_keys=True, ensure_ascii=False))
+
+
+def test_no_inference_words_exemption_is_narrow(tmp_path):
+    banned_en = re.compile(r"\b(will|likely|expect)\b", re.IGNORECASE)
+    banned_substrings = ("risk score", "probability", "预计", "可能会")
+
+    def _check(text: str) -> None:
+        assert not banned_en.search(text), banned_en.search(text).group()
+        for substring in banned_substrings:
+            assert substring not in text, substring
+
+    synth, inner_start, inner_end = _synthetic_excerpt()
+    excerpts = {(SYN_ACC, synth["span"]["raw_sha256"]): synth, SYN_ACC: synth}
+    premises = describe.load_premises_file(PREMISES_PATH)
+    lead_en = premises["lead_in"]["en"]
+    lead_zh = premises["lead_in"]["zh"]
+
+    # (a) a NON-quoted banned word — here carried in the counterparty slot of
+    # the premise template — survives the exemption pass and must still fail.
+    edge = _edge(
+        conditions=[_condition(synth, inner_start, inner_end)],
+        to={"issuer_id": BETA, "name_as_filed": "will industries"},
+    )
+    entry, _counters = _render(edge, excerpts)
+    assert _exempt_cited_quotes(
+        [entry], lead_en, lead_zh, banned_en, banned_substrings
+    ) == 0
+    with pytest.raises(AssertionError):
+        _check(describe.report_text([entry]))
+
+    # (b) a quoted span containing a banned word that is NOT a byte-exact
+    # substring of its excerpt is never exempt.  The renderer itself refuses
+    # unverifiable quotes, so simulate the defect by mutating the rendered
+    # line's quote; the unchanged check must still fail on it.
+    entry2, _counters2 = _render(
+        _edge(conditions=[_condition(synth, inner_start, inner_end)]), excerpts
+    )
+    verbatims = _classes(entry2, "verbatim_excerpt")
+    assert len(verbatims) == 1
+    verbatims[0]["en"] += " will"
+    assert _exempt_cited_quotes(
+        [entry2], lead_en, lead_zh, banned_en, banned_substrings
+    ) == 0
+    with pytest.raises(AssertionError):
+        _check(describe.report_text([entry2]))
 
 
 # --- condition quotes ----------------------------------------------------------------
@@ -649,9 +839,12 @@ def test_describe_rerun_byte_identical(tmp_path):
 
 
 @pytest.mark.needs_full_checkout("data")
-def test_real_m1_describe(tmp_path):
+def test_real_m1_describe(m1_reference, tmp_path):
     out = tmp_path / "d"
-    proc = _run_cli("describe", "--out", str(out))
+    proc = _run_cli(
+        "describe", "--package", str(m1_reference["package"]),
+        "--edges", str(m1_reference["edges"]), "--out", str(out),
+    )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     report = json.loads((out / "describe_report.json").read_text("utf-8"))
     assert report["schema"] == describe.REPORT_SCHEMA
@@ -716,15 +909,39 @@ def test_real_m1_describe(tmp_path):
     assert "research/theme_graph/gmi_relationships_20261021/"
     "m3/describe_premises_v1.json" in report["inputs"]
 
+    # full data, the default committed run: the M1 relationship still renders
+    # exactly once with its pinned direction, and the edge counter equals an
+    # independent count of the committed edges file.
+    # falsifier: a renderer that drops, duplicates or miscounts entries
+    full_out = tmp_path / "full"
+    full = _run_cli("describe", "--out", str(full_out))
+    assert full.returncode == 0, full.stdout + full.stderr
+    full_report = json.loads(
+        (full_out / "describe_report.json").read_text("utf-8")
+    )
+    hits = [
+        entry for entry in full_report["entries"]
+        if entry["relationship_key"] == REL_KEY
+    ]
+    assert len(hits) == 1
+    assert hits[0]["from"] == {
+        "issuer_id": SWKS, "name": "SKYWORKS SOLUTIONS, INC."
+    }
+    assert hits[0]["to"] == {"issuer_id": AAPL, "name": "Apple Inc."}
+    assert hits[0]["from_role"] == "supplier" and hits[0]["to_role"] == "customer"
+    committed_edges = json.loads(DATA_EDGES_PATH.read_text("utf-8"))["edges"]
+    assert full_report["counters"]["edges"] == len(committed_edges)
+
 
 # --- the point-in-time correction demo --------------------------------------------------------
 
 
 @pytest.mark.needs_full_checkout("data")
-def test_correction_demo_pit(tmp_path):
+def test_correction_demo_pit(m1_reference, tmp_path):
     out = tmp_path / "demo"
     proc = _run_cli(
         "correction-demo",
+        "--repo-root", str(_m1_mirror(m1_reference, tmp_path)),
         "--out", str(out),
         "--relationship-key", REL_KEY,
         "--as-of", T2, "--as-of", T1, "--as-of", T3,
@@ -793,19 +1010,43 @@ def test_correction_demo_pit(tmp_path):
     assert demo["current_package_restatements"] == []
     assert "ABSENT" in proc.stdout
 
+    # full data, the default run against the committed repo: the demo's
+    # current-package restatement census equals the number of restatement
+    # revisions counted directly in the committed package JSON, and every
+    # such entry cites an accession.
+    # falsifier: a demo that invents, drops or miscounts the current
+    # package's restatements
+    committed = json.loads(DATA_PACKAGE_PATH.read_text("utf-8"))
+    restatements = [
+        row for row in committed["magnitude_revisions"]
+        if row.get("revision_kind") == "restatement"
+    ]
+    assert all(
+        (row.get("source_ref") or {}).get("accession") for row in restatements
+    )
+    full_out = tmp_path / "demo_full"
+    full = _run_cli(
+        "correction-demo",
+        "--out", str(full_out),
+        "--relationship-key", REL_KEY, "--as-of", T3,
+    )
+    assert full.returncode == 0, full.stdout + full.stderr
+    full_json = json.loads((full_out / "correction_demo.json").read_text("utf-8"))
+    assert len(full_json["current_package_restatements"]) == len(restatements)
+
 
 @pytest.mark.needs_full_checkout("data")
-def test_restatement_absent_is_printed_not_synthesized(tmp_path):
-    # The committed package really carries no restatement revision.
-    package = json.loads(
-        (REPO_ROOT / "data/company_intelligence/relationships/"
-         "observation_package.v2.json").read_text("utf-8")
-    )
+def test_restatement_absent_is_printed_not_synthesized(m1_reference, tmp_path):
+    # The M1 reference package really carries no restatement revision.
+    package = json.loads(m1_reference["package"].read_text("utf-8"))
     kinds = {row["revision_kind"] for row in package["magnitude_revisions"]}
     assert "restatement" not in kinds
 
     out = tmp_path / "d"
-    proc = _run_cli("describe", "--out", str(out))
+    proc = _run_cli(
+        "describe", "--package", str(m1_reference["package"]),
+        "--edges", str(m1_reference["edges"]), "--out", str(out),
+    )
     assert proc.returncode == 0
     report = json.loads((out / "describe_report.json").read_text("utf-8"))
     assert report["counters"]["restatements_found"] == 0
@@ -813,13 +1054,46 @@ def test_restatement_absent_is_printed_not_synthesized(tmp_path):
 
     demo_out = tmp_path / "demo"
     demo = _run_cli(
-        "correction-demo", "--out", str(demo_out),
+        "correction-demo",
+        "--repo-root", str(_m1_mirror(m1_reference, tmp_path)),
+        "--out", str(demo_out),
         "--relationship-key", REL_KEY, "--as-of", T3,
     )
     assert demo.returncode == 0
     assert "ABSENT" in demo.stdout
     demo_json = json.loads((demo_out / "correction_demo.json").read_text("utf-8"))
     assert demo_json["current_package_restatements"] == []
+
+    # full data, the default runs against the committed repo: both restatement
+    # censuses equal the number of restatement revisions counted directly in
+    # the committed package JSON, and every such entry cites an accession.
+    # falsifier: a renderer or demo that invents, drops or miscounts
+    # restatements against the committed package
+    committed = json.loads(DATA_PACKAGE_PATH.read_text("utf-8"))
+    restatements = [
+        row for row in committed["magnitude_revisions"]
+        if row.get("revision_kind") == "restatement"
+    ]
+    assert all(
+        (row.get("source_ref") or {}).get("accession") for row in restatements
+    )
+    full_out = tmp_path / "full"
+    full = _run_cli("describe", "--out", str(full_out))
+    assert full.returncode == 0
+    full_report = json.loads(
+        (full_out / "describe_report.json").read_text("utf-8")
+    )
+    assert full_report["counters"]["restatements_found"] == len(restatements)
+    full_demo_out = tmp_path / "full_demo"
+    full_demo = _run_cli(
+        "correction-demo", "--out", str(full_demo_out),
+        "--relationship-key", REL_KEY, "--as-of", T3,
+    )
+    assert full_demo.returncode == 0
+    full_demo_json = json.loads(
+        (full_demo_out / "correction_demo.json").read_text("utf-8")
+    )
+    assert len(full_demo_json["current_package_restatements"]) == len(restatements)
 
 
 # --- purity ---------------------------------------------------------------------------------
