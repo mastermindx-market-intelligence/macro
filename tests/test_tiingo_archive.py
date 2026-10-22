@@ -495,3 +495,55 @@ def test_legacy_news_filter_compatibility_preserves_old_non_news_paths():
 def test_news_publisher_filter_history_does_not_weaken_path_validation(path):
     with pytest.raises(a.TiingoArchiveError):
         a.validate_request("news", None, path)
+
+def test_legacy_news_filter_plan_preserves_frozen_digest_offline(monkeypatch):
+    import scripts.tiingo_ingest as ing
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("offline historical plan attempted collection")
+
+    monkeypatch.setattr(ing, "collect", forbidden)
+    monkeypatch.setattr(ing, "read_key", forbidden)
+    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    tasks = [ing.Task("news", None, {"limit": 250, "sources": "cnbc.com"})]
+    # Frozen from plan_page at a92ee6e9, before the HTTP parameter correction.
+    digest = "39ca53761298a38c9c32e71b9a1e488199cd2fe0dcc41df11c66d5e193e21c0d"
+    page = ing.plan_page(tasks, expected_digest=digest)
+    assert page["plan_sha256"] == digest
+    assert page["items"] == [{
+        "ordinal": 0, "source": "news", "symbol": None,
+        "request_path": "/tiingo/news?limit=250&sources=cnbc.com",
+    }]
+    assert page["network"] is False
+    assert page["execution_authorized"] is False
+
+
+def test_legacy_news_filter_corpus_audit_matches_original_plan_without_writes(
+        lake, legacy_news_receipt, monkeypatch):
+    import scripts.tiingo_ingest as ing
+    from scripts.tiingo_corpus_audit import audit_corpus
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("read-only historical audit attempted collection or storage")
+
+    monkeypatch.setattr(ing, "read_key", forbidden)
+    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    monkeypatch.setattr(a.Archive, "store_response", forbidden)
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+    result = audit_corpus(
+        [ing.Task("news", None, {"limit": 250, "sources": "cnbc.com"})],
+        root=lake.root, observed_before="2026-10-22T01:00:00+00:00",
+        check_mount=False,
+    )
+    assert result["plan_sha256"] == "39ca53761298a38c9c32e71b9a1e488199cd2fe0dcc41df11c66d5e193e21c0d"
+    assert result["request_status_counts"] == {"RAW_RECORDS_CAPTURED": 1}
+    assert result["requests"][0]["request_path"] == "/tiingo/news?limit=250&sources=cnbc.com"
+    assert result["scan"]["verified_raw_responses"] == 1
+    assert result["network"] is False
+    assert result["writes"] is False
+    assert result["execution_authorized"] is False
+    assert result["canonical_identity_admitted"] is False
+    assert result["source_authenticity_proven"] is False
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before

@@ -129,6 +129,17 @@ def request_path(source: str, symbol: str | None, params: dict[str, Any] | None 
     return _request_path(source, symbol, params)
 
 
+def recorded_request_path(source: str, symbol: str | None,
+                          params: dict[str, Any] | None = None) -> str:
+    """Reconstruct exact old/current queries for offline evidence, not collection.
+
+    A legacy query records what was requested; it does not prove that the vendor
+    honored its publisher filter. Never rename that recorded spelling.
+    """
+    return _request_path(source, symbol, params,
+                         legacy_sources="sources" in (params or {}))
+
+
 def capture_day(value: str) -> str:
     """Validate an aware capture instant before deriving a confined UTC partition."""
     if not isinstance(value, str) or not re.fullmatch(
@@ -160,7 +171,7 @@ def validate_request(source: str, symbol: str | None, path: str, *,
         legacy_sources = "sources" in params
         if legacy_sources and not allow_legacy_sources:
             raise ValueError("legacy publisher parameter cannot be collected")
-        if _request_path(source, symbol, params, legacy_sources=legacy_sources) != path:
+        if recorded_request_path(source, symbol, params) != path:
             raise ValueError("noncanonical endpoint or query")
     except (TypeError, ValueError) as exc:
         raise TiingoArchiveError("source endpoint/request context mismatch") from exc
