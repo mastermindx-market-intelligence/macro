@@ -191,6 +191,7 @@ def test_post_commit_failure_reconciles_same_fixed_inputs_without_live_changes(f
     assert git(repo, "show-ref") == refs_before
     assert (repo / ".git/index").read_bytes() == index_before
     assert (repo / "data/qledger/claims.jsonl").read_bytes() == raw
+
     # Host Git identity/date overrides cannot change these explicit commit bytes.
     monkeypatch.setenv("GIT_AUTHOR_DATE", "1800000000 +0000")
     monkeypatch.setenv("GIT_COMMITTER_DATE", "1900000000 +0000")
@@ -199,6 +200,29 @@ def test_post_commit_failure_reconciles_same_fixed_inputs_without_live_changes(f
     assert result.commit_metadata.timestamp == 1700000000
     commit = git(repo, "cat-file", "commit", result.candidate_oid)
     assert b"fixture@example.invalid> 1700000000 +0000" in commit
+    assert git(repo, "show-ref") == refs_before
+    assert (repo / ".git/index").read_bytes() == index_before
+    assert (repo / "data/qledger/claims.jsonl").read_bytes() == raw
+
+
+def test_preparation_refuses_missing_excluded_accepted_history(fixture):
+    repo, _, _, raw, _ = fixture
+    historical_file = repo / "retired-source"
+    historical_file.write_bytes(b"accepted historical bytes\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-qm", "accepted historical source")
+    historical_blob = git(repo, "rev-parse", "HEAD:retired-source").decode()
+    git(repo, "rm", "-q", "retired-source")
+    git(repo, "commit", "-qm", "accepted source no longer in tip")
+    tip = git(repo, "rev-parse", "HEAD").decode()
+    git(repo, "update-ref", "refs/remotes/origin/main", tip)
+    missing = repo / ".git/objects" / historical_blob[:2] / historical_blob[2:]
+    missing.unlink()
+    refs_before = git(repo, "show-ref")
+    index_before = (repo / ".git/index").read_bytes()
+    with pytest.raises(SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        prepare(fixture, accepted_tip_oid=tip)
+    assert not missing.exists()
     assert git(repo, "show-ref") == refs_before
     assert (repo / ".git/index").read_bytes() == index_before
     assert (repo / "data/qledger/claims.jsonl").read_bytes() == raw
