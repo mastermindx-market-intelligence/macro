@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl_workspace/transmission.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+  - tests/intl_gs_transmission_fixture.py
+manifest: mockups/evidence/intl-gs-w4b/manifest.json

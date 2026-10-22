@@ -4775,6 +4775,10 @@ CURATED_EXCLUSIVE = {
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.
     "international-transmission-evidence",
+    # IM17 W4B: the R14 §10.4 Transmission board view (presenter + template
+    # + CSS through the test-only builder); its curated scope pins the
+    # measured render-path import closure, so it must be pinned here too.
+    "international-transmission-board",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page

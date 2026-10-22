@@ -20636,6 +20636,79 @@ jobs:
       - name: International transmission evidence contract
         run: python -m pytest tests/test_intl_transmission_evidence.py -q
 
+  international-transmission-board:
+    # IM17 W4B: the R14 §10.4 Transmission board UI — presenter + template + CSS proven
+    # through the test-only builder in tests/intl_gs_transmission_fixture.py (the production
+    # builder does not exist yet; the tab stays not_built on the real site). The import
+    # closure is the measured render path (fixture -> W2 seam -> IM17 engine + configs).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_intl_gs_transmission_view.py"
+      - "tests/intl_gs_transmission_fixture.py"
+      - "tests/intl_gs_fixture_site.py"
+      - "tests/test_intl_transmission_evidence.py"
+      - "tests/__init__.py"
+      - "lib/intl_gs_transmission_present.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_library_mount.py"
+      - "lib/intl_library_view.py"
+      - "lib/intl_macro_mount.py"
+      - "lib/intl_workspace_binding.py"
+      - "lib/intl_gs_display.py"
+      - "lib/intl_inspector_mount.py"
+      - "lib/intl_inspector_view.py"
+      - "lib/intl_compare_mount.py"
+      - "lib/intl_compare_view.py"
+      - "lib/intl_workspace_macro.py"
+      - "lib/intl_chart_geometry.py"
+      - "lib/intl_chart_mount.py"
+      - "lib/intl_chart_publication.py"
+      - "lib/store.py"
+      - "lib/config.py"
+      - "lib/__init__.py"
+      - "engine/i18n.py"
+      - "engine/intl_inputs.py"
+      - "engine/intl_market_state.py"
+      - "engine/technicals.py"
+      - "engine/intl_global_universe.py"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_transmission_evidence.py"
+      - "engine/intl_workspace_overview.py"
+      - "engine/intl_performance.py"
+      - "engine/intl_performance_charts.py"
+      - "engine/intl_performance_records.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/__init__.py"
+      - "templates/intl.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
+      - "templates/intl_workspace/overview.html.j2"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace/transmission.html.j2"
+      - "templates/intl_workspace_surveillance.css"
+      - "site/intl_workspace_surveillance.css"
+      - "scripts/build_intl.py"
+      - "config/intl_transmission_channels_v1.json"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/intl_library_catalogue.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install transmission board test dependencies
+        run: pip install pytest pandas numpy pyyaml pyarrow requests jinja2 plotly
+      - name: International transmission board view
+        run: python -m pytest tests/test_intl_gs_transmission_view.py -q
+
   ird-substrate-engines:
     if: ${{ false }}
     gate: code
