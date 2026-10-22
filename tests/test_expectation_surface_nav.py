@@ -134,3 +134,63 @@ def test_rendered_nav_carries_the_row_without_banned_word() -> None:
         for s in (ROW_LABEL_EN, ROW_LABEL_ZH, ROW_DESC_EN, ROW_DESC_ZH):
             assert s in html
         assert "申报" not in html, "banned word 申报 must not appear in rendered nav"
+
+
+# --- Round 2: the client-side icon-drawing bridge (nav_market.js) ----------
+
+
+def _nav_market_js() -> str:
+    return (TEMPLATES / "nav_market.js").read_text(encoding="utf-8")
+
+
+def _research_icon_map_block(js: str) -> str:
+    start = js.find("var MOCKUP_RESEARCH_ICON_BY_FILE = {")
+    assert start != -1, "MOCKUP_RESEARCH_ICON_BY_FILE not found"
+    end = js.find("};", start)
+    assert end != -1, "MOCKUP_RESEARCH_ICON_BY_FILE closing brace not found"
+    return js[start:end]
+
+
+def test_bridge_drawing_added_to_mockup_icon_paths() -> None:
+    js = _nav_market_js()
+    marker = "MOCKUP_ICON_PATHS.expectation_surface = '"
+    assert js.count(marker) == 1, (
+        f"expected exactly one expectation_surface drawing assignment, found {js.count(marker)}"
+    )
+    start = js.find(marker) + len(marker)
+    end = js.find("';", start)
+    assert end != -1, "unterminated expectation_surface drawing string"
+    drawing = js[start:end]
+    for cls in ('class="ghost"', 'class="accent"', 'class="soft-fill"'):
+        assert cls in drawing, f"drawing missing structural class {cls}"
+    for banned in ("fill=", "stroke=", "#", "rgb(", "style="):
+        assert banned not in drawing, f"drawing carries banned token {banned!r}"
+
+
+def test_bridge_map_entry_after_macro_context_before_close() -> None:
+    js = _nav_market_js()
+    entry = "'expectation_surface.html': ['expectation_surface', 'violet'],"
+    assert js.count(entry) == 1, (
+        f"expected exactly one expectation_surface map entry, found {js.count(entry)}"
+    )
+    map_start = js.find("var MOCKUP_RESEARCH_ICON_BY_FILE = {")
+    i_close = js.find("};", map_start)
+    i_macro = js.find("'macro_context.html'", map_start)
+    i_entry = js.find(entry)
+    assert i_macro != -1, "macro_context map entry missing"
+    assert i_macro < i_entry, "expectation_surface entry must appear after macro_context"
+    assert i_entry < i_close, "expectation_surface entry must precede the map's closing brace"
+
+
+def test_site_nav_market_js_pair_is_byte_copy() -> None:
+    template = (TEMPLATES / "nav_market.js").read_bytes()
+    site = (REPO / "site" / "nav_market.js").read_bytes()
+    assert template == site, "site/nav_market.js must byte-equal templates/nav_market.js"
+
+
+def test_six_drill_files_still_in_research_icon_map() -> None:
+    block = _research_icon_map_block(_nav_market_js())
+    for href, _icon in RESEARCH_DRILL_ROWS:
+        needle = f"'{href}':"
+        n = block.count(needle)
+        assert n == 1, f"{href}: expected exactly 1 map entry, found {n}"
