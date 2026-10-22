@@ -8610,6 +8610,7 @@ jobs:
       - "scripts/build_intl.py"
       - "lib/intl_surveillance_mount.py"
       - "tests/test_intl_gs_foundation.py"
+      - "site/intl_workspace_surveillance.css"
       - "tests/intl_gs_fixture_site.py"
       - "tests/intl_gs_foundation_browser.test.cjs"
       - "lib/intl_gs_display.py"
