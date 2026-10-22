@@ -1,5 +1,5 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_macros.html.j2" import t, tip, ic, arrow_long, mark, d, asof, sec, search_box, key, kind_tag, chain, tip_core, tip_ext, tip_adm, tip_held with context %}
 {% from "_gmi_head.html.j2" import head %}
 {% block title %}GMI Explorer — All micro-themes{% endblock %}
 {% block seo %}{% set seo_title = 'GMI Explorer — All micro-themes | Mastermind' %}{% set seo_desc = 'Every one of the ' ~ model.totals.micros ~ ' micro-themes, grouped by category, with held and admitted links marked on their row.' %}{% set seo_path = 'gmi-index.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
@@ -7,5 +7,37 @@
 {% set M = model.totals.micros %}
 {{ head([('Research','研究'),('Theme map','主题地图'),('Index','索引')], 'All micro-themes', '全部细分主题',
         'Every one of the ' ~ M ~ ', grouped by category.', '全部 ' ~ M ~ ' 个，按类别分组。') }}
-<section class="gmi-sec" data-gmi-surface="index"></section>
+<section class="gmi-panel">
+{{ search_box('Search ' ~ M ~ ' micro-themes', '搜索 ' ~ M ~ ' 个细分主题', 'index') }}
+{{ key() }}
+</section>
+<div class="gmi-indexwrap">
+<nav class="gmi-jump" aria-label="Categories"><div class="gmi-jump-track">{% for c in model.cats %}<a href="#{{ c.id.split(':')[1] }}">{{ t(c.en, c.zh) }}<small>{{ c.micros|length }}</small></a>{% endfor %}</div></nav>
+<div class="gmi-index" data-gmi-index>
+{% for c in model.cats %}
+{% set nc_ns = namespace(nc=0) %}
+{% for mid in c.micros %}{% if model.micros[mid].tier == 'acceptance' %}{% set nc_ns.nc = nc_ns.nc + 1 %}{% endif %}{% endfor %}
+{% set nc = nc_ns.nc %}
+{% set ne = c.micros|length - nc %}
+<details class="gmi-index-group" id="{{ c.id.split(':')[1] }}" open><summary class="gmi-index-h"><span class="gmi-index-hn">{{ t(c.en, c.zh) }}</span><span class="gmi-index-hc">{% if c.micros %}{{ t(nc ~ ' core · ' ~ ne ~ ' extended', '核心 ' ~ nc ~ ' · 扩展 ' ~ ne) }}{% else %}{{ t("none yet", "暂无") }}{% endif %}</span><b>{{ c.micros|length }}</b>{{ ic("chev", 16) }}</summary>
+{% if not c.micros %}
+<div class="gmi-irow gmi-muted">{{ t("No micro-themes mapped yet", "尚未绘制细分主题") }}</div>
+{% else %}
+{% for th in c.themes %}
+{% set tm = [] %}
+{% for mid in c.micros %}{% if model.micros[mid].primary_path[1] == th.id %}{% set _ = tm.append(mid) %}{% endif %}{% endfor %}
+{% set mids = tm|ordered %}
+{% if mids %}
+<h3 class="gmi-index-t"><span>{{ t(th.en, th.zh) }}</span><small>{{ mids|length }}</small></h3>
+{% for mid in mids %}{% set mv = model.micros[mid] %}
+<div class="gmi-irow{% if mv.kind == 'held' %} gmi-irow--held{% endif %}" data-gmi-id="{{ mid }}" data-gmi-q="{{ mv.en }} {{ mv.zh }}">{{ mark(mv.kind) }}<span class="gmi-irow-name">{{ t(mv.en, mv.zh) }}</span><span class="{% if mv.kind == 'disp' %}gmi-vh{% else %}gmi-irow-tag{% endif %}">{{ kind_tag(mv.kind) }}</span></div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+</details>
+{% endfor %}
+</div>
+</div>
+<p class="gmi-foot">{{ t(M ~ ' rows: ' ~ model.totals.core ~ ' core, ' ~ model.totals.extended ~ ' extended. Held and admitted links are marked on their row.', '共 ' ~ M ~ ' 行：核心 ' ~ model.totals.core ~ ' 个，扩展 ' ~ model.totals.extended ~ ' 个。待审核与已纳入的关联在所在行标注。') }}</p>
 {% endblock %}
