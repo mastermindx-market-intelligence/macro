@@ -1,3 +1,11 @@
+# Current owner frontier — International Tools repair, 22 October 2026 UTC
+
+The active continuation remains original operation `intl-country-cockpit-20261018`, branch `sol/web-intl-country-cockpit-20261018` and draft PR9596. The Chairman authorized resumption and this session owns the bounded integration. Current evidence, source hashes, process state and next actions are maintained in [main_tools_repair_20261022/CHECKPOINT.md](main_tools_repair_20261022/CHECKPOINT.md). Read that frontier before acting on any historical next-action or publication statement below.
+
+R3 is terminal and rejected as returned; its original bytes and failures remain retained. Root's bounded controller/test correction passes18 navigation tests and2 independent probes, with four discriminating negative controls. Independent source re-review and full regressions pass (International browser198/198; shared bridge/adapters188/188). Exact-source ordinary build and actual-parent verification are next. The unmodified parent/predecessor saved-focus failure is recorded separately and remains a limitation. Frozen accepted source/artifact/HTML identities and production FX/served conditions are unchanged. No complete-build, Ready, main-merge, acquisition or served-adoption claim follows from this checkpoint.
+
+---
+
 # Current-main continuation — 22 October 2026 UTC
 
 Actual main 25051144947f027c698cd1ce10e3c8824ee6ade9 is now integrated by normal merge c2b0562234abbec883ea91b934ac3d09fa3bae8b. Fresh P0B and International browser evidence passed. See main_reconciliation_20261022/README.md and its exact receipts for this phase. The older published 7e995873 checkpoint and all frozen evidence remain preserved. Publication and current-head CI readback are the next actions; original PR9596 remains the carrier.

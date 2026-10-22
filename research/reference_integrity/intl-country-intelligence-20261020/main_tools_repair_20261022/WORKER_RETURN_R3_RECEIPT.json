@@ -1,0 +1,52 @@
+{
+  "schema": "intl.worker_return.v1",
+  "recorded_at": "2026-10-22T04:41:48.324758+00:00",
+  "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "run_id": "intl-20261022-shell-contract-revision-r3",
+  "terminal_observation": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_status",
+    "run_id": "intl-20261022-shell-contract-revision-r3",
+    "effective_run_id": "intl-20261022-shell-contract-revision-r3",
+    "expected_root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "status": {
+      "acceptance_reason": "NO_OUTCOME",
+      "acceptance_state": "NOT_ACCEPTED",
+      "accepted": false,
+      "accepted_by": null,
+      "parent_run_id": "root",
+      "rc": 0,
+      "result_available": true,
+      "result_bytes": 82315,
+      "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+      "run_id": "intl-20261022-shell-contract-revision-r3",
+      "schema": "mastermind.fabric_task_status.v1",
+      "signal": "ok",
+      "state": "TERMINAL",
+      "continuation": {
+        "requested_run_id": "intl-20261022-shell-contract-revision-r3",
+        "effective_run_id": "intl-20261022-shell-contract-revision-r3",
+        "prior_attempts": [],
+        "controller_return": "RECORDED",
+        "controller_reason": "terminal_return"
+      }
+    },
+    "root_verified": true,
+    "execution_absence_proven": false,
+    "retry_allowed": false
+  },
+  "retrieval": "Bounded read of the existing local result artifact after Fabric result reader returned RESULT_TOO_LARGE at its65536byte maximum. No dispatch/replay, limit/config change or result mutation.",
+  "source_result_path": "/Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/lanes/intl-20261022-shell-contract-revision-r3.remote.stdout",
+  "response_bytes": 82315,
+  "response_sha256": "7f4edfe64ee1e9bec2f768801709b32d10e165267f79f430b165a88df8d9dbb5",
+  "patch_bytes": 73843,
+  "patch_sha256": "c836819a48b4c6057ce0e2bbeae27686dfe713e4a25db8dc798e25cdf50f8636",
+  "paths": [
+    "site/shared_shell_bridge.js",
+    "templates/intl_country_cockpit.js",
+    "templates/shared_shell_bridge.js",
+    "tests/intl_country_cockpit_navigation.test.cjs",
+    "tests/js/shared_shell_bridge.test.cjs"
+  ],
+  "acceptance": "NOT_ACCEPTED; independent exact-patch review and root verification pending"
+}

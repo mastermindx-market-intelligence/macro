@@ -1,0 +1,12 @@
+{
+  "schema": "intl.independent_r3_probes.v1",
+  "created_at": "2026-10-22T04:47:17.903254+00:00",
+  "fixture_source": "tests/intl_country_cockpit_navigation.test.cjs",
+  "fixture_source_sha256": "0e05b12898c46178daf03375183d112d6d0dd3976a0467b84c6b2fb27a826161",
+  "derivation": "Reuse only the existing modeled-parent fixture and helper functions before its first test. Replace the two template path roots with this attended workspace, then append two independent tests. No fixture logic or product code altered.",
+  "probe_sha256": "c517b77e349f0722fffe90d0662766341dbb7d6baca2eb6e90b4538046657c62",
+  "product_sources": {
+    "templates/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "templates/intl_country_cockpit.js": "0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838"
+  }
+}

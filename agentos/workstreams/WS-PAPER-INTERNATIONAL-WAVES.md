@@ -61,6 +61,11 @@ owns_paths:
 - templates/intl_country_cockpit.html.j2
 - templates/intl_country_cockpit.css
 - templates/intl_country_cockpit.js
+- templates/shared_shell_bridge.js
+- site/shared_shell_bridge.js
+- tests/js/shared_shell_bridge.test.cjs
+- tests/intl_country_cockpit_navigation.test.cjs
+- research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/**
 - tests/test_intl_country_cockpit.py
 - tests/test_intl_currency_observation.py
 - tests/fixtures/intl_currency_observations_20261020.json
@@ -155,12 +160,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Bind the repaired country cockpit to genuine independent immutable reviews, publish through
-  the existing registered branch and native fenced publisher, and complete current hosted CI. Preserve
-  current-main CI enrollment and access-policy composition. Then complete ordinary full-history FX
-  acquisition, the normal render/updater path and actual served country acceptance. The original
-  publisher uncertainty is reconciled; the published 1a292672 candidate has concrete repairs awaiting
-  its next immutable publication. Retain PR8754 and its separate rights, browser, Saved and release obligations.
+next_action: Complete the independently reviewed bounded Tools navigation repair on original draft PR9596,
+  verify its exact-source ordinary build, unchanged country output, standalone and actual-parent journeys,
+  then publish through the registered expected-head Studio publisher and complete current-head hosted CI.
+  Preserve the pre-existing actual-parent saved-focus failure and the separate FX custody, ordinary
+  render/updater and served-user release conditions. See the 22 October Tools repair checkpoint.
 artifacts:
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md
@@ -329,3 +333,13 @@ The original immutable 1a292672 candidate received substantive independent REPAI
 The final declared foundation commands pass 1,363 + 369 checks in a fresh Python 3.12 environment. An additional 40 final build/access tests pass. Actual Chrome records 84 country views, 12 focus checks, 8 ageing controls and no page exceptions; the twelve targeted history/legend/accessibility checks and six explicitly labeled degraded visual controls also pass. The canonical main integration inference reports no uncovered jobs or unenrolled gated suites. The clean-environment openpyxl failure and the earlier interaction failures are preserved beside the repairs.
 
 Evidence and remaining production obligations: `research/paper_international_wave1_wave2/review_repair_20261020/REVIEW_REPAIR_20261020.md`, its structured receipts, and `mockups/evidence/intl-review-repair-20261020/`. Ordinary full-history acquisition must establish production FX custody; a new render alone does not refresh observations. Hosted CI, release, actual shared render/updater adoption and served-user acceptance are still separate facts. This update does not close the mission.
+
+## 2026-10-22 — bounded shared Tools navigation repair
+
+The Chairman explicitly authorized this resumed session as the sole integration writer for the existing country-cockpit operation and draft Macro PR9596. This continuation supersedes stale next-action and carrier references in the historical narrative; it does not change the separate PR8754 rights, Saved, source or release obligations.
+
+The bounded shared ownership listed above covers only the pure same-document classifier, paired bridge publication, International disclosure/navigation consumer and its regression proof. It does not claim ownership of the entire shared shell, parent runtime or another active commission. The existing International browser job receives the corresponding test/path enrollment.
+
+R3 is terminal and NOT_ACCEPTED after independent review found concrete controller/test defects. Root's closed correction under the documented LOWER_TOTAL_OVERHEAD exception has independent source PASS; corrected navigation18/18, independent probes2/2, full International browser198/198 and shared bridge/adapters188/188 pass, and four new cases fail against the rejected controller. Exact-source build and actual-parent runtime acceptance remain pending at this entry. The original failures are retained. See `research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CHECKPOINT.md` for the current source and process state.
+
+The unchanged actual Terminal parent and predecessor child already fail saved Library-input focus restoration while restoring the recorded scroll position. This limitation remains explicit and cannot be cleared by a successful Tools test or a child focus timer. Frozen reference artifact/source/HTML bindings remain unchanged. No production merge, acquisition, render/updater adoption or complete served acceptance is claimed by this checkpoint.

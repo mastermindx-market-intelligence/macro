@@ -1,0 +1,1467 @@
+**I consumed this bounded worker role** (`skills/mastermind-fabric-orchestration/references/worker.md`). No descendants spawned, no native helpers, no provider delegation, no CLI workers. I did not self-accept, and I did not inspect or retry R1 or R2.
+
+# R3 — Shared Shell: Tools + nested research navigation repair
+
+## What changed
+
+**Bridge (both published copies, byte-identical):** extracted `onClick`'s classification into a pure `classifyAnchor(a)` shared with the new public `MMXSharedShell.sameDocumentFragment(anchorElement)`. It returns the ENCODED fragment (no `#`) or `null`, honours `rec.original` only while `href === rec.projected`, and reuses `firstPartyToChild`, `credentialsFree`, the sensitive guard, catalog admission, `filterTransport` raw-byte handling, `currentCanonical`/`isFragmentAgainst` and the anchor exclusions. No writes, history, messages, errors, request IDs, enqueues, scroll/focus/observers; it never navigates to classify. `onClick` keeps every side effect, error code, external-link attribute and admission path, only re-sourced.
+
+**Controller:** a document **capture**-phase click listener (so disclosures are open before the bridge's bubble-phase fragment navigation and its first scroll) classifies via the bridge helper when active, strict local origin/path/query+credentials when standalone, and **fails closed** when an active bridge lacks the helper while keeping the accepted-location fallback. It opens **all** ancestor disclosures, then defers the arrival alignment across the reflow with a sticky-toolbar offset; a `<details>` destination arrives at its summary. `revealGeneration` cancels stale deferred scrolls. Added `mmx:shell-location` handling that reads `window.location`, never `event.detail`. No history, no synthetic hashchange/ACK, no focus moves; country rail/focus/select logic untouched.
+
+One defect the ruling's "open ALL ancestor details through Tools" exposed: BASE's walk stopped at `tools.parentElement`, i.e. it never opened the wrapper *containing* Tools. Fixed.
+
+## Artifact SHA256
+
+| Artifact | BASE | Changed |
+|---|---|---|
+| `templates/shared_shell_bridge.js` | `048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d` | `31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30` |
+| `site/shared_shell_bridge.js` | `048314d5…0b653d` | `31b150d8…9720e30` |
+| `templates/intl_country_cockpit.js` | `d9827c38995d766f0cf7a4c1112353d1dabb42835ba5fd88ade1ef95dd83d45a` | `0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838` |
+| `tests/js/shared_shell_bridge.test.cjs` | `fdb7ab84a724393b45e82afecbd5dfd41bcf547f22f130879cf7f682e1fec07f` | `c6641ae09c5fdf4e131be0c4b2104410d916c70ccc6c75618d53b287c8de7aa3` |
+| `tests/intl_country_cockpit_navigation.test.cjs` | **did not exist** | `0e05b12898c46178daf03375183d112d6d0dd3976a0467b84c6b2fb27a826161` |
+
+Unchanged inputs, absent from the diff: `templates/intl_workspace_entry.js` `3b476b4c…c8b1b`, `tests/intl_workspace_legacy_navigation.test.cjs` `a575c830…4cd07f`, both CSS files. Unified diff: `intl-tools-repair.diff`, SHA256 `c836819a48b4c6057ce0e2bbeae27686dfe713e4a25db8dc798e25cdf50f8636`.
+
+**Template/site byte equality:** `cmp templates/shared_shell_bridge.js site/shared_shell_bridge.js` exits 0 — identical at 54,454 bytes, same SHA256.
+
+## Commands and actual results
+
+```
+git apply --check ../intl-tools-repair.diff            # vs pristine BASE tree -> CLEAN (exit 0)
+git apply ../intl-tools-repair.diff                    # exit 0; all 5 files == work tree
+node --test tests/js/shared_shell_bridge.test.cjs                      # exit 0  74/74
+node --test tests/intl_workspace_legacy_navigation.test.cjs           # exit 0  14/14
+node --test tests/intl_country_cockpit_navigation.test.cjs            # exit 0  14/14
+```
+
+102 passing. The 70 pre-existing bridge assertions and all 14 legacy-navigation assertions run unmodified — nothing was skipped, weakened or reordered.
+
+**Anti-vacuity (same new tests on BASE, exact failing names retained):**
+
+- `tests/js/shared_shell_bridge.test.cjs` → exit 1, 70 pass / **4 fail**: A authored fragment…; B classification reads the current href…; C raw query bytes…; D the helper is pure… — all `ctx.api(...).sameDocumentFragment is not a function`.
+- `tests/intl_country_cockpit_navigation.test.cjs` → exit 1, 2 pass / **12 fail**, and the DOM ones fail for the observed reasons, not API absence:
+  - `E first and repeated Tools activation…` — first Tools stays closed (`false !== true`)
+  - `E Tools still activates after the parent changes the current query` — "the query change must not strand Tools"
+  - `E a nested research link opens every containing disclosure…` — repeated nested link leaves `refFold/tools/legacy` false
+  - `E the nested destination is not left below the fold or under the sticky toolbar` — `awaitArrival` TimeoutError (nested destination invisible)
+  - `E unicode, malformed, missing and unrelated ids…` — nested chain stays closed
+  - plus G accepted-location, G focus, G stale-scroll, G Back/Forward, G standalone, E protocol surface, G fail-closed.
+  - The two that pass on BASE (`F modified/non-primary/native-target/lookalike`, `G country selection`) are the *preserve-existing-behaviour* tests and correctly pass on both sides.
+
+## Limitations
+
+- **Modeled parent, not the Terminal AppShell.** It is a real cross-origin iframe parent on `127.0.0.1:3100` (in the bridge's `LOCAL_PARENTS`) speaking the real protocol with real INIT/READY/NAVIGATE/LOCATION_ACCEPTED, running the unmodified bridge and controller from disk — but parent chrome, the parent's own view controls and cross-frame occlusion in the parent's viewport are out of scope and remain root's 17-context actual-parent acceptance. Labelled in the test header.
+- Because the modeled parent is cross-origin it cannot reach into the child; Back/Forward restore goes through a **fixture-level** channel that performs the same wrapped history call the child's own view control uses. The bridge/controller under test still see an ordinary controlled navigation. Also labelled in-file.
+- Modified/non-primary and `_blank`/`download`/`role=button` cases are dispatched (real listeners, real modifier flags) with a window-bubble `preventDefault` for untrusted events only, because real Alt/Ctrl activations trigger browser tab/download handling that would destroy the test context. One **real** Ctrl+click is included and asserts only the guarded properties (this page must not move, parent hears nothing); whether the headless shell then opens a tab is environment-dependent and not asserted.
+- The fixture supplies a minimal `--mmx-shared-shell-css-ready: 1` stylesheet, the real `shared_shell.css`, and a modelled sticky `.imc-toolbar`. Arrival is proved with `checkVisibility()` + `elementFromPoint` against that toolbar — content inside a *closed* disclosure keeps a layout box in this engine, so `checkVisibility` is required for the negative direction to be meaningful.
+- The real `intl.html.j2` DOM was not available; the fixture reproduces the described ancestor chain (`details.ref-fold > #intl-analysis-tools > #intl-legacy-research`, country section and Tools as siblings) rather than the literal markup. `site/intl_country_cockpit.js` was not added, as instructed.
+- Playwright 1.63.0 was borrowed from `/home/ubuntu2/lanes/tmp/site20-s2-node/node_modules` and the matching chromium build installed into `~/.cache/ms-playwright` — test-tooling only, outside the repo.
+
+## Effects
+
+All work is SCRATCH-ONLY in `/home/ubuntu2/intl-tools-repair-scratch/` (`base/` pristine BASE, `work/` repaired, `repo/` diff source, `verify/` diff-applied, `anti/` anti-vacuity). Nothing was written to the original workspace or any other worktree; nothing staged, committed, pushed, PR'd, messaged, deployed, or published. No CI, config, proposal, docs, parent code, auth, allowlist, protocol, version or route-registry change. No financial data acquired. Protocol remains `mmx.shared-shell.v1`, bridge `20261018.1`, runtime buildId development.
+
+## Complete unified diff
+
+73,843 bytes — above the 60,000 preference, because completeness including the full new test file is the explicit requirement and trimming either source hunk or a required A–G discriminator would weaken it. It is also on disk at `/home/ubuntu2/intl-tools-repair-scratch/intl-tools-repair.diff` (SHA256 above), byte-identical to the block below.
+
+```diff
+diff --git a/site/shared_shell_bridge.js b/site/shared_shell_bridge.js
+index dd501dc..235e77e 100644
+--- a/site/shared_shell_bridge.js
++++ b/site/shared_shell_bridge.js
+@@ -496,6 +496,55 @@
+     } catch (e) {}
+   }
+   function preventDefault(e) { try { if (typeof e.preventDefault === "function") e.preventDefault(); } catch (err) {} }
++
++  /* ---- shared anchor classification ----
++   * "What would activating this anchor mean" is one decision, and the page has to be
++   * able to ask it without also being able to perform it. onClick and the public
++   * sameDocumentFragment() below therefore share classifyAnchor(), so no navigation
++   * policy is restated on the consumer side and neither answer can drift from the
++   * other.
++   *
++   * The private projected record is the only provenance that exists: an anchor
++   * authored "#id" and one authored "/intl.html#id" project to the SAME displayed
++   * href, so the displayed attribute cannot tell a same-document fragment from an
++   * explicit first-party page link once the parent has changed the current query. The
++   * recorded authored value is honored only while the href attribute still equals
++   * exactly what the bridge projected; after any rewrite the current attribute is
++   * authoritative, so a stale destination is never classified.
++   *
++   * This function is pure with respect to the document: no attribute or WeakMap
++   * write, no history change, no message, error or request id, no enqueue, no scroll,
++   * focus or observer work. It never navigates in order to classify.
++   */
++  var CLASS_NONE = "none", CLASS_EXTERNAL = "external", CLASS_BLOCKED = "blocked", CLASS_LOCAL = "local";
++  function classifyAnchor(a) {
++    if (skipIntercept(a)) return { kind: CLASS_NONE };
++    var attr = null;
++    try { attr = a.getAttribute("href"); } catch (e) { return { kind: CLASS_NONE }; }
++    var rec = projected ? projected.get(a) : null;
++    var raw = (rec && attr === rec.projected) ? rec.original : attr;
++    var hs = coerceHref(raw);
++    if (hs === null) return { kind: CLASS_NONE };
++    var low = hs.trim().toLowerCase();
++    if (DEAD_SCHEME_RE.test(low)) return { kind: CLASS_NONE };
++    var u = resolveHref(hs);
++    if (!u) return { kind: CLASS_NONE };
++    if (u.origin !== childOrigin) {
++      var mapped = firstPartyToChild(u);
++      if (mapped) {
++        u = mapped;  // first-party target classified against the child catalog
++      } else {
++        return { kind: CLASS_EXTERNAL, url: u };
++      }
++    }
++    if (!credentialsFree(u)) return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
++    if (isSensitiveURL(u)) return { kind: CLASS_BLOCKED, code: "authentication_navigation", url: u };
++    var canonical = canonicalHref(u);
++    var curC = currentCanonical();
++    if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null)
++      return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
++    return { kind: CLASS_LOCAL, url: u, canonical: canonical, current: curC };
++  }
+   function onClick(e) {
+     try {
+       if (!state.active || !e || e.defaultPrevented) return;
+@@ -506,46 +555,22 @@
+       if (node.nodeType !== undefined && node.nodeType !== 1) node = node.parentElement;
+       if (!node || typeof node.closest !== "function") return;
+       var a = node.closest("a[href]");
+-      if (!a || skipIntercept(a)) return;
+-      var attr = null;
+-      try { attr = a.getAttribute("href"); } catch (err) { return; }
+-      var rec = projected ? projected.get(a) : null;
+-      // Use the recorded authored value only while the attribute is still exactly what
+-      // the bridge projected. An unregistered rewrite is reclassified from the current
+-      // value, so a stale destination is never navigated to.
+-      var raw = (rec && attr === rec.projected) ? rec.original : attr;
+-      var hs = coerceHref(raw);
+-      if (hs === null) return;
+-      var low = hs.trim().toLowerCase();
+-      if (DEAD_SCHEME_RE.test(low)) return;
+-      var u = resolveHref(hs);
+-      if (!u) return;
+-      if (u.origin !== childOrigin) {
+-        var mapped = firstPartyToChild(u);
+-        if (mapped) {
+-          u = mapped;  // first-party target classified against the child catalog
+-        } else {
+-          if (u.protocol === "http:" || u.protocol === "https:") {
+-            try {
+-              if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
+-            } catch (err) {}
+-            addNoopener(a);
+-          }
+-          return;
++      if (!a) return;
++      var cls = classifyAnchor(a);
++      if (cls.kind === CLASS_NONE) return;
++      if (cls.kind === CLASS_EXTERNAL) {
++        if (cls.url.protocol === "http:" || cls.url.protocol === "https:") {
++          try {
++            if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
++          } catch (err) {}
++          addNoopener(a);
+         }
+-      }
+-      if (!credentialsFree(u)) { preventDefault(e); emitError("navigation_unavailable"); return; }
+-      if (isSensitiveURL(u)) { preventDefault(e); emitError("authentication_navigation"); return; }
+-      var canonical = canonicalHref(u);
+-      var curC = currentCanonical();
+-      if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null) {
+-        preventDefault(e);
+-        emitError("navigation_unavailable");
+         return;
+       }
++      if (cls.kind === CLASS_BLOCKED) { preventDefault(e); emitError(cls.code); return; }
+       preventDefault(e);
+-      if (isFragmentAgainst(canonical, curC)) { applyFragmentNavigation(u, canonical, curC, "push"); return; }
+-      emitNavigate(canonical, "push", canonical === curC);
++      if (isFragmentAgainst(cls.canonical, cls.current)) { applyFragmentNavigation(cls.url, cls.canonical, cls.current, "push"); return; }
++      emitNavigate(cls.canonical, "push", cls.canonical === cls.current);
+     } catch (err) {}
+   }
+   function installAnchors() {
+@@ -1086,6 +1111,34 @@
+       if (!state.active) return enqueue({ kind: "auth", intent: intent });
+       send("AUTH_REQUEST", { intent: intent });
+       return true;
++    },
++    /* Read-only classification of one REAL anchor element.
++     *
++     * Returns the ENCODED fragment, without a leading "#", when activating this anchor
++     * would be a same-document fragment change against the CURRENT child location -
++     * the same answer onClick would act on. Returns null for everything else: before
++     * INIT, a non-anchor or attribute-less element, an anchor whose native semantics
++     * the bridge deliberately leaves alone (_blank, download, role=button), a dead
++     * scheme, a foreign origin, a different path, different query bytes, credentials,
++     * a sensitive or unadmitted path, or an href with no fragment.
++     *
++     * The ELEMENT is required rather than an href string, because the answer depends on
++     * the private projection record: two anchors showing the identical projected href
++     * classify differently. A copied node carries no record and is therefore classified
++     * from its own current attribute - provenance is never inherited.
++     *
++     * It returns a value; it does not navigate. No attribute or record write, no
++     * history change, no message, error or request id, nothing queued for a later
++     * INIT, and no scroll, focus or observer effect. Consumers must use the return
++     * value only to decide what they do for themselves. */
++    sameDocumentFragment: function (a) {
++      try {
++        if (!state.active) return null;
++        var cls = classifyAnchor(a);
++        if (cls.kind !== CLASS_LOCAL) return null;
++        if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
++        return fragmentOf(cls.canonical);
++      } catch (e) { return null; }
+     }
+   };
+   try {
+diff --git a/templates/intl_country_cockpit.js b/templates/intl_country_cockpit.js
+index a62bf0f..7b4f84b 100644
+--- a/templates/intl_country_cockpit.js
++++ b/templates/intl_country_cockpit.js
+@@ -77,15 +77,159 @@
+       if (scroll) target.scrollIntoView({block: "start"});
+       target.querySelector("summary").focus({preventScroll: true});
+     }
+-    function exposeLegacyAnchor() {
+-      if (!tools) return;
+-      var hash = window.location.hash, target = null;
+-      try { target = document.getElementById(decodeURIComponent(hash.slice(1))); } catch (_) {}
+-      if (target && (target === tools || tools.contains(target))) {
+-        for (var node = target; node && node !== tools.parentElement; node = node.parentElement)
+-          if (node.tagName === "DETAILS") node.open = true;
++
++    /* ---- Tools and retained research reveal ----
++     *
++     * The retained research lives inside the Tools disclosure, so a link to any of it
++     * is unreachable until every containing disclosure is open. Two properties of a
++     * projected page make this more than toggling details.open:
++     *  - a projected anchor displays the PARENT href, so its attribute cannot be
++     *    compared against this child location to decide whether the destination is
++     *    still same-document. Only the bridge knows whether the anchor was authored as
++     *    "#id" or as an explicit "/intl.html#id"; it answers that question through
++     *    MMXSharedShell.sameDocumentFragment(anchorElement) and this controller never
++     *    rebuilds the question out of the displayed URL.
++     *  - opening a disclosure reflows everything below it, and the country toolbar is
++     *    sticky, so the destination only becomes reachable after that reflow and clear
++     *    of the toolbar. Neither is something native fragment scrolling can do.
++     *
++     * Presentation only: it opens disclosures and scrolls. It never pushes or replaces
++     * history, never synthesises a hashchange, a message or an acknowledgment, and
++     * never moves focus.
++     */
++    var revealGeneration = 0;
++
++    function locationFragment() {
++      var hash = "";
++      try { hash = window.location.hash; } catch (e) { return null; }
++      return (typeof hash === "string" && hash.length > 1) ? hash.slice(1) : null;
++    }
++
++    function elementForFragment(fragment) {
++      if (typeof fragment !== "string" || fragment === "") return null;
++      var id = "";
++      try { id = decodeURIComponent(fragment); } catch (_) { return null; }
++      if (!id) return null;
++      try { return document.getElementById(id); } catch (_) { return null; }
++    }
++
++    // Research is reachable only through Tools. An id anywhere else on the page keeps
++    // its ordinary behaviour, and a malformed or unknown id is not a destination.
++    function researchTarget(fragment) {
++      if (!tools) return null;
++      var target = elementForFragment(fragment);
++      if (!target) return null;
++      return (target === tools || tools.contains(target)) ? target : null;
++    }
++
++    function openAncestors(target) {
++      // Every containing disclosure, including the ones ABOVE Tools: a closed
++      // ancestor leaves the destination unrendered, so opening only up to Tools'
++      // own parent is what leaves a nested target invisible.
++      for (var node = target; node && node !== document.body; node = node.parentElement)
++        if (node.tagName === "DETAILS") node.open = true;
++    }
++
++    // Tools is far taller than the scrollport, so its box is not where a reader
++    // arrives; the summary is the first visible line of that destination.
++    function arrivalFor(target) {
++      if (String(target.tagName || "").toUpperCase() === "DETAILS") {
++        var summary = null;
++        try { summary = target.querySelector("summary"); } catch (_) { summary = null; }
++        if (summary) return summary;
++      }
++      return target;
++    }
++
++    function stickyHeight() {
++      if (!toolbar) return 0;
++      var box = null;
++      try { box = toolbar.getBoundingClientRect(); } catch (e) { return 0; }
++      if (!box || !(box.height > 0) || box.top > 1) return 0;
++      var limit = window.innerHeight || 0;
++      var gap = Math.ceil(box.height) + 8;
++      return limit ? Math.min(gap, Math.floor(limit / 2)) : gap;
++    }
++
++    function bringIntoView(el) {
++      var box = null;
++      try { box = el.getBoundingClientRect(); } catch (e) { return; }
++      if (!box) return;
++      var viewport = window.innerHeight || document.documentElement.clientHeight || 0;
++      var offset = stickyHeight();
++      // Already inside the scrollport and clear of the toolbar: leave the reader's
++      // position, and any parent-restored position, exactly as it is.
++      if (viewport > 0 && box.bottom > 0 && box.top >= offset - 1 && box.top < viewport) return;
++      var top = (window.pageYOffset || 0) + box.top - offset;
++      var limit = Math.max(0, (document.documentElement.scrollHeight || 0) - viewport);
++      if (limit > 0 && top > limit) top = limit;
++      if (top < 0) top = 0;
++      try { window.scrollTo(window.pageXOffset || 0, top); } catch (e) {}
++    }
++
++    function revealResearch(fragment) {
++      var target = researchTarget(fragment);
++      if (!target) return null;
++      // Synchronous: the disclosures must already be open when the fragment arrives.
++      openAncestors(target);
++      revealGeneration += 1;
++      var mine = revealGeneration;
++      var arrival = arrivalFor(target);
++      // Deferred: the arrival alignment runs against the reflowed layout, and a newer
++      // destination cancels whatever this one still had pending.
++      var run = function () { if (mine === revealGeneration) bringIntoView(arrival); };
++      if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(run);
++      else window.setTimeout(run, 0);
++      return target;
++    }
++
++    // A standalone page answers this itself, and answers it strictly: same origin,
++    // same path, same query bytes, no credentials. A live bridge owns the answer for
++    // its own projected anchors; when that bridge exposes no helper, classification
++    // fails CLOSED instead of guessing and the accepted-location fallback below stays
++    // the only thing that reacts.
++    function standaloneFragment(anchor) {
++      var attr = null;
++      try { attr = anchor.getAttribute("href"); } catch (_) { return null; }
++      if (typeof attr !== "string" || attr === "") return null;
++      var url = null;
++      try { url = new URL(attr, window.location.href); } catch (_) { return null; }
++      if (url.username || url.password) return null;
++      if (url.origin !== window.location.origin) return null;
++      if (url.pathname !== window.location.pathname) return null;
++      if (url.search !== window.location.search) return null;
++      return url.hash.length > 1 ? url.hash.slice(1) : null;
++    }
++
++    function fragmentForAnchor(anchor) {
++      var bridge = window.MMXSharedShell;
++      if (bridge && bridge.active === true) {
++        if (typeof bridge.sameDocumentFragment !== "function") return null;
++        try { return bridge.sameDocumentFragment(anchor); } catch (_) { return null; }
+       }
++      return standaloneFragment(anchor);
+     }
++
++    /* Capture phase on the document. The bridge intercepts in the bubble phase on the
++     * same node and performs the fragment navigation there, so capturing here is what
++     * makes the disclosures open BEFORE the fragment arrives and before its own first
++     * scroll attempt, while still reading the pre-navigation classification. */
++    document.addEventListener("click", function (event) {
++      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
++      if (typeof event.button === "number" && event.button !== 0) return;
++      var node = event.target;
++      if (!node || typeof node.closest !== "function") return;
++      var anchor = node.closest("a[href]");
++      // Anchors the bridge leaves native (new tab, download, a link acting as a button)
++      // keep the current page and its state; they are not an arrival into research.
++      if (!anchor || anchor.hasAttribute("download")) return;
++      if (String(anchor.getAttribute("target") || "").toLowerCase() === "_blank") return;
++      if (String(anchor.getAttribute("role") || "").toLowerCase() === "button") return;
++      var fragment = fragmentForAnchor(anchor);
++      if (!fragment) return;
++      revealResearch(fragment);
++    }, true);
++
+     root.addEventListener("click", function (event) {
+       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+       var link = event.target.closest("a[data-imc-country]");
+@@ -106,7 +250,7 @@
+     function followHash() {
+       var hash = window.location.hash;
+       var country = reveal(hash || initialCountryHash);
+-      exposeLegacyAnchor();
++      revealResearch(locationFragment());
+       // Native fragment scrolling may precede the country disclosure reflow.
+       // Align after that layout, only while this remains the active destination.
+       if (country && hash) window.requestAnimationFrame(function () {
+@@ -115,6 +259,10 @@
+       });
+     }
+     window.addEventListener("hashchange", followHash);
++    // The bridge announces an accepted location with a bare event. The destination is
++    // read back from this window, never from event.detail, so a stale or forged detail
++    // cannot select a target.
++    window.addEventListener("mmx:shell-location", followHash);
+     if (tools && new URLSearchParams(window.location.search).has("view")) tools.open = true;
+     followHash();
+     syncRail();
+diff --git a/templates/shared_shell_bridge.js b/templates/shared_shell_bridge.js
+index dd501dc..235e77e 100644
+--- a/templates/shared_shell_bridge.js
++++ b/templates/shared_shell_bridge.js
+@@ -496,6 +496,55 @@
+     } catch (e) {}
+   }
+   function preventDefault(e) { try { if (typeof e.preventDefault === "function") e.preventDefault(); } catch (err) {} }
++
++  /* ---- shared anchor classification ----
++   * "What would activating this anchor mean" is one decision, and the page has to be
++   * able to ask it without also being able to perform it. onClick and the public
++   * sameDocumentFragment() below therefore share classifyAnchor(), so no navigation
++   * policy is restated on the consumer side and neither answer can drift from the
++   * other.
++   *
++   * The private projected record is the only provenance that exists: an anchor
++   * authored "#id" and one authored "/intl.html#id" project to the SAME displayed
++   * href, so the displayed attribute cannot tell a same-document fragment from an
++   * explicit first-party page link once the parent has changed the current query. The
++   * recorded authored value is honored only while the href attribute still equals
++   * exactly what the bridge projected; after any rewrite the current attribute is
++   * authoritative, so a stale destination is never classified.
++   *
++   * This function is pure with respect to the document: no attribute or WeakMap
++   * write, no history change, no message, error or request id, no enqueue, no scroll,
++   * focus or observer work. It never navigates in order to classify.
++   */
++  var CLASS_NONE = "none", CLASS_EXTERNAL = "external", CLASS_BLOCKED = "blocked", CLASS_LOCAL = "local";
++  function classifyAnchor(a) {
++    if (skipIntercept(a)) return { kind: CLASS_NONE };
++    var attr = null;
++    try { attr = a.getAttribute("href"); } catch (e) { return { kind: CLASS_NONE }; }
++    var rec = projected ? projected.get(a) : null;
++    var raw = (rec && attr === rec.projected) ? rec.original : attr;
++    var hs = coerceHref(raw);
++    if (hs === null) return { kind: CLASS_NONE };
++    var low = hs.trim().toLowerCase();
++    if (DEAD_SCHEME_RE.test(low)) return { kind: CLASS_NONE };
++    var u = resolveHref(hs);
++    if (!u) return { kind: CLASS_NONE };
++    if (u.origin !== childOrigin) {
++      var mapped = firstPartyToChild(u);
++      if (mapped) {
++        u = mapped;  // first-party target classified against the child catalog
++      } else {
++        return { kind: CLASS_EXTERNAL, url: u };
++      }
++    }
++    if (!credentialsFree(u)) return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
++    if (isSensitiveURL(u)) return { kind: CLASS_BLOCKED, code: "authentication_navigation", url: u };
++    var canonical = canonicalHref(u);
++    var curC = currentCanonical();
++    if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null)
++      return { kind: CLASS_BLOCKED, code: "navigation_unavailable", url: u };
++    return { kind: CLASS_LOCAL, url: u, canonical: canonical, current: curC };
++  }
+   function onClick(e) {
+     try {
+       if (!state.active || !e || e.defaultPrevented) return;
+@@ -506,46 +555,22 @@
+       if (node.nodeType !== undefined && node.nodeType !== 1) node = node.parentElement;
+       if (!node || typeof node.closest !== "function") return;
+       var a = node.closest("a[href]");
+-      if (!a || skipIntercept(a)) return;
+-      var attr = null;
+-      try { attr = a.getAttribute("href"); } catch (err) { return; }
+-      var rec = projected ? projected.get(a) : null;
+-      // Use the recorded authored value only while the attribute is still exactly what
+-      // the bridge projected. An unregistered rewrite is reclassified from the current
+-      // value, so a stale destination is never navigated to.
+-      var raw = (rec && attr === rec.projected) ? rec.original : attr;
+-      var hs = coerceHref(raw);
+-      if (hs === null) return;
+-      var low = hs.trim().toLowerCase();
+-      if (DEAD_SCHEME_RE.test(low)) return;
+-      var u = resolveHref(hs);
+-      if (!u) return;
+-      if (u.origin !== childOrigin) {
+-        var mapped = firstPartyToChild(u);
+-        if (mapped) {
+-          u = mapped;  // first-party target classified against the child catalog
+-        } else {
+-          if (u.protocol === "http:" || u.protocol === "https:") {
+-            try {
+-              if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
+-            } catch (err) {}
+-            addNoopener(a);
+-          }
+-          return;
++      if (!a) return;
++      var cls = classifyAnchor(a);
++      if (cls.kind === CLASS_NONE) return;
++      if (cls.kind === CLASS_EXTERNAL) {
++        if (cls.url.protocol === "http:" || cls.url.protocol === "https:") {
++          try {
++            if (anchorTarget(a) === "") a.setAttribute("target", "_blank");
++          } catch (err) {}
++          addNoopener(a);
+         }
+-      }
+-      if (!credentialsFree(u)) { preventDefault(e); emitError("navigation_unavailable"); return; }
+-      if (isSensitiveURL(u)) { preventDefault(e); emitError("authentication_navigation"); return; }
+-      var canonical = canonicalHref(u);
+-      var curC = currentCanonical();
+-      if (!canonical || canonical.length > MAX_URL || !isAdmitted(u.pathname) || curC === null) {
+-        preventDefault(e);
+-        emitError("navigation_unavailable");
+         return;
+       }
++      if (cls.kind === CLASS_BLOCKED) { preventDefault(e); emitError(cls.code); return; }
+       preventDefault(e);
+-      if (isFragmentAgainst(canonical, curC)) { applyFragmentNavigation(u, canonical, curC, "push"); return; }
+-      emitNavigate(canonical, "push", canonical === curC);
++      if (isFragmentAgainst(cls.canonical, cls.current)) { applyFragmentNavigation(cls.url, cls.canonical, cls.current, "push"); return; }
++      emitNavigate(cls.canonical, "push", cls.canonical === cls.current);
+     } catch (err) {}
+   }
+   function installAnchors() {
+@@ -1086,6 +1111,34 @@
+       if (!state.active) return enqueue({ kind: "auth", intent: intent });
+       send("AUTH_REQUEST", { intent: intent });
+       return true;
++    },
++    /* Read-only classification of one REAL anchor element.
++     *
++     * Returns the ENCODED fragment, without a leading "#", when activating this anchor
++     * would be a same-document fragment change against the CURRENT child location -
++     * the same answer onClick would act on. Returns null for everything else: before
++     * INIT, a non-anchor or attribute-less element, an anchor whose native semantics
++     * the bridge deliberately leaves alone (_blank, download, role=button), a dead
++     * scheme, a foreign origin, a different path, different query bytes, credentials,
++     * a sensitive or unadmitted path, or an href with no fragment.
++     *
++     * The ELEMENT is required rather than an href string, because the answer depends on
++     * the private projection record: two anchors showing the identical projected href
++     * classify differently. A copied node carries no record and is therefore classified
++     * from its own current attribute - provenance is never inherited.
++     *
++     * It returns a value; it does not navigate. No attribute or record write, no
++     * history change, no message, error or request id, nothing queued for a later
++     * INIT, and no scroll, focus or observer effect. Consumers must use the return
++     * value only to decide what they do for themselves. */
++    sameDocumentFragment: function (a) {
++      try {
++        if (!state.active) return null;
++        var cls = classifyAnchor(a);
++        if (cls.kind !== CLASS_LOCAL) return null;
++        if (!isFragmentAgainst(cls.canonical, cls.current)) return null;
++        return fragmentOf(cls.canonical);
++      } catch (e) { return null; }
+     }
+   };
+   try {
+diff --git a/tests/intl_country_cockpit_navigation.test.cjs b/tests/intl_country_cockpit_navigation.test.cjs
+new file mode 100644
+index 0000000..1c0fdc2
+--- /dev/null
++++ b/tests/intl_country_cockpit_navigation.test.cjs
+@@ -0,0 +1,680 @@
++'use strict';
++
++/*
++ * Country cockpit + Tools / retained-research navigation, in a real browser.
++ *
++ * ---------------------------------------------------------------------------
++ * THIS IS A MODELLED PARENT, NOT THE TERMINAL APP SHELL.
++ * The parent below is a small in-test stand-in served from one of the bridge's
++ * own allowed local parent origins. It really hosts the child in a cross-origin
++ * iframe, really speaks mmx.shared-shell.v1 (INIT / READY / NAVIGATE /
++ * LOCATION_ACCEPTED), really owns acceptance and the outgoing history, and runs
++ * the UNMODIFIED templates/shared_shell_bridge.js and
++ * templates/intl_country_cockpit.js from disk. What it is not: the production
++ * Terminal AppShell. Assertions about parent chrome, the parent's own view
++ * controls and cross-frame occlusion are therefore out of scope here and stay
++ * with the root's actual-parent acceptance run.
++ *
++ * Run: node --test tests/intl_country_cockpit_navigation.test.cjs
++ * The parent origin must be one the bridge itself allows
++ * (LOCAL_PARENTS in templates/shared_shell_bridge.js).
++ */
++
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++const { test } = require('node:test');
++const { chromium } = require('playwright');
++
++const BRIDGE = fs.readFileSync(path.join(__dirname, '..', 'templates', 'shared_shell_bridge.js'), 'utf8');
++const CONTROLLER = fs.readFileSync(path.join(__dirname, '..', 'templates', 'intl_country_cockpit.js'), 'utf8');
++
++const PARENT_ORIGIN = 'http://127.0.0.1:3100';   // in the bridge's LOCAL_PARENTS
++const CHILD_ORIGIN = 'http://127.0.0.1:3105';
++const PROTOCOL = 'mmx.shared-shell.v1';
++const GENERATION = 'g1';
++const LIBRARY = '?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=';
++const UNICODE_ID = 'ünï-目标';
++
++let browser;
++
++test.before(async () => {
++  browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL });
++});
++
++test.after(async () => {
++  if (browser) await browser.close();
++});
++
++function filler(id, rows) {
++  let out = `<div class="filler" id="${id}">`;
++  for (let i = 0; i < rows; i++) out += `<p>row ${i}</p>`;
++  return out + '</div>';
++}
++
++/* The legacy page the country controller enhances. Structure mirrors the real
++ * one as described by the actual-parent evidence: the country section and the
++ * Tools disclosure are SIBLINGS, and a nested research target sits inside
++ * details.ref-fold > #intl-analysis-tools > #intl-legacy-research. Every anchor
++ * a test clicks is outside those disclosures so it stays reachable once they
++ * have been opened and closed again. */
++function childHtml() {
++  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
++<meta name="mmx-shell-document" content="20261018.1">
++<meta name="mmx-shell-response" content="content">
++<title>International country cockpit</title>
++<style>
++  :root { --mmx-shared-shell-css-ready: 1; }
++  body { margin: 0; font: 13px/1.4 system-ui, sans-serif; }
++  .imc-toolbar { position: sticky; top: 0; z-index: 10; background: #fff;
++                 border-bottom: 2px solid #333; padding: 6px; }
++  .imc-country-rail a { margin-right: 8px; }
++  .filler p { height: 120px; margin: 0; }
++  details > summary { padding: 6px; background: #eee; }
++</style>
++<script>${BRIDGE}</script>
++</head><body>
++<main id="page">
++  <div data-im-country-analysis id="cockpit">
++    <div class="imc-toolbar-anchor">
++      <div class="imc-toolbar" id="imc-toolbar">
++        <nav class="imc-country-rail">
++          <a id="rail-jp" href="#imc-country-JP" data-imc-country>Japan</a>
++          <a id="rail-kr" href="#imc-country-KR" data-imc-country>Korea</a>
++        </nav>
++      </div>
++      <div class="imc-assistant-slot" id="imc-assistant-slot"></div>
++    </div>
++    <details class="imc-country" id="imc-country-JP" open>
++      <summary id="jp-summary">Japan</summary>
++      <a id="root-tools-link" href="#intl-analysis-tools">Analysis tools</a>
++      <a id="root-nested-link" href="#intl-legacy-research">Legacy research</a>
++      <a id="root-path-link" href="/intl.html#intl-analysis-tools">Tools as an explicit path</a>
++      <p id="jp-body">Japan body</p>
++    </details>
++    <details class="imc-country" id="imc-country-KR"><summary id="kr-summary">Korea</summary><p id="kr-body">Korea body</p></details>
++    <details class="imc-country" id="imc-country-TW"><summary id="tw-summary">Taiwan</summary><p id="tw-body">Taiwan body</p></details>
++  </div>
++  <nav id="siblings">
++    <a id="sibling-tools-link" href="#intl-analysis-tools">Tools, sibling section</a>
++    <a id="sibling-deep-link" href="#deep-target">Deep note, sibling section</a>
++    <a id="unicode-link" href="#${UNICODE_ID}">Unicode note</a>
++    <a id="missing-link" href="#missing-target">Missing</a>
++    <a id="malformed-link" href="#%ZZ">Malformed</a>
++    <a id="outside-link" href="#outside-target">Outside the tools</a>
++    <a id="foreign-link" href="https://evil.example/intl.html#intl-analysis-tools">Foreign</a>
++    <a id="otherpath-link" href="/other.html#intl-analysis-tools">Other path</a>
++    <a id="otherquery-link" href="/intl.html?view=chart#intl-analysis-tools">Other query</a>
++    <a id="credential-link" href="http://user:secret@127.0.0.1:3105/intl.html#intl-analysis-tools">Credentials</a>
++    <a id="blank-link" target="_blank" href="#intl-analysis-tools">New tab</a>
++    <a id="download-link" download href="#intl-analysis-tools">Download</a>
++    <a id="rolebutton-link" role="button" href="#intl-analysis-tools">Acts as a button</a>
++  </nav>
++  <details class="ref-fold" id="ref-fold">
++    <summary id="ref-summary">Reference</summary>
++    <details id="intl-analysis-tools">
++      <summary id="tools-summary">International analysis tools</summary>
++      ${filler('tools-filler', 26)}
++      <details id="intl-legacy-research">
++        <summary id="legacy-summary">Legacy research</summary>
++        <p id="deep-target">Deep target</p>
++        <p id="${UNICODE_ID}">Unicode target</p>
++      </details>
++    </details>
++  </details>
++  ${filler('tail-filler', 34)}
++  <h1 id="outside-heading">Outside</h1>
++  <p id="outside-target">Outside target</p>
++</main>
++<script>
++// The incumbent workspace's own view control: a wrapped same-document history
++// call, exactly as the real page switches view. The bridge and its parent own
++// what that means.
++document.addEventListener('click', function (event) {
++  const button = event.target.closest('button[data-im-action="set_view"]');
++  if (!button) return;
++  const url = new URL(location.href);
++  url.search = button.getAttribute('data-im-view') === 'library'
++    ? '${LIBRARY.slice(1)}'
++    : 'view=country&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=';
++  url.hash = '';
++  history.pushState(history.state, '', url.pathname + url.search);
++});
++// MODELING BOUNDARY: the modeled parent is cross-origin, so it cannot reach into
++// this frame the way the real shared runtime does. The modeled parent therefore
++// hands the restoration back over its own fixture-level channel, and the page
++// performs it with the same wrapped history call its own view control uses - the
++// bridge and the controller under test see an ordinary controlled navigation.
++window.addEventListener('message', function (event) {
++  var data = event.data;
++  if (event.origin !== '${PARENT_ORIGIN}') return;
++  if (!data || data.type !== 'restore-location') return;
++  history.replaceState(history.state, '', data.href);
++  window.scrollTo(0, data.y || 0);
++});
++</script>
++<script>${CONTROLLER}</script>
++</body></html>`;
++}
++
++/* The modelled Terminal AppShell. */
++function parentHtml() {
++  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Shell</title></head>
++<body>
++<h1 id="parent-title">Modeled shell</h1>
++<iframe id="child" src="${CHILD_ORIGIN}/intl.html?mmx_shell=1&mmx_generation=${GENERATION}"
++        width="640" height="480" style="border:0"></iframe>
++<script>
++(function () {
++  var frame = document.getElementById('child');
++  var win = frame.contentWindow;
++  var log = { ready: 0, nav: 0, ack: 0, errors: [], navs: [], locations: 0 };
++  var stack = [];
++  window.__shell = log;
++  function post(data) { win.postMessage(data, '${CHILD_ORIGIN}'); }
++  window.addEventListener('message', function (event) {
++    var d = event.data;
++    if (!d || d.protocol !== '${PROTOCOL}' || d.frameGeneration !== '${GENERATION}') return;
++    if (d.type === 'READY') { log.ready += 1; log.readyPayload = d; return; }
++    if (d.type === 'ERROR') { log.errors.push(d.code); return; }
++    if (d.type === 'NAVIGATE') {
++      log.nav += 1;
++      log.navs.push({ href: d.href, mode: d.mode, sameDocument: d.sameDocument, requestId: d.requestId });
++      // The parent owns URL acceptance.
++      log.ack += 1;
++      post({ protocol: '${PROTOCOL}', frameGeneration: '${GENERATION}', type: 'LOCATION_ACCEPTED',
++             requestId: d.requestId, canonicalPath: d.href });
++    }
++  });
++  frame.addEventListener('load', function () {
++    post({ protocol: '${PROTOCOL}', frameGeneration: '${GENERATION}', type: 'INIT', theme: 'dark', locale: 'en',
++           contextRevision: 1, canonicalPath: '/intl.html',
++           catalog: { legacyPaths: ['/intl.html'], nativePaths: ['/pricing'] }, restore: null });
++  });
++  // Outgoing view/history ownership, with a reader position per entry.
++  window.__pushEntry = function (href, y) {
++    stack.push({ href: href, y: y || 0 });
++    history.pushState({ idx: stack.length - 1 }, '');
++  };
++  window.addEventListener('popstate', function (event) {
++    var entry = stack[(event.state && event.state.idx) || 0];
++    if (!entry) return;
++    log.restored = entry;
++    post({ type: 'restore-location', href: entry.href, y: entry.y });
++  });
++}());
++</script>
++</body></html>`;
++}
++
++async function createShell(options = {}) {
++  const o = Object.assign({ query: '', hash: '', parent: true }, options);
++  const context = await browser.newContext();
++  const page = await context.newPage();
++  page.setDefaultTimeout(4000);
++  // Synthetic clicks in this suite reach the real listeners with real modifier
++  // flags but must not then perform their native default action (new tabs,
++  // downloads, top-level navigations): what is under test is the guard, not the
++  // browser's popup behaviour. Trusted clicks are never touched, so ordinary
++  // activation, the real country view switch and the real new-tab case below
++  // still behave natively. Registered on the window BUBBLE phase so it runs
++  // after the bridge's own document-phase handler.
++  await page.addInitScript(() => {
++    window.addEventListener('click', (event) => { if (!event.isTrusted) event.preventDefault(); }, false);
++  });
++  // Matched by URL shape, not by a glob: the child is always requested with its
++  // mmx_shell/mmx_generation query.
++  const isPath = (origin) => (url) => url.origin === origin && new URL(url).pathname === '/intl.html';
++  await context.route(isPath(CHILD_ORIGIN), route => route.fulfill({
++    contentType: 'text/html; charset=utf-8', body: childHtml(),
++  }));
++  if (o.parent) {
++    await context.route(isPath(PARENT_ORIGIN), route => route.fulfill({
++      contentType: 'text/html; charset=utf-8', body: parentHtml(),
++    }));
++    await page.goto(`${PARENT_ORIGIN}/intl.html`);
++    await page.waitForFunction(() => window.__shell && window.__shell.ready >= 1);
++  } else {
++    const target = new URL(`${CHILD_ORIGIN}/intl.html${o.query}`);
++    target.hash = o.hash;
++    await page.goto(target.href);
++  }
++  const frame = o.parent ? page.frames().find(f => f.url().startsWith(CHILD_ORIGIN)) : page.mainFrame();
++  assert.ok(frame, 'the child frame must be reachable');
++  return { context, page, frame };
++}
++
++const shellLog = (page) => page.evaluate(() => window.__shell);
++const isOpen = (frame, id) => frame.evaluate((x) => document.getElementById(x).open, id);
++const locationHref = (frame) => frame.evaluate(() => location.href);
++const scrollY = (frame) => frame.evaluate(() => window.pageYOffset);
++
++/* Arrival is proved the way the root proof does it: the element must sit inside
++ * the child scrollport, clear of the sticky toolbar, and elementFromPoint at its
++ * own leading edge must not land on that toolbar. */
++const ARRIVAL = (id) => {
++  const el = document.getElementById(id);
++  if (!el) return false;
++  // Content inside a CLOSED disclosure keeps a layout box in this engine, so a
++  // rectangle alone would call an unrevealed destination "visible". Only painted
++  // content counts as an arrival.
++  if (typeof el.checkVisibility === 'function' &&
++      !el.checkVisibility({ checkVisibilityCSS: true, contentVisibilityAuto: true,
++                            opacityProperty: true, visibilityProperty: true })) return false;
++  const box = el.getBoundingClientRect();
++  const toolbar = document.getElementById('imc-toolbar');
++  const tb = toolbar.getBoundingClientRect();
++  const x = Math.min(Math.max(box.left + 6, 1), window.innerWidth - 1);
++  const y = Math.min(Math.max(box.top + 3, 1), window.innerHeight - 1);
++  const hit = document.elementFromPoint(x, y);
++  return box.bottom > 0 && box.top < window.innerHeight && box.top >= tb.bottom - 1 &&
++    !!hit && hit !== toolbar && !toolbar.contains(hit);
++};
++async function awaitArrival(frame, id) {
++  await frame.waitForFunction(ARRIVAL, id, { timeout: 3000 });
++}
++async function assertNoArrival(frame, id) {
++  assert.equal(await frame.evaluate(ARRIVAL, id), false, `${id} must not be a visible arrival`);
++}
++async function openState(frame) {
++  return frame.evaluate(() => ({
++    refFold: document.getElementById('ref-fold').open,
++    tools: document.getElementById('intl-analysis-tools').open,
++    legacy: document.getElementById('intl-legacy-research').open,
++    jp: document.getElementById('imc-country-JP').open,
++  }));
++}
++/* Bridge messages and the accepted-location notification are delivered as tasks,
++ * so a counter or a disclosure state read straight after an activation can still
++ * be looking at the previous turn. Two nested timer turns in the parent let every
++ * queued message land before anything is read. */
++async function settle(page) {
++  await page.evaluate(() => new Promise((resolve) => setTimeout(() => setTimeout(resolve, 0), 0)));
++}
++async function waitNav(page, count) {
++  await page.waitForFunction((n) => window.__shell && window.__shell.nav >= n, count);
++  await settle(page);
++}
++// The modeled parent's own view control: real wrapped history, real acceptance.
++async function switchToLibrary(frame) {
++  await frame.evaluate(() => {
++    const b = document.createElement('button');
++    b.setAttribute('data-im-action', 'set_view');
++    b.setAttribute('data-im-view', 'library');
++    b.id = 'set-library';
++    document.body.appendChild(b);
++    b.click();
++    b.remove();
++  });
++}
++
++test('E first and repeated Tools activation from the root and from the sibling section', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    assert.deepEqual(await openState(frame), { refFold: false, tools: false, legacy: false, jp: true });
++    assert.equal(await frame.evaluate(() => document.getElementById('root-tools-link').getAttribute('href')),
++      `${PARENT_ORIGIN}/intl.html#intl-analysis-tools`, 'the anchor really is projected');
++
++    await frame.click('#root-tools-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
++    await awaitArrival(frame, 'tools-summary');
++
++    // A repeat is the same canonical fragment: it must not fabricate a second one.
++    await frame.click('#root-tools-link');
++    await awaitArrival(frame, 'tools-summary');
++    assert.equal((await shellLog(page)).nav, 1, 'only the first activation may reach the parent');
++
++    // Manually closed, then activated again from the sibling section.
++    await frame.evaluate(() => { document.getElementById('intl-analysis-tools').open = false; });
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), false);
++    await frame.click('#sibling-tools-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
++    await awaitArrival(frame, 'tools-summary');
++    await settle(page);
++    assert.equal((await shellLog(page)).nav, 1, 'a reopened disclosure is still the same canonical fragment');
++  } finally { await context.close(); }
++});
++
++test('E Tools still activates after the parent changes the current query', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    await switchToLibrary(frame);
++    assert.ok((await locationHref(frame)).includes('view=library'));
++    assert.equal((await shellLog(page)).nav, 1);
++    // Anti-vacuity: the projection still displays the query-less parent href.
++    assert.equal(await frame.evaluate(() => document.getElementById('root-tools-link').getAttribute('href')),
++      `${PARENT_ORIGIN}/intl.html#intl-analysis-tools`);
++
++    await frame.click('#root-tools-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true, 'the query change must not strand Tools');
++    await awaitArrival(frame, 'tools-summary');
++    const log = await shellLog(page);
++    assert.equal(log.nav, 2);
++    assert.equal(log.navs[1].sameDocument, true, 'the authored fragment is still this document');
++
++    await frame.evaluate(() => { document.getElementById('intl-analysis-tools').open = false; });
++    await frame.click('#root-tools-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true, 'the repeat after the query change reopens');
++    await awaitArrival(frame, 'tools-summary');
++    await settle(page);
++    assert.equal((await shellLog(page)).nav, 2, 'no new navigation for the repeated fragment');
++
++    // The explicitly path-authored link is a different destination, and must not
++    // be treated as a local fragment arrival.
++    await frame.evaluate(() => { document.getElementById('intl-analysis-tools').open = false; });
++    await frame.click('#root-path-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), false,
++      'an authored /intl.html#id is not this document after the view change');
++    await frame.click('#root-tools-link');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
++  } finally { await context.close(); }
++});
++
++test('E a nested research link opens every containing disclosure and arrives visibly', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    await frame.click('#root-nested-link');
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, 'legacy-summary');
++
++    // Repeat after a manual collapse: every ancestor must reopen again.
++    await frame.evaluate(() => {
++      document.getElementById('intl-legacy-research').open = false;
++      document.getElementById('intl-analysis-tools').open = false;
++      document.getElementById('ref-fold').open = false;
++    });
++    assert.deepEqual(await openState(frame), { refFold: false, tools: false, legacy: false, jp: true });
++    await settle(page);
++    await frame.click('#sibling-deep-link');
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, 'deep-target');
++    assert.equal((await shellLog(page)).nav, 1, 'the repeated fragment fabricates nothing');
++  } finally { await context.close(); }
++});
++
++test('E the nested destination is not left below the fold or under the sticky toolbar', async () => {
++  const { context, frame } = await createShell();
++  try {
++    await frame.click('#sibling-deep-link');
++    await awaitArrival(frame, 'deep-target');
++    const box = await frame.evaluate(() => {
++      const el = document.getElementById('deep-target');
++      const b = el.getBoundingClientRect();
++      const t = document.getElementById('imc-toolbar').getBoundingClientRect();
++      return { top: b.top, bottom: b.bottom, toolbarBottom: t.bottom, viewport: window.innerHeight, y: window.pageYOffset };
++    });
++    assert.ok(box.top >= box.toolbarBottom - 1, `destination ${box.top} must clear the toolbar ${box.toolbarBottom}`);
++    assert.ok(box.top > 0, 'the destination was below the visible viewport');
++    assert.ok(box.y > 0, 'the disclosure really had to reflow for this to arrive');
++    assert.ok(box.bottom <= box.viewport, 'the destination is inside the child scrollport');
++
++    // The huge Tools wrapper itself arrives at its summary, not at its own top.
++    await frame.evaluate(() => {
++      document.getElementById('intl-legacy-research').open = false;
++      document.getElementById('intl-analysis-tools').open = false;
++    });
++    await frame.click('#sibling-tools-link');
++    await awaitArrival(frame, 'tools-summary');
++    await assertNoArrival(frame, 'deep-target');
++  } finally { await context.close(); }
++});
++
++test('E unicode, malformed, missing and unrelated ids are handled without guessing', async () => {
++  const { context, frame } = await createShell();
++  try {
++    await frame.click('#unicode-link');
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, UNICODE_ID);
++    await frame.evaluate(() => {
++      document.getElementById('ref-fold').open = false;
++      document.getElementById('intl-analysis-tools').open = false;
++      document.getElementById('intl-legacy-research').open = false;
++    });
++
++    for (const id of ['#missing-link', '#malformed-link', '#outside-link']) {
++      await frame.click(id);
++      assert.deepEqual(await openState(frame),
++        { refFold: false, tools: false, legacy: false, jp: true }, `${id} must not open Tools`);
++      // A collapsed summary still renders, so probe a target that only exists inside
++      // the collapsed research chain: nothing may have been brought into view.
++      await assertNoArrival(frame, 'deep-target');
++    }
++  } finally { await context.close(); }
++});
++
++test('F modified, non-primary, native-target and lookalike activations preserve the current page', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    const before = await locationHref(frame);
++    const navBefore = (await shellLog(page)).nav;
++
++    // A REAL modified click: whether the browser then opens a tab is its own
++    // business, but this page must not move and the parent must hear nothing.
++    const popups = [];
++    const onPopup = (p) => { popups.push(p); p.close().catch(() => {}); };
++    context.on('page', onPopup);
++    await frame.click('#root-tools-link', { modifiers: ['Control'] });
++    await settle(page);
++    context.off('page', onPopup);
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), false);
++    assert.equal(await locationHref(frame), before);
++
++    // The remaining modified and non-primary activations: same guard, dispatched so
++    // the browser's own tab/download handling cannot disturb the assertions.
++    for (const modifiers of [{ altKey: true }, { metaKey: true }, { shiftKey: true }, { button: 1 }, { button: 2 }]) {
++      await frame.dispatchEvent('#root-tools-link', 'click',
++        Object.assign({ button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false }, modifiers));
++      assert.equal(await isOpen(frame, 'intl-analysis-tools'), false,
++        `${JSON.stringify(modifiers)} must keep native semantics`);
++      assert.equal(await locationHref(frame), before, `${JSON.stringify(modifiers)} must not move this page`);
++    }
++
++    // Dispatched clicks carry the same listener path without opening new tabs or
++    // starting downloads, which is what a real _blank/download activation would.
++    // Each keeps its native outcome: a genuine same-origin destination with another
++    // query is still a real navigation, and a rejected one is still an explicit
++    // refusal - none of them may reveal local Tools.
++    for (const [id, why] of [['#blank-link', '_blank'], ['#download-link', 'download'],
++      ['#rolebutton-link', 'role=button'], ['#foreign-link', 'foreign origin'],
++      ['#otherpath-link', 'other path'], ['#otherquery-link', 'other query'],
++      ['#credential-link', 'credentials']]) {
++      const navBefore = (await shellLog(page)).nav;
++      const errBefore = (await shellLog(page)).errors.length;
++      await frame.dispatchEvent(id, 'click', { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false });
++      assert.equal(await isOpen(frame, 'intl-analysis-tools'), false, `${why} must not reveal local Tools`);
++      assert.equal(await locationHref(frame), before, `${why} must not change this page`);
++      // A collapsed summary still renders, so probe a target that only exists inside
++      // the collapsed research chain.
++      await assertNoArrival(frame, 'deep-target');
++      await settle(page);
++      const log = await shellLog(page);
++      if (why === 'other query') {
++        assert.equal(log.nav, navBefore + 1, 'a different query is still a real same-site navigation');
++      } else {
++        assert.equal(log.nav, navBefore, `${why} must not reach the parent`);
++      }
++      const refused = why === 'other path' || why === 'credentials';
++      assert.equal(log.errors.length, errBefore + (refused ? 1 : 0),
++        `${why} keeps the bridge's own refusal behaviour`);
++    }
++
++    // Existing native semantics are untouched: the bridge still marks foreign links.
++    assert.equal(await frame.evaluate(() => document.getElementById('foreign-link').getAttribute('target')), '_blank');
++    assert.ok((await frame.evaluate(() => document.getElementById('foreign-link').getAttribute('rel'))).includes('noopener'));
++  } finally { await context.close(); }
++});
++
++test('G an accepted location is read from this window, never from event.detail', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    // A forged detail must not select anything while the location says otherwise.
++    await frame.evaluate(() => {
++      window.dispatchEvent(new CustomEvent('mmx:shell-location', { detail: { hash: '#intl-analysis-tools' } }));
++      window.dispatchEvent(new CustomEvent('mmx:shell-location', { detail: '#intl-legacy-research' }));
++    });
++    assert.deepEqual(await openState(frame), { refFold: false, tools: false, legacy: false, jp: true });
++
++    // The real notification, with the location the parent actually accepted.
++    await frame.evaluate((href) => { history.replaceState(history.state, '', href); },
++      `/intl.html${LIBRARY}#deep-target`);
++    await waitNav(page, 1);
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, 'deep-target');
++  } finally { await context.close(); }
++});
++
++test('G country selection keeps its own focus, rail and history behaviour', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    assert.equal(await frame.evaluate(() => document.getElementById('rail-jp').getAttribute('aria-current')), 'location');
++    await frame.click('#rail-kr');
++    assert.equal(await isOpen(frame, 'imc-country-KR'), true);
++    assert.equal(await isOpen(frame, 'imc-country-JP'), false, 'one country at a time');
++    assert.equal(await frame.evaluate(() => document.getElementById('rail-kr').getAttribute('aria-current')), 'location');
++    assert.equal(await frame.evaluate(() => document.getElementById('rail-jp').getAttribute('aria-current')), null);
++    assert.equal(await frame.evaluate(() => document.activeElement.id), 'kr-summary');
++    await waitNav(page, 1);
++    assert.equal((await shellLog(page)).nav, 1);
++    assert.equal((await shellLog(page)).navs[0].sameDocument, true);
++  } finally { await context.close(); }
++});
++
++test('G reveal never steals focus from a keyboard activation', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    await frame.evaluate(() => document.getElementById('root-tools-link').focus());
++    await frame.evaluate(() => document.getElementById('root-tools-link').click());
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
++    assert.equal(await frame.evaluate(() => document.activeElement.id), 'root-tools-link',
++      'the disclosure must not take focus');
++    await awaitArrival(frame, 'tools-summary');
++
++    await frame.evaluate(() => document.getElementById('root-tools-link').focus());
++    await page.keyboard.press('Enter');
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true, 'a keyboard activation is an ordinary one');
++    assert.equal(await frame.evaluate(() => document.activeElement.id), 'root-tools-link');
++  } finally { await context.close(); }
++});
++
++test('G a newer destination cancels the stale deferred scroll', async () => {
++  const { context, frame } = await createShell();
++  try {
++    // Both activations land in one turn; only the second may settle the position.
++    await frame.evaluate(() => {
++      document.getElementById('root-tools-link').click();
++      document.getElementById('sibling-deep-link').click();
++    });
++    await awaitArrival(frame, 'deep-target');
++    await assertNoArrival(frame, 'tools-summary');
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++  } finally { await context.close(); }
++});
++
++test('G parent-owned Back and Forward restore the reader position', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    await frame.click('#sibling-tools-link');
++    await awaitArrival(frame, 'tools-summary');
++    const restingY = await scrollY(frame);
++    const restingHref = await locationHref(frame);
++
++    // Two parent-owned entries, each with the reader position that goes with it.
++    await page.evaluate((entry) => window.__pushEntry(entry.href, entry.y), { href: restingHref, y: restingY });
++    await page.evaluate((href) => window.__pushEntry(href, 0),
++      `${CHILD_ORIGIN}/intl.html${LIBRARY}#deep-target`);
++
++    await page.goBack();
++    await page.waitForFunction(() => window.__shell.restored);
++    await frame.waitForFunction((href) => location.href === href, restingHref);
++    // The restored position already shows the destination, so the controller must
++    // leave it exactly where the parent put it.
++    await awaitArrival(frame, 'tools-summary');
++    assert.ok(Math.abs((await scrollY(frame)) - restingY) <= 2,
++      `restoration moved from ${restingY} to ${await scrollY(frame)}`);
++
++    await page.goForward();
++    await frame.waitForFunction((href) => location.hash === '#deep-target');
++    // A restored location whose destination is not on screen still has to arrive.
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, 'deep-target');
++  } finally { await context.close(); }
++});
++
++test('G standalone keeps a strict local test for hash and direct nested activation', async () => {
++  const { context, page } = await createShell({ parent: false });
++  try {
++    const frame = page.mainFrame();
++    assert.equal(await frame.evaluate(() => typeof window.MMXSharedShell), 'undefined',
++      'a standalone page has no bridge to ask');
++    await frame.click('#root-nested-link');
++    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(frame, 'legacy-summary');
++
++    // Strict local checks: a foreign lookalike still reveals nothing.
++    await frame.evaluate(() => {
++      document.getElementById('ref-fold').open = false;
++      document.getElementById('intl-analysis-tools').open = false;
++      document.getElementById('intl-legacy-research').open = false;
++    });
++    for (const id of ['#foreign-link', '#otherpath-link', '#otherquery-link', '#blank-link']) {
++      await frame.dispatchEvent(id, 'click', { button: 0 });
++      assert.equal(await isOpen(frame, 'intl-analysis-tools'), false, `${id} must not reveal standalone Tools`);
++      await assertNoArrival(frame, 'deep-target');
++    }
++
++    // A direct load with a nested hash opens the whole chain and arrives there.
++    await page.goto(`${CHILD_ORIGIN}/intl.html#deep-target`);
++    assert.deepEqual(await openState(page.mainFrame()), { refFold: true, tools: true, legacy: true, jp: true });
++    await awaitArrival(page.mainFrame(), 'deep-target');
++  } finally { await context.close(); }
++});
++
++test('E protocol, version and admission are unchanged by the repair', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    const log = await shellLog(page);
++    assert.equal(log.ready, 1);
++    assert.equal(log.errors.length, 0);
++    assert.equal(log.readyPayload.bridgeVersion, '20261018.1');
++    assert.equal(log.readyPayload.documentVersion, '20261018.1');
++    assert.equal(log.readyPayload.responseKind, 'content');
++    assert.equal(await frame.evaluate(() => window.MMXSharedShell.__mmxBridge), PROTOCOL);
++    assert.equal(await frame.evaluate(() => window.MMXSharedShell.active), true);
++    assert.equal(typeof (await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort().join(','))),
++      'string');
++    // The helper is the only addition to the published surface.
++    assert.equal(await frame.evaluate(() => typeof window.MMXSharedShell.sameDocumentFragment), 'function');
++    assert.equal(await frame.evaluate(() => Object.isFrozen(window.MMXSharedShell)), true);
++    assert.deepEqual(await frame.evaluate(() => Object.keys(window.MMXSharedShell).sort()),
++      ['__mmxBridge', 'active', 'applyingContext', 'navigate', 'openAuth', 'sameDocumentFragment']);
++  } finally { await context.close(); }
++});
++
++test('G a live bridge without the helper fails closed and keeps the accepted-location fallback', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    // The probe records how many accepted-location notifications had arrived when
++    // Tools first became open. Speculative classification would open it at zero.
++    await frame.evaluate(() => {
++      window.__locationEvents = 0;
++      window.__openedAt = null;
++      window.addEventListener('mmx:shell-location', () => { window.__locationEvents += 1; });
++      const tools = document.getElementById('intl-analysis-tools');
++      new MutationObserver(() => {
++        if (tools.open && window.__openedAt === null) window.__openedAt = window.__locationEvents;
++      }).observe(tools, { attributes: true, attributeFilter: ['open'] });
++    });
++    await frame.evaluate(() => {
++      delete window.MMXSharedShell;
++      window.MMXSharedShell = Object.freeze({ __mmxBridge: 'mmx.shared-shell.v1', active: true });
++    });
++
++    await frame.click('#root-tools-link');
++    await frame.waitForFunction(() => document.getElementById('intl-analysis-tools').open, null, { timeout: 3000 });
++    assert.equal(await isOpen(frame, 'intl-analysis-tools'), true, 'the fallback still resolves the arrival');
++    const openedAt = await frame.evaluate(() => window.__openedAt);
++    assert.ok(openedAt >= 1,
++      `classification must fail closed: Tools opened after ${openedAt} accepted-location notifications`);
++    await awaitArrival(frame, 'tools-summary');
++  } finally { await context.close(); }
++});
+diff --git a/tests/js/shared_shell_bridge.test.cjs b/tests/js/shared_shell_bridge.test.cjs
+index 464b53c..7fbc3fd 100644
+--- a/tests/js/shared_shell_bridge.test.cjs
++++ b/tests/js/shared_shell_bridge.test.cjs
+@@ -1691,3 +1691,208 @@ test('credential-bearing history URLs never mutate or enter the protocol', () =>
+     assert.ok(!JSON.stringify(ctx.sent).includes('synthetic-pass'));
+   }
+ });
++
++/* ===================================================================
++ * MMXSharedShell.sameDocumentFragment(): read-only classification of a
++ * REAL anchor element.
++ *
++ * The provenance these tests pin is the private projected record. Two
++ * anchors authored "#id" and "/intl.html#id" project to the identical
++ * displayed href, so nothing a consumer can read off the DOM separates
++ * them; only the bridge's own record does. A controller that guessed from
++ * the displayed URL gets the second one wrong the moment the parent
++ * changes the current query.
++ * =================================================================== */
++
++const LIBRARY = '?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=';
++
++function activated(extra) {
++  const ctx = harness(extra);
++  ctx.activate();
++  return ctx;
++}
++// An anchor that reaches the projection sweep the way a real one does.
++function projected(ctx, attrs, id) {
++  const el = ctx.mkEl('A', Object.assign({ id: id || attrs.href }, attrs));
++  ctx.mutateAdd(el);
++  return el;
++}
++// The incumbent page changing its own view: a wrapped same-document history
++// call the parent accepts, which is the real path to a changed current query.
++function acceptViewChange(ctx, search) {
++  const before = ctx.activeCount('NAVIGATE');
++  ctx.sandbox.history.replaceState({ view: 'library' }, '', '/tools' + search);
++  assert.strictEqual(ctx.activeCount('NAVIGATE'), before + 1, 'view change must reach the parent');
++  const nav = ctx.lastOf('NAVIGATE');
++  ctx.dispatchMessage({
++    protocol: 'mmx.shared-shell.v1', frameGeneration: 'g1', type: 'LOCATION_ACCEPTED',
++    requestId: nav.requestId, canonicalPath: nav.href,
++  });
++  return ctx;
++}
++
++test('A authored fragment stays same-document across a view query change; an authored path does not', () => {
++  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?mmx_shell=1&mmx_generation=g1' });
++  const fragmentAuthored = projected(ctx, { href: '#lead-rotation' }, 'a-fragment');
++  const pathAuthored = projected(ctx, { href: '/tools#lead-rotation' }, 'a-path');
++
++  // Anti-vacuity: the two anchors really do display one identical href.
++  assert.strictEqual(fragmentAuthored.getAttribute('href'), pathAuthored.getAttribute('href'));
++  assert.strictEqual(fragmentAuthored.getAttribute('href'), PROD + '/tools#lead-rotation');
++  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
++  assert.strictEqual(ctx.api().sameDocumentFragment(pathAuthored), 'lead-rotation');
++
++  acceptViewChange(ctx, LIBRARY);
++  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
++  assert.strictEqual(ctx.api().sameDocumentFragment(pathAuthored), null);
++  // Still the identical displayed href: the answer came from provenance alone.
++  assert.strictEqual(fragmentAuthored.getAttribute('href'), pathAuthored.getAttribute('href'));
++
++  // A copied node carries no record, so it must not inherit the classification.
++  const clone = ctx.mkEl('A', { id: 'a-clone', href: fragmentAuthored.getAttribute('href') });
++  assert.strictEqual(clone.getAttribute('href'), fragmentAuthored.getAttribute('href'));
++  assert.strictEqual(ctx.api().sameDocumentFragment(clone), null);
++  assert.strictEqual(ctx.api().sameDocumentFragment(fragmentAuthored), 'lead-rotation');
++});
++
++test('B classification reads the current href attribute, never a stale projected record', () => {
++  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?q=alpha&mmx_shell=1&mmx_generation=g1' });
++  const a = projected(ctx, { href: '#lead-rotation' }, 'a-rewritten');
++  // Projected against the child's CURRENT query, which is exactly the href the old
++  // controller-only heuristic would have compared.
++  assert.strictEqual(a.getAttribute('href'), PROD + '/tools?q=alpha#lead-rotation');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
++
++  // Rewritten before any MutationObserver delivery: the current attribute wins.
++  a.setAttribute('href', '?q=alpha#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'other-panel');
++  a.setAttribute('href', '?q=beta#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
++  a.setAttribute('href', '/dashboard#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
++  a.setAttribute('href', 'https://evil.example/tools#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
++  a.setAttribute('href', 'https://user:secret@www.mastermind-x.com/tools#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
++  a.setAttribute('href', 'https://www.mastermind-x.com/login#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null);
++  a.setAttribute('href', 'https://www.mastermind-x.com/tools#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), null,
++    'an explicit CHILD path without the current query is a page link, not a fragment of this document');
++  a.setAttribute('href', '?q=alpha#other-panel');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'other-panel');
++  a.setAttribute('href', '#lost-provenance');
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lost-provenance');
++
++  // The stale record is gone with it: real navigation now follows the rewrite,
++  // and never the value the bridge once projected.
++  ctx.click(a);
++  assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lost-provenance');
++  assert.strictEqual(ctx.lastOf('NAVIGATE').sameDocument, true);
++
++  // ...and an unregistered rewrite of an external target still keeps native semantics.
++  const external = projected(ctx, { href: '#panel' }, 'a-external');
++  external.setAttribute('href', 'https://evil.example/tools#panel');
++  const navsBefore = ctx.activeCount('NAVIGATE');
++  const evt = ctx.click(external);
++  assert.strictEqual(evt.defaultPrevented, false);
++  assert.strictEqual(ctx.activeCount('NAVIGATE'), navsBefore);
++  assert.strictEqual(external.getAttribute('target'), '_blank');
++  assert.ok(String(external.getAttribute('rel')).includes('noopener'));
++});
++
++test('C raw query bytes decide equality: spaces, plus, comma, %2c, duplicates and empty segments', () => {
++  const raw = '?q=A%20B&set=1,2&set=3%2c4&plus=A+B&empty=&flag';
++  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools' + raw + '&mmx_shell=1&mmx_generation=g1' });
++
++  // Transport keys are filtered; every other byte is preserved as the server sent it.
++  assert.strictEqual(ctx.lastOf('READY').href, 'https://www.mastermind-x.com/tools' + raw);
++
++  // Authored fragment inherits the current query byte for byte.
++  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: '#panel' }, 'a-inherit')), 'panel');
++  // An explicitly written identical query is still the same document.
++  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: raw + '#panel' }, 'a-same')), 'panel');
++  // Transport keys alone never decide it either way.
++  assert.strictEqual(
++    ctx.api().sameDocumentFragment(projected(ctx, { href: '?mmx_shell=1&mmx_generation=g1&q=A%20B&set=1,2&set=3%2c4&plus=A+B&empty=&flag#panel' }, 'a-transport')),
++    'panel');
++
++  // One byte different is a different destination, however a parser might normalise it.
++  const nearMisses = [
++    ['?q=A+B&set=1,2&set=3%2c4&plus=A+B&empty=&flag#panel', 'space encoded as plus'],
++    ['?q=A%20B&set=1,2&set=3%2C4&plus=A+B&empty=&flag#panel', 'lowercase %2c normalised'],
++    ['?set=1,2&q=A%20B&set=3%2c4&plus=A+B&empty=&flag#panel', 'duplicate parameter reordered'],
++    ['?q=A%20B&set=1,2&set=3%2c4&plus=A%20B&empty=&flag#panel', 'plus decoded to space'],
++  ];
++  for (const [href, why] of nearMisses) {
++    assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href }, 'a-' + why.replace(/\W+/g, '-'))),
++      null, why);
++  }
++  assert.strictEqual(ctx.api().sameDocumentFragment(projected(ctx, { href: raw + '#panel' }, 'a-exact')), 'panel');
++
++  // Empty segments are bytes, not noise a parser may collapse.
++  const seg = activated({ childUrl: 'https://www.mastermind-x.com/tools?a=1&&b=2&&mmx_shell=1&mmx_generation=g1' });
++  assert.strictEqual(seg.lastOf('READY').href, 'https://www.mastermind-x.com/tools?a=1&&b=2&');
++  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '#panel' }, 'a-seg')), 'panel');
++  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '?a=1&&b=2&#panel' }, 'a-seg-ok')), 'panel');
++  assert.strictEqual(seg.api().sameDocumentFragment(projected(seg, { href: '?a=1&b=2&#panel' }, 'a-seg-collapsed')), null);
++});
++
++test('D the helper is pure: no location, history, message, attribute, focus or scroll effect', () => {
++  // Before INIT it answers null and queues nothing for the INIT that follows.
++  const pre = harness({ childUrl: 'https://www.mastermind-x.com/tools?mmx_shell=1&mmx_generation=g1' });
++  const preAnchor = pre.mkEl('A', { id: 'a-pre', href: '#panel' });
++  const preUrl = pre.location().href;
++  assert.strictEqual(pre.api().active, false);
++  assert.strictEqual(pre.api().sameDocumentFragment(preAnchor), null);
++  assert.strictEqual(pre.sent.length, 0);
++  assert.strictEqual(pre.replaceCalls.length, 0);
++  assert.strictEqual(pre.pushCalls.length, 0);
++  assert.strictEqual(pre.calls.focus.length, 0);
++  assert.strictEqual(pre.calls.scrollTo.length, 0);
++  pre.activate();
++  assert.strictEqual(pre.activeCount('READY'), 1);
++  assert.strictEqual(pre.activeCount('NAVIGATE'), 0, 'no work may be replayed from a later INIT');
++  assert.strictEqual(pre.activeCount('ERROR'), 0);
++  assert.strictEqual(pre.location().href, preUrl);
++  assert.strictEqual(pre.api().sameDocumentFragment(preAnchor), 'panel');
++
++  const ctx = activated({ childUrl: 'https://www.mastermind-x.com/tools?q=alpha&mmx_shell=1&mmx_generation=g1' });
++  const a = projected(ctx, { href: '#lead-rotation' }, 'a-pure');
++  const blank = projected(ctx, { href: '#panel' }, 'a-blank');
++  const snapshot = {
++    url: ctx.location().href, sent: ctx.sent.length,
++    replace: ctx.replaceCalls.length, push: ctx.pushCalls.length,
++    focus: ctx.calls.focus.length, scroll: ctx.calls.scrollTo.length,
++    href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'),
++    dispatched: ctx.dispatched.length,
++  };
++  // Repeated, interleaved and invalid calls in every order.
++  for (let i = 0; i < 5; i++) {
++    assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
++    assert.strictEqual(ctx.api().sameDocumentFragment(blank), 'panel');
++    for (const bad of [null, undefined, 0, '', 'a-panel', {}, [], ctx.docEl, ctx.body, ctx.head, ctx.mkEl('P', { id: 'p' })]) {
++      assert.strictEqual(ctx.api().sameDocumentFragment(bad), null, String(bad));
++    }
++    const detached = ctx.mkEl('A', { id: 'a-noattr-' + i });
++    assert.strictEqual(ctx.api().sameDocumentFragment(detached), null);
++  }
++  assert.deepStrictEqual({
++    url: ctx.location().href, sent: ctx.sent.length,
++    replace: ctx.replaceCalls.length, push: ctx.pushCalls.length,
++    focus: ctx.calls.focus.length, scroll: ctx.calls.scrollTo.length,
++    href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'),
++    dispatched: ctx.dispatched.length,
++  }, snapshot);
++
++  // Native targets stay excluded, and the projection still behaves afterwards.
++  for (const attrs of [{ target: '_blank' }, { download: '' }, { role: 'button' }]) {
++    const native = projected(ctx, Object.assign({ href: '#panel' }, attrs), 'a-native');
++    assert.strictEqual(ctx.api().sameDocumentFragment(native), null, JSON.stringify(attrs));
++    assert.strictEqual(ctx.click(native).defaultPrevented, false, JSON.stringify(attrs));
++  }
++  assert.strictEqual(ctx.api().sameDocumentFragment(a), 'lead-rotation');
++  ctx.click(a);
++  assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?q=alpha#lead-rotation');
++  assert.strictEqual(a.getAttribute('href'), snapshot.href, 'the helper never rewrites the anchor');
++});
+```

@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-22T03:20:11.075114+00:00",
+  "responses": [
+    {
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    }
+  ]
+}
