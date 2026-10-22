@@ -1,39 +1,42 @@
-# International Markets — incumbent continuation
-Original operation `intl-country-cockpit-20261018`; incumbent C2 Personal source writer; original workspace and `sol/web-intl-country-cockpit-20261018`; PR #9596. Continue query correction, Golden Surveillance integration, unchanged actual Terminal acceptance, and release gates. Preserve original workspace. Do not relaunch failed Fabric R2 or separate expired Golden Surveillance leases.
+# International Markets — incumbent release checkpoint
 
-## Publication and current source
-At 2026-10-22 20:12 UTC (15:12 America/Chicago), typed status confirms local and remote `9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb`, APPLIED, with only intended pending correction/evidence changes. Earlier source96cf, ordinary two-parent merge d7f (main2d334), source68782 and recovered evidence-only9bf remain intact; no pending merge or history rewrite.
+Original operation `intl-country-cockpit-20261018`; incumbent C2 Personal writer; original workspace/branch `sol/web-intl-country-cockpit-20261018`; PR #9596. User explicitly directs completion through release gates. Preserve workspace. Do not relaunch failed Fabric R2 or separate expired GS leases.
 
-Pending paired controller SHA256: `bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae`.
-Pending controller test SHA256: `d74ddd7d52a947435b72ac4896bd42bbf25331cbecbdf73e709512427e750e59`.
-Pending independent history test SHA256: `ec29c9ee555f6619e24d4d824eb5f82a87fbf3e795729413adc9d0c3c491a37b`.
+## Current source and publication frontier
+Source commit **bdeb609bf11a170c39713461eace85b47d2ca18c**, typed local commit APPLIED/clean/index-synchronized, parent9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb. Paired workspace SHA256 bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae. Branch already contains the original query-reader repair, ordinary GS/main two-parent merge, CI/theme fixture integration and earlier evidence. No pending merge or history rewrite.
+At this checkpoint, new evidence is being sealed before a typed push. Exact final publication head must be read from the subsequent commit/push receipts and GitHub. Previous remote remains9bf until that push is verified. PR remains Draft/HOLD pending new exact-head hosted CI and explicit source-release ruling; no production claim.
 
-The pending Scenario correction preserves invalid raw destinations, restores a valid refused traversal exactly once, and performs GS URL alignment only after final acceptance. Six native-history/real-bridge regressions were independently accepted. Two comments now use “committed state” and “accepted state” to address hosted validated-claims-source findings without modifying checker or allowlist semantics.
+## Correction and independent disposition
+Rejected queries preserve raw URL, committed state, pending Scenario draft and confirmation. Valid refused traversals receive one serialized restoration. GS URL alignment follows final valid acceptance. Paired source comments use committed/accepted state; source-claims checker and allowlist unchanged.
+Fresh independent reviewer /root/intl_query_candidate_review ACCEPTS exact bdeb source and new local/actual-Terminal evidence, explicitly closing the pending-Scenario defect named by PRcomment6350147974 on preceding9bf. Full source/test/verifier hashes independently verified; the two comment-only deltas precisely recover tested92f8 bytes. All34 broad data/logic/GS review bindings unchanged and applicable. See pending_scenario_20261022/OWNER_CAPTURED_FINAL_SCENARIO_SOURCE_REVIEW.md.
 
-## Local validation, with failures retained
-- Six new tests reproduce all six intended failures on original c3fa source.
-- Focused11/11 pass; zero skips.
-- Full International browser invocation:247 pass/1 fail of248. This failed receipt is preserved. Sole failure was an older test expecting invalid-query URL sanitization, contrary to the accepted correction.
-- Bounded correction to that test retains state, draft, refusal and cancellation assertions, and now requires the raw invalid URL and local/FX values to remain. The whole affected independent-history file then passes22/22. Do not sum overlapping runs or claim a single248-pass execution.
-- Independent review accepts both the implementation and the legacy test correction; LOCAL_VALIDATION_RECONCILIATION.json binds unchanged dependencies and the two comment-only source deltas.
-- Initial source-claims attempt failed because the sparse checkout lacked the tracked allowlist. Exact HEAD allowlist bytes were materialized without a content or index change; qualified selftest and source-scope gate both pass. Preserve the initial failed receipt.
-- Main v13 actual-parent verifier closes the late-response finalization gap: every exact child asset response is checked after all contexts close and pending captures drain. All12 synthetic positive/negative controls pass; independent review ACCEPT. This is verifier validation, not fresh browser acceptance.
+## Fresh proof on bdeb
+- Ordinary no-overlay build:510 retained production inputs; source reacquisition/production mutation false;44 files = HTML plus43 assets. HTML SHA2568a1af9804fc9b424ecfe1e7312b84ae35015c6ddca3a5d1750b6d67abfaa1405. Build receipt e71ab39a7f7d132f83871a574c177d419b6526c942af29f780aa68e008ab39b3.
+- All7 frozen raw country sections equal;22/22 fragment/Tools landings;28/28 country/native-history checks.
+- Actual unchanged Terminal parente45bde2cac07ac3b29285ff70c40d68900fad62c: **v13 full866/866 PASS in21contexts**, including query profiles and real saved Library search focus. Started20:15:05UTC; driver finished20:17:51UTC; owned parent/child stopped20:17:54UTC; parent trackedclean before/after.
+- v13 final response custody checks every exact child asset row after context closure. All345responses retained;251child rows comprise219hash-verified200 +32qualified304; all5criticalassets have initial200 in everycontext. Independent reviewer checked everyrow/cachelink;94parentstatus rows also satisfy contract. No page/console errors.
+- Full observation7,933,358bytes SHA2563e24194eb252ef1ce530944293b63b17c4ebde6983ea7b8dc8a2396343b14e75. Complete cases/responses reviewextract SHAba753fc7fbc4ff2de49e756b877d1cc0a47433ed6ce1808887dbb860787e7a6b.14screenshotbytes/hashes verified byroot; no new full visual inspection claim.
+- All7 repository gates have qualified PASS onbdeb. Initial registry-only failure is preserved; exact tracked missing sparse page_registry.json was materialized and the same checker passed. Qualified source-claims selftest/source scope also pass after exact tracked allowlist materialization, with original sparse dependency failure retained.
 
-## Independent integration assessment
-Broad independent data/logic/GS/build/access/CI enrollment review ACCEPT at9bf. DATA_LOGIC_APPLICABILITY.json confirms34 current source files remain exactly reviewed9bf bytes. Frozen country logic remains at accepted442042. GS is a foundation integration; seven future view builders remain unavailable/disabled. No claim of full GS feature delivery.
-Latest complete prospective check against main651aacf064441f1db01fd716fa402182df065a84:5299 incoming paths, two overlaps (CI manifest and generated Screener), clean prospective treecaad506f6306a4446ea532275e36d01c6e145ee7.11 of12 checked source blobs unchanged; CI manifest changes only add browser setup annotations to two unrelated jobs. Paired new runner supports those annotations. No extra main merge solely for ancestry. Rebind applicability to final source and assess any newer main changes.
+## Honest local test reconciliation
+Six new native-history/real-bridge tests first reproduced6/6intended failures. Focused11/11pass. First full local International invocation remains247PASS/1FAILof248; its onlyfailure was a legacy test expecting forbidden invalid-URL sanitation. Bounded independent-reviewed oracle correction retains allstate/draft/refusal/cancel assertions; whole affectedfile22/22pass. No overlapping-count total or relabelled full pass. Newpublication hosted fullsuite remains required.
 
-## Immediate next steps
-1. Typed fenced local commit at expected9bf after SOURCE_COMMIT_PREFLIGHT.json (no unexpected paths; production/test diff check clean).
-2. Normal exact-commit no-overlay build with build_query_candidate.py --label scenariopop20261022; output proposed_scenariopop20261022_repair and repair_scenariopop20261022_build_receipt.json.
-3. pending_scenario_20261022/verify_main_composition.py NEW_SHA: frozen country equality,22 landings and28 country/history checks.
-4. Unchanged run_actual_parent_proof.py with v13 verifier, unique candidate_parent_scenario_v13 output, candidate/full matrix, exact NEW_SHA/build receipt and original tracked-clean Terminal parent e45bde2cac07ac3b29285ff70c40d68900fad62c.
-5. Seven repository guards, independent proof readback and latest-main applicability. Seal evidence, typed push exact final head, update original PR body, require new exact-head hosted CI.
-6. Assess justified release ruling and protected-main acceptance; then genuine full-history seven-currency acquisition after adoption, canonical receipts, ordinary covering renderer/updater adoption, and actual source-bound anonymous served browser/access/assistant proof.
+## Integration and latest main
+Broad independent data/GS/build/access/CI review ACCEPT at9bf,34files unchanged atbdeb. GSfoundation integrated;7futureviewbuilders unavailable/disabled, not claimedcomplete. Accepted sharedbridge24d7bb10/theme d7be48a7 retained.
+Latest complete main check pinned **a281a3801e87510aecbe15aa03efc9c5854b81ef**,5304incomingpaths; onlyCI manifest/generatedScreener overlap. Clean prospective tree12e550f51d1e6ddb0db7abb403b4e0924ed018d5. All43builtstaticassets and83of84 sourcebindings unchanged; solechangedbinding is independently reviewedCI annotations for2unrelatedjobs. Screener retains acceptedcacherefs plus incomingdatecaption; SHA256f751e17df163fea1e92fcf4345817851472eafb5a25dae39e7314d5d98038997. No ancestry-only merge needed. Recheck actual merge-base/tested-tree at final release.
 
-## Retained historical evidence and open release conditions
-Earlier normal no-overlay build at68782:510 retained inputs,44 files (HTML plus43 assets), HTML8bc4d2546e10ae44304abf2d9f89237183be695f23edeef8310aa1345ceecf79; seven country blocks identical;22/22 landings;28/28 history. Earlier unchanged Terminal v12 query105/105 and full866/866 passed, but v13 now tightens asset finalization, and the pending source requires its own proof. Earlier failures remain unchanged.
-Published9bf hostedCI39840840690 pack10 failed only validated-claims-source in two now-corrected comments; exact-base replay passed. Other pending hosted results do not establish final corrected-head acceptance.
-Frozen artifact883a1e48efdf9c334c08665262efa0961b1997a0/source442042e591d255dd24b540ff240edb4c0410c297/HTMLad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0 and144 historical bindings/proposal remain; APPROVE_WITH_CONDITIONS preserved.
-RELEASE-INTL-FX-CUSTODY and RELEASE-INTL-SERVED remain open. PRpreflight6349678268 observed older served bridge048314d5/workspaceba10411e, not candidate acceptance. Local copied stores, a green workflow or HTTP200 cannot substitute for genuine endpoint clocks/full-history or source-bound user proof.
-Protected procedure continuity verified at28f704ab42c4866cec3f33dad6b787bfb8feef47 against prior c3623:all8 governing files identical. Original operation/lease restrictions retained. No Slack/email/PR comment sent by this resumed root.
+## Next execution
+1. Seal only new evidence/checkpoint into a typed expected-bdeb local commit; inspect exact delta; typed push original branch; verify APPLIED remote/GitHub identity and update PRbody with current evidence. Prior body archived.
+2. Require exact final publication-head hostedCI, fences and active-main authority, inspect actual tested merge/base and relevant logicaljobs. Old9bf pack10 comment-failure is repaired but not counted green. Preserve initial failure.
+3. Bind fresh independent source/Terminal disposition to final evidence-only publication head and integration. Once checks conclude and holds are actually satisfied, record explicit source-acceptance/HOLD-release ruling; normalReady/expected-head merge. No auto-merge shortcut.
+4. Verify actual adopted main source. Existing main backfill.yml only=intl_prices runs ordinary --full-history collector under pipeline-batch serialization; after sourceadoption require genuine all7canonical FX stores and endpoint request/return clocks/digests, qualified returns and ordinaryconsumer evidence.70% corecoverage/greenworkflow/copies are insufficient.
+5. Covering ordinary intlrender after acquisition publication and normalupdater adoption. Then source-bound anonymous CDN/actualTerminaldesktop/mobile EN/ZH light/dark country/Tools/Scenario/history/Libraryfocus/assistant/publicresource/protectedrefusal journeys. Noactivecoveringrendercancellation.
+6. Close RELEASE-INTL-FX-CUSTODY and RELEASE-INTL-SERVED only on actualproductionevidence. No extra human approval gate was found in existing scoped authority; these are post-sourceacceptanceconditions, not circularpremergeprerequisites.
+
+## Preserved governance and history
+Frozen artifact883a1e48efdf9c334c08665262efa0961b1997a0/source442042e591d255dd24b540ff240edb4c0410c297/HTMLad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0,144historicalbindings,proposal and APPROVE_WITH_CONDITIONS remain; acceptedcountry-first/legacydiscoverabilitytradeoff not erased. India/TaiwanGDPfollow-up separate.
+Protectedprocedurecontinuity at28f704ab42c4866cec3f33dad6b787bfb8feef47 vs c3623 verifiedidentical8governingfiles; current userdelegation maintainsincumbentauthority. Separate8754/9477carriers not consumed. No Slack/email/PRcomment sent byresumedroot.
+R2provider task nonstartprovedscopedhistoricadmission; controller/lease/refusaleffectshistorical. SeparateexpiredGLMleases donotproveeffectabsence/replaypermission. NoFabricstate mutation/retry/reenrollment.
+
+## Publication preflight reconciliation
+An unrelated working-copy edit appeared in tests/test_biocatalyst_deploy.py (mtime20:20:42UTC, provenanceunknown). Its exact fullcopy andpatch are preserved in pending_scenario_20261022/UNOWNED_BIOCATALYST_TEST_WORKING_COPY.txt and UNOWNED_BIOCATALYST_TEST_PATCH.patch. Apart from2explanatorycomments it equals existing incomingmaina281's3Caddytest-pathrepair. Hash-fenced restoration to originalbdeb bytes keeps this evidence commit scoped; normalmaincomposition alreadyretains the upstreamfix. See UNOWNED_BIOCATALYST_CHANGE.json. No unknownwork discarded and no upstreamrepairreverted.

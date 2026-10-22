@@ -1,0 +1,18 @@
+# Preserved principal review on preceding 9bf source
+
+Source: https://github.com/mastermindx-market-intelligence/macro/pull/9596#issuecomment-6350147974
+Recorded at: 2026-10-22T20:05:40Z
+
+### Independent principal review — REQUEST_CHANGES on exact HEAD 9bf7161b (2026-10-22 UTC)
+
+**Reviewer:** native read-only principal `/root/intl_independent_principal_review`. **PR:** #9596, original Draft/HOLD branch. **Semantic head:** `9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb`; **base:** `2d33475adef502ab6b00b8003356c1b0ad1673c0`. No source edit, Fabric replay, approval, merge, deployment, or lease transfer was made by this reviewer.
+
+**Verdict: REQUEST_CHANGES; HOLD Ready/merge.** In immutable `site/intl_workspace.js:1759–1783`, `popstate` calls `commitResearch(parsed,'popstate')`, but when `pendingScenario` is truthy it subsequently executes `history.replaceState` without checking `parsed.ok` or actual commit acceptance. For an already-pending confirmation, rejected malformed/foreign queries can be silently sanitized into `controller.serializedQuery`; for a newly staged valid pending confirmation, an extra write/navigation may follow. This violates strict business-query refusal and one-write Shared Shell history discipline. Source control-flow proof was independently established; the incumbent's six RED real-bridge/native-history cases corroborate it but were not the review's basis.
+
+**Required repair and proof:** retain rejected URL bytes and committed state/Scenario draft, apply GS market clamp to verified business query, perform at most one justified history restoration or market correction, prove before/after bridge INIT, native Back/Forward, confirmed/cancelled Scenario, focus, and no extra parent NAVIGATE. Bind fresh regression and real Terminal-parent proof to a *new immutable* source head. The concurrently uncommitted Scenario patch, though 11/11 focused tests passed, was deliberately excluded from the 9bf review. The first broad WIP International browser receipt is 247 PASS / 1 FAIL on a legacy test expecting the now-forbidden sanitation; reconcile and rerun rather than count as green.
+
+**Independently inspected without a new execution claim:** 2,924 changed-path PR census; FX row/date/quote-to-acquisition receipt design (`collectors/intl_prices.py`, `lib/intl_currency_observation.py`); macro source identity, vintage and conflict qualifications; country builder integration; Shared Shell transport/query parser; country navigation source; all twelve post-dock4 viewport screenshots and representative full reading/Tools/assistant captures. No other definite source blocker established on those inspected paths, but this is not blanket production acceptance. Earlier 175 GS / 192 bridge / 242 browser / 105 query / 866 full Terminal results were inspected as historical claims, not rerun by this reviewer.
+
+**Release holds remain separate:** (1) final corrected-head review and exact-head hosted CI; (2) after protected-main adoption, genuine full-history `intl_prices` acquisition, seven source-bound canonical FX stores and endpoint request/return receipts consumed by ordinary renderer; (3) normal render/updater adoption and actual source-bound served CDN/Terminal anonymous EN/ZH, desktop/mobile, light/dark, history, Library-focus, assistant and access tests. Existing reference `APPROVE_WITH_CONDITIONS` and bounded source reviews do not waive those. No Ready/merge/deploy/served acceptance claim.
+
+**Review reuse:** unaffected data-provenance and existing visual evidence may be retained with verified same-blobs/base movement; changed history/query source needs focused fresh independent review on the new exact head.
