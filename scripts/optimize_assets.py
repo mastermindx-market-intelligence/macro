@@ -51,13 +51,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib.pages import css_imports, dbase_prefix, optimize_assets_text, preload_css_text, write_page  # noqa: E402
 from lib.shared_shell import copy_shared_shell_asset, inject_shared_shell_text  # noqa: E402
+from lib.site_assets import mm_brain_version  # noqa: E402
 
 log = logging.getLogger("optimize_assets")
 
 
 def _hash_bytes(p: Path) -> Optional[str]:
     try:
-        return hashlib.sha256(p.read_bytes()).hexdigest()[:8]
+        return mm_brain_version(p) if p.name == "mm_brain.js" else hashlib.sha256(p.read_bytes()).hexdigest()[:8]
     except Exception:  # noqa: BLE001
         return None
 

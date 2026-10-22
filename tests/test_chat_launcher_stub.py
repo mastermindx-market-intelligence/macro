@@ -76,7 +76,7 @@ def theme_code(theme_src: str) -> str:
 # assigned from a bare string literal. An expression (pfx + 'x.js',
 # _mmBrainSrc(), _mmOverlaySrc) is not a literal and is not matched here; those
 # are checked for shared-root provenance by the second half of the test.
-_LITERAL_SRC_RE = re.compile(r"""\.(?:src|href)\s*=\s*(['"])([^'"]+)\1""")
+_LITERAL_SRC_RE = re.compile(r"""\.(src|href)\s*=\s*(['"])([^'"]+)\2""")
 
 # URLs that are not ours to rebase: absolute, protocol-relative, data/blob, and
 # the empty string (used to detach a media element).
@@ -88,8 +88,11 @@ def _document_relative_offenders(code: str) -> list[str]:
     code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
     return [
         url
-        for _q, url in _LITERAL_SRC_RE.findall(code)
-        if url and not url.startswith(_NOT_LOCAL)
+        for field, _q, url in _LITERAL_SRC_RE.findall(code)
+        if (url and not url.startswith(_NOT_LOCAL)
+            # Navigation anchors to HTML documents are not injected child assets.
+            # Keep every .src and CSS/JS/preload .href check fail-closed.
+            and not (field == "href" and url.split("?", 1)[0].split("#", 1)[0].lower().endswith(".html")))
     ]
 
 
@@ -107,6 +110,12 @@ def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
         "into a test that can only pass"
     )
     assert _document_relative_offenders(fixed) == []
+    # A live ticker anchor is navigation, not a dynamically loaded asset.
+    # Both script and CSS/preload href regressions must remain rejected.
+    assert _document_relative_offenders(
+        "a.href = 'stock.html#' + encodeURIComponent(ticker);"
+        " s.src = 'mm_brain.js'; l.href = 'mm_brain_finance.css';"
+    ) == ["mm_brain.js", "mm_brain_finance.css"]
     # absolute / protocol-relative / data URLs are never ours to rebase
     assert _document_relative_offenders(
         "a.src = 'https://cdn.example/x.js'; b.src = '//h/y.js'; c.src = '/z.js'; d.src = 'data:,';"

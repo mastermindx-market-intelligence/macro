@@ -20,7 +20,7 @@ from unittest import mock
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib.pages import css_imports, optimize_assets_text, preload_css_text  # noqa: E402
-from scripts.optimize_assets import optimize  # noqa: E402
+from scripts.optimize_assets import optimize, _hash_bytes  # noqa: E402
 
 # a stub hasher: pretend theme.js/heatmap.js/theme.css exist, nothing else
 _PRESENT = {"theme.js": "aaaa1111", "heatmap.js": "bbbb2222", "theme.css": "cccc3333"}
@@ -498,3 +498,26 @@ def test_a_hand_written_query_is_never_judged(tmp_path):
     )
     assert check(tmp_path, fix=True) == ["page.html"]
     assert check.refused == [], "a hand-written query was audited as our stamp"
+
+
+def test_full_brain_stamp_recovers_prematurely_cached_immutable_short_key(tmp_path):
+    bundle = tmp_path / "mm_brain.js"
+    bundle.write_bytes(b"already-deployed-current-Brain")
+    expected = hashlib.sha256(bundle.read_bytes()).hexdigest()
+    assert _hash_bytes(bundle) == expected
+
+    prior = '<script src="mm_brain.js?v=e7dce737"></script>'
+    updated = optimize_assets_text(prior, lambda _: expected)
+    assert f'src="mm_brain.js?v={expected}"' in updated
+    assert optimize_assets_text(updated, lambda _: expected) == updated
+
+    bundle.write_bytes(b"next-deployed-Brain")
+    later = _hash_bytes(bundle)
+    assert later != expected and len(later) == 64
+    assert f'src="mm_brain.js?v={later}"' in optimize_assets_text(updated, lambda _: later)
+
+    foreign = '<script src="theme.js?v=' + "a" * 64 + '"></script>'
+    assert optimize_assets_text(foreign, lambda _: "bbbb2222") == foreign
+    ordinary = tmp_path / "theme.js"
+    ordinary.write_bytes(b"normal")
+    assert len(_hash_bytes(ordinary)) == 8

@@ -184,6 +184,9 @@ _SCHEME_RE = re.compile(r"[a-zA-Z][\w+.-]*:")  # http:, https:, data:, mailto: .
 # query. A ref wearing this is re-hashed when the file behind it changed; any
 # other query (a hand-written ?v=3, ?foo=bar, a fragment) is still left alone.
 _OUR_STAMP_RE = re.compile(r"^([^?#]+)\?v=[0-9a-f]{8}$")
+# Brain alone uses its complete digest to abandon an already-poisoned immutable
+# short key; remain strict for every other asset and hand-authored query.
+_OUR_BRAIN_STAMP_RE = re.compile(r"^((?:[^?#]*/)?mm_brain\.js)\?v=[0-9a-f]{64}$")
 # Re-stamping is only safe on the tag that actually LOADS the asset. A
 # `<link rel="preload">` hint mirrors a URL owned elsewhere (preload_css_text
 # copies it from the stylesheet, or from an @import that this sweep never
@@ -243,7 +246,7 @@ def optimize_assets_text(text: str, hash_for: Callable[[str], Optional[str]]) ->
         # only the tag that actually LOADS the asset may be re-stamped.
         rel = _REL_ATTR_RE.search(attrs)
         loads_it = kind == "script" or (rel is not None and "stylesheet" in rel.group(1).lower())
-        stamped = _OUR_STAMP_RE.match(url) if loads_it else None
+        stamped = (_OUR_STAMP_RE.match(url) or _OUR_BRAIN_STAMP_RE.match(url)) if loads_it else None
         bare = stamped.group(1) if stamped else url
         low = bare.lower()
         if (not stamped and ("?" in url or "#" in url)) or not (low.endswith(".js") or low.endswith(".css")):

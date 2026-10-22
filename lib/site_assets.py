@@ -98,8 +98,9 @@ def mm_brain_version(src: Path) -> str:
 
     ``src`` is any path in ``templates/``; the bundle is read as its sibling.
 
-    This is deliberately the SAME function ``scripts.optimize_assets`` applies to
-    every ``.js``/``.css`` reference it stamps into HTML — ``sha256(bytes)[:8]``.
+    This is the canonical full SHA256 stamp for the Brain loader.
+    ``scripts.optimize_assets`` calls this same function for ``mm_brain.js``;
+    all other JS/CSS assets retain their standard 8-character digest stamp.
     Sharing the derivation is the whole point: the ~3,500 pages that carry a
     page-authored ``<script src="../../mm_brain.js?v=…">`` and the pages whose
     launcher requests the bundle dynamically must land on ONE cache key, or a
@@ -112,7 +113,7 @@ def mm_brain_version(src: Path) -> str:
     just uncached. A missing sibling is a local/custom build, never production.
     """
     try:
-        return hashlib.sha256(src.with_name("mm_brain.js").read_bytes()).hexdigest()[:8]
+        return hashlib.sha256(src.with_name("mm_brain.js").read_bytes()).hexdigest()
     except OSError:
         return ""
 

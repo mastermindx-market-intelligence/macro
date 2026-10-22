@@ -193,7 +193,7 @@ def test_no_builder_writes_theme_js_raw() -> None:
 # ---------------------------------------------------------------------------
 # theme.js requests the assistant bundle dynamically, so its ?v= cannot come from
 # scripts.optimize_assets — that pass rewrites HTML references, and this URL only
-# exists at runtime. It is baked here instead, from the SAME sha256[:8] the
+# exists at runtime. It is baked here instead, from the SAME full Brain digest the
 # stamper uses, so the ~3,500 pages carrying a page-authored
 # <script src="../../mm_brain.js?v=…"> and every page that loads it on demand
 # share ONE cache key. Diverge them and a reader crossing between the two kinds of
@@ -204,12 +204,12 @@ MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
 
 
 def test_mm_brain_version_is_the_stamper_hash() -> None:
-    """mm_brain_version() == sha256(mm_brain.js)[:8], the optimize_assets rule."""
+    """Both the live loader and page stamper use the same full Brain digest."""
     import hashlib
 
-    expected = hashlib.sha256((TEMPLATES / "mm_brain.js").read_bytes()).hexdigest()[:8]
+    expected = hashlib.sha256((TEMPLATES / "mm_brain.js").read_bytes()).hexdigest()
     assert site_assets.mm_brain_version(TEMPLATES / "theme.js") == expected
-    assert re.fullmatch(r"[0-9a-f]{8}", expected), "stamp shape drifted from 8 hex"
+    assert re.fullmatch(r"[0-9a-f]{64}", expected), "Brain stamp must be full SHA256"
 
 
 def test_mm_brain_version_token_never_survives_the_bake() -> None:
@@ -287,7 +287,7 @@ console.log(JSON.stringify({cfg:ctx.window.SUPABASE_CFG,brain:ctx.window.brain,
 """
     result = _node_json(runtime)
     assert result["cfg"] == {"url":"https://proxy.example", "anonKey":'public-key-with-quote-"-and-slash-\\', "ref":"project-ref"}
-    assert result["brain"] == hashlib.sha256(brain).hexdigest()[:8]
+    assert result["brain"] == hashlib.sha256(brain).hexdigest()
     assert result["same"] and result["closed"]
     assert result["api"] == ["close", "isOpen", "open", "terminalDestination", "terminalHandoff"]
     assert result["listeners"] == ["message", "keydown", "popstate"]

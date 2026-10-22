@@ -60,7 +60,7 @@ def test_lazy_urls_use_the_same_per_asset_content_hash_as_the_site_pipeline():
 def test_theme_is_baked_by_its_existing_owner_not_raw_copied():
     source=ROOT/'templates/theme.js'
     emitted=site_assets.emit_theme_js(source)
-    expected=hashlib.sha256((ROOT/'templates/mm_brain.js').read_bytes()).hexdigest()[:8]
+    expected=hashlib.sha256((ROOT/'templates/mm_brain.js').read_bytes()).hexdigest()
     # The canonical owner now minifies the final bundle; verify the baked value,
     # not whitespace that the required minifier deliberately removes.
     assert f'MM_BRAIN_VER="{expected}"' in emitted

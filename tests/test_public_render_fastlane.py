@@ -136,3 +136,8 @@ def test_public_pages_do_not_double_escape_entities(tmp_path):
     }
     offenders = {name: hits for name, hits in offenders.items() if hits}
     assert not offenders, f"double-escaped entities reach the reader: {offenders}"
+
+
+def test_full_brain_stamp_canonical_owner_triggers_existing_public_render():
+    for path in ("scripts/optimize_assets.py", "lib/pages.py", "lib/site_assets.py"):
+        assert ('- "' + path + '"') in PUBLIC
