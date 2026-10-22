@@ -733,3 +733,24 @@ def test_signal_acceptance_does_not_bypass_later_render_guard_failure(job_succes
         commits[0].get("if"), outcome="success", accepted="true",
         job_success=job_success,
     ) == job_success
+
+
+@pytest.mark.parametrize("scenario", ["success", "builder_failure", "validator_failure"])
+def test_signal_valid_daily_paths_keep_liquidity_producer_live(tmp_path, scenario):
+    steps, index = _signal_steps("daily")
+    # There is no intentionally skipped-gate success path in this nightly job.
+    assert steps[index].get("if") is None
+    assert not steps[index].get("continue-on-error", False)
+    producers = [
+        (i, step) for i, step in enumerate(steps)
+        if "scripts.build_global_liquidity_transmission" in step.get("run", "")
+    ]
+    assert len(producers) == 1
+    producer_index, producer = producers[0]
+    assert producer_index > index
+    result, _, outputs, _, _ = _exercise_signal_gate(tmp_path, "daily", scenario)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert _signal_step_eligible(
+        producer.get("if"), outcome="success",
+        accepted=outputs.get("accepted", ""), job_success=True,
+    )
