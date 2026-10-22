@@ -29,14 +29,15 @@ if str(REPO_ROOT) not in sys.path:
 import jsonschema  # noqa: E402
 
 from engine.company_intelligence.relationships import (  # noqa: E402
+    CORRUPT,
     SPECIES_ROLES,
     build_package,
+    canon,
     load_manifest_issuers,
 )
 
 DEFAULT_EXTRACTION = (
-    REPO_ROOT
-    / "research/theme_graph/gmi_relationships_20261021/extraction/swks_aapl_m1.jsonl"
+    REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/extraction"
 )
 DEFAULT_SOURCES = (
     REPO_ROOT / "research/theme_graph/gmi_relationships_20261021/sources"
@@ -54,6 +55,9 @@ PACKAGE_SHA_PLACEHOLDER = "0" * 64
 
 #: A7 binding shape: a ruling ref is <ruling_id>@sha256:<sha256 of the bytes>.
 RIGHTS_RULING_ID = re.compile(r"^GMI-REL-[A-Z0-9-]{3,80}$")
+
+#: A33 source layout: an accession is 10 digits, dash, 2, dash, 6.
+ACCESSION_RE = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 
 
 def _warn(title: str, message: str) -> None:
@@ -316,15 +320,33 @@ def main(argv=None) -> int:
         )
         return 0
 
-    # --sources is searched recursively for <accession>.json.  Two copies of one
-    # accession with identical bytes are one source; differing bytes make that
-    # accession source_corrupt for every row citing it.
+    # --sources is searched recursively (A33).  Two on-disk layouts are
+    # recognized, keyed by (accession, span.raw_sha256) so one filing can carry
+    # several relationship spans:
+    #   FLAT    <any dirs>/<accession>.json          (the stem is the accession)
+    #   NESTED  <any dirs>/<accession>/<sha20>.json  (the parent dir is the
+    #                                                 accession; sha20 =
+    #                                                 span.raw_sha256[:20])
+    # File order is the string order of the POSIX relative path — NOT Path
+    # order — so a flat file sorts before nested files of the same accession
+    # ('.' < '/').  Anything else under the root is skipped with a warning.
     sources_input = Path(args.sources)
-    source_candidates: dict = {}
+    source_files: list = []  # (accession, path, nested) in deterministic order
     if sources_input.is_dir():
-        for path in sorted(sources_input.rglob("*.json")):
-            if path.is_file():
-                source_candidates.setdefault(path.stem, []).append(path)
+        for path in sorted(
+            (p for p in sources_input.rglob("*.json") if p.is_file()),
+            key=lambda p: p.relative_to(sources_input).as_posix(),
+        ):
+            if ACCESSION_RE.match(path.stem):
+                source_files.append((path.stem, path, False))
+            elif ACCESSION_RE.match(path.parent.name):
+                source_files.append((path.parent.name, path, True))
+            else:
+                _warn(
+                    "SOURCE_PATH_UNRECOGNIZED",
+                    f"{path.relative_to(sources_input).as_posix()}: neither "
+                    "<accession>.json nor <accession>/<sha20>.json; skipped",
+                )
 
     rows = []
     for extraction_file in extraction_files:
@@ -338,16 +360,12 @@ def main(argv=None) -> int:
     # Refused-species rows bypass the extraction contract (its enum excludes them
     # by design) and are passed to the derivation, which records the refusal.
     rows_kept = []
-    referenced = set()
     for row in rows:
         if (
             row.get("row_kind") == "observation"
             and row.get("species") not in SPECIES_ROLES
         ):
             rows_kept.append(row)
-            source = row.get("source_ref") or {}
-            if isinstance(source.get("accession"), str):
-                referenced.add(source["accession"])
             continue
         problems = _validate_row(row, _extraction_validator())
         if problems:
@@ -360,45 +378,180 @@ def main(argv=None) -> int:
             )
             continue
         rows_kept.append(row)
+
+    # Row dedupe: the same row may arrive from several extraction files.  Rows
+    # sharing an observation_id / assessment_id collapse to their first row in
+    # load order when canonically identical; a group with differing rows is
+    # dropped ENTIRELY — the package never silently prefers one variant.
+    # Coverage rows carry no content identity and pass through untouched.
+    def _dedupe_id(row: dict):
+        if row.get("row_kind") == "observation":
+            return row.get("observation_id")
+        if row.get("row_kind") == "document_assessment":
+            return row.get("assessment_id")
+        return None
+
+    groups: dict = {}  # identifier -> [kind, row count, {canon(row)}]
+    for row in rows_kept:
+        identifier = _dedupe_id(row)
+        if not isinstance(identifier, str):
+            continue
+        held = groups.get(identifier)
+        if held is None:
+            groups[identifier] = [row.get("row_kind"), 1, {canon(row)}]
+        else:
+            held[1] += 1
+            held[2].add(canon(row))
+    dropped = set()
+    for identifier, (kind, count, prints) in groups.items():
+        if len(prints) > 1:
+            dropped.add(identifier)
+            _warn(
+                "OBSERVATION_DUPLICATE_CONFLICT"
+                if kind == "observation"
+                else "ASSESSMENT_DUPLICATE_CONFLICT",
+                f"{identifier}: {count} rows with differing content; the whole "
+                "group is dropped",
+            )
+    deduped = []
+    seen_ids = set()
+    for row in rows_kept:
+        identifier = _dedupe_id(row)
+        if not isinstance(identifier, str):
+            deduped.append(row)  # coverage / id-less rows pass through
+            continue
+        if identifier in dropped or identifier in seen_ids:
+            continue  # a conflicted group drops whole; an identical copy collapses
+        seen_ids.add(identifier)
+        deduped.append(row)
+    rows_kept = deduped
+
+    referenced = set()
+    for row in rows_kept:
         source = row.get("source_ref") or {}
         if isinstance(source.get("accession"), str):
             referenced.add(source["accession"])
 
+    # Excerpts and their inputs, keyed by (accession, span.raw_sha256) with the
+    # M1 plain-accession view preserved for single-excerpt accessions (A33):
+    #   excerpts[accession]               = CORRUPT when the accession is
+    #     poisoned; else its single key's value (dict or CORRUPT); else absent.
+    #   excerpts[(accession, raw_sha256)] = the parsed excerpt dict, or CORRUPT
+    #     for a key with differing bytes on disk.
     excerpts = {}
+    excerpt_paths = {}
     source_inputs: dict = {}
     for accession in sorted(referenced):
-        candidates = source_candidates.get(accession) or []
-        if not candidates:
+        entries = [entry for entry in source_files if entry[0] == accession]
+        if not entries:
             excerpts[accession] = None
             continue  # an absent excerpt is a source state, not an input
-        payload = {path: path.read_bytes() for path in candidates}
-        if len(set(payload.values())) > 1:
-            excerpts[accession] = "corrupt"
-            source_inputs[accession] = sorted(
-                payload, key=lambda p: _input_path(p)
-            )
-            _warn(
-                "SOURCE_DUPLICATE_CONFLICT",
-                f"accession {accession}: {len(candidates)} copies with differing "
-                "bytes under the sources root; it is source_corrupt for every "
-                "row citing it",
-            )
+        # Every recognized file of the accession is read and parsed; any bad
+        # one poisons the whole accession for every row citing it.
+        parsed = []
+        poisoned = False
+        for _accession, path, nested in entries:
+            rel = path.relative_to(sources_input).as_posix()
+            try:
+                payload = path.read_bytes()
+                doc = json.loads(payload.decode("utf-8"))
+            except (OSError, ValueError) as error:
+                poisoned = True
+                _warn(
+                    "SOURCE_FILE_POISONED",
+                    f"{rel}: unreadable or not JSON ({error}); accession "
+                    f"{accession} is source_corrupt for every row citing it",
+                )
+                continue
+            span = doc.get("span") if isinstance(doc, dict) else None
+            span_sha = span.get("raw_sha256") if isinstance(span, dict) else None
+            if (
+                not isinstance(doc, dict)
+                or not isinstance(doc.get("accession"), str)
+                or not isinstance(span_sha, str)
+            ):
+                poisoned = True
+                _warn(
+                    "SOURCE_FILE_POISONED",
+                    f"{rel}: excerpt lacks a string accession or "
+                    f"span.raw_sha256; accession {accession} is source_corrupt "
+                    "for every row citing it",
+                )
+                continue
+            if doc["accession"] != accession:
+                poisoned = True
+                _warn(
+                    "SOURCE_FILE_POISONED",
+                    f"{rel}: excerpt accession {doc['accession']!r} does not "
+                    f"match its path accession {accession!r}; the accession is "
+                    "source_corrupt for every row citing it",
+                )
+                continue
+            if nested and path.stem != span_sha[:20]:
+                poisoned = True
+                _warn(
+                    "SOURCE_PATH_MISMATCH",
+                    f"{rel}: nested stem {path.stem!r} does not equal "
+                    f"span.raw_sha256[:20] ({span_sha[:20]!r}); accession "
+                    f"{accession} is source_corrupt for every row citing it",
+                )
+                continue
+            parsed.append((path, nested, payload, doc))
+        if poisoned:
+            excerpts[accession] = CORRUPT
+            source_inputs[accession] = [entry[1] for entry in entries]
             continue
-        source_inputs[accession] = [candidates[0]]  # identical copies are one source
-        try:
-            excerpts[accession] = json.loads(
-                payload[candidates[0]].decode("utf-8")
+        # Healthy files group by (accession, raw_sha256); byte-identical copies
+        # are one source (the first file in order wins and is the input).
+        key_groups: dict = {}
+        for path, nested, payload, doc in parsed:
+            key_groups.setdefault(doc["span"]["raw_sha256"], []).append(
+                (path, nested, payload, doc)
             )
-        except ValueError:
-            excerpts[accession] = "corrupt"
+        cited_spans = {
+            (row.get("source_ref") or {}).get("span_sha256")
+            for row in rows_kept
+            if (row.get("source_ref") or {}).get("accession") == accession
+        }
+        keyed: dict = {}
+        for raw_sha in sorted(key_groups):
+            members = key_groups[raw_sha]
+            wanted = len(key_groups) == 1 or raw_sha in cited_spans
+            if len({payload for _p, _n, payload, _d in members}) > 1:
+                keyed[raw_sha] = CORRUPT
+                if wanted:  # a conflicted key contributes all its files
+                    source_inputs.setdefault(accession, []).extend(
+                        path for path, _nested, _payload, _doc in members
+                    )
+                _warn(
+                    "SOURCE_DUPLICATE_CONFLICT",
+                    f"accession {accession} span {raw_sha[:20]}: {len(members)} "
+                    "copies with differing bytes under the sources root; the "
+                    "span is source_corrupt for every row citing it",
+                )
+                continue
+            path, nested, _payload, doc = members[0]
+            keyed[raw_sha] = doc
+            if nested:
+                excerpt_paths[(accession, raw_sha)] = _input_path(path)
+            if wanted:
+                source_inputs.setdefault(accession, []).append(path)
+        for raw_sha, value in keyed.items():
+            excerpts[(accession, raw_sha)] = value
+        if len(keyed) == 1:
+            excerpts[accession] = next(iter(keyed.values()))
 
     manifest_version, issuers = load_manifest_issuers(manifest_path)
     inputs = [
         {"path": _input_path(path), "sha256": _sha_file(path)}
         for path in extraction_files
     ]
+    seen_paths = set(extraction_files)  # dedupe inputs by path
     for accession in sorted(source_inputs):
         for path in source_inputs[accession]:
+            if path in seen_paths:
+                continue
+            seen_paths.add(path)
             inputs.append({"path": _input_path(path), "sha256": _sha_file(path)})
     inputs.append({"path": _input_path(manifest_path), "sha256": _sha_file(manifest_path)})
 
@@ -417,6 +570,7 @@ def main(argv=None) -> int:
         inputs,
         enforce_clock=True,
         rights=rights,
+        excerpt_paths=excerpt_paths or None,
     )
 
     package_validator = _validator(PACKAGE_CONTRACT)

@@ -15,6 +15,14 @@
     "not_a_clock": ["sec_submissions_acceptance_raw"],
     "note": "The EDGAR submissions JSON acceptanceDateTime carries a 'Z' suffix but is NOT a UTC instant (observed +5h versus header-derived UTC on all three M1 documents, e.g. header 20241115163743 ET = 2024-11-15T21:37:43Z while the JSON reads 2024-11-16T02:37:43.000Z); it is retained only as sec_submissions_acceptance_raw and never used as a clock."
   },
+  "x-gmi-identity-rule": {
+    "rule_id": "A35",
+    "canon": "json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False); sha = sha256 hex of its utf-8 bytes",
+    "observation_id": "'obs:' + sha(canon([accession, byte_start, byte_end, species, subject_issuer_id, object_issuer_id]))[:20]; when object_issuer_id is null and object_label is a non-empty string, object_label is appended as a 7th element",
+    "object_label": "object.anonymous_alias when non-null, else object.name_as_filed",
+    "assessment_id": "'asm:' + sha(canon([accession, byte_start, byte_end, assessment]))[:20]",
+    "note": "Two unresolved counterparties in one span (e.g. 'Customer A' and 'Customer B') would collide on the 6-element form; the label separates them. Ids of resolved-object observations are unchanged."
+  },
   "oneOf": [
     {"$ref": "#/$defs/observation_row"},
     {"$ref": "#/$defs/assessment_row"},

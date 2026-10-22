@@ -72,19 +72,27 @@ def observation_identity(
     species: str,
     subject_issuer_id,
     object_issuer_id,
+    object_label=None,
 ) -> str:
-    return "obs:" + sha(
-        canon(
-            [
-                accession,
-                byte_start,
-                byte_end,
-                species,
-                subject_issuer_id,
-                object_issuer_id,
-            ]
-        )
-    )[:20]
+    """A35: with an unresolved object, the filed label joins the identity.
+
+    ``object_label`` (the object's ``anonymous_alias`` when non-null, else its
+    ``name_as_filed``) is appended as a 7th canon element only when
+    ``object_issuer_id`` is None AND the label is a non-empty string — two
+    unresolved counterparties in one span would otherwise collide.  Every
+    resolved-object id (all of M1) is the unchanged 6-element form.
+    """
+    identity = [
+        accession,
+        byte_start,
+        byte_end,
+        species,
+        subject_issuer_id,
+        object_issuer_id,
+    ]
+    if object_issuer_id is None and isinstance(object_label, str) and object_label:
+        identity.append(object_label)
+    return "obs:" + sha(canon(identity))[:20]
 
 
 def assessment_identity(
@@ -204,10 +212,44 @@ def _resolve_direction(row: dict) -> tuple:
     return subject_iid, object_iid, from_role, to_role
 
 
+def _lookup_excerpt(excerpts: dict, source_ref):
+    """The one excerpt read for a source_ref (J1/A33).
+
+    ``excerpts`` carries two key kinds: ``accession`` -> dict | None (absent) |
+    CORRUPT (the poisoned/single-excerpt form, also what plain M1-style callers
+    pass), and ``(accession, span raw_sha256)`` -> dict | CORRUPT.  A poison
+    sentinel wins over everything; a keyed entry wins over the plain
+    single-excerpt entry; neither means None -> source_unavailable.
+    """
+    accession = (source_ref or {}).get("accession")
+    plain = excerpts.get(accession)
+    if isinstance(plain, str):  # poison (CORRUPT) wins
+        return plain
+    keyed = excerpts.get((accession, (source_ref or {}).get("span_sha256")))
+    if keyed is not None:
+        return keyed
+    return plain  # dict for a single-excerpt accession, else None
+
+
+def _lookup_path(excerpt_paths, source_ref) -> str:
+    """The excerpt_path for one source_ref (J1): nested keyed path when known,
+    else the plain accession path, else the flat template."""
+    source_ref = source_ref or {}
+    accession = source_ref.get("accession")
+    if excerpt_paths:
+        keyed = excerpt_paths.get((accession, source_ref.get("span_sha256")))
+        if keyed is not None:
+            return keyed
+        plain = excerpt_paths.get(accession)
+        if plain is not None:
+            return plain
+    return EXCERPT_PATH_TEMPLATE.format(accession=accession)
+
+
 def _excerpt_state(row: dict, excerpts: dict, match_row_span: bool) -> tuple:
     """(source_state, usable) for one row against the pinned excerpt map."""
     accession = (row.get("source_ref") or {}).get("accession")
-    excerpt = excerpts.get(accession)
+    excerpt = _lookup_excerpt(excerpts, row.get("source_ref"))
     if excerpt is None:
         return "source_unavailable", False
     if isinstance(excerpt, str):  # CORRUPT sentinel from the caller
@@ -279,12 +321,21 @@ def rights_block(rights: dict | None) -> dict:
 
 def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
                   manifest_version: str, inputs, *, enforce_clock: bool = False,
-                  rights: dict | None = None):  # noqa: C901
+                  rights: dict | None = None,
+                  excerpt_paths: dict | None = None):  # noqa: C901
     """Derive (package, edges_doc_without_package_sha256) from pinned rows.
 
     ``rows`` are contract-checked extraction rows of all three kinds.  ``excerpts``
-    maps accession -> excerpt dict | None (missing) | CORRUPT.  ``issuers`` maps
-    issuer_id -> sorted manifest security_ids.  The returned edges doc carries a
+    maps two key kinds (A33): ``accession`` -> excerpt dict | None (missing) |
+    CORRUPT (a poisoned accession, or its single excerpt), and
+    ``(accession, span raw_sha256)`` -> excerpt dict | CORRUPT for a conflicted
+    key — one filing may carry several relationship spans.  Plain M1-style
+    ``{accession: excerpt}`` callers keep working: reads go through
+    ``_lookup_excerpt`` (poison, then keyed, then plain).  ``issuers`` maps
+    issuer_id -> sorted manifest security_ids.  ``excerpt_paths`` optionally
+    carries the on-disk excerpt path per ``(accession, span_sha256)`` (or per
+    ``accession``) for NESTED-layout sources; any span it does not name falls
+    back to ``EXCERPT_PATH_TEMPLATE``.  The returned edges doc carries a
     placeholder ``package_sha256``; the producer replaces it with the hash of the
     package bytes it just wrote.
 
@@ -331,7 +382,9 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         non_edge_key = None
         refusal_reason = None
         clock_problem = (
-            clock_refusal(row, excerpts.get(accession)) if enforce_clock else None
+            clock_refusal(row, _lookup_excerpt(excerpts, source))
+            if enforce_clock
+            else None
         )
 
         if clock_problem is not None:
@@ -441,7 +494,7 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
         asm_id = row.get("assessment_id")
         source = row.get("source_ref") or {}
         clock_problem = (
-            clock_refusal(row, excerpts.get(source.get("accession")))
+            clock_refusal(row, _lookup_excerpt(excerpts, source))
             if enforce_clock
             else None
         )
@@ -470,7 +523,14 @@ def build_package(rows, excerpts: dict, issuers: dict, as_of: str,
 
     edges = [
         _build_edge(
-            rel_key, accs[rel_key], pit_asm, issuers, as_of_dt, excerpts, rights
+            rel_key,
+            accs[rel_key],
+            pit_asm,
+            issuers,
+            as_of_dt,
+            excerpts,
+            rights,
+            excerpt_paths,
         )
         for rel_key in sorted(accs)
     ]
@@ -604,7 +664,8 @@ def _record_non_edge(non_edges: list, row: dict, accession: str, known_at: str,
 
 
 def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
-                as_of_dt: datetime, excerpts: dict, rights: dict | None) -> dict:
+                as_of_dt: datetime, excerpts: dict, rights: dict | None,
+                excerpt_paths: dict | None = None) -> dict:
     rows = sorted(
         acc["observations"],
         key=lambda r: (_known_at(r), r.get("observation_id") or ""),
@@ -646,7 +707,7 @@ def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
     assessed_ats = known_ats + [entry["known_at"] for entry in lineage]
     last_assessed_at = max(assessed_ats)
 
-    revisions = _build_revisions(rel_key, rows)
+    revisions = _build_revisions(rel_key, rows, excerpt_paths)
     conflicts, conflicted_kinds = _build_conflicts(revisions)
     current_magnitudes = _current_magnitudes(revisions, conflicted_kinds)
 
@@ -689,9 +750,7 @@ def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
                 "byte_start": row["source_ref"]["byte_start"],
                 "byte_end": row["source_ref"]["byte_end"],
                 "span_sha256": row["source_ref"]["span_sha256"],
-                "excerpt_path": EXCERPT_PATH_TEMPLATE.format(
-                    accession=row["source_ref"]["accession"]
-                ),
+                "excerpt_path": _lookup_path(excerpt_paths, row["source_ref"]),
             }
             for row in rows
         ),
@@ -738,7 +797,7 @@ def _build_edge(rel_key: str, acc: dict, pit_asm, issuers: dict,
     }
 
 
-def _build_revisions(rel_key: str, rows) -> list:
+def _build_revisions(rel_key: str, rows, excerpt_paths: dict | None = None) -> list:
     groups: dict = {}
     for row in rows:
         for magnitude in row.get("magnitudes") or []:
@@ -799,9 +858,7 @@ def _build_revisions(rel_key: str, rows) -> list:
                     "byte_end": source["byte_end"],
                     "span_sha256": source["span_sha256"],
                     "xbrl_fact_id": magnitude.get("xbrl_fact_id"),
-                    "excerpt_path": EXCERPT_PATH_TEMPLATE.format(
-                        accession=source["accession"]
-                    ),
+                    "excerpt_path": _lookup_path(excerpt_paths, source),
                 },
             }
             revisions.append(revision)
