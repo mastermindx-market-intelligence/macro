@@ -13281,6 +13281,10 @@ jobs:
     scope: exclusive
     paths:
       - "scripts/__init__.py"
+      - "engine/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/research_vault/__init__.py"
+      - "tests/__init__.py"
       - "scripts/build_gmi_explorer.py"
       - "scripts/gmi_explorer/**"
       - "scripts/gmi_coverage_proof.py"
