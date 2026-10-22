@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-05T21:02:49Z",
+ "accession": "0000804328-25-000085",
+ "cik": "0000804328",
+ "doc_byte_length": 1878949,
+ "doc_sha256": "3e2824ff84032e8413f3720397f8c6c400ba0c063eb40cc6550064b63e1a3e6c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-05",
+ "form": "10-K",
+ "period_of_report": "2025-09-28",
+ "primary_document": "qcom-20250928.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 317772,
+  "byte_start": 317274,
+  "normalized": "For example, in May 2024, the U.S. Department of Commerce revoked the export license under which we previously sold 4G and certain other integrated circuit products to Huawei, which is one of the largest smartphone OEMs in China. Accordingly, we do not expect to receive any further product revenues from Huawei, and to the extent that Huawei’s devices take share from OEMs that utilize our products (in China or elsewhere), our results of operations and cash flows could be further impacted.",
+  "normalized_sha256": "229ef00e06d8923e0f4cc2eb63f4100e7ea27380add7349860df3668e1e01b08",
+  "raw": "For example, in May 2024, the U.S. Department of Commerce revoked the export license under which we previously sold 4G and certain other integrated circuit products to Huawei, which is one of the largest smartphone OEMs in China. Accordingly, we do not expect to receive any further product revenues from Huawei, and to the extent that Huawei&#8217;s devices take share from OEMs that utilize our products (in China or elsewhere), our results of operations and cash flows could be further impacted.",
+  "raw_sha256": "d97273ab927be62c64839ef1e1ec9a59a31df7f5c6d41722140b8260b31b2c2f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/804328/000080432825000085/qcom-20250928.htm",
+ "xbrl_contexts": []
+}

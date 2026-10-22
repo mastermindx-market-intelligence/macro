@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-05-21T20:40:59Z",
+ "accession": "0000827054-26-000016",
+ "cik": "0000827054",
+ "doc_byte_length": 2801556,
+ "doc_sha256": "e2c960532213b680e6f0c55a7049099a84fef1a63a0dc6adab53b62fbd874b8a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "mchp-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1892294,
+  "byte_start": 1891531,
+  "normalized": "With the exception of Arrow Electronics, the Company's largest distributor, which accounted for 12%, 10% and 12% of net sales in fiscal 2026, fiscal 2025 and fiscal 2024, respectively, no other distributor or direct customer accounted for more than 10% of net sales in either of fiscal 2026, fiscal 2025 or fiscal 2024.",
+  "normalized_sha256": "7eb7aeed30c01c1b78fc14c7121b68b3174d5f14df0874e30547ced01517148f",
+  "raw": "With the exception of Arrow Electronics, the Company's largest distributor, which accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-113\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-600\">12</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-114\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-601\">10</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-115\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-602\">12</ix:nonFraction>% of net sales in fiscal 2026, fiscal 2025 and fiscal 2024, respectively, no other distributor or direct customer accounted for more than 10% of net sales in either of fiscal 2026, fiscal 2025 or fiscal 2024.",
+  "raw_sha256": "7447777f6610844faade38db767acc8da17aaf50207a4d1be399d1e348d4eeda"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/827054/000082705426000016/mchp-20260331.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 54343,
+   "byte_start": 53659,
+   "context_ref": "c-113",
+   "raw": "<xbrli:context id=\"c-113\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000827054</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mchp:ArrowElectronicsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-04-01</xbrli:startDate><xbrli:endDate>2026-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "d33f6335677db7ef75ef7727891b120ee39632f02378f411a8115b8bd406d781"
+  },
+  {
+   "byte_end": 55027,
+   "byte_start": 54343,
+   "context_ref": "c-114",
+   "raw": "<xbrli:context id=\"c-114\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000827054</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mchp:ArrowElectronicsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-04-01</xbrli:startDate><xbrli:endDate>2025-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b1c1f2721934cb686f269b847a4ce50c4c472d7177609a006e45c69f389995fb"
+  },
+  {
+   "byte_end": 55711,
+   "byte_start": 55027,
+   "context_ref": "c-115",
+   "raw": "<xbrli:context id=\"c-115\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000827054</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mchp:ArrowElectronicsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-04-01</xbrli:startDate><xbrli:endDate>2024-03-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "a79a81080fcbc62ae4e53f1a55b7e25de2d88df66de84afa864e5df4f769fe0e"
+  }
+ ]
+}
