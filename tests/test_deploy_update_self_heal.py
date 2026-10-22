@@ -314,7 +314,23 @@ def _matches(regex: str, path: str) -> bool:
 
 
 def _triggers_restart(path: str) -> bool:
-    return _matches(_api_restart_regex(), path)
+    """Exercise the complete production trigger, including separate conditions."""
+    trigger = SCRIPT.split("# BEGIN MACRO_API_RESTART_TRIGGER\n", 1)[1].split(
+        "# END MACRO_API_RESTART_TRIGGER", 1
+    )[0]
+    probe = (
+        "set -eu\n"
+        "API_RESTART_NEEDED=0\nAPI_UNIT_UPDATED=0\nAPI_DEPS_UPDATED=0\n"
+        "CHANGED=$1\nmm_api_fence_marker_ready() { return 0; }\n"
+        + trigger
+        + '\nprintf "%s" "$API_RESTART_NEEDED"\n'
+    )
+    result = subprocess.run(
+        ["bash", "-c", probe, "restart-contract", path],
+        text=True, capture_output=True, check=True,
+    )
+    assert result.stdout in {"0", "1"}, result.stdout
+    return result.stdout == "1"
 
 
 def _triggers_admin_restart(path: str) -> bool:
