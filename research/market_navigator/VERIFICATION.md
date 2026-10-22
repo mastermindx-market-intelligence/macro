@@ -173,6 +173,23 @@ The manifest validator still accepts all 350 job definitions. Direct scope probe
 
 Paper was newly inspected from the current Studio carrier: Desktop is connected but the adapter returned `accepted_for_write=false` with catalog mismatch (observed SHA-256 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db; expected ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9). No Paper edit was dispatched, and the oversized active design remains held. Local product save census confirms `lib/user_prefs.py` stores scalar UI/alert preferences and `market_memory_retained_saved.py` is an authorized exact retained-output reader, not a generic market-path storage writer. No substitute store was built.
 
+
+## Hosted curated-membership CI repair (2026-10-22)
+
+The post-curation hosted CI run 39774043837 at exact head
+6ed9008275b15f1cb4de94adbca84403530f9d7b failed one new
+control-plane contract: 794 other cases passed, one was skipped,
+and test_the_curated_exclusive_set_is_actually_declared rejected
+market-navigator-foundation as missing from the existing closed
+CURATED_EXCLUSIVE job membership set. This is a separate gate from
+the now-fixed ordinary-code packing over-selection; it remains enforced.
+
+The owning branch now adds that job ID to the existing pinned membership
+without weakening the assertion, selection ceilings, timeouts or reviews.
+Targeted local checks for curated-membership, explicit-scope coverage and
+exclusive-scope replacement: 3 passed. The new candidate still owes
+hosted CI and independent review. No merge or production claim follows.
+
 ## W3 presentation increment (source-only)
 
 The new isolated `templates/market_navigator_view.js` and `.css` are an actual DOM presentation consumer of the incumbent validated response shape, not a newly admitted source. They render condition status, original rule/deadline clocks, support and counterevidence without probabilities or trade effects. Controls switch EN/ZH and dark/light with keyboard focus and disclosure state preserved; a new response/error withdraws old content. `VIEW_BROWSER_REPORT.json` records eight synthetic real Chromium viewports with no observed network/storage, horizontal overflow or browser errors. The Python->JS zero-browser-dependency harness was run under `tests/test_market_navigator_view.py`. These are not Paper, signed-in or production proofs.
