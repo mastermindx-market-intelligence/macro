@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 import pytest
 
 from engine.entry_radar.research_read import read_published_research
@@ -25,7 +26,7 @@ def start(browser, published, *, mutate=None, status=200, headers=None):
     window.MDXAuth={user:()=>owner?({id:owner}):null,client:async()=>sdk};</script>'''
     shell = shell.replace('<head>','<head>'+auth)
     def route(r):
-        path = r.request.url.split('macro.example')[-1]
+        path = urlsplit(r.request.url).path
         if path == '/ontology.html':
             r.fulfill(status=200,content_type='text/html',body=shell)
         elif path == '/api/ontology/explorer/radar-research/v1':
