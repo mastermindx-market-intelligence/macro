@@ -1,0 +1,26 @@
+{
+  "schema": "intl.screener_canonical_bake.v1",
+  "observed_at": "2026-10-22T08:12:11.387318+00:00",
+  "source_commit": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+  "mode": "preflight",
+  "payload_sha256": "b766115f51fd729dd3c46b58ea1cbcdf4f4fb44b8b9878700f1ae76e6dc91fdd",
+  "assets": {
+    "shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "theme.css": "50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51",
+    "research_screener.css": "63c091b65579c969d810e34181dbf91a6d059074c030e2a5ac26c85295356bd7"
+  },
+  "old_html_sha256": "baa73d6f0caa84a9eaa7c2ad387ab166f905804c330844b2958fdc80c534cba6",
+  "new_html_sha256": "c8bad55100d0df06614886b0d7ab06b12019e7b5cf1164d7aac419d5be43813e",
+  "banner_count": 0,
+  "banner_bytes_preserved": true,
+  "diff_lines": 20,
+  "diff_sha256": "82b7871968ce4f377812cf3f27e5727abdc384b24a9e62ac341954d217757650",
+  "no_acquisition": true,
+  "builder": "scripts.build_research_screener.bake_html",
+  "writer": "lib.pages.write_page",
+  "product_changed_paths": [
+    "site/research_screener.html"
+  ]
+}

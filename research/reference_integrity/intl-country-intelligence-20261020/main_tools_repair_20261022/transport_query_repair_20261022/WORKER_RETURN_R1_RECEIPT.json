@@ -1,0 +1,19 @@
+{
+  "schema": "intl.query_worker_return.v1",
+  "run_id": "intl-20261022-workspace-transport-query-r1",
+  "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_base": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "response_bytes": 21722,
+  "response_sha256": "edaad4335d4feb161610cbbdd36a25da55fdb52025e59cf2f08b88a525bd6766",
+  "retained_projection_sha256": "779636feb6441f0e1c946e91a30d961fe065cd38eda572164fc9f03675d13c9c",
+  "retained_projection_bytes": 45548,
+  "reported_complete_patch": {
+    "path": "/home/ubuntu3/scratch-intl-20261022/workspace-transport-query.patch",
+    "bytes": 80079,
+    "sha256": "420997f5ec5174601ebe4572bbaa357288df5655637915e1742a13ae104dfe28"
+  },
+  "full_patch_delivered": false,
+  "source_applied": false,
+  "accepted": false,
+  "reported_guard_failure": "tests/intl_country_cockpit_navigation.test.cjs expected API key inventory omits new readPageSearch; file outside original worker allowlist"
+}

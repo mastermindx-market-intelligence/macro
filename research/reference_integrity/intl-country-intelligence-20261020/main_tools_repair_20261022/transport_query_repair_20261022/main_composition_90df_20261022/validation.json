@@ -1,0 +1,23 @@
+{
+  "schema": "intl.p0b_composition_validation.v1",
+  "source_commit": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+  "started_at": "2026-10-22T07:55:45.918820+00:00",
+  "checks": [
+    {
+      "name": "receipt_closure",
+      "exit_code": 0,
+      "duration_seconds": 0.16,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/receipt_closure.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "canonical_receipt_tests",
+      "exit_code": 0,
+      "duration_seconds": 65.6,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/canonical_receipt_tests.log",
+      "log_sha256": "7353099ed050697838fef4ef1fbe52f8da8b6da913e26a2029e30972b4a822d6"
+    }
+  ],
+  "completed_at": "2026-10-22T07:56:51.692159+00:00",
+  "pass": true
+}

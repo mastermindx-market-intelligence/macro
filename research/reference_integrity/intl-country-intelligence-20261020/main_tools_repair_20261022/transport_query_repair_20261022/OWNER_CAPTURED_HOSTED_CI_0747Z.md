@@ -1,6 +1,6 @@
 # Published14ed hosted CI — owner-captured independent review
 
-Reviewer:/root/intl_release_scope_adjudication, GitHub reads only. Snapshot delivered2026-10-22 about07:47Z. No rerun, mutation, message or reviewer artifact write.
+Reviewer:/root/intl_release_scope_adjudication, GitHub reads only. Review delivered during2026-10-22 continuation; precise delivery clock was not recorded. The0747Z filename is an owner label, not a measured event time. No rerun, mutation, message or reviewer artifact write.
 
 Subject14ed4f12f31b71c63bbabd969aebbf9c4305ccaa; DraftPR9596.
 ci39735499640 attempt1 remains in progress:10/12packs succeeded,pack11 failed,pack0 in progress. ci-plan and contract-delta succeeded. fences39735499502 completed success. ci-authority39735494186 completed success for active main context; inactive codex/merge-queue-pilot context rejection is recorded, not waived.

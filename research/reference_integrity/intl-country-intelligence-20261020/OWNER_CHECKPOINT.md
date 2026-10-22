@@ -113,6 +113,11 @@ No user permission or login is currently needed. VTC-004 is active owner repair,
 
 Principal retention: source integration, consequential evidence/visual adjudication and the functioning approved M2 process/publication surface remain root work. Independent native reviewers supply necessary principal judgment; no paid-provider execution or production acquisition is implied by native review.
 
-## Continuation frontier — 2026-10-22 07:50Z
+## Continuation frontier — 2026-10-22 (owner record; no precise event clock)
 
 Tools publication is now14ed4f12f31b71c63bbabd969aebbf9c4305ccaa on original DraftPR9596; see main_tools_repair_20261022/TOOLS_PUBLICATION_RESULT.json. The current owner retains sole integration custody. Current detailed frontier is main_tools_repair_20261022/transport_query_repair_20261022/CHECKPOINT.md. Completed: independent data-contract source ACCEPT, 12-test build-suite execution and accepted CI enrollment/planner closure, v11 actual-parent query baseline and independent driver review. Original paid query worker remains pending/unconfirmed on its original run; no duplicate. Fresh main produces four historical visual/generated-output conflicts requiring real composed-theme recapture. Published14ed CI identified research-screener's stale bridge assettoken with passing exactbase replay; final generated output must be refreshed against final repair. No Ready/merge/deployment/full release acceptance claimed; FXcustody and servedproof remain open. Older pending-publication wording above is historical.
+
+
+## Continuation 2026-10-22 08:16:30 UTC
+
+See main_tools_repair_20261022/transport_query_repair_20261022/CHECKPOINT.md for the current frontier. Local45e70cb is the real two-parent90df composition; remote14ed remains Draft. Fresh128-caseP0B +136canonicaltests independentlyACCEPTED, bothparenthistoriespreserved. CanonicalScreener two-tokenrepair independentlyACCEPTED,51existingtestsPASS. Published14edCI finishedwithsoleScreenerregression. QueryR1REQUEST_CHANGES; C0unconfirmedretrieval and R2canonical_source_unreadable admission failure remainfenced/no retry; no querysourceapplied. Next: exact-sourceordinarybuild,7country/22landing/28historychecks,guards and typedDraftpublication. Fullquery/focus,FXcustody andservedrelease gatesremainopen.
