@@ -738,6 +738,36 @@ def _frozen_base() -> str:
     return sha
 
 
+# Shared surfaces the W2F foundation must never carry edits to. They belong to
+# the theme and navigation families (templates/theme.css, templates/_navlinks.html.j2)
+# and change through those families' own PRs: unconditional, this guard blocked
+# every such PR (2026-10-22, ITP-ES #10077 added the Expectation Surface nav row
+# and moved theme.css's icon-import stamp, and the guard went red on a change
+# that touched no International surface). The two shared entries are therefore
+# enforced only when the same change also touches a GS production surface
+# (_GS_SURFACE_PREFIXES); the GS-owned engine/lib entries stay frozen outright.
+_SHARED_FROZEN = {"templates/theme.css", "templates/_navlinks.html.j2"}
+_GS_SURFACE_PREFIXES = (
+    "engine/intl_global_",
+    "lib/intl_global_",
+    "lib/intl_gs_",
+    "lib/intl_surveillance_",
+    "scripts/build_intl.py",
+    "templates/intl",
+    "site/intl",
+)
+
+
+def _gs_surfaces_changed(base: str) -> list[str]:
+    """Paths under a GS production prefix that differ from the merge base; FAILS CLOSED."""
+    result = subprocess.run(["git", "diff", "--name-only", base, "--"],
+                            cwd=REPO, capture_output=True, text=True)
+    if result.returncode != 0:
+        pytest.fail(f"FAIL CLOSED: git diff --name-only {base} errored: {result.stderr.strip()}")
+    return sorted(line.strip() for line in result.stdout.splitlines()
+                  if line.strip().startswith(_GS_SURFACE_PREFIXES))
+
+
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -747,6 +777,9 @@ def _frozen_base() -> str:
 ])
 def test_frozen_files_unchanged_vs_origin_main(path):
     base = _frozen_base()
+    if path in _SHARED_FROZEN and not _gs_surfaces_changed(base):
+        pytest.skip(f"{path} is a shared theme/nav surface; frozen only against "
+                    f"International GS changes, and none differ from {base[:12]}")
     result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
