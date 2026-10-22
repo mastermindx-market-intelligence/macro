@@ -1,47 +1,47 @@
 {
-  "checked_at": "2026-10-22T00:36:41+00:00",
-  "expected_session": "2026-10-21",
+  "checked_at": "2026-10-22T10:32:46+00:00",
+  "expected_session": "2026-10-22",
   "stores": {
     "cache": {
       "asof": "2026-10-16",
-      "lag_days": 5,
-      "lag_sessions": 2,
-      "state": "slow",
+      "lag_days": 6,
+      "lag_sessions": 3,
+      "state": "stale",
       "data_state": "late",
       "calendar_verified": true
     },
     "bellwether": {
       "asof": "2026-10-21",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
-      "calendar_verified": true
-    },
-    "standouts": {
-      "asof": "2026-10-21",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
-      "calendar_verified": true
-    },
-    "regime": {
-      "asof": "2026-10-21",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
-      "calendar_verified": true
-    },
-    "southbound": {
-      "asof": "2026-10-20",
       "lag_days": 1,
       "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
+      "calendar_verified": true
+    },
+    "standouts": {
+      "asof": "2026-10-21",
+      "lag_days": 1,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
+      "calendar_verified": true
+    },
+    "regime": {
+      "asof": "2026-10-21",
+      "lag_days": 1,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
+      "calendar_verified": true
+    },
+    "southbound": {
+      "asof": "2026-10-20",
+      "lag_days": 2,
+      "lag_sessions": 2,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true,
-      "expected_session": "2026-10-21"
+      "expected_session": "2026-10-22"
     }
   },
   "coherence": {

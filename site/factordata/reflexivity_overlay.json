@@ -1,8 +1,8 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-10-20",
-  "generated_utc": "2026-10-21T23:41:47Z",
+  "as_of": "2026-10-21",
+  "generated_utc": "2026-10-22T10:32:24Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
@@ -54,8 +54,7 @@
         "same_week_peers": [
           "CTSH",
           "G",
-          "INSP",
-          "VAC"
+          "INSP"
         ],
         "has_data": true
       },
@@ -99,6 +98,7 @@
       "earnings_leg": {
         "next_date": "2026-10-29",
         "same_week_peers": [
+          "EDU",
           "FOX"
         ],
         "has_data": true
@@ -145,8 +145,7 @@
         "same_week_peers": [
           "EXPD",
           "G",
-          "INSP",
-          "VAC"
+          "INSP"
         ],
         "has_data": true
       },
@@ -190,6 +189,52 @@
       "earnings_leg": {
         "next_date": "2026-10-29",
         "same_week_peers": [
+          "EDU",
+          "ICE"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer EXPD at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EXPD\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "EDU": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:no-beta",
+      "nearest": [
+        {
+          "ticker": "EXPD",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "ICE",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "CTSH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.19<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-27",
+        "same_week_peers": [
+          "FOX",
           "ICE"
         ],
         "has_data": true
@@ -238,61 +283,13 @@
         "same_week_peers": [
           "CTSH",
           "EXPD",
-          "INSP",
-          "VAC"
+          "INSP"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as ICE \u2014 shared factor profile (similarity 98%).",
       "why_zh": "\u4e0e ICE \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
-    "VAC": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.20<0.2",
-      "nearest": [
-        {
-          "ticker": "EXPD",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.09<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "ICE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.20<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "CTSH",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.19<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "CTSH",
-          "EXPD",
-          "G",
-          "INSP"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EXPD at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EXPD\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
     "INSP": {
       "verdict": "new",
@@ -332,8 +329,7 @@
         "same_week_peers": [
           "CTSH",
           "EXPD",
-          "G",
-          "VAC"
+          "G"
         ],
         "has_data": true
       },
@@ -364,6 +360,13 @@
       "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
+    "EXPD__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
+      "shared_groups": []
+    },
     "EXPD__G": {
       "membership_jaccard": 0.5,
       "factor_cosine": null,
@@ -372,13 +375,6 @@
       "shared_groups": [
         "sector:Industrials"
       ]
-    },
-    "EXPD__VAC": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.09<0.2",
-      "shared_groups": []
     },
     "EXPD__INSP": {
       "membership_jaccard": 0.0,
@@ -401,18 +397,18 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
+    "ICE__EDU": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
     "ICE__G": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.9788,
       "combined": 0.9788,
       "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "ICE__VAC": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
       "shared_groups": []
     },
     "ICE__INSP": {
@@ -429,14 +425,14 @@
       "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
-    "CTSH__G": {
+    "CTSH__EDU": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
-    "CTSH__VAC": {
+    "CTSH__G": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -450,14 +446,14 @@
       "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
-    "FOX__G": {
+    "FOX__EDU": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
-    "FOX__VAC": {
+    "FOX__G": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -471,11 +467,18 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
-    "G__VAC": {
+    "EDU__G": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
+    "EDU__INSP": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.07<0.2",
       "shared_groups": []
     },
     "G__INSP": {
@@ -483,13 +486,6 @@
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.07<0.2",
-      "shared_groups": []
-    },
-    "VAC__INSP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
       "shared_groups": []
     }
   },
@@ -513,7 +509,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-10-20"
+      "as_of": "2026-10-21"
     },
     "membership": {
       "path": "data/baskets/membership.json",

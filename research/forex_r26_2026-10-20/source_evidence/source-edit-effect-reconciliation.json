@@ -1,0 +1,21 @@
+{
+  "schema": "forex_r26.source_edit_effect_reconciliation.v1",
+  "original_client_return": "aborted after 331.2 seconds; no PID or completion receipt",
+  "original_target": "lib/dataos/tiingo_forex.py",
+  "observed_at_utc": "2026-10-22T03:08:40.062435+00:00",
+  "original_carrier": "Studio Direct; unchanged",
+  "gateway_observation_utc": "2026-10-22T03:08:07.265Z",
+  "gateway_active": 0,
+  "gateway_queued": 0,
+  "desktop_sessions": "No active sessions",
+  "retained_history_since": "2026-10-22T02:53:00Z",
+  "retained_history_entries": 26,
+  "exact_workspace_history_entries": 2,
+  "exact_workspace_mutation_entries": 0,
+  "matching_processes": [],
+  "source_sha256": "97df09accb4b866984fb56163b0d9b22d5e3bbfecac1d39e35363a4f0ec93de4",
+  "test_sha256": "504cdf8f47e2eb2334e2e3a53b127c890c836a439f378f341efc03ac4186e92d",
+  "observed_state": "UNCHANGED_PREIMAGE_AND_NO_ACTIVE_BACKEND_WORK",
+  "decision": "Owner may continue bounded source edits in same managed workspace; original helper remains stopped; no replay of original call",
+  "unrelated_accepted_work": "preserved"
+}
