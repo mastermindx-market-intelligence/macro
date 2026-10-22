@@ -13,8 +13,8 @@
  "counters": {
   "duplicate_span_bytes": 9,
   "excerpt_self_check_failed": 0,
-  "sources_reused": 74,
-  "sources_written": 97,
+  "sources_reused": 171,
+  "sources_written": 0,
   "subject_name_from_sec_name": 3
  },
  "coverage_by_state": {
