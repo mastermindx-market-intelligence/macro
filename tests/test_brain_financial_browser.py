@@ -5,7 +5,7 @@ import json
 import pytest
 from playwright.sync_api import expect, sync_playwright
 from engine.neuralweb import brain_financial_views as fv
-from tests.test_brain_financial_views import fund, wire
+from tests.test_brain_financial_views import fund, wire, exact_wire
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -121,7 +121,7 @@ def test_renderer_rejects_bad_payload_and_deduplicates(page):
     assert not mount(page,bad)
     expect(page.locator("img")).to_have_count(0)
 
-def test_summary_has_no_quote_treatment_and_company_facts_stay_labelled(page):
+def test_summary_has_no_quote_treatment_and_company_facts_stay_labelled(page,tmp_path):
     summary=fv.compile_financial_widget({"template":"transcript","symbol":"AAPL"},
         {"reader":"get_earnings","call_id":"s","result":{"symbol":"AAPL","latest_earnings_call":{
             "summary":"The company discussed revenue.","fiscal_period":"Q4 2026"}}},"summary")
@@ -135,6 +135,18 @@ def test_summary_has_no_quote_treatment_and_company_facts_stay_labelled(page):
     assert mount(page,company)
     expect(page.locator(".mmb-f-metrics")).to_contain_text("Trailing P/E")
     expect(page.locator(".mmb-f-body").last).to_contain_text("currency is not supplied")
+    quotes=exact_wire(tmp_path)
+    assert mount(page,quotes)
+    original=[f["quote"]["text"] for f in quotes["visual"]["data"]["facts"]]
+    expect(page.locator(".mmb-f-badge").last).to_have_text("Source excerpts")
+    expect(page.locator(".mmb-f-excerpt figcaption").first).to_contain_text("Executive · Prepared remarks")
+    expect(page.locator(".mmb-f-excerpt figcaption").filter(has_text="Q&A")).to_have_count(2)
+    assert page.locator("blockquote").all_text_contents()==original
+    page.evaluate("document.documentElement.dataset.lang='zh';document.dispatchEvent(new Event('langchange'))")
+    expect(page.locator(".mmb-f-badge").last).to_have_text("原文摘录")
+    expect(page.locator(".mmb-f-excerpt figcaption").first).to_contain_text("管理层 · 预备发言")
+    expect(page.locator(".mmb-f-excerpt figcaption").filter(has_text="问答")).to_have_count(2)
+    assert page.locator("blockquote").all_text_contents()==original
 
 def test_mathml_is_lazy_safe_and_literal_fallback(page):
     page.add_script_tag(path=str(ROOT/"templates/mm_brain_math.js"))

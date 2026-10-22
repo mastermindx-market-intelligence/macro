@@ -41,7 +41,7 @@
   var visualScriptVersion = '2e3ce3a5';
   var visualStyleVersion = 'b9f2e195';
   var visualAssetPromise = null;
-  var presentationVersion = '55272dd6';
+  var presentationVersion = '88e1f94b';
   var presentationPromise = null;
   function loadPresentationAssets() {
     if (window.MMBrainPresentation) return Promise.resolve(window.MMBrainPresentation);

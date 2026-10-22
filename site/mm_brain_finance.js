@@ -368,12 +368,15 @@
         }}catch(_){}
       }
     } else {
-      add(c.body,'span','mmb-f-badge',tr(c,'Verified source excerpts','已验证来源摘录'));
+      add(c.body,'span','mmb-f-badge',tr(c,'Source excerpts','原文摘录'));
       if(!data.facts.length)note(c,tr(c,'No qualified excerpt is available.','暂无合格摘录。'));
+      var roles={executive:['Executive','管理层'],analyst:['Analyst','分析师'],operator:['Operator','主持人']};
+      var chapters={prepared:['Prepared remarks','预备发言'],q_and_a:['Q&A','问答']};
+      function caption(value,labels){return Object.prototype.hasOwnProperty.call(labels,value)?labels[value][c.zh?1:0]:value;}
       data.facts.forEach(function(f){
         var block=add(c.body,'figure','mmb-f-excerpt');
         add(block,'blockquote','',f.quote.text);
-        add(block,'figcaption','',[f.speaker,f.role,f.chapter].filter(Boolean).join(' · '));
+        add(block,'figcaption','',[f.speaker,caption(f.role,roles),caption(f.chapter,chapters)].filter(Boolean).join(' · '));
       });
       if(data.correction_status) note(c,tr(c,'Source status: ','来源状态：')+data.correction_status);
     }

@@ -30372,9 +30372,10 @@ jobs:
     # Its own install: the FastAPI route tests need fastapi + starlette's TestClient
     # (httpx). Kept off the shared unrun-* line so the other twenty jobs still share
     # one venv; execute_pack sorts by install string, so this costs one extra venv.
+    # Run 39768032122 spent 417s installing Chromium; preserve the full browser gate.
     if: ${{ false }}
     gate: code
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
