@@ -988,6 +988,17 @@ def test_withdrawal_grant_change_during_enrichment_withholds_html_and_json(tiing
         assert json.loads((outdir / "financial.json").read_text()) == vm["fin"]
 
 
+def _assert_cleared_static(ctx, outdir, vm):
+    published = json.loads((outdir / "financial.json").read_text())
+    assert vm["fin"] == published
+    _assert_no_tiingo_material(published)
+    assert published["counts"]["raw"] == 0
+    assert json.loads((outdir / "by_ticker.json").read_text())["tickers"] == {}
+    rejected = json.loads((outdir / "rejected.json").read_text())
+    assert rejected["feeds"]["financial"] == []
+    assert "Old unmarked Tiingo rejection" not in json.dumps(rejected)
+
+
 @pytest.mark.parametrize("failed_name", ["financial.json", "by_ticker.json", "rejected.json"])
 def test_withdrawal_required_artifact_failure_is_not_reported_success(tiingo_runtime, monkeypatch, failed_name):
     from pathlib import Path
@@ -1002,5 +1013,66 @@ def test_withdrawal_required_artifact_failure_is_not_reported_success(tiingo_run
             raise OSError("synthetic required withdrawal write failure")
         return original(path, text, *args, **kwargs)
     monkeypatch.setattr(Path, "write_text", fail_required)
-    with pytest.raises(OSError, match="required withdrawal"):
-        build.build(write=True)
+    for _attempt in range(2):
+        with pytest.raises(OSError, match="required withdrawal"):
+            build.build(write=True)
+        # A partial clear must not replace the qualification trigger with a
+        # reusable empty snapshot before all dependent writes succeed.
+        retained = json.loads((outdir / "financial.json").read_text())
+        assert not ctx["fin"].financial_snapshot_reusable(retained)
+    monkeypatch.setattr(Path, "write_text", original)
+    _assert_cleared_static(ctx, outdir, build.build(write=True))
+
+
+@pytest.mark.parametrize("failed_name", ["financial.json", "by_ticker.json", "rejected.json"])
+@pytest.mark.parametrize("retained_projections", ["both", "financial_rejections_only"])
+def test_withdrawal_missing_financial_snapshot_retries_orphan_clear(
+    tiingo_runtime, monkeypatch, failed_name, retained_projections,
+):
+    from pathlib import Path
+    ctx = tiingo_runtime
+    old = ctx["fin"].feed(use_cache=False)
+    _change_tiingo_context(ctx, "disabled")
+    build, outdir = _static_builder(ctx, monkeypatch, None)
+    _retain_unsafe_static(ctx, outdir, old)
+    (outdir / "financial.json").unlink()
+    if retained_projections == "financial_rejections_only":
+        (outdir / "by_ticker.json").unlink()
+    original = Path.write_text
+    def fail_required(path, text, *args, **kwargs):
+        if path == outdir / failed_name:
+            raise OSError("synthetic orphan withdrawal write failure")
+        return original(path, text, *args, **kwargs)
+    monkeypatch.setattr(Path, "write_text", fail_required)
+    for _attempt in range(2):
+        with pytest.raises(OSError, match="orphan withdrawal"):
+            build.build(write=True)
+        assert not (outdir / "financial.json").exists()
+    monkeypatch.setattr(Path, "write_text", original)
+    _assert_cleared_static(ctx, outdir, build.build(write=True))
+
+
+@pytest.mark.parametrize("financial_bucket_present", [False, True])
+def test_withdrawal_macro_rss_only_rejections_do_not_invent_financial_snapshot(
+    tiingo_runtime, monkeypatch, financial_bucket_present,
+):
+    import engine
+    ctx = tiingo_runtime
+    _change_tiingo_context(ctx, "disabled")
+    build, outdir = _static_builder(ctx, monkeypatch, None)
+    macro_rejected = [{"title": "Macro-only rejected headline"}]
+    rss_rejected = [{"title": "RSS-only rejected headline"}]
+    feeds = {"macro": macro_rejected, "rss": rss_rejected}
+    if financial_bucket_present:
+        feeds["financial"] = []
+    (outdir / "rejected.json").write_text(json.dumps({"feeds": feeds}))
+    monkeypatch.setattr(engine.macro_news, "macro_headlines",
+                        lambda: {"headlines": [], "rejected": macro_rejected})
+    monkeypatch.setattr(engine.news_rss, "start_reject_log", lambda: (rss_rejected, None))
+    vm = build.build(write=True)
+    assert vm["fin"] is None
+    assert not (outdir / "financial.json").exists()
+    assert not (outdir / "by_ticker.json").exists()
+    rejected = json.loads((outdir / "rejected.json").read_text())
+    assert rejected["feeds"] == {"macro": macro_rejected, "rss": rss_rejected, "financial": []}
+    assert rejected["n_total"] == 2

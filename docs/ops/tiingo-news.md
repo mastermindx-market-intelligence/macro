@@ -208,8 +208,12 @@ before publication, and uses one selected snapshot for HTML, financial JSON,
 compact ticker output and ledger/rejection inputs. If no safe financial
 snapshot exists, it publishes empty sections and truthful zero counts.
 Required withdrawal writes for financial.json, by_ticker.json and rejected.json
-must succeed; failures fail the build. These are build/read boundaries,
-not a claim of instantaneous revocation on already deployed static files.
+must succeed; failures fail the build. Compact and rejection outputs are cleared
+before financial.json is replaced, preserving the unsafe snapshot as the retry
+trigger after a partial failure. Missing financial snapshots with surviving
+financial projections also require withdrawal; ordinary macro/RSS-only reject
+logs do not. These are build/read boundaries, not a claim of instantaneous
+revocation on already deployed static files.
 
 Tiingo rejected titles do not enter the shared rejection log; quality refusals
 remain aggregate counts. Ticker tags use the existing display universe's unique

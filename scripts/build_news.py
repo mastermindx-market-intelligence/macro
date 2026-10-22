@@ -24,8 +24,8 @@ Side-artifacts written under site/news/:
 
 Run:   python -m scripts.build_news
 Fast:  feeds are disk-cached (12 h TTL); re-runs are ~instant.
-Standalone & degrade-safe — any feed that fails is simply omitted; the artifacts
-that do have data are still written (each write is independently guarded).
+Standalone & degrade-safe — ordinary feed failures omit that feed. Financial
+withdrawal is required: a build cannot succeed with uncleared revoked artifacts.
 """
 from __future__ import annotations
 
@@ -89,6 +89,31 @@ def _should_keep_existing(existing: dict, candidate: dict) -> bool:
     return False
 
 log = logging.getLogger(__name__)
+
+
+def _orphan_financial_projection_exists(outdir: Path) -> bool:
+    """Detect financial derivatives without their qualifying snapshot.
+
+    Missing artifacts are harmless. Unreadable or malformed projections raise
+    so the caller requires withdrawal rather than accepting unknown content.
+    Macro/RSS-only rejection logs are not financial derivatives.
+    """
+    try:
+        (outdir / "by_ticker.json").stat()
+    except FileNotFoundError:
+        pass
+    else:
+        return True
+    try:
+        rejected = json.loads((outdir / "rejected.json").read_text())
+    except FileNotFoundError:
+        return False
+    if not isinstance(rejected, dict) or not isinstance(rejected.get("feeds"), dict):
+        raise ValueError("rejected artifact has no qualified feed projection")
+    financial_rejected = rejected["feeds"].get("financial", [])
+    if not isinstance(financial_rejected, list):
+        raise ValueError("financial rejection projection is malformed")
+    return bool(financial_rejected)
 
 
 # --------------------------------------------------------------------------- #
@@ -278,7 +303,7 @@ def build(write: bool = True) -> dict:
     # site/news.html is rendered by scripts/build_site.py (the full, rich page from
     # the shared macro view-model). build_news runs AFTER build_site and writes ONLY
     # the JSON side-artifacts below — it must NOT render news.html. Each write is
-    # independently guarded so one bad feed can never block the rest.
+    # independently guarded except for required financial withdrawal writes.
     site = config.ROOT / cfg["storage"]["site_dir"]
     outdir = site / "news"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -298,8 +323,12 @@ def build(write: bool = True) -> dict:
     _existing = None
     _fin_out_path = outdir / "financial.json"
     try:
-        if _fin_out_path.exists():
+        try:
             _existing = json.loads(_fin_out_path.read_text())
+        except FileNotFoundError:
+            if _orphan_financial_projection_exists(outdir):
+                _financial_withdrawal = True
+        else:
             if not fnews.financial_snapshot_reusable(_existing):
                 _financial_withdrawal = True
                 _existing = None
@@ -322,7 +351,6 @@ def build(write: bool = True) -> dict:
     vm["fin"] = fin
 
     if fin:
-        _write("financial.json", fin, required=_financial_withdrawal)
         try:
             bt = fnews.mastermind_by_ticker(fin)
             _write("by_ticker.json", {"schema": "news_flow.v1", "is_context_only": True,
@@ -333,6 +361,34 @@ def build(write: bool = True) -> dict:
             if _financial_withdrawal:
                 raise
             log.warning("by_ticker artifact failed (%s)", e)
+    # ---- reject log (aggregate all feed buckets) ----------------------------
+    try:
+        macro_rejected = (macro or {}).get("rejected") or []
+        fin_rejected = (fin or {}).get("rejected") or []
+        n_total = len(macro_rejected) + len(fin_rejected) + len(rss_rejected)
+        _write("rejected.json", {
+            "schema": "news_reject_log.v1",
+            "is_context_only": True,
+            "built": vm["built"],
+            "n_total": n_total,
+            "feeds": {
+                "macro": macro_rejected,
+                "financial": fin_rejected,
+                "rss": rss_rejected,
+            },
+        }, required=_financial_withdrawal)
+        log.info("news reject log: %d total (%d macro / %d fin / %d rss)",
+                 n_total, len(macro_rejected), len(fin_rejected), len(rss_rejected))
+    except Exception as e:  # noqa: BLE001
+        if _financial_withdrawal:
+            raise
+        log.warning("rejected.json artifact failed (%s)", e)
+
+    # Publish the qualifying snapshot last. Until every dependent clear succeeds,
+    # the old unsafe snapshot (or orphan derivatives) keeps retries mandatory.
+    if fin:
+        _write("financial.json", fin, required=_financial_withdrawal)
+
     if macro:
         _write("macro.json", macro)
     if china:
@@ -366,29 +422,6 @@ def build(write: bool = True) -> dict:
         "schema": "macro_releases.v1", "is_context_only": True, "cards": []
     })
     vm["macro_releases"] = macro_releases
-
-    # ---- reject log (aggregate all feed buckets) ----------------------------
-    try:
-        macro_rejected = (macro or {}).get("rejected") or []
-        fin_rejected = (fin or {}).get("rejected") or []
-        n_total = len(macro_rejected) + len(fin_rejected) + len(rss_rejected)
-        _write("rejected.json", {
-            "schema": "news_reject_log.v1",
-            "is_context_only": True,
-            "built": vm["built"],
-            "n_total": n_total,
-            "feeds": {
-                "macro": macro_rejected,
-                "financial": fin_rejected,
-                "rss": rss_rejected,
-            },
-        }, required=_financial_withdrawal)
-        log.info("news reject log: %d total (%d macro / %d fin / %d rss)",
-                 n_total, len(macro_rejected), len(fin_rejected), len(rss_rejected))
-    except Exception as e:  # noqa: BLE001
-        if _financial_withdrawal:
-            raise
-        log.warning("rejected.json artifact failed (%s)", e)
 
     # ---- W4: persist kept events + reject sample (fire-and-forget) ----------
     # Collect kept events from macro and financial feeds. Each kept headline dict
