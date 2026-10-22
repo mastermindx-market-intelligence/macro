@@ -27,6 +27,7 @@ decisions:
   - DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19
   - DEC:GMI-INVESTABLE-ECONOMY-RECOVERY-ACCEPTANCE
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
+  - DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
   - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
   - DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK
@@ -409,7 +410,12 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  Recovery steps 2 through 8 of research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
+  2026-10-21 Chairman completion commission is RUNNING under seat 6f14c2da (live checkpoint:
+  agentos/handoffs/GMI-THEME-GRAPH-2026-10-21-completion-commission.md). Micro expansion
+  ratified additively (303 micros, DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68);
+  integration PR #10017 under CI; ORCH-PIPE and ORCH-REL orchestrators administer fabric
+  lanes; design, UI and verification orchestrators follow. The prior remainder below still
+  states the incumbent-owner acts. Recovery steps 2 through 8 of research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
   §9 are merged and recorded (waves RECOVERY-S2..S8); the seat lane is complete and
   DO_NOT_REDO. The descriptive product is accepted as a MEASURED, OPEN record
   (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19): only denominator honesty is
