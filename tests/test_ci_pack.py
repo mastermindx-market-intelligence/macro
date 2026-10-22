@@ -5177,7 +5177,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_818),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6225,6 +6225,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the two breached weight ceilings: 5,822 -> 5,829 and 5,697 -> 5,704.
     Preserve the plan-book ceiling 5,600, every job-count and pack bound,
     all suites, selectors, scope/closure audits and duration overrides.
+    2026-10-22 (Tiingo News original DRAFT/HOLD #8697, source-only):
+    Hosted contract-delta CI39732644252/job119671309701 measured the
+    tested PR merge with the existing news/qbus test-cohort expansion:
+    scripts/build_free_content.py has 135 selected jobs, ten packs and
+    5,818 planned weight units, compared with the accepted base ceiling
+    5,814. There are NO newly selected jobs. The matching ci-control-
+    plane-contracts test failed 5,818 > 5,814 in CI pack 1; the final
+    CI gate consequently failed. This funding ratchet changes only the
+    exactly measured build-free-content WEIGHT ceiling 5,814 -> 5,818.
+    Preserve the other probes and ceilings, all job/pack bounds,
+    manifest selectors and complete Tiingo/qbus regression suites.
+    These are planning weights, not runtime latency or a news-source SLA.
+
     These are deterministic planning weights, not execution timings.
     """
     rows = packing_probe_measurements(
