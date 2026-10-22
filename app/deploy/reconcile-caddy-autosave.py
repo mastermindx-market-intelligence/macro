@@ -217,7 +217,10 @@ def main():
     if os.geteuid() != 0:
         raise ValueError("root-owned updater required")
     if args.pending_check:
-        status = journal_status(STATE)
+        try:
+            status = journal_status(STATE)
+        except Exception:
+            status = {"ok": False}
         raise SystemExit(0 if not status.get("ok") or status.get("pending_op_ids") else 1)
     # The updater holds its normal FD9 flock. Lock ownership is inherited, not
     # recreated; direct invocation cannot acquire delegation by naming a PID.
@@ -254,6 +257,13 @@ def main():
     source = read_regular(APP / "app/deploy/Caddyfile")
     prior = previous_source(args.source_baseline, installed)
     candidate = plan_routes(adapt(prior), adapt(source), active)
+    if canonical(candidate) == canonical(active) and installed == source:
+        if canonical(read_autosave()) != canonical(candidate):
+            raise ValueError("current source lacks matching autosave")
+        result = {"result": "already_current", "source_sha256": hashlib.sha256(source).hexdigest(),
+                  "native_sha256": hashlib.sha256(canonical(candidate)).hexdigest()}
+        print(json.dumps(result))
+        return result
     validate(candidate)
     receipt = publish(state_dir=STATE, api=api, expected_preimage=active,
                       candidate=candidate, source_before=installed,

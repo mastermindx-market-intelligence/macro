@@ -224,9 +224,11 @@ def _validate_source(value: Any, label: str) -> Tuple[Optional[bytes], Optional[
 
 
 def _op_id(preimage_digest: str, candidate_digest: str,
-           before_digest: str, after_digest: str) -> str:
-    """Stable identity of one publication operation over captured bytes."""
+           before_digest: str, after_digest: str, predecessor=None) -> str:
+    """Captured transition plus its fully closed predecessor, never a pending escape."""
     material = "\n".join((preimage_digest, candidate_digest, before_digest, after_digest))
+    if predecessor is not None:
+        material += "\nclosed-predecessor:" + predecessor
     return _sha256_hex(material.encode("ascii"))
 
 
@@ -448,14 +450,57 @@ def _receipt_for(journal: _Journal, op_id: str) -> Optional[Dict[str, Any]]:
     return receipt
 
 
+def _closed_history_tip(journal):
+    """Validate one immutable intent chain; clocks and ETags are not generations."""
+    if not journal.intents:
+        return None, None
+    children = {}
+    for op, intent in journal.intents.items():
+        predecessor = intent.get("predecessor")
+        if predecessor is not None and (not isinstance(predecessor, str)
+                                        or not re.fullmatch(r"[0-9a-f]{64}", predecessor)):
+            return None, _error("journal_predecessor_invalid")
+        digests = [intent.get(key) for key in (
+            "preimage_digest", "candidate_digest", "source_before_digest", "source_after_digest")]
+        if (any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+                for value in digests) or _op_id(*digests, predecessor) != op):
+            return None, _error("journal_transition_identity_invalid")
+        if ("predecessor" not in intent or intent.get("op_id") != op
+                or intent.get("kind") != "intent"
+                or predecessor == op or predecessor in children):
+            return None, _error("journal_history_ambiguous")
+        if predecessor is not None and (predecessor not in journal.intents
+                                       or predecessor not in journal.receipts):
+            return None, _error("journal_predecessor_not_closed")
+        children[predecessor] = op
+        if op in journal.receipts:
+            receipt = _receipt_for(journal, op)
+            if (receipt is None or receipt.get("op_id") != op
+                    or receipt.get("kind") != "receipt"
+                    or receipt.get("closure") not in {"committed", "refused_precondition"}
+                    or any(receipt.get(key) != intent.get(key) for key in
+                           ("preimage_digest", "candidate_digest", "source_before_digest", "source_after_digest"))):
+                return None, _error("journal_receipt_unverified")
+    current, seen = None, set()
+    while current in children:
+        current = children[current]
+        if current in seen:
+            return None, _error("journal_history_cycle")
+        seen.add(current)
+    if len(seen) != len(journal.intents):
+        return None, _error("journal_history_disconnected")
+    return current, None
+
+
 def _build_intent(state_dir_identity: Tuple[int, int], op_id: str, etag: str,
                   expected_preimage_digest: str, candidate_digest: str,
                   candidate: Dict[str, Any], source_before: bytes,
-                  source_after: bytes) -> Dict[str, Any]:
+                  source_after: bytes, predecessor=None) -> Dict[str, Any]:
     record: Dict[str, Any] = {
         "schema": JOURNAL_SCHEMA,
         "kind": "intent",
         "op_id": op_id,
+        "predecessor": predecessor,
         "created_ns": time.time_ns(),
         "pid": os.getpid(),
         "uid": os.geteuid(),
@@ -689,23 +734,61 @@ def publish(
         # Ambiguous journal custody: more than one unclosed intent.  Fail closed.
         return _result(S_HELD, None, [_error("journal_multiple_pending")], effect_state=E_UNCERTAIN)
     pending_id: Optional[str] = pending[0] if pending else None
+    tip, err = _closed_history_tip(journal)
+    if err is not None:
+        return _result(S_HELD, op_id, [err], effect_state=E_UNCERTAIN)
 
-    # ---- idempotent recall of an already committed operation -----------------
-    if pending_id is None and op_id in journal.intents:
-        receipt = _receipt_for(journal, op_id)
+    # Pending remains the same captured operation regardless of a caller's
+    # desired content or closed history. No new generation exists on this path.
+    if pending_id is not None:
+        if pending_id != tip:
+            return _result(S_HELD, op_id, [_error("journal_pending_not_tip")], effect_state=E_UNCERTAIN)
+        requested = _op_id(preimage_digest, candidate_digest, _sha256_hex(before),
+                           _sha256_hex(after), journal.intents[pending_id]["predecessor"])
+        return _reconcile_pending(state_path, journal, pending_id, identity, api,
+                                  read_autosave, install_source, requested_op=requested)
+
+    # Only the latest closed transition can be recalled, and historical receipt
+    # evidence alone never proves that its candidate is still current.
+    tip_intent = journal.intents.get(tip)
+    same_transition = tip_intent is not None and all(
+        tip_intent.get(key) == value for key, value in (
+            ("preimage_digest", preimage_digest), ("candidate_digest", candidate_digest),
+            ("source_before_digest", _sha256_hex(before)), ("source_after_digest", _sha256_hex(after))))
+    if same_transition:
+        receipt = _receipt_for(journal, tip)
         if receipt is None:
             # Receipt missing or lost inode custody for a recorded intent:
             # fail closed rather than re-publishing on a broken boundary.
-            return _result(S_HELD, op_id, [_error("journal_receipt_unverified")], effect_state=E_UNCERTAIN)
+            return _result(S_HELD, tip, [_error("journal_receipt_unverified")], effect_state=E_UNCERTAIN)
         if receipt.get("closure") == "refused_precondition":
-            return _result(S_REFUSED, op_id, [_error("write_precondition_refused")],
+            return _result(S_REFUSED, tip, [_error("write_precondition_refused")],
                            effect_state=E_NONE_PROVEN, write_http_status=412,
                            receipt_written=True, closure="refused_precondition")
         if receipt.get("closure") != "committed":
-            return _result(S_HELD, op_id, [_error("journal_unknown_closure")],
+            return _result(S_HELD, tip, [_error("journal_unknown_closure")],
                            effect_state=E_UNCERTAIN)
+        try:
+            current, current_etag = _coerce_api_read(api.read())
+            if (_validate_etag(current_etag) is None or not _native_equal(current, candidate)
+                    or not _native_equal(read_autosave(), candidate)):
+                return _result(S_REFUSED, tip, [_error("historical_receipt_not_current")])
+            intent_path = journal.intent_paths[tip]
+            st = os.lstat(intent_path)
+            err = _intent_unchanged(state_path, identity, intent_path,
+                                    (st.st_dev, st.st_ino), tip_intent)
+            if err is not None:
+                return _result(S_HELD, tip, [err], effect_state=E_UNCERTAIN)
+            install_source(before, after)  # Idempotent verification of the actual baseline.
+            err = _intent_unchanged(state_path, identity, intent_path,
+                                    (st.st_dev, st.st_ino), tip_intent)
+            if err is not None:
+                return _result(S_HELD, tip, [err], effect_state=E_UNCERTAIN,
+                               installed_source=True)
+        except Exception as exc:
+            return _result(S_REFUSED, tip, [_error("current_recall_unverified", type(exc).__name__)])
         return _result(
-            S_ALREADY, op_id, [],
+            S_ALREADY, tip, [],
             effect_state=E_APPLIED_VERIFIED,
             write_http_status=receipt.get("write_http_status"),
             installed_source=True,
@@ -714,12 +797,9 @@ def publish(
             closure=receipt.get("closure"),
         )
 
-    # ---- a pending intent blocks any new conditional write -------------------
-    if pending_id is not None:
-        return _reconcile_pending(
-            state_path, journal, pending_id, identity, api, read_autosave, install_source,
-            requested_op=op_id,
-        )
+    # A new normal source transition follows only fully closed history. Thus
+    # A→B→A→B is three distinct attempts while a pending B can never get a new ID.
+    op_id = _op_id(preimage_digest, candidate_digest, _sha256_hex(before), _sha256_hex(after), tip)
 
     # ---- qualification: full preimage agreement, then a second full check ----
     try:
@@ -761,7 +841,7 @@ def publish(
     # ---- durable intent BEFORE the sole conditional write --------------------
     intent = _build_intent(
         identity, op_id, etag1, preimage_digest, candidate_digest,
-        candidate, before, after,
+        candidate, before, after, predecessor=tip,
     )
     try:
         payload = _canonical_json_bytes(intent)
@@ -889,6 +969,9 @@ def journal_status(state_dir: Path) -> Dict[str, Any]:
     journal = _Journal(state_path)
     if journal.custody_errors:
         return {"ok": False, "errors": list(journal.custody_errors)}
+    _, err = _closed_history_tip(journal)
+    if err is not None:
+        return {"ok": False, "errors": [err]}
     pending = journal.pending_ops()
     out: Dict[str, Any] = {
         "ok": True,

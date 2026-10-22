@@ -727,7 +727,9 @@ def test_journal_custody_properties_and_idempotent_recall(world):
     assert recall["op_id"] == op
     assert recall["closure"] == "committed"
     assert len(world.api.writes) == 1
-    assert world.installer.calls == [(SRC_A, SRC_B)]
+    # Current baseline is reverified through the idempotent caller, rather than
+    # promoted from a historical receipt without a live source check.
+    assert world.installer.calls == [(SRC_A, SRC_B), (SRC_A, SRC_B)]
     assert intent_path.stat().st_ino == before_stat.st_ino
 
 
@@ -868,3 +870,66 @@ def test_installer_intent_substitution_cannot_close_receipt(world):
     assert result['status'] == 'held_pending' and result['installed_source'] is True
     assert len(world.api.writes) == 1
     assert not list(world.journal_dir.glob('receipt-*'))
+
+
+def test_normal_rollback_then_reapply_has_new_closed_predecessor_identity(world):
+    import hashlib
+    installed = [SRC_A]
+    def install(before, after):
+        assert installed[0] in (before, after)
+        installed[0] = after
+    original_etag = world.api._etag
+    first = publish(world, install_source=install)
+    first_intent = world.journal_dir / ('intent-' + first['op_id'] + '.json')
+    original_bytes = first_intent.read_bytes()
+    second = publish(world, preimage=CFG_B, candidate=CFG_A,
+                     before=SRC_B, after=SRC_A, install_source=install)
+    assert second['status'] == 'published'
+    assert world.api._config == CFG_A and installed[0] == SRC_A
+    # Caddy's content-addressed version may return to the exact initial ETag.
+    world.api._etag = original_etag
+    third = publish(world, install_source=install)
+    assert [first['status'], second['status'], third['status']] == ['published'] * 3
+    assert len({first['op_id'], second['op_id'], third['op_id']}) == 3
+    assert len(world.api.writes) == 3
+    assert world.api._config == world.autosave.value == CFG_B
+    assert installed[0] == SRC_B
+    assert first_intent.read_bytes() == original_bytes
+    tip_intent = json.loads((world.journal_dir / ('intent-' + third['op_id'] + '.json')).read_text())
+    assert tip_intent['predecessor'] == second['op_id']
+    assert mcp.journal_status(world.journal_dir)['pending_op_ids'] == []
+
+
+def test_historical_receipt_with_noncurrent_api_cannot_claim_success(world):
+    first = publish(world)
+    assert first['status'] == 'published'
+    world.api.apply(CFG_A, ET_A)
+    count = len(world.installer.calls)
+    again = publish(world)
+    assert again['status'] == 'refused' and again['published'] is False
+    assert again['installed_source'] is False
+    assert len(world.api.writes) == 1 and len(world.installer.calls) == count
+
+
+@pytest.mark.parametrize('apply_rollback', [True, False])
+def test_pending_rollback_blocks_new_generation_for_repeated_prior_content(world, apply_rollback):
+    first = publish(world)
+    lost_response(world.api, world.autosave,
+                  applied_config=CFG_A if apply_rollback else None,
+                  applied_etag=ET_A if apply_rollback else None)
+    rollback = publish(world, preimage=CFG_B, candidate=CFG_A, before=SRC_B, after=SRC_A)
+    assert rollback['status'] == 'held_pending'
+    reapply = publish(world)
+    assert len(world.api.writes) == 2
+    if apply_rollback:
+        assert reapply['status'] == 'reconciled_prior'
+        assert reapply['op_id'] == rollback['op_id']
+        assert world.installer.calls[-1] == (SRC_B, SRC_A)
+        final = publish(world)
+        assert final['status'] == 'published' and len(world.api.writes) == 3
+        assert final['op_id'] != first['op_id']
+        assert world.api._config == CFG_B
+    else:
+        assert reapply['status'] == 'held_pending'
+        assert reapply['op_id'] == rollback['op_id']
+        assert mcp.journal_status(world.journal_dir)['pending_op_ids'] == [rollback['op_id']]

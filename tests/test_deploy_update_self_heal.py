@@ -27,7 +27,7 @@ SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
 MOVERS_GUARD_BEGIN = "# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_GUARD_END = "# END MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_MATCHER_NAME = "@movers_seo_redirect"
-CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { [ -d /var/lib/macro-caddy-publication ] && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then'
+CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then'
 CADDY_VALIDATE_LINE = 'caddy validate --config "$APP_DIR/app/deploy/Caddyfile"'
 CADDY_INSTALL_LINE = 'install -m 0644 "$APP_DIR/app/deploy/Caddyfile"'
 

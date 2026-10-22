@@ -409,7 +409,7 @@ fi
 
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
 # config can never take the site down — reload is gated on `caddy validate`).
-if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { [ -d /var/lib/macro-caddy-publication ] && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
+if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
 	# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD
 	# Fail-closed ordering guard for the staged Movers SEO redirect. The
 	# @movers_seo_redirect matcher is a FUTURE repo-side construct (no such
@@ -466,7 +466,7 @@ if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADD
 		fi
 		python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" "${CADDY_RECONCILE_ARGS[@]}"
 		RECONCILED=1
-	elif [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { [ -d /var/lib/macro-caddy-publication ] && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
+	elif [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then
 		echo "macro-update: pending/attended Caddy adoption requires the qualified autosave mode" >&2
 		exit 1
 	elif caddy validate --config "$APP_DIR/app/deploy/Caddyfile" --adapter caddyfile; then
