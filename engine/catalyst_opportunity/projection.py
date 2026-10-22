@@ -251,7 +251,9 @@ def build_opportunity_view(pulse: Mapping | None, *, assessed_at: datetime,
                             "refused": len(out["refusals"]), "watch_count": len(out["cases"]),
                             "complete": complete})
     out["reason_codes"] = []
-    if not complete:
+    if declared is None:
+        out["reason_codes"].append("UNKNOWN_POPULATION")
+    if valid != len(rows) or (declared is not None and declared != len(rows)):
         out["reason_codes"].append("PARTIAL_POPULATION")
     if freshness == "stale":
         out["reason_codes"].append("DATED_SOURCE")

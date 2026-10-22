@@ -3668,6 +3668,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -5924,6 +5928,11 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -15203,6 +15212,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -15946,6 +15958,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -16431,6 +16447,97 @@ jobs:
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+
+  catalyst-opportunity:
+    if: ${{ false }}
+    gate: code
+    # The existing site-full auth dependency reaches these owner domains.
+    # Keep that closure covered, but do not run on unrelated page/free-content edits.
+    # Derived with infer_job_scopes for both suites; no packing ceilings changed.
+    scope: exclusive
+    paths:
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/test_catalyst_opportunity_api.py"
+      - "tests/test_catalyst_opportunity_projection.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+    # The pack runner owns execution; keep both new source/API suites in CI.
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Catalyst contract test dependencies
+        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
+      - name: Catalyst projection, reader and entitled API contracts
+        run: >
+          python -m pytest tests/test_catalyst_opportunity_projection.py
+          tests/test_catalyst_opportunity_api.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
@@ -17931,6 +18038,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -19487,6 +19599,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "tests/fixtures/government_program_ontology/builders.py"
       - "tests/test_government_program_public_capacity.py"
       - "tests/test_government_program_capacity_ui.py"
@@ -20259,6 +20374,10 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -25422,6 +25541,10 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -25904,6 +26027,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - lib/dataos/web_history.py
       - lib/dataos/web_readers.py
       - lib/dataos/web_workspace.py
@@ -28519,6 +28647,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py

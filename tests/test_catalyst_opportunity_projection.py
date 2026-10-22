@@ -162,7 +162,31 @@ def test_repeated_transport_read_is_not_new_market_evidence():
 
 
 def test_incomplete_denominator_is_not_complete():
-    assert view(pulse(n_themes=100))["status"] == "partial"
+    result = view(pulse(n_themes=100))
+    assert result["status"] == "partial"
+    assert result["reason_codes"] == ["PARTIAL_POPULATION"]
+
+
+@pytest.mark.parametrize("declared", [None, True, "1", -1])
+def test_unknown_denominator_does_not_claim_missing_observations(declared):
+    result = view(pulse(n_themes=declared))
+    assert result["status"] == "partial"
+    assert result["coverage"]["declared"] is None
+    assert result["coverage"]["complete"] is False
+    assert result["coverage"]["valid"] == 1
+    assert result["reason_codes"] == ["UNKNOWN_POPULATION"]
+
+
+def test_absent_denominator_remains_unknown():
+    source = pulse()
+    del source["n_themes"]
+    assert view(source)["reason_codes"] == ["UNKNOWN_POPULATION"]
+
+
+def test_unknown_denominator_does_not_hide_refused_rows():
+    result = view(pulse(row(rel_5d=True), row("energy_complex"), n_themes=None))
+    assert result["coverage"]["refused"] == 1
+    assert result["reason_codes"] == ["UNKNOWN_POPULATION", "PARTIAL_POPULATION"]
 
 
 def test_population_bound_refuses_not_truncates():
