@@ -8,10 +8,11 @@
 # This script therefore no longer opens MarketDesk at all — two processes
 # sharing one Chromium profile would deadlock.
 #
-# Its one remaining job: watch the DB for freshly vaulted papers and trigger
-# the dashboard ingest workflow the moment something new lands (the hourly
-# research-ingest cron remains the backstop). Run every ~15 min by launchd
-# (com.mastermindx.research-feed).
+# Its one remaining job: watch the DB for freshly vaulted papers and attempt
+# to trigger the existing dashboard ingest workflow when something new lands.
+# The hourly research-ingest schedule is NOT a dependable backstop while that
+# workflow remains intentionally disabled by the R2 publication recovery owner.
+# Run every ~15 min by launchd (com.mastermindx.research-feed).
 # ============================================================================
 DEST="$HOME/mastermind-research"
 APP="$DEST/marketdesk_paper_extractor"

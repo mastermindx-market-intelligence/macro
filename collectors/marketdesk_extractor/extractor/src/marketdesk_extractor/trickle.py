@@ -450,16 +450,23 @@ def run_tick(
                          state.name, blob_id, e)
                 pulled += 1
             except MarketDeskError as e:
-                # HTTP access rejection, JSON success:false and unknown bytes do
-                # not establish an unsupported document. Preserve the source
-                # row, make no second inline request, and pause this account.
+                # A rejected/ambiguous PDF is NOT proven unsupported. Keep the
+                # source row retryable, but take it out of this tick's ranked
+                # queue: leaving it DISCOVERED selects the same top-ranked
+                # document forever and starves every healthy report behind it.
+                # FAILED is the incumbent temporary state; _reset_failed()
+                # re-admits it at startup and on the daily wide discovery pass.
+                # Session, cap and transient transport errors have their own
+                # branches above and must not be quarantined this way.
                 res.provider_refusals += 1
-                db.set_status(conn, blob_id, Status.DISCOVERED,
-                              error_message=None)
+                db.set_status(
+                    conn, blob_id, Status.FAILED,
+                    error_message=f"PROVIDER_PDF_UNQUALIFIED:{type(e).__name__}"[:160],
+                )
                 state.transient_retry_after = now + TRANSIENT_PDF_RETRY_DELAY
                 log.warning(
                     "[%s] PDF provider access/response unqualified on %s: %s "
-                    "— row preserved, account retry after %s",
+                    "— retained for next wide retry, account retry after %s",
                     state.name, blob_id, e,
                     state.transient_retry_after.isoformat(),
                 )
@@ -728,9 +735,12 @@ def _refresh_queue(
 
 
 def _reset_failed(conn) -> int:
-    """FAILED papers failed on the cap (not bad content) — reset to DISCOVERED so
-    they re-enter the candidate pool. Run at loop start AND on every wide pass, so
-    a long-lived daemon re-tries them daily rather than only on restart."""
+    """Re-admit retryable FAILED candidates (cap/unsupported not asserted).
+
+    Retained provider-refused PDFs are temporarily FAILED to avoid reselecting
+    the same top-priority blob every tick. Reset only at daemon start and the
+    existing daily wide pass; never turn them into SKIPPED_UNSUPPORTED.
+    """
     rows = db.get_by_status(conn, [Status.FAILED])
     for r in rows:
         db.set_status(conn, r["blob_id"], Status.DISCOVERED, error_message=None)
@@ -787,7 +797,7 @@ def run_trickle(
     if not dry_run:
         n = _reset_failed(conn)
         if n:
-            log.info("reset %d FAILED papers to DISCOVERED (cap-failures, retryable)", n)
+            log.info("reset %d retryable FAILED papers to DISCOVERED", n)
 
     results: list[TickResult] = []
     _open_sessions(cfg, states)

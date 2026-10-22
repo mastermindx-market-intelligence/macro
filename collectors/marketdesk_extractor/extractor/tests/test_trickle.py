@@ -846,7 +846,46 @@ def test_blob_known_zip_container_is_explicitly_unsupported(
     assert Context.request.calls == 1
 
 
-def test_provider_refusal_requeues_without_permanent_skip_or_inline_retry(
+def test_persistently_refused_top_paper_cannot_starve_other_new_reports(
+    tmp_path, monkeypatch,
+):
+    """A vendor denial must remain retryable without pinning the entire queue."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "poison", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "good_a", published_at=NOW - timedelta(minutes=2))
+    _seed(conn, "good_b", published_at=NOW - timedelta(minutes=3))
+
+    class SelectiveRefusal(FakeClient):
+        def download_blob(self, blob_id):
+            if blob_id == "poison":
+                self.downloaded.append(blob_id)
+                raise ProviderBlobRefused("access denied; PDF not delivered")
+            return super().download_blob(blob_id)
+
+    _patch_sessions(monkeypatch, client_cls=SelectiveRefusal)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        for minute in (0, 6, 12, 18, 24, 30):
+            trickle.run_tick(
+                cfg, conn, [state], NOW + timedelta(minutes=minute),
+                dry_run=False,
+            )
+        assert state.client.downloaded.count("poison") == 1
+        assert {"good_a", "good_b"} <= set(state.client.downloaded)
+        assert db.get_by_blob_id(conn, "poison")["status"] == Status.FAILED.value
+        assert db.get_by_blob_id(conn, "good_a")["status"] == Status.COMPLETE.value
+        assert db.get_by_blob_id(conn, "good_b")["status"] == Status.COMPLETE.value
+        # FAILED is deliberately not terminal: the incumbent wide-pass retry
+        # is the sole existing requeue mechanism (no new backoff database).
+        assert trickle._reset_failed(conn) == 1
+        assert db.get_by_blob_id(conn, "poison")["status"] == Status.DISCOVERED.value
+    finally:
+        trickle._close_sessions([state]); conn.close()
+
+
+def test_provider_refusal_is_retryable_without_permanent_skip_or_inline_retry(
     tmp_path, monkeypatch,
 ):
     cfg = _cfg(tmp_path, monkeypatch)
@@ -868,7 +907,10 @@ def test_provider_refusal_requeues_without_permanent_skip_or_inline_retry(
         assert tick.unsupported == tick.errors == tick.downloaded_new == 0
         assert state.client.downloaded == ["first"]
         assert state.transient_retry_after == NOW + timedelta(minutes=5)
-        assert db.get_by_blob_id(conn, "first")["status"] == Status.DISCOVERED.value
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.FAILED.value
+        assert db.get_by_blob_id(conn, "first")["error_message"] == (
+            "PROVIDER_PDF_UNQUALIFIED:ProviderBlobRefused"
+        )
         assert db.trailing_24h_count(conn, state.name, NOW) == 0
         before = trickle.run_tick(
             cfg, conn, [state], NOW + timedelta(minutes=4), dry_run=False

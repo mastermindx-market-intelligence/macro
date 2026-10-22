@@ -33,12 +33,14 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Mapping
+from zoneinfo import ZoneInfo
 
 from .db import DISCOVERY_HEALTHY, DISCOVERY_UNKNOWN
 from .schemas import Status
 
 # ---------------------------------------------------------------------------
-# Measured posts-per-ET-hour profile (over 175 days). ET = UTC-4 (EDT).
+# Measured posts-per-ET-hour profile (over 175 days). Bins are Eastern wall
+# clock hours, with DST resolved by America/New_York on each UTC observation.
 # Weekday ~208 posts/day, weekend ~85; ~60% of a day's posts land by 09 ET.
 # Overridable: every consumer takes an optional ``profile`` argument.
 # ---------------------------------------------------------------------------
@@ -53,8 +55,10 @@ WEEKEND_HOURLY: dict[int, float] = {
     16: 5.8, 17: 3.5, 18: 4.0, 19: 3.2, 20: 2.4, 21: 2.4, 22: 1.8, 23: 3.3,
 }
 
-# ET offset. The measured profile is stated in EDT (UTC-4); see task brief.
-_ET_OFFSET = timedelta(hours=-4)
+# Use actual Eastern wall-clock time for this EDT-measured hourly profile.
+# A fixed -4h offset misclassifies Friday 23:30 EST as Saturday 00:30,
+# under-reserving fresh arrivals when the backlog budget is enabled.
+_ET_ZONE = ZoneInfo("America/New_York")
 
 
 class HourlyProfile:
@@ -82,7 +86,7 @@ def _to_et(dt_utc: datetime) -> datetime:
     """UTC (tz-aware) -> naive ET wall-clock used to index the profile."""
     if dt_utc.tzinfo is None:
         dt_utc = dt_utc.replace(tzinfo=timezone.utc)
-    return (dt_utc.astimezone(timezone.utc) + _ET_OFFSET).replace(tzinfo=None)
+    return dt_utc.astimezone(_ET_ZONE).replace(tzinfo=None)
 
 
 def _iso(dt: datetime) -> str:
@@ -368,14 +372,14 @@ class BackfillDecision:
     reason: str
     forecast: float   # raw demand forecast (papers expected over the reserve horizon)
     reserve: float    # feasible reservation actually applied
-    used_24h: int     # backfill pulls this account already spent in the window
+    used_24h: int | None  # None until the incumbent ledger was actually read
     budget: int       # configured ceiling (0 = backfill disabled)
 
     def describe(self) -> str:
         return (
             f"{self.allowed}({self.reason}) "
             f"reserve={self.reserve:.1f}/forecast={self.forecast:.1f} "
-            f"backfill_24h={self.used_24h}/{self.budget}"
+            f"backfill_24h={self.used_24h if self.used_24h is not None else 'unmeasured'}/{self.budget}"
         )
 
 
@@ -419,7 +423,18 @@ def decide_backfill(
     )
     budget = max(0, int(backfill_budget))
     if budget <= 0:
-        return BackfillDecision(False, "BUDGET_DISABLED", forecast, reserve, 0, budget)
+        return BackfillDecision(False, "BUDGET_DISABLED", forecast, reserve, None, budget)
+
+    # The incumbent download ledger is a trailing 24h window. A shorter
+    # "fresh" classification window makes legitimate recent downloads count
+    # retroactively against the historical budget. Refuse opt-in backfill
+    # rather than inventing a new tier ledger or charging the wrong class.
+    if (type(new_window_hours) not in (int, float)
+            or not math.isfinite(new_window_hours)
+            or new_window_hours < 24.0):
+        return BackfillDecision(
+            False, "WINDOW_BELOW_LEDGER", forecast, reserve, None, budget
+        )
 
     ok, why = discovery_is_current(
         discovery, now, max_age_hours=discovery_max_age_hours
@@ -427,7 +442,7 @@ def decide_backfill(
     if not ok:
         # No ledger probe on the refusal path: a blind collector must not even
         # pay for the query that a permitted pull would have justified.
-        return BackfillDecision(False, why, forecast, reserve, 0, budget)
+        return BackfillDecision(False, why, forecast, reserve, None, budget)
 
     used = backfill_used_24h(
         conn, account, now, new_window_hours=new_window_hours

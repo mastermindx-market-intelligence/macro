@@ -6,7 +6,9 @@ from pathlib import Path
 
 from . import db
 from .config import Config
-from .marketdesk import MarketDeskClient, MarketDeskError, UnsupportedBlobError
+from .marketdesk import (
+    MarketDeskClient, MarketDeskError, SessionExpired, UnsupportedBlobError,
+)
 from .schemas import Status
 from .storage import StorageGuardError
 from .utils import (
@@ -119,6 +121,11 @@ def download_pending(
         except StorageGuardError:
             # Infrastructure failure, not a bad paper. Leave it DISCOVERED and
             # fail the command so launchd can retry after the volume recovers.
+            raise
+        except SessionExpired:
+            # This requires operator re-authentication. Never turn a typed
+            # logout into an ordinary provider-PDF refusal or a skipped paper;
+            # preserve the discovered row and propagate the original cause.
             raise
         except UnsupportedBlobError as e:
             # A positively identified binary non-PDF is terminal for this

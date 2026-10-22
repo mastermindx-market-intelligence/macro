@@ -311,6 +311,15 @@ def test_expected_new_weekday_peak():
     assert allocator.expected_new_next_hours(mon_peak, 3) == pytest.approx(69.3)
 
 
+def test_post_dst_fall_back_uses_real_eastern_hour_and_weekday():
+    # 2026-11-07T04:30Z is Friday 23:30 EST, not Saturday 00:30 EDT.
+    # Misclassifying it as the weekend reserves 4.55 rather than 11.60
+    # prospective new posts over the next four hours.
+    stamp = datetime(2026, 11, 7, 4, 30, tzinfo=timezone.utc)
+    assert allocator._to_et(stamp) == datetime(2026, 11, 6, 23, 30)
+    assert allocator.expected_new_next_hours(stamp, 4) == pytest.approx(11.60)
+
+
 def test_expected_new_weekend_lower_than_weekday():
     # Saturday 00:00 ET == 04:00 UTC; weekend hrs 0..3 = 5.9+0.1+0.0+1.5 = 7.5
     sat_mid = datetime(2026, 7, 25, 4, 0, 0, tzinfo=timezone.utc)
@@ -500,6 +509,13 @@ def test_invalid_reserve_ratio_cannot_erase_fresh_protection(ratio):
 
 
 # --- 3. decide_backfill — three independent bounds -------------------------
+def test_backfill_refuses_new_window_shorter_than_rolling_download_ledger(conn):
+    # A 12h 'new' window would reclassify fresh downloads as historical within
+    # the same rolling 24h budget, so it cannot authorize a backfill pull.
+    d = _decide(conn, new_window_hours=12, backfill_budget=5)
+    assert (d.allowed, d.reason) == (False, "WINDOW_BELOW_LEDGER")
+
+
 def test_backfill_is_disabled_by_default_so_no_allowance_is_invented(conn):
     """The shipped default is the OLD behaviour: no backfill, no new spend."""
     decision = _decide(conn, backfill_budget=0)
@@ -525,6 +541,8 @@ def test_no_backfill_is_spent_while_discovery_cannot_see_the_feed(conn, discover
     """The outage case: upstream discovery down must not drain quota on stale rows."""
     decision = _decide(conn, backfill_budget=25, discovery=discovery)
     assert (decision.allowed, decision.reason) == (False, reason)
+    assert decision.used_24h is None
+    assert "backfill_24h=unmeasured/" in decision.describe()
 
 
 def test_backfill_is_admitted_only_with_budget_healthy_discovery_and_surplus(conn):

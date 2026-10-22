@@ -153,6 +153,38 @@ def test_manual_download_pass_preserves_metadata_on_unqualified_provider_error(
         conn.close()
 
 
+def test_manual_download_pass_preserves_and_raises_expired_auth(
+    tmp_path, monkeypatch,
+):
+    from marketdesk_extractor.discover import discover
+    from marketdesk_extractor.download import download_pending
+    from marketdesk_extractor.marketdesk import SessionExpired
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    discover(cfg, conn, FakeClient(), limit=10)
+
+    class LoggedOutClient(FakeClient):
+        def __init__(self):
+            self.calls = []
+
+        def download_blob(self, blob_id):
+            self.calls.append(blob_id)
+            raise SessionExpired("session control confirmed logged out")
+
+    client = LoggedOutClient()
+    try:
+        with pytest.raises(SessionExpired, match="confirmed logged out"):
+            download_pending(cfg, conn, client)
+        assert len(client.calls) == 1
+        for blob_id in ("PID1", "PID2"):
+            row = db.get_by_blob_id(conn, blob_id)
+            assert row["status"] == Status.DISCOVERED.value
+            assert row["sha256"] is None
+    finally:
+        conn.close()
+
+
 def test_manual_download_pass_terminal_only_for_proven_binary_non_pdf(
     tmp_path, monkeypatch,
 ):

@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.marketdesk_extractor.release.v1",
-  "release_id": "marketdesk-provider-pdf-refusal-20261022-v4",
-  "capability": "Retain eligible report rows across qualified and unqualified provider failures, while exposing independent login/discovery health and quota-safe backfill",
+  "release_id": "marketdesk-provider-pdf-refusal-20261022-v5",
+  "capability": "Retryable bounded vendor-PDF refusals, correct Eastern time reserves, honest auth and discovery, and quota-safe backfill",
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "96118d8a70624aa359aab0fc3d00a5a8dd20343f61923b053ccae18d309eccd1",
+  "manifest_sha256": "47f832516eb221e451dd7e49d01c599b8ea31f4e3d5cae572de5205316546804",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
@@ -44,8 +44,14 @@
     "Keep the existing feed lock, watermark, single Chromium profile owner, download cap, and research-ingest workflow dispatch semantics unchanged; do not claim an hourly fallback can run during the known workflow hold.",
     "When an existing research-ingest workflow dispatch is unavailable, preserve its watermark and report publication NOT confirmed instead of promising an hourly ingest that may be deliberately disabled.",
     "Recognize only positively identified non-PDF binary containers as SKIPPED_UNSUPPORTED; HTTP 401/403/404/429, successful-HTTP JSON failures, blank responses and ambiguous bytes preserve the paper for controlled future retry.",
-    "The incumbent trickle loop stops after one unqualified provider response per account, records provider_refusals, retains DISCOVERED and sets an existing five-minute account retry cooldown without inline replay.",
-    "Manual download_pending also stops on provider rejection without invalidating the source row; confirmed binary non-PDF remains terminal and other papers continue."
+    "After one unqualified provider PDF response, retain its document in the existing retryable FAILED tier until daemon start/daily wide-pass reset; pause that account five minutes so one top-ranked rejection cannot starve other papers.",
+    "Manual download_pending also stops on provider rejection without invalidating the source row; confirmed binary non-PDF remains terminal and other papers continue.",
+    "Use actual America/New_York daylight-saving-aware hourly demand to preserve Eastern weekday/weekend fresh-report reserve through EST/EDT changes.",
+    "Refuse opt-in backfill when NEW_WINDOW_HOURS is shorter than the existing 24-hour download ledger; do not add a second tier/accounting store.",
+    "Propagate confirmed SessionExpired from the manual downloader instead of silently classifying lost authentication as an ordinary PDF provider refusal.",
+    "Correct the feed-watcher comment to disclose that a deliberately disabled research-ingest workflow cannot serve as the promised hourly backstop.",
+    "Preserve non-PDF terminal SKIPPED_UNSUPPORTED only for positive binary signatures; all other upstream provider PDF failures remain retained and re-admitted through the original reset mechanism.",
+    "Where discovery, budget, or an unsafe fresh window refuses historical quota admission before any ledger read, display backfill_24h=unmeasured rather than inventing a zero spend measurement."
   ],
   "non_goals": [
     "No MarketDesk re-authentication or browser-profile mutation.",
