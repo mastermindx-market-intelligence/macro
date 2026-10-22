@@ -416,6 +416,7 @@ body.page-es > .site-nav{ max-width:1200px; margin:14px auto 6px; padding:0 20px
 .es-lb li[aria-selected="true"]{ background:var(--panel2); outline:1px solid var(--line); }
 .es-card{ display:flex; flex-direction:column; gap:14px; padding:16px; background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r-ctl,8px); }
 .es-card-h{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.es-card-link{ margin-right:auto; }
 .es-card-t{ margin:0; font:700 28px/32px var(--fig); letter-spacing:-0.01em; color:var(--text); }
 .es-card-t:focus{ outline:none; } .es-card-t:focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
 .es-pill{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:var(--r-card,12px); background:var(--es-ok-soft); font:700 11px/14px var(--font-ui); color:var(--es-ok-ink); }
@@ -1038,6 +1039,7 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
 
         <div class="es-card" id="es-card">
           <div class="es-card-h"><h3 class="es-card-t f" id="es-card-t" tabindex="-1">{{ def_t }}</h3>
+            <a class="es-link es-card-link" id="es-card-link" hidden>{{ t('Company page','公司页面') }}</a>
             <span class="es-pill" id="es-card-pill" hidden></span></div>
           <dl>
             <div class="es-card-s"><dt>{{ t('Sessions captured','已采集期数') }}</dt><dd class="f" id="es-card-sessions">—</dd></div>
@@ -1632,6 +1634,12 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
     if (!cardT) return;
     cardT.textContent = doc.ticker || '';
     pillFor(doc.identity_status);
+    var cardLink = $('es-card-link');
+    if (cardLink) {
+      var cp = doc.company_page;
+      if (typeof cp === 'string' && /^stocks\/[A-Z0-9.\-]{1,12}\.html$/.test(cp)) { cardLink.href = cp; cardLink.hidden = false; }
+      else { cardLink.removeAttribute('href'); cardLink.hidden = true; }
+    }
     var maxLen = 0, latestAt = null, hzSet = {};
     var ser = doc.series || {};
     Object.keys(ser).forEach(function (m) {
