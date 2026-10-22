@@ -14,7 +14,7 @@ mission: >
   glm, pinned BASE sha, no fetch) and consumed by the parent, which wired them into the
   map. Delivery follows the Terminal chain commit → PR → merge-on-green → git-gated
   deploy → authenticated live verification.
-prs: [1098, 1109]
+prs: [1098, 1109, 1112, 1116]
 decisions: ["DEC:OPTIONS-R2-ORACLE-OUTRANKS-FREEZE-TEXT"]
 discoveries:
   - "DSC:TERMINAL-GLOBALS-CSS-EDIT-RELOCKS-THREE-EVIDENCE-PACKETS"
@@ -38,7 +38,7 @@ changed:
   - path: "mastermind-terminal:terminal/lib/exposureMapProjection.ts"
     what: "PR-1: qualifiedDeltaExtension validators V1–V10 for the per-cell DEX extension; receipt must match the parent's root, input_sha256, population_id, kind, position_basis, scale and unit; typed refusals wrong_root / receipt_mismatch / invalid_metric."
   - path: "mastermind-terminal:terminal/components/exposure-map/ExposureMap.tsx"
-    what: "PR-2 (#1098): shell redesigned from the Paper pin (clocks strip, lens rail, stat strip, field with sticky axes, keyboard ±/0, inspector). Wiring branch: five book-anatomy detail tabs (expiries, values, changes, replay, review, scenario, surface) with onLoadSession from the desk, the ExposureReviewTab / ExposureScenarioTab / ExposureSurfaceTab hosts, pin and Open-in-Exposure links from the surface."
+    what: "PR-2 (#1098): shell redesigned from the Paper pin (clocks strip, lens rail, stat strip, field with sticky axes, keyboard ±/0, inspector). Wiring branch (#1116): seven book-anatomy detail tabs (expiries, values, changes, replay, review, scenario, surface) with onLoadSession from the desk, the ExposureReviewTab / ExposureScenarioTab / ExposureSurfaceTab hosts, pin and Open-in-Exposure links from the surface."
   - path: "mastermind-terminal:terminal/app/globals.css"
     what: "PR-2: --exposure-positive / --exposure-negative / --exposure-selected tokens; this edit relocked three evidence packets that were recaptured in commit 20825722f (see the discovery)."
   - path: "mastermind-terminal:terminal/lib/exposureMap.ts"
@@ -59,6 +59,12 @@ changed:
     what: "Lane PR-6 component (with .module.css, exposureScenarioStrings.ts, lib/exposureScenario.ts and tests): local linear value over the admitted summary; data-scenario-status ready / not-admitted / summary-unavailable / out-of-range / invalid; repricing held and labelled."
   - path: "mastermind-terminal:terminal/components/exposure-map/ExposureSurface.tsx"
     what: "Lane PR-7 component (with .module.css, exposureSurfaceStrings.ts, lib/exposureSurface.ts and tests): SVG strike × expiry surface over projection cells; windows 2/4/8 %, expiry caps 5/9/15, rotate / elevation never change a cell; prior cells matched on equal population_id feed changeMn."
+  - path: "mastermind-terminal:terminal/lib/exposureScan.ts"
+    what: "Lane PR-5 (consumed at 29ffeb06b, six owned files against BASE 52aa270aa; #1112): scan records over the node reducer — SCAN_VERSION exposure-scan/v1, SCAN_ROLLOUT SPY QQQ SPXW IWM NDXP, books fetched only for rollout roots, identity_unadmitted rows without a fetch, typed null-score reasons, frozen original revision 1 and refreshScan deltas (node moved, contested, score)."
+  - path: "mastermind-terminal:terminal/components/exposure-map/ExposureScanTable.tsx"
+    what: "Lane PR-5 component (with .module.css, exposureScanStrings.ts and two tests): ranked table with data-scan-status loading / ready / empty and data-scan-revision; Open in Exposure wired, Watch hidden when no owner is passed."
+  - path: "mastermind-terminal:terminal/components/exposure-map/ExposureBoard.tsx"
+    what: "#1112 (parent-owned mount): the Discover board keeps the glance scanner and mounts ExposureScanTable beneath it over SCAN_ROLLOUT ∪ GEX_AUTOCOMPLETE_ROOTS (41 presets); e2e case asserts ready at revision 1 and the counts line."
   - path: "mastermind-terminal:terminal/components/gexdesk/GexDeskView.tsx"
     what: "Wiring branch: the desk's stored-book opener (loadSession) is passed to the map as onLoadSession so replay and review can open an archived session."
   - path: "mastermind-terminal:terminal/e2e/options-exposure-map.spec.ts"
@@ -80,46 +86,55 @@ verified:
     result: green on branch claude/r2-pr1-dex-reducer-1021 at 52aa270aa after the Opus read-only F1 audit's repairs R1–R12 (verdict REPAIR_REQUIRED, then repaired).
   - claim: The wiring head's affected unit suites, types, lint and plain-language guard are clean.
     command: cd terminal && npx vitest run lib/__tests__/exposure lib/__tests__/useReplayColumns lib/__tests__/usePriorProjection && npx tsc --noEmit && npx eslint <changed ts/tsx> && node scripts/check_plain_language.mjs --mode enforce-added --diff-file <git diff --unified=0 origin/master HEAD -- ':/terminal'>
-    result: on 205508dcb the affected suites passed (8 files / 64 tests in the surface step after two hook-test repairs), tsc rc=0, eslint rc=0, guard rc=0 (legacy findings are non-blocking).
+    result: "on 205508dcb the affected suites passed (8 files / 64 tests in the surface step after two hook-test repairs), tsc rc=0, eslint rc=0, guard rc=0; on the final #1116 head 9ef0160bb (master e54fc7f02 merged) 30 files / 421 tests, tsc rc=0, guard rc=0, eslint only the pre-existing GexDeskView.tsx 540 / 577 findings that master carries."
   - claim: The responsive Playwright spec passes on the wiring head at all three viewports, including the three new tab cases.
     command: cd terminal && TERMINAL_E2E_PORT=3141 npx playwright test e2e/options-exposure-map.spec.ts
-    result: 22 passed (31.2s) on 205508dcb in the W1 worktree (real node_modules; Turbopack refuses a symlinked node_modules).
+    result: 22 passed (31.2s) on 205508dcb and 22 passed / 2 skipped (46.1s) on the final head 9ef0160bb, in the W1 worktree (real node_modules; Turbopack refuses a symlinked node_modules).
   - claim: Each lane branch touches only its owned files against master.
     command: git diff --name-only origin/master...origin/claude/r2-exposure-surface-1021 (and the replay, review, scenario branches)
     result: six owned files each (component, module.css, strings, lib module, two tests); the review lane's two "Restore beta ops/tests files" commits net to nothing against master.
   - claim: The three evidence packets relocked by the globals.css edit were recaptured and match.
     command: cd terminal && npx vitest run lib/__tests__/conductorFitBadgeZhEvidence.test.ts lib/__tests__/eodHeatmapFlowdeskLoadFailureEvidence.test.ts lib/__tests__/gexLevelsHeatmapLoadFailureEvidence.test.ts
-    result: green at commit 20825722f on #1098.
+    result: "green at commit 20825722f on #1098."
+  - claim: The PR-5 lane's owned files and the Discover mount pass the gate set and the responsive spec on the merged #1109 master.
+    command: cd terminal && npx vitest run lib/__tests__/exposure lib/__tests__/useReplayColumns lib/__tests__/usePriorProjection && npx tsc --noEmit && npx eslint <changed ts/tsx> && node scripts/check_plain_language.mjs --mode enforce-added --diff-file <diff> && TERMINAL_E2E_PORT=3141 npx playwright test e2e/options-exposure-map.spec.ts
+    result: on 85bbd0bf0 (lane 29ffeb06b + mount 49c3f486f + master 38723cef6) 20 files / 331 tests, tsc rc=0, eslint rc=0, guard rc=0, 16 passed / 2 skipped; the diff against master is exactly the nine scan files.
+  - claim: The #1109 master is live on production through the git-gated build.
+    command: ssh root@146.190.142.17 '/opt/terminal/terminal-build.sh --target-sha 38723cef63e87e478b1652d42322a69bdec462fd' then git -C /opt/terminal/.gitsrc rev-parse HEAD, cat /opt/terminal/terminal/.deployment-id, curl -s https://app.mastermind-x.com/options | grep -o 'data-dpl-id="[^"]*"'
+    result: "\"[build] DONE — target=production live = origin/master @ 38723cef63e8 (app + runtime code, git-gated, healthy)\"; .gitsrc HEAD, the marker and the live data-dpl-id all equal 38723cef63e87e478b1652d42322a69bdec462fd; anonymous /options returns 200 (04:15Z)."
   - claim: The new tabs render their honest states on the fixture book in a browser.
     command: preview of the W1 worktree with the Playwright fixture env (FLOW_FIXTURE=1, TERMINAL_E2E_FIXTURE=1) at /options?tab=prism&symbol=SPY&view=chart
     result: the fixture SPY book is legacy (session 2026-07-10), so Scenario shows not-admitted and Surface shows "No qualified projection for this session"; desktop and mobile screenshots of all four tabs are in the session report.
 unverified:
   - claim: The replay, review, scenario and surface tabs render on a qualified live book.
-    what_would_verify: the authenticated journey on https://app.mastermind-x.com after the wiring PR deploys, on a session whose SPY/QQQ book carries exposure_projection (P76 row of the coverage ledger).
+    what_would_verify: "the authenticated journey on https://app.mastermind-x.com after #1116 deploys, on a session whose SPY/QQQ book carries exposure_projection (P76 row of the coverage ledger)."
   - claim: P74 performance on a 13k-contract book.
     what_would_verify: a profiled run of buildExposureSurface and the map field at the largest stored QQQ book; not run in this program.
-  - claim: The PR-5 scan table matches the frozen scanner_score goldens end to end.
-    what_would_verify: consuming RESULT_PR5.md on ubuntu3, running its tests against BASE 52aa270aa, and the Discover board mount.
+  - claim: The scan table ranks a qualified live book end to end.
+    what_would_verify: "the Discover board on production after #1112 deploys, with a rollout root whose stored book carries exposure_projection; the dev fixture SPY book yields \"41 presets · 0 scored · 41 unscored\" because it is legacy."
+  - claim: The #1098 master (e54fc7f02) is live.
+    what_would_verify: the "[build] DONE" line in /opt/terminal/deploy-r2-pr1098.log (launched 04:49Z) and .gitsrc, the marker and the live data-dpl-id all equal e54fc7f02481d7f66ae962bf8ddf03453382a5cf.
 unresolved:
-  - PR-5 scan lane r2-pr5-scan-1021-v1 was still POLL_PENDING (poll 80 at 02:59Z); consume it, verify owned files against BASE 52aa270aa, mount ExposureScanTable on the Discover board after #1109 lands.
-  - The combined wiring PR (branch claude/r2-wire-scenario-surface-1021, which contains claude/r2-wire-replay-review-1021) opens only after #1098 merges; it then needs merge origin/master, the gate set, push, label, auto-merge, deploy and live verification.
+  - "#1109 merged 03:45Z (master 38723cef6, deployed and verified live) and #1098 merged 04:45Z (master e54fc7f02, deploy launched 04:49Z, not yet verified)."
+  - "#1112 (scan mount, branch claude/r2-scan-mount-1021; the controller refreshed it to 42263cd20 after #1098) and #1116 (wiring, branch claude/r2-wire-scenario-surface-1021 at 9ef0160bb) are open with merge-on-green and native auto-merge armed; CI is running on both. Each still needs its deploy and live verification after it merges."
   - Held rows P17, P25, P29–P31, P39, P48, P61–P67, P75 need owners outside this program (velocity history, alerts contract, annual anchor, calibration, path scenarios, producer schedule record, recap card, sharing/export, Discord adapter, prospective validation).
   - The second package in Downloads (R1 / GammaPulse MASTERPLAN and FABLE_HANDOFF) is a different commission and was not touched.
 next_actions:
-  - When #1098 merges, in a worktree on claude/r2-wire-scenario-surface-1021 run git merge origin/master, the gate set above, push, open the PR against master, add merge-on-green and arm gh pr merge --auto --squash --delete-branch.
+  - "Verify the #1098 deploy (deploy-r2-pr1098.log DONE line; .gitsrc, .deployment-id and data-dpl-id = e54fc7f02481d7f66ae962bf8ddf03453382a5cf) before launching the next build; the VPS runs one build at a time."
   - After each R2 merge deploy that master sha through /opt/terminal/terminal-build.sh --target-sha <sha> on the VPS and verify .gitsrc, .deployment-id and data-dpl-id on https://app.mastermind-x.com, then the authenticated Exposure journey and the metric_units three-key check; record P76 per row in docs/OPTIONS_R2_ACCEPTANCE_COVERAGE_2026-10-22.md.
-  - After #1109 merges delete claude/r2-dex-extension-1021, claude/r2-node-reducer-1021 and claude/r2-pr1-audit-repairs-1021; after the wiring PR merges delete claude/r2-wire-replay-review-1021 and the four consumed lane branches.
-  - Consume the PR-5 lane; the scan table mounts on the Discover board as a parent-owned change in its own PR.
+  - "After #1112 merges delete claude/r2-scan-table-1021; after #1116 merges delete claude/r2-wire-replay-review-1021 and the four consumed lane branches (claude/r2-replay-frames-1021, claude/r2-session-review-1021, claude/r2-local-scenario-1021, claude/r2-exposure-surface-1021). The three PR-1 lane branches are already deleted."
   - Report holds as holds; nothing in the ledger closes a row until P76 is recorded against a deployed master.
 do_not_redo:
   - Do not rebuild distance_fit or scanner_score from the freeze prose; the oracle governs and the reducer already ports it (DEC:OPTIONS-R2-ORACLE-OUTRANKS-FREEZE-TEXT).
-  - Do not re-run the Opus F1 read-only audit for unchanged reducer code; its REPAIR_REQUIRED verdict was consumed and repairs R1–R12 are on #1109.
+  - "Do not re-run the Opus F1 read-only audit for unchanged reducer code; its REPAIR_REQUIRED verdict was consumed and repairs R1–R12 are on #1109."
   - Do not derive a second projection for the surface or the scenario; the reader's projection(lens) accessor and the moves owner's 1σ are the only inputs.
   - Do not re-run lane gates for the four consumed lanes unless their files change; they were verified at consumption and again on the wiring head.
   - Do not redesign from the Astra mockup page; the pinned page and docs/OPTIONS_R2_DESIGN_PIN_2026-10-20.md are the contract.
   - Do not recapture the three evidence packets unless app/globals.css changes again.
   - Do not treat the dev fixture SPY book as qualified; its legacy session is why the scenario and surface show their refusal states locally.
-  - Do not open the wiring PR before #1098 merges; its diff would carry PR-2's commits and burn a CI cycle.
+  - "Do not rebase or reopen #1116; it was opened after #1098 merged with master merged in. The ExposureMap.tsx / .module.css conflicts were resolved with the branch side because master's copies were byte-identical to 20825722f, the PR-2 content the branch carries (git diff 20825722f origin/master -- <files> was empty)."
+  - "Do not re-run or re-consume the PR-5 lane; its six owned files were verified against BASE 52aa270aa at 29ffeb06b and mounted in #1112."
+  - Do not deploy 38723cef6 again; it is live and verified. Each later deploy targets the new master sha only.
   - Do not create a Terminal-local mirror of these records; the Macro agentos/ store is canonical.
 danger_areas:
   - Any edit to terminal/app/globals.css relocks three evidence packets (conductor-fit-badge-zh, eod-heatmap-flowdesk-load-failure, gex-levels-heatmap-load-failure); recapture serially.
@@ -129,6 +144,7 @@ danger_areas:
   - React act() flushes immediately-resolving mocked promises, so a loading state is only observable behind a deferred promise.
   - gh pr view headRefOid lags the real tip after a controller refresh; git ls-remote is authoritative, and update-branch returns 422 when the controller already refreshed.
   - The deploy is git-gated to merged master only; a working-tree rsync is not a deployment.
+  - A branch that carries another open PR's commits conflicts with that PR's squash on every shared file; when master's copy equals the carried content, the branch side is the whole resolution, otherwise master's extra delta must be applied on top.
   - The Theta publication-only hold, the last-good full book rule (never replaced by a canary) and the no-parallel-store rule remain binding for anything that touches the options data plane.
 ---
 
@@ -136,12 +152,14 @@ danger_areas:
 
 ## Where the work is
 
-Seven slices, seven owners. PR-1 (#1109) and PR-2 (#1098) are open with the
-controller armed. PR-3, PR-4, PR-6 and PR-7 were built as fabric lanes, gate-checked at
-consumption and merged into `claude/r2-wire-scenario-surface-1021` together with the
-parent-owned wiring commits; that branch opens as one PR once #1098 merges. PR-5 is still
-on its lane. The three governing documents (design pin, freeze with errata, coverage
-ledger) are committed under the Terminal `docs/` directory on the wiring branch.
+Seven slices, seven owners. PR-1 (#1109) merged at 03:45Z and is live on production;
+PR-2 (#1098) merged at 04:45Z and its build is running. PR-3, PR-4, PR-6 and PR-7 were
+built as fabric lanes, gate-checked at consumption and merged into
+`claude/r2-wire-scenario-surface-1021` together with the parent-owned wiring commits;
+that branch is open as #1116 with master merged in. PR-5 was consumed from its lane and
+mounted on the Discover board as #1112. Both open PRs carry merge-on-green with native
+auto-merge armed. The three governing documents (design pin, freeze with errata, coverage
+ledger) ride on #1116 under the Terminal `docs/` directory.
 
 ## How the wiring stays honest
 
