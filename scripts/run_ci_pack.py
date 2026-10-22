@@ -599,6 +599,11 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     return capture_commands()
 
 
+# Native cold acquisition retains its original TOTAL grant even when a
+# broader owner manifest later increases that job's declared timeout.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+
+
 def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
@@ -625,6 +630,7 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         "phase": "browser_setup", "command": step["run"],
         "acquisition": "native_parallel" if native else "incumbent",
         "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium" if native else "original_playwright_with_deps",
+        **({"logical_job_timeout_minutes": NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES} if native else {}),
         "native_source_sha256": {
             name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
         },
@@ -3636,13 +3642,18 @@ def _run_job(
         # GIT_WORK_TREE — those force every nested `git init` onto this tree.
         semantic_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     timeout_minutes = job.definition.get("timeout-minutes")
-    timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
-    job_deadline = (
-        time.monotonic() + timeout_seconds if timeout_seconds is not None else None
-    )
+    job_started_at = time.monotonic() if timeout_minutes else None
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec["acquisition"] == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
+    timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
+    job_deadline = (
+        job_started_at + timeout_seconds if timeout_seconds is not None else None
+    )
     observations: list[dict[str, Any]] = []
     failure: str | None = None
     infrastructure: dict[str, Any] = {"outcome": "passed"}
