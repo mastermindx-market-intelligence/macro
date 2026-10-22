@@ -1,12 +1,12 @@
 {
   "schema": "mmx.commodities.review_receipt.v1",
-  "accepted_base": "ff6ed4cced271da0b556aba4f35e82d7b939ccc5",
+  "accepted_base": "9b5a047faec53ac7cf98ea22e056ff37331e0dc8",
   "mode": "published_payload_presentation_only",
-  "research_as_of": "2026-10-21",
-  "workspace_fingerprint": "abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4",
-  "accepted_page_sha256": "ff0d20d5b17e4377573237c824ec33047ff296f4fe7492b50898d3c30a8048ac",
-  "review_page_sha256": "a1cad961396f6bcdee03b6277cd78fba797cc24ad057fe5e55ce1dc98a2331e2",
-  "payload_sha256": "da906458497e14100dbe6fcb036028164955cafe031e3ff00b4d59d963ada008",
+  "research_as_of": "2026-10-22",
+  "workspace_fingerprint": "96d565cd6a66e39e7137b074101721d466eaa22030b39556f4563a31b80a479b",
+  "accepted_page_sha256": "6054f5167814a8321c27619827f8a1761a31c1995569f24832b93975e5481a2d",
+  "review_page_sha256": "e8658c6c456172fd5e5ae9493aae5acb51b72490c68f3391b6969d4225803edf",
+  "payload_sha256": "d2eb726faa1e93730a71fdaa786736bcf977e263f04a422715d5a6f295af1985",
   "payload_bytes_unchanged": true,
   "legacy_content_preserved": true,
   "assets": 17,
@@ -19,12 +19,40 @@
   "asset_freezing": {
     "owner": "lib.pages.externalize_css_text + scripts.optimize_assets.make_optimizer + lib.pages.write_page",
     "scope": "site/commodities.html only; no site sweep or pruning",
-    "final_page_sha256": "2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf",
+    "final_page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea",
     "created_css": [
-      "site/assets/css/5e34efe9.css"
+      "site/assets/css/50b8967a.css"
     ],
-    "source_css_sha256": "86a3a9b349089fa30df600666632cf127e6ebb88dedbc34829c7c3a3d24fdd66",
+    "source_css_sha256": "f77997395b7d9649adfe2bccf3a0061e2c14a217c725d0f5b4c2b76b4f8f5e88",
     "restored_accepted_assets": [],
     "whitespace_normalization": "blank-only lines within the owned workspace component only; payload bytes preserved"
+  },
+  "local_capture_binding": {
+    "owner": "root verification of retained local capture artifacts",
+    "observed_page_sha256_after_captures": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea",
+    "canonical_cohorts": [
+      {
+        "manifest": "mockups/evidence/commodities-northstar-20261022/final/manifest.json",
+        "sha256": "a42862f8d4af693082cd40386b06a85612c8765a40c41b59b9cc8faab35466b0",
+        "states_captured": 24
+      },
+      {
+        "manifest": "mockups/evidence/commodities-northstar-20261022/journeys/manifest.json",
+        "sha256": "46a9dec1c3fa1a7871f482bac50f767b2e28c3215bebaba20ebd517c2dd14045",
+        "states_captured": 16
+      }
+    ],
+    "browser_receipt": "mockups/commodities-northstar-parity-browser-receipt.json",
+    "browser_receipt_sha256": "b24b00d4b30342f67590fed2bb84f10d3b5ff6868e6d5f1dca358ea33296b806",
+    "source_hashes": {
+      "templates/_commodity_decision_workspace.html.j2": "c5f48339bb1728a27bffa647ee2812ced95a4d2ef3b0c14c982b14beff3748b7",
+      "templates/commodity-workspace.css": "f77997395b7d9649adfe2bccf3a0061e2c14a217c725d0f5b4c2b76b4f8f5e88",
+      "templates/commodity-workspace.js": "0548542d813f63be1668cd51f3a1c0bcddbb41d4e57077c24d64f83933c403c8",
+      "scripts/verify_commodity_workspace_browser.py": "ebe6c31f054051d9a14afb4447cc13d9b018335c22c392e483a916323e0d9beb"
+    },
+    "capture_target_head_is_normal_builder_proof": false,
+    "production_acceptance": false,
+    "authenticated_acceptance": false,
+    "scope": "Anonymous local presentation and interaction evidence only; no controlled performance acceptance."
   }
 }

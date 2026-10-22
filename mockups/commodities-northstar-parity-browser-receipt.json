@@ -6,8 +6,8 @@
   "accessible_reading_cases": {
     "scope": "actual published universe; no values injected",
     "numeric_cases_observed": {
-      "positive": 12,
-      "negative": 22,
+      "positive": 13,
+      "negative": 21,
       "zero": 0,
       "unavailable": 0
     },
@@ -24,7 +24,7 @@
   "screenshots": [
     {
       "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-desktop-dark-en.png",
-      "sha256": "290a9960cb258ba0d8328c550a84575e60ffd1c7848df2a93471b2b2ebc5a60b",
+      "sha256": "9ef4bfb328cb450ab3f5c4e576bfdb2327e16a23da23f284f2016b263d269345",
       "theme": "dark",
       "lang": "en",
       "viewport": {
@@ -32,11 +32,23 @@
         "height": 900
       },
       "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
-      "page_sha256": "2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf"
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-technical-desktop-dark-en.png",
+      "sha256": "783f072fae07555534ce20ad93fc95d5b6185dcdd24b0d2e603aaecfddb5efad",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
     },
     {
       "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/physical-seasonal-source-desktop-dark-en.png",
-      "sha256": "c7c6ac53a871c2a0a2c010fc46889a3cc14c73e5834a76fb72ac9523ca0674f1",
+      "sha256": "9bd2f58494056f46b3861041b5d7759083d88f05c9cbc190b8274cd2a0d2d682",
       "theme": "dark",
       "lang": "en",
       "viewport": {
@@ -44,11 +56,23 @@
         "height": 900
       },
       "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved",
-      "page_sha256": "2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf"
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/overview-320-dark-en.png",
+      "sha256": "1e770bce4e187e0cebe8a6b8f3fe66010efa67fb5a827bb22033215e3d7d7d02",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/overview/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
     },
     {
       "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-320-light-zh.png",
-      "sha256": "086b0e42c9102d796b954e0b832b40e3614bc68a66ed5982cc612059d170625f",
+      "sha256": "308aa02a70e5b4bc1e78366a81129cba4cf8fc413e91bbb59e29e169436460fd",
       "theme": "light",
       "lang": "zh",
       "viewport": {
@@ -56,19 +80,36 @@
         "height": 900
       },
       "route": "/commodities.html#cw/explore/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
-      "page_sha256": "2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf"
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-interpretation-320-light-zh.png",
+      "sha256": "308aa02a70e5b4bc1e78366a81129cba4cf8fc413e91bbb59e29e169436460fd",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
     }
   ],
   "physical_accessible_name_checks": 24,
   "available_company_continuations": 0,
-  "research_as_of": "2026-10-21",
-  "workspace_fingerprint": "abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4",
+  "research_as_of": "2026-10-22",
+  "workspace_fingerprint": "96d565cd6a66e39e7137b074101721d466eaa22030b39556f4563a31b80a479b",
   "fresh_document_import": {
     "separate_browser_context": true,
     "exact_export_round_trip": true,
     "threshold": 0,
     "window_sessions": 20,
     "monitoring_active": false
+  },
+  "expired_draft_fixture": {
+    "scope": "isolated simulated clock; no market data changed",
+    "expires_on": "2026-10-22",
+    "evaluation_clock": "2026-10-23T12:00:00Z"
   },
   "unobstructed_mobile_returns": 17,
   "responsive_layout_checks": [
@@ -231,6 +272,7 @@
     "overview numeric values remain unobstructed at desktop scroll positions",
     "Explore presents the complete 17-commodity published universe",
     "actual universe source buttons expose commodity, reading/sign and available state in both languages",
+    "source interpretation retains field scope and the expanded technical reference fits the drawer",
     "native source dialog preserves exact reading, independent clocks, modal focus and Escape return",
     "search and family intersect, preserve comparison selection and recover with visible focus",
     "signal map counts actual independent states and transfers keyboard focus to matching results",

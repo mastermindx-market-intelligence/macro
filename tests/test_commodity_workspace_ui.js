@@ -86,7 +86,17 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
     assert.ok(q('[data-cw-inspector-label]').textContent.includes("One-month"));
     assert.ok(q('[data-cw-inspector-facts]').textContent.includes("Not recorded"));
     assert.ok(q('[data-cw-inspector-identity]').textContent.includes("chg_1m_pct"));
+    assert.ok(q('[data-cw-inspector-supports]').textContent.includes("one-month price change"));
+    assert.ok(q('[data-cw-inspector-does-not]').textContent.includes("physical shortage"));
   });
+  d.documentElement.dataset.lang="zh";await pause();
+  check("an open source drawer translates the same interpretation and boundaries",()=>{
+    assert.ok(q('[data-cw-inspector-supports]').textContent.includes("一个月价格变化"));
+    assert.ok(q('[data-cw-inspector-does-not]').textContent.includes("实物短缺"));
+    assert.ok(!q('[data-cw-inspector-supports]').textContent.includes("one-month"));
+    assert.equal(q('[data-cw-inspector]').hasAttribute("open"),true);
+  });
+  d.documentElement.dataset.lang="en";await pause();
   click('[data-cw-inspector-close]');
   check("closing inspection restores its exact trigger",()=>{
     assert.equal(q('[data-cw-inspector]').hasAttribute("open"),false);assert.equal(d.activeElement,source);
@@ -131,6 +141,8 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
   check("comparison inspection follows the selected window instead of defaulting to one month",()=>{
     assert.ok(q('[data-cw-inspector-label]').textContent.includes("60-session"));
     assert.ok(q('[data-cw-inspector-identity]').textContent.includes("velocity.r60"));
+    assert.ok(q('[data-cw-inspector-supports]').textContent.includes("60 trading sessions"));
+    assert.ok(!q('[data-cw-inspector-supports]').textContent.includes("one-month"));
   });
   click('[data-cw-inspector-close]');change('[data-cw-window]',"1m");
   q('[data-cw-compare-editor]').open=true;click('[data-cw-finish-selection]');
@@ -153,6 +165,9 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
     assert.ok(q('[data-cw-inspector-facts]').textContent.includes("Not verified"));
     assert.ok(q('[data-cw-inspector-identity]').textContent.includes("data/eia/crude_stocks.parquet"));
     assert.ok(q('[data-cw-inspector-identity]').textContent.includes(data.physical.owner_method_revision));
+    assert.ok(q('[data-cw-inspector-supports]').textContent.includes("seasonal reference"));
+    assert.ok(q('[data-cw-inspector-does-not]').textContent.includes("five-year range"));
+    assert.ok(!q('[data-cw-inspector-supports]').textContent.includes("60 trading sessions"));
   });
   click('[data-cw-inspector-close]');
   check("physical inspection returns focus to the exact stock observation",()=>assert.equal(d.activeElement,physicalButton));

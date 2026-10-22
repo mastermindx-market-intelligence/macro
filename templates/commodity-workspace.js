@@ -109,10 +109,50 @@
     const slots={level:["_stocks_mb","Stock level","库存水平"],anomaly:["_z","Seasonal deviation","季节偏离"],change_4w:["_chg_4w_mb","Four-week stock change","四周库存变化"],days_cover:[null,"Stock / daily flow","库存 / 日均流量"]};
     for(const stock of physical.stocks || [])for(const [slot,spec] of Object.entries(slots)){
       const field=slot==="days_cover"?({crude:"days_supply",gasoline:"gasoline_days",distillate:"distillate_days"})[stock.id]:stock.id+spec[0];
-      if(field===key)return {key,observation,label:stock.label,metric_label:{en:spec[1],zh:spec[2]},physical};
+      if(field===key)return {key,kind:slot,observation,label:stock.label,metric_label:{en:spec[1],zh:spec[2]},physical};
     }
     const flow=(physical.flows || []).find(row=>row.id===key);
-    return flow ? {key,observation,label:flow.label,metric_label:{en:"US petroleum balance",zh:"美国石油供需"},physical}:null;
+    const kinds={refinery_inputs_avg:"flow",gasoline_supplied_avg:"flow",distillate_supplied_avg:"flow",production_mbd:"flow",production_chg_4w:"production_change",refinery_util:"utilisation",spr_chg_4w_mb:"change_4w",cushing_stocks_mb:"level"};
+    return flow && Object.prototype.hasOwnProperty.call(kinds,key) ? {key,kind:kinds[key],observation,label:flow.label,metric_label:{en:"US petroleum balance",zh:"美国石油供需"},physical}:null;
+  }
+  function metricInterpretation(receipt, language) {
+    const zh=language==="zh", pick=(en,cn)=>zh?cn:en;
+    const trend={up:pick("up","向上"),down:pick("down","向下"),flat:pick("flat","持平")};
+    const momentum={bull:pick("positive","偏强"),bear:pick("negative","偏弱"),neutral:pick("neutral","中性")};
+    const unknown=pick("unavailable","暂不可用");
+    const recordedTrend=trend[receipt.asset.trend]||unknown, recordedMomentum=momentum[receipt.asset.momentum]||unknown;
+    const numeric=isNumber(receipt.value), state=receipt.metric==="trend"?trend[receipt.value]:momentum[receipt.value];
+    const available=["trend","momentum"].includes(receipt.metric)?Boolean(state):numeric;
+    let supports=pick("This field is unavailable in the published snapshot. It supports no directional conclusion.","本发布快照中此字段不可用，不能据此作出方向判断。");
+    let doesNot=pick("An executable return, a spot quote, a physical shortage, future performance or an entry signal.","可执行回报、现货报价、实物短缺、未来表现或入场信号。");
+    if(receipt.metric==="trend") {
+      if(available)supports=pick("The source records a long-term trend that is "+state+". Momentum is "+recordedMomentum+" and remains a separate reading.","来源记录的长期趋势"+state+"；动能"+recordedMomentum+"，两者仍是独立判断。");
+      doesNot=pick("Near-term momentum, the cause of a price move, future performance or entry readiness. A trend state does not replace the dated price change.","短期动能、价格变化原因、未来表现或入场准备度。趋势状态不能替代有日期的价格变化。");
+    } else if(receipt.metric==="momentum") {
+      if(available)supports=pick("The source records "+state+" momentum. Long-term trend is "+recordedTrend+" and remains a separate reading.","来源记录的动能"+state+"；长期趋势"+recordedTrend+"，两者仍是独立判断。");
+      doesNot=pick("A long-term trend, a physical supply or demand cause, future performance or an entry signal.","长期趋势、实物供需原因、未来表现或入场信号。");
+    } else if(numeric) {
+      const direction=receipt.value>0?pick("positive","为正"):receipt.value<0?pick("negative","为负"):pick("zero","为零");
+      supports=receipt.metric==="1m"?
+        pick("The published one-month price change is "+direction+". Long-term trend is "+recordedTrend+"; momentum is "+recordedMomentum+". These readings retain their own scope.","发布的一个月价格变化"+direction+"；长期趋势"+recordedTrend+"，动能"+recordedMomentum+"。各项判断保留各自范围。"):
+        pick("The published endpoint price change over "+receipt.metric+" trading sessions is "+direction+". It describes that selected window only.","发布的"+receipt.metric+"个交易日端点价格变化"+direction+"，仅描述所选窗口。");
+    }
+    return {supports,doesNot};
+  }
+  function physicalInterpretation(receipt, language) {
+    const zh=language==="zh", pick=(en,cn)=>zh?cn:en;
+    const readings={
+      level:["The recorded inventory level for the dated observation. Read the level alongside stock changes and physical flows.","有日期观察中的库存水平，应结合库存变化与实物流量阅读。","A physical shortage, the reason prices moved, or how much inventory is available for immediate delivery.","实物短缺、价格变化原因，或可立即交割的库存数量。"],
+      anomaly:["Where this stock observation sits relative to the recorded seasonal reference. Its sign distinguishes above from below that reference.","本次库存观察相对记录的季节参照的位置；正负号区分高于或低于参照。","EIA’s published five-year range, a probability, a shortage or a trading signal.","EIA发布的五年区间、概率、短缺或交易信号。"],
+      change_4w:["The net inventory change over the recorded four-week window. A draw or build is separate from the inventory level.","记录的四周窗口内库存净变化；去库或累库与库存水平是不同读数。","Whether supply or demand caused the change, a price forecast or confirmation of a transmission chain.","变化由供给还是需求造成、价格预测，或传导链已获确认。"],
+      days_cover:["The ratio of the recorded stock level to the daily flow over its stated window. Its meaning depends on that denominator.","记录的库存水平与指定窗口日均流量之比，其含义取决于该分母。","An inventory exhaustion date, guaranteed deliverable supply, or proof of a shortage.","库存耗尽日期、保证可交付的供给，或短缺证明。"],
+      utilisation:["The recorded refinery utilisation percentage for its dated observation. This is a capacity-use ratio, not a volume of oil.","有日期观察中的炼厂利用率，这是产能使用比例，而非石油数量。","Refining margins, product demand, a physical shortage or the cause of a price move.","炼油利润率、成品油需求、实物短缺或价格变化原因。"],
+      production_change:["The change in the recorded daily production rate over four weeks. This is a rate change, not cumulative output over the window.","记录的日均产量在四周内的变化，这是产出速率变化，而非窗口内累计产量。","A cumulative inventory change, the cause of a supply change or future production.","累计库存变化、供给变化原因或未来产量。"],
+      flow:["The recorded physical flow for its dated window. Read it alongside inventories and the other petroleum balance measures.","有日期窗口内记录的实物流量，应结合库存及其他石油供需指标阅读。","The cause of a commodity price move, a complete supply-demand balance or an activated entry signal.","商品价格变化原因、完整供需平衡，或已激活的入场信号。"]
+    };
+    const copy=readings[receipt.kind];
+    const supports=isNumber(receipt.observation.value)&&copy?pick(copy[0],copy[1]):pick("This physical observation is unavailable. No level, direction or balance conclusion is supported.","此实物观察不可用，不能据此判断水平、方向或供需平衡。");
+    return {supports,doesNot:copy?pick(copy[2],copy[3]):pick("A physical shortage, future price performance or an entry signal.","实物短缺、未来价格表现或入场信号。")};
   }
   function companyReturnHref(href, state, pageHref) {
     try {
@@ -176,7 +216,7 @@
       snapshot_fingerprint: data.fingerprint, ...semantics
     }};
   }
-  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics, returnScale, returnGeometry, filterAssets, comparisonReading, metricReceipt, physicalReceipt};
+  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics, returnScale, returnGeometry, filterAssets, comparisonReading, metricReceipt, physicalReceipt, metricInterpretation, physicalInterpretation};
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof document === "undefined") return;
   const root = document.getElementById("commodity-workspace");
@@ -284,10 +324,15 @@
       row.append(term,description);list.appendChild(row);
     }
   }
+  function renderInterpretation(copy) {
+    root.querySelector("[data-cw-inspector-supports]").textContent=copy.supports;
+    root.querySelector("[data-cw-inspector-does-not]").textContent=copy.doesNot;
+  }
   function renderInspection() {
     if (!inspection || !inspector) return;
     if(inspection.kind==="physical"){renderPhysicalInspection();return;}
     const receipt=metricReceipt(data,inspection.asset,inspection.metric); if(!receipt)return;
+    renderInterpretation(metricInterpretation(receipt,lang()));
     const metricLabel=receipt.metric==="1m"?text("One-month price change","一个月价格变化"):
       receipt.metric==="trend"?text("Long-term trend","长期趋势"):receipt.metric==="momentum"?text("Momentum","动能"):
       receipt.metric+text("-session price change","个交易日价格变化");
@@ -321,6 +366,7 @@
   }
   function renderPhysicalInspection() {
     const receipt=physicalReceipt(data,inspection.key);if(!receipt)return;
+    renderInterpretation(physicalInterpretation(receipt,lang()));
     const observation=receipt.observation, physical=receipt.physical;
     const units={million_barrels:["million bbl","百万桶"],million_barrels_per_day:["million bbl/day","百万桶/日"],seasonal_z:["z","z"],days:["days","天"],percent:["%","%"]};
     const unit=units[observation.unit];
@@ -471,7 +517,7 @@
     all("[data-cw-note-asset]").forEach(el => { el.textContent = selectedAsset ? selectedAsset.label[lang()] : ""; });
     all("[data-cw-compare-empty]").forEach(el => { el.hidden = state.compare.length > 0; });
     all(".cw-plot-axis").forEach(el => { el.hidden = state.compare.length === 0 || !compareValues.some(isNumber); });
-    compareStatus.textContent = state.compare.length ? text("One basis. No return ranking.", "同一口径，不进行回报排名。") : text("Select a commodity to compare.", "请选择需要比较的品种。");
+    compareStatus.textContent = state.compare.length ? text("Same selected window · series bases not verified.", "同一所选窗口 · 序列口径未核实。") : text("Select a commodity to compare.", "请选择需要比较的品种。");
     all("[data-cw-comparison-reading]").forEach(el=>{el.textContent=comparisonReading(data.assets,state.compare,state.window,lang());});
     if (form) {
       form.elements.asset.value = state.asset;

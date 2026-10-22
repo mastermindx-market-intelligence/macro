@@ -34,7 +34,7 @@
 <section id="commodity-workspace" class="cw" aria-labelledby="cw-title">
   <header class="cw-head">
     <div class="cw-head-copy"><p class="cw-eyebrow">{{ t('Market intelligence','市场情报') }}</p><h1 id="cw-title">{{ t('Commodities','大宗商品') }}</h1></div>
-    <div class="cw-head-actions"><span class="dtp-asof cw-stamp">{{ t('Research','研究') }} · {{ ws.as_of or t('Date unavailable','日期不可用') }}</span><button type="button" id="cw-brain-entry" class="gbtn gbtn-quiet cw-brain-entry" hidden>{{ t('Ask Mastermind','问操盘大脑') }}</button><span id="cw-brain-status" class="cw-brain-status" role="status" aria-live="polite"></span><a class="gbtn gbtn-quiet" href="#commodity-advanced" data-cw-advanced>{{ t('Advanced analytics','高级分析') }} ↗</a></div>
+    <div class="cw-head-actions"><span class="dtp-asof cw-stamp">{{ t('Research','研究') }} · {% if ws.as_of %}<time datetime="{{ ws.as_of }}">{{ ws.as_of }}</time>{% else %}{{ t('Date unavailable','日期不可用') }}{% endif %}</span><button type="button" id="cw-brain-entry" class="gbtn gbtn-quiet cw-brain-entry" hidden>{{ t('Ask Mastermind','问操盘大脑') }}</button><span id="cw-brain-status" class="cw-brain-status" role="status" aria-live="polite"></span><a class="gbtn gbtn-quiet" href="#commodity-advanced" data-cw-advanced>{{ t('Advanced analytics','高级分析') }} ↗</a></div>
   </header>
   <nav class="mx-tabset cw-tabs" role="tablist" data-cw-tablist aria-label="Commodity workspace" data-aria-en="Commodity workspace" data-aria-zh="商品工作台">
     {% for key,en,zh in [('overview','Overview','总览'),('explore','Explore','研究品种'),('relationships','Relationships','关联传导'),('compare','Compare','比较'),('research','Research note','研究笔记')] %}
@@ -291,7 +291,7 @@
 
   <div id="cw-panel-compare" role="tabpanel" aria-labelledby="cw-tab-compare" data-cw-panel="compare" hidden>
     <section class="cw-section">
-      <div class="cw-section-head cw-route-head"><div><p class="cw-eyebrow">{{ t('A shared perspective','统一的观察视角') }}</p><h2>{{ t('Compare on one basis','用统一口径比较') }}</h2></div><p>{{ t('Choose up to four commodities','最多选择四个品种') }}</p></div>
+      <div class="cw-section-head cw-route-head"><div><p class="cw-eyebrow">{{ t('A shared perspective','统一的观察视角') }}</p><h2>{{ t('Compare published price changes','比较已发布价格变化') }}</h2></div><p>{{ t('Choose up to four commodities','最多选择四个品种') }}</p></div>
 
       <details class="panel cw-compare-editor" data-cw-compare-editor>
         <summary><span><strong>{{ t('Selected','已选品种') }} <span data-cw-selection-count></span></strong><span class="cw-stamp" data-cw-selection-names></span></span><span class="cw-source-action">{{ t('Edit selection','编辑选择') }} <span aria-hidden="true">⌄</span></span></summary>
@@ -345,6 +345,8 @@
     <div class="cw-inspector-observation"><span data-cw-inspector-label></span><strong class="cw-number" data-cw-inspector-value></strong></div>
     <p class="cw-note" data-cw-inspector-limit></p>
     <dl data-cw-inspector-facts></dl>
+    <section class="cw-inspector-interpretation" aria-labelledby="cw-inspector-support-title"><h3 id="cw-inspector-support-title">{{ t('What this supports','这能支持什么') }}</h3><p data-cw-inspector-supports></p></section>
+    <section class="cw-inspector-interpretation" aria-labelledby="cw-inspector-boundary-title"><h3 id="cw-inspector-boundary-title">{{ t('What this does not establish','这不能确定什么') }}</h3><p data-cw-inspector-does-not></p></section>
     <details class="cw-disclosure"><summary>{{ t('Source identity and method','来源标识与方法') }}</summary><dl data-cw-inspector-identity></dl></details>
     <p class="cw-chart-foot">{{ t('This receipt describes the published observation. A snapshot date does not prove when the information became available.','此记录描述已发布观察，快照日期不能证明信息何时可得。') }}</p>
   </dialog>

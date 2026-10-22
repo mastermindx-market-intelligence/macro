@@ -6,6 +6,7 @@ monitor activation or production write is involved.
 from __future__ import annotations
 
 import argparse
+from datetime import date as calendar_date, timedelta
 import hashlib
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -41,6 +42,9 @@ def verify(receipt: Path) -> None:
             page = context.new_page()
             page.on("pageerror", lambda error: errors.append(str(error)))
             def capture_review(name):
+                # Match the canonical evidence owner's settle interval so theme
+                # transition feedback is not mistaken for resting composition.
+                page.wait_for_timeout(1300)
                 image_dir = receipt.resolve().parent / "evidence" / receipt.stem
                 image_dir.mkdir(parents=True, exist_ok=True)
                 target = image_dir / (name + ".png")
@@ -169,10 +173,20 @@ def verify(receipt: Path) -> None:
             expect(inspector.locator("[data-cw-inspector-facts]")).to_contain_text("Analysis snapshot")
             expect(inspector.locator("[data-cw-inspector-facts]")).to_contain_text(gold_asset["as_of"] or "Not recorded")
             expect(inspector.locator("[data-cw-inspector-facts] > div").filter(has_text="Price observation time")).to_contain_text("Not recorded")
+            expect(inspector.locator("[data-cw-inspector-supports]")).to_contain_text("one-month price change")
+            expect(inspector.locator("[data-cw-inspector-does-not]")).to_contain_text("physical shortage")
             for key in ("Tab", "Shift+Tab", "Shift+Tab", "Tab"):
                 page.keyboard.press(key)
                 assert inspector.evaluate("el=>el.contains(document.activeElement)"), key
             capture_review("gold-source-desktop-dark-en")
+            technical = inspector.locator("details.cw-disclosure")
+            technical.locator("summary").click()
+            inspector.locator("[data-cw-inspector-identity]").scroll_into_view_if_needed()
+            assert inspector.evaluate("el=>el.scrollWidth <= el.clientWidth + 1")
+            expect(inspector.locator("[data-cw-inspector-identity]")).to_contain_text("chg_1m_pct")
+            capture_review("gold-source-technical-desktop-dark-en")
+            technical.locator("summary").click()
+            checks.append("source interpretation retains field scope and the expanded technical reference fits the drawer")
             close_receipt_to(gold_trigger)
             checks.append("native source dialog preserves exact reading, independent clocks, modal focus and Escape return")
 
@@ -369,6 +383,12 @@ def verify(receipt: Path) -> None:
             expired = dict(draft, expires_on=draft["as_of"])
             expired_file = Path(folder) / "condition-expired.json"
             expired_file.write_text(json.dumps(expired))
+            # A current-day publication is not already expired. Advance only this
+            # isolated context's clock; keep the actual saved evidence unchanged.
+            expiry_clock = (calendar_date.fromisoformat(draft["as_of"]) + timedelta(days=1)).isoformat() + "T12:00:00Z"
+            fresh.clock.set_fixed_time(expiry_clock)
+            result["expired_draft_fixture"] = {"scope": "isolated simulated clock; no market data changed",
+                                                "expires_on": expired["expires_on"], "evaluation_clock": expiry_clock}
             fresh.locator("#cw-import-file").set_input_files(expired_file)
             fresh.wait_for_function("document.querySelector('#cw-export-status').textContent.includes('expiry date has passed')")
             assert "no monitoring is active" in fresh.locator("#cw-export-status").inner_text()
@@ -495,6 +515,9 @@ def verify(receipt: Path) -> None:
                             page.locator("#cw-tab-" + tab).click()
                             page.evaluate("document.fonts.ready")
                             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (width, locale, theme, tab)
+                            if width == 320 and locale == "en" and theme == "dark" and tab == "overview":
+                                page.locator(".cw-hero").scroll_into_view_if_needed()
+                                capture_review("overview-320-dark-en")
                             if tab == "explore":
                                 assert rows.count() == len(data["assets"])
                                 source = gold_row.locator('.cw-reading-button[data-cw-inspect="gold:1m"]')
@@ -505,7 +528,11 @@ def verify(receipt: Path) -> None:
                                     assert abs(box["x"]) <= 1 and abs(box["width"] - width) <= 1, (locale, theme, "phone receipt must occupy full width", box)
                                 assert inspector.evaluate("el=>el.scrollWidth <= el.clientWidth + 1"), (width, locale, theme, "inspector contents")
                                 if width == 320 and locale == "zh" and theme == "light":
+                                    expect(inspector.locator("[data-cw-inspector-supports]")).to_contain_text("一个月价格变化")
+                                    expect(inspector.locator("[data-cw-inspector-does-not]")).to_contain_text("实物短缺")
                                     capture_review("gold-source-320-light-zh")
+                                    inspector.locator("[data-cw-inspector-supports]").scroll_into_view_if_needed()
+                                    capture_review("gold-source-interpretation-320-light-zh")
                                 close_receipt_to(source)
                             responsive_cells.append({"width": width, "locale": locale, "theme": theme, "view": tab})
             result["responsive_layout_checks"] = responsive_cells

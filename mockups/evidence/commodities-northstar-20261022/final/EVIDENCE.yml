@@ -4,5 +4,5 @@ changed_paths:
   - templates/_commodity_decision_workspace.html.j2
   - templates/commodity-workspace.js
   - site/commodities.html
-  - site/assets/css/5e34efe9.css
+  - site/assets/css/50b8967a.css
 manifest: mockups/evidence/commodities-northstar-20261022/final/manifest.json

@@ -54,6 +54,48 @@ assert.equal(api.physicalReceipt(fixture,"days_supply").observation.value,null);
 assert.equal(api.physicalReceipt(fixture,"days_supply").metric_label.en,"Stock / daily flow");
 assert.equal(api.physicalReceipt(fixture,"__proto__"),null);
 assert.equal(api.physicalReceipt(fixture,"nonexistent"),null);
+// The interpretation must follow the selected field, without turning a missing
+// observation into zero or borrowing direction from a different state/window.
+const oilMonth=api.metricInterpretation(api.metricReceipt(fixture,"oil","1m"),"en");
+assert.match(oilMonth.supports,/one-month price change is zero/);
+assert.match(oilMonth.supports,/trend is up; momentum is neutral/);
+assert.match(oilMonth.doesNot,/physical shortage.*entry signal/);
+assert.match(api.metricInterpretation(api.metricReceipt(fixture,"gas","1m"),"en").supports,/negative.*trend is down.*momentum is negative/);
+assert.match(api.metricInterpretation(api.metricReceipt(fixture,"silver","1m"),"zh").supports,/变化为正.*趋势向上.*动能偏强/);
+for(const metric of ["1m","20","trend","momentum"]){
+  const missing=api.metricInterpretation(api.metricReceipt(fixture,"gold",metric),"en");
+  assert.match(missing.supports,/unavailable.*no directional conclusion/);
+  assert.doesNotMatch(missing.supports,/is zero|is flat|is neutral/);
+}
+assert.match(api.metricInterpretation(api.metricReceipt(fixture,"gas","20"),"en").supports,/20 trading sessions is negative/);
+assert.doesNotMatch(api.metricInterpretation(api.metricReceipt(fixture,"gas","20"),"en").supports,/one-month/);
+const mixed=structuredClone(fixture);
+Object.assign(mixed.assets[0],{change_1m_pct:-4,trend:"up",momentum:"bear"});
+assert.match(api.metricInterpretation(api.metricReceipt(mixed,"oil","trend"),"en").supports,/trend that is up.*Momentum is negative/);
+assert.match(api.metricInterpretation(api.metricReceipt(mixed,"oil","momentum"),"zh").supports,/动能偏弱.*趋势向上/);
+assert.match(api.physicalInterpretation(api.physicalReceipt(fixture,"crude_z"),"en").supports,/seasonal reference/);
+assert.match(api.physicalInterpretation(api.physicalReceipt(fixture,"crude_z"),"en").doesNot,/five-year range.*probability/);
+assert.match(api.physicalInterpretation(api.physicalReceipt(fixture,"days_supply"),"en").supports,/unavailable/);
+assert.match(api.physicalInterpretation(api.physicalReceipt(fixture,"days_supply"),"en").doesNot,/exhaustion date/);
+const zeroCover=structuredClone(fixture);
+zeroCover.physical.evidence.days_supply.value=0;
+assert.match(api.physicalInterpretation(api.physicalReceipt(zeroCover,"days_supply"),"zh").supports,/库存水平.*日均流量之比/);
+assert.doesNotMatch(api.physicalInterpretation(api.physicalReceipt(zeroCover,"days_supply"),"en").supports,/unavailable/);
+const physicalKinds={refinery_util:[90,"utilisation",/capacity-use ratio/,/产能使用比例/],spr_chg_4w_mb:[-3,"change_4w",/inventory change/,/库存净变化/],cushing_stocks_mb:[0,"level",/inventory level/,/库存水平/],production_chg_4w:[0,"production_change",/daily production rate/,/日均产量/],production_mbd:[13,"flow",/physical flow/,/实物流量/]};
+for(const [key,[value,kind,en,zh]] of Object.entries(physicalKinds)){
+  fixture.physical.flows.push({id:key,label:{en:key,zh:key}});
+  fixture.physical.evidence[key]={value};
+  const receipt=api.physicalReceipt(fixture,key);
+  assert.equal(receipt.kind,kind);
+  assert.match(api.physicalInterpretation(receipt,"en").supports,en);
+  assert.match(api.physicalInterpretation(receipt,"zh").supports,zh);
+  if(kind!=="flow")assert.doesNotMatch(api.physicalInterpretation(receipt,"en").supports,/recorded physical flow/);
+}
+for(const key of ["unknown_field","constructor","toString","__proto__"]){
+  fixture.physical.flows.push({id:key,label:{en:key,zh:key}});
+  Object.defineProperty(fixture.physical.evidence,key,{value:{value:1},enumerable:true,configurable:true});
+  assert.equal(api.physicalReceipt(fixture,key),null);
+}
 console.log("PASS intersecting universe filters, unknown states, null-last sorting, URL context and field-specific receipts");
 
 const html = fs.readFileSync(path.join(root, "site/commodities.html"), "utf8");
@@ -73,6 +115,7 @@ const note = () => q("[data-cw-note-window]").textContent;
 
 (async () => {
   change("[data-cw-window]", "20");
+  assert.match(q("#cw-compare-status").textContent,/series bases not verified/);
   assert.equal(mark("oil").style.width, "25%");
   assert.equal(mark("gold").style.width, "50%");
   assert.ok(mark("gold").classList.contains("cw-bar-negative"));
