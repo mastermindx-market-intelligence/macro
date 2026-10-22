@@ -16,6 +16,7 @@ Run: python3 -m pytest tests/test_build_expectation_surface.py -q -p no:cachepro
 from __future__ import annotations
 
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -380,16 +381,132 @@ def test_unsafe_ticker_skipped_with_reason(tmp_path: Path):
 # ---------------------------------------------------------------------------
 
 def test_template_has_six_ids_in_order_and_four_chips(fake_root: Path):
+    """Six frozen section ids, in order, in the template source; the four hero
+    status chips per the accepted R1 design (§6.3/§8). The wave-1 version of
+    this test asserted the no-style skeleton contract, which the accepted
+    design supersedes: it now asserts the design's equivalents (one page style
+    block with tokens scoped to body.page-es, no color literals outside it,
+    style attributes binding custom properties only — see
+    test_ui_contract_style_tokens_and_ids)."""
     _build(fake_root)
     src = (ROOT / "templates" / "expectation_surface.html.j2").read_text(encoding="utf-8")
     ids = ["es-hero", "es-census", "es-breadth", "es-movers", "es-explorer", "es-method"]
     pos = [src.index(f'id="{i}"') for i in ids]
     assert pos == sorted(pos)
-    assert "<style" not in src and "style=" not in src
     html = (fake_root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
-    for chip in ("Descriptive · not a signal", "仅描述 · 非信号",
-                 "Identity COMPLETE_DEGRADED", "Source snapshot ", "Rendered "):
+    for chip in ("Descriptive · not a signal", "描述性 · 非信号",
+                 "COMPLETE_DEGRADED", "Source snapshot", "身份披露"):
         assert chip in html
+
+
+# ---------------------------------------------------------------------------
+# UI contract (accepted R1 design, BUILD-UI lane)
+# ---------------------------------------------------------------------------
+
+_UI_TOKENS = [
+    "--hair", "--hair-soft", "--es-ser1", "--es-ser2", "--es-band", "--es-flat",
+    "--es-skel", "--es-neutral-soft", "--es-warn-soft", "--es-warn-line",
+    "--es-ok-soft", "--es-shadow", "--es-up", "--es-down", "--es-warn-ink",
+    "--es-ok-ink", "--es-link-ink",
+]
+_COLOR_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b|rgb\(|hsl\(")
+_CUSTOM_PROPS_RE = re.compile(
+    r'^--[a-z0-9\-]+:[^;"]+(?:;\s*--[a-z0-9\-]+:[^;"]+)*$', re.I)
+
+
+def _style_split(src: str) -> tuple[str, str]:
+    m = re.search(r"<style>.*?</style>", src, re.S)
+    assert m, "page <style> block missing"
+    return m.group(0), src[:m.start()] + src[m.end():]
+
+
+def test_ui_contract_style_tokens_and_ids(fake_root: Path):
+    """(a)+(b): rendered page carries body.page-es and every frozen id exactly
+    once; the style block defines page tokens under body.page-es selectors
+    only; no color literal or inline style outside the block; every style=
+    attribute binds custom properties only."""
+    _build(fake_root)
+    src = (ROOT / "templates" / "expectation_surface.html.j2").read_text(encoding="utf-8")
+    html = (fake_root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
+    assert '<body class="page-es">' in html
+    for i in ["es-hero", "es-census", "es-breadth", "es-movers", "es-explorer",
+              "es-method", "es-search", "es-ticker-panel", "es-strings",
+              "es-default-series", "es-q", "es-view", "es-chart", "es-num"]:
+        assert html.count(f'id="{i}"') == 1, f"id {i} not exactly once"
+    style, outside = _style_split(src)
+    assert src.count("<style") == 1
+    # (b) no color literal, and no style= attribute, outside the style block
+    assert not _COLOR_RE.search(outside), "color literal outside the style block"
+    # tokens are defined only inside body.page-es (dark) / light body.page-es blocks
+    blocks = re.findall(
+        r'(?:html\[data-theme="light"\]\s+)?body\.page-es\{[^{}]*\}', style)
+    assert len(blocks) >= 2, "page-es token blocks missing"
+    token_blob = "\n".join(blocks)
+    for tok in _UI_TOKENS:
+        assert f"{tok}:" in token_blob, f"token {tok} not defined under body.page-es"
+        defined_outside = style.replace(token_blob, "")
+        assert tok not in defined_outside or f"{tok}:" not in defined_outside
+    # every style= attribute binds custom properties only (no colors, no layout)
+    for val in re.findall(r'style="([^"]*)"', src):
+        assert _CUSTOM_PROPS_RE.match(val), f"non-token inline style: {val!r}"
+        assert not _COLOR_RE.search(val), f"color in inline style: {val!r}"
+
+
+def test_ui_contract_strings_json_and_language(fake_root: Path):
+    """(a)+(c): #es-strings parses with equal EN/ZH key sets; ZH parity holds
+    (no 申报, 披露 present in the identity disclosure's accessible name)."""
+    _build(fake_root)
+    html = (fake_root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
+    m = re.search(
+        r'<script type="application/json" id="es-strings">(.*?)</script>',
+        html, re.S)
+    assert m, "#es-strings missing"
+    strings = json.loads(m.group(1))
+    assert strings.get("en") and strings.get("zh")
+    assert set(strings["en"]) == set(strings["zh"])
+    assert "申报" not in html
+    assert "披露" in html  # 身份披露 region label
+
+
+def test_ui_contract_horizon_labels(fake_root: Path):
+    """(d): the four raw horizon labels map to the four display strings (seat
+    ruling G1) in the explorer radios and the JS string table."""
+    _build(fake_root)
+    src = (ROOT / "templates" / "expectation_surface.html.j2").read_text(encoding="utf-8")
+    html = (fake_root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
+    for raw, en, zh in [("0q", "Current Q", "当季"), ("+1q", "Next Q", "下季"),
+                        ("0y", "Current FY", "当财年"), ("+1y", "Next FY", "下财年")]:
+        assert f"t('{en}','{zh}')" in src, f"horizon pair for {raw} missing"
+        assert strings_has(html, raw, en, zh)
+        assert f'name="es-xh" value="{raw}"' in html
+
+
+def strings_has(html: str, key: str, en: str, zh: str) -> bool:
+    m = re.search(
+        r'<script type="application/json" id="es-strings">(.*?)</script>',
+        html, re.S)
+    strings = json.loads(m.group(1))
+    return strings["en"].get(key) == en and strings["zh"].get(key) == zh
+
+
+def test_ui_offline_page_renders_every_section_and_band(tmp_path: Path):
+    """(e): the OFFLINE build still renders every frozen section id and the
+    offline band (explorer internals are honestly absent offline, §11)."""
+    root = tmp_path / "repo"
+    (root / "site").mkdir(parents=True)
+    _write_fixture(root, [])
+    (root / "data" / "revisions" / "expectation_observations.parquet").unlink()
+    _build(root)
+    html = (root / "site" / "expectation_surface.html").read_text(encoding="utf-8")
+    assert '<body class="page-es">' in html
+    for i in ["es-hero", "es-census", "es-breadth", "es-movers",
+              "es-explorer", "es-method", "es-strings"]:
+        assert html.count(f'id="{i}"') == 1, f"id {i} not exactly once offline"
+    assert 'class="es-offline"' in html and 'role="status"' in html
+    assert "Not available while offline" in html and "离线时不可用" in html
+    for reason in ("observations_unavailable",):
+        assert reason in html
+    assert "Consensus data is offline" in html and "一致预期数据离线" in html
 
 
 def test_page_written_through_write_page(fake_root: Path, monkeypatch):
