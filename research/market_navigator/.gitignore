@@ -1,2 +1,6 @@
 .pytest-tmp/
 .export/
+
+.pytest-*/
+
+.*.log

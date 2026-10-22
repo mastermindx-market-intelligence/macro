@@ -59,3 +59,31 @@ ordering or joint execution data. Corpus acquisition: actual archive entitlement
 retention/display/model-use rights and spend must be established through existing owners.
 
 Do not classify this frontier as a shipped product or completed parent assignment.
+
+
+## W1 cumulative delta (22 October 2026 resume)
+
+New bounded source increment: lossless Market Memory evidence and typed comparison;
+trusted-reader inspection CLI; VIX1D methodology-phase annotation and declared research
+coverage checks; original script-root import failure repaired. All authority flags
+remain false. Full focused suite: 145 passed; import guard: 11 passed. Research update
+and integration seam are documented alongside this frontier. No live data source,
+publication, account state, Paper canvas or trade was modified.
+
+Preserve these new paths and the three explicitly synthetic fixtures. The exact
+GitHub candidate head is read from PR 10055 after publishing this increment. No
+merge-on-green label or native auto-merge was armed at the last source boundary.
+
+The independent review operation is `market-navigator-foundation-review-20261022`.
+Summon returned backend_unavailable; its sole exact reply lookup returned
+reply_unavailable. No START/accepted runtime identity was observed. Do not blindly
+resubmit or create a replacement worker. No unresolved source modifying effect remains.
+
+The next material action is the original PR's normal source release, then an actual
+trusted-generation read through existing bindings. The new inspection CLI never
+initializes storage and does not choose the legacy missing-only reader. Preserve
+native clock semantics and keep opaque references unresolved until their existing
+owner provides an approved resolver. A local fixture roundtrip is not live proof.
+
+Paper remains lane-local pending a safe target file. Do not recreate the program,
+core Greek models, regime engine, calendar, memory store, save owner or alert outbox.

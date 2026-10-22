@@ -7,6 +7,11 @@ from pathlib import Path
 import platform
 import statistics
 import time
+import sys
+
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
 from engine.market_navigator import Condition, Observation, Receipt, Scenario, compose
 
 

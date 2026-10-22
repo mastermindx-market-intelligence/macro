@@ -19,7 +19,7 @@ waves:
     pr: 10055
   - id: W1
     title: Existing-owner source adapters and point-in-time qualification
-    status: todo
+    status: in_progress
     depends_on: [W0]
   - id: W2
     title: Safe Paper design and bilingual theme evidence
@@ -35,15 +35,15 @@ waves:
     depends_on: [W3]
   - id: W5
     title: Rights-approved research and existing promotion qualification
-    status: todo
+    status: in_progress
     depends_on: [W1]
   - id: W6
     title: Production-path acceptance
     status: todo
     depends_on: [W3, W4]
 next_action: >-
-  Consume exact-head CI and deliver foundation PR 10055, then bind a safe Paper file
-  and verify existing source-adapter receipts before production UI integration.
+  Deliver the repaired PR 10055 candidate and verify a real trusted source generation;
+  preserve the new lossless evidence adapter and measurement tests while Paper awaits a safe file.
 owns_paths:
   - engine/market_navigator*.py
   - research/market_navigator/**
@@ -95,3 +95,11 @@ The current local suite passed 89 tests; the browser study passed 8 viewport/lan
 theme combinations. `VERIFICATION.md` binds the commands and scope. The CI manifest
 validated 350 jobs, not 350 executed checks. No production activation or native Paper
 write is claimed. Current exact source-release state must be read from GitHub.
+
+## Resume delta
+
+Lossless Market Memory evidence/comparison and the trusted-reader inspection CLI are
+implemented. The VIX1D measurement-phase and coverage checks are research-only.
+Synthetic trusted-owner integration does not establish live data or forecast quality.
+The two import-pinning CI defects are repaired without weakening their guard.
+Research detail: `research/market_navigator/RESEARCH_UPDATE_2026-10-22.md`.

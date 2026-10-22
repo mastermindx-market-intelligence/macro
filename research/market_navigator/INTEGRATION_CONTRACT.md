@@ -152,3 +152,21 @@ provenance, not a claim that no later source change exists.
 
 No source adapter was promoted to production. No native Paper edit, account save,
 notification, paid feed, raw corpus ingestion or trade occurred in this foundation.
+
+## 8. Implemented W1 consumer seam (22 October 2026)
+
+`engine/market_navigator_memory.py::read_evidence` retains the canonical owner packet
+and produces a detached display projection. It does not translate capture clocks
+into measurement clocks, resolve opaque snapshot references, or qualify conditions.
+`compare_evidence` requires matching identity/mode and non-regressing clocks, refuses
+conflicting exact queries, and reports value/reference/coverage/quality differences.
+
+`scripts/research/market_navigator_memory_inspect.py` consumes the trusted reader
+only; it is not an HTTP endpoint, store initializer or production deployment. Its
+synthetic integration test uses the incumbent projector/identity/capture/read path
+and verifies no file or directory content changes during inspection. The legacy
+missing-only reader's directory-creation behavior is deliberately not selected.
+
+Application identity, entitlement, actual source generation and current-data proof
+remain with the existing owner. A valid historical context remains historical; no
+current hero, probability, save, alert or trade is enabled by these new adapters.

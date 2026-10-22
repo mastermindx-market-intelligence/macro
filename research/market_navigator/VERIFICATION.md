@@ -72,3 +72,34 @@ alert delivery; empirical forecast validation; real user task study; CI and merg
 receipts; deployed source and signed-in production browser proof.
 
 Those obligations are not satisfied by local tests, a preview, a plan, or this record.
+
+## W1 continuation verification (22 October 2026)
+
+The extended nine-file Navigator suite passed **145 tests in 5.16 seconds**.
+It includes the original foundation plus `test_market_navigator_memory.py`,
+`test_market_navigator_measurement.py`, `test_market_navigator_entrypoints.py`
+and `test_market_navigator_memory_cli.py`. The separate repository import-pinning
+ratchet passed **11 tests in 21.48 seconds** after the new CLI was added.
+
+The trusted-owner subprocess test uses synthetic raw regime data and the actual
+incumbent projector, identity builder, capture writer and exact retained reader.
+The inspection consumer leaves the fixture store's file/directory contents unchanged;
+an absent store remains absent. These tests prove interface behavior, not production
+identity, live data rights, real market completeness or predictive performance.
+
+The legacy missing-only reader's missing-root creation behavior was discovered in a
+synthetic test. The inspection CLI uses the trusted reader only and does not modify
+the legacy owner. A valid opaque snapshot is not falsely rendered as a resolved state.
+
+CI run 39751853416 for the prior head failed on two Navigator script import pins.
+Both entrypoints are repaired without extending the baseline or adding a waiver.
+The new head still owes its own concluded release checks; no merge is inferred here.
+
+Independent review request `market-navigator-foundation-review-20261022` returned
+`backend_unavailable`; one exact original-operation reply read returned
+`reply_unavailable`. No accepted runtime ID, START, or review result is established.
+No replacement request was made. New source remains awaiting independent acceptance.
+
+The previous eight-case browser study was not rerun because its source did not change.
+Native Paper, live data, account save/restore, alert delivery, user study and production
+proof remain outstanding. Measurement metadata is not a forecast or trading authority.

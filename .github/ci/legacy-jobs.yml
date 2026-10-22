@@ -39531,4 +39531,4 @@ jobs:
       - name: install pure foundation test dependencies
         run: pip install pytest
       - name: Navigator clocks, owner binding, numerical audit and inert design study
-        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py -q
+        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py -q
