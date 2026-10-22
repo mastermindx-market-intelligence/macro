@@ -1,5 +1,22 @@
 # Credit Dislocation Intelligence - recovered implementation status
 
+## October 22 completed source integration — current continuation
+
+The original maturity integration is committed as **4d345a59ac8fb595cc8cfaf4435f51fcd0eae706** in the data-bearing workspace. The admitted isolated source workspace is /Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001, operation ccw-cdi-source-integration-20261022-sol-001. Its first merge is **a7f28614fe993ab8dc4d4e3cdfb20892c824bfb7**, retaining R33 parent **03e2bbf1f2f5aacb86e21eca33dba8cacbeb0f1c**. This update commits the subsequent merge of observed main **1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7**. The original data workspace remains at 4d345a5 with its 775 preserved modified/untracked/ignored paths; do not reset, clean, stash or sparse-reapply it.
+
+**Source evidence:** 119 original maturity/view tests passed. Composed owning contracts then passed258 cases; the two missing committed-asset checks subsequently passed after exact index HTML/CSS restoration, without source edits. Latest-main integration preserved runtime bytes. Four curation guards initially found two reached files missing from the existing credit-desk declaration: config/dag.yml and engine/corp_credit.py. Adding precisely those paths took926 paths to928, preserving commands, assertions, ceilings and all other main jobs. All four existing guards then passed in176.28 seconds on tested source tree **d8d71034f60dd8e682306b931b52209ceb1fe950**. The [qualification receipt](evidence/current_main_qualification_20261022.json) retains original failures and corrected proof. Counts overlap and are not summed as unique scenarios.
+
+### Next steps, in order
+
+1. Publish only to the **existing #9590 branch**, claude/ssd-ccw-dislocation-v1-cc87720e59421398, after verifying remote4074adb0aeb2d5029dbaacdda4de5bf4e81f19ab. Use a normal descendant push; keep Draft/HOLD. The managed local branch has a different name. Do not create a replacement PR.
+2. Consume the normal exact-head CI from that source publication. No duplicate dispatch or new job. Included R33 source has green CI39751798516, but its independent review returned an unqualified429; that hold also binds this composition. CDI must not merge around R33's hold.
+3. Build the new native Bonds route in an isolated input/output context that preserves original data. The recovered437,877-byte October15 page proves the earlier source only. Complete language/theme/device and accessibility acceptance through an admitted browser path; original administrator/platform refusals remain binding.
+4. Obtain required source/visual review and the existing release-owner decision, then normal covering production render and protected served-route/machine-consumer proof. No alternate deployment or publication plane.
+5. Continue W4–W6 history/comparables, financing and case memory. Qualified October15 data has311 mapped holdings and zero eligible five-session pairs. Genuine CDS and prospective21/63/126-session outcomes remain evidence obligations; do not invent missing sessions, historical availability, probabilities or outcomes.
+
+Joint continuity: [Macro#9996 checkpoint6336042815](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). R11 continues through original #8241 and its preserved workspaces. Tiingo licensing and intended product use are complete by Chairman attestation; no outreach is needed. This is attended progress, with no new watch, retry, lifecycle, evaluator, account or queue plane. Full program completion remains false.
+
+
 ## Current recovery status — October 22
 
 The original missing-input hydration and native build completed; the retained HTML and all 22 restored inputs still match their receipts. The pricing qualification remains PASS for its exact October 15 source binding, with zero eligible five-session issuer comparisons. These recovered results supersede the historical pending/build-incomplete statements below.

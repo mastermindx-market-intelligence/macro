@@ -5177,8 +5177,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_847),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_820),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_852),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5187,6 +5187,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 CAGR truthful-copy integration adds the actual handler pytest
+    to calculator-input-integrity (+5 estimator units). It newly selects
+    that existing job on the free-content probe (135 -> 136 jobs); index
+    stays136. Actual measured weights5849/5822 fund only these +5 units.
+    Incoming protectedmain adds3 units independently; compose its5847/5820
+    with this exact+5 to5852/5825. Preserve prophet5600, ten packs,
+    execution timeouts and every check.
 
     2026-10-22 GMI micro-theme expansion integration (PR #10017) adds one
     pytest step, tests/test_theme_graph_micro_expansion_20261021.py (ratified
