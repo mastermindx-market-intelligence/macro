@@ -286,7 +286,7 @@ Accepted visual deltas:
 - tier ink → link ink (`--ink-link`, the `templates/tier_preview.css` default outside the prophet gate);
 - returns heat → opacity steps (.14 / .26 / .42) over `--up` / `--down`. The light theme and the ZH red-up convention therefore hold by construction, because theme.css swaps `--up`/`--down` under `html[data-lang="zh"]`.
 
-§15 re-run: `--ink-tier` (= `--ink-link`) text on `--panel`, measured in Chromium on the W2F fixture site, gives dark 6.92:1 and light 5.8:1 (the AA body-text threshold is 4.5:1).
+§15 re-run: `--ink-tier` (= `--ink-link`) text on `--panel`, measured in Chromium on the W2F fixture site (independent review r7, WCAG 2.x relative luminance; chip ink rgb(122,167,224) dark, rgb(41,90,234) light), gives dark 7.12:1 on the states panel (#151820) and 7.20:1 on the coverage panel (#14171e), and light 5.61:1 on #ffffff (the AA body-text threshold is 4.5:1). The 6.92 / 5.79 figures in the §15 table below are the Paper-token values, not the rendered theme.
 
 ## 6. Direction-ink rule (incl. ZH)
 
