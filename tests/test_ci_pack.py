@@ -5176,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_845),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_818),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5186,6 +5186,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Native refresh e0b639a composes Treasury with protected dabf745b.
+    Main now includes both HK lookup and fixed-redirect regression coverage.
+    The two unchanged Treasury suites add four estimator units beyond main:
+    local red measures index 5,845 > 5,841 and free-content 5,818 > 5,814.
+    Import closure passes; job counts, plan-book weight, ten-pack limit,
+    selectors, execution budgets and all suites remain unchanged.
 
     Current-main ae93436a composition preserves all accepted main coverage.
     The two unchanged Treasury suites add exactly four estimator units:
