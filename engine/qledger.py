@@ -2024,9 +2024,13 @@ def _start_control_clocks_for(new_rows: Iterable[dict],
 
 
 def register(claim: dict, root: Path | str | None = None,
-             *, dedupe: bool = True, today: date | None = None) -> dict:
+             *, dedupe: bool = True, today: date | None = None, native_intent=None) -> dict:
     """Register ONE claim. Validates against the schema, stamps `claim_id`,
     `timestamp`, and `status`, then appends to data/qledger/claims.jsonl.
+
+    `native_intent` is an explicit caller-owned storage write identity for an
+    already-bound native owner. It is never inferred from a claim or a clock.
+    Recover an original native write through its retained plan, not this API.
 
     Returns the stored claim dict (with `status` in {open, rejected}). Rejected
     claims ARE persisted (audit trail for the D4 dark-fraction report) but never
@@ -2043,7 +2047,7 @@ def register(claim: dict, root: Path | str | None = None,
     root = _root(root)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(root.joinpath(*_CLAIMS_FILE)) as storage:
+    with _claims_mutation(root.joinpath(*_CLAIMS_FILE), native_intent=native_intent) as storage:
         stored = _prepare_claim(claim)
         cid = stored["claim_id"]
 
@@ -2075,7 +2079,7 @@ def register(claim: dict, root: Path | str | None = None,
 
 
 def register_batch(claims: Iterable[dict], root: Path | str | None = None,
-                   *, dedupe: bool = True, today: date | None = None) -> list[dict]:
+                   *, dedupe: bool = True, today: date | None = None, native_intent=None) -> list[dict]:
     """Register MANY claims with ONE store read and ONE append write
     (§5.1 sub-task 3 / §5.2 — required before any volume increase).
 
@@ -2090,13 +2094,15 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
     valid ones — schema-invalid claims don't raise, they persist as
     status="rejected" exactly as register() does).
 
-    Returns one stored dict per input claim, in input order.
+    Returns one stored dict per input claim, in input order. `native_intent`
+    identifies this batch's one actual storage write, not each claim. An empty
+    or fully deduped batch consumes no storage transaction or clock.
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(p) as storage:
+    with _claims_mutation(p, native_intent=native_intent) as storage:
         if storage is None:
             p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -2142,10 +2148,13 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
         return results
 
 
-def backfill_regime_stamps(root: Path | str | None = None) -> dict:
+def backfill_regime_stamps(root: Path | str | None = None, *, native_intent=None) -> dict:
     """§3.4 backfill: fill missing regime stamps on existing claim rows ONLY
     from the persisted daily vector for dates it covers (PIT-safe by
     construction) — never reconstructed from latest-state sources.
+
+    `native_intent` identifies one changed native view; unchanged calls consume
+    no transaction. Reconcile the retained original replacement for recovery.
 
     Fill-null-only (keep-FIRST): an existing non-null value is never altered.
     Atomic rewrite, and only when at least one row gained a stamp. Returns
@@ -2164,7 +2173,7 @@ def backfill_regime_stamps(root: Path | str | None = None) -> dict:
     p = root.joinpath(*_CLAIMS_FILE)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(p) as storage:
+    with _claims_mutation(p, native_intent=native_intent) as storage:
         claims = _read_jsonl(p) if storage is None else storage.read_rows()
         if not claims:
             return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}
