@@ -129,7 +129,7 @@ def test_policy_version_is_v3_and_story_digest_is_unchanged():
     """A title-mixing or random new_cluster_id fails the pinned digest."""
     from engine.qbus_news_cluster import CLUSTER_POLICY_VERSION
 
-    assert CLUSTER_POLICY_VERSION == "qbus_news_cluster.v3"
+    assert CLUSTER_POLICY_VERSION == "qbus_news_cluster.v4"
     pinned = item("123", "Hello")
     assert pinned.story_id == "benzinga:123"
     assert new_cluster_id(pinned) == "ev2_0816bfa7518889e2"

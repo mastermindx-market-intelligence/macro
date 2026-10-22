@@ -555,7 +555,7 @@ def test_assignment_evidence_names_retrieval_and_matcher_counters(tmp_path):
         evidence = _evidence(store, "benzinga", "b")
 
     assert evidence["retrieval_policy_version"] == RETRIEVAL_POLICY_VERSION
-    assert evidence["cluster_policy_version"] == "qbus_news_cluster.v3"
+    assert evidence["cluster_policy_version"] == "qbus_news_cluster.v4"
     assert evidence["postings_examined"] > 0
     assert evidence["candidates_qualifying"] >= 1
     assert evidence["retrieval_truncated"] is False

@@ -494,3 +494,79 @@ def normalize_massive_news(
             "tags": payload.get("keywords"),
         },
     )
+
+
+def normalize_finlight_news(
+    payload: Mapping[str, object], *, received_at: datetime,
+) -> NewsRevision:
+    """Original zh headline/link with exact provider-tagged CN/HK listings.
+
+    Finlight is the transport; source rights remain scoped to the original
+    publisher. Alternative listings, names, provider AI summaries and sentiment
+    cannot create an attachment or an annotation. Missing revision clocks are
+    not replaced by receipt time; same-clock edits remain reducer conflicts.
+    """
+    from engine.qbus_news_cn_hk import CN_HK_MICS, cn_hk_news_symbol
+    from engine.qkernel import publisher_domain
+    from lib.dataos.identity import IdentityError
+
+    if not isinstance(payload, Mapping) or payload.get("language") != "zh":
+        raise NewsContractError("unsupported_language")
+    received = _aware_utc(received_at, "received_at_not_aware")
+    raw_source = payload.get("source")
+    publisher = publisher_domain(raw_source) if isinstance(raw_source, str) else ""
+    if not publisher:
+        raise NewsContractError("invalid_publisher")
+    url = _text(payload.get("link"), "url", MAX_URL_CHARS, required=True)
+    try:
+        parts = urlsplit(url)
+        host = publisher_domain(parts.hostname or "")
+        if (parts.scheme not in {"http", "https"} or parts.username or parts.password
+                or parts.port not in {None, 80, 443}
+                or not (host == publisher or host.endswith("." + publisher))):
+            raise ValueError
+    except ValueError:
+        raise NewsContractError("invalid_publisher_url") from None
+    published = _parse_clock(payload.get("publishDate"), "published_at", required=True)
+    updated = _parse_clock(payload.get("revisedDate"), "updated_at", required=False)
+    if published > received or (updated is not None and (updated < published or updated > received)):
+        raise NewsContractError("invalid_source_clock")
+    companies = payload.get("companies")
+    if not isinstance(companies, list) or len(companies) > MAX_COLLECTION_ITEMS - 2:
+        raise NewsContractError("invalid_company_entities")
+    tickers, associations = set(), set()
+    invalid_entities = 0
+    for company in companies:
+        if not isinstance(company, Mapping):
+            raise NewsContractError("invalid_company_entities")
+        mic, raw_ticker = company.get("exchange"), company.get("ticker")
+        if not isinstance(mic, str) or mic.strip().upper() not in CN_HK_MICS:
+            continue
+        try:
+            symbol = cn_hk_news_symbol(raw_ticker, mic)
+            if len(raw_ticker) > 64 or len(mic) > 64:
+                raise IdentityError("provider_entity_too_large")
+            tickers.add(symbol)
+            # Existing revision tags retain only the direct association inputs.
+            # RoutedRevision already retains security IDs and universe revision.
+            associations.add("finlight_entity:" + json.dumps(
+                {"ticker": raw_ticker, "exchange": mic, "symbol": symbol},
+                ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+            ))
+        except IdentityError:
+            # Conflicting/unsupported entities stay unbound; never repair with
+            # name search, primaryListing or otherListings issuer expansion.
+            invalid_entities += 1
+    tags = ["language:zh", *sorted(associations)]
+    if invalid_entities:
+        tags.append("entity_invalid:" + str(invalid_entities))
+    return _build(
+        source="finlight:" + publisher,
+        source_item_id=hashlib.sha256(url.encode("utf-8")).hexdigest(),
+        transport="finlight_articles_v2", message_id=None, action="updated",
+        action_explicit=False, published_at=published, updated_at=updated,
+        source_event_at=updated, received_at=received, version_at=updated or published,
+        version_clock_domain="finlight_revised" if updated else "finlight_published",
+        content={"title": payload.get("title"), "url": url, "stocks": sorted(tickers),
+                 "tags": tags},
+    )

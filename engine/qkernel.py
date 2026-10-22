@@ -76,6 +76,13 @@ TIER2_TOKENS: tuple[str, ...] = (
     # major CN business portals / wires (china_news_intel tier 2)
     "em", "sina", "ths", "futu", "cls", "jin10", "yicai", "caixin",
     "eastmoney", "wallstreet", "gelonghui",
+    # Reviewed editorial domains for original Chinese ticker news. These are
+    # publisher roles, never licences. Forum/social hosts are not admitted.
+    "cls.cn", "yicai.com", "stcn.com", "cnstock.com", "cs.com.cn",
+    "caixin.com", "wallstreetcn.com", "cnfin.com",
+    "finance.eastmoney.com", "stock.eastmoney.com", "finance.sina.com.cn",
+    "news.10jqka.com.cn", "etnet.com.hk", "aastocks.com", "hkej.com",
+    "hket.com", "zhitongcaijing.com",
 )
 TIER3_TOKENS: tuple[str, ...] = (
     "yahoo.com", "investing.com", "seekingalpha.com", "kitco.com",

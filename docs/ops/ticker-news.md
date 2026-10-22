@@ -462,3 +462,12 @@ in it to compare against.
 
 不存在 `--verify` 模式：运行健康回执只含进程计数器
 （scripts/run_qbus_news.py:183-206），其中没有可与库存对比的存量计数。
+
+## Original Chinese CN/HK coverage
+
+The existing runner can add publisher-qualified, original-language Chinese
+headlines for current mainland and Hong Kong listings. See
+[Chinese ticker news](chinese-ticker-news.md) for source selection, the Finlight
+adapter contract, exact listing provenance, rights-qualified activation,
+coverage-health semantics and the remaining live acceptance gate. The lane is
+OFF by default; configuring a publisher label does not establish a connected feed.

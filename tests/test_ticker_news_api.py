@@ -477,7 +477,7 @@ def test_editorial_views_filter_rows_groups_details_changes_and_flow(monkeypatch
         body = bodies[mode] = response.json()
         assert len(body["rows"]) == count
         assert body["editorial_view"]["mode"] == mode
-        assert body["editorial_view"]["rules"] == "ticker_news.editorial_rules.v1"
+        assert body["editorial_view"]["rules"] == "ticker_news.editorial_rules.v2"
         assert body["editorial_view"]["name_coverage"] == "names_and_symbols"
         assert body["flow"]["reports_24h"] == count
         assert body["flow"]["provenance"]["editorial_view"] == body["editorial_view"]

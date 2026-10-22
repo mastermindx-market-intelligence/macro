@@ -166,8 +166,11 @@ def build_news_universe_snapshot(
     observed_at: datetime,
     fresh_for: timedelta = timedelta(hours=36),
     min_count: int = 400,
+    include_cn_hk: bool = False,
 ) -> dict[str, object]:
-    """Build one exact current S&P 500 news-universe snapshot."""
+    """Build the current S&P selection, optionally adding canonical CN/HK listings."""
+    if not isinstance(include_cn_hk, bool):
+        raise NewsUniverseSnapshotError("include_cn_hk_invalid")
 
     observed = _aware_utc(observed_at)
     if not isinstance(fresh_for, timedelta) or fresh_for <= timedelta(0):
@@ -302,6 +305,20 @@ def build_news_universe_snapshot(
         "pit_context_unresolved_count": pit_unresolved,
         "securities": securities,
     }
+
+    if include_cn_hk:
+        from engine.qbus_news_cn_hk import cn_hk_news_securities
+        try:
+            additional = cn_hk_news_securities(aliases, security_master, observed_at=observed)
+        except IdentityError:
+            raise NewsUniverseSnapshotError("cn_hk_identity_unqualified") from None
+        securities.extend(additional)
+        snapshot.update(
+            revision=_revision(securities).replace("sp500-news-", "sp500-cn-hk-news-", 1),
+            effective_at=observed.isoformat(),
+            cn_hk_count=len(additional),
+            cn_hk_membership_authority="reference.security_master+theme_graph_native",
+        )
 
     qualified = qualify_universe(snapshot, asof=observed)
     if qualified.status != "qualified" or qualified.count != len(securities):

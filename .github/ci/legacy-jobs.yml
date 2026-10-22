@@ -261,6 +261,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -2152,6 +2153,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -3102,6 +3104,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -6967,6 +6970,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -9392,6 +9396,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -20572,6 +20577,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
@@ -21365,6 +21371,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -23400,6 +23407,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -25934,6 +25942,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -31598,6 +31607,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -32113,6 +32123,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/qbus_news_cn_hk.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -35182,6 +35193,9 @@ jobs:
       - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/massive_news.py
+      - engine/finlight_news.py
+      - engine/qbus_news_cn_hk.py
+      - tests/test_chinese_ticker_news.py
       - engine/qbus_news_intake.py
       - engine/qbus_news_quality.py
       - engine/qbus_news_editorial.py
@@ -36230,6 +36244,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_qbus_news_retrieval.py
           tests/test_massive_news.py
+          tests/test_chinese_ticker_news.py
           tests/test_qbus_news_intake.py
           tests/test_shared_news_intelligence.py
           tests/test_alpaca_news.py
