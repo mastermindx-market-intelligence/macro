@@ -33,6 +33,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import http.client
 import json
 import logging
 import math
@@ -75,6 +76,13 @@ _AUTH_LOCK = threading.Lock()
 _AUTH_UPSTREAM_LIMIT = 8
 _AUTH_UPSTREAM_SEM = threading.BoundedSemaphore(_AUTH_UPSTREAM_LIMIT)
 _TOKEN_REJECT_HTTP = frozenset({400, 401, 403})
+
+#: Entitlement reads: the statuses that genuinely mean "the service is failing
+#: right now", so the pre-existing outage contract -- and its positive-only
+#: grace -- still applies unchanged. Any OTHER answered status is a verdict about
+#: OUR request (a bad service role 401/403, a moved table 404, a rejected query
+#: 4xx): a configuration fault, never a vendor blip.
+_TRANSIENT_ENTITLEMENT_HTTP = frozenset({408, 429, 500, 502, 503, 504})
 
 
 @dataclass(frozen=True)
@@ -346,7 +354,15 @@ def _fresh_uid(token: str) -> str | None:
 
 
 def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
-    """Return (row, store_reachable). Empty row is reachable and unentitled."""
+    """Return (row, store_reachable). Empty row is reachable and unentitled.
+
+    Only REAL I/O trouble is an outage -- a transport failure or a transient
+    HTTP status -- so the (None, False) path, its positive-only grace and its
+    503 stay exactly as they were. A missing service role, a body the SELECT
+    could not have produced, or a bug in the read itself is a configuration or
+    protocol fault: it raises _EntitlementStoreInvalid, which no caller may
+    mistake for a reachable absence, cache, or autoretry around.
+    """
     from app import billing  # noqa: PLC0415
 
     quoted = urllib.parse.quote(user_id)
@@ -356,16 +372,56 @@ def _store_entitlement(user_id: str) -> tuple[dict[str, Any] | None, bool]:
             f"user_entitlements?user_id=eq.{quoted}&select=tier,features,status",
             timeout=4,
         )
-    except Exception as exc:  # noqa: BLE001
+    except urllib.error.HTTPError as exc:
+        # PostgREST ANSWERED. 408/429/5xx is the service failing; every other
+        # status is a verdict about our own request (bad service role, moved
+        # table, rejected query), so it is OUR fault and not an outage.
+        if exc.code in _TRANSIENT_ENTITLEMENT_HTTP:
+            log.warning("paywall: entitlement store unavailable (HTTP %s)", exc.code)
+            return None, False
+        raise _EntitlementStoreInvalid(
+            f"entitlement store rejected the read (HTTP {exc.code})"
+        ) from exc
+    except http.client.InvalidURL as exc:  # our own base URL cannot be requested
+        raise _EntitlementStoreInvalid("entitlement store URL is unusable") from exc
+    except (urllib.error.URLError, http.client.HTTPException, OSError) as exc:
+        # Genuine I/O: DNS, connect/read timeout, reset, TLS, truncated response.
+        # TimeoutError and ConnectionError are OSError subclasses.
         log.warning("paywall: entitlement store unavailable (%s)", exc)
         return None, False
-    if isinstance(rows, list) and rows and isinstance(rows[0], dict):
-        return rows[0], True
-    return None, True
+    except _EntitlementStoreInvalid:
+        raise  # already classified; never double-wrap
+    except Exception as exc:  # noqa: BLE001 — a bug is not a vendor blip
+        raise _EntitlementStoreInvalid(
+            f"entitlement store read failed ({type(exc).__name__})"
+        ) from exc
+
+    # The user_id is a primary key and all three selected columns are NOT NULL
+    # (0005_user_entitlements.sql). Only [] proves a missing entitlement.
+    if isinstance(rows, list) and not rows:
+        return None, True
+    if isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], dict):
+        row = rows[0]
+        if (isinstance(row.get("tier"), str)
+                and isinstance(row.get("status"), str)
+                and isinstance(row.get("features"), list)
+                and all(isinstance(feature, str) for feature in row["features"])):
+            return row, True
+    raise _EntitlementStoreInvalid("entitlement store returned an invalid row envelope")
 
 
 class _EntitlementStoreUnavailable(RuntimeError):
     """No usable store verdict or previously verified positive grace."""
+
+
+class _EntitlementStoreInvalid(RuntimeError):
+    """The store cannot produce a verdict at all: configuration or protocol.
+
+    Deliberately NOT a subclass of _EntitlementStoreUnavailable. A missing
+    service role or an unreadable body is not a vendor blip, so it must never
+    reach the 503 autoretry, must never consume outage grace, and must never be
+    recorded as a "free" verdict for anyone.
+    """
 
 
 def _entitled(
@@ -376,6 +432,11 @@ def _entitled(
     Site paths keep their existing fail-closed false verdict on store outage.
     The Pro host can instead distinguish an outage from a genuine unpaid row,
     WITHOUT changing the underlying entitlement/grace authority.
+
+    A configuration/protocol fault is neither of those: nothing is learned
+    about this user, so it is not cached, not answered as "free", and not
+    granted grace. Site paths fail closed on it exactly as on an outage; the
+    Pro host, which opts in with unavailable_as_error, sees the exception.
     """
     now = time.monotonic()
     fresh_ttl = _seconds("PAYWALL_ENTITLEMENT_CACHE_SECONDS", 60.0, 5.0, 120.0)
@@ -385,7 +446,19 @@ def _entitled(
         if cached and cached.fetched_at + fresh_ttl > now:
             return cached.allowed, cached.tier
 
-    row, reachable = _store_entitlement(user_id)
+    try:
+        row, reachable = _store_entitlement(user_id)
+    except _EntitlementStoreInvalid as exc:
+        # A configuration/protocol fault says NOTHING about this user's tier: it
+        # is not cached, it is not answered as "free", and -- unlike a real
+        # outage -- it never reaches the grace window below. Site callers keep
+        # their documented fail-closed verdict; only the Pro host, which opts in
+        # with unavailable_as_error, is allowed to see an exception.
+        if unavailable_as_error:
+            raise
+        log.warning("paywall: entitlement store unusable, denying (%s)", exc)
+        return False, "free"
+
     if reachable:
         tier = str((row or {}).get("tier") or "free").strip().lower()
         status = str((row or {}).get("status") or "none").strip().lower()
@@ -699,10 +772,14 @@ def _is_bot_document(request: Request, path: str) -> bool:
     A missing Sec-Fetch-Dest on a Bot deep link should not strand a real browser
     on raw 401 JSON; explicit fetch/asset/API semantics still win.
     """
+    destination = (request.headers.get("sec-fetch-dest") or "").strip().lower()
+    kind = (request.headers.get("x-original-kind") or "").strip().lower()
+    if (destination and destination != "document") or (kind and kind != "document"):
+        return False
+    if destination == "document" or kind == "document":
+        return True
     if _is_document(request, path):
         return True
-    if request.headers.get("sec-fetch-dest") or request.headers.get("x-original-kind"):
-        return False
     if path.startswith(("/api/", "/ws/")) or path.lower().endswith(
         (".js", ".css", ".json", ".svg", ".ico", ".png", ".jpg", ".woff2")
     ):
@@ -893,6 +970,12 @@ def paywall_check_pro(request: Request) -> Response:
         return Response(status_code=204, headers=_headers(f"allow-{normalize_tier(tier)}"))
     except _EntitlementStoreUnavailable:
         return _unavailable_pro(request, path)
+    except _EntitlementStoreInvalid as exc:
+        # Missing service role, an unusable body, or a bug in the read: the store
+        # cannot answer at all. Permanent, so NO autoretry -- and never a
+        # statement that this caller is unpaid.
+        log.error("paywall: entitlement store unusable (%s)", exc)
+        return _internal_pro_failure(request, path)
     except Exception:  # noqa: BLE001 — unexpected/config faults are not vendor blips
         log.exception("paywall: unexpected Pro host verification failure")
         return _internal_pro_failure(request, path)

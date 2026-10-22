@@ -15,11 +15,13 @@ unknown-tier and broken-catalog paths denying rather than guessing.
 from __future__ import annotations
 
 import base64
+import http.client
 import json
 import re
 import shutil
 import subprocess
 import time
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -128,8 +130,8 @@ def test_expired_shared_cookie_recovers_with_canonical_auth_client(monkeypatch):
     assert r.headers["vary"] == "Cookie"
     assert 'name="mm-bot-renew" content="yes"' in r.text
     assert '<base href="https://www.mastermind-x.com/">' in r.text
-    assert 'src="https://www.mastermind-x.com/theme.js"' in r.text
-    assert "window.getSupabaseClient()" in r.text
+    assert 'src="https://www.mastermind-x.com/theme.js?bot-recovery=1"' in r.text
+    assert "var broker = window.getSupabaseClient;" in r.text
     assert "sb.auth.getSession()" in r.text
     assert "location.reload()" in r.text
     assert "sessionStorage" in r.text
@@ -342,6 +344,327 @@ def test_temporary_auth_failure_document_retries_without_paywall_message(monkeyp
     assert 'name="mm-bot-service-retry" content="enabled"' in r.text
     assert "attempts >= 2" in r.text
     assert "5000 * Math.pow(2" in r.text
+
+
+# ---------------------------------------------------------------------------
+# What the store actually answered: app.billing._pg and below
+#
+# These drive the seam BELOW _store_entitlement, so the real classification is
+# under test rather than a stubbed verdict. The line being defended: real I/O
+# trouble stays a retryable 503, while a configuration or protocol fault is
+# never retried and is NEVER recorded as "free" -- not even for a caller who
+# was a paying customer a minute ago.
+# ---------------------------------------------------------------------------
+
+
+def _pg_result(result):
+    """A stand-in for app.billing._pg that answers with `result`."""
+
+    def _call(*args, **kwargs):
+        return result
+
+    return _call
+
+
+def _pg_raises(exc):
+    def _call(*args, **kwargs):
+        raise exc
+
+    return _call
+
+
+def _http_error(code: int) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError(
+        "https://postgrest.invalid/rest/v1/user_entitlements", code, "boom", {}, None,
+    )
+
+
+def _blank_service_role(monkeypatch) -> None:
+    """Exactly the state a missing SUPABASE_SERVICE_ROLE_KEY leaves behind."""
+    from app import billing  # noqa: PLC0415
+
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "")
+
+
+def _pro_row():
+    return [{"tier": "pro", "status": "active", "features": [paywall._PRO_FEATURE]}]
+
+
+def _stale_fresh_read() -> None:
+    """Expire the freshness window while keeping the accepted grace window."""
+    from dataclasses import replace  # noqa: PLC0415
+
+    v = paywall._ENT_CACHE[UID]
+    paywall._ENT_CACHE[UID] = replace(v, fetched_at=v.fetched_at - 200)
+
+
+def test_the_read_still_asks_only_for_the_three_entitlement_columns(monkeypatch):
+    seen = {}
+
+    def _call(method, path, **kwargs):
+        seen["method"] = method
+        seen["path"] = path
+        return []
+
+    monkeypatch.setattr("app.billing._pg", _call)
+    assert paywall._store_entitlement(UID) == (None, True)
+    assert seen["method"] == "GET"
+    assert seen["path"] == f"user_entitlements?user_id=eq.{UID}&select=tier,features,status"
+
+
+_TRANSPORT_FAULTS = [
+    urllib.error.URLError("connection refused"),
+    urllib.error.URLError("name or service not known"),
+    TimeoutError("read timed out"),
+    ConnectionResetError("reset by peer"),
+    ConnectionRefusedError("connection refused"),
+    http.client.RemoteDisconnected("closed without response"),
+    http.client.IncompleteRead(b"partial"),
+    http.client.BadStatusLine("not an http response"),
+]
+
+
+@pytest.mark.parametrize(
+    "fault",
+    _TRANSPORT_FAULTS,
+    ids=[
+        "urlerror-refused", "urlerror-dns", "timeout", "reset", "refused",
+        "remote-disconnected", "incomplete-read", "bad-status-line",
+    ],
+)
+def test_real_io_trouble_is_the_only_thing_that_counts_as_an_outage(monkeypatch, fault):
+    monkeypatch.setattr("app.billing._pg", _pg_raises(fault))
+    assert paywall._store_entitlement(UID) == (None, False)
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 503
+    assert r.json()["error"] == "membership_check_unavailable"
+    assert r.headers["retry-after"] == "5"
+    assert r.headers["x-paywall"] == "unavailable"
+    assert UID not in paywall._ENT_CACHE
+
+
+@pytest.mark.parametrize("code", [408, 429, 500, 502, 503, 504])
+def test_transient_http_status_keeps_the_existing_outage_contract(monkeypatch, code):
+    monkeypatch.setattr("app.billing._pg", _pg_raises(_http_error(code)))
+    assert paywall._store_entitlement(UID) == (None, False)
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 503
+    assert r.json()["retryable"] is True
+    assert UID not in paywall._ENT_CACHE
+
+
+@pytest.mark.parametrize("code", [400, 401, 402, 403, 404, 405, 409, 415, 422, 451])
+def test_non_transient_http_status_is_a_configuration_fault(monkeypatch, code):
+    monkeypatch.setattr("app.billing._pg", _pg_raises(_http_error(code)))
+    with pytest.raises(paywall._EntitlementStoreInvalid):
+        paywall._store_entitlement(UID)
+    assert UID not in paywall._ENT_CACHE
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
+    assert r.headers["x-paywall"] == "error"
+    assert r.headers["cache-control"] == "private, no-store"
+    assert UID not in paywall._ENT_CACHE
+
+
+_MALFORMED_BODIES = [
+    None,                                             # empty body, or a JSON null
+    {},                                               # an object, not an array
+    {"message": 'relation "user_entitlements" does not exist'},
+    {"code": "PGRST200", "details": "no such table"},  # an error envelope, 200
+    {"tier": "pro", "status": "active", "features": ["site_full"]},
+    "[]",                                             # a JSON string, not an array
+    0,
+    True,
+    [None],
+    ["a row"],
+    [[{"tier": "pro"}]],
+    [{}],                                             # missing selected columns
+    [{"tier": "pro"}],
+    [{"tier": "pro", "status": "active", "features": "site_full"}],
+    [{"tier": "pro", "status": "active", "features": [7]}],
+    [{"tier": 7, "status": "active", "features": []}],
+    [{"tier": "pro", "status": {}, "features": []}],
+    _pro_row() * 2,                                    # user_id is a primary key
+]
+
+
+@pytest.mark.parametrize("body", _MALFORMED_BODIES, ids=lambda b: type(b).__name__)
+def test_a_body_the_select_could_not_have_produced_is_never_an_answer(monkeypatch, body):
+    monkeypatch.setattr("app.billing._pg", _pg_result(body))
+    with pytest.raises(paywall._EntitlementStoreInvalid):
+        paywall._store_entitlement(UID)
+    assert UID not in paywall._ENT_CACHE
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
+    # No malformed caching: nothing about this user was learned, so the next
+    # caller is not told "free" either -- and a site caller still just denies.
+    assert UID not in paywall._ENT_CACHE
+    assert paywall._entitled(UID, paywall._PRO_FEATURE) == (False, "free")
+    assert UID not in paywall._ENT_CACHE
+
+
+def test_a_well_formed_empty_array_is_a_verified_absence(monkeypatch):
+    monkeypatch.setattr("app.billing._pg", _pg_result([]))
+    assert paywall._store_entitlement(UID) == (None, True)
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 403
+    assert r.json()["locked"] is True
+    assert r.json()["tier"] == "free"
+    assert r.headers["x-paywall"] == "deny"
+    # A REACHABLE verdict is still cached. Unchanged, intended behavior.
+    assert paywall._ENT_CACHE[UID].allowed is False
+
+
+@pytest.mark.parametrize("status", ["active", "trialing"])
+def test_verified_active_or_trialing_pro_is_still_admitted(monkeypatch, status):
+    monkeypatch.setattr(
+        "app.billing._pg",
+        _pg_result([{"tier": "pro", "status": status, "features": [paywall._PRO_FEATURE]}]),
+    )
+    _signed_in(monkeypatch)
+    assert paywall._entitled(UID, paywall._PRO_FEATURE) == (True, "pro")
+    r = _check()
+    assert r.status_code == 204
+    assert r.headers["x-paywall"].startswith("allow-")
+
+
+@pytest.mark.parametrize(
+    "row,why",
+    [
+        ({"tier": "free", "status": "active", "features": ["site_full"]}, "free-tier"),
+        ({"tier": "pro", "status": "canceled", "features": ["site_full"]}, "canceled"),
+        ({"tier": "pro", "status": "past_due", "features": ["site_full"]}, "past-due"),
+        ({"tier": "pro", "status": "active", "features": ["seats"]}, "feature-absent"),
+        ({"tier": "mystery", "status": "active", "features": ["site_full"]}, "unknown-tier"),
+    ],
+    ids=["free-tier", "canceled", "past-due", "feature-absent", "unknown-tier"],
+)
+def test_well_formed_rows_still_deny_exactly_when_they_did_before(monkeypatch, row, why):
+    monkeypatch.setattr("app.billing._pg", _pg_result([row]))
+    _signed_in(monkeypatch)
+    assert _check().status_code == 403, why
+
+
+def test_null_required_columns_are_a_protocol_fault_not_an_unpaid_verdict(monkeypatch):
+    """The entitlement schema declares all three selected columns NOT NULL."""
+    monkeypatch.setattr("app.billing._pg", _pg_result([
+        {"tier": None, "features": None, "status": None},
+    ]))
+    _signed_in(monkeypatch)
+    assert _check().status_code == 500
+    assert UID not in paywall._ENT_CACHE
+
+
+def test_a_missing_service_role_is_permanent_not_a_retryable_blip(monkeypatch):
+    from app import billing  # noqa: PLC0415
+
+    _blank_service_role(monkeypatch)
+    # The real guard fires before any socket, so no stand-in for _pg stands in.
+    with pytest.raises(RuntimeError):
+        billing._pg("GET", "user_entitlements?select=tier", timeout=4)
+    with pytest.raises(paywall._EntitlementStoreInvalid):
+        paywall._store_entitlement(UID)
+    assert UID not in paywall._ENT_CACHE
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
+    assert r.headers["x-paywall"] == "error"
+    assert UID not in paywall._ENT_CACHE
+
+
+def test_a_missing_service_role_never_reaches_the_network(monkeypatch):
+    def _no_socket(*args, **kwargs):
+        raise AssertionError("the missing-role guard must fire before urlopen")
+
+    _blank_service_role(monkeypatch)
+    monkeypatch.setattr("urllib.request.urlopen", _no_socket)
+    with pytest.raises(paywall._EntitlementStoreInvalid):
+        paywall._store_entitlement(UID)
+
+
+def test_a_confirmed_pro_survives_a_real_transport_blip(monkeypatch):
+    monkeypatch.setattr("app.billing._pg", _pg_result(_pro_row()))
+    _signed_in(monkeypatch)
+    assert _check().status_code == 204
+    monkeypatch.setattr("app.billing._pg", _pg_raises(urllib.error.URLError("reset")))
+    _stale_fresh_read()
+    assert _check().status_code == 204
+
+
+@pytest.mark.parametrize("fault", ["malformed-body", "missing-role"], ids=str)
+def test_outage_grace_never_covers_a_fault_the_store_can_never_fix(monkeypatch, fault):
+    from app import billing
+    real_pg = billing._pg
+    monkeypatch.setattr("app.billing._pg", _pg_result(_pro_row()))
+    _signed_in(monkeypatch)
+    assert _check().status_code == 204
+    _stale_fresh_read()
+    if fault == "malformed-body":
+        monkeypatch.setattr("app.billing._pg", _pg_result({"code": "PGRST116"}))
+    else:
+        monkeypatch.setattr(billing, "_pg", real_pg)
+        _blank_service_role(monkeypatch)
+    r = _check()
+    assert r.status_code == 500
+    assert r.json()["error"] == "membership_verification_error"
+    # The stale positive is neither honoured nor rewritten into a "free" verdict.
+    assert paywall._ENT_CACHE[UID].allowed is True
+    assert paywall._ENT_CACHE[UID].tier == "pro"
+
+
+def test_a_fresh_positive_is_served_without_reading_the_store(monkeypatch):
+    monkeypatch.setattr("app.billing._pg", _pg_result(_pro_row()))
+    _signed_in(monkeypatch)
+    assert _check().status_code == 204
+    monkeypatch.setattr(
+        "app.billing._pg", _pg_raises(AssertionError("a fresh verdict must not re-read")),
+    )
+    assert _check().status_code == 204
+
+
+@pytest.mark.parametrize(
+    "fault", ["outage", "missing-role", "malformed-body"], ids=str,
+)
+def test_ordinary_site_callers_stay_fail_closed_and_uncached(monkeypatch, fault):
+    if fault == "outage":
+        monkeypatch.setattr("app.billing._pg", _pg_raises(urllib.error.URLError("down")))
+    elif fault == "malformed-body":
+        monkeypatch.setattr("app.billing._pg", _pg_result(None))
+    else:
+        _blank_service_role(monkeypatch)
+    assert paywall._entitled(UID, paywall._PRO_FEATURE) == (False, "free")
+    assert UID not in paywall._ENT_CACHE
+
+
+def test_an_ordinary_site_caller_still_sees_a_real_paid_row(monkeypatch):
+    monkeypatch.setattr("app.billing._pg", _pg_result(_pro_row()))
+    assert paywall._entitled(UID, paywall._PRO_FEATURE) == (True, "pro")
+
+
+def test_a_configuration_fault_can_never_be_caught_as_a_vendor_blip():
+    assert issubclass(paywall._EntitlementStoreUnavailable, RuntimeError)
+    assert issubclass(paywall._EntitlementStoreInvalid, RuntimeError)
+    assert not issubclass(paywall._EntitlementStoreInvalid, paywall._EntitlementStoreUnavailable)
+
+
+def test_a_browser_document_config_fault_is_not_a_retry_page(monkeypatch):
+    _blank_service_role(monkeypatch)
+    _signed_in(monkeypatch)
+    r = _check("/", headers={"Sec-Fetch-Dest": "document"})
+    assert r.status_code == 500
+    assert "text/html" in r.headers["content-type"]
+    assert r.headers["cache-control"] == "private, no-store"
+    assert "sessionStorage" not in r.text
+    assert "retry" not in r.text.lower()
+    assert "Mastermind Bot comes with Pro" not in r.text
 
 
 def test_invalid_token_does_not_receive_cached_positive_grace(monkeypatch):
@@ -951,7 +1274,7 @@ const document = {
     return {content:fixture.mode};
   }
 };
-const window = {};
+const window = {addEventListener(){}};
 if(fixture.hasBroker) window.getSupabaseClient = () => {
   calls++;
   let session = fixture.result === 'none' ? null : {
@@ -964,13 +1287,18 @@ if(fixture.hasBroker) window.getSupabaseClient = () => {
       data:{session},error:fixture.result==='none'?{message:'no session'}:null
     })}});
 };
+if(window.getSupabaseClient) {
+  window.getSupabaseClient.botRecoveryVersion = 1;
+  window.getSupabaseClient.acceptRecoverySession = s =>
+    !!(s && s.access_token && Number(s.expires_at)>Date.now()/1000+15);
+}
 vm.runInNewContext(javascript, {
   window,document,location:{reload(){reloads++;}},
   sessionStorage:{
     getItem(k){if(fixture.storageOff)throw Error('storage unavailable');return memory.get(k)||null;},
     setItem(k,v){if(fixture.storageOff)throw Error('storage unavailable');memory.set(k,v);}
   },
-  Date,Number,JSON,Math,Promise,console,setTimeout:armTimer,clearTimeout:disarmTimer
+  Date,Number,JSON,Math,Promise,AbortController,console,setTimeout:armTimer,clearTimeout:disarmTimer
 });
 setImmediate(()=>{
   if(fixture.result==='pending' || fixture.result==='dom_stall'){
@@ -997,9 +1325,51 @@ setImmediate(()=>{
 def test_recovery_assets_are_first_party_and_no_unclean_redirects() -> None:
     html = DOCUMENT.read_text(encoding="utf-8")
     assert '<base href="https://www.mastermind-x.com/">' in html
-    assert '<script src="https://www.mastermind-x.com/theme.js" defer>' in html
+    assert '<script src="https://www.mastermind-x.com/theme.js?bot-recovery=1" defer>' in html
     assert "supabase.co/auth/v1/token" not in html
     assert "document.cookie" not in html
     assert "window.location.href =" not in html
     assert "location.reload()" in html  # Same original URL, re-gated.
     assert "sessionStorage" in html  # Bounded renewal, no unbounded loop.
+
+
+@pytest.mark.parametrize("path", ["/", "/desk.html"])
+@pytest.mark.parametrize("headers", [
+    {"Sec-Fetch-Dest": "empty", "Accept": "text/html"},
+    {"X-Original-Kind": "asset", "Sec-Fetch-Dest": "document", "Accept": "text/html"},
+])
+@pytest.mark.parametrize("state", ["expired", "outage", "free", "config"])
+def test_explicit_fetch_metadata_wins_over_document_shaped_bot_paths(
+    monkeypatch, path, headers, state,
+):
+    _signed_in(monkeypatch)
+    if state == "expired":
+        monkeypatch.setattr("app.main._mm_supabase_access_token", lambda request: _jwt(1))
+        expected = 401
+    elif state == "outage":
+        monkeypatch.setattr("app.billing._pg", _pg_raises(TimeoutError("synthetic timeout")))
+        expected = 503
+    elif state == "config":
+        _blank_service_role(monkeypatch)
+        expected = 500
+    else:
+        monkeypatch.setattr("app.billing._pg", _pg_result([]))
+        expected = 403
+    r = _check(path, headers=headers)
+    assert r.status_code == expected
+    assert r.headers["content-type"].startswith("application/json")
+    assert isinstance(r.json(), dict)
+
+
+@pytest.mark.parametrize("fault", [
+    http.client.InvalidURL("synthetic bad URL"),
+    json.JSONDecodeError("synthetic invalid JSON", "x", 0),
+    ValueError("synthetic application defect"),
+])
+def test_non_transport_store_fault_is_not_retried_or_cached(monkeypatch, fault):
+    monkeypatch.setattr("app.billing._pg", _pg_raises(fault))
+    _signed_in(monkeypatch)
+    r = _check()
+    assert r.status_code == 500
+    assert "retry-after" not in r.headers
+    assert UID not in paywall._ENT_CACHE

@@ -13,8 +13,7 @@
   <style>
     :root{color-scheme:light;--ink:#111827;--muted:#667085;--line:#dfe4ea;--blue:#2463eb}
     *{box-sizing:border-box}
-    /* The shared auth broker may also mount Macro navigation/chat widgets here.
-       This single-purpose recovery page must remain uncluttered. */
+    /* Keep this single-purpose recovery document uncluttered. */
     body > :not(main):not(script){display:none!important}
     body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.55
       ui-sans-serif,system-ui,-apple-system,sans-serif;color:var(--ink);
@@ -45,12 +44,15 @@
 <!-- Reuse the EXISTING main-site Supabase client and parent-domain cookie
      storage. A second token refresh/auth plane must never live on the Bot host.
      The fixed base sends the lazy SDK load to www, not the gated Bot origin. -->
-<script src="https://www.mastermind-x.com/theme.js" defer></script>
+<script src="https://www.mastermind-x.com/theme.js?bot-recovery=1" defer></script>
 <!-- The server replaces the opaque nonce per response; this is the only
      inline recovery script permitted by the response CSP. -->
 <script nonce="__MM_BOT_CSP_NONCE__">
 (function () {
   'use strict';
+  // Existing theme bundles already honor a truthy config override. Keep stale
+  // bundles disabled BEFORE they execute; the guarded broker alone may opt in.
+  window.SUPABASE_CFG = {botRecoveryDisabled:true};
   var status = document.getElementById('mm-bot-renew-status');
   var retry = document.getElementById('mm-bot-renew-retry');
   if (retry) retry.addEventListener('click', function () { location.reload(); });
@@ -58,63 +60,71 @@
     if (status) status.textContent =
       'We could not renew your session. Please sign in again. Your subscription has not been changed.';
   }
-  // Start the deadline at inline-script execution, BEFORE DOMContentLoaded;
-  // a stalled deferred theme.js must not strand the recovery page indefinitely.
-  var settled = false;
-  var timeout = setTimeout(function () {
-    if (settled) return;
-    settled = true;
-    showUnavailable();
-  }, 12000);
-  function failClosed() {
+  // Admission precedes the deferred theme, including its SDK initialization.
+  // Every broker effect checks this absolute deadline, even if timers run late.
+  var deadline = Date.now() + 12000, settled = false;
+  var abort = typeof AbortController === 'function' ? new AbortController() : null;
+  var timeout = setTimeout(failClosed, 12000);
+  function close() {
     if (settled) return;
     settled = true;
     clearTimeout(timeout);
+    if (abort) abort.abort();
+  }
+  function failClosed() {
+    if (settled) return;
+    close();
     showUnavailable();
   }
-  function refresh() {
-    if (settled) return; // Ignore a late DOMContentLoaded after the deadline.
-    var mode = document.querySelector('meta[name="mm-bot-renew"]');
-    if (!mode || mode.content !== 'yes') { failClosed(); return; }
-    // One automatic attempt per tab within 30 s. Every navigation back to Bot
-    // still passes server-side auth + entitlement. Nothing grants access here.
-    try {
-      var key = 'mm.bot.session-renew.v1', now = Date.now();
-      var previous = Number(sessionStorage.getItem(key) || 0);
-      if (previous > 0 && previous <= now && now - previous < 30000) {
-        failClosed();
-        return;
-      }
-      sessionStorage.setItem(key, String(now));
-    } catch (e) {
-      // No tab-scoped replay fence: do not risk an infinite refresh/reload loop.
+  function isOpen() {
+    if (!settled && Date.now() >= deadline) failClosed();
+    return !settled;
+  }
+  window.__MMBotSessionRecovery = {
+    version: 1, isOpen: isOpen, fail: failClosed,
+    signal: abort && abort.signal
+  };
+  window.addEventListener('pagehide', failClosed, {once:true});
+  var mode = document.querySelector('meta[name="mm-bot-renew"]');
+  if (!abort || !mode || mode.content !== 'yes') { failClosed(); return; }
+  // No tab-scoped replay fence means no automatic attempt. All later script and
+  // SDK continuations see the same permanently closed controller.
+  try {
+    var key = 'mm.bot.session-renew.v1', now = Date.now();
+    var previous = Number(sessionStorage.getItem(key) || 0);
+    if (previous > 0 && previous <= now && now - previous < 30000) {
       failClosed();
       return;
     }
-    if (!window.getSupabaseClient) { failClosed(); return; }
-    // The already-running deadline also covers SDK and GoTrue settlement;
-    // it controls only this page and never retries or mutates auth state.
-    function finish(result, failed) {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-      var session = !failed && result && result.data && result.data.session;
-      var expires = Number(session && session.expires_at || 0);
-      if (!failed && result && !result.error && session && session.access_token &&
-          Number.isFinite(expires) && expires > Date.now() / 1000 + 15) {
-        // Original path and query are kept; no caller-controlled return URL.
-        // Caddy revalidates the new token and Pro entitlement on the next GET.
+    sessionStorage.setItem(key, String(now));
+  } catch (e) {
+    failClosed();
+    return;
+  }
+  function refresh() {
+    if (!isOpen()) return;
+    var broker = window.getSupabaseClient;
+    // Only the guarded broker can renew. Old bundles remain auth-disabled.
+    if (!broker || broker.botRecoveryVersion !== 1 ||
+        typeof broker.acceptRecoverySession !== 'function') {
+      failClosed();
+      return;
+    }
+    broker().then(function (sb) {
+      if (!isOpen()) return null;
+      return sb.auth.getSession();
+    }).then(function (result) {
+      if (!isOpen()) return;
+      var session = result && result.data && result.data.session;
+      if (result && !result.error && broker.acceptRecoverySession(session)) {
+        close();
+        // Keep the original path/query. The server verifies identity AND Pro
+        // entitlement again; browser session data never grants Bot admission.
         location.reload();
       } else {
-        showUnavailable();
+        failClosed();
       }
-    }
-    window.getSupabaseClient().then(function (sb) {
-      // GoTrue handles refresh-token rotation and writes the canonical shared
-      // cookie before this promise resolves. Never authenticate from JWT claims.
-      return sb.auth.getSession();
-    }).then(function (result) { finish(result, false); })
-      .catch(function () { finish(null, true); });
+    }).catch(failClosed);
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', refresh, {once:true});
