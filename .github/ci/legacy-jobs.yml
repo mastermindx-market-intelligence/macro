@@ -11848,6 +11848,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
       - "scripts/build_live_overlay.py"
@@ -13775,6 +13777,8 @@ jobs:
       - "templates/finance_intelligence.js"
       - "templates/finance_intelligence.css"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "tests/test_finance_intelligence_page.py"
       - "tests/test_finance_intelligence_hydration.py"
       - "tests/finance_intelligence_hydration_harness.js"
@@ -18137,6 +18141,8 @@ jobs:
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - scripts/build_expectation_surface.py
       - engine/sector_intelligence/finance_watching.py
       - engine/sector_intelligence/finance_witness_hints.py
       - engine/sector_intelligence/finance_page_signal.py
@@ -21129,6 +21135,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): imported by
@@ -27949,6 +27957,14 @@ jobs:
       - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
+      # ITP-ES wave 1: the expectation-surface contract suite + the template
+      # family it renders through the real jinja2 environment.
+      - "tests/test_build_expectation_surface.py"
+      - "templates/expectation_surface.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -28069,6 +28085,8 @@ jobs:
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/stocktable.js"
+      - "templates/watchlist.js"
+      - "templates/watchstore.js"
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "templates/theme.js"
@@ -28094,6 +28112,7 @@ jobs:
       - "tests/test_prophet_card_shared.py"
       - "tests/test_us_prophet_original_card_layout.py"
       - "tests/test_prophet_daily_brief.py"
+      - "tests/test_prophet_r7_wave_a_watchlist.py"
       - "tests/test_prophet_doors.py"
       - "tests/test_prophet_journey_reconcile.py"
       - "tests/test_prophet_r7_wave_a_guards.py"
@@ -28223,6 +28242,8 @@ jobs:
       # anticipation lane. No new job/runner/control plane is introduced.
       - name: Prophet source, lifecycle and presentation contracts (one native process)
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+      - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
+        run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
@@ -28247,6 +28268,11 @@ jobs:
         run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
+      # ITP-ES wave 1 (2026-10-21): Expectation Surface page builder contract —
+      # deterministic synthetic-fixture suite; rides this job's single install
+      # step (pytest pandas pyarrow jinja2) and its declared scope above.
+      - name: expectation surface page builder contract (ITP-ES wave 1)
+        run: python -m pytest tests/test_build_expectation_surface.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -29341,6 +29367,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
@@ -36950,6 +36978,8 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      # ITP-ES wave 1: build_site.py lazily imports the expectation-surface builder.
+      - "scripts/build_expectation_surface.py"
       - "engine/sector_intelligence/finance_watching.py"
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"

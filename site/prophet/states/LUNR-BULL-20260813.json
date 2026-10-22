@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LUNR-BULL-20260813",
-  "asof": "2026-10-21",
+  "asof": "2026-10-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.5,
@@ -13,18 +13,18 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 40.2,
-    "overlay": 47.0
+    "retention": 40.5,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.055,
+    "dist_to_stop_r": -0.015,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 144.4,
-    "p1": -0.7031,
-    "p2": -0.3516,
+    "horizon_pct_used": 146.7,
+    "p1": -0.6767,
+    "p2": -0.3383,
     "p3": null,
-    "move_r": -1.055,
+    "move_r": -1.015,
     "mfe_r": 0.0,
     "mae_r": -1.055
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 65,
-  "tau": 1.4444
+  "days_elapsed": 66,
+  "tau": 1.4667
 }
