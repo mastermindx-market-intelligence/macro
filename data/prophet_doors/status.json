@@ -1,14 +1,14 @@
 {
-  "appended": 20,
-  "asof": "2026-10-20",
+  "appended": 2,
+  "asof": "2026-10-21",
   "candidates": {
     "R": 1,
-    "T": 30,
+    "T": 21,
     "W": 23
   },
   "deduped": {
     "R": 1,
-    "T": 10,
+    "T": 19,
     "W": 23
   },
   "dry_run": false,
@@ -27,36 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 45
+        "ohlcv_absent": 13
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "E-commerce": {
-          "theme_thrust_frac": 0.1613,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Environmental Sustainability": {
-          "theme_thrust_frac": 0.1818,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
         "FinTech": {
-          "theme_thrust_frac": 0.1429,
+          "theme_thrust_frac": 0.0882,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Real Estate & REITs": {
-          "theme_thrust_frac": 0.1765,
+        "Smart Home": {
+          "theme_thrust_frac": 0.087,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 120,
-      "tickers_read": 165
+      "tickers_ok": 57,
+      "tickers_read": 70
     },
     "keys": [
       "relay_count_3d",
@@ -76,14 +66,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 188,
-      "n_covered": 143,
+      "members_indexed": 163,
+      "n_covered": 0,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-20",
+      "last_session": "2026-10-21",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -118,26 +108,8 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "VICI",
-      "EGP",
-      "ELS",
-      "GLPI",
-      "KIM",
-      "KRC",
-      "MAC",
-      "O",
-      "REG",
-      "RHP",
-      "SPG",
-      "FDX",
-      "AOS",
-      "CWST",
-      "NEE",
-      "ICE",
-      "TRUP",
-      "AXP",
-      "DAVE",
-      "GWRE"
+      "FISV",
+      "CARR"
     ],
     "W": []
   },
@@ -147,41 +119,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-21 19:59:36",
-  "runtime_s": 105.5,
+  "run_utc": "2026-10-22 10:35:59",
+  "runtime_s": 127.6,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-10-21",
-    "n_members": 188,
+    "asof": "2026-10-22",
+    "n_members": 163,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.175,
+        "emerging_score": 2.793,
         "rank": 1,
         "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.365,
+        "emerging_score": 2.359,
         "rank": 2,
-        "theme": "Real Estate & REITs"
+        "theme": "FinTech"
       },
       {
-        "emerging_score": 2.088,
+        "emerging_score": 2.057,
         "rank": 3,
         "theme": "E-commerce"
       },
       {
-        "emerging_score": 1.96,
+        "emerging_score": 1.71,
         "rank": 4,
         "theme": "Environmental Sustainability"
       },
       {
-        "emerging_score": 1.888,
+        "emerging_score": 1.567,
         "rank": 5,
-        "theme": "FinTech"
+        "theme": "Smart Home"
       }
     ]
   },
@@ -191,15 +163,15 @@
       "3B"
     ],
     "aligned": 23,
-    "asof_max": "2026-10-20",
+    "asof_max": "2026-10-21",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-20",
+    "asof_run": "2026-10-21",
     "evaluated": 712,
     "fresh": 26,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.2,
+    "runtime_s": 21.9,
     "skipped": 5,
     "source": "baskets/membership.json",
     "state_turn": 66,

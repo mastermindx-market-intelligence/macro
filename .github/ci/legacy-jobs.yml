@@ -39284,6 +39284,7 @@ jobs:
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
       - "site/commodities.html"
+      - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
@@ -39305,8 +39306,11 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
       - "tests/test_commodity_publication.py"
+      - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
+      - "tests/test_commodity_workspace_ui.js"
+      - "tests/test_commodity_workspace_presentation.js"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -39319,10 +39323,17 @@ jobs:
           node-version: "20"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+      - name: install pinned DOM test dependency
+        run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py tests/test_commodity_presentation_render.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
+      - name: rendered workspace and signed presentation journeys
+        run: |
+          export NODE_PATH="${RUNNER_TEMP:?}/commodity-dom/node_modules"
+          node tests/test_commodity_workspace_ui.js
+          node tests/test_commodity_workspace_presentation.js
 
   options-r1-rotation-relative-trend:
     # Options R1 W2A: weekly sector relative-trend emitter — calendar endpoints, EMA math, vintage, Terminal contract, additive hook.
