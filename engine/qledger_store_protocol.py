@@ -1263,3 +1263,25 @@ def plan_reconcile_original(
     if rebuilt.snapshot.root_bytes != checked.snapshot.root_bytes:
         _fail("CONFLICT", "original write reconciliation differs from verified rebase")
     return rebuilt
+
+
+@_typed
+def restore_original_plan(
+    original_base_snapshot: VerifiedSnapshot, original_candidate_snapshot: VerifiedSnapshot,
+    *, transaction_id: str, limits: ProtocolLimits,
+) -> PublicationPlan:
+    """Restore ONE retained write via existing exact pending verification.
+
+    Source adapters own durable inputs and custody; this pure reconstruction
+    grants neither. No claim preparation, timestamp or clock is regenerated.
+    """
+    checked = rebase_verified_pending(
+        original_base_snapshot, original_base_snapshot=original_base_snapshot,
+        original_candidate_snapshot=original_candidate_snapshot,
+        authorized_transaction_ids=(transaction_id,), limits=limits)
+    transaction = original_candidate_snapshot._transactions[-1]
+    plan = _restart_plan(original_base_snapshot, original_candidate_snapshot, transaction, limits)
+    if plan.is_noop or plan.snapshot.root_bytes != checked.snapshot.root_bytes:
+        _fail("CONFLICT", "original snapshots do not restore exactly one write")
+    validate_plan(plan, limits=limits)
+    return plan
