@@ -358,6 +358,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -2302,6 +2303,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3216,6 +3218,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -9687,6 +9690,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -12296,6 +12300,10 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -22031,6 +22039,15 @@ jobs:
     # with the repository's deploy invariants.  It was previously co-run here;
     # giving it its own bounded command keeps that coverage without borrowing
     # time from evidence replay.
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "tests/test_deploy_update_self_heal.py"
+      - "tests/test_caddy_autosave_driver.py"
+      - "tests/test_macro_caddy_overlay.py"
+      - "tests/test_macro_caddy_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22043,7 +22060,10 @@ jobs:
       - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_caddy_autosave_driver.py
+          tests/test_macro_caddy_overlay.py
+          tests/test_macro_caddy_publication.py -q
 
   deploy-git-history:
     if: ${{ false }}
@@ -23212,6 +23232,7 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_auth.py
+          tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
       # authenticated operator identity, a fixed admin iframe, Caddy's real
@@ -23709,6 +23730,7 @@ jobs:
       - app/intelligence_hub_market_pulse.py
       - app/mailer.py
       - app/main.py
+      - app/live_status_projection.py
       - app/market_memory.py
       - app/marketing_emails.py
       - app/observability.py
@@ -27331,6 +27353,7 @@ jobs:
       - "engine/close_pass/**"
       - "engine/quant_lab/**"
       - "app/tape_symbols.py"
+      - "app/live_status_projection.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -32524,6 +32547,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -35545,6 +35569,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
