@@ -1,0 +1,279 @@
+{
+  "schema": "mastermind.attended.macro_d528_two_page_composition.v1",
+  "observed_at": "2026-10-20T02:04:26.312272+00:00",
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "incoming": "d52827f26b062f67d594350a65becf406710d4d1",
+  "base": "6397b97031640de2a0bdd850bfebc520e7458b41",
+  "preview_tree": "8339adc5846d5e81dac67533ac4828e226f87e3a",
+  "files": [
+    {
+      "path": "site/etfs.html",
+      "candidate_path": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-etfs.html",
+      "base_sha256": "4daebce586277d6bb63ef4f90ac1231a1ac0ca2f722962474e8baee202c3367b",
+      "ours_sha256": "f8b898079f7d2af5ab08a7877ef15f40202f70aad9d2a47dae2f371e07e5cf72",
+      "incoming_sha256": "bbfaa981c144b1d1871c8ee897569e18e4ab2f216ade6e5e02ee4b07caac1620",
+      "candidate_sha256": "76acbf0e808f4ae7024451c85eccf2f0674cf554a43c8d95ad14d375a361097b",
+      "candidate_bytes": 97332,
+      "adapter_count": 1,
+      "base_to_ours_exact": true,
+      "inverse_incoming_exact": true,
+      "injector_idempotent": true
+    },
+    {
+      "path": "site/us_stocks.html",
+      "candidate_path": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-us_stocks.html",
+      "base_sha256": "b39af1fafbc99d08ff030105a83686584ead66f9c28a68258b6203f39fbcf055",
+      "ours_sha256": "eaf2cb07ef36f65baface2bf87da98d78845d0cf2a9d41e4d2c3b631aa907420",
+      "incoming_sha256": "9905e25915c92337a9ebdbb0116860344dfdd5f5f332dfa976ae08f0cecc18a8",
+      "candidate_sha256": "7efd196446e66409b0ea3c1e883103abc7da32c58c709470936aeeed760e7d73",
+      "candidate_bytes": 742316,
+      "adapter_count": 3,
+      "base_to_ours_exact": true,
+      "inverse_incoming_exact": true,
+      "injector_idempotent": true
+    }
+  ],
+  "ci_inventory_jobs": 329,
+  "incoming_job_order_preserved": true,
+  "all_job_fields_three_way_verified": true,
+  "ours_delta_fields": [
+    {
+      "job": "bea-gvc-current-descriptive-consumer",
+      "field": "paths"
+    },
+    {
+      "job": "c19-wp32-integrated-answer-correction-denial-pins",
+      "field": "paths"
+    },
+    {
+      "job": "c19-wp22-dhi-traversal",
+      "field": "paths"
+    },
+    {
+      "job": "c19-wp31-incremental-information",
+      "field": "paths"
+    },
+    {
+      "job": "am-edition-producer",
+      "field": "paths"
+    },
+    {
+      "job": "conviction-profile",
+      "field": "paths"
+    },
+    {
+      "job": "options-matrix-code",
+      "field": "paths"
+    },
+    {
+      "job": "international-workspace-foundation",
+      "field": "paths"
+    },
+    {
+      "job": "international-workspace-browser",
+      "field": "paths"
+    },
+    {
+      "job": "fif-kernel-guards",
+      "field": "paths"
+    },
+    {
+      "job": "cycle-consistency",
+      "field": "paths"
+    },
+    {
+      "job": "intelligence-registry",
+      "field": "paths"
+    },
+    {
+      "job": "push-retry-policy",
+      "field": "paths"
+    },
+    {
+      "job": "transmission-chains",
+      "field": "paths"
+    },
+    {
+      "job": "options-payoff-lab-consumer",
+      "field": "paths"
+    },
+    {
+      "job": "finance-intelligence",
+      "field": "paths"
+    },
+    {
+      "job": "consumer-cyclical-economic-change",
+      "field": "paths"
+    },
+    {
+      "job": "research-screener",
+      "field": "paths"
+    },
+    {
+      "job": "leader-radar-unit",
+      "field": "paths"
+    },
+    {
+      "job": "validated-claims-contract",
+      "field": "paths"
+    },
+    {
+      "job": "data-base-shim",
+      "field": "steps"
+    },
+    {
+      "job": "sanctions-map-page",
+      "field": "paths"
+    },
+    {
+      "job": "itr-turn-rotation",
+      "field": "paths"
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "field": "paths"
+    },
+    {
+      "job": "lr-rotation-evidence-modes",
+      "field": "paths"
+    },
+    {
+      "job": "biocatalyst-worker",
+      "field": "paths"
+    },
+    {
+      "job": "crypto-assistant-context",
+      "field": "paths"
+    },
+    {
+      "job": "crypto-vector-r2-organs",
+      "field": "paths"
+    },
+    {
+      "job": "govrev-program-ontology",
+      "field": "paths"
+    },
+    {
+      "job": "unrun-nav-chrome",
+      "field": "steps"
+    },
+    {
+      "job": "washout-turn-organ",
+      "field": "paths"
+    },
+    {
+      "job": "earnings-economic-source-selection",
+      "field": "paths"
+    },
+    {
+      "job": "earnings-economic-dossier",
+      "field": "paths"
+    },
+    {
+      "job": "research-price-panel",
+      "field": "paths"
+    },
+    {
+      "job": "leadership-rotation-countercases",
+      "field": "paths"
+    },
+    {
+      "job": "ticker-news-qbus",
+      "field": "paths"
+    },
+    {
+      "job": "market-os-macro-workspaces",
+      "field": "paths"
+    },
+    {
+      "job": "market-os-macro-suite-pages",
+      "field": "paths"
+    },
+    {
+      "job": "markets-regime-strip",
+      "field": "paths"
+    },
+    {
+      "job": "skew-accrual-lane",
+      "field": "paths"
+    },
+    {
+      "job": "mining-economic-dossier",
+      "field": "paths"
+    },
+    {
+      "job": "industrials-result-cash",
+      "field": "paths"
+    },
+    {
+      "job": "pb-d-event-quality",
+      "field": "paths"
+    }
+  ],
+  "critical_blobs": {
+    ".github/workflows/render.yml": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": "54d1e69add408cd3532451f85b355626c78c451a",
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "8430d71dad2ef0a6209b9b605190551078c21819",
+      "d52827f26b062f67d594350a65becf406710d4d1": "54d1e69add408cd3532451f85b355626c78c451a",
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "8430d71dad2ef0a6209b9b605190551078c21819"
+    },
+    "app/deploy/update.sh": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": "d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6",
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "0d7a5bd406cc0a014712a27e353f9c0edc71c640",
+      "d52827f26b062f67d594350a65becf406710d4d1": "d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6",
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "0d7a5bd406cc0a014712a27e353f9c0edc71c640"
+    },
+    "app/deploy/Caddyfile": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6",
+      "d52827f26b062f67d594350a65becf406710d4d1": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6"
+    },
+    "lib/shared_shell.py": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": null,
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+      "d52827f26b062f67d594350a65becf406710d4d1": null,
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+    },
+    "templates/shared_shell_bridge.js": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": null,
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+      "d52827f26b062f67d594350a65becf406710d4d1": null,
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "dd501dc2dd846b19190c430c0d093452b8d5f322"
+    },
+    "templates/shared_shell.css": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": null,
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "d52827f26b062f67d594350a65becf406710d4d1": null,
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+    },
+    "scripts/check_contract_delta.py": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "d52827f26b062f67d594350a65becf406710d4d1": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "deefde717818f4be641097a24c2f5b01e55cddbd"
+    },
+    "scripts/run_ci_pack.py": {
+      "6397b97031640de2a0bdd850bfebc520e7458b41": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "d52827f26b062f67d594350a65becf406710d4d1": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "8339adc5846d5e81dac67533ac4828e226f87e3a": "f92be10fc37455fd427829f0f964c5ef581b3a80"
+    }
+  },
+  "nested_instructions": {
+    "AGENTS.md": {
+      "incoming_blob": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "head_blob": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "content": "unchanged already-read root instructions"
+    },
+    "CLAUDE.md": {
+      "incoming_blob": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "head_blob": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "content": "unchanged already-read root instructions"
+    }
+  },
+  "python3_12": "/opt/homebrew/bin/python3.12",
+  "source_edited": false,
+  "renderer_invoked": false,
+  "prior_attempt": "Artifact-only preparation completed both exact HTML candidates then failed metadata lookup for new lib/shared_shell.py absent from base; existing artifacts were reverified byte-for-byte and retained. No merge or source edit occurred."
+}

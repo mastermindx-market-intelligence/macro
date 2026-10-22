@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-20T23:37:18.800535+00:00",
+  "head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "manifest_sha256": "c19ac78034276ed0711ecda14e91e1d6091f203c661e34caf364dbc0f0ccff64",
+  "job": "ticker-news-qbus",
+  "gate": "code",
+  "scope": "Named new-import coverage only; not a full dependency audit or hosted result.",
+  "explicit_paths": [
+    "lib/pages.py",
+    "lib/shared_shell.py",
+    "lib/site_assets.py"
+  ],
+  "manifest_modified": false
+}
