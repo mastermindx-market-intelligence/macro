@@ -2140,7 +2140,8 @@ def changed_edges(computed: list[dict], stored: pd.DataFrame) -> list[dict]:
 
 ACTIVITY_HISTORY_EVENT_SCHEMA = "gmi.activity_membership_history_event/v1"
 ACTIVITY_HISTORY_STATE_SCHEMA = "gmi.activity_membership_history_state/v1"
-ADMITTED_ACTIVITY_HISTORY_SPECIES = frozenset({"planned_product_integration"})
+ADMITTED_ACTIVITY_HISTORY_SPECIES = frozenset({"planned_product_integration",
+                                               "principal_business_activity"})
 ACTIVITY_HISTORY_CONTRACT = "contracts/theme_graph/activity_membership_history.v1.schema.json"
 _ACTIVITY_HISTORY_SOURCE = re.compile(r"^co:[a-z]{2}:[A-Za-z0-9._-]+$")
 _ACTIVITY_HISTORY_TARGET = re.compile(r"^theme:[a-z0-9_]+$")
