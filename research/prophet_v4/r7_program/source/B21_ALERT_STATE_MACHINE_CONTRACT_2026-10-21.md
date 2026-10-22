@@ -113,6 +113,10 @@ contract.
   knowledge is not a journey change. Maturity is pinned UNESTIMABLE by the native read
   (`engine/prophet_candidate_state.py:1433-1443` expects `"maturity_state":
   "UNESTIMABLE"`), so no maturity transition is producible today and none is eligible.
+  Exception (ratified deviation, seat ruling F28 R8): for the `emergence_triggered` diff a
+  prior emergence state that is absent or `UNESTIMABLE` (B3's `SOURCE_NOT_SUPPLIED`
+  default) counts as not triggered, so a later `TRIGGERED` carrying a real relation id is
+  eligible.
 - B1 `REARM_SUPPRESSED` (replay no-op, `engine/us_candidate_episode.py:617-618`) and
   `OBSERVED`/`EXPERT_EVENT_ATTACHED` (engine-internal relations, no user-facing state
   change of record).
@@ -420,7 +424,7 @@ Real source change → existing transport → receipt readback:
 | U1 | `ALERT_CATEGORIES` member + comment line + enum gate | `lib/user_prefs.py:68-72`, `tests/test_alert_prefs.py` | **READY** | none technical; coordination fact = open cs-v2 lane `9807f9067f80` edits the same tuple (§3 bytes) — merge-order coordination, both gates must accept the union |
 | U2 | pure producer core: §1 eligibility, §2 id + synthetic alert_id, payload compose, `not_after`, requires_tier | new `engine/prophet_journey_notifications.py` (fif shape; pure half) | **READY** | none |
 | U3 | IO + dormant runner + `config/dag.yml` step row | fif IO shape (`read_designated_lists`/`read_list_symbols`/`read_existing_fire_ids`/`enqueue`, `:577-657`) | **READY** | none (nightly engine job config owner) |
-| U4 | correction/retraction rows: original-status readback (`status,attempts,last_error` select), unsent-supersede PATCH, typed `correction_original_effect_unknown` count | extends U3's read; PATCH analogue = terminal one-shot disarm | **READY** | none legal; the effect-unknown copy variant is a Sol ruling (open, §4) |
+| U4 | correction/retraction rows: original-status readback (`status,attempts,last_error` select), unsent-supersede PATCH, typed `original_quarantined` count (the readback + typed counts landed in U2 under seat ruling F28 R5/R6; key name as implemented) | extends U3's read; PATCH analogue = terminal one-shot disarm | **READY** | none legal; the effect-unknown copy variant is a Sol ruling (open, §4) |
 | U5 | drain stale-fact guard: `not_after` check in `decide_row`, reason `mandatory_fact_stale` | `engine/alert_delivery_drain.py:484-531` | **READY** | none (drain lane; pin suite `tests/test_alert_delivery_drain.py` at BASE) |
 | U6 | premium payload `requires_tier` | U2 payload | **READY** | exact tier literal pends the B07 entitlement-surface decision (mechanism fixed, §6) |
 | U7 | account-UI category row + i18n strings | `templates/account.js:655-656` | **READY, deferrable** | honest-absence ruling permits shipping after the producer (§3.4); no blocker |
@@ -463,3 +467,35 @@ classes) is excluded from this sparse worktree by the standing profile
 so no outcome-class file was reachable, and no `*scoreboard*`/`*track_record*`/
 `*outcome*`/`*returns*` path was read. The B1/B3/B4 contract modules read for this
 contract contain no realized-outcome data.
+
+## 12. Addendum F34 (seat ruling 2026-10-22, after U2 #9999 and the A2/U2 reviews)
+
+Three review notes routed to the U4/U5 unit are dispositioned here so the contract and the
+landed producer (`engine/prophet_journey_notifications.py` on main `aad27efd`+) read the same.
+
+- **N-A — what a session is.** `market_session` is the UTC date (`YYYY-MM-DD`) carried by the
+  transition's B1 envelope; `not_after` is `_session_end`'s VERBATIM read of the calendar row for
+  that exact session (one RFC3339 UTC instant). A weekend, holiday, Friday-evening-ET or calendar
+  gap has no row for that session and is `not_after_unresolvable` — no neighbouring-session
+  fallback, no computed bound (F28 R2). Ruling: accepted as implemented; nothing to change.
+- **N-B — the boundary inequality.** The producer suppresses at mint when
+  `not_after <= now_utc` (`stale_transition_at_mint`). §5 item 2 wrote the drain check as
+  `now_utc > not_after`, which would SEND a row at the instant `now_utc == not_after` that the
+  producer would have refused to mint. Ruling: `not_after` is the session's END instant, so the
+  fact is stale AT that instant. §5 item 2 is amended to `now_utc >= not_after` ⇒
+  `Decision(action="suppress", reason="mandatory_fact_stale")`; the producer is unchanged. A
+  present but unparsable `not_after` (not one RFC3339 UTC instant) is
+  `Decision(action="unevaluable", reason="not_after_unparsable")` — the incumbent drain pattern
+  for a malformed input (`quiet_hours_unparsed`, `category_missing`): typed, counted, re-selected,
+  never a silent send. Rows without `not_after` (fif rows) are untouched by the guard.
+- **N-C — producer-side suppression keys the contract did not name.** The landed
+  `SUPPRESSION_KEYS` tuple is the contract's closed set: `read_unavailable`,
+  `prev_projection_unavailable`, `ineligible_event`, `unknown_side`, `no_subscriber`,
+  `already_fired`, `banned_term`, `not_after_unresolvable`, `stale_transition_at_mint`,
+  `no_original`, `original_quarantined`, `original_producer_suppressed`,
+  `original_superseded_in_run`. Each is a typed count in the run receipt (`ProducerPlan.suppressed`),
+  never a row. Adding a key is a contract change (this section), never a silent module edit.
+- **U4 status.** The pure half of U4 (correction table §4, `PlannedPatch`,
+  `PRODUCER_SUPPRESSED_REASON`, quarantine rule) LANDED inside U2; what remains of U4 is the IO
+  read it extends (U3), which waits on U1 (#9774 custody). U5 (drain guard, §5 item 2 as amended)
+  is independent of U1/U3 and builds now on main ≥ `790990a2`.
