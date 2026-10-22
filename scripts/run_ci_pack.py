@@ -102,7 +102,7 @@ ALLOWED_JOB_KEYS = {
 #: `gate: data` jobs still run and still red something a human reads — the
 #: field never deletes a receipt.
 GATE_VALUES = ("code", "data")
-ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes"}
+ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes", "acquisition"}
 
 # Changing any item in this string changes the job execution contract digest.
 # It deliberately describes only the infrastructure shared by all legacy jobs;
@@ -602,20 +602,32 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
 def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
-        if "timeout-minutes" in step:
-            raise ManifestError("browser setup timeout requires its explicit phase")
+        if "timeout-minutes" in step or "acquisition" in step:
+            raise ManifestError("browser setup timeout/acquisition requires its explicit phase")
         return None
     if (
         step.get("phase") != "browser_setup"
-        or set(step) - {"name", "phase", "timeout-minutes", "run"}
+        or set(step) - {"name", "phase", "timeout-minutes", "run", "acquisition"}
+        or type(step.get("acquisition", "incumbent")) is not str
+        or step.get("acquisition", "incumbent") not in {"incumbent", "native_parallel"}
         or not isinstance(step.get("run"), str)
         or step["run"].strip() != "python -m playwright install --with-deps chromium"
         or type(step.get("timeout-minutes")) is not int
         or not 1 <= step["timeout-minutes"] <= 10
     ):
         raise ManifestError("browser setup must be the exact standalone installer with a finite <=10 minute bound")
+    native = step.get("acquisition") == "native_parallel"
+    if native:
+        from scripts.ci_browser_native_setup import BOUND_FILES
+    else:
+        BOUND_FILES = ()
     return {
         "phase": "browser_setup", "command": step["run"],
+        "acquisition": "native_parallel" if native else "incumbent",
+        "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium" if native else "original_playwright_with_deps",
+        "native_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
+        },
         "timeout_minutes": step["timeout-minutes"],
         "budget": "within_original_logical_job_deadline",
         "diagnostics": _browser_dependency_diagnostic_commands(),
@@ -3688,7 +3700,15 @@ def _run_job(
                     )
                     break
                 command_attempted = True
-                result = _stream_command(current_command, env=semantic_env, timeout_seconds=remaining)
+                if setup is not None and setup["acquisition"] == "native_parallel" and command_index == len(commands) - 1:
+                    from scripts.ci_browser_native_setup import run_native_setup
+                    print("native APT cold acquisition: complete transaction, <=4 downloads, no-download install; same original total deadline", flush=True)
+                    result = CommandObservation(**run_native_setup(
+                        deadline=min(job_deadline, setup_deadline), command_env=semantic_env,
+                        expected_sources=setup["native_source_sha256"], browser_stream=_stream_command,
+                    ))
+                else:
+                    result = _stream_command(current_command, env=semantic_env, timeout_seconds=remaining)
                 is_diagnostic = command_index < len(commands) - 1
                 if is_diagnostic:
                     if result.outcome == "timed_out" or result.timeout_settlement == "unknown":

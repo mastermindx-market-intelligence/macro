@@ -3098,3 +3098,62 @@ def test_capture_shares_the_finite_setup_bound_as_well_as_the_job_deadline(monke
     assert calls == [("capture apt", 540), ("capture playwright", 240)]
     assert result.failure is not None
     assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+# Explicit native acquisition is closed opt-in; default setup path is retained.
+def test_native_acquisition_strategy_and_every_helper_are_digest_bound(monkeypatch):
+    original = _job("browser", [_browser_setup_step(), {"name":"assertion","run":"true"}], timeout=10)
+    native = _job("browser", [{**_browser_setup_step(), "acquisition":"native_parallel"}, {"name":"assertion","run":"true"}], timeout=10)
+    assert PACK.semantic_job_digest(original) != PACK.semantic_job_digest(native)
+    before = PACK.semantic_job_digest(native)
+    read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda p:read(p)+b"#changed" if p.name=="ci_apt_native_stage.py" else read(p))
+    assert PACK.semantic_job_digest(native) != before
+    spec=PACK._browser_setup_contract(native)[0]
+    assert len(spec["native_source_sha256"])==7
+    assert spec["budget"]=="within_original_logical_job_deadline"
+
+
+def test_native_acquisition_unknown_never_falls_back_or_runs_assertions(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job=_job("browser", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}],timeout=10)
+    calls=[];ticks=iter([0.,0.,20.,40.])
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:next(ticks))
+    monkeypatch.setattr(PACK,"_stream_command",lambda c,**k:calls.append(c) or PACK.CommandObservation(outcome="passed",returncode=0))
+    def setup(**kwargs):
+        assert kwargs["deadline"]==600 and len(kwargs["expected_sources"])==7
+        calls.append("native once")
+        return dict(outcome="timed_out",returncode=None,failure_signature=None,timeout_settlement="unknown",detail="original native acquisition timeout")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert calls==["capture apt","capture playwright","native once"]
+    assert result.timeout_settlement=="unknown" and result.steps[0]["outcome"]=="infrastructure_blocked"
+    assert result.infrastructure["outcome"]=="unknown"
+
+
+def test_native_acquisition_normal_success_leaves_only_remaining_total_for_assertions(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job=_job("browser", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}],timeout=10)
+    calls=[];ticks=iter([0.,0.,20.,40.,500.])
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:next(ticks))
+    monkeypatch.setattr(PACK,"_stream_command",lambda c,**k:calls.append((c,k["timeout_seconds"])) or PACK.CommandObservation(outcome="passed",returncode=0))
+    def setup(**kwargs):
+        calls.append(("native once",kwargs["deadline"]))
+        return dict(outcome="passed",returncode=0,failure_signature=None,timeout_settlement=None,detail="native and browser acquisition passed")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert result.failure is None
+    assert calls==[("capture apt",600),("capture playwright",580),("native once",600),("true",100)]
+
+
+@pytest.mark.parametrize("strategy", ["foreign",None,True,{},[]])
+def test_native_acquisition_has_no_unknown_strategy_fallback(strategy):
+    with pytest.raises(PACK.ManifestError):PACK._browser_setup_spec({**_browser_setup_step(),"acquisition":strategy})
+
+
+def test_native_acquisition_manifest_is_explicit_and_nonphase_selection_refused(tmp_path):
+    native=_job("browser", [{**_browser_setup_step(),"acquisition":"native_parallel"},{"name":"assertion","run":"true"}],timeout=10)
+    assert len(PACK.load_legacy_jobs(_write_manifest(tmp_path/"manifest.yml",[native])))==1
+    with pytest.raises(PACK.ManifestError):PACK._browser_setup_spec({"name":"assertion","run":"true","acquisition":"native_parallel"})
