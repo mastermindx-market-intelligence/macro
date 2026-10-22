@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:30:34Z",
+ "accession": "0001193125-26-115081",
+ "cik": "0001966983",
+ "doc_byte_length": 3672914,
+ "doc_sha256": "866869c17fe04fb41aaf54dd2458be4225161c7e922d725e3ed666a8b948702c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lac-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 366273,
+  "byte_start": 365184,
+  "normalized": "Once in commercial production, Phase 1 of Thacker Pass is expected to substantially increase U.S. domestic production of lithium to help the U.S. reduce dependence on foreign countries for supply. With a strategic investment, joint venture partnership and long-term offtake agreement with General Motors, production from Thacker Pass Phase 1 is estimated to support lithium needs for up to 800,000 EV’s annually (assuming lithium carbonate equivalent (“LCE”) intensity of 850 tonnes (“t”) of LCE per GWh.",
+  "normalized_sha256": "21063a8d9573e8757265c0e09f31dc65bb7d56fb59bf0b9ce1b2506c3166e714",
+  "raw": " Once in commercial production, Phase 1 of Thacker Pass is expected to substantially increase U.S. domestic production of lithium to help the U.S. reduce dependence on foreign countries for supply. With a strategic investment, joint venture partnership and long-term offtake agreement with General Motors, production from Thacker Pass Phase 1 is estimated to support lithium needs for up to 800,000 EV&#8217;s annually (assuming lithium carbonate equivalent (&#8220;</span><span style=\"color:#000000;white-space:pre-wrap;font-weight:bold;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">LCE</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">&#8221;) intensity of 850 tonnes (&#8220;</span><span style=\"color:#000000;white-space:pre-wrap;font-weight:bold;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">t</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">&#8221;) of LCE per GWh.",
+  "raw_sha256": "4896e7afd5f9cf10f7e36d900e16c19d9251c5f4187ec00e9bc0792b4d337876"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1966983/000119312526115081/lac-20251231.htm",
+ "xbrl_contexts": []
+}

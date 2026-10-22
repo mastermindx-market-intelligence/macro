@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:59:08Z",
+ "accession": "0001493152-26-011503",
+ "cik": "0001670061",
+ "doc_byte_length": 1300610,
+ "doc_sha256": "f2d9ee8e4e95d2481a96adb68c2b45cd3d1bf3eebda95a9259a561b20130822e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ex99-1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 73309,
+  "byte_start": 72361,
+  "normalized": "On January 29, 2025 Almonty announced that it entered into an exclusive offtake agreement with SeAH M&S Corp. (“SeAH”), the largest processor of molybdenum products in South Korea and the second largest molybdenum oxide smelter in the world, pursuant to which SeAH has agreed to purchase 100% of the material produced from the Sangdong Molybdenum Project (as defined herein) for life of mine. SeAH is building a US$110 million metals and fabrication facility in Temple, Texas, that is slated to provide fabricated metal products to Space Exploration Technologies Corp. and to the U.S. defense and civilian aerospace sectors.",
+  "normalized_sha256": "62a0253762c04f6a4f71561c4d6c2e9e0abccf849a87cc0f5a89361b0c0ddbe2",
+  "raw": "On\n                                            January 29, 2025 Almonty announced that it entered into an exclusive offtake agreement with\n                                            SeAH M&amp;S Corp. (&ldquo;SeAH&rdquo;), the largest processor of molybdenum products in\n                                            South Korea and the second largest molybdenum oxide smelter in the world, pursuant to which\n                                            SeAH has agreed to purchase 100% of the material produced from the Sangdong Molybdenum Project\n                                            (as defined herein) for life of mine. SeAH is building a US$110 million metals and fabrication\n                                            facility in Temple, Texas, that is slated to provide fabricated metal products to Space Exploration\n                                            Technologies Corp. and to the U.S. defense and civilian aerospace sectors.",
+  "raw_sha256": "4f41f68f7954757bee5dd21a962ecd897761191de17050a41df6782f3679a4b2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1670061/000149315226011503/ex99-1.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T12:24:32Z",
+ "accession": "0001193125-26-233537",
+ "cik": "0000866291",
+ "doc_byte_length": 4981774,
+ "doc_sha256": "9bfce73a4ff3ec58c3821089b8cb487ea67ec44d612c8db96567e4ebe0d95b48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-27",
+ "primary_document": "algm-20260327.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 539206,
+  "byte_start": 538667,
+  "normalized": "We currently rely on a limited number of third-party wafer fabrication facilities for the fabrication of semiconductor wafers used in the manufacture of our IC products, primarily United Microelectronics Corporation (“UMC”), Polar, Tower Semiconductor Ltd. (“Tower”) and Taiwan Semiconductor Manufacturing Company (“TSMC”), and we purchase a number of key manufacturing materials and components from single or limited sources. We depend on these foundries and other sources to meet our production needs.",
+  "normalized_sha256": "f8b2f60330dc41e11adc0187e00de77d3290633dcb8bacd1a1aba0ea9ecf3ab5",
+  "raw": "We currently rely on a limited number of third-party wafer fabrication facilities for the fabrication of semiconductor wafers used in the manufacture of our IC products, primarily United Microelectronics Corporation (&#8220;UMC&#8221;), Polar, Tower Semiconductor Ltd. (&#8220;Tower&#8221;) and Taiwan Semiconductor Manufacturing Company (&#8220;TSMC&#8221;), and we purchase a number of key manufacturing materials and components from single or limited sources. We depend on these foundries and other sources to meet our production needs.",
+  "raw_sha256": "900a3b5d6d6243a3448ac2895bac2578d992eee754b8fc77fdd177e38a8cef30"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/866291/000119312526233537/algm-20260327.htm",
+ "xbrl_contexts": []
+}

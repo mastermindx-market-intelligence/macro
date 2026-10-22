@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:31:36Z",
+ "accession": "0001104659-26-019711",
+ "cik": "0000103145",
+ "doc_byte_length": 3555084,
+ "doc_sha256": "eaae0d4a1e0e6bbfd2b2e61a79b091b144703b66d2d114bc49ea3d5714403a70",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "veco-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2485686,
+  "byte_start": 2483789,
+  "normalized": "Customer A​ 24% 13",
+  "normalized_sha256": "d0eec9921f69d138b7a7ab392b3d0d96756016b203e162e32683c00054f6d925",
+  "raw": "Customer A</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.6%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:12pt;margin:0pt;\"><span style=\"font-size:10pt;font-weight:bold;visibility:hidden;\">&#8203;</span></p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.68%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3.6pt 0pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_Md-On2rxv0-k41rZ781ImA\" contextRef=\"Duration_1_1_2025_To_12_31_2025_srt_MajorCustomersAxis_veco_CustomerAMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CreditConcentrationRiskMember_4U4Fo0scq0mOa3VaCB2eIw\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_Wr5-AyTLzkCNVFH4zK9XzQ_4_2\">24</ix:nonFraction></p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.6%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt;\">%</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.67%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3.6pt 0pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_Md-On2rxv0-k41rZ781ImA\" contextRef=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_veco_CustomerAMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CreditConcentrationRiskMember_msVxRTMN7UmwwMz2HAhW1g\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_NCFLyiDQTUq_g9IRRk7T0g_4_4\">13",
+  "raw_sha256": "ec30232e39c90d9bcd1ae1a5b97b69a3befbc66383a7a873b585aa60554c37dd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/103145/000110465926019711/veco-20251231x10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 168130,
+   "byte_start": 167227,
+   "context_ref": "Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_veco_CustomerAMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CreditConcentrationRiskMember_msVxRTMN7UmwwMz2HAhW1g",
+   "raw": "<xbrli:context id=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_veco_CustomerAMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CreditConcentrationRiskMember_msVxRTMN7UmwwMz2HAhW1g\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000103145</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">veco:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CreditConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9671e7a5de8ddae5ed3147cdfd89dab8f5d6d461fcbbdb81ecff722bcc441065"
+  }
+ ]
+}

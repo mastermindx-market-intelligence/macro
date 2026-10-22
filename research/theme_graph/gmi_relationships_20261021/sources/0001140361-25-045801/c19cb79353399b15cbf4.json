@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2025-12-17T19:22:38Z",
+ "accession": "0001140361-25-045801",
+ "cik": "0000810136",
+ "doc_byte_length": 2832969,
+ "doc_sha256": "d8cbc894fb591653384b5569dac28f569a54636fbaa899f583491b78edee3d68",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-17",
+ "form": "10-K",
+ "period_of_report": "2025-10-31",
+ "primary_document": "ef20057458_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2276917,
+  "byte_start": 2276152,
+  "normalized": "Customer C 8",
+  "normalized_sha256": "48772a9b3430a5d89402062eee13902c4b4010bee4d64d8b8fbd4055a5cc7423",
+  "raw": "Customer C</div>\n                    </td>\n                    <td class=\"cftguttercell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%; background-color: rgb(204, 238, 255);\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftcurrcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; width: 1%; background-color: rgb(204, 238, 255);\" valign=\"bottom\">&#160;</td>\n                    <td class=\"cftnumcell\" colspan=\"1\" style=\"font-size: 10pt; vertical-align: bottom; text-align: right; width: 9%; background-color: rgb(204, 238, 255);\" valign=\"bottom\"> <div><ix:nonFraction contextRef=\"c232\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" unitRef=\"pure\" id=\"ixv-21074\">8",
+  "raw_sha256": "c19cb79353399b15cbf447eeccd66ddf393c4d3fce852aac4b18617fe0e6a01d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/810136/000114036125045801/ef20057458_10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 2809042,
+   "byte_start": 2808314,
+   "context_ref": "c232",
+   "raw": "<xbrli:context xmlns=\"\" id=\"c232\">\n  <xbrli:entity>\n    <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000810136</xbrli:identifier>\n    <xbrli:segment>\n      <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">plab:CustomerCMember</xbrldi:explicitMember>\n      <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n      <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n    </xbrli:segment>\n  </xbrli:entity>\n  <xbrli:period>\n    <xbrli:startDate>2024-11-01</xbrli:startDate>\n    <xbrli:endDate>2025-10-31</xbrli:endDate>\n  </xbrli:period>\n</xbrli:context>",
+   "raw_sha256": "e9b0c7a5916b776778e69e2c7900f04c1b27f8c084ab732065752e8328a5b609"
+  }
+ ]
+}

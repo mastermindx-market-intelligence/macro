@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1791786,
+ "doc_sha256": "96a6017ee5a37c24991450e68b7e9a2434ad8892ddd9ab7a832bdc57230428f8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ero-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1258057,
+  "byte_start": 1257513,
+  "normalized": "In 2021, the Company entered into a precious metals purchase agreement (the “Original Xavantina Stream”) with RGLD Gold AG (\"Royal Gold\"), a wholly-owned subsidiary of Royal Gold, Inc., in relation to gold production from the Xavantina Operations. The Company received upfront cash consideration of $100.0 million for the",
+  "normalized_sha256": "b1a3cf4d93da6e7002e6cda823cef285ec19350200127ca7133ade7a3fe16ab6",
+  "raw": "In<ix:continuation id=\"f-865-1\" continuedAt=\"f-865-2\"> 2021, the Company entered into a precious metals purchase agreement (the &#8220;Original Xavantina Stream&#8221;) with RGLD Gold AG (\"Royal Gold\"), a wholly-owned subsidiary of Royal Gold, Inc., in relation to gold production from the Xavantina Operations. The Company received upfront cash consideration of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-231\" decimals=\"-5\" name=\"ero:ContractLiabilityAdvancePaymentsReceived\" scale=\"6\" id=\"f-866\">100.0</ix:nonFraction>&#160;million for the ",
+  "raw_sha256": "c72b71b4e5ac26fbbcb6f9694eecbb6f31a9781cd96d182cf72e3da2710c83e0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/ero-20251231.htm",
+ "xbrl_contexts": []
+}

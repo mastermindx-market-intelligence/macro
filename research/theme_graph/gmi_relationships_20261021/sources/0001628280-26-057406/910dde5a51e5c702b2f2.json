@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2133781,
+  "byte_start": 2133518,
+  "normalized": "Intellectual Property Cross-License Agreement, dated as of February 21, 2025, by and between Western Digital Corporation and Sandisk Corporation (incorporated by reference to Exhibit 10.4 to the Company’s Current Report on Form 8-K dated February 24, 2025)#",
+  "normalized_sha256": "9e15e8cb03c2b7030cad6c6c3d8650faee269e2b78b5e6b96b6878c03760c205",
+  "raw": "Intellectual Property Cross-License Agreement, dated as of February 21, 2025, by and between Western Digital Corporation and Sandisk Corporation (incorporated by reference to Exhibit 10.4 to the Company&#8217;s Current Report on Form 8-K dated February 24, 2025)#",
+  "raw_sha256": "910dde5a51e5c702b2f2231a29af1e58d02e4d1bed67ae03e033bdecf542108b"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

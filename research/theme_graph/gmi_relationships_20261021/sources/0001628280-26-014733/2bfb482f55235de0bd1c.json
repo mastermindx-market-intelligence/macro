@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 201459,
+  "byte_start": 200850,
+  "normalized": "Conversely, we could lose sales opportunities and market share or damage our customer relationships if, for example, we underestimate customer demand, we are affected by supply chain constraints, or sufficient manufacturing is unavailable. We manufacture MRAM products at our leased 200mm facility in Chandler, Arizona and use a single foundry, GLOBALFOUNDRIES, for production of higher density products on advanced technology nodes, which may not have sufficient capacity to meet customer demand. The rapid pace of innovation in our industry could also render significant portions of our inventory obsolete.",
+  "normalized_sha256": "ebc72d04044f1e83160aafbe2af3b5a51e9b4ab4af94d8151352cfba853c6291",
+  "raw": " Conversely, we could lose sales opportunities and market share or damage our customer relationships if, for example, we underestimate customer demand, we are affected by supply chain constraints, or sufficient manufacturing is unavailable. We manufacture MRAM products at our leased 200mm facility in Chandler, Arizona and use a single foundry, GLOBALFOUNDRIES, for production of higher density products on advanced technology nodes, which may not have sufficient capacity to meet customer demand. The rapid pace of innovation in our industry could also render significant portions of our inventory obsolete.",
+  "raw_sha256": "2bfb482f55235de0bd1cb61bcdaf7a73d02ca480136e0ed2f324d43d40395a6c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T10:30:34Z",
+ "accession": "0001193125-26-115081",
+ "cik": "0001966983",
+ "doc_byte_length": 3672914,
+ "doc_sha256": "866869c17fe04fb41aaf54dd2458be4225161c7e922d725e3ed666a8b948702c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lac-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1209109,
+  "byte_start": 1208400,
+  "normalized": "In 2023, LN entered into a License Agreement with MECS, Inc. (“MECS”) for the use of certain intellectual property relating to the design, operation and performance of MECS proprietary equipment relating to the acid plant. The agreement provides for a technology license in relation to the plant based on a one-time fully paid-up license fee (payable in four parts), as well as technical services to be provided by MECS.",
+  "normalized_sha256": "83ea0c22c2a815b9c8a887f0cde4454bb1528902e951d119a2520bc47eacfbab",
+  "raw": "In 2023, LN entered into a License Agreement with MECS, Inc. (&#8220;</span><span style=\"color:#000000;white-space:pre-wrap;font-weight:bold;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">MECS</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">&#8221;) for the use of certain intellectual property relating to the design, operation and performance of MECS proprietary equipment relating to the acid plant. The agreement provides for a technology license in relation to the plant based on a one-time fully paid-up license fee (payable in four parts), as well as technical services to be provided by MECS.",
+  "raw_sha256": "4dcab3a0f42c1346bd018f46470890c168197a6d08e7e75c3e5989731dcf420c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1966983/000119312526115081/lac-20251231.htm",
+ "xbrl_contexts": []
+}

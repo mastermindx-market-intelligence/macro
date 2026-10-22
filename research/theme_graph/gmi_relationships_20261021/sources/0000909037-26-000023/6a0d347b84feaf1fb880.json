@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-22T15:31:05Z",
+ "accession": "0000909037-26-000023",
+ "cik": "0000909037",
+ "doc_byte_length": 13218054,
+ "doc_sha256": "f74e20149613e8b3dd58c2c8e8d220f25950a2655c93de977e306d24b2a4a68f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-22",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sqm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3332943,
+  "byte_start": 3332590,
+  "normalized": "In addition, we have a fuel supply contract with Compañía de Petróleos de Chile Copec S.A. (“Copec”), which is in effect through August 2026. The Company is currently conducting a tender process to secure future fuel supply arrangements, which is expected to be submitted to the Board of Directors for consideration in April.",
+  "normalized_sha256": "70b2f881c65f961d72b9f04980ad3d075319076ba11aeaec7a881a8999f8e977",
+  "raw": " In addition, we have a fuel supply contract with Compa&#241;&#237;a de Petr&#243;leos de Chile Copec S.A. (&#8220;Copec&#8221;), which is in effect through August 2026. The Company is currently conducting a tender process to secure future fuel supply arrangements, which is expected to be submitted to the Board of Directors for consideration in April.",
+  "raw_sha256": "6a0d347b84feaf1fb880f08875feb21f51447e20c20f26f51f16061fdff6d03f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/909037/000090903726000023/sqm-20251231.htm",
+ "xbrl_contexts": []
+}

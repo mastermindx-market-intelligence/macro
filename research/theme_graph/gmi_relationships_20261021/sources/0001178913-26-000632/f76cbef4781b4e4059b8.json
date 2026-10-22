@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T13:41:24Z",
+ "accession": "0001178913-26-000632",
+ "cik": "0001419612",
+ "doc_byte_length": 3660648,
+ "doc_sha256": "3712e288a307a462ef05512f91b1bb9f3ef7cb6184e1d84e71d2e5ed71638852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "zk2634374.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 659718,
+  "byte_start": 658877,
+  "normalized": "Occasionally, we may also be subject to claims of intellectual property right infringement and related litigation, and, as we gain greater recognition in the market, we face a higher risk of being the subject to claims of violation of others’ intellectual property rights. For example, in July 2022, we were served with a complaint by Ampt, LLC filed with the International Trade Commission pursuant to Section 337 of the Tariff Act of 1930, as amended and the District Court for the District of Delaware alleging patent infringement against the Company and its subsidiary SolarEdge Technologies Ltd. In May 2023, we entered into a settlement agreement under which the parties agreed to dismiss all proceedings related to the complaints and the parties have granted each other 10-year cross-licenses for certain intellectual property.",
+  "normalized_sha256": "33234db6d22ad01fdbb266187058166110568bd7bb493c97b15fd1672c6618e6",
+  "raw": " Occasionally, we may also be subject to claims of intellectual property right infringement and related litigation, and, as we gain greater recognition in the market, we face a higher risk of being the subject to claims of violation of others&#8217; intellectual property rights. For example, in July 2022, we were served with a complaint by Ampt, LLC filed with the International Trade Commission pursuant to Section 337 of the Tariff Act of 1930, as amended and the District Court for the District of Delaware alleging patent infringement against the Company and its subsidiary SolarEdge Technologies Ltd. In May 2023, we entered into a settlement agreement under which the parties agreed to dismiss all proceedings related to the complaints and the parties have granted each other 10-year cross-licenses for certain intellectual property.",
+  "raw_sha256": "f76cbef4781b4e4059b8c290672a070db714c054d6e48f51156793b4851a4158"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1419612/000117891326000632/zk2634374.htm",
+ "xbrl_contexts": []
+}

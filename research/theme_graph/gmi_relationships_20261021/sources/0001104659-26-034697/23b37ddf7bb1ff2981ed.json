@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 787663,
+ "doc_sha256": "af50c789956377a222f309d848b84907b33e8228fca6e41d0e651a1656fc3b9a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 236667,
+  "byte_start": 236391,
+  "normalized": "Definitive agreements between NMG and Caterpillar provide a framework for the research and development of equipment, preferential supply arrangements once such machines become commercially available, and fleet leasing or acquisition via Caterpillar’s Job Site Solutions.",
+  "normalized_sha256": "3ab620b939cbbf327dc7340de30cd7700dafea4bce0efff6f626bee6f7815fa5",
+  "raw": "Definitive agreements between NMG and Caterpillar provide a framework for the research and development of equipment, preferential supply arrangements once such machines become commercially available, and fleet leasing or acquisition via Caterpillar&#8217;s Job Site Solutions.",
+  "raw_sha256": "23b37ddf7bb1ff2981ed7e0f44ea36b63961194ba491eabc6b25f8a5e56e3c14"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d3.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-03T21:07:32Z",
+ "accession": "0001628280-26-013788",
+ "cik": "0000949157",
+ "doc_byte_length": 3845651,
+ "doc_sha256": "6027eaed123148b4beb7146528d579b25457c34fd2a0f2daedbd6e37d3e119f5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-03",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cenx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2461294,
+  "byte_start": 2460885,
+  "normalized": "Century Aluminum of South Carolina, Inc. (\"CASC\") has a power supply agreement with South Carolina Public Service Authority (“Santee Cooper”) that has an effective term through December 2031. Under this power supply agreement, 100% of Mt.",
+  "normalized_sha256": "e42a94a6d3ff951363fcf9528c13afd2f9c87f989f3cd1b5e65e6fefd7656638",
+  "raw": "Century Aluminum of South Carolina, Inc. (\"CASC\") has a power supply agreement with South Carolina Public Service Authority (&#8220;Santee Cooper&#8221;) that has an effective term through December 2031. Under this power supply agreement, <ix:nonFraction unitRef=\"number\" contextRef=\"c-380\" decimals=\"INF\" name=\"cenx:ShortTermPowerAgreementSupplyPercentage\" scale=\"-2\" id=\"f-1640\">100</ix:nonFraction>% of Mt.",
+  "raw_sha256": "9a4d9c2134a6c53f129bd8465ca3f3fb6276d9cf258d8cbbf1b426e521679031"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/949157/000162828026013788/cenx-20251231.htm",
+ "xbrl_contexts": []
+}

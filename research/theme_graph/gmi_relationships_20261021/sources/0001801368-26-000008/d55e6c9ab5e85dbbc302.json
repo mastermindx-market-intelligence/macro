@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3081980,
+  "byte_start": 3081735,
+  "normalized": "Offtake Agreement, dated as of July 9, 2025, between MP 10X Development, LLC and the United States Department of Defense (incorporated herein by reference to Exhibit 10.5 to the Company’s Current Report on Form 8-K filed on July 10, 2025).",
+  "normalized_sha256": "637950901445286143f526e505c947b521f9f718b41dfba88a1d2359d965a971",
+  "raw": "Offtake Agreement, dated as of July 9, 2025, between MP 10X Development, LLC and the United States Department of Defense (incorporated herein by reference to Exhibit 10.5 to the Company&#8217;s Current Report on Form 8-K filed on July 10, 2025).",
+  "raw_sha256": "d55e6c9ab5e85dbbc30213d52b7caf71d23c2a219ebe0989c62fd58c58e10e55"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T00:25:18Z",
+ "accession": "0001262039-26-000007",
+ "cik": "0001262039",
+ "doc_byte_length": 2693210,
+ "doc_sha256": "bef9b7bdac3aa28a765d311540862082ccf7ceabb34e60686605c2d814ea3f50",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ftnt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2544816,
+  "byte_start": 2544406,
+  "normalized": "Distributor A28",
+  "normalized_sha256": "6773f2671856e34e0a4005d5977d80790694b5e61db44fb0c0cac18f911095c1",
+  "raw": "Distributor A</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-378\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1578\">28",
+  "raw_sha256": "4adeea091d0c04542885352cb631e362e37cfb2d449a082650bc0cfb6ee97194"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1262039/000126203926000007/ftnt-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 216291,
+   "byte_start": 215627,
+   "context_ref": "c-378",
+   "raw": "<xbrli:context id=\"c-378\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001262039</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ftnt:DistributorAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b8ee25092077ba3c0b2459953e692574ab29e6bb8efe5fa84eaaed56cc700213"
+  }
+ ]
+}

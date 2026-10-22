@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T20:48:26Z",
+ "accession": "0001104659-26-020461",
+ "cik": "0001113232",
+ "doc_byte_length": 3058722,
+ "doc_sha256": "caea13eedcaba102752e926f81061705b9e0adef717069d67faf34d3378c0211",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "acls-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 220590,
+  "byte_start": 220034,
+  "normalized": "U.S. export controls impact our ability to sell to certain customers in China, a country that has represented a significant portion of our sales in recent years. One of our major Chinese customers, Semiconductor Manufacturing International Corporation (“SMIC”), is on the U.S. Entity List, but is subject to a 2020 licensing policy that allows shipments to certain mature process SMIC fabs, which to date, we have been able to obtain. Other Chinese chipmakers are on the U.S. Entity List, without a similar policy allowing licensed shipments.",
+  "normalized_sha256": "99d9c869e9c9cecadb3a03fd1f1ae4bfbffea420b107e3f7157f7b3d024f49bd",
+  "raw": "U.S. export controls impact our ability to sell to certain customers in China, a country that has represented a significant portion of our sales in recent years.  One of our major Chinese customers, Semiconductor Manufacturing International Corporation (&#8220;SMIC&#8221;), is on the U.S. Entity List, but is subject to a 2020 licensing policy that allows shipments to certain mature process SMIC fabs, which to date, we have been able to obtain.  Other Chinese chipmakers are on the U.S. Entity List, without a similar policy allowing licensed shipments.",
+  "raw_sha256": "20f6d1f96a24fda22e6e885cda3013a1f1bb83e6f60b5c962d12e364f10baa78"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1113232/000110465926020461/acls-20251231x10k.htm",
+ "xbrl_contexts": []
+}

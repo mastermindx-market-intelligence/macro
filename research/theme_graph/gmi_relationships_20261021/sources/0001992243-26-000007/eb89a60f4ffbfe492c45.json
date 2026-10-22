@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T20:44:53Z",
+ "accession": "0001992243-26-000007",
+ "cik": "0001992243",
+ "doc_byte_length": 2064981,
+ "doc_sha256": "9dcda3888df8da599a4743038ec3357e066ef76f5e6ccb1af7d29cc45123870f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "t1-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1953994,
+  "byte_start": 1953730,
+  "normalized": "First Amendment to IP License Agreement, dated as of December 29, 2025, by and between T1 Energy Inc. and Evervolt Green Energy Holding Pte Ltd. (incorporated by reference to Exhibit 10.3 to the Current Report on Form 8-K filed with the SEC on December 29, 2025).",
+  "normalized_sha256": "4959a43f7b2c59d3142b4627aa704ac5a531ec0043e5abf885553d2cb55c2ad4",
+  "raw": "First Amendment to IP License Agreement, dated as of  December 29, 2025, by and between T1 Energy Inc. and Evervolt Green Energy Holding Pte Ltd. (incorporated by reference to Exhibit 10.3 to the Current Report on Form 8-K filed with the SEC on December 29, 2025).",
+  "raw_sha256": "eb89a60f4ffbfe492c4527db032ae7dada48100067f3cc5865f8dbdaa52cda97"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1992243/000199224326000007/t1-20251231.htm",
+ "xbrl_contexts": []
+}

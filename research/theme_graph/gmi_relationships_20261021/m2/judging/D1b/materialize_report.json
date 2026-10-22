@@ -1,27 +1,232 @@
 {
  "assessments": 15,
- "candidates_total": 120,
+ "candidates_total": 1147,
  "codes": {
-  "MAGNITUDE_BENCHMARK_UNSUPPORTED": 16,
-  "MAGNITUDE_XBRL_AVAILABLE": 2
+  "DUPLICATE_SPAN_BYTES": 4,
+  "MAGNITUDE_BENCHMARK_UNSUPPORTED": 29,
+  "MAGNITUDE_KIND_WORDING": 1,
+  "MAGNITUDE_PARSE_AMBIGUOUS": 20,
+  "MAGNITUDE_XBRL_AVAILABLE": 4,
+  "OBSERVATION_ID_DUPLICATE": 1,
+  "ROLE_NOT_IN_SPECIES": 1
  },
  "counters": {
-  "duplicate_span_bytes": 0,
+  "duplicate_span_bytes": 4,
   "excerpt_self_check_failed": 0,
   "sources_reused": 53,
-  "sources_written": 0,
+  "sources_written": 239,
   "subject_name_from_sec_name": 0
  },
  "coverage_by_state": {
-  "assessed": 12,
-  "no_supported_result": 58
+  "assessed": 56,
+  "no_supported_result": 14
  },
  "dirname": "D1b",
  "edges": [
   {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XNAS-SYNA"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MSFT",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-SONY",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XNYS-UI"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-QCOM",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XNYS-UI"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-PI"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-SIMO"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-SITM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-UMC",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-SITM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-FLEX",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-TER"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-PLXS",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-TER"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNYS-ASX"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AMZN",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-PANW"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-GOOG",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-PANW"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MSFT",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-PANW"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-ORCL",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-PANW"
+  },
+  {
    "object_issuer_id": "ISS:US-XNYS-ARW",
    "species": "distribution",
    "subject_issuer_id": "ISS:US-XNAS-SLAB"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-ARW",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-VICR"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MSFT",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-XRX"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVT",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNYS-CTS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-INTC",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-PI"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-NXPI",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-PI"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AMD",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MU",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-NVDA",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-QCOM",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-WDC",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-STM",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-WDC",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-SNDK"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-SYNA"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MSFT",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-SNDK",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNAS-WDC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-ATEN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-VYX",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-NATL"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-GOOG",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-PL"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-DD",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-Q"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AVGO",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-UMC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-IBM",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-UMC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-NATL",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-VYX"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-INTC",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-PI"
   },
   {
    "object_issuer_id": "ISS:US-XNAS-GEHC",
@@ -31,12 +236,47 @@
   {
    "object_issuer_id": "ISS:US-XNAS-MU",
    "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-RMBS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MU",
+   "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XNAS-SIMO"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AAPL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-SITM"
   },
   {
    "object_issuer_id": "ISS:US-XNYS-ARW",
    "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XNAS-SITM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-BA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-SSYS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-GM",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-SSYS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AMZN",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-WMT",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-BBY",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-TBCH"
   },
   {
    "object_issuer_id": "ISS:US-XNAS-ASML",
@@ -49,49 +289,266 @@
    "subject_issuer_id": "ISS:US-XNAS-UCTT"
   },
   {
+   "object_issuer_id": "ISS:US-XNAS-CMCSA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-VISN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-SNX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-VISN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-T",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-CIEN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-NVDA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-COHR"
+  },
+  {
    "object_issuer_id": "ISS:US-XNYS-CMI",
    "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XNYS-CTS"
   },
   {
+   "object_issuer_id": "ISS:US-XNAS-AMZN",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-FN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-CSCO",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-FN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-NVDA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-FN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-NOK",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-FN"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-NEE",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-JKS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-GOOG",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-PL"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-DD",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-Q"
+  },
+  {
    "object_issuer_id": "ISS:US-XNYS-TSM",
    "species": "supplier_customer",
    "subject_issuer_id": "ISS:US-XNYS-Q"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AAPL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-STM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-TSLA",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-STM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-INTC",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-UMC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-TXN",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-UMC"
   }
  ],
  "inputs": {
-  "D1b/candidates.jsonl": "56f51de906db78d4a7880e8135aef49de7a0499cc0f4f70990c0005c809b8c37",
+  "D1b/candidates.jsonl": "2f4fdeb0e42a034b9a5d41982c7a1854b76e51e9d643394d76a2ba0e551b553f",
   "D1b/fetch_ledger.jsonl": "0ebebb5a74aaba932c679c704346b650c01f7d24ff104b784fb8ab4ffc193cb3",
-  "D1b/harvest_report.json": "334feadc156544213f8c0a5430e66a0e11fdb1b1688e5f0b86927b2bd5455f2d",
-  "D1b/packs/index.json": "11e0eecccb308c6bf9d673b48986a4bc49514f9ed8de358aa88cc88d8dbb6558",
+  "D1b/harvest_report.json": "3f00bb95ab04a2408ea15ac2dfb791c4e4a75da06b61d245fc1503bda24471d8",
+  "D1b/packs/index.json": "eb30316482b57903e2574a954f5ff6904840d90f8ec70f66347355db6999c43d",
   "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json": "5977c20a3bfde6280f9835d403579469d2c1252c5deb341f419c89125ca5fbd4",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
   "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
  },
- "judged": 120,
+ "judged": 1147,
  "leaf": "D1b",
  "non_edge_reason": {
-  "ANONYMOUS_ALIAS": 13,
-  "OUT_OF_CORE_MARKET": 2,
-  "UNRESOLVED_COUNTERPARTY": 11
+  "ANONYMOUS_ALIAS": 59,
+  "CN_SECURITY_LEVEL_ONLY": 3,
+  "OUT_OF_CORE_MARKET": 25,
+  "PRIVATE_COMPANY": 16,
+  "UNRESOLVED_COUNTERPARTY": 194
  },
- "observations": 40,
+ "observations": 435,
  "outcomes": {
-  "admitted": 53,
-  "no_relationship": 51,
-  "refused": 16
+  "admitted": 292,
+  "no_relationship": 796,
+  "refused": 48,
+  "unclear": 11
  },
  "rows_by_species": {
-  "distribution": 4,
-  "supplier_customer": 36
+  "component_dependency": 6,
+  "contract_manufacturing": 51,
+  "distribution": 32,
+  "licensing": 122,
+  "supplier_customer": 224
  },
  "schema": "gmi_rel_m2.materialize_report/v1",
  "unresolved_names": [
   {
-   "count": 2,
+   "count": 14,
+   "name": "Seiko Epson Corporation"
+  },
+  {
+   "count": 10,
    "name": "Applied Materials, Inc."
+  },
+  {
+   "count": 5,
+   "name": "Lapis Semiconductor Co., Ltd."
+  },
+  {
+   "count": 5,
+   "name": "OKI Electric Industry Co., Ltd."
+  },
+  {
+   "count": 4,
+   "name": "AFASTOR"
+  },
+  {
+   "count": 4,
+   "name": "Compuware"
+  },
+  {
+   "count": 4,
+   "name": "OKI Semiconductor Co., Ltd."
+  },
+  {
+   "count": 4,
+   "name": "PHISEMI"
+  },
+  {
+   "count": 4,
+   "name": "Samsung Electronics Co., Ltd."
+  },
+  {
+   "count": 3,
+   "name": "Ablecom"
+  },
+  {
+   "count": 3,
+   "name": "Aura"
+  },
+  {
+   "count": 3,
+   "name": "Edom Technology"
+  },
+  {
+   "count": 3,
+   "name": "IBM"
+  },
+  {
+   "count": 3,
+   "name": "Infineon Technologies AG"
+  },
+  {
+   "count": 3,
+   "name": "Motorola Trademark Holdings, LLC"
+  },
+  {
+   "count": 3,
+   "name": "Quantek Technology Corporation"
+  },
+  {
+   "count": 3,
+   "name": "RWE Investco EPC MGMT, LLC"
+  },
+  {
+   "count": 3,
+   "name": "SDSS"
+  },
+  {
+   "count": 3,
+   "name": "TDK Corporation"
+  },
+  {
+   "count": 3,
+   "name": "X-FAB Semiconductor Foundries AG"
+  },
+  {
+   "count": 3,
+   "name": "XRX Brandco LLC"
+  },
+  {
+   "count": 2,
+   "name": "AEWIN Technologies, Inc."
+  },
+  {
+   "count": 2,
+   "name": "Amlogic"
+  },
+  {
+   "count": 2,
+   "name": "Ampt, LLC"
+  },
+  {
+   "count": 2,
+   "name": "Atomistic SAS"
+  },
+  {
+   "count": 2,
+   "name": "CXMT"
+  },
+  {
+   "count": 2,
+   "name": "Charter Communications, Inc."
+  },
+  {
+   "count": 2,
+   "name": "Consolidated Electrical Distributors, Inc"
+  },
+  {
+   "count": 2,
+   "name": "CreeLED"
+  },
+  {
+   "count": 2,
+   "name": "DECA Technologies Inc."
+  },
+  {
+   "count": 2,
+   "name": "Infineon"
+  },
+  {
+   "count": 2,
+   "name": "MACOM"
+  },
+  {
+   "count": 2,
+   "name": "Marvell"
+  },
+  {
+   "count": 2,
+   "name": "Nanya"
+  },
+  {
+   "count": 2,
+   "name": "Nuvoton"
   },
   {
    "count": 2,
@@ -99,7 +556,19 @@
   },
   {
    "count": 2,
-   "name": "Quantek Technology Corporation"
+   "name": "Phison"
+  },
+  {
+   "count": 2,
+   "name": "RicohPrinting Systems America, Inc."
+  },
+  {
+   "count": 2,
+   "name": "Robert Bosch LLC"
+  },
+  {
+   "count": 2,
+   "name": "SAM Meerkat"
   },
   {
    "count": 2,
@@ -107,27 +576,39 @@
   },
   {
    "count": 2,
+   "name": "Silicon Motion"
+  },
+  {
+   "count": 2,
+   "name": "Socionext"
+  },
+  {
+   "count": 2,
+   "name": "Teledyne Digital Imaging Inc."
+  },
+  {
+   "count": 2,
+   "name": "Toshiba"
+  },
+  {
+   "count": 2,
    "name": "Toyota Motor Corporation"
   },
   {
-   "count": 1,
-   "name": "AFASTOR"
+   "count": 2,
+   "name": "Trina Solar Co., Ltd."
+  },
+  {
+   "count": 2,
+   "name": "Winbond"
+  },
+  {
+   "count": 2,
+   "name": "the U.S. Government"
   },
   {
    "count": 1,
-   "name": "Edom Technology"
-  },
-  {
-   "count": 1,
-   "name": "PHISEMI"
-  },
-  {
-   "count": 1,
-   "name": "Sabre Technologies Pte. Ltd"
-  },
-  {
-   "count": 1,
-   "name": "the Unis Venture"
+   "name": "Advanced Semiconductor Engineering, Inc."
   }
  ]
 }

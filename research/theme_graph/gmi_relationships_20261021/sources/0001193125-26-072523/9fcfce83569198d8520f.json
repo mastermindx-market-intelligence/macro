@@ -1,0 +1,52 @@
+{
+ "accepted_at": "2026-02-26T00:26:16Z",
+ "accession": "0001193125-26-072523",
+ "cik": "0001517228",
+ "doc_byte_length": 5973097,
+ "doc_sha256": "5a4921b39020ba2f8cb67203272fb9beb0acbc386086160cd8708b9849d3e9f1",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "visn-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 5496454,
+  "byte_start": 5495298,
+  "normalized": "Accounts receivable from Comcast and TD Synnex Corporation (TD Synnex) represented approximately 42% and 11%,",
+  "normalized_sha256": "8b5544d622d805c8a441e0b8583e5c3ef25475c689587f9274eb3ac387a052cd",
+  "raw": " Accounts receivable from Comcast and TD Synnex Corporation (TD Synnex) represented approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_472e5947-c373-4642-9847-6983850547d7\" contextRef=\"C_9cec4ce0-9951-4060-91cc-8863ce6c3f3d\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">42</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% and </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_62f70186-cd24-4611-9526-1efe3d475773\" contextRef=\"C_964ecf4c-2b0d-4016-a07e-f75d0a9cd132\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">11</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">%,",
+  "raw_sha256": "9fcfce83569198d8520fec690a51b398cedf96ec864d3006f1faa0ce75f769b3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526072523/visn-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 23489,
+   "byte_start": 22782,
+   "context_ref": "C_964ecf4c-2b0d-4016-a07e-f75d0a9cd132",
+   "raw": "<xbrli:context id=\"C_964ecf4c-2b0d-4016-a07e-f75d0a9cd132\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:TDSynnexCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "d9538519a6602e5a499bdad50bbab73e6fd0d1d5737fdf578a6805a96e578778"
+  },
+  {
+   "byte_end": 30269,
+   "byte_start": 29563,
+   "context_ref": "C_9cec4ce0-9951-4060-91cc-8863ce6c3f3d",
+   "raw": "<xbrli:context id=\"C_9cec4ce0-9951-4060-91cc-8863ce6c3f3d\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:ComcastCorporationMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "46a41da770cbcc4363aab3ab2a68b89a3213f0e365d0a921790a2d599b475f5e"
+  },
+  {
+   "byte_end": 35857,
+   "byte_start": 35140,
+   "context_ref": "C_a31d9e06-cdcc-4df6-beb9-14aa47918f93",
+   "raw": "<xbrli:context id=\"C_a31d9e06-cdcc-4df6-beb9-14aa47918f93\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:ComcastAndTDSynnexCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7137e19df4c647d3089a970ef06aa6a1503895f7b334a409138d4a0e02e55263"
+  },
+  {
+   "byte_end": 181262,
+   "byte_start": 180555,
+   "context_ref": "C_5bb6a7f8-5a45-4f3b-b632-e0f0ade9cf35",
+   "raw": "<xbrli:context id=\"C_5bb6a7f8-5a45-4f3b-b632-e0f0ade9cf35\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:TDSynnexCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "35d2825b1e63d2d5210cdb462b18bea391eb1ff931a37009667fd707ed53028f"
+  }
+ ]
+}

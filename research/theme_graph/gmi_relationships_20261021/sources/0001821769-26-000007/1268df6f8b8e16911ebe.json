@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 303231,
+  "byte_start": 302683,
+  "normalized": "with Powerchip Semiconductor Manufacturing Corporation and in November 2025, we announced a long-term strategic partnership with GlobalFoundries to develop and deliver advanced GaN solutions for critical applications in high power markets, including AI datacenters, energy and grid infrastructure, performance computing and industrial electrification. Despite these mitigation steps, there is no assurance that we will be able to successfully source sufficient quality or volume of GaN wafers at a cost or on a timeline that meets our requirements.",
+  "normalized_sha256": "1268df6f8b8e16911ebe00ab1c196ff095184d22878824fd68e4f9c1f031dc34",
+  "raw": "with Powerchip Semiconductor Manufacturing Corporation and in November 2025, we announced a long-term strategic partnership with GlobalFoundries to develop and deliver advanced GaN solutions for critical applications in high power markets, including AI datacenters, energy and grid infrastructure, performance computing and industrial electrification. Despite these mitigation steps, there is no assurance that we will be able to successfully source sufficient quality or volume of GaN wafers at a cost or on a timeline that meets our requirements.",
+  "raw_sha256": "1268df6f8b8e16911ebe00ab1c196ff095184d22878824fd68e4f9c1f031dc34"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:13:06Z",
+ "accession": "0001062993-26-001765",
+ "cik": "0001308648",
+ "doc_byte_length": 3775840,
+ "doc_sha256": "47f8f288c1dda600e9ac67787010773653af88c6779a536ef096c4ace9f1b655",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-2.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2227245,
+  "byte_start": 2225766,
+  "normalized": "• The third payment of $5.0 million was originally scheduled to be made as a combination of cash and First Majestic common shares. On March 13, 2025, the Company signed an amendment agreement (the \"Amended Springpole Stream Agreement\") to the original streaming agreement for the Springpole property (the \"Springpole Stream Agreement\") among the Company, Gold Canyon Resources Inc. (a wholly-owned subsidiary of First Mining) and First Mining to accelerate the final tranche payment owed by the Company under the Springpole Stream Agreement, and to make such final payment a cash only payment of $5 million (previously, this final payment was to be a combination of cash and Common Shares), payable by the Company by March 31, 2025. The Company made this final payment to First Mining prior to March 31, 2025.",
+  "normalized_sha256": "2e242cf87edb72c60bb9c61339188700918f0cce7e2afb1de0e7d7a8fc5a331b",
+  "raw": "&#8226;<span style=\"display:inline-block;width:15.0pt\">&#160;</span>The third payment of $<ix:nonFraction id=\"Fxbrl_20260223154358509\" name=\"ag:AcquisitionOfMiningInterestConsiderationTransferred\" contextRef=\"C_20250313to20250313_ifrsfullSegmentsAxis_agSpringpoleSilverStreamMember\" unitRef=\"USD\" scale=\"6\" decimals=\"-5\" format=\"ixt:num-dot-decimal\">5.0</ix:nonFraction> million was originally scheduled to be made as a combination of cash and First Majestic common shares. On March 13, 2025, the Company signed an amendment agreement (the \"Amended Springpole Stream Agreement\") to the original streaming agreement for the Springpole property (the \"Springpole Stream Agreement\") among the Company, Gold Canyon Resources Inc. (a wholly-owned subsidiary of First Mining) and First Mining to accelerate the final tranche payment owed by the Company under the Springpole Stream Agreement, and to make such final payment a cash only payment of $<ix:nonFraction id=\"Fxbrl_20260223154638500\" name=\"ag:AcquisitionOfMiningInterestConsiderationTransferred\" contextRef=\"C_20250313to20250313_agAgreementAxis_agSpringpoleStreamAgreementMember_ifrsfullSegmentsAxis_agSpringpoleSilverStreamMember\" unitRef=\"USD\" scale=\"6\" decimals=\"-6\" format=\"ixt:num-dot-decimal\">5</ix:nonFraction> million (previously, this final payment was to be a combination of cash and Common Shares), payable by the Company by March 31, 2025. The Company made this final payment to First Mining prior to March 31, 2025.",
+  "raw_sha256": "43e59b90424f9f2bd0b153b0335bdb2232aa8a15f4299c01c323b59f31cf7c8e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1308648/000106299326001765/exhibit99-2.htm",
+ "xbrl_contexts": []
+}

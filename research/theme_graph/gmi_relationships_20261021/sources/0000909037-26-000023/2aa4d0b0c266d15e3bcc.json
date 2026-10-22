@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-22T15:31:05Z",
+ "accession": "0000909037-26-000023",
+ "cik": "0000909037",
+ "doc_byte_length": 13218054,
+ "doc_sha256": "f74e20149613e8b3dd58c2c8e8d220f25950a2655c93de977e306d24b2a4a68f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-22",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sqm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3253131,
+  "byte_start": 3252683,
+  "normalized": "One customer individually (Fertilizantes Tepeyac from Mexico) accounted for at least 11% of this segment's sales in 2025, due to a general decrease of potassium chloride sales which led to a higher concentration of sales with this customer. We estimate that the 10 largest customers together accounted for approximately 36% of sales during this period . No single supplier has a concentration of at least 10% of this business line's cost of sales.",
+  "normalized_sha256": "d64590c6a41e5f6421b6d97769d8b43f7e42c192bc726607c49ba2299e9677c9",
+  "raw": " One customer individually (Fertilizantes Tepeyac from Mexico) accounted for at least 11% of this segment's sales in 2025, due to a general decrease of potassium chloride sales which led to a higher concentration of sales with this customer. We estimate that the 10 largest customers together accounted for approximately 36% of sales during this period . No single supplier has a concentration of at least 10% of this business line's cost of sales.",
+  "raw_sha256": "2aa4d0b0c266d15e3bcc23cf5f07bc72aa02a4785d6f6312257aa2fb0d138ef2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/909037/000090903726000023/sqm-20251231.htm",
+ "xbrl_contexts": []
+}

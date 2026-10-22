@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-18T21:20:36Z",
+ "accession": "0001193125-26-057101",
+ "cik": "0000917273",
+ "doc_byte_length": 4723143,
+ "doc_sha256": "705cadc7853c287c94d1db5ec5fe4aa5cb9924d6938183c64b0b18803a29584b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-18",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "rmbs-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 778318,
+  "byte_start": 777810,
+  "normalized": "Royalties may be structured as fixed, variable or a hybrid of fixed and variable royalty payments. Leading semiconductor and electronic system companies such as AMD, Amlogic, Broadcom, CXMT, IBM, Infineon, Kioxia, Marvell, MediaTek, Micron, Nanya, Nuvoton, NVIDIA, Phison, Qualcomm, Samsung, Silicon Motion, SK hynix, Socionext, STMicroelectronics, Toshiba, Western Digital and Winbond have licensed our patents. The vast majority of our patents originate from our internal research and development efforts.",
+  "normalized_sha256": "ec2f2aea5b43dd20d27a2cab82a1d7a6ceb752ec020c3ebb8677247b949f1006",
+  "raw": " Royalties may be structured as fixed, variable or a hybrid of fixed and variable royalty payments. Leading semiconductor and electronic system companies such as AMD, Amlogic, Broadcom, CXMT, IBM, Infineon, Kioxia, Marvell, MediaTek, Micron, Nanya, Nuvoton, NVIDIA, Phison, Qualcomm, Samsung, Silicon Motion, SK hynix, Socionext, STMicroelectronics, Toshiba, Western Digital and Winbond have licensed our patents. The vast majority of our patents originate from our internal research and development efforts.",
+  "raw_sha256": "a355a927fdcda9773966bbe57ad0d2e47e0b49029837f301c0bafa165bee4473"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/917273/000119312526057101/rmbs-20251231.htm",
+ "xbrl_contexts": []
+}

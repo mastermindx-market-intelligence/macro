@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 869779,
+  "byte_start": 869319,
+  "normalized": "1997 Amended License Agreement among the registrant, The Trustees of Princeton University and the University of Southern California, dated as of October 9, 1997 (7)",
+  "normalized_sha256": "f2b11bb8d4d7584fa84c364fabc9b02f07e4139b600d4501f4f8c51455d95792",
+  "raw": "1997 Amended License Agreement among the registrant, The Trustees of Princeton University and the University of Southern California, dated as of October 9, 1997</span><span style=\"color:#000000;top:-4.6899999999999995pt;white-space:pre-wrap;font-size:6.7pt;position:relative;font-kerning:none;min-width:fit-content;\"> </span><span style=\"color:#000000;top:1pt;white-space:pre-wrap;font-size:6.7pt;position:relative;font-kerning:none;min-width:fit-content;\">(7)",
+  "raw_sha256": "ba70dbd524dfc753a8cd3de844af42a3e3777a75243b6f0b47028b43f6e7007b"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T11:06:02Z",
+ "accession": "0001628280-26-011378",
+ "cik": "0000937966",
+ "doc_byte_length": 24864730,
+ "doc_sha256": "0941dbd1acd13e954e0bbf74361475eb1c0e178b5a25cb07b41628af85729721",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "asml-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 24817121,
+  "byte_start": 24817022,
+  "normalized": "ASML/Carl Zeiss Sublicense Agreement, 2004, dated December 10, 2004, between Carl Zeiss SMT AG and",
+  "normalized_sha256": "166626cdddf608cfdbe5310d9e4022a2bf869d8b776bc1cb078dcb61a4f2a0e6",
+  "raw": "ASML/Carl Zeiss Sublicense Agreement, 2004, dated December 10, 2004, between Carl Zeiss SMT AG and ",
+  "raw_sha256": "86857b1bd3aa9699d688a8c12f7158b51f14c3935c54b1d2f6132e7bafaa7d2e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/asml-20251231.htm",
+ "xbrl_contexts": []
+}

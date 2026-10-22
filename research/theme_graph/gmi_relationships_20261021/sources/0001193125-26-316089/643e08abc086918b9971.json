@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 405035,
+  "byte_start": 404516,
+  "normalized": "Some textbook publishers supply textbooks pursuant to consignment or rental programs which could impact used textbook supplies in the future. Barnes & Noble Education is a national distributor for rental textbooks offered through McGraw-Hill Education's and Pearson Education’s consignment rental program. Barnes & Noble Education does not have long-term arrangements with most of its suppliers to guarantee availability of content or services, particular payment terms or the extension of credit limits.",
+  "normalized_sha256": "439b4a7d518100e580aad95281c61758a6fc9250810c6c36160dbf205c13330e",
+  "raw": " Some textbook publishers supply textbooks pursuant to consignment or rental programs which could impact used textbook supplies in the future. Barnes &amp; Noble Education is a national distributor for rental textbooks offered through McGraw-Hill Education's and Pearson Education&#8217;s consignment rental program. Barnes &amp; Noble Education does not have long-term arrangements with most of its suppliers to guarantee availability of content or services, particular payment terms or the extension of credit limits.",
+  "raw_sha256": "643e08abc086918b9971be8f8e1c41848993f2bd6b0dc095d0cb67e7d839953f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

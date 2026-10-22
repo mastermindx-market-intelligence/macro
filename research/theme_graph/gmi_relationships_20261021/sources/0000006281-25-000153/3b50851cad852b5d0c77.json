@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-25T21:02:50Z",
+ "accession": "0000006281-25-000153",
+ "cik": "0000006281",
+ "doc_byte_length": 2363627,
+ "doc_sha256": "4e312f689cc55d7ec170389b1cc7810ff0bee8e651a0ed7dcaabe5f08c68627a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "adi-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1420121,
+  "byte_start": 1419339,
+  "normalized": "The Company is exposed to the risk of obsolescence of its inventory depending on the mix of future business. Additionally, more than half of the Company’s purchases of external wafer and foundry services are from a limited number of suppliers, such as Taiwan Semiconductor Manufacturing Company (TSMC) and others. If these suppliers or any of the Company’s other key suppliers are unable or unwilling to manufacture and deliver sufficient quantities of components, on the time schedule and of the quality that the Company requires, the Company may be forced to engage additional or replacement suppliers, which could result in significant expenses and disruptions or delays in manufacturing, product development and shipment of product to the Company’s customers.",
+  "normalized_sha256": "13bda9219b829c9563c6c7a8a120a0d141278751994ba38c0e06ed41c04e4fef",
+  "raw": " The Company is exposed to the risk of obsolescence of its inventory depending on the mix of future business. Additionally, more than half of the Company&#8217;s purchases of external wafer and foundry services are from a limited number of suppliers, such as Taiwan Semiconductor Manufacturing Company (TSMC) and others. If these suppliers or any of the Company&#8217;s other key suppliers are unable or unwilling to manufacture and deliver sufficient quantities of components, on the time schedule and of the quality that the Company requires, the Company may be forced to engage additional or replacement suppliers, which could result in significant expenses and disruptions or delays in manufacturing, product development and shipment of product to the Company&#8217;s customers.",
+  "raw_sha256": "3b50851cad852b5d0c7745fe8c3d59a2cc19ad51db64b272c1885f1e5fe50370"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628125000153/adi-20251101.htm",
+ "xbrl_contexts": []
+}

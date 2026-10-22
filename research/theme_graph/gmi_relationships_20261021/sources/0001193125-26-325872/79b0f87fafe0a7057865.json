@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-30T18:41:42Z",
+ "accession": "0001193125-26-325872",
+ "cik": "0000108516",
+ "doc_byte_length": 8064657,
+ "doc_sha256": "4da193fcec877967869ebc8729fb82c7bec4e9a5ef021af900e10e2c4e4c40eb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "wor-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 7824847,
+  "byte_start": 7824734,
+  "normalized": "WBS License Agreement, dated November 30, 2023, between Worthington Enterprises, Inc. and Worthington Steel, Inc.",
+  "normalized_sha256": "79b0f87fafe0a705786565fde3eb8d33e39ed8ed965e5d7b8eb9f58e696278b7",
+  "raw": "WBS License Agreement, dated November 30, 2023, between Worthington Enterprises, Inc. and Worthington Steel, Inc.",
+  "raw_sha256": "79b0f87fafe0a705786565fde3eb8d33e39ed8ed965e5d7b8eb9f58e696278b7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/108516/000119312526325872/wor-20260531.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 359520,
+  "byte_start": 359035,
+  "normalized": "If market demand for wafers or production and assembly materials increases, if a supplier of our wafers fails to procure materials needed for manufacture of our products, or if a supplier of our wafers ceases or suspends operations, our supply of wafers and other materials could become limited. We currently have a ten-year supply agreement with Bosch for the fabrication of our MEMS wafers. The initial term of this supply agreement is through February 2027 and renews automatically.",
+  "normalized_sha256": "6f5b20cbbed87e02476ce4202ac783a147b8c31b33429aa444bbe7cdc67c50d5",
+  "raw": "If market demand for wafers or production and assembly materials increases, if a supplier of our wafers fails to procure materials needed for manufacture of our products, or if a supplier of our wafers ceases or suspends operations, our supply of wafers and other materials could become limited. We currently have a ten-year supply agreement with Bosch for the fabrication of our MEMS wafers. The initial term of this supply agreement is through February 2027 and renews automatically.",
+  "raw_sha256": "6f5b20cbbed87e02476ce4202ac783a147b8c31b33429aa444bbe7cdc67c50d5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

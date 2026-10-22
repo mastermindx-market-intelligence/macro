@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-18T21:05:10Z",
+ "accession": "0001049521-26-000045",
+ "cik": "0001049521",
+ "doc_byte_length": 2182366,
+ "doc_sha256": "763b48fcf45a9a588a2eabc819e67c38a19dabe746b4eb1c914b6bdb97a9bb2e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "mrcy-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 325212,
+  "byte_start": 324744,
+  "normalized": "Navy accounted for 10% of our total net revenues. In fiscal 2024, L3Harris accounted for 12% of our total net revenues, Lockheed Martin accounted for 11% of our total net revenues and RTX Corporation accounted for 10% of our total net revenues. Customers in the defense market generally purchase our products in connection with government programs that have a limited duration, leading to fluctuating sales to any particular customer in this market from year to year.",
+  "normalized_sha256": "af13c4423a3ad5e6ef7fc0ebfefdee4f321f42297394f6a38ef23e37bed2f8b2",
+  "raw": " Navy accounted for 10% of our total net revenues. In fiscal 2024, L3Harris accounted for 12% of our total net revenues, Lockheed Martin accounted for 11% of our total net revenues and RTX Corporation accounted for 10% of our total net revenues. Customers in the defense market generally purchase our products in connection with government programs that have a limited duration, leading to fluctuating sales to any particular customer in this market from year to year.",
+  "raw_sha256": "b8d3355a65975c61cb197861bcde74b771399d65aa862dd03178505ffcd5a8db"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1049521/000104952126000045/mrcy-20260703.htm",
+ "xbrl_contexts": []
+}

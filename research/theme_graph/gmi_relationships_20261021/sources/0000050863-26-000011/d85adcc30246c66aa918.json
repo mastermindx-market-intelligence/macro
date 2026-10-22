@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-22T23:43:06Z",
+ "accession": "0000050863-26-000011",
+ "cik": "0000050863",
+ "doc_byte_length": 3320835,
+ "doc_sha256": "1c1fccdaa6ba7111fb85206501dfa9aa064d1d833e731b793026dad2c31f6060",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "intc-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 936260,
+  "byte_start": 935306,
+  "normalized": "Further, some of our newer and more high-end products and a number of our future products involve the use of tiles manufactured by TSMC, a key competitor on the foundry side of our business, or other third-party foundry suppliers. To the extent there is any interruption in the supply of tiles manufactured by TSMC or any other third-party foundry supplier, whether as a result of a dispute or otherwise, we would be unable to complete assembly of complete products requiring such tiles until such time as we could design and manufacture replacement tiles and source such tiles from an alternative supplier, which would likely involve a substantial delay given the bespoke design of each tile to the particular manufacturing process utilized. As such, our disaggregated design approach involves significant supply chain risk to our ability to manufacture and sell our products that could have a material adverse impact on business and financial results.",
+  "normalized_sha256": "906f3e8b79c54f9f79566a1fc7d2d5d56131c114457fe7547843a4897180be2d",
+  "raw": " Further, some of our newer and more high-end products and a number of our future products involve the use of tiles manufactured by TSMC, a key competitor on the foundry side of our business, or other third-party foundry suppliers. To the extent there is any interruption in the supply of tiles manufactured by TSMC or any other third-party foundry supplier, whether as a result of a dispute or otherwise, we would be unable to complete assembly of complete products requiring such tiles until such time as we could design and manufacture replacement tiles and source such tiles from an alternative supplier, which would likely involve a substantial delay given the bespoke design of each tile to the particular manufacturing process utilized. As such, our disaggregated design approach involves significant supply chain risk to our ability to manufacture and sell our products that could have a material adverse impact on business and financial results.",
+  "raw_sha256": "d85adcc30246c66aa918f563e2684f742c6d2c342a3da737aa3f652009369e80"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+ "xbrl_contexts": []
+}

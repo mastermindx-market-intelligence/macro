@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3952695,
+  "byte_start": 3951462,
+  "normalized": "The customer representing 10% or more of revenue for the fiscal years ended January 31, 2026 and 2025 was WT, which accounted for approximately 70% and 63% of total revenue, respectively.",
+  "normalized_sha256": "4d1c946b134769c02b5f2592dfc1c3b276be14bb16c1431eb3964bcf80825102",
+  "raw": "The customer representing 10% or more of revenue for the fiscal years ended January 31, 2026 and 2025 was WT, which accounted for approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_24e9a6f8-6933-4de3-986d-9a3583a6c018\" contextRef=\"C_99542afd-52d3-4662-9fa2-93c52a6077d1\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">70</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% and </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_b24c9814-3cab-43b8-9728-98f24f5234c2\" contextRef=\"C_919c0d76-732e-453d-bed6-88e2d4d5f58e\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">63</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% of total revenue, respectively.",
+  "raw_sha256": "234c87fa1a5d138a57f9e126a6cbc5a492f8defbe384ec4b1a3c8ac70bacdd66"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 8205,
+   "byte_start": 7518,
+   "context_ref": "C_919c0d76-732e-453d-bed6-88e2d4d5f58e",
+   "raw": "<xbrli:context id=\"C_919c0d76-732e-453d-bed6-88e2d4d5f58e\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001280263</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">amba:WTMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-02-01</xbrli:startDate><xbrli:endDate>2025-01-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ca4b68ada46aab211861fde94d6345c0f3edceee2ba877966415ea9a5d607fac"
+  },
+  {
+   "byte_end": 12432,
+   "byte_start": 11745,
+   "context_ref": "C_99542afd-52d3-4662-9fa2-93c52a6077d1",
+   "raw": "<xbrli:context id=\"C_99542afd-52d3-4662-9fa2-93c52a6077d1\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001280263</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">amba:WTMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-02-01</xbrli:startDate><xbrli:endDate>2026-01-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "350d1326c92da1fb7fb4cf2855e85ae58e2c5702d342c4d894542509699049fe"
+  }
+ ]
+}

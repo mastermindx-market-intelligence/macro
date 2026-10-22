@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T21:17:35Z",
+ "accession": "0001193125-26-067039",
+ "cik": "0000026058",
+ "doc_byte_length": 5248029,
+ "doc_sha256": "5037d30798b317ad55ccd1372d4a9748b41875cf99ccf976ef7c91368a1a597f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 348159,
+  "byte_start": 347525,
+  "normalized": "We use distributors for a small portion of our product portfolio that are standard and require less design support, to service smaller customers, and to provide supply chain fulfillment for certain customers. Our key distribution partners include large global and regional distributors such as Avnet, Inc., Digi-Key Electronics, Master Electronics, Future Electronics, and TTI, Inc. In addition, we also utilize the services of independent manufacturers' representatives for customers not serviced directly by our sales engineers. Independent manufacturers' representatives receive commissions from us in exchange for their services.",
+  "normalized_sha256": "2837bb5067d5dde77240b8a2876a5b77aa316c6efc0168b444a044966b9316ba",
+  "raw": " We use distributors for a small portion of our product portfolio that are standard and require less design support, to service smaller customers, and to provide supply chain fulfillment for certain customers. Our key distribution partners include large global and regional distributors such as Avnet, Inc., Digi-Key Electronics, Master Electronics, Future Electronics, and TTI, Inc. In addition, we also utilize the services of independent manufacturers' representatives for customers not serviced directly by our sales engineers. Independent manufacturers' representatives receive commissions from us in exchange for their services.",
+  "raw_sha256": "802c6300ef162683788e94893ad4001732e497c7d7fb32e06938497084489a4c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/26058/000119312526067039/cts-20251231.htm",
+ "xbrl_contexts": []
+}

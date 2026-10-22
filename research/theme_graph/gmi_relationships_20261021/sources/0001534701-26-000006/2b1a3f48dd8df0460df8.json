@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T17:46:04Z",
+ "accession": "0001534701-26-000006",
+ "cik": "0001534701",
+ "doc_byte_length": 5032641,
+ "doc_sha256": "eba5852d039b98bbba7bd7b80a60472e54d10f107fa430cedcda912bcf1dc309",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "psx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4864346,
+  "byte_start": 4864226,
+  "normalized": "Intellectual Property Assignment and License Agreement between ConocoPhillips and Phillips 66, dated April 26, 2012.",
+  "normalized_sha256": "2730a0a54b413a36b1c9fb7155afafe6b66c9e8635e1d274538d09e1b852294e",
+  "raw": "Intellectual Property Assignment and License Agreement between ConocoPhillips and Phillips 66, dated April 26, 2012</a>.",
+  "raw_sha256": "2b1a3f48dd8df0460df8f8d37632f3bc8fbc7dba58c3e93236f1ed6183dd217e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1534701/000153470126000006/psx-20251231.htm",
+ "xbrl_contexts": []
+}

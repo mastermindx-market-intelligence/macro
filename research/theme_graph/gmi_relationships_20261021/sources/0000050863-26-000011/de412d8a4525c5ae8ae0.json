@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-01-22T23:43:06Z",
+ "accession": "0000050863-26-000011",
+ "cik": "0000050863",
+ "doc_byte_length": 3320835,
+ "doc_sha256": "1c1fccdaa6ba7111fb85206501dfa9aa064d1d833e731b793026dad2c31f6060",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "intc-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 499349,
+  "byte_start": 498993,
+  "normalized": "This approach provides flexibility and scale, including in recent years the ability to offer products at the most performant end of the spectrum where comparable internal process technologies were not yet available. We expect to continue to use TSMC and other third-party foundry suppliers for various key tiles in a number of current and future products.",
+  "normalized_sha256": "cf208491f15534af37a53fc6515d1519e87bc81b66fe516f8a6cf9432d5b77ca",
+  "raw": " This approach provides flexibility and scale, including in recent years the ability to offer products at the most performant end of the spectrum where comparable internal process technologies were not yet available. We expect to continue to use TSMC and other third-party foundry suppliers for various key tiles in a number of current and future products.",
+  "raw_sha256": "de412d8a4525c5ae8ae05897e4e1d008e32320a9ad59dd2b3d01511af736b189"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+ "xbrl_contexts": []
+}

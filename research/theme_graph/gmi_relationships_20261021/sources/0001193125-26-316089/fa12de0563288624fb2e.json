@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 520462,
+  "byte_start": 520181,
+  "normalized": "Because we have a fixed payment license with Microsoft, our royalty revenue from licensing in the gaming market and other consumer markets has declined and may further do so if Microsoft increases its volume of sales of touch-enabled products at the expense of our other licensees.",
+  "normalized_sha256": "fa12de0563288624fb2e544d82a5a46d8fe7eb1df058702b9b5c1eaa7e835646",
+  "raw": "Because we have a fixed payment license with Microsoft, our royalty revenue from licensing in the gaming market and other consumer markets has declined and may further do so if Microsoft increases its volume of sales of touch-enabled products at the expense of our other licensees.",
+  "raw_sha256": "fa12de0563288624fb2e544d82a5a46d8fe7eb1df058702b9b5c1eaa7e835646"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

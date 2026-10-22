@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-12T22:23:47Z",
+ "accession": "0000004281-26-000012",
+ "cik": "0000004281",
+ "doc_byte_length": 3061915,
+ "doc_sha256": "944f4eb4245e8bbf7150459e84ae51d6d890f797d59da002ebc0d358f7b7fdb6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hwm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 859743,
+  "byte_start": 858490,
+  "normalized": "The Company generally passes through material costs in customer contracts with limited exceptions. In connection with the Arconic Inc. Separation Transaction, the Company entered into several agreements with Arconic Corporation that govern the relationship between the Company and Arconic Corporation following the separation, including raw material supply agreements.",
+  "normalized_sha256": "2a76db60f875ae0fe0f155554bb8dbfb89ee20cc22266776c2d79f74701dc0d3",
+  "raw": " The Company generally passes through material costs in customer contracts with limited exceptions. </span><span style=\"color:#212529;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">In connection with the </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Arconic Inc. Separation Transaction</span><span style=\"color:#212529;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">, the Company entered into several agreements with Arconic Corporation that </span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">govern the relationship </span><span style=\"color:#212529;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">between</span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> the Company and Arconic Corporation following the separation, including raw material supply agreements.</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> ",
+  "raw_sha256": "0571d6bf362f70070cbeb3bf02adb2900d93627ab502227f1265d1482431968a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/4281/000000428126000012/hwm-20251231.htm",
+ "xbrl_contexts": []
+}

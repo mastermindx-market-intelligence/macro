@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T21:04:45Z",
+ "accession": "0001193125-26-119957",
+ "cik": "0001836833",
+ "doc_byte_length": 5134238,
+ "doc_sha256": "c5e0baac3207f49902112b4d45c345456e5353ce413e032aa573ded5160068d8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "pl-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3944462,
+  "byte_start": 3943834,
+  "normalized": "The amended agreement commenced on August 1, 2021 and extends through January 31, 2028. See Note 10 for future Google hosting purchase commitments, including the amended commitments, as of January 31, 2026.",
+  "normalized_sha256": "4f230208238564048ce29c7255d93a2d22697cd23d2c43c3790ec708ef87508a",
+  "raw": " The amended agreement commenced on August 1, 2021 and extends through January 31, 2028. See Note 10 for future Google hosting purchase commitments, including the amended commitments, as of January 31, </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">2026</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "301177eb326436d81da6a912d933974db85f92db88586c204b3bf5e2ca2b0ea9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312526119957/pl-20260131.htm",
+ "xbrl_contexts": []
+}

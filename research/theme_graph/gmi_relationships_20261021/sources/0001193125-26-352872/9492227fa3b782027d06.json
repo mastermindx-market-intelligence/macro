@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-14T23:42:43Z",
+ "accession": "0001193125-26-352872",
+ "cik": "0001078271",
+ "doc_byte_length": 4467003,
+ "doc_sha256": "d050741aeba7f096fdadadf3705d146475cb50d91a1db5fe56a2821d12f9bbca",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "extr-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2417655,
+  "byte_start": 2416633,
+  "normalized": "Jenne, Inc. 25%",
+  "normalized_sha256": "bd2c1212f61211ee6e833d3276b2c05870576a3f7fc4d8a629f7aa4e4ef2ef67",
+  "raw": "Jenne, Inc.</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_d7ad84e8-5b86-4557-85f7-3cf57f847383\" contextRef=\"C_13e07d46-7601-4b69-b738-54c5d2983e4c\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">25</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "9492227fa3b782027d066d0c3d072f8fd2c8d5b52bddfb37ebea93c26af7a65e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1078271/000119312526352872/extr-20260630.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 101991,
+   "byte_start": 101295,
+   "context_ref": "C_13e07d46-7601-4b69-b738-54c5d2983e4c",
+   "raw": "<xbrli:context id=\"C_13e07d46-7601-4b69-b738-54c5d2983e4c\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001078271</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">extr:JenneIncMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-07-01</xbrli:startDate><xbrli:endDate>2026-06-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "a555c155ee1ae0fa08ce5675b1c5bdb5692071fc060f132bb2aad54c0108aa04"
+  }
+ ]
+}

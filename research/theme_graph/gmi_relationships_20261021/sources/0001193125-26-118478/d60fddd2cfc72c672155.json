@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T10:48:51Z",
+ "accession": "0001193125-26-118478",
+ "cik": "0001440972",
+ "doc_byte_length": 7891154,
+ "doc_sha256": "ab5b623d717813d4763bc60b8e48b0fda6a545c199e45133e374dfcdb7541523",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "lar-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 6463121,
+  "byte_start": 6461852,
+  "normalized": "The Company is entitled to 49% of the offtake, which would amount to approximately 19,600 tonnes per annum (“tpa”) of lithium carbonate assuming full capacity is achieved. The Company has entered into an offtake agreement with each of Ganfeng and BCP Innovation PTE.",
+  "normalized_sha256": "47ab7673c12fa2752ba17fed4fd870fb9103a8e55bf8747e188681aeb0a38f15",
+  "raw": " The Company is entitled to </span><span style=\"font-size:10pt;font-family:Arial;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_c34a12ac-0162-4e82-8324-9d5f3cb23827\" contextRef=\"C_0cd7ba74-66a5-428e-8c99-c7ac08a46500\" name=\"lar:PercentageOfShareProductionBasis\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">49</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\">% of the offtake, which would amount to approximately </span><span style=\"font-size:10pt;font-family:Arial;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_1273fa1c-6222-42f3-9af5-750a24c300cb\" contextRef=\"C_0cd7ba74-66a5-428e-8c99-c7ac08a46500\" name=\"lar:LithiumCarbonateOfftake\" unitRef=\"U_Tonnes\" decimals=\"INF\" format=\"ixt:num-dot-decimal\">19,600</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Arial;font-kerning:none;min-width:fit-content;\"> tonnes per annum (&#8220;tpa&#8221;) of lithium carbonate assuming full capacity is achieved. The Company has entered into an offtake agreement with each of Ganfeng and BCP Innovation PTE.",
+  "raw_sha256": "d60fddd2cfc72c672155d1f59e39d1ae1bb44dfd4eefd269311d86ac93c8df6c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1440972/000119312526118478/lar-20251231.htm",
+ "xbrl_contexts": []
+}

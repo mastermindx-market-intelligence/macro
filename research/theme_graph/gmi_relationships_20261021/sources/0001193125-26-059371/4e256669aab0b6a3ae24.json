@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 893442,
+  "byte_start": 893165,
+  "normalized": "Supplemental OLED Material Purchase Agreement between UDC Ireland Limited and Samsung Display Co., Ltd., dated as of December 2, 2022 (11)",
+  "normalized_sha256": "8332a847cf3979cb91996fb40c98a04c5ebaf5031da36060ff5ce87a9dd845b6",
+  "raw": "Supplemental OLED Material Purchase Agreement between UDC Ireland Limited and Samsung Display Co., Ltd., dated as of December 2, 2022</span><span style=\"color:#000000;top:1pt;white-space:pre-wrap;font-size:6.7pt;position:relative;font-kerning:none;min-width:fit-content;\"> (11)",
+  "raw_sha256": "4e256669aab0b6a3ae24106fe2327220ba29d9ff2b6d60da40224bc6be3cbdbe"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

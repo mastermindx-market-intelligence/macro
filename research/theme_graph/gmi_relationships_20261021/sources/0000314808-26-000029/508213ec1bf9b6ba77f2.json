@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T20:08:24Z",
+ "accession": "0000314808-26-000029",
+ "cik": "0000314808",
+ "doc_byte_length": 3088003,
+ "doc_sha256": "6f64ff5e9f81e44c7098e14689547b4c471e61b444d631d7a7cf9a5b3cb71b7c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "val-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 401896,
+  "byte_start": 401585,
+  "normalized": "During the year ended December 31, 2025, our five largest customers accounted for 49% of consolidated revenues. Petróleo Brasileiro S.A. (\"Petrobras\"), BP plc (\"BP\") and Azule Energy (\"Azule\"), our customers who account for 10% or more of consolidated revenues, accounted for 35% of consolidated revenues.",
+  "normalized_sha256": "d2d6fc0235771aa7005172ef43381f47cddf1ee4e9288d84be2139c021e6ef50",
+  "raw": " During the year ended December 31, 2025, our five largest customers accounted for 49% of consolidated revenues. Petr&#243;leo Brasileiro S.A. (\"Petrobras\"), BP plc (\"BP\") and Azule Energy (\"Azule\"), our customers who account for 10% or more of consolidated revenues, accounted for 35% of consolidated revenues.",
+  "raw_sha256": "508213ec1bf9b6ba77f21dca19efd06c3bf967778c526a6d6b3e62748078a2b9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/314808/000031480826000029/val-20251231.htm",
+ "xbrl_contexts": []
+}

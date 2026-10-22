@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-29T10:20:32Z",
+ "accession": "0001104659-26-050737",
+ "cik": "0001481513",
+ "doc_byte_length": 6808587,
+ "doc_sha256": "6ee607b67cce984dfe80a2b7cceed9340950a238e624a677c3262929c9b75233",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-29",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "jks-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 800502,
+  "byte_start": 800132,
+  "normalized": "We also operate manufacturing facilities in the United States and Vietnam. In January 2018, we entered into a master solar module supply agreement (the “Master Agreement”) with NextEra Energy, Inc., or NextEra. Under the Master Agreement, as amended in March 2018, we agreed to supply NextEra up to 2,750 MW of high-efficiency solar modules over four years.",
+  "normalized_sha256": "10b315c7fe955e395ebef24ac7832d73f8123a83d76d9da639c94678f26273b3",
+  "raw": " We also operate manufacturing facilities in the United States and Vietnam. In January 2018, we entered into a master solar module supply agreement (the &#8220;Master Agreement&#8221;) with NextEra Energy, Inc., or NextEra. Under the Master Agreement, as amended in March 2018, we agreed to supply NextEra up to 2,750 MW of high-efficiency solar modules over four years.",
+  "raw_sha256": "dde80da5f73a2146d6d331b136169fe34b4432c26e8cc87ba59e4baa9325795f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1481513/000110465926050737/jks-20251231x20f.htm",
+ "xbrl_contexts": []
+}

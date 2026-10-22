@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-25T21:02:50Z",
+ "accession": "0000006281-25-000153",
+ "cik": "0000006281",
+ "doc_byte_length": 2363627,
+ "doc_sha256": "4e312f689cc55d7ec170389b1cc7810ff0bee8e651a0ed7dcaabe5f08c68627a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "adi-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 344350,
+  "byte_start": 343823,
+  "normalized": "This reliance involves several risks, including reduced control over availability, pricing, capacity utilization, delivery schedules, manufacturing yields, costs and supply chain allocations. We currently source more than half of our wafer requirements annually from third-party wafer foundries, including Taiwan Semiconductor Manufacturing Company (TSMC) and others. These foundries often provide wafer foundry services to our competitors and therefore periods of increased industry demand may result in capacity constraints.",
+  "normalized_sha256": "4ca4450c1955caa6896fba45068d3dd7cf8be208edac2a76d6d3e45d548f3697",
+  "raw": " This reliance involves several risks, including reduced control over availability, pricing, capacity utilization, delivery schedules, manufacturing yields, costs and supply chain allocations. We currently source more than half of our wafer requirements annually from third-party wafer foundries, including Taiwan Semiconductor Manufacturing Company (TSMC) and others. These foundries often provide wafer foundry services to our competitors and therefore periods of increased industry demand may result in capacity constraints.",
+  "raw_sha256": "c408d47431b45e9aac32ea3f542defbf56be7e7fd8f9e4e2f583b80f5e4ec92c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628125000153/adi-20251101.htm",
+ "xbrl_contexts": []
+}

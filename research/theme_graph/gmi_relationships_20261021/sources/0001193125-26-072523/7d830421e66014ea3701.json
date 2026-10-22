@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-02-26T00:26:16Z",
+ "accession": "0001193125-26-072523",
+ "cik": "0001517228",
+ "doc_byte_length": 5973097,
+ "doc_sha256": "5a4921b39020ba2f8cb67203272fb9beb0acbc386086160cd8708b9849d3e9f1",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "visn-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 5491392,
+  "byte_start": 5489513,
+  "normalized": "Net sales to Comcast Corporation and affiliates (Comcast) accounted for approximately 35%, 21% and 20% for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "normalized_sha256": "40a421b8554f48cfe6df77523ccfb667cac50b30d0532deb8074e7d7dc968eaa",
+  "raw": "Net sales to Comcast </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Corporation and affiliates (Comcast) accounted for approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_659d06c9-787e-410f-8995-55ed8dcea1d8\" contextRef=\"C_7f6009e0-efa0-4b52-bdc2-d464e4445a91\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">35</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">%, </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_bf46e262-98f7-483d-9ac1-79dc5e17083e\" contextRef=\"C_3ade1225-3841-48e1-b188-fabd57f5b38c\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">21</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% and </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_11ce5e84-3683-499d-b27b-264bf872e46f\" contextRef=\"C_ae572bcc-9068-4122-97c3-c9ecbd137781\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">20</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% for the years ended December 31, 2025, 2024 and 2023, respectively.",
+  "raw_sha256": "7d830421e66014ea370154a9542fae93d4816bb8544e828b679bd8bf7e94ad3f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526072523/visn-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 44600,
+   "byte_start": 43897,
+   "context_ref": "C_ae572bcc-9068-4122-97c3-c9ecbd137781",
+   "raw": "<xbrli:context id=\"C_ae572bcc-9068-4122-97c3-c9ecbd137781\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:ComcastCorporationMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "1e2a23151d3b40b4a9d99749720e886db2ed3fe4eccb7204ca2a3c94537d0d9e"
+  },
+  {
+   "byte_end": 153671,
+   "byte_start": 152968,
+   "context_ref": "C_3ade1225-3841-48e1-b188-fabd57f5b38c",
+   "raw": "<xbrli:context id=\"C_3ade1225-3841-48e1-b188-fabd57f5b38c\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:ComcastCorporationMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f6649c78b7317c3c93e630aa2bf54bb5dc595b61ec0d8317eafa84a81e169dad"
+  },
+  {
+   "byte_end": 217833,
+   "byte_start": 217130,
+   "context_ref": "C_7f6009e0-efa0-4b52-bdc2-d464e4445a91",
+   "raw": "<xbrli:context id=\"C_7f6009e0-efa0-4b52-bdc2-d464e4445a91\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:ComcastCorporationMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "b7e8d48a1e8a1f993f9f6f0e692b707c223577b68fd6f2d5f9bab1468479a341"
+  }
+ ]
+}

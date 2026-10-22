@@ -1,15 +1,16 @@
 {
  "candidates_by_origin": {
   "amendment_note": 3,
-  "cue": 93,
+  "cue": 179,
   "xbrl": 24
  },
  "candidates_by_rank": {
   "0": 27,
   "1": 61,
-  "2": 32
+  "2": 61,
+  "4": 57
  },
- "candidates_total": 120,
+ "candidates_total": 206,
  "counters": {
   "cache_integrity_refetch": 0,
   "clock_refused": 0,
@@ -18,7 +19,7 @@
   "excerpt_self_check_failed": 0,
   "extension_skipped": 0,
   "overflow_document": 0,
-  "overflow_filing": 86,
+  "overflow_filing": 0,
   "span_not_utf8": 0,
   "span_too_large": 0,
   "xbrl_context_too_large": 0,

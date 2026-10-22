@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 238677,
+  "byte_start": 238310,
+  "normalized": "We have established direct relationships with key OEMs, including Dell Inc., Hewlett-Packard Company, Samsung Group, and Stanley Black & Decker, Inc., most of whom we serve through our distributors and ODMs. In addition, based on our historical design win activities, our power semiconductors are also incorporated into products sold to many other leading OEMs.",
+  "normalized_sha256": "571407ad6cab170268c92df4f323f902057793e081f702d27a65b718bd21257e",
+  "raw": "We have established direct relationships with key OEMs, including Dell Inc., Hewlett-Packard Company, Samsung Group, and Stanley Black &amp; Decker, Inc., most of whom we serve through our distributors and ODMs.  In addition, based on our historical design win activities, our power semiconductors are also incorporated into products sold to many other leading OEMs. ",
+  "raw_sha256": "fecb947c524867e1c1da170984abeaa1269a9373fb4065f4ff2f811cb63903fc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

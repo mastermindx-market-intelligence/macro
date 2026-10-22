@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-15T21:09:27Z",
+ "accession": "0001628280-26-043303",
+ "cik": "0001807794",
+ "doc_byte_length": 1712551,
+ "doc_sha256": "d4896817099c692f1d1d25678807cb8ef76df37ab45e96915cdab183cb1c6955",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-05-02",
+ "primary_document": "crdo-20260502.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 338562,
+  "byte_start": 338270,
+  "normalized": "Except for our agreement with BizLink for the manufacture of certain AEC products, we do not maintain long-term supply contracts with TSMC or generally with any of our third-party contract manufacturers or other suppliers. We make substantially all of our purchases on a purchase order basis.",
+  "normalized_sha256": "750d7a69819c0c63b6e8c783156920e0e6ce0724a8c8947c56cabd4818f35e86",
+  "raw": "Except for our agreement with BizLink for the manufacture of certain AEC products, we do not maintain long-term supply contracts with TSMC or generally with any of our third-party contract manufacturers or other suppliers. We make substantially all of our purchases on a purchase order basis.",
+  "raw_sha256": "750d7a69819c0c63b6e8c783156920e0e6ce0724a8c8947c56cabd4818f35e86"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
+ "xbrl_contexts": []
+}
