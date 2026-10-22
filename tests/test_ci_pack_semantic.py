@@ -2840,3 +2840,148 @@ def test_uncertain_dependency_retains_environment_without_transport_retry(tmp_pa
     assert caught.value.original_outcome == ("unavailable" if response_loss else "failed")
     assert calls == ["create", "install"]
     assert (environment / "original-partial").read_text() == "retain"
+
+
+def _review_replay_boundary(tmp_path, monkeypatch):
+    from dataclasses import replace
+
+    source = tmp_path / "source"
+    exact, _ = _small_repository(source)
+    jobs = [_job("first", [{"name": "proof", "run": "false"}]),
+            _job("second", [{"name": "proof", "run": "false"}], ordinal=1)]
+    plan = replace(_plan(jobs, changed=[".github/ci/legacy-jobs.yml"]), base_sha=exact)
+    holders = []
+    real_boundary = PACK._exact_base_worktree
+
+    @contextlib.contextmanager
+    def boundary(*args, **kwargs):
+        with real_boundary(*args, **kwargs) as base:
+            holders.append(base.parent)
+            yield base
+
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    monkeypatch.setattr(PACK, "_exact_base_worktree", boundary)
+    monkeypatch.setattr(PACK, "_selected_python_loader_environment", lambda: {})
+    records = [{"logical_job_id": j.job_id, "job_exec_sha256": PACK.semantic_job_digest(j),
+                "infrastructure": {"outcome": "passed"},
+                "steps": [{**s.plan_dict(), "outcome": "failed", "failure_signature": None}
+                          for s in PACK.semantic_step_specs(j)]} for j in jobs]
+    return source, plan, jobs, records, holders
+
+
+@pytest.mark.parametrize("fault", [OSError, RuntimeError])
+def test_review_timeout_second_wait_error_preserves_checkout_and_stops_replay(tmp_path, monkeypatch, fault):
+    source, plan, jobs, records, holders = _review_replay_boundary(tmp_path, monkeypatch)
+    real_stream = PACK._stream_process_with_deadline
+    calls = []
+    waits = []
+
+    class Process:
+        pid = 123
+        returncode = None
+
+        def wait(self, **kwargs):
+            waits.append(kwargs)
+            if len(waits) == 1:
+                raise subprocess.TimeoutExpired(["base-runner"], 1)
+            raise fault("original timeout cleanup observation lost")
+
+    def stream(*args, **kwargs):
+        calls.append(True)
+        with monkeypatch.context() as patch:
+            patch.setattr(PACK.subprocess, "Popen", lambda *_a, **_k: Process())
+            patch.setattr(PACK.os, "killpg", lambda *_a: None)
+            return real_stream(*args, **kwargs)
+
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    PACK._run_exact_base_replays(root=source, plan=plan, records=records, budget_seconds=30)
+    assert len(calls) == 1 and len(waits) == 2
+    assert len(holders) == 1 and holders[0].is_dir()
+    assert records[0]["steps"][0]["base_replay"]["outcome"] == "timed_out"
+    assert records[1]["steps"][0]["base_replay"]["outcome"] == "unavailable"
+
+
+@pytest.mark.parametrize("missing", ["null_row", "job_exec_sha256", "infrastructure", "steps"])
+def test_review_malformed_base_job_retains_result_and_stops_replay(tmp_path, monkeypatch, missing):
+    source, plan, jobs, records, holders = _review_replay_boundary(tmp_path, monkeypatch)
+    calls = []
+    emitted = []
+
+    def stream(command, **kwargs):
+        calls.append(True)
+        output = Path(command[command.index("--emit-semantic-fragment") + 1])
+        row = {"logical_job_id": "first", "job_exec_sha256": PACK.semantic_job_digest(jobs[0]),
+               "infrastructure": {"outcome": "passed"}, "steps": []}
+        if missing == "null_row":
+            row = None
+        else:
+            del row[missing]
+        doc = {"schema": PACK.FRAGMENT_SCHEMA, "tested_tree_sha": plan.base_sha,
+               "subject_head_sha": plan.base_sha, "base_sha": plan.base_sha,
+               "role": "main", "infrastructure": [], "jobs": [row]}
+        raw = json.dumps(doc)
+        output.write_text(raw)
+        emitted.append((output, raw))
+        return 0, False
+
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    PACK._run_exact_base_replays(root=source, plan=plan, records=records, budget_seconds=30)
+    assert calls == [True]
+    assert len(holders) == 1 and holders[0].is_dir()
+    assert emitted[0][0].read_text() == emitted[0][1]
+    assert all(r["steps"][0]["base_replay"]["outcome"] == "unavailable" for r in records)
+    assert all(r["steps"][0]["outcome"] == "failed" for r in records)
+
+
+@pytest.mark.parametrize("fault", ["read", "display", "collector"])
+def test_review_pump_error_after_root_wait_blocks_all_dependent_effects(tmp_path, monkeypatch, fault):
+    import builtins
+
+    jobs = [_job("alpha", [{"name": "install", "run": "pip install pytest"}, {"name": "original", "run": "true"}]),
+            _job("beta", [{"name": "install", "run": "pip install pytest pyyaml"}, {"name": "later", "run": "true"}], ordinal=1)]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"], pack_count=1)
+    calls = {"wait": [], "deps": [], "restore": [], "heal": [], "replay": []}
+    chunks = iter([b"original output\n", b""])
+
+    def read(*args):
+        if fault == "read":
+            raise OSError("original read failed")
+        return next(chunks)
+
+    class Process:
+        pid = 123
+        returncode = 0
+        stdout = SimpleNamespace(read=read, close=lambda: None)
+
+        def wait(self, **kwargs):
+            calls["wait"].append(True)
+            return self.returncode
+
+    if fault == "display":
+        def display(*args, **kwargs):
+            if kwargs.get("end") == "":
+                raise OSError("original display failed")
+            return builtins.print(*args, **kwargs)
+        monkeypatch.setattr(PACK, "print", display, raising=False)
+    elif fault == "collector":
+        def collect(*args, **kwargs):
+            raise RuntimeError("original collector failed")
+        monkeypatch.setattr(PACK.FailureAtomCollector, "feed", collect)
+    monkeypatch.setattr(PACK.subprocess, "Popen", lambda *_a, **_k: Process())
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: calls["deps"].append(dep) or {})
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: calls["restore"].append(True))
+    monkeypatch.setattr(PACK, "_ensure_pack_git_usable", lambda *_a: calls["heal"].append(True) or True)
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: calls["replay"].append(True))
+    fragment = tmp_path / "fragment.json"
+    assert PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=fragment) == 1
+    assert calls == {"wait": [True], "deps": ["pip install pytest"], "restore": [True], "heal": [], "replay": []}
+    doc = json.loads(fragment.read_text())
+    assert doc["jobs"][0]["steps"][0]["outcome"] == "failed"
+    assert "original " + fault + " failed" in doc["jobs"][0]["steps"][0]["detail"]
+    assert doc["jobs"][0]["infrastructure"]["outcome"] == "unknown"
+    assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
+    evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
+    assert SEMANTIC.semantic_gate_verdict(evidence).clear is False

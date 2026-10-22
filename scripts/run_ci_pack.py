@@ -63,6 +63,7 @@ from scripts.ci_semantic_proof import (  # noqa: E402
     PLAN_SCHEMA,
     FailureAtomCollector,
     SemanticProofError,
+    _validate_base_replay,
     effective_proof_id,
     job_exec_sha256,
     step_spec_sha256,
@@ -3924,6 +3925,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=None,
             detail=f"output stream failed: {pump_error[0]}",
+            timeout_settlement="unknown",
         )
     if stream_incomplete:
         return CommandObservation(
@@ -4654,16 +4656,18 @@ def _stream_process_with_deadline(
     try:
         return process.wait(timeout=_remaining_seconds(deadline)), False
     except subprocess.TimeoutExpired:
-        with contextlib.suppress(OSError):
+        # A failed signal or second wait cannot erase the original timeout or
+        # escape the typed preservation boundary. Neither proves settlement.
+        with contextlib.suppress(Exception):
             os.killpg(process.pid, signal.SIGKILL)
-        with contextlib.suppress(subprocess.TimeoutExpired):
+        with contextlib.suppress(Exception):
             process.wait(timeout=_remaining_seconds(deadline))
         raise _ProcessSettlementUnknown(
             "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown"
         )
 
     except Exception as exc:
-        with contextlib.suppress(OSError):
+        with contextlib.suppress(Exception):
             os.killpg(process.pid, signal.SIGKILL)
         raise _ProcessSettlementUnknown(
             "base runner did not return a settled observation", outcome="unavailable"
@@ -4892,17 +4896,24 @@ def _run_exact_base_replays(
                                     "base replay must contain exactly one logical job"
                                 )
                             base_job = replay_jobs[0]
+                            if not isinstance(base_job, dict):
+                                raise ManifestError("base replay logical job must be an object")
                             if base_job.get("logical_job_id") != record["logical_job_id"]:
                                 raise ManifestError("base replay logical job mismatch")
                             replay = {
                                 "tested_tree_sha": base_sha,
                                 "job_present": True,
                                 "logical_job_id": base_job["logical_job_id"],
-                                "job_exec_sha256": base_job["job_exec_sha256"],
-                                "infrastructure": base_job["infrastructure"],
-                                "steps": base_job["steps"],
+                                "job_exec_sha256": base_job.get("job_exec_sha256"),
+                                "infrastructure": base_job.get("infrastructure"),
+                                "steps": base_job.get("steps"),
                             }
-                    except (ManifestError, OSError, json.JSONDecodeError, TypeError) as exc:
+                        # Reuse the existing exact-base evidence validator before
+                        # this original result can qualify safe teardown/reuse.
+                        _validate_base_replay(replay, expected_base_sha=base_sha)
+                    except _ProcessSettlementUnknown:
+                        raise
+                    except Exception as exc:  # qualification must preserve the original on any failure
                         raise _ProcessSettlementUnknown(
                             "base runner original result could not be qualified: " + _bounded_detail(exc),
                             outcome="unavailable",
