@@ -5009,6 +5009,9 @@ CURATED_EXCLUSIVE = {
     "options-r1-rotation-relative-trend",
     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-sector-holdings-coverage",
+    # Synthetic OHLC delivery has an exact import/read closure; preserve every
+    # packing ceiling and keep this new code gate off unrelated render probes.
+    "ohlc-origin-delivery",
 }
 
 
