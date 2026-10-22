@@ -664,3 +664,22 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
 - Next: review PASS/PASS_WITH_NOTES + full-table green → reviewDecision read → MAIN captured in-op → merge-tree clean →
   fence → `gh pr merge 10062 --squash --match-head-commit af255c2fd720da49c1432a7a2f0ee1132cf44301` → records → Stage 6.
   FAIL → one fix lane on a NEW id (`pro-source-b21u5-fix-20261022-r1`), never relaunch r1.
+
+#### Addendum 09:0xZ — usage limit hit mid-turn; in-flight handles (READ THIS ONE FIRST)
+
+- U5 reviewer aff4126aa3bc74480 stopped PARTIAL at its 24-turn limit; the seat
+  RESUMED it by SendMessage asking for the compact final RETURN only (≤80 lines,
+  VERDICT + F/N findings + evidence). Never re-spawn; continue it by message only.
+  File its return verbatim as reviews/U5_10062_REVIEW_af255c2f_2026-10-22.md.
+- Local suites on the exported lane tree (task bbdrl0nf2): drain suite 87 passed
+  confirmed; U2+fif+ci_pack, watchlist suite and design guard still running.
+- CI watcher bkjvr1scu on #10062 (head af255c2f): no output yet (still watching).
+- Census lane `pro-close-donewhen-index-20261022-r1` (task b907xbyh3): packet
+  fixed (validated count 1), launch in progress; pick/host line not yet read.
+  Id is USED; never relaunch it.
+- No notifications queued; #6817 fence unchanged (6306863736).
+- Next: review PASS/PASS_WITH_NOTES + full-table green → reviewDecision read →
+  MAIN captured in-op → merge-tree clean → fence → `gh pr ready 10062` →
+  `gh pr merge 10062 --squash --match-head-commit af255c2fd720da49c1432a7a2f0ee1132cf44301`
+  → records → consume census lane → Stage 6 adjudication. FAIL → one fix lane
+  on `pro-source-b21u5-fix-20261022-r1`.
