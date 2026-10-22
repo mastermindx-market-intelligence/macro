@@ -495,6 +495,9 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 .gmi-note--chain{ padding:8px 12px 0; }
 .gmi-trow-caret--mark{ display:flex; align-items:center; justify-content:center; }
 .gmi-panel--bare{ box-shadow:none; }
+/* The `hidden` attribute must win over every .gmi-* display rule (.gmi-trow is flex):
+   collapsed tree rows, filtered index rows and no-match notes carry `hidden`. */
+[class*="gmi-"][hidden]{ display:none; }
 /* l4: micro-themes under a sub-theme — one step deeper than l3 (70px -> 98px; 62px at <=640). */
 .gmi-trow--l4{ padding-left:98px; min-height:40px; }
 .gmi-trow--l4 .gmi-trow-name{ font-weight:400; font-size:var(--fs-sm); }

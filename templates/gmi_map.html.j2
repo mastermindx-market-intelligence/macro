@@ -16,7 +16,7 @@
 {% set sub_en = M ~ ' micro-themes mapped. ' ~ A ~ ' have an admitted company.' %}
 {% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，其中 ' ~ A ~ ' 个已有获准纳入的公司。' %}
 {% endif %}
-{{ head([('Research','研究'),('Theme map','主题地图')], 'Theme map', '主题地图', sub_en, sub_zh) }}
+{{ head([('Research','研究'),('Theme map','主题地图')], 'Theme map', '主题地图', sub_en, sub_zh, side=asof(model.asof)) }}
 {#- focus: the category/theme of the first theme link (the specimen hardcodes
     semiconductors; production focuses the live focus, none without links) -#}
 {% if model.theme_links %}

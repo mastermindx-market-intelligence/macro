@@ -6,7 +6,7 @@
 {% block body %}
 {% set M = model.totals.micros %}
 {{ head([('Research','研究'),('Theme map','主题地图'),('Index','索引')], 'All micro-themes', '全部细分主题',
-        'Every one of the ' ~ M ~ ', grouped by category.', '全部 ' ~ M ~ ' 个，按类别分组。') }}
+        'Every one of the ' ~ M ~ ', grouped by category.', '全部 ' ~ M ~ ' 个，按类别分组。', side=asof(model.asof)) }}
 <section class="gmi-panel">
 {{ search_box('Search ' ~ M ~ ' micro-themes', '搜索 ' ~ M ~ ' 个细分主题', 'index') }}
 {{ key() }}
