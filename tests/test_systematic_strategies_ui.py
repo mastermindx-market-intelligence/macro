@@ -66,20 +66,38 @@ def main_of(html: str) -> str:
     return html[html.index("<main") : html.index("</main>")]
 
 
+# t() emits exactly this pair for every string the page authors, so an assertion
+# about English copy can be made against the page as an English reader sees it —
+# the Chinese span removed and the English one unwrapped — instead of matching
+# around the spans. Chinese parity is asserted separately and directly.
+_BILINGUAL = re.compile(
+    r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>', re.S
+)
+
+
+def en_of(html: str) -> str:
+    return _BILINGUAL.sub(r"\1", html)
+
+
+def body_of(html: str) -> str:
+    """The workspace body as an English reader sees it."""
+    return en_of(main_of(html))
+
+
 # --------------------------------------------------------------------------- #
 # available — the honest happy path
 # --------------------------------------------------------------------------- #
 
 
 def test_available_renders_title_deck_and_stance(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     assert "<h1 class=\"ss-title\">Systematic Strategies</h1>" in body
     assert "Test small edges. Keep only evidence." in body
     assert "Observe only" in body
 
 
 def test_available_shows_no_strategy_is_approved_for_capital(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     assert "No strategy is approved for capital." in body
     # The capital count is rendered as a real 0, never hidden or spun.
     assert "<dt>Approved for capital</dt>" in body
@@ -87,7 +105,7 @@ def test_available_shows_no_strategy_is_approved_for_capital(available):
 
 
 def test_candidate_labels_are_plain_words_and_real_names_live_in_methodology(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     assert ">Trend baseline</h3>" in body
     assert ">Pullback timing</h3>" in body
     # The artifact's own input name is shown under methodology, not as the label.
@@ -96,7 +114,7 @@ def test_candidate_labels_are_plain_words_and_real_names_live_in_methodology(ava
 
 
 def test_available_card_shows_state_horizon_prereq_and_evidence_control(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     assert body.count('<span class="ss-chip ss-chip--research_only">Research only</span>') == 2
     assert "<dt>Stance</dt>" in body
     assert "<dt>Horizon</dt>" in body
@@ -107,7 +125,7 @@ def test_available_card_shows_state_horizon_prereq_and_evidence_control(availabl
 
 
 def test_evidence_splits_historical_prospective_and_paper(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     for heading in ("Historical record", "Forward testing", "Paper trading", "Method and provenance"):
         assert body.count(f">{heading}</h4>") == 2, heading
     assert "<dt>Forward records registered</dt>" in body
@@ -116,7 +134,7 @@ def test_evidence_splits_historical_prospective_and_paper(available):
 
 
 def test_evidence_carries_costs_limitations_versions_and_invalidators(available):
-    body = main_of(render(available))
+    body = body_of(render(available))
     assert "Costs and limitations" in body
     assert "Assumed cost" in body
     assert "synthetic0000" in body and "synthetic0001" in body
@@ -132,12 +150,64 @@ def test_every_displayed_metric_carries_its_unit(available):
     every other measure must state whether it is a percentage, a multiple or a
     cost in basis points.
     """
-    body = main_of(render(available))
-    for _key, label, _places in renderer.METRIC_LABELS:
-        assert f"<th scope=\"row\">{label}</th>" in body, label
+    body = body_of(render(available))
+    row_headers = re.findall(r'<th scope="row"[^>]*>(.*?)</th>', body, re.S)
+    for _key, label, _places, _scale in renderer.METRIC_LABELS:
+        # Matched inside the row header: the turnover row also carries a
+        # convention tooltip, so the element is not a fixed string.
+        assert any(label in header for header in row_headers), label
     assert "(%)" in body
     assert "basis points" in body
-    assert "times per year" in body
+    # M1: turnover is a sample total, never an annual rate.
+    assert "in sample" in body
+    assert "times per year" not in body
+    # Costs are explicitly ONE-WAY, because a round trip cost and a one-way
+    # cost differ by a factor of two and a reader cannot see which is shown.
+    assert "one way" in body
+
+
+def test_percent_metrics_are_scaled_from_decimal_fractions(available):
+    """B2: rates are decimal fractions; printing them raw under "%" is a lie.
+
+    ``0.0991`` is 9.91% and ``-0.241`` is -24.10%. Rendering the fraction
+    unchanged printed "0.10%" for a result that was nearly ten percent.
+    """
+    body = body_of(render(available))
+    assert "3.20" in body and "-11.40" in body and "1.40" in body and "-8.90" in body
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        (0.0991, "9.91"),   # a fraction shown as a percent
+        (-0.241, "-24.10"),  # negative return / drawdown
+        (0.0, "0.00"),       # a measured zero is retained, not hidden
+        (1.0, "100.00"),      # exactly 100%
+        (-0.0005, "-0.05"),   # small negative, two places
+    ],
+)
+def test_percent_scaling_is_exact_for_edge_values(available, raw, expected):
+    report = copy.deepcopy(available)
+    for strategy in report["strategies"]:
+        strategy["historical"]["net_cagr"] = raw
+    body = body_of(render(report))
+    assert expected in body
+
+
+def test_turnover_is_labelled_a_sample_total_with_its_convention(available):
+    """M1: the figure cannot carry its own convention, so the label states it."""
+    body = body_of(render(available))
+    assert "Traded notional in sample (times)" in body
+    # A tooltip on the row itself...
+    assert f'title="{renderer.TURNOVER_CONVENTION}"' in body
+    # ...and a visible statement, because a convention reachable only on hover
+    # is a convention a keyboard and a screen-reader user never meets.
+    assert renderer.TURNOVER_CONVENTION in body
+
+
+def test_cost_label_states_the_one_way_basis(available):
+    body = body_of(render(available))
+    assert "Assumed cost per trade, one way (basis points)" in body
 
 
 def test_research_is_never_presented_as_validated(available):
@@ -162,13 +232,109 @@ def test_page_has_no_script_and_uses_native_disclosure(available):
     assert "<summary" in body
 
 
-def test_timestamp_and_mode_are_shown_exactly_once(available):
-    body = main_of(render(available))
-    # One mode stamp and one as-of in the page header; the per-candidate chips
-    # carry each candidate's own state and are not a repeated page stamp.
+def test_both_timestamps_are_shown_once_each_with_the_mode_stamp(available):
+    """M8: the information cutoff and the generation stamp answer different
+    questions. A page carrying only the generation stamp lets a record compiled
+    yesterday from month-old data read as "up to date"."""
+    body = body_of(render(available))
+    # One mode stamp; the per-candidate chips carry each candidate's own state
+    # and are not a repeated page stamp.
     assert body.count('<span class="ss-meta-mode">Research only</span>') == 1
-    assert body.count("2026-10-22 18:26 UTC") == 1
-    assert body.count("<time ") == 1
+    assert body.count("2026-10-22 18:26 UTC") == 1   # generated
+    assert body.count("2026-10-21 20:00 UTC") == 1   # information cutoff
+    assert body.count("<time ") == 2
+    assert "Information cutoff" in body
+    assert "Generated" in body
+
+
+def test_blocked_page_states_no_timestamp_at_all():
+    """M5: an unreadable record has no known age.
+
+    Stamping the renderer's own clock into a <time datetime=...> would present
+    "now" as the age of a research record that does not exist.
+    """
+    body = body_of(render(None))
+    assert "<time " not in body
+    assert body.count("Not available") >= 2
+
+
+def test_render_with_an_injected_clock_is_byte_identical(available):
+    """M5: same inputs + same clock => same HTML, including the blocked page."""
+    assert renderer.render_report(available, now=NOW) == renderer.render_report(
+        available, now=NOW
+    )
+    # The blocked page too: it used to embed an ambient clock, which made it the
+    # one page whose bytes changed on every render.
+    assert renderer.render_report(None, now=NOW) == renderer.render_report(None, now=NOW)
+
+
+def test_cli_now_pins_the_reference_clock(tmp_path, available):
+    """--now makes a render reproducible instead of wall-clock dependent."""
+    path = tmp_path / "artifact.json"
+    path.write_text(json.dumps(available), encoding="utf-8")
+    out = tmp_path / "page.html"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.render_systematic_strategies",
+            "--input",
+            str(path),
+            "--output",
+            str(out),
+            "--now",
+            "2026-10-22T18:00:00Z",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    assert proc.returncode == 0, proc.stderr
+    first = out.read_text(encoding="utf-8")
+    # The fixture is stamped 18:26Z, so a clock of 18:00Z puts it in the future:
+    # this proves the INJECTED clock is the one every decision is made against,
+    # not the wall clock the runner happens to have.
+    assert "This record could not be read" in first
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.render_systematic_strategies",
+            "--input",
+            str(path),
+            "--output",
+            str(out),
+            "--now",
+            "2026-10-24T19:00:00Z",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "This record could not be read" not in out.read_text(encoding="utf-8")
+
+
+def test_cli_rejects_an_unreadable_now(tmp_path, available):
+    path = tmp_path / "artifact.json"
+    path.write_text(json.dumps(available), encoding="utf-8")
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.render_systematic_strategies",
+            "--input",
+            str(path),
+            "--now",
+            "not-a-timestamp",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    assert proc.returncode == 2
+    assert "not an ISO 8601 timestamp" in proc.stderr
 
 
 def test_reuses_the_shared_header_and_never_mints_another_one(available):
@@ -216,7 +382,10 @@ def test_historical_unavailable_never_renders_a_number(available):
                 "benchmark_sharpe": None,
             }
         )
-    body = main_of(render(report))
+    # Neither candidate is measurable, so the record's own evaluated count has
+    # to agree (M7) or it blocks instead of showing an honest empty history.
+    report["summary"]["evaluated_count"] = 0
+    body = body_of(render(report))
     assert "Historical record unavailable" in body
     assert body.count("Not available") >= 12
     assert "0.41" not in body and "3.20" not in body
@@ -224,7 +393,7 @@ def test_historical_unavailable_never_renders_a_number(available):
 
 
 def test_inputs_blocked_lists_what_is_missing_rather_than_an_empty_plot():
-    body = main_of(render(load("inputs_blocked.json")))
+    body = body_of(render(load("inputs_blocked.json")))
     assert "Inputs blocked" in body or "Blocked" in body
     assert "Why the inputs are blocked" in body
     assert "Incomplete daily history" in body
@@ -234,7 +403,7 @@ def test_inputs_blocked_lists_what_is_missing_rather_than_an_empty_plot():
 
 
 def test_data_stale_variant_keeps_reasons_visible_beside_cards():
-    body = main_of(render(load("data_stale.json")))
+    body = body_of(render(load("data_stale.json")))
     assert "Why the inputs are blocked" in body
     assert "one revision behind the current one" in body
     # A stale page still shows its candidate — and still says it is stale.
@@ -245,7 +414,12 @@ def test_data_stale_variant_keeps_reasons_visible_beside_cards():
 def test_empty_candidate_list_produces_a_useful_empty_state(available):
     report = copy.deepcopy(available)
     report["strategies"] = []
-    body = main_of(render(report))
+    # The counts describe the rows; a record claiming two candidates beside an
+    # empty list is inconsistent and blocks (M7). The useful empty state is
+    # reached by a record that actually reports none.
+    report["summary"]["candidate_count"] = 0
+    report["summary"]["evaluated_count"] = 0
+    body = body_of(render(report))
     assert "No candidates to show" in body
     assert "What is missing" in body
     assert "No strategy is approved for capital." in body
@@ -325,11 +499,58 @@ def test_mixed_unsupported_schema_fails_closed(available):
 def test_future_timestamp_fails_closed(available):
     report = copy.deepcopy(available)
     report["generated_at"] = (NOW + timedelta(days=40)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    assert "stamped in the future" in fail_closed(render(report))
+    assert "after the reference clock" in fail_closed(render(report))
 
     report["generated_at"] = (NOW + timedelta(days=40)).strftime("%Y-%m-%dT%H:%M:%SZ")
     report["as_of"] = (NOW + timedelta(days=90)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    assert "stamped in the future" in fail_closed(render(report))
+    assert "after the reference clock" in fail_closed(render(report))
+
+
+def test_no_future_tolerance_window(available):
+    """M5: a 15-hour-ahead stamp is future information, not clock skew.
+
+    The retired 24h tolerance accepted exactly this record — the one whose
+    as-of cannot be verified — so the tolerance is gone, not narrowed.
+    """
+    report = copy.deepcopy(available)
+    report["generated_at"] = (NOW + timedelta(hours=15)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    report["as_of"] = (NOW - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert "after the reference clock" in fail_closed(render(report))
+
+    # One second ahead is still ahead.
+    report["generated_at"] = (NOW + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert "after the reference clock" in fail_closed(render(report))
+
+    # Exactly at the clock is not ahead.
+    report["generated_at"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert "This record could not be read" not in render(report)
+
+
+def test_generated_at_must_not_precede_its_own_cutoff(available):
+    """M2: a record generated before the information it reports is not a record."""
+    report = copy.deepcopy(available)
+    report["as_of"] = (NOW - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    report["generated_at"] = (NOW - timedelta(hours=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert "cannot both be true" in fail_closed(render(report))
+
+
+def test_timestamp_ordering_survives_mixed_timezone_offsets(available):
+    """M2: both values are normalised to UTC before they are compared."""
+    # The same instant the other side of the Atlantic: 2026-10-21T20:00Z.
+    report = copy.deepcopy(available)
+    report["as_of"] = "2026-10-21T16:00:00-04:00"
+    assert "This record could not be read" not in render(report)
+
+    # Written as +08:00, 2026-10-22T04:00+08:00 == 2026-10-21T20:00Z: still the
+    # real cutoff, so ordering still holds and nothing blocks.
+    report["as_of"] = "2026-10-22T04:00:00+08:00"
+    assert "This record could not be read" not in render(report)
+
+    # An offset that genuinely moves as_of ahead of generated_at must block,
+    # even though the two strings compare fine as text.
+    report["as_of"] = "2026-10-22T14:00:00+08:00"   # == 2026-10-22T06:00Z
+    report["generated_at"] = "2026-10-22T02:00:00Z"
+    assert "cannot both be true" in fail_closed(render(report))
 
 
 def test_invalid_timestamp_fails_closed(available):
@@ -342,9 +563,45 @@ def test_invalid_timestamp_fails_closed(available):
 
 
 def test_timestamp_within_tolerance_is_accepted(available):
+    """A stamp an hour in the PAST is ordinary and must still render."""
     report = copy.deepcopy(available)
-    report["generated_at"] = (NOW + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    report["generated_at"] = (NOW - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    report["as_of"] = (NOW - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%SZ")
     assert "This record could not be read" not in render(report)
+
+
+def test_unknown_strategy_id_fails_closed_with_a_useful_reason(available):
+    """B1: an id this page cannot label is a structural fault, not a row to hide.
+
+    Dropping it silently would make the summary counts describe a record that no
+    longer exists — and, with a duplicate, would have let two cards share one DOM
+    id while the second real candidate was truncated away.
+    """
+    report = copy.deepcopy(available)
+    report["strategies"][0]["id"] = "grid_momentum_50"
+    body = fail_closed(render(report))
+    assert "does not recognise" in body
+    assert "ss-card" not in body
+
+
+def test_duplicate_candidate_id_fails_closed(available):
+    """B1: the defect that hid RSI behind a duplicated tsmom card."""
+    report = copy.deepcopy(available)
+    report["strategies"][1] = copy.deepcopy(report["strategies"][0])
+    body = fail_closed(render(report))
+    assert "more than once" in body
+    assert "ss-card" not in body
+
+
+def test_duplicate_dom_id_cannot_reach_the_page(available):
+    report = copy.deepcopy(available)
+    report["strategies"].append(copy.deepcopy(report["strategies"][0]))
+    body = main_of(render(report))
+    # Either it fails closed, or it never mints two elements with one id.
+    if "ss-card-tsmom_200" in body:
+        assert body.count('id="ss-card-tsmom_200"') == 1
+    else:
+        assert "This record could not be read" in en_of(body)
 
 
 def test_unreadable_artifact_renders_the_fail_closed_page(tmp_path):
@@ -363,8 +620,7 @@ def test_unknown_strategy_id_is_counted_not_shown(available):
     report = copy.deepcopy(available)
     report["strategies"][0]["id"] = "grid_momentum_50"
     body = main_of(render(report))
-    assert "not ones this page recognises and were not shown" in body
-    assert body.count("<article class=\"ss-card\"") == 1
+    assert "does not recognise" in en_of(body)
 
 
 # --------------------------------------------------------------------------- #
@@ -439,12 +695,81 @@ def test_wrong_typed_metric_degrades_to_unavailable(available):
 
 
 def test_unreadable_sample_date_degrades_to_unavailable(available):
+    """M4: measured performance is not shown over a window that cannot be read."""
     report = copy.deepcopy(available)
     report["strategies"][0]["historical"]["sample_start"] = "sometime in 2010"
-    body = main_of(render(report))
+    # Only one candidate is left measurable, so the record must say so (M7);
+    # with the stale count it blocks outright — see the test below.
+    report["summary"]["evaluated_count"] = 1
+    body = body_of(render(report))
     assert "not a readable date" in body
     assert "Not available" in body
     assert "sometime in 2010" not in body
+    # The card still renders — the candidate is real, its measurement is not.
+    assert ">Trend baseline</h3>" in body
+
+
+def test_broken_sample_date_with_a_stale_count_blocks(available):
+    """A record whose rows no longer match its own counts is not shown at all."""
+    report = copy.deepcopy(available)
+    report["strategies"][0]["historical"]["sample_start"] = "sometime in 2010"
+    assert "do not match the candidates" in fail_closed(render(report))
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        pytest.param(
+            lambda h: h.__setitem__("sample_start", "2026-11-01"),
+            id="inverted",
+        ),
+        pytest.param(lambda h: h.__setitem__("observations", 0), id="zero-observations"),
+        pytest.param(lambda h: h.__setitem__("sample_end", "2030-01-01"), id="future"),
+    ],
+)
+def test_measured_performance_is_withheld_when_the_window_is_unusable(available, mutate):
+    """M3/M4: no measured performance over a window that cannot be trusted."""
+    report = copy.deepcopy(available)
+    mutate(report["strategies"][0]["historical"])
+    report["summary"]["evaluated_count"] = 1  # one candidate is no longer measurable
+    body = body_of(render(report))
+    assert "Not available" in body
+    # The real Sharpe of the OTHER candidate is untouched and still shown.
+    assert "0.22" in body
+
+
+def test_a_missing_observation_count_is_not_read_as_zero(available):
+    report = copy.deepcopy(available)
+    report["strategies"][0]["historical"].pop("observations")
+    assert "missing or malformed" in fail_closed(render(report))
+
+
+def test_missing_prospective_counts_are_not_read_as_zero(available):
+    """M6: a defaulted count is a guessed zero beside a real measurement."""
+    report = copy.deepcopy(available)
+    report["strategies"][0]["prospective"].pop("registered")
+    assert "missing or malformed" in fail_closed(render(report))
+    report = copy.deepcopy(available)
+    report["strategies"][0]["prospective"].pop("graded")
+    assert "missing or malformed" in fail_closed(render(report))
+
+
+@pytest.mark.parametrize("field", ["registered", "graded"])
+def test_not_started_cannot_also_report_records(available, field):
+    """M6: 'not started' and 'seven records registered' cannot both be true."""
+    report = copy.deepcopy(available)
+    report["strategies"][0]["prospective"][field] = 7
+    assert "missing or malformed" in fail_closed(render(report))
+
+
+def test_summary_counts_must_match_the_rows_actually_present(available):
+    """M7: counts that describe another record do not get to borrow this one's cards."""
+    report = copy.deepcopy(available)
+    report["summary"]["candidate_count"] = 17
+    report["summary"]["evaluated_count"] = 99
+    body = fail_closed(render(report))
+    assert "do not match the candidates" in body
+    assert "ss-card" not in body
 
 
 def test_boolean_is_not_read_as_a_metric(available):
@@ -772,3 +1097,192 @@ def test_no_strategy_performance_numbers_are_hardcoded_in_source():
     """Numbers in the page are labels and counts, never a performance figure."""
     for pattern in (r"Sharpe[^<]*\d", r"\b\d+\.\d{2}\b", r"drawdown[^<]*\d", r"\bCAGR\b"):
         assert not re.search(pattern, TEMPLATE), pattern
+
+# --------------------------------------------------------------------------- #
+# review repairs — duplicate JSON keys, freshness against the real calendar,
+# session-date labels, and Chinese parity
+# --------------------------------------------------------------------------- #
+
+
+def test_duplicate_json_key_is_rejected_before_projection(available, tmp_path):
+    """json.loads keeps the LAST duplicate, so a repeated claim reads as agreed.
+
+    An artifact carrying ``"capital_eligible_count": 0`` twice with a different
+    value in between would otherwise parse as the clean zero.
+    """
+    payload = (
+        '{"schema":"systematic_research.v1","mode":"RESEARCH_ONLY",'
+        '"live_orders_enabled":false,"status":"research_available",'
+        '"generated_at":"2026-10-22T18:26:00Z","as_of":"2026-10-21T20:00:00Z",'
+        '"capital_eligible_count":4,"capital_eligible_count":0}'
+    )
+    path = tmp_path / "dup.json"
+    path.write_text(payload, encoding="utf-8")
+    with pytest.raises(ValueError):
+        renderer.load_artifact(path)
+    # Through the file API it renders fail-closed rather than believing a number.
+    out, contract_ok = renderer.render_file(path, tmp_path / "page.html")
+    assert contract_ok is False
+    fail_closed(out.read_text(encoding="utf-8"))
+
+
+def test_duplicate_key_inside_a_strategy_is_also_rejected(available, tmp_path):
+    payload = json.dumps(available)
+    # Re-open the first strategy's metrics with a second, different value.
+    payload = payload.replace(
+        '"net_sharpe": 0.41,', '"net_sharpe": 0.41, "net_sharpe": 9.99,', 1
+    )
+    path = tmp_path / "dup2.json"
+    path.write_text(payload, encoding="utf-8")
+    with pytest.raises(ValueError):
+        renderer.load_artifact(path)
+
+
+def test_stale_record_stays_readable_but_is_never_called_current():
+    """M8: a historical result may remain visible — labelled historic, not current."""
+    body = body_of(render(load("data_stale.json")))
+    assert "This record is out of date" in body
+    assert "historical reconstruction, not current data" in body
+    # The measured candidate is still shown, still with its real numbers...
+    assert ">Trend baseline</h3>" in body
+    assert "3.00" in body
+    # ...but the Inputs stat does not read "Ready", and nothing claims a signal.
+    assert '<dd class="ss-stat-text">Stale</dd>' in body
+    assert "no current signal is claimed" in body
+
+
+def test_fresh_record_is_not_labelled_stale(available):
+    body = body_of(render(available))
+    assert "This record is out of date" not in body
+    assert '<dd class="ss-stat-text">Ready</dd>' in body
+
+
+def test_a_weekend_alone_does_not_make_a_record_stale(available):
+    """M8: no universal weekend-days rule.
+
+    On Saturday 2026-10-24 the newest DUE session is Friday the 23rd, so a
+    record through Friday is current. A rule that simply skipped two weekend
+    days would call this record stale, and one that assumed Monday would call a
+    Friday record fresh when it is two sessions behind.
+    """
+    report = copy.deepcopy(available)
+    report["as_of"] = "2026-10-23T20:00:00Z"
+    report["generated_at"] = "2026-10-24T12:00:00Z"
+    saturday = datetime(2026, 10, 24, 15, 0, tzinfo=timezone.utc)
+    body = body_of(renderer.render_report(report, now=saturday))
+    assert "This record is out of date" not in body
+
+
+def test_an_exchange_holiday_is_not_treated_as_a_session(available):
+    """M8: Thanksgiving 2026-11-26 closed; the newest due session is the 27th.
+
+    A weekday-only rule would name Monday the 30th as expected and declare a
+    record through Friday the 27th stale.
+    """
+    report = copy.deepcopy(available)
+    report["as_of"] = "2026-11-27T20:00:00Z"
+    report["generated_at"] = "2026-11-28T12:00:00Z"
+    thanksgiving_monday = datetime(2026, 11, 30, 15, 0, tzinfo=timezone.utc)
+    body = body_of(renderer.render_report(report, now=thanksgiving_monday))
+    assert "This record is out of date" not in body
+
+
+def test_session_date_labels_are_not_shifted_by_a_utc_conversion(available):
+    """M3: a session label is the exchange's date, not a receipt instant.
+
+    ``2010-01-04`` is that session. Read as UTC and projected into New York it
+    becomes 2010-01-03 — the previous session, on the wrong side of midnight.
+    """
+    body = body_of(render(available))
+    assert "<dd>2010-01-04</dd>" in body
+    assert "<dd>2016-01-04</dd>" in body
+    assert "2010-01-03" not in body
+
+
+def test_offset_session_labels_are_read_in_exchange_time(available):
+    """A session label carrying an offset is an instant; take the ET date."""
+    report = copy.deepcopy(available)
+    # 2026-10-22T02:00+09:00 == 2026-10-21T13:00 ET -> session 2026-10-21.
+    report["strategies"][0]["historical"]["sample_end"] = "2026-10-22T02:00:00+09:00"
+    body = body_of(render(report))
+    assert "<dd>2026-10-21</dd>" in body
+
+
+def test_every_chinese_label_has_an_english_pair():
+    """Parity is structural: no English string without a Chinese counterpart."""
+    assert set(renderer.BLOCK_REASONS) == set(renderer.BLOCK_REASONS_ZH)
+    assert set(renderer.CANDIDATE_LABELS) == set(renderer.CANDIDATE_LABELS_ZH)
+    assert set(renderer.STATE_LABELS) == set(renderer.STATE_LABELS_ZH)
+    assert set(renderer.HISTORICAL_LABELS) == set(renderer.HISTORICAL_LABELS_ZH)
+    assert set(renderer.PROSPECTIVE_LABELS) == set(renderer.PROSPECTIVE_LABELS_ZH)
+    assert set(renderer.PAPER_LABELS) == set(renderer.PAPER_LABELS_ZH)
+    assert set(renderer.DATA_HEALTH_LABELS) == set(renderer.DATA_HEALTH_LABELS_ZH)
+    assert {key for key, _l, _p, _s in renderer.METRIC_LABELS} == set(
+        renderer.METRIC_LABELS_ZH
+    )
+    for table in (
+        renderer.BLOCK_REASONS_ZH,
+        renderer.CANDIDATE_LABELS_ZH,
+        renderer.STATE_LABELS_ZH,
+        renderer.HISTORICAL_LABELS_ZH,
+        renderer.PROSPECTIVE_LABELS_ZH,
+        renderer.PAPER_LABELS_ZH,
+        renderer.DATA_HEALTH_LABELS_ZH,
+        renderer.METRIC_LABELS_ZH,
+    ):
+        for key, value in table.items():
+            assert value.strip(), key
+
+
+def test_no_rendered_chinese_span_is_empty(available):
+    """The language toggle is on screen, so no span may render blank in Chinese."""
+    html = render(available)
+    zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, re.S)
+    assert len(zh_spans) > 40, len(zh_spans)
+    for span in zh_spans:
+        assert span.strip(), span
+
+
+def test_every_t_call_in_the_template_supplies_chinese():
+    """A t() call with no Chinese string would fall back to English in zh."""
+    calls = re.findall(r"\{\{\s*t\((.*?)\)\s*\}\}", TEMPLATE, re.S)
+    assert len(calls) > 30, len(calls)
+    for call in calls:
+        assert call.count(",") >= 1, call
+
+
+def test_chinese_visibility_rules_are_present():
+    """Without these the shared language toggle is dead markup on this page."""
+    assert 'html:not([data-lang="zh"]) .l-zh' in CSS
+    assert 'html[data-lang="zh"] .l-en' in CSS
+
+
+def test_synthetic_fixtures_are_marked_as_synthetic():
+    """No fixture may read as a measured result."""
+    for path in sorted(FIXTURES.glob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        assert "SYNTHETIC" in payload.get("_fixture_note", ""), path.name
+
+
+def test_artifact_note_key_never_reaches_the_page(available):
+    assert "_fixture_note" not in render(available)
+    assert "SYNTHETIC" not in render(available)
+
+
+def test_no_t_call_is_used_inside_an_html_attribute():
+    """An attribute is plain text; the dual-span mechanism cannot run there.
+
+    Putting t() in an aria-label emits the literal markup as the accessible
+    name, and the nested quotes break the attribute outright.
+    """
+    for match in re.finditer(r'([a-zA-Z-]+)="([^"]*)"', TEMPLATE):
+        if re.search(r"\{\{\s*t\(", match.group(2)):
+            raise AssertionError(f"{match.group(1)} carries t(): {match.group(2)!r}")
+
+
+def test_rendered_attributes_contain_no_markup(available):
+    html = render(available)
+    for match in re.finditer(r'<[^>]+>', html):
+        tag = match.group(0)
+        for attr in re.findall(r'="([^"]*)"', tag):
+            assert "<span" not in attr, tag

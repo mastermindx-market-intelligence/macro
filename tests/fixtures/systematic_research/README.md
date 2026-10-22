@@ -9,9 +9,18 @@ They exist to exercise one rendering path: `scripts/render_systematic_strategies
 
 | File | State it exercises |
 |---|---|
-| `research_available.json` | `status=research_available`, two candidates, full historical metrics, data health `ready` |
-| `inputs_blocked.json` | `status=inputs_blocked`, named data-health reasons, one candidate blocked — the useful empty state |
-| `historical_unavailable.json` | one candidate with `historical.state=unavailable` and `null` metrics — absent must never read as zero |
+| `research_available.json` | `status=research_available`, two candidates, full historical metrics, data health `ready`, current against the reference clock |
+| `inputs_blocked.json` | `status=inputs_blocked`, named data-health reasons, both candidates blocked with `historical.state=unavailable` — absent metrics must never read as zero |
+| `data_stale.json` | one candidate, an information cutoff two weeks behind the reference clock — the record stays readable but is labelled historic, never current |
+
+The unavailable-metrics case is carried by `inputs_blocked.json` (both
+candidates `historical.state=unavailable`) and is mutated in place by
+`tests/test_systematic_strategies_ui.py`; it is not a separate committed file.
+
+**Rates are decimal fractions.** `net_cagr` and `max_drawdown` are fractions in
+this contract: `0.032` is 3.20% and `-0.114` is -11.40%. The renderer scales them
+into the unit its own label names. A fixture carrying `3.2` under a "%" label
+means 320%, and is the defect this convention exists to prevent.
 
 Each file also carries an `_fixture_note` key. That key is **not** part of the
 `systematic_research.v1` contract; it is here to make the file self-identifying

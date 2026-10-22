@@ -27,6 +27,16 @@
   background: var(--bg);
 }
 
+/* The shared header ships a language toggle, so every string this page authors
+   carries both languages through t(). This is the same visibility contract the
+   rest of the site uses: one language is shown, never both stacked, and the
+   default plane shows English. Without these rules the toggle does nothing on
+   this page and the control is dead markup. */
+html:not([data-lang="zh"]) .l-zh { display: none; }
+html[data-lang="zh"] .l-en { display: none; }
+html:not([data-lang="zh"]) .ss-page .l-en { display: inline; }
+html[data-lang="zh"] .ss-page .l-zh { display: inline; }
+
 /* Every descendant is allowed to shrink inside a grid/flex track; without this
    a long reason or a long version string widens the page and forces a
    horizontal scrollbar at 390px. */
@@ -437,7 +447,12 @@
   width: 100%;
   margin: 14px 0 0;
   border-collapse: collapse;
-  table-layout: fixed;
+  /* Auto layout, not `table-layout: fixed`. A fixed table honours the numeric
+     column's `width: 1%` LITERALLY, so the nowrap header overflows its own
+     3px column and drags the document 19px wider than a 390px viewport. Auto
+     layout gives that column its content width and lets the measure take the
+     rest, which is what the fixed table was reaching for in the first place.
+     The CSS text alone never caught this: it needs a measured viewport. */
   font-size: var(--fs-sm);
 }
 
