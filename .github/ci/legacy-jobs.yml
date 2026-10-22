@@ -261,6 +261,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -276,6 +278,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -354,6 +358,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -2152,6 +2157,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -2167,6 +2174,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -2294,6 +2303,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3102,6 +3112,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -3117,6 +3129,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -3204,6 +3218,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -7006,6 +7021,8 @@ jobs:
       - "tests/test_options_hub_contract_v2.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -8265,6 +8282,8 @@ jobs:
       - "templates/intl_country_cockpit.html.j2"
       - "templates/intl_country_cockpit.js"
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -8578,6 +8597,8 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "lib/intl_gs_observations.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -8618,6 +8639,16 @@ jobs:
       - "lib/shared_shell.py"
       - "templates/shared_shell_bridge.js"
       - "site/shared_shell_bridge.js"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace/_gs_state_fixture.html.j2"
+      - "templates/intl_workspace/shell.html.j2"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -8681,6 +8712,19 @@ jobs:
       - "templates/account.js"
       - "templates/terminal_overlay.js"
       - "scripts/build_intl.py"
+      - "lib/intl_surveillance_mount.py"
+      - "tests/test_intl_gs_foundation.py"
+      - "site/intl_workspace_surveillance.css"
+      - "tests/intl_gs_fixture_site.py"
+      - "tests/intl_gs_foundation_browser.test.cjs"
+      - "lib/intl_gs_display.py"
+      - "lib/intl_gs_observations.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/site_access.yml"
+      - "app/deploy/Caddyfile"
+      - "app/__init__.py"
       - "lib/intl_eod_publication.py"
       - "tests/test_intl_eod_publication.py"
       - "tests/test_intl_eod_publisher_integration.py"
@@ -8939,10 +8983,16 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
+      # W2A (IM13) paths: insert below this line
+      # spacer: keep unchanged
+      # spacer: keep unchanged
+      # W2B (IM14) paths: insert below this line
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -8955,12 +9005,22 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
+      - name: canonical base for the frozen-file guard (fail closed)
+        run: |
+          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
+            exit 1
+          fi
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_country_cockpit_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_country_cockpit_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs tests/intl_gs_foundation_browser.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
+      # W2A (IM13) test steps: insert below this line
+      # spacer: keep unchanged
+      # spacer: keep unchanged
+      # W2B (IM14) test steps: insert below this line
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -9039,6 +9099,11 @@ jobs:
     # separate, larger cleanup outside this PR's scope.
     paths:
       - "app/prophet_lab.py"
+      # Same-box Treasury input reuses this module's internal and site-full guards.
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
+      - "tests/test_treasury_daily_history.py"
+      - "tests/test_treasury_history_api.py"
       - "engine/prophet_lab/**"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
@@ -9126,6 +9191,7 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
@@ -9494,6 +9560,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -9509,6 +9577,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -9708,6 +9778,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -11760,8 +11831,12 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -12069,6 +12144,9 @@ jobs:
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12320,6 +12398,10 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -15447,7 +15529,7 @@ jobs:
       # Shared Shell keeps the existing document producer and finite route
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
-        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py -q
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py -q
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -17041,6 +17123,15 @@ jobs:
       - "lib/intl_forecast_vintages.py"
       - "lib/intl_policy_evidence.py"
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_sources.yml"
+      - "config/theme_crosswalk.yml"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -17292,6 +17383,10 @@ jobs:
       - site/factordata/basket_washout_state.json
       - tests/test_intl_market_state.py
       - tests/test_intl_rotation.py
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -17360,10 +17455,17 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
@@ -18503,6 +18605,10 @@ jobs:
       - "tests/test_gmi_activity_history_bridge.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19303,7 +19409,7 @@ jobs:
   stock-liquidity-profile:
     if: ${{ false }}
     gate: code
-    # Producer-only F08 contract; no holdings, account, collector or live writes.
+    # F08 source qualification, retained dated currency and one-record writer; tests use no network/user state.
     # Exact native import/read closure; temporary parquet fixtures do not own
     # unrelated product code. Keep the existing packing-probe ceilings intact.
     scope: exclusive
@@ -19313,16 +19419,26 @@ jobs:
       - engine/__init__.py
       - engine/liquidity_chip.py
       - engine/liquidity_profile.py
+      - engine/liquidity_currency.py
+      - engine/liquidity_source_availability.py
       - lib/__init__.py
       - lib/massive_ticker.py
       - lib/nyse_calendar.py
       - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
       - scripts/build_stock_library.py
       - scripts/ci/daily_engine_regime_dashboard.sh
+      - scripts/__init__.py
       - scripts/stock_liquidity_profile.py
       - tests/test_liquidity_chip.py
       - tests/test_liquidity_profile.py
       - tests/test_stock_liquidity_profile.py
+      - lib/config.py
+      - scripts/capture_stock_liquidity_currency.py
+      - tests/test_capture_stock_liquidity_currency.py
+      - tests/test_liquidity_currency.py
+      - tests/test_liquidity_currency_source.py
+      - data/stock_currency/MU.json
+      - tests/test_liquidity_source_availability.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19330,9 +19446,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: raw-source qualification and existing one-record writer
-        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py -q
+        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py tests/test_liquidity_currency.py tests/test_liquidity_currency_source.py tests/test_liquidity_source_availability.py tests/test_capture_stock_liquidity_currency.py -q
 
   pick-lab-liquidity:
     if: ${{ false }}
@@ -20393,6 +20509,7 @@ jobs:
       - "engine/press/external_candidate.py"
       - "engine/press/research_triage.py"
       - "engine/press/validators.py"
+      - "engine/press/native_plan_scope.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
@@ -20720,6 +20837,7 @@ jobs:
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
+      - "engine/intl_global_universe.py"
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
@@ -20727,6 +20845,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
@@ -21395,6 +21515,8 @@ jobs:
       - "engine/research_intelligence/selection.py"
       - "engine/research_intelligence/store.py"
       - "scripts/check_research_vault_source_freshness.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21524,6 +21646,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -22040,6 +22164,15 @@ jobs:
     # with the repository's deploy invariants.  It was previously co-run here;
     # giving it its own bounded command keeps that coverage without borrowing
     # time from evidence replay.
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "tests/test_deploy_update_self_heal.py"
+      - "tests/test_caddy_autosave_driver.py"
+      - "tests/test_macro_caddy_overlay.py"
+      - "tests/test_macro_caddy_publication.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22052,7 +22185,10 @@ jobs:
       - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_caddy_autosave_driver.py
+          tests/test_macro_caddy_overlay.py
+          tests/test_macro_caddy_publication.py -q
 
   deploy-git-history:
     if: ${{ false }}
@@ -23221,6 +23357,7 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_auth.py
+          tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
       # authenticated operator identity, a fixed admin iframe, Caddy's real
@@ -23345,12 +23482,21 @@ jobs:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
+      - templates/calculators/cagr.html.j2
+      - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install copy feedback test dependency
+        run: pip install pytest
+      - name: CAGR truthful copy feedback
+        run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: node --test tests/js/calculator_input_integrity.test.mjs
 
@@ -23548,6 +23694,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -23563,6 +23711,8 @@ jobs:
       - engine/qbus_news_editorial.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -23705,6 +23855,7 @@ jobs:
       - app/intelligence_hub_market_pulse.py
       - app/mailer.py
       - app/main.py
+      - app/live_status_projection.py
       - app/market_memory.py
       - app/marketing_emails.py
       - app/observability.py
@@ -25283,6 +25434,8 @@ jobs:
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
@@ -26092,6 +26245,8 @@ jobs:
       - engine/qbus_news_quality.py
       - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -27254,8 +27409,15 @@ jobs:
     scope: exclusive
     paths:
       - "lib/shared_shell.py"
+      - "lib/intl_surveillance_mount.py"
+      - "lib/intl_gs_display.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
@@ -27329,6 +27491,7 @@ jobs:
       - "engine/close_pass/**"
       - "engine/quant_lab/**"
       - "app/tape_symbols.py"
+      - "app/live_status_projection.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -28325,6 +28488,10 @@ jobs:
       - "engine/us_prophet_grades.py"
       - "engine/us_prophet_w3.py"
       - "scripts/capture_prophet_b4_same_read.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "lib/intl_gs_observations.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -28734,10 +28901,13 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/intl_global_universe.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/dataos/sec_filing_identity.py"
       - "engine/bond_issue_parser.py"
@@ -29808,6 +29978,8 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # W2F-X closure widening: the observation seam widened these import closures
+      - "engine/intl_global_observation.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -31790,6 +31962,8 @@ jobs:
       - engine/qbus_news_quality.py
       - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -32295,6 +32469,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -32309,6 +32485,8 @@ jobs:
       - engine/qbus_news_quality.py
       - engine/qbus_news_editorial.py
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -32508,6 +32686,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -35349,6 +35528,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
       - "engine/press/adjusted_baseline.py"
       - "templates/press/press_news.css"
@@ -35375,6 +35556,8 @@ jobs:
       - tests/test_shared_news_intelligence.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -35525,6 +35708,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -36347,6 +36531,9 @@ jobs:
       - "engine/marketing/x_intel.py"
       - "engine/press/__init__.py"
       - "engine/press/desk_planner.py"
+      - "engine/press/native_plan_scope.py"
+      - "tests/test_press_native_plan_scope.py"
+      - "tests/test_press_native_plan_integration.py"
       - "engine/press/external_candidate.py"
       - "engine/press/properties.py"
       - "engine/press/qbus_news.py"
@@ -36455,7 +36642,8 @@ jobs:
           tests/test_ticker_news_snapshot_provenance.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
-          tests/test_press_run.py tests/test_press_writer.py -q -rs
+          tests/test_press_run.py tests/test_press_writer.py
+          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
@@ -37004,6 +37192,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
@@ -39394,6 +39584,7 @@ jobs:
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
       - "site/commodities.html"
+      - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
@@ -39415,8 +39606,11 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
       - "tests/test_commodity_publication.py"
+      - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
+      - "tests/test_commodity_workspace_ui.js"
+      - "tests/test_commodity_workspace_presentation.js"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -39429,10 +39623,17 @@ jobs:
           node-version: "20"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+      - name: install pinned DOM test dependency
+        run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py tests/test_commodity_presentation_render.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
+      - name: rendered workspace and signed presentation journeys
+        run: |
+          export NODE_PATH="${RUNNER_TEMP:?}/commodity-dom/node_modules"
+          node tests/test_commodity_workspace_ui.js
+          node tests/test_commodity_workspace_presentation.js
 
   options-r1-rotation-relative-trend:
     # Options R1 W2A: weekly sector relative-trend emitter — calendar endpoints, EMA math, vintage, Terminal contract, additive hook.

@@ -97,6 +97,7 @@ def test_intl_workspace_dependencies_are_public_presentation_assets():
         "/intl_workspace_macro.css",
         "/intl_workspace_risk.css",
         "/intl_workspace_history.css",
+        "/intl_workspace_surveillance.css",
         "/intl_workspace_state.js",
         "/intl_library_search.js",
         "/intl_workspace_scenario.js",
@@ -293,11 +294,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -696,6 +701,18 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
         }""".split())
     assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
     assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
 
 
 def test_fail_closed_and_browser_hardening_are_present():

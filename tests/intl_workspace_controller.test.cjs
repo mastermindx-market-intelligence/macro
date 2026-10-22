@@ -1915,7 +1915,7 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
 
 // A routed cross-origin child runs the real blocking bridge, controller and entry.
 // The modelled parent deliberately withholds INIT until the test asks for it.
-async function withQueryFrames(run) {
+async function withQueryFrames(run, { gs = false } = {}) {
   const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL } : {}) });
   const bridge = fs.readFileSync(path.join(__dirname, '../templates/shared_shell_bridge.js'), 'utf8');
   const entry = fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_entry.js'), 'utf8');
@@ -1923,6 +1923,7 @@ async function withQueryFrames(run) {
   const script = source => '<script>' + source.replace(/<\/script/gi, '<\\/script') + '</script>';
   let markup = workspaceMarkup().replace('</select>', option('TW') + '</select>');
   markup = markup.replace('<p data-im-unavailable>', '<article data-im-panel data-view="library" data-horizon="3m" data-basis="local" data-source="fixture:v1"><input id="query-library-search" type="search"></article><article data-im-panel data-view="history" data-horizon="3m" data-basis="local" data-source="fixture:v1">Taiwan history</article><p data-im-unavailable>');
+  if (gs) markup = markup.replace('<p data-im-unavailable>', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div><div data-gs-market="KR">Korea GS content</div></div><p data-im-unavailable>');
   markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(config) + '</script><fieldset data-im-controls disabled><h1');
   markup = markup.replace('</section>', '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
   async function open(query, beforeEntry = '') {
@@ -2259,4 +2260,166 @@ test('query source: standalone search getter failure stays inside the live refus
     assert.equal(out.issues, 'Workspace state unavailable');
     assert.deepEqual(errors, []);
   });
+});
+
+
+const gsQueryHistoryProbe = 'window.gsQueryWrites=[];for(const method of ["pushState","replaceState"]){const original=history[method];history[method]=function(state,title,url){gsQueryWrites.push({method,url:String(url)});return original.apply(this,arguments);};}';
+
+async function gsQuerySnapshot(child) {
+  return child.frame.evaluate(() => ({
+    state: queryHandle.getState(),
+    query: MMXSharedShell.readPageSearch(),
+    raw: location.search,
+    issues: document.querySelector('[data-im-issues]').textContent,
+    writes: gsQueryWrites,
+    length: history.length,
+    initialLength: queryBoot.length,
+    active: MMXSharedShell.active,
+    visibleMarkets: Array.from(document.querySelectorAll('[data-gs-market-scope] > [data-gs-market]'))
+      .filter(node => !node.hidden).map(node => node.getAttribute('data-gs-market'))
+  }));
+}
+
+async function gsNavigationMessages(child) {
+  await child.page.waitForFunction(() => queryMessages.some(message => message.type === 'READY'));
+  await child.page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  return child.page.evaluate(() => queryMessages.filter(message => message.type === 'NAVIGATE'));
+}
+
+test('GS query composition: transport and unchanged business selection cause no history or navigation writes', async () => {
+  const queries = ['', 'view=overview', 'market=', 'market=JP',
+    'view=history&market=KR&pins=JP&horizon=1m&basis=usd_unhedged&return_basis=price',
+    '%6darket=%4aP&view=overview&group=&pins=%4aP,KR'];
+  await withQueryFrames(async open => {
+    for (const business of queries) {
+      const child = await open('?' + (business ? business + '&' : '') + 'mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      const selected = business.includes('KR&') ? 'KR' : business.includes('JP') || business.includes('%4aP') ? 'JP' : null;
+      assert.equal(before.state.selected_market, selected, business);
+      assert.equal(before.query, business ? '?' + business : '', business);
+      assert.equal(before.issues, '', business);
+      assert.equal(before.active, false);
+      assert.equal(before.length, before.initialLength);
+      assert.deepEqual(before.writes, [], business);
+      assert.deepEqual(before.visibleMarkets, [selected || 'JP']);
+      await child.init();
+      const after = await gsQuerySnapshot(child);
+      assert.deepEqual(after.state, before.state);
+      assert.equal(after.raw, before.raw);
+      assert.deepEqual(after.writes, []);
+      assert.deepEqual(await gsNavigationMessages(child), [], business);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: one market-only correction preserves raw business bytes before INIT', async () => {
+  const cases = [
+    ['market=zz', 'market='],
+    ['market=XX', 'market='],
+    ['market=JPN', 'market='],
+    ['market=TW', 'market='],
+    ['group=&pins=%4aP,KR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price',
+     'group=&pins=%4aP,KR&%6darket=&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price']
+  ];
+  await withQueryFrames(async open => {
+    for (const [business, corrected] of cases) {
+      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      assert.equal(before.state.selected_market, null, business);
+      assert.equal(before.query, '?' + corrected, business);
+      assert.equal(before.issues, '');
+      assert.equal(before.active, false);
+      assert.equal(before.length, before.initialLength);
+      assert.deepEqual(before.writes, [{ method: 'replaceState', url: '/intl.html?' + corrected }], business);
+      assert.deepEqual(before.visibleMarkets, ['JP']);
+      assert.match(before.raw, /mmx_shell=1&mmx_generation=query-g1$/);
+      await child.init();
+      const requests = await gsNavigationMessages(child);
+      assert.equal(requests.length, 1, business);
+      assert.equal(requests[0].mode, 'replace');
+      assert.equal(requests[0].sameDocument, true);
+      assert.equal(new URL(requests[0].href).search, '?' + corrected);
+      await child.frame.evaluate(() => dispatchEvent(new PopStateEvent('popstate')));
+      const after = await gsQuerySnapshot(child);
+      assert.deepEqual(after.state, before.state);
+      assert.deepEqual(after.writes, before.writes, 'corrected query is idempotent');
+      assert.equal(after.length, before.initialLength);
+      assert.equal((await gsNavigationMessages(child)).length, 1);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: rejected business queries are not sanitized by market alignment', async () => {
+  const queries = ['notmarket=JP', 'market=JP&foreign=x', 'market=JP&%6darket=KR',
+    'market=%zz', 'view=unknown&market=JP', 'market=TW&&view=overview',
+    'view=overview&market=TW&', 'market=JP&view=%zz', 'market=TW&pins=JP%2cKR'];
+  await withQueryFrames(async open => {
+    for (const business of queries) {
+      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      assert.equal(before.query, '?' + business, business);
+      assert.equal(before.issues, business === 'view=unknown&market=JP' ? 'Unsupported value' : 'Invalid URL state restored', business);
+      assert.deepEqual(before.writes, [], business);
+      assert.equal(before.length, before.initialLength);
+      await child.init();
+      assert.deepEqual(await gsNavigationMessages(child), [], business);
+      const after = await gsQuerySnapshot(child);
+      assert.equal(after.raw, before.raw);
+      assert.equal(after.issues, before.issues);
+      assert.deepEqual(after.writes, []);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: native Back and Forward preserve one intended clamp before and after INIT', async () => {
+  await withQueryFrames(async open => {
+    for (const admitted of [false, true]) {
+      const child = await open('?market=JP&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      if (admitted) await child.init();
+      await child.frame.evaluate(() => {
+        const original = location.href;
+        History.prototype.pushState.call(history, null, '', '?market=TW&mmx_shell=1&mmx_generation=query-g1');
+        History.prototype.pushState.call(history, null, '', original);
+        window.gsNativeLength = history.length;
+        window.gsPopDone = false;
+        addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
+        history.back();
+      });
+      await child.frame.waitForFunction(() => gsPopDone);
+      let out = await gsQuerySnapshot(child);
+      assert.equal(out.state.selected_market, null);
+      assert.equal(out.query, '?market=');
+      assert.equal(out.issues, '');
+      assert.equal(out.writes.length, 1);
+      assert.deepEqual(out.visibleMarkets, ['JP']);
+      const length = out.length;
+      for (const [method, selected, query] of [['forward', 'JP', '?market=JP'], ['back', null, '?market=']]) {
+        await child.frame.evaluate(method => {
+          window.gsPopDone = false;
+          addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
+          history[method]();
+        }, method);
+        await child.frame.waitForFunction(() => gsPopDone);
+        out = await gsQuerySnapshot(child);
+        assert.equal(out.state.selected_market, selected);
+        assert.equal(out.query, query);
+        assert.equal(out.issues, '');
+        assert.equal(out.writes.length, 1, 'no repeated correction on native history');
+        assert.equal(out.length, length);
+      }
+      if (!admitted) await child.init();
+      const requests = await gsNavigationMessages(child);
+      assert.equal(requests.length, 1);
+      assert.equal(requests[0].mode, 'replace');
+      assert.equal(requests[0].sameDocument, true);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
 });
