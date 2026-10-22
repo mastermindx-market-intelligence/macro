@@ -7097,6 +7097,9 @@ jobs:
       - "engine/research_intelligence/store.py"
       - "scripts/build_macro_suite_pages.py"
       - "scripts/check_research_vault_source_freshness.py"
+      - "engine/market_os/__init__.py"
+      - "engine/medtech/__init__.py"
+      - "engine/research_intelligence/__init__.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
