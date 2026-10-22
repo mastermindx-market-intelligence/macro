@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-11T21:18:02Z",
+ "accession": "0001104659-26-013386",
+ "cik": "0001433270",
+ "doc_byte_length": 5200018,
+ "doc_sha256": "e121d4eaae7db002e12b7e289632cdea206e15744cbb120ce1cff3eca9ac10db",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ar-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2722449,
+  "byte_start": 2720780,
+  "normalized": "The Company’s revenues from its exploration and production and marketing reportable segments are derived principally from uncollateralized sales to purchasers in the oil and gas industry or the utilities industry. The Company also contracts with the primary processor of its natural gas, MarkWest, to market a portion of the Company’s NGLs, which accounted for approximately 16% of the Company’s sales for the years ended December 31, 2023 and 2024. The concentration of credit risk affects the Company’s overall exposure to credit risk because purchasers may be similarly affected by changes in economic and other conditions.",
+  "normalized_sha256": "0769d4d31f76225f6f9d713d78d237c0e124d29497aba97eebb0ce510e389cc2",
+  "raw": "The Company&#8217;s revenues from its exploration and production and marketing reportable segments are derived principally from uncollateralized sales to purchasers in the oil and gas industry or the utilities industry.  The Company also contracts with the primary processor of its natural gas, MarkWest, to market a portion of the Company&#8217;s NGLs, which accounted for approximately </span><ix:nonFraction unitRef=\"Unit_Standard_pure_ONuQe8Lk7USwyc6Q2EiIWg\" contextRef=\"Duration_1_1_2023_To_12_31_2023_srt_MajorCustomersAxis_ar_MarkwestEnergyPartnersLpMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_ZGelCWVjOUyAWiimBSaZeg\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Narr_btFOcxB8uki9ig-NpePT7w\"><ix:nonFraction unitRef=\"Unit_Standard_pure_ONuQe8Lk7USwyc6Q2EiIWg\" contextRef=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_ar_MarkwestEnergyPartnersLpMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_YtiSm1xkhk6XvJgZj5SvAQ\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Narr_317VIbR7akazTk7R13dAJQ\">16</ix:nonFraction></ix:nonFraction>%<span style=\"white-space:pre-wrap;\"> of the Company&#8217;s sales for the years ended December 31, 2023 and 2024.  The concentration of credit risk affects the Company&#8217;s overall exposure to credit risk because purchasers may be similarly affected by changes in economic and other conditions.",
+  "raw_sha256": "091561bab0a258e7e6a37d7158a36fad91f2598dfa7619a49c62ce6e714f79dd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1433270/000110465926013386/ar-20251231x10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 194144,
+   "byte_start": 193215,
+   "context_ref": "Duration_1_1_2023_To_12_31_2023_srt_MajorCustomersAxis_ar_MarkwestEnergyPartnersLpMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_ZGelCWVjOUyAWiimBSaZeg",
+   "raw": "<xbrli:context id=\"Duration_1_1_2023_To_12_31_2023_srt_MajorCustomersAxis_ar_MarkwestEnergyPartnersLpMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_ZGelCWVjOUyAWiimBSaZeg\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001433270</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ar:MarkwestEnergyPartnersL.p.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "69e0c60d08b79258202b186799ecf98991d0fb59a045058b8759240775e5bda9"
+  }
+ ]
+}
