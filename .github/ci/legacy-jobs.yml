@@ -20291,6 +20291,7 @@ jobs:
       - "engine/press/external_candidate.py"
       - "engine/press/research_triage.py"
       - "engine/press/validators.py"
+      - "engine/press/native_plan_scope.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
@@ -36252,6 +36253,9 @@ jobs:
       - "engine/marketing/x_intel.py"
       - "engine/press/__init__.py"
       - "engine/press/desk_planner.py"
+      - "engine/press/native_plan_scope.py"
+      - "tests/test_press_native_plan_scope.py"
+      - "tests/test_press_native_plan_integration.py"
       - "engine/press/external_candidate.py"
       - "engine/press/properties.py"
       - "engine/press/qbus_news.py"
@@ -36360,7 +36364,8 @@ jobs:
           tests/test_ticker_news_snapshot_provenance.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
-          tests/test_press_run.py tests/test_press_writer.py -q -rs
+          tests/test_press_run.py tests/test_press_writer.py
+          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
