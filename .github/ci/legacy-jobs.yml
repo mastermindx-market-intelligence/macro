@@ -39210,6 +39210,7 @@ jobs:
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
       - "site/commodities.html"
+      - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
