@@ -44,6 +44,9 @@ def test_read_vault_state_returns_newest_and_count_after_watermark(tmp_path: Pat
     assert state.count == 1
     assert state.producer_auth_state == "UNKNOWN"
     assert state.producer_auth_observed_at == ""
+    assert state.discovery_state == "UNKNOWN"
+    assert state.discovery_observed_at == ""
+    assert state.discovery_reason == ""
 
 
 def test_read_vault_state_projects_typed_auth_required(tmp_path: Path) -> None:
@@ -67,6 +70,45 @@ def test_read_vault_state_projects_typed_auth_required(tmp_path: Path) -> None:
     assert state.producer_auth_observed_at == "2026-09-24T10:05:00+00:00"
     assert state.producer_auth_required_at == "2026-09-24T09:35:00+00:00"
     assert state.producer_auth_reason == "NO_AUTHENTICATED_PROFILE"
+
+
+def test_read_vault_state_distinguishes_authentication_from_failed_discovery(
+    tmp_path: Path,
+) -> None:
+    database = _database(tmp_path / "marketdesk.sqlite")
+    conn = sqlite3.connect(database)
+    conn.executemany(
+        "INSERT INTO meta(key,value) VALUES (?,?)",
+        [
+            ("producer_auth_state", "AUTHENTICATED"),
+            ("discovery_state", "FAILED"),
+            ("discovery_observed_at", "2026-10-22T10:30:35Z"),
+            ("discovery_reason", "DISCOVER_ERROR:MarketDeskError"),
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+    state = read_vault_state(
+        database, "1970-01-01T00:00:00+00:00", timeout_seconds=1
+    )
+    assert state.producer_auth_state == "AUTHENTICATED"
+    assert state.discovery_state == "FAILED"
+    assert state.discovery_observed_at == "2026-10-22T10:30:35Z"
+    assert state.discovery_reason == "DISCOVER_ERROR:MarketDeskError"
+
+
+def test_read_vault_state_refuses_unknown_discovery_enum(tmp_path: Path) -> None:
+    database = _database(tmp_path / "marketdesk.sqlite")
+    conn = sqlite3.connect(database)
+    conn.execute(
+        "INSERT INTO meta(key,value) VALUES (?,?)",
+        ("discovery_state", "GREEN_BUT_UNVERIFIED"),
+    )
+    conn.commit()
+    conn.close()
+    state = read_vault_state(database, "", timeout_seconds=1)
+    assert state.discovery_state == "UNKNOWN"
 
 
 def test_read_vault_state_times_out_a_stalled_database_open(
