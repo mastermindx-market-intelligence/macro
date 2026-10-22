@@ -16813,6 +16813,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -38750,6 +38751,7 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -39022,6 +39024,7 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
