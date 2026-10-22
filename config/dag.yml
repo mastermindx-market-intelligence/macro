@@ -3216,6 +3216,13 @@ lanes:
           Insider+ payload site/premiumdata/china_special_situations.json
           (docs/TIER_PREVIEW_PATTERN.md) — they must never be rebuilt apart.
           Display-only; CONST-ART2 authority: false.
+      - id: build_baskets_china_redirect_stub
+        module: scripts.build_baskets_china
+        args: [--page-only]
+        note: >
+          Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
+          Returns before collectors, market computation, session clocks or payload
+          writes; the full China basket build remains in its existing daily lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
