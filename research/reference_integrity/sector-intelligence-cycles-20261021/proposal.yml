@@ -7,7 +7,7 @@
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+  frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
