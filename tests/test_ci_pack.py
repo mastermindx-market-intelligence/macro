@@ -4973,6 +4973,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-21 W33-LD: the regime-history reader repairs (US basis, HK segment
+    # in force, Canada today marker, China 120d analogs). Its own exclusive job
+    # pins the four page templates, build_hk's static import closure and the
+    # suites instead of adding test paths to a shared job; ceilings stay fixed.
+    "regime-history-surfaces",
     # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;

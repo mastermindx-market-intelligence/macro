@@ -190,6 +190,10 @@
         <th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('Dist', '距离') }}</th>
         <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('SHCOMP 20d', '上证20日') }}</th>
         <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('CSI300 60d', '沪深300 60日') }}</th>
+        <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);
+color:var(--muted);font-weight:600">{{ t('SHCOMP 120d', '上证120日') }}</th>
+        <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);
+color:var(--muted);font-weight:600">{{ t('CSI300 120d', '沪深300 120日') }}</th>
       </tr>
       {% for a in analogs %}
       {% set fsh = a.get('fwd_shcomp') or {} %}
@@ -202,6 +206,18 @@
         <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:{{ 'var(--up)' if sh20 is not none and sh20 > 0 else ('var(--down)' if sh20 is not none and sh20 < 0 else 'var(--muted)') }}">{{ ('%+.1f%%'|format(sh20 * 100)) if sh20 is not none else '—' }}</td>
         {% set csi60 = fcsi.get('h60') %}
         <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:{{ 'var(--up)' if csi60 is not none and csi60 > 0 else ('var(--down)' if csi60 is not none and csi60 < 0 else 'var(--muted)') }}">{{ ('%+.1f%%'|format(csi60 * 100)) if csi60 is not none else '—' }}</td>
+        {% set sh120 = fsh.get('h120') %}
+        {% set sh120c = 'var(--up)' if sh120 is not none and sh120 > 0 else
+                        ('var(--down)' if sh120 is not none and sh120 < 0 else 'var(--muted)') %}
+        <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;
+color:{{ sh120c }}">
+          {{ ('%+.1f%%'|format(sh120 * 100)) if sh120 is not none else '—' }}</td>
+        {% set csi120 = fcsi.get('h120') %}
+        {% set csi120c = 'var(--up)' if csi120 is not none and csi120 > 0 else
+                         ('var(--down)' if csi120 is not none and csi120 < 0 else 'var(--muted)') %}
+        <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;
+color:{{ csi120c }}">
+          {{ ('%+.1f%%'|format(csi120 * 100)) if csi120 is not none else '—' }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -233,7 +249,7 @@
   </script>
   {% endif %}
 
-  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }} UTC</p>
+  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }}</p>
 <script>
 window.__CHART_SWAP__ = {
   /* zh 红涨绿跌 (operator ruling 2026-07-21): direction phase pairs swap.
