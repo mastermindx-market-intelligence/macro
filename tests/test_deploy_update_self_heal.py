@@ -446,7 +446,7 @@ def test_movers_pre_mirror_pair_admission_preserves_good_and_unrelated_updates(t
 def test_movers_pre_mirror_guard_precedes_every_site_rsync():
     start = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
     end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", start)
-    rsync = SCRIPT.index('rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"')
+    rsync = SCRIPT.index('rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"')
     assert start < end < rsync < SCRIPT.index(CADDY_DIFF_LINE)
 
 
