@@ -140,6 +140,17 @@ renders stamped fields only — it never recomputes a stance (W3.6 comment
 `sector_cycles.js:143-152`); a null stance (resolve failure,
 `engine/sector_cycles.py:852-854`) omits the chip (`stanceHTML:159`).
 
+Wave 2 (SIC-V2-C01, VTC-013): the accepted design presents the engine stance through
+the six doctrine stances (`docs/DESIGN_DOCTRINE.md:44`; `STANCE_MAP` in
+`design_refs/sector-paper-20261021/cycles_repair/build_cycles.py`: BUY→Act ·
+GET READY→Get ready · HOLD, HIGH-RISK BOUNCE→Watch — don't chase · TRIM, SELL→Protect
+gains · WAIT, AVOID, COUNTERTREND ONLY→Stand aside · null→Ignore). This is a
+presentation binding applied to the stamped `now.stance`, not a recomputation; the
+engine stance and tone stay visible in the card's provenance drawer. The production
+port applies the same map inside `stanceHTML` (`sector_cycles.js:159`) and keeps the
+null-stance omission; stance ink is `--ink-ok` / `--ink-warn` / `--muted`, never
+`--up`/`--down`.
+
 ## R6 — timing & projection (ladder, gate, rhythm, hazard)
 
 | Row | Element | ZH label | Producer → Render | Status |

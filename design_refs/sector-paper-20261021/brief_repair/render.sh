@@ -22,3 +22,7 @@ shot 24-brief-desktop-dark-en  1440 "${H24:-$(measure 1440 "$B?theme=dark&lang=e
 shot 25-brief-mobile-dark-zh    390 "${H25:-$(measure 390 "$M&theme=dark&lang=zh")}" "$M&theme=dark&lang=zh"
 shot 26-brief-mobile-light-en   390 "${H26:-$(measure 390 "$M&theme=light&lang=en&state=locked")}" "$M&theme=light&lang=en&state=locked"
 shot 27-coverage-matrix-desktop-light-en 1440 "${H27:-$(measure 1440 "$C?theme=light&lang=en")}" "$C?theme=light&lang=en"
+# wave 2 (SIC-V2-C12): the three Brief coverage-matrix GAP cells become drawn boards
+shot 32-brief-desktop-light-zh 1440 "${H32:-$(measure 1440 "$B?theme=light&lang=zh")}" "$B?theme=light&lang=zh"
+shot 33-brief-desktop-dark-zh  1440 "${H33:-$(measure 1440 "$B?theme=dark&lang=zh")}" "$B?theme=dark&lang=zh"
+shot 37-brief-mobile-dark-en    390 "${H37:-$(measure 390 "$M&theme=dark&lang=en")}" "$M&theme=dark&lang=en"

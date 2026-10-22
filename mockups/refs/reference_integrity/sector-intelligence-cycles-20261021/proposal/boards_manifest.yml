@@ -2,8 +2,8 @@
 # Every PNG was produced by the Paper export tool at 1x (no screenshot substitution).
 # Node ids are real, returned by Paper after admitted edits (ORCH-PAPER return 2026-10-21 ~06:1xZ);
 # png_path rewritten from the scratchpad export location to this committed path by the seat.
-# Boards 23-27 are NOT Paper exports: seat-rendered HTML specimens (headless Chrome, 1x) from
-# design_refs/sector-paper-20261021/brief_repair/ because the Paper file is at its size limit
+# Boards 23-37 are NOT Paper exports: seat-rendered HTML specimens (headless Chrome, 1x) from
+# design_refs/sector-paper-20261021/{brief_repair,cycles_repair}/ because the Paper file is at its size limit
 # (PAPER_CAPACITY_LIMITED); node_id/page_id are null by design and must never be filled in by hand.
 # Board 22 (node 6W1R-0, the 23rd board on p-24-0; node id from ORCH-PAPER's ledger, never typed by the seat)
 # was exported by the seat 2026-10-21 ~09:0xZ with the same Paper export tool at 1x; png_px read from the PNG header.
@@ -57,10 +57,12 @@ boards:
   - clocks disagree
   - lazy Cycle DNA (closed)
   capabilities_covered:
-  - C01-C24
+  - C01-C13
+  - C22
   - C26
-  - C27
   - C28
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/01-cycles-desktop-dark-en.png
   capture: export
   png_px:
@@ -80,10 +82,12 @@ boards:
   - PRIOR-led window
   - lazy Cycle DNA
   capabilities_covered:
-  - C01-C24
+  - C01-C13
+  - C22
   - C26
-  - C27
   - C28
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/02-cycles-desktop-light-zh.png
   capture: export
   png_px:
@@ -104,11 +108,12 @@ boards:
   - lazy Cycle DNA
   - not overdue
   capabilities_covered:
-  - C01-C17
-  - C19
-  - C21-C25
-  - C27
+  - C01-C13
+  - C22
+  - C25
   - C28
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/03-cycles-mobile-dark-en.png
   capture: export
   png_px:
@@ -129,11 +134,12 @@ boards:
   - lazy Cycle DNA
   - not overdue
   capabilities_covered:
-  - C01-C17
-  - C19
-  - C21-C25
-  - C27
+  - C01-C13
+  - C22
+  - C25
   - C28
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/04-cycles-mobile-light-zh.png
   capture: export
   png_px:
@@ -159,6 +165,8 @@ boards:
   - C25
   - C26
   - C28
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/05-cycles-touch-interactions-mobile-dark-en.png
   capture: export
   png_px:
@@ -193,14 +201,13 @@ boards:
   - C11
   - C12
   - C13
-  - C19
-  - C20
-  - C24
   - C28
   - U02
   - U05
   - U11
   - U14
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/06-cycles-states-desktop-dark-en.png
   capture: export
   png_px:
@@ -234,14 +241,13 @@ boards:
   - C11
   - C12
   - C13
-  - C19
-  - C20
-  - C24
   - C28
   - U02
   - U05
   - U11
   - U14
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/07-cycles-states-mobile-light-zh.png
   capture: export
   png_px:
@@ -269,13 +275,10 @@ boards:
   - C08
   - C09
   - C13
-  - C15
-  - C16
-  - C18
-  - C19
-  - C21
   - C22
   - C25
+  superseded_by: [28, 29, 30, 31, 34, 35, 36]
+  note: "scoped supersession (SIC-V2-C12/PRC-029/PRC-030): stance, phase/position, hazard, rhythm, event, grader and metadata SEMANTICS drawn on this board are superseded by the R4 correction boards 28-31/34-36; the chart instrument (series, oscillator, scale, zoom, filters, compare, RS, turn markers, leg timeline, narratives, Cycle DNA, drill-through, mobile picker, keyboard) stays homed here and is not redrawn by wave 2. PNG byte-unchanged on purpose; capabilities_covered trimmed to instrument rows only — this board is not normative for stance/phase/hazard semantics"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/08-cycles-edge-cases-desktop-light-en.png
   capture: export
   png_px:
@@ -373,7 +376,8 @@ boards:
   capabilities_covered:
   - R3A-24
   - R3A-28
-  note: "capabilities trimmed per PRC-020: R3A-19 (auth hydration), R3A-27 and R3A-92 (correction representation) are not drawn on this board; the chart's single-series legend is not adopted (VTC-011 withdrawn from reference)"
+  superseded_by: [23, 24, 25, 26, 32, 33, 37]
+  note: "capabilities trimmed per PRC-020: R3A-19 (auth hydration), R3A-27 and R3A-92 (correction representation) are not drawn on this board; the chart's single-series legend is not adopted (VTC-011 withdrawn from reference); superseded (SIC-V2-C12/PRC-029) by the R4 Brief HTML specimens for every presentation cell; retained as the Paper-export provenance of the Brief layout only and no longer cited as coverage evidence (board 27)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
   capture: export
   png_px:
@@ -397,6 +401,8 @@ boards:
   - R3A-27
   - R3A-28
   - R3A-92
+  superseded_by: [23, 24, 25, 26, 32, 33, 37]
+  note: "superseded (SIC-V2-C12/PRC-029) by the R4 Brief HTML specimens for every presentation cell; retained as the Paper-export provenance of the Brief layout only and no longer cited as coverage evidence (board 27)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/13-brief-mobile-dark-zh.png
   capture: export
   png_px:
@@ -465,7 +471,8 @@ boards:
   - fast/slow MODEL disagreement
   capabilities_covered:
   - masterplan 8.1
-  note: "capabilities trimmed per PRC-020: C10/C11/C12 are Cycles capabilities and are not drawn on the Dossier board"
+  superseded_by: [28, 29, 34, 35]
+  note: "capabilities trimmed per PRC-020: C10/C11/C12 are Cycles capabilities and are not drawn on the Dossier board; scoped supersession (SIC-V2-C12/PRC-029): the Dossier's stance and hazard cells follow the R4 Cycles correction semantics on boards 28/29/34/35; the Dossier layout itself is not redrawn by wave 2"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
   capture: export
   png_px:
@@ -556,7 +563,7 @@ boards:
   - theme x device axes table
   capabilities_covered:
   - masterplan 7.2 state examples (reviewer index)
-  note: "superseded by board 27 (coverage matrix) + design_refs/sector-paper-20261021/state_matrix.csv; retained as a reviewer index only (VTC-008/PRC-021)"
+  note: "superseded by board 27 (coverage matrix, re-rendered in wave 2 to cover the Brief + Cycles cells on boards 23-26/28-31/32-37) + design_refs/sector-paper-20261021/state_matrix.csv; retained as a reviewer index only (VTC-008/PRC-021)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
   capture: export
   png_px:
@@ -574,7 +581,7 @@ boards:
   capabilities_covered:
   - masterplan 7.2 navigation and selection model with return behavior
   - board index and R2 supersession
-  note: "superseded by boards_manifest.yml (this file) + proposal.yml routing_contract; retained as a reviewer index only (VTC-008/PRC-017)"
+  note: "superseded by boards_manifest.yml (this file; rows 32-37 added in wave 2) + proposal.yml routing_contract; retained as a reviewer index only (VTC-008/PRC-017)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
   capture: export
   png_px:
@@ -598,6 +605,8 @@ boards:
   - R3A-27
   - R3A-28
   - R3A-92
+  superseded_by: [23, 24, 25, 26, 32, 33, 37]
+  note: "superseded (SIC-V2-C12/PRC-029) by the R4 Brief HTML specimens for every presentation cell; retained as the Paper-export provenance of the Brief layout only and no longer cited as coverage evidence (board 27)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
   capture: export
   png_px:
@@ -616,6 +625,9 @@ boards:
   - partial 11 sectors / 49 baskets
   - bottoming watch 7
   - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
   capabilities_covered:
   - R3A-19
   - R3A-24
@@ -628,7 +640,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
   png_px:
   - 1440
-  - 2531
+  - 2730
 - board_no: 24
   title: R3 · Brief · Desktop · Dark · EN (HTML specimen)
   node_id: null
@@ -642,6 +654,9 @@ boards:
   - partial 11 sectors / 49 baskets
   - bottoming watch 7
   - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
   capabilities_covered:
   - R3A-19
   - R3A-24
@@ -654,7 +669,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
   png_px:
   - 1440
-  - 2531
+  - 2730
 - board_no: 25
   title: R3 · Brief · Mobile · Dark · ZH (HTML specimen)
   node_id: null
@@ -668,6 +683,10 @@ boards:
   - partial 11 sectors / 49 baskets
   - bottoming watch 7
   - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the 40% side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   capabilities_covered:
   - R3A-19
   - R3A-24
@@ -680,7 +699,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
   png_px:
   - 390
-  - 4244
+  - 4511
 - board_no: 26
   title: R3 · Brief · Mobile · Light · EN · locked (HTML specimen)
   node_id: null
@@ -694,6 +713,10 @@ boards:
   - Watch — don't chase stance chip
   - bottoming watch 7
   - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the 40% side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   capabilities_covered:
   - R3A-19
   - R3A-24
@@ -706,7 +729,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
   png_px:
   - 390
-  - 4347
+  - 4686
 - board_no: 27
   title: R3 · Brief · Coverage matrix · viewport × theme × locale (HTML specimen)
   node_id: null
@@ -717,6 +740,7 @@ boards:
   states_shown:
   - drawn vs renderable cells
   - locked state frozen once (board 26)
+  - "wave 2: cells extended to Brief + Cycles — 14 of 16 presentation cells drawn on HTML specimen boards 23-26/28-31/32-37; Paper boards 12/13/22 no longer cited as coverage evidence (PRC-027/PRC-029)"
   capabilities_covered: []
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/27-coverage-matrix-desktop-light-en.png
   capture: html-specimen-chrome-headless-1x
@@ -724,7 +748,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/coverage_matrix.html
   png_px:
   - 1440
-  - 853
+  - 1026
 - board_no: 28
   title: R4 · Cycles · corrections · Desktop · Light · EN (HTML specimen)
   node_id: null
@@ -733,7 +757,7 @@ boards:
   theme: light
   locale: EN
   states_shown:
-  - pos_v2 + phase_v2 only (legacy families retired from display)
+  - "pos_v2 + phase_v2 on the card face; legacy cycle-position numerals and projected-turn dates stripped from 'The read' and kept verbatim in the provenance drawer (SIC-V2-C07/PRC-025)"
   - resolved stance + tone + clocks-disagree note (XLF)
   - phase age lower_bound (3 rows)
   - hazard MODEL cells + parity_failed muting (XLF)
@@ -742,6 +766,10 @@ boards:
   - sizing inert + lead-lag STOP methods
   - grader caption without a number
   - rotation clocks aligned (fresh)
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   capabilities_covered:
   - C14
   - C15
@@ -760,7 +788,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2368
+  - 2007
 - board_no: 29
   title: R4 · Cycles · corrections · Desktop · Dark · EN (HTML specimen)
   node_id: null
@@ -772,6 +800,10 @@ boards:
   - same composition as board 28 on the dark tokens
   - hazard gap cells + muted ladder on dark
   - chip/badge contrast on dark
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
   capabilities_covered:
   - C14
   - C15
@@ -785,7 +817,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2368
+  - 2007
 - board_no: 30
   title: R4 · Cycles · corrections · Mobile · Dark · ZH (HTML specimen)
   node_id: null
@@ -799,6 +831,12 @@ boards:
   - phase_age_lower_bound ZH
   - forecast_footnote ZH with producer months
   - MODEL badge 模型 at >= 11px
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
+  - ZH nav search placeholder + ZH mono labels (SIC-V2-C04/PRC-031)
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   capabilities_covered:
   - C14
   - C15
@@ -813,7 +851,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 5436
+  - 3992
 - board_no: 31
   title: R4 · Cycles · corrections · Mobile · Light · EN · incompatible_generation fixture (HTML specimen)
   node_id: null
@@ -826,6 +864,12 @@ boards:
   - fresh row hidden while the state is set
   - fixture label printed under the banner
   - hazard unavailable gap cells on light
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
+  - "banner body wraps; 'aligned' chips muted under the banner and carry the dated qualifier chip (SIC-V2-C06/VTC-018)"
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
   capabilities_covered:
   - C18
   - C19
@@ -838,4 +882,227 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 6116
+  - 4477
+- board_no: 32
+  title: R4 · Brief · Desktop · Light · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: ZH
+  states_shown:
+  - fresh
+  - ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern)
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/32-brief-desktop-light-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 1440
+  - 2752
+- board_no: 33
+  title: R4 · Brief · Desktop · Dark · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: dark
+  locale: ZH
+  states_shown:
+  - fresh
+  - ZH deck copy end-to-end (lane titles + production qualifiers, stance chips, legend, as-of 截至 pattern)
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - coverage unavailable (measured-sector read withheld)
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/33-brief-desktop-dark-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 1440
+  - 2752
+- board_no: 34
+  title: R4 · Cycles · corrections · Desktop · Light · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: light
+  locale: ZH
+  states_shown:
+  - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
+  - resolved stance chips 立场 from the one doctrine vocabulary
+  - hazard MODEL cells 模型 + parity_failed muting (XLF)
+  - hazard unavailable gap cells (XLK, XLC)
+  - provenance drawers 测量方式 closed on the face
+  - rotation clocks aligned (fresh)
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C24
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/34-cycles-desktop-light-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 1440
+  - 1944
+- board_no: 35
+  title: R4 · Cycles · corrections · Desktop · Dark · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: desktop 1440
+  theme: dark
+  locale: ZH
+  states_shown:
+  - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
+  - resolved stance chips 立场 from the one doctrine vocabulary
+  - hazard MODEL cells 模型 + parity_failed muting (XLF)
+  - hazard unavailable gap cells (XLK, XLC)
+  - provenance drawers 测量方式 closed on the face
+  - rotation clocks aligned (fresh)
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C24
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/35-cycles-desktop-dark-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 1440
+  - 1944
+- board_no: 36
+  title: R4 · Cycles · corrections · Mobile · Light · ZH (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: light
+  locale: ZH
+  states_shown:
+  - single-column recomposition (cards, methods, grader, events, metadata)
+  - ZH deck copy + ZH producer enums (顶部/底部, 板块) — desktop mirror of board 30
+  - resolved stance chips 立场 from the one doctrine vocabulary
+  - hazard MODEL cells 模型 + parity_failed muting (XLF)
+  - hazard unavailable gap cells (XLK, XLC)
+  - provenance drawers 测量方式 closed on the face
+  - rotation clocks aligned (fresh)
+  - "one stance vocabulary (SIC-V2-C01): engine stances bound to the six doctrine stances via STANCE_MAP (XLF HOLD→Watch — don't chase, XLK HIGH-RISK BOUNCE→Watch — don't chase, XLC SELL→Protect gains); stance ink never --up/--down"
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Cycles current"
+  - "provenance drawers (SIC-V2-C04): producer identifiers, hashes, paths and the full hazard footnote moved off the card face into closed 'How this was measured' drawers"
+  - MODEL/PRIOR badge at 11px (SIC-V2-C10); projection window moved into the drawer beside the rhythm method (SIC-V2-C11)
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
+  capabilities_covered:
+  - C14
+  - C15
+  - C16
+  - C18
+  - C19
+  - C24
+  - C27
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/36-cycles-mobile-light-zh.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
+  png_px:
+  - 390
+  - 3992
+- board_no: 37
+  title: R4 · Brief · Mobile · Dark · EN (HTML specimen)
+  node_id: null
+  page_id: null
+  viewport: mobile 390
+  theme: dark
+  locale: EN
+  states_shown:
+  - single-column recomposition (hero, lanes, bottoming strip, coverage, track record)
+  - fresh
+  - "Watch — don't chase stance chip"
+  - partial 11 sectors / 49 baskets
+  - bottoming watch 7
+  - "shared shell (SIC-V2-C02/C03): canonical site nav + page header + six-workflow switcher, Brief current"
+  - doctrine lane titles with the production lane qualifier beneath (SIC-V2-C13)
+  - "Brief polish (SIC-V2-C14): singular '1 day in', full-width coverage card, labeled ◆ theme basket / ■ sector ETF legend, stretch-aligned lane grid"
+  - "six-workflow switcher wraps to a second row at 390 (si_shell.css block 4, proposal); as-of stamp wraps inside the 40% side-foot (block 5, proposal); overflow probe data-w=390 data-ovf=\"\""
+  capabilities_covered:
+  - R3A-19
+  - R3A-24
+  - R3A-27
+  - R3A-28
+  - R3A-92
+  png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/37-brief-mobile-dark-en.png
+  capture: html-specimen-chrome-headless-1x
+  paper_state: PAPER_CAPACITY_LIMITED
+  source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
+  png_px:
+  - 390
+  - 4903
+
+# wave 2 (SIC-V2-C12/PRC-030): exactly one NORMATIVE board per Cycles/shared-engine capability. Chart-instrument
+# capabilities (C01-C13, C22, C25, C26, C28) stay homed on the R3 instrument boards 01-08, which are NOT normative for
+# stance/phase/hazard/rhythm/grader/metadata semantics; those (C14-C21, C23, C24, C27) are normative on the R4 correction
+# boards 28-31/34-36. Other boards listing a capability are supporting evidence only.
+capability_boards:
+  C01: 1
+  C02: 1
+  C03: 1
+  C04: 1
+  C05: 1
+  C06: 1
+  C07: 1
+  C08: 1
+  C09: 1
+  C10: 1
+  C11: 1
+  C12: 1
+  C13: 1
+  C14: 28
+  C15: 28
+  C16: 28
+  C17: 28
+  C18: 28
+  C19: 28
+  C20: 28
+  C21: 28
+  C22: 1
+  C23: 28
+  C24: 28
+  C25: 5
+  C26: 1
+  C27: 34
+  C28: 6

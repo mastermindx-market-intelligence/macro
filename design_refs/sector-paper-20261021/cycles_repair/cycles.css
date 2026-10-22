@@ -34,9 +34,11 @@ html[data-lang="zh"] .cyc-eyebrow{letter-spacing:.02em;text-transform:none}
 .cyc-grp{font-size:var(--fs-micro);color:var(--muted);flex-basis:100%}
 .cyc-pos{font:700 var(--fs-sm)/1.3 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--text);margin-left:auto;text-align:right}
 .cyc-pos b{font-size:var(--fs-md)} .cyc-pos .b{display:block;font:500 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted)}
-.cyc-stance{--c:var(--muted)}
-.cyc-stance[data-tone="bullish"]{--c:var(--ink-up,var(--up))} .cyc-stance[data-tone="bearish"]{--c:var(--ink-down,var(--down))}
-.cyc-stance[data-tone="caution"]{--c:var(--ink-warn,var(--warn))} .cyc-stance[data-tone="anticipatory"]{--c:var(--ink-info,var(--info))}
+/* C01: one stance vocabulary — the six doctrine stances, inked by doctrine group (docs/DESIGN_DOCTRINE.md:44); never --up/--down */
+.cyc-stance{--c:var(--muted);font-weight:700}
+.cyc-stance[data-stance="act"],.cyc-stance[data-stance="get_ready"]{--c:var(--ink-ok,var(--ok))}
+.cyc-stance[data-stance="watch"],.cyc-stance[data-stance="protect"]{--c:var(--ink-warn,var(--warn))}
+.cyc-stance[data-stance="aside"],.cyc-stance[data-stance="ignore"]{--c:var(--muted)}
 .cyc-stance-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .cyc-stance-ttl{font-size:var(--fs-label);color:var(--muted);font-weight:600}
 .cyc-clocks{--c:var(--ink-warn,var(--warn))}
@@ -106,3 +108,34 @@ html[data-lang="zh"] .cyc .l-en{display:none}
 }
 .cyc-warn{--c:var(--ink-warn,var(--warn))}
 .cyc-hz-gap{display:block;width:16px;height:0;margin:9px auto;border-top:1px dashed var(--muted)}
+
+/* wave 2 — C04 provenance drawers: producer identifiers live here, closed by default */
+.cyc-prov{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+.cyc-prov summary{font:600 var(--fs-label)/1.5 var(--font-ui);color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;min-height:32px}
+.cyc-prov summary::-webkit-details-marker{display:none}
+.cyc-prov summary::before{content:"";width:0;height:0;border:4px solid transparent;border-left:6px solid currentColor;transform:translateX(2px);transition:transform .12s}
+.cyc-prov[open] summary::before{transform:rotate(90deg) translateY(-2px)}
+.cyc-prov summary:focus-visible{outline:2px solid var(--focus,var(--accent));outline-offset:2px;border-radius:4px}
+.cyc-prov-hint{font-weight:500;color:var(--muted);opacity:.85}
+.cyc-prov-body{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin:4px 0 0}
+.cyc-prov-body > div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:4px 12px;padding:6px 0;border-top:1px dashed var(--line);align-items:baseline;min-width:0}
+.cyc-prov-body dt{font:600 var(--fs-micro)/1.45 var(--font-ui);color:var(--muted);overflow-wrap:anywhere}
+.cyc-prov-body dd{margin:0;font:500 var(--fs-micro)/1.45 var(--font-ui);color:var(--text);overflow-wrap:anywhere;min-width:0}
+.cyc-prov-body dd .mono,.cyc-prov-body dd code,.cyc-prov-body dt code{font:500 var(--fs-micro)/1.45 var(--font-mono,var(--font-ui))}
+.cyc-prov-read{font:400 var(--fs-micro)/1.5 var(--font-ui);color:var(--muted)}
+.cyc-prov-meta .cyc-prov-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+.cyc-sec-h2{font-size:var(--fs-h3);margin:0 0 8px}
+/* C04: hazard ladder muted while the producer records model_cell_current_claim (parity unproven) */
+.spc-hazard-ladder.cyc-hz-muted .spc-hz-val{color:var(--muted)}
+/* C06: incompatible_generation — banner wraps, clock chips mute, dated qualifier shows */
+.cyc .spc-state-banner{flex-wrap:wrap;align-items:flex-start}
+.cyc .spc-sb-msg{min-width:0;flex:1 1 200px;overflow-wrap:anywhere;line-height:1.45}
+.cyc-ev-st{font-weight:600}
+.cyc-ev-qual{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-chip{opacity:.55}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-qual{display:inline-flex}
+.cyc-fixture{margin:8px 0 0}
+.cyc-fixture-chip{--c:var(--muted)}
+@media (max-width:720px){.cyc-prov-meta .cyc-prov-body{grid-template-columns:minmax(0,1fr)}.cyc-prov-body > div{grid-template-columns:minmax(0,1fr)}}
+/* wave 2 (SIC-V2-C06): the dated qualifier is a wrapping note, not a nowrap pill (390px EN overflow) */
+.cyc-ev-qual{white-space:normal;line-height:1.35;border-radius:10px;text-align:left;max-width:100%;padding:5px 10px}

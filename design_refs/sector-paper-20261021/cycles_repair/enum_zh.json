@@ -1,7 +1,11 @@
 {
- "_source": "ZH forms for producer enums used by copy_deck cycles.forecast_footnote placeholders: next_turn from templates/sector_cycles.js:1420 L(\"Next \"+nextTurn, \"下次\"+(peak?\"顶部\":\"底部\")); unit sector/basket from the deck placeholder gloss",
+ "_source": "ZH forms for producer enums used by copy_deck cycles.forecast_footnote placeholders: next_turn from templates/sector_cycles.js:1420 L(\"Next \"+nextTurn, \"下次\"+(peak?\"顶部\":\"底部\")); unit sector/basket from the deck placeholder gloss | wave 2 (SIC-V2-C04): direction up/down from sector_cycles.js L('up'/'down') family rendered as 向上/向下; basis price 价格; status aligned 已对齐",
  "peak": "顶部",
  "trough": "底部",
  "sector": "板块",
- "basket": "篮子"
+ "basket": "篮子",
+ "down": "向下",
+ "up": "向上",
+ "price": "价格",
+ "aligned": "已对齐"
 }

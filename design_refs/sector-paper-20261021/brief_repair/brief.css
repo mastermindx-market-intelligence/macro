@@ -153,3 +153,12 @@ html:not([data-state="locked"]) .brf .brf-locked{display:none}
   .brf-lockrow{justify-content:flex-start}
   .brf-lockrow .spc-lock-chip{white-space:normal;flex-wrap:wrap;max-width:100%;height:auto;line-height:1.35;padding-top:5px;padding-bottom:5px}
 }
+
+/* wave 2 — C13/C14: doctrine-stance lane titles with the production fold name as qualifier; equal-height lanes; full-width coverage card; glyph legend */
+.brf-lanes{align-items:stretch}
+.brf-lane{height:100%}
+.brf-lane-qual{margin:0;font:500 var(--fs-micro)/1.4 var(--font-ui);color:var(--muted);letter-spacing:.01em}
+.brf-cov{grid-column:1/-1}
+.brf-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 2px 0;font:500 var(--fs-micro)/1.4 var(--font-ui);color:var(--muted)}
+.brf-legend svg{width:10px;height:10px;vertical-align:-1px;margin-right:4px;fill:currentColor}
+.brf-lane-src{margin:8px 2px 0;font:400 var(--fs-micro)/1.45 var(--font-ui);color:var(--muted)}

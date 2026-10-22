@@ -40,7 +40,11 @@
     "next_02_desc": {"en": "Check breadth and money flow before drawing a market-wide conclusion.", "zh": "结合市场广度与资金流，判断变化是否普遍。", "role": "list body", "source": "templates/_sector_central_brief.html.j2:46-55"},
     "next_03_title": {"en": "03 · Stock evidence", "zh": "03 · 个股证据", "role": "list title", "source": "templates/_sector_central_brief.html.j2:46-55"},
     "next_03_desc": {"en": "Compare stock-level evidence and the existing entry conditions.", "zh": "比较个股证据与既有入场条件。", "role": "list body", "source": "templates/_sector_central_brief.html.j2:46-55"},
-    "handoff_to_sr": {"en": "to", "zh": "至", "role": "screen-reader text", "source": "NEW"}
+    "handoff_to_sr": {"en": "to", "zh": "至", "role": "screen-reader text", "source": "NEW"},
+    "stance_day_one": {"en": "1 day in", "zh": "已持续1天", "role": "qualifier", "source": "templates: production renders '1 days in / 已持续1天' at d86344b93a0bd (plural defect); singular NEW (SIC-V2 wave-2 proposal) — SIC-V2-C14 (VTC-020)"},
+    "lane_source_note": {"en": "Lane names follow the doctrine stances; the production fold name is kept as the qualifier line.", "zh": "分组名称采用准则立场；生产分组名保留为说明行。", "role": "note", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C13 (VTC-013 one vocabulary)"},
+    "glyph_theme": {"en": "theme basket", "zh": "主题篮子", "role": "legend", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C14(4): row glyph ◆ labeled"},
+    "glyph_sector": {"en": "sector ETF", "zh": "板块ETF", "role": "legend", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C14(4): row glyph ■ labeled"}
   },
   "explore_rotation": {
     "title": {"en": "What is actually changing", "zh": "实际在变什么", "role": "h1", "source": "templates/sector_central.html.j2:2198"},
@@ -178,7 +182,21 @@
     "hazard_unavailable": {"en": "No calibrated cell for this leg. The producer could not form a monotone turn curve; shown as a gap, never as zero.", "zh": "该周期段没有校准单元格。生产端无法形成单调的转折曲线；显示为空缺，绝不记为零。", "role": "footnote", "source": "data/sector_cycles now.hazard.unavailable=true unavailable_reason=non_monotone_cdf (C19); templates/sector_cycles.js has no unavailable render (PRODUCED_NOT_RENDERED)"},
     "sizing_inert": {"en": "Position sizing: none. The conviction multiplier is held at 1.0 and is not a size.", "zh": "仓位规模：无。信念倍数固定为 1.0，并非仓位大小。", "role": "method", "source": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_ia.md:166 cites :404, stale)"},
     "leadlag_stop": {"en": "Lead-lag: no claim. The W5.1 study stopped; nothing here orders sectors in time.", "zh": "领先滞后：不作声明。W5.1 研究已停止；此处不对板块作时间排序。", "role": "method", "source": "research/sector_completion_20261021/MASTERPLAN_2026-10-21.md:169 (W5.1 STOP/NO-GO; descriptive synchronization gauge is the accepted fallback)"},
-    "stance_label": {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:155 stanceHTML L(\"Resolved stance · engine\",\"综合策略 · 引擎\") (production verbatim)"}
+    "stance_label": {"en": "Resolved stance · engine", "zh": "综合策略 · 引擎", "role": "label", "source": "templates/sector_cycles.js:155 stanceHTML L(\"Resolved stance · engine\",\"综合策略 · 引擎\") (production verbatim)"},
+    "proj_label": {"en": "Production projection (not the rhythm window)", "zh": "生产投影（非节律窗口）", "role": "drawer", "source": "templates/sector_cycles.js:1420 draws proj; NEW (SIC-V2 wave-2 proposal) — SIC-V2-C11 (PRC-032)"},
+    "read_legacy_withheld": {"en": "The production read narrates the legacy position family; its position number and projected peak are withheld from the face and kept here verbatim.", "zh": "生产解读沿用旧版位置口径；其位置数字与预计顶部不在正面显示，此处保留原文。", "role": "drawer", "source": "engine/sector_cycles.py::_engine_read; NEW (SIC-V2 wave-2 proposal) — SIC-V2-C07 (VTC-019/PRC-025)"},
+    "win_low": {"en": "earliest", "zh": "最早", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (rhythm.window.low)"},
+    "win_central": {"en": "central", "zh": "中位", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (rhythm.window.central)"},
+    "win_high": {"en": "latest", "zh": "最晚", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (rhythm.window.high)"},
+    "events_chip": {"en": "Events clock", "zh": "事件时钟", "role": "chip", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (rotation_context.events)"},
+    "fragmentation_chip": {"en": "Fragmentation clock", "zh": "分化时钟", "role": "chip", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (rotation_context.fragmentation)"},
+    "aligned_qualifier": {"en": "Clocks aligned on the history day {d}; not current under this banner", "zh": "时钟在历史日 {d} 对齐；在此横幅下并非当前", "role": "chip", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C06 (VTC-018)"},
+    "hazard_row_pattern": {"en": "{direction} · {turn}", "zh": "{direction} · {turn}", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (hazard.direction / hazard.turn_kind via enum_zh.json)"},
+    "kind_basis_pattern": {"en": "{kind} · {basis}", "zh": "{kind} · {basis}", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (sector.kind / sector.basis via enum_zh.json)"},
+    "methods_h2": {"en": "Methods and limits", "zh": "方法与限制", "role": "h2", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (section title replaces the literal field-key eyebrow)"},
+    "cell_verdict_pattern": {"en": "{h} cell · {verdict}", "zh": "{h} 单元格 · {verdict}", "role": "drawer", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (hazard.<h>.cell_verdict moves to the drawer)"},
+    "stance_engine_pattern": {"en": "{stance} · tone {tone}", "zh": "{stance} · 语气 {tone}", "role": "drawer", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C01 (engine resolved_stance + tone in the drawer)"},
+    "hazard_face_note": {"en": "Probability that the open leg’s next confirmed turn lands inside each horizon. Historical calibration only; not a current claim while live parity is unproven.", "zh": "开放周期段的下一个已确认拐点落在各时间窗内的概率。仅为历史校准；实时一致性未证实期间不构成当前判断。", "role": "footnote", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04: the full cycles.hazard_footnote (with producer identifiers) moves to the provenance drawer"}
   },
   "components": {
     "title": {"en": "Shared components", "zh": "共享组件", "role": "h1", "source": "NEW"},
@@ -204,7 +222,22 @@
     "rel_not_supplied": {"en": "Sector relationship not supplied", "zh": "未提供板块间关系", "role": "state_title", "source": "NEW"},
     "no_evidence_attached": {"en": "No Sector evidence attached", "zh": "未附带板块证据", "role": "state_title", "source": "NEW"},
     "search_aria": {"en": "Search sectors", "zh": "搜索板块", "role": "aria", "source": "templates/sector_cycles.js:1750"},
-    "grader_label": {"en": "Conviction-call grader", "zh": "判断评分器", "role": "label", "source": "engine/sector_central_grader.py (PRC-004)"}
+    "grader_label": {"en": "Conviction-call grader", "zh": "判断评分器", "role": "label", "source": "engine/sector_central_grader.py (PRC-004)"},
+    "stance_act": {"en": "Act", "zh": "行动", "role": "chip", "source": "docs/DESIGN_DOCTRINE.md:44 + design_refs/sector-paper-20261021/components/COMPONENTS.md:129; no production t('Act') stance string exists (templates/dashboard.html.j2:14510 'Act' is an unrelated badge) — SIC-V2-C13/PRC-026"},
+    "nav_brief": {"en": "Brief", "zh": "简报", "role": "nav", "source": "templates/sector_central.html.j2:1495"},
+    "nav_explore": {"en": "Explore", "zh": "探索", "role": "nav", "source": "templates/sector_central.html.j2:1496"},
+    "nav_dossier": {"en": "Dossier", "zh": "档案", "role": "nav", "source": "templates/sector_central.html.j2:889 t('Dossier','档案'); not in the production .si-workflow switcher — SIC-V2-C03"},
+    "nav_research": {"en": "Research", "zh": "研究", "role": "nav", "source": "templates/sector_central.html.j2:1497"},
+    "nav_watches": {"en": "Watches", "zh": "观察", "role": "nav", "source": "templates/sector_central.html.j2:1497"},
+    "nav_cycles": {"en": "Cycles", "zh": "周期", "role": "nav", "source": "templates/_navlinks.html.j2:327 'Sector Cycles / 美国行业周期' shortened to the workflow noun; not in the production .si-workflow switcher — SIC-V2-C03"},
+    "workflow_note": {"en": "Sectors, themes and industries, connected.", "zh": "串联板块、主题与行业。", "role": "nav", "source": "templates/sector_central.html.j2:1498"},
+    "workflow_aria": {"en": "Sector Intelligence workflow", "zh": "板块情报工作流", "role": "aria", "source": "templates/sector_central.html.j2:1494 (EN); ZH NEW (SIC-V2 wave-2 proposal)"},
+    "provenance_label": {"en": "How this was measured", "zh": "测量方式", "role": "disclosure", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04 (VTC-016/PRC-024)"},
+    "provenance_hint": {"en": "producer fields, codes and sources", "zh": "生产字段、代码与来源", "role": "disclosure", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C04"},
+    "stance_title": {"en": "Stance", "zh": "立场", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C01 (face label for the doctrine stance chip; the engine string moves to the drawer under cycles.stance_label)"},
+    "fixture_chip": {"en": "Fixture", "zh": "示例数据", "role": "chip", "source": "NEW (SIC-V2 wave-2 proposal) — labeled fixture (house law: fixtures must be explicitly labeled)"},
+    "search_placeholder": {"en": "Search any stock — US, China, HK, Canada & more…", "zh": "搜索任意股票 — 美股、A 股、港股、加股等…", "role": "placeholder", "source": "templates/_site_nav.html.j2:19-20 (placeholder + data-ph-zh) — PRC-031"},
+    "nav_toggle_aria": {"en": "Toggle navigation menu", "zh": "切换导航菜单", "role": "aria", "source": "templates/theme.js:1549 (EN); ZH NEW (SIC-V2 wave-2 proposal)"}
   },
   "states": {
     "title": {"en": "States", "zh": "状态", "role": "h1", "source": "NEW"},

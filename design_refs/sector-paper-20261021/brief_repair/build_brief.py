@@ -1,19 +1,28 @@
 #!/usr/bin/env python3
-"""Build brief.html — the R3 Brief specimen (RIG boards 23–26) from the committed
+"""Build brief.html — the R3 Brief specimen (RIG boards 23–26, 32, 33, 37) from the committed
 example dataset, the copy deck and the canonical rendered chrome.
 
 Every visible string is bound to copy_deck.json (brief.*, components.*, states.*)
 or to example_dataset.json (production rows rendered at d86344b93a0bd). Nothing
 user-facing is typed in this file. Run:  python3 build_brief.py
+
+Wave 2 (verdict REVISE round 2): C02/C03 shared shell (si_shell.py: canonical nav, page
+header, six-workflow switcher); C13 lane titles are the six doctrine stances
+(components.stance_*) with the production fold name kept as a qualifier line; C14 the
+"1 day in" singular (brief.stance_day_one), a labeled glyph legend, full-width coverage
+card and equal-height lanes. Lane subtitles are production strings verbatim
+(their em dashes are production copy, not typed here — see README).
 """
 import html
 import json
 import pathlib
+import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 DECK = json.loads((HERE.parent / "copy_deck.json").read_text(encoding="utf-8"))
 DS = json.loads((HERE / "example_dataset.json").read_text(encoding="utf-8"))
-NAV = (HERE / "nav_static.html").read_text(encoding="utf-8")
+sys.path.insert(0, str(HERE.parent / "components"))
+from si_shell import nav as shell_nav, page_header, workflow_nav  # wave 2 (SIC-V2-C02/C03): shared shell
 STAT_ZH = {k: v for k, v in json.loads((HERE / "stat_zh.json").read_text(encoding="utf-8")).items()
            if not k.startswith("_") and v}
 
@@ -82,17 +91,18 @@ def row(r, stance, pos=None):
             f'{badge}<span class="brf-cell">{name}{lens}</span>{stat}{score}</a>')
 
 
-def lane_head(lid, title_html, count, sub_en, sub_zh, chip=""):
+def lane_head(lid, title_html, count, sub_en, sub_zh, chip="", qual_html=""):
+    qual = f'<p class="brf-lane-qual">{qual_html}</p>' if qual_html else ""
     return (f'<header class="brf-lane-head"><div class="brf-lane-top">'
             f'<h3 class="brf-lane-title" id="lane-{lid}">{title_html} <span class="cnt">{count}</span></h3>{chip}</div>'
-            f'<p class="brf-lane-sub">{bi(sub_en, sub_zh)}</p></header>')
+            f'{qual}<p class="brf-lane-sub">{bi(sub_en, sub_zh)}</p></header>')
 
 
 def lane(l):
     stance, skey = LANE_STANCE[l["fold_id"]]
     body = "".join(row(r, stance) for r in l["rows"])
     return (f'<section class="brf-lane" data-stance="{stance}" aria-labelledby="lane-{l["fold_id"]}">'
-            f'{lane_head(l["fold_id"], bi(l["name_en"], l["name_zh"]), l["count"], l["sub_en"], l["sub_zh"])}'
+            f'{lane_head(l["fold_id"], D("components", skey), l["count"], l["sub_en"], l["sub_zh"], qual_html=bi(l["name_en"], l["name_zh"]))}'
             f'<div class="brf-rows">{body}</div></section>')
 
 
@@ -103,7 +113,7 @@ def stand_aside(l):
     full = "".join(row(r, stance) for r in allrows[:FULL_VISIBLE])
     locked = "".join(row(r, stance) for r in allrows[:LOCKED_VISIBLE])
     return (f'<section class="brf-lane" data-stance="{stance}" aria-labelledby="lane-{l["fold_id"]}">'
-            f'{lane_head(l["fold_id"], bi(l["name_en"], l["name_zh"]), l["count"], l["sub_en"], l["sub_zh"])}'
+            f'{lane_head(l["fold_id"], D("components", skey), l["count"], l["sub_en"], l["sub_zh"], qual_html=bi(l["name_en"], l["name_zh"]))}'
             f'<div class="brf-rows brf-full">{full}'
             f'<button type="button" class="brf-more" aria-expanded="false">{D("components", "see_all_link", n=len(allrows))}</button></div>'
             f'<div class="brf-rows brf-locked">{locked}'
@@ -117,7 +127,7 @@ def bottoming(l):
     body = "".join(row(r, stance, BOTTOM_POS[r["name_en"]]) for r in l["rows"])
     chip = f'<span class="brf-chip" data-stance="{stance}">{D("components", skey)}</span>'
     return (f'<section class="brf-lane brf-lane-bottoming" data-stance="{stance}" aria-labelledby="lane-bottoming">'
-            f'{lane_head("bottoming", D("brief", "bottoming_title"), l["count"], l["sub_en"], l["sub_zh"], chip)}'
+            f'{lane_head("bottoming", D("brief", "bottoming_title"), l["count"], l["sub_en"], l["sub_zh"], chip, qual_html=bi(l["name_en"], l["name_zh"]))}'
             f'<div class="brf-rows">{body}</div></section>')
 
 
@@ -130,14 +140,14 @@ def hero():
     rg = DS["regime"]
     en = rg["rvx-vword"]["en"].replace("Leadership", '<span class="brf-key">Leadership</span>', 1)
     zh = rg["rvx-vword"]["zh"].replace("领涨格局", '<span class="brf-key">领涨格局</span>', 1)
-    days = 1  # production stance qualifier at d86344b93a0bd: "1 days in / 已持续1天"
+    days = 1  # production stance qualifier at d86344b93a0bd: "1 days in / 已持续1天" — singular fixed in the deck (C14)
     return f'''
 <section class="brf-hero" aria-labelledby="brf-h1">
   <div class="brf-panel brf-read">
     <p class="brf-eyebrow">{D("brief", "eyebrow")}</p>
     <h1 id="brf-h1"><span class="l-en">{en}</span><span class="l-zh">{zh}</span></h1>
     <p class="brf-stance"><span class="brf-chip" data-stance="watch">{bi(rg["rvx-stance"]["en"], rg["rvx-stance"]["zh"])}</span>
-      <span class="brf-days">{D("brief", "stance_days", n=days)}</span></p>
+      <span class="brf-days">{D("brief", "stance_day_one") if days == 1 else D("brief", "stance_days", n=days)}</span></p>
     <p class="brf-method">{bi(rg["rvx-vsub"]["en"], rg["rvx-vsub"]["zh"])}</p>
     <div class="brf-hero-actions"><a href="#board">{D("brief", "leaders_link")}</a><a href="#board">{D("brief", "changed_link")}</a></div>
     {asof()}
@@ -165,6 +175,8 @@ def board():
     <p class="brf-lane-disclaim">{D("brief", "lanes_disclaimer")}</p></header>
   <div class="brf-lanes">{top}</div>
   <div class="brf-lanes-2">{stand_aside(lanes["dash-hold-fold"])}{bottoming(lanes[None])}</div>
+  <p class="brf-legend" aria-label="legend"><span>{DIAMOND}{D("brief", "glyph_theme")}</span><span>{SQUARE}{D("brief", "glyph_sector")}</span></p>
+  <p class="brf-lane-src">{D("brief", "lane_source_note")}</p>
   <p class="brf-foot spc-panel-footnote"><span class="spc-fn-fix" aria-hidden="true">≈</span>{D("brief", "lens_leadership_only")}</p>
   {asof()}
 </section>'''
@@ -201,13 +213,16 @@ d.setAttribute("data-theme",t);d.setAttribute("data-lang",l);d.setAttribute("lan
 if(s)d.setAttribute("data-state",s);}})();</script>
 <link rel="stylesheet" href="../../../templates/theme.css">
 <link rel="stylesheet" href="../../../templates/navigation-refresh.css">
+<link rel="stylesheet" href="../components/si_shell.css">
 <link rel="stylesheet" href="../components/components.css">
 <link rel="stylesheet" href="brief.css">
 </head>
 <body class="macro-desk page-baskets">
-{NAV}
-<main class="brf" id="main">{hero()}{board()}{bottom()}</main>
-<script>(function(){{var d=document.documentElement,w=innerWidth,o=[];d.setAttribute("data-h",String(d.scrollHeight));d.setAttribute("data-w",String(d.scrollWidth));
+{shell_nav()}
+<main class="brf si-shell" id="main">{page_header(asof())}{workflow_nav("brief")}{hero()}{board()}{bottom()}</main>
+<script>(function(){{var d=document.documentElement,w=innerWidth,o=[];
+var wf=document.querySelector(".si-workflow[data-aria-zh]");if(wf&&d.getAttribute("data-lang")==="zh")wf.setAttribute("aria-label",wf.getAttribute("data-aria-zh"));
+d.setAttribute("data-h",String(d.scrollHeight));d.setAttribute("data-w",String(d.scrollWidth));
 document.querySelectorAll("body *").forEach(function(e){{var r=e.getBoundingClientRect();if(r.right>w+1&&o.length<6)o.push(e.tagName.toLowerCase()+(e.className&&typeof e.className==="string"?"."+e.className.trim().split(/\\s+/).join("."):"")+"@"+Math.round(r.right));}});
 d.setAttribute("data-ovf",o.join(" "));}})();</script>
 </body>
