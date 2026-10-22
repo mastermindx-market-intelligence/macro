@@ -1,14 +1,14 @@
 {
-  "appended": 20,
-  "asof": "2026-10-20",
+  "appended": 14,
+  "asof": "2026-10-21",
   "candidates": {
-    "R": 1,
-    "T": 30,
+    "R": 2,
+    "T": 18,
     "W": 23
   },
   "deduped": {
-    "R": 1,
-    "T": 10,
+    "R": 0,
+    "T": 6,
     "W": 23
   },
   "dry_run": false,
@@ -27,36 +27,31 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 45
+        "ohlcv_absent": 30
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "E-commerce": {
-          "theme_thrust_frac": 0.1613,
+        "Defense & Aerospace": {
+          "theme_thrust_frac": 0.05,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
         "Environmental Sustainability": {
-          "theme_thrust_frac": 0.1818,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "FinTech": {
-          "theme_thrust_frac": 0.1429,
+          "theme_thrust_frac": 0.0476,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
         "Real Estate & REITs": {
-          "theme_thrust_frac": 0.1765,
+          "theme_thrust_frac": 0.1471,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 120,
-      "tickers_read": 165
+      "tickers_ok": 76,
+      "tickers_read": 106
     },
     "keys": [
       "relay_count_3d",
@@ -76,14 +71,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 188,
-      "n_covered": 143,
+      "members_indexed": 144,
+      "n_covered": 119,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-20",
+      "last_session": "2026-10-21",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -116,28 +111,23 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
+    "R": [
+      "DHR",
+      "MEDP"
+    ],
     "T": [
-      "VICI",
-      "EGP",
-      "ELS",
-      "GLPI",
-      "KIM",
-      "KRC",
-      "MAC",
-      "O",
-      "REG",
-      "RHP",
-      "SPG",
-      "FDX",
-      "AOS",
-      "CWST",
-      "NEE",
-      "ICE",
-      "TRUP",
-      "AXP",
-      "DAVE",
-      "GWRE"
+      "GD",
+      "LDOS",
+      "BAH",
+      "MAA",
+      "VTR",
+      "WELL",
+      "BRX",
+      "INVH",
+      "SKT",
+      "DCI",
+      "SON",
+      "XYL"
     ],
     "W": []
   },
@@ -147,41 +137,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-21 19:59:36",
-  "runtime_s": 105.5,
+  "run_utc": "2026-10-22 21:32:56",
+  "runtime_s": 109.0,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-10-21",
-    "n_members": 188,
+    "asof": "2026-10-22",
+    "n_members": 144,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.175,
+        "emerging_score": 2.827,
         "rank": 1,
         "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.365,
+        "emerging_score": 2.643,
         "rank": 2,
         "theme": "Real Estate & REITs"
       },
       {
-        "emerging_score": 2.088,
+        "emerging_score": 2.625,
         "rank": 3,
-        "theme": "E-commerce"
-      },
-      {
-        "emerging_score": 1.96,
-        "rank": 4,
         "theme": "Environmental Sustainability"
       },
       {
-        "emerging_score": 1.888,
+        "emerging_score": 2.485,
+        "rank": 4,
+        "theme": "Healthy Food & Nutrition"
+      },
+      {
+        "emerging_score": 2.457,
         "rank": 5,
-        "theme": "FinTech"
+        "theme": "Biometrics"
       }
     ]
   },
@@ -191,15 +181,15 @@
       "3B"
     ],
     "aligned": 23,
-    "asof_max": "2026-10-20",
-    "asof_mismatch": 0,
-    "asof_run": "2026-10-20",
+    "asof_max": "2026-10-22",
+    "asof_mismatch": 23,
+    "asof_run": "2026-10-21",
     "evaluated": 712,
     "fresh": 26,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.2,
+    "runtime_s": 21.0,
     "skipped": 5,
     "source": "baskets/membership.json",
     "state_turn": 66,

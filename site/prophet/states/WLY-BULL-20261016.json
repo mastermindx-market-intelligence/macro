@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WLY-BULL-20261016",
-  "asof": "2026-10-21",
+  "asof": "2026-10-22",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 67.9,
@@ -11,20 +11,20 @@
   "human_state": "Awaiting Trigger",
   "components": {
     "validity": 100.0,
-    "progress": 5.3,
+    "progress": 3.8,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.05,
-    "dist_to_t1_r": 1.45,
-    "dist_to_t2_r": 2.95,
-    "horizon_pct_used": 3.6,
-    "p1": 0.0332,
-    "p2": 0.0166,
+    "dist_to_stop_r": 1.032,
+    "dist_to_t1_r": 1.468,
+    "dist_to_t2_r": 2.968,
+    "horizon_pct_used": 5.4,
+    "p1": 0.0212,
+    "p2": 0.0106,
     "p3": null,
-    "move_r": 0.05,
+    "move_r": 0.032,
     "mfe_r": 0.05,
     "mae_r": 0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 2,
-  "tau": 0.0357
+  "days_elapsed": 3,
+  "tau": 0.0536
 }

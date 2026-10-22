@@ -1,11 +1,11 @@
 {
  "status": "ok",
- "detail": "1969 candidate row(s) this run",
- "last_attempt_utc": "2026-10-21T12:00:56.474660+00:00",
- "last_success_utc": "2026-10-21T12:00:56.474660+00:00",
+ "detail": "2012 candidate row(s) this run",
+ "last_attempt_utc": "2026-10-22T12:03:46.472786+00:00",
+ "last_success_utc": "2026-10-22T12:03:46.472786+00:00",
  "candidate_accounting": {
-  "eligible": 1969,
-  "represented_downstream": 1969,
+  "eligible": 2012,
+  "represented_downstream": 2012,
   "typed_exclusions": 0,
   "exclusions_by_type": {},
   "coverage_exceptions": {
