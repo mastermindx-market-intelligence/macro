@@ -524,25 +524,219 @@ def test_outcomes_render_into_their_regions_with_verbatim_copy():
 
 
 # ===========================================================================
+# 4b. lost responses vs refusals — the account's answer, never the transport's
+# ===========================================================================
+LOST_RESPONSE = {   # postgrest-js resolves a dropped exchange like this (status 0)
+    "status": 0,
+    "error": {"message": "TypeError: Failed to fetch", "details": "", "hint": "", "code": ""},
+}
+GATEWAY_5XX = {     # a gateway/pool failure: 5xx even when a PostgREST code rides along
+    "status": 503,
+    "error": {"message": "Database client error. Retrying the connection.",
+              "details": None, "hint": None, "code": "PGRST000"},
+}
+ACCOUNT_REFUSAL = {  # the account answering no: RLS refusal, 403 + Postgres code
+    "status": 403,
+    "error": {"message": 'new row violates row-level security policy for table "watchlist_symbols"',
+              "details": None, "hint": None, "code": "42501"},
+}
+
+# The insert override every case below shares: the exchange is attempted, the
+# row optionally lands, and the answer is the given postgrest-js response.
+_INSERT_ANSWERS = """
+var attempts = 0;
+var realFrom = db.client.from;
+db.client.from = function (table) {
+  var api = realFrom.call(db.client, table);
+  if (table !== 'watchlist_symbols') return api;
+  api.insert = function (rows) {
+    attempts++;
+    var r = Array.isArray(rows) ? rows[0] : rows;
+    if (LANDS) db.tables.watchlist_symbols.push({ id: 'x' + attempts, watchlist_id: r.watchlist_id,
+                                                  symbol: r.symbol, position: r.position });
+    return Promise.resolve({ data: null, status: ANSWER.status, statusText: '',
+                             error: ANSWER.error });
+  };
+  return api;
+};
+"""
+
+
+def _save_with_answer(answer: dict, lands: bool) -> dict:
+    return _ws(
+        """
+        var db = makeDb({ watchlists: [LIST_ROW], watchlist_symbols: [] });
+        INSERT_ANSWERS
+        SESSION
+        var events = [];
+        document.addEventListener('ws-save-outcome', function (e) { events.push(e.detail.state); });
+        WS.symbols.saveChecked('L1', ['VRT'],
+          { decisions: { VRT: { en: 'Get ready', zh: '做好准备' } } }).then(function (r) {
+          OUT({ state: r.state, reason: r.reason || null, decisionsKept: r.decisionsKept,
+                attempts: attempts, events: events,
+                rows: db.tables.watchlist_symbols.length,
+                selects: db.ops.filter(function (o) {
+                  return o.table === 'watchlist_symbols' && o.kind === 'select'; }).length,
+                snap: JSON.parse(localStorage.getItem('mdash.watchlist.saved_snap.v1') || 'null') });
+        }).catch(function (e) { OUT({ ERR: String(e && e.stack || e) }); });
+        """.replace("INSERT_ANSWERS", _INSERT_ANSWERS).replace("SESSION", _seed_session()),
+        {"USER": USER, "LIST_ROW": LIST_ROW, "ANSWER": answer, "LANDS": lands},
+    )
+
+
+@needs_node
+def test_p1_row_committed_but_response_lost_reads_back_saved():
+    """P1. The insert committed on the server but the response was lost
+    (postgrest-js: status 0, 'TypeError: Failed to fetch', code ''). That is NOT
+    the account refusing: the list is read back once, the row is there, so the
+    honest outcome is 'saved' — never 'rejected' with the row on the server."""
+    out = _save_with_answer(LOST_RESPONSE, lands=True)
+    assert "ERR" not in out, out
+    assert out["state"] == "saved", out
+    assert out["attempts"] == 1 and out["rows"] == 1
+    assert out["selects"] == 2, "check-first read + exactly one read-back"
+    assert out["events"] == ["waiting", "saved"]
+    assert out["decisionsKept"] is True
+    assert out["snap"]["L1"]["VRT"]["en"] == "Get ready"
+
+
+@needs_node
+@pytest.mark.parametrize("answer", [LOST_RESPONSE, GATEWAY_5XX], ids=["status0-lost", "gateway-503"])
+def test_p1b_ambiguous_failure_with_nothing_landed_is_uncertain_never_rejected(answer):
+    """P1b. Lost response (status 0) or a gateway 5xx, and the read-back does
+    NOT find the row: 'uncertain' (we could not hear the answer), never
+    'rejected', and no snapshot is frozen."""
+    out = _save_with_answer(answer, lands=False)
+    assert "ERR" not in out, out
+    assert out["state"] == "uncertain", out
+    assert out["attempts"] == 1 and out["rows"] == 0
+    assert out["selects"] == 2, "an ambiguous failure is always read back once"
+    assert out["events"] == ["waiting", "uncertain"]
+    assert out["snap"] is None
+
+
+@needs_node
+def test_account_refusal_with_nothing_landed_is_rejected_without_read_back():
+    """The account really answered no (403 + Postgres code 42501) and nothing
+    landed: 'rejected' with the account's own message, no read-back."""
+    out = _save_with_answer(ACCOUNT_REFUSAL, lands=False)
+    assert "ERR" not in out, out
+    assert out["state"] == "rejected", out
+    assert "row-level security" in out["reason"]
+    assert out["attempts"] == 1 and out["rows"] == 0
+    assert out["selects"] == 1, "a refusal is an answer; nothing to read back"
+    assert out["events"] == ["waiting", "rejected"]
+    assert out["snap"] is None
+
+
+@needs_node
+def test_p2_rejected_late_insert_is_never_reinserted_by_the_outbox():
+    """P2. The insert outlives the deadline, then its promise REJECTS after the
+    row has landed (a transport failure on the way back). The browser is online
+    and fires `online`: the sync outbox must not re-insert the checked ticker —
+    exactly one row, exactly one insert attempt."""
+    out = _ws(
+        """
+        var db = makeDb({ watchlists: [LIST_ROW], watchlist_symbols: [] });
+        var attempts = 0;
+        var realFrom = db.client.from;
+        db.client.from = function (table) {
+          var api = realFrom.call(db.client, table);
+          if (table !== 'watchlist_symbols') return api;
+          var realInsert = api.insert;
+          api.insert = function (rows) {
+            attempts++;
+            if (attempts > 1) return realInsert.call(api, rows);   // any re-insert lands for real
+            var r = Array.isArray(rows) ? rows[0] : rows;
+            return new Promise(function (resolve, reject) {
+              setTimeout(function () {
+                db.tables.watchlist_symbols.push({ id: 'late1', watchlist_id: r.watchlist_id,
+                                                   symbol: r.symbol, position: r.position });
+                reject(new TypeError('Failed to fetch'));
+              }, 120);
+            });
+          };
+          return api;
+        };
+        SESSION
+        global.navigator = { onLine: true };
+        var prev = WS._setCloudDeadlineMs(40);
+        WS.symbols.saveChecked('L1', ['VRT']).then(function (r) {
+          WS._setCloudDeadlineMs(prev);
+          return wait(200).then(function () {
+            window.dispatchEvent({ type: 'online' });
+            return wait(250);
+          }).then(function () {
+            OUT({ state: r.state, attempts: attempts,
+                  vrtRows: db.tables.watchlist_symbols.filter(function (x) {
+                    return x.symbol === 'VRT'; }).length });
+          });
+        }).catch(function (e) { OUT({ ERR: String(e && e.stack || e) }); });
+        """.replace("SESSION", _seed_session()),
+        {"USER": USER, "LIST_ROW": LIST_ROW},
+    )
+    assert "ERR" not in out, out
+    assert out["state"] == "uncertain"
+    assert out["attempts"] == 1, "the outbox re-inserted a checked save"
+    assert out["vrtRows"] == 1
+
+
+@needs_node
+def test_snapshot_only_for_tickers_this_save_inserted():
+    """Snapshot scope. A ticker already on the server keeps whatever snapshot
+    it had — none stays none — because today's date and decision are not when
+    it was saved; `decisionsKept` is true only if a decision was really stored."""
+    out = _ws(
+        """
+        var db = makeDb({ watchlists: [LIST_ROW],
+                          watchlist_symbols: [ { id: 's1', watchlist_id: 'L1', symbol: 'MU', position: 0 } ] });
+        SESSION
+        var dec = { VRT: { en: 'Get ready', zh: '做好准备' }, MU: { en: 'No entry signal yet', zh: '尚无入场信号' } };
+        WS.symbols.saveChecked('L1', ['VRT', 'MU'], { decisions: dec }).then(function (r1) {
+          var snap1 = JSON.parse(localStorage.getItem('mdash.watchlist.saved_snap.v1') || '{}');
+          return WS.symbols.saveChecked('L1', ['MU'], { decisions: dec }).then(function (r2) {
+            OUT({ s1: r1.state, already1: r1.already, k1: r1.decisionsKept, snap1: snap1,
+                  s2: r2.state, k2: r2.decisionsKept,
+                  snap2: JSON.parse(localStorage.getItem('mdash.watchlist.saved_snap.v1') || '{}') });
+          });
+        }).catch(function (e) { OUT({ ERR: String(e && e.stack || e) }); });
+        """.replace("SESSION", _seed_session()),
+        {"USER": USER, "LIST_ROW": LIST_ROW},
+    )
+    assert "ERR" not in out, out
+    assert out["s1"] == "saved" and out["already1"] == ["MU"]
+    assert sorted(out["snap1"]["L1"].keys()) == ["VRT"], "MU was already there — no snapshot"
+    assert out["k1"] is True
+    assert out["s2"] == "saved"
+    assert out["k2"] is False, "nothing inserted, nothing kept"
+    assert "MU" not in out["snap2"]["L1"]
+
+
+# ===========================================================================
 # 6. the "When you saved" snapshot — confirmed-only, frozen, storage-safe
 # ===========================================================================
 @needs_node
 def test_snapshot_written_only_for_confirmed_and_never_overwritten():
-    """Case 6. Snapshots exist only for tickers the read-back confirmed, are
-    never overwritten for the same list+ticker (frozen history), and a save
-    that cannot confirm writes none at all."""
+    """Case 6. Snapshots exist only for tickers this save inserted and the
+    read-back confirmed, are never overwritten for the same list+ticker (frozen
+    history), and a save that cannot confirm writes none at all. VRT is removed
+    server-side between the two saves, so the second save really inserts it
+    again — and still may not overwrite the first snapshot."""
     out = _ws(
         """
-        var db = makeDb({ watchlists: [LIST_ROW],
-                          watchlist_symbols: [ { id: 's1', watchlist_id: 'L1', symbol: 'VRT', position: 0 } ] });
+        var db = makeDb({ watchlists: [LIST_ROW], watchlist_symbols: [] });
         SESSION
         var dec = { VRT: { en: 'Not there yet, get ready', zh: '尚未触发，做好准备' },
                     MU:  { en: 'No entry signal yet', zh: '尚无入场信号' } };
         WS.symbols.saveChecked('L1', ['VRT', 'MU'], { decisions: dec }).then(function (r1) {
-          // second save: VRT confirmed again but with DIFFERENT copy — frozen
+          // VRT leaves the list elsewhere, then is saved again with DIFFERENT copy
+          db.tables.watchlist_symbols = db.tables.watchlist_symbols.filter(function (r) {
+            return r.symbol !== 'VRT';
+          });
           var dec2 = { VRT: { en: 'CHANGED', zh: '改了' } };
           return WS.symbols.saveChecked('L1', ['VRT'], { decisions: dec2 }).then(function (r2) {
-            OUT({ s1: r1.state, s2: r2.state,
+            OUT({ s1: r1.state, s2: r2.state, k1: r1.decisionsKept, k2: r2.decisionsKept,
+                  inserts: insertedSymbols(db, 'L1'),
                   snap: JSON.parse(localStorage.getItem('mdash.watchlist.saved_snap.v1') || '{}') });
           });
         }).catch(function (e) { OUT({ ERR: String(e && e.stack || e) }); });
@@ -551,6 +745,9 @@ def test_snapshot_written_only_for_confirmed_and_never_overwritten():
     )
     assert "ERR" not in out, out
     assert out["s1"] == "saved" and out["s2"] == "saved"
+    assert sorted(out["inserts"]) == ["MU", "VRT", "VRT"]   # VRT really re-inserted
+    assert out["k1"] is True
+    assert out["k2"] is False, "a frozen snapshot is not a decision kept by this save"
     snap = out["snap"]["L1"]
     assert sorted(snap.keys()) == ["MU", "VRT"]
     assert re.match(r"^\d{4}-\d{2}-\d{2}$", snap["VRT"]["d"])

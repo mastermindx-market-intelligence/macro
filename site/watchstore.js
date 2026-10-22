@@ -802,15 +802,19 @@
   /* ---- the checked, idempotent save (R7 Wave A §6.4/§10/§13) ----------------
      saveChecked(listId, tickers, opts) — one save that reports what the ACCOUNT
      actually answered, never repeats itself, and never claims "saved" without
-     reading the list back. Strictly composed from the primitives above
-     (symbolsFetch / symbolAdd / _deadline); _symbolInsert, the outbox and every
-     retry semantic stay untouched.
+     reading the list back. Composed from the primitives above (symbolsFetch /
+     _deadline) plus its own single insert, _checkedInsert, which never hands a
+     failed write to the sync outbox — a checked ticker is written by this save
+     or by a later save's check-first read, never re-inserted behind the page.
+     _symbolInsert, the outbox and their retry semantics stay untouched for
+     every other caller.
 
-     opts.decisions   {TICKER: {en, zh}} — tonight's decision per ticker. On a
-                      confirmed read-back, each is frozen into the
-                      "When you saved" snapshot (localStorage
-                      `mdash.watchlist.saved_snap.v1`), never overwriting an
-                      existing entry: what you saved stays as it was.
+     opts.decisions   {TICKER: {en, zh}} — tonight's decision per ticker. For
+                      each ticker THIS save inserted and the read-back
+                      confirmed, it is frozen into the "When you saved"
+                      snapshot (localStorage `mdash.watchlist.saved_snap.v1`),
+                      never overwriting an existing entry: what you saved stays
+                      as it was. A ticker already on the list gets none.
      opts.returnFocus an Element — echoed on every outcome detail so the page can
                       hand focus back to the invoking control once the account
                       has answered.
@@ -820,9 +824,12 @@
      emitted once at the start of a real attempt):
 
        {state:'saved', readBackAt, names, already, listCount, decisionsKept, listName}
-       {state:'rejected', reason, listName, names}   — the account answered no;
-                                                       nothing was added anywhere
-       {state:'uncertain', askedAt, listName, names} — no answer in time, or a
+       {state:'rejected', reason, listName, names}   — the account answered no
+                                                       (4xx / PostgREST code) with
+                                                       nothing added anywhere
+       {state:'uncertain', askedAt, listName, names} — no answer in time, a lost
+                                                       response / 5xx the read-back
+                                                       could not confirm, or a
                                                        write landed ambiguously;
                                                        the NEXT save's check-first
                                                        read is what prevents a
@@ -847,14 +854,60 @@
       function (e) { d.cancel(); throw e; }
     );
   }
-  /* A refusal is the account's own error payload — postgrest-js hands server
-     errors back as plain objects ({message, code}), while deadline tags, fetch
-     failures and our own argument errors are Error instances. Only a real
-     answer may paint 'rejected'; "we could not hear the answer" may not. */
+  /* A refusal is an answer the ACCOUNT actually gave. postgrest-js resolves a
+     lost exchange as a plain object too — `{message:'TypeError: Failed to
+     fetch', code:''}` with status 0 — and a gateway 5xx body arrives the same
+     way, so "plain object with a message" proves nothing. A refusal therefore
+     needs a 4xx-class HTTP status from the account (401/403/409/422 …) or a
+     non-empty PostgREST/Postgres error `code`, and must not look like a lost
+     exchange. Status 0, any 5xx, a 408, a fetch/network/timeout message, and
+     our own Error instances (deadline tags, bad-args) are AMBIGUOUS: once an
+     insert was attempted, only the read-back may decide. */
+  var _AMBIGUOUS_ERR_RE = /failed to fetch|networkerror|network request failed|load failed|timed? ?out/i;
   function _isRefusalErr(err) {
-    return !!(err && typeof err === 'object' &&
-              !(err instanceof Error) &&
-              ((err.message != null && err.message !== '') || err.code != null));
+    if (!err || typeof err !== 'object' || err instanceof Error) return false;
+    var status = (typeof err.status === 'number') ? err.status : null;
+    if (status !== null && (status === 0 || status === 408 || status >= 500)) return false;
+    if (_AMBIGUOUS_ERR_RE.test(String(err.message == null ? '' : err.message))) return false;
+    if (status !== null && status >= 400 && status < 500) return true;
+    return typeof err.code === 'string' && err.code !== '';
+  }
+  /* The checked save's own single insert: the row shape and cache bookkeeping
+     of _symbolInsert, with two differences the save contract needs.
+       - A failure is NEVER handed to the sync outbox (no pendingInserts
+         marker), so nothing re-inserts a checked ticker behind the user's back
+         after the page has reported 'uncertain'; the next save's check-first
+         read is the only road to a second write.
+       - The account's HTTP status rides on the thrown error, so
+         _isRefusalErr can tell a 4xx answer from a lost exchange (status 0)
+         or a gateway 5xx.
+     `onAttempt` fires immediately before the insert request leaves. */
+  function _checkedInsert(listId, t, onAttempt) {
+    return _listsGuard().then(function () {
+      return _cloudOf(listId) ? null : symbolsFetch(listId);
+    }).then(function () {
+      var c = _cloudOf(listId);
+      if (!c || c.set[t]) return { symbol: t, skipped: true };
+      setPill('syncing');
+      if (onAttempt) onAttempt();
+      return sb.from('watchlist_symbols')
+        .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
+        .then(function (res) {
+          if (res && res.error) {
+            var e = res.error;
+            if (e instanceof Error) throw e;
+            var out = (e && typeof e === 'object')
+              ? { message: e.message, code: e.code, details: e.details, hint: e.hint, status: e.status }
+              : { message: String(e) };
+            if (typeof res.status === 'number') out.status = res.status;
+            throw out;
+          }
+          _noteInserted(listId, [t]);
+          _syncClearInsertPending(listId, t);
+          setPill('synced');
+          return { symbol: t };
+        });
+    });
   }
   function _saveEmit(detail) {
     try {
@@ -868,12 +921,15 @@
     return false;
   }
   function _pad2(n) { return ('0' + n).slice(-2); }
-  /* Freeze the "When you saved" snapshot for exactly the tickers the read-back
-     confirmed. Frozen history: an existing list+ticker entry is never
+  /* Freeze the "When you saved" snapshot for exactly the tickers THIS save
+     inserted and the read-back confirmed — a ticker that was already on the
+     server keeps whatever snapshot it had (none stays none), because today's
+     date and decision are not when it was saved. Returns how many entries were
+     actually stored (0 when storage refuses). Frozen history: an existing list+ticker entry is never
      overwritten — a later correction belongs in the Tonight column, beside the
      saved decision, not on top of it. Every storage access is guarded. */
   function _saveSnapshots(listId, confirmed, decisions) {
-    if (!decisions || typeof decisions !== 'object') return;
+    if (!decisions || typeof decisions !== 'object') return 0;
     var snap = {};
     try {
       var raw = localStorage.getItem(SAVE_SNAP_KEY);
@@ -884,16 +940,17 @@
     if (!perList || typeof perList !== 'object') { perList = {}; snap[listId] = perList; }
     var now = new Date();
     var day = now.getFullYear() + '-' + _pad2(now.getMonth() + 1) + '-' + _pad2(now.getDate());
-    var changed = false;
+    var stored = 0;
     confirmed.forEach(function (t) {
       if (perList[t]) return;                     // frozen history
       var dec = decisions[t];
       if (!dec || !(dec.en || dec.zh)) return;    // no decision supplied -> no snapshot
       perList[t] = { d: day, en: String(dec.en || ''), zh: String(dec.zh || '') };
-      changed = true;
+      stored++;
     });
-    if (!changed) return;
-    try { localStorage.setItem(SAVE_SNAP_KEY, JSON.stringify(snap)); } catch (e) {}
+    if (!stored) return 0;
+    try { localStorage.setItem(SAVE_SNAP_KEY, JSON.stringify(snap)); } catch (e) { return 0; }
+    return stored;
   }
 
   /* The save must land in a list the account actually knows. listsCache is
@@ -941,6 +998,7 @@
       _saveEmit({ state: 'waiting', listName: listName, names: want.slice(), returnFocus: rf });
 
       var wroteAnything = false;
+      var attempted = {};        // tickers whose insert request actually left
       var uncertain = function () {
         return { state: 'uncertain', askedAt: askedAt, listName: listName,
                  names: want.slice(), returnFocus: rf };
@@ -965,8 +1023,9 @@
               var chain = Promise.resolve();
               missing.forEach(function (t) {
                 chain = chain.then(function () {
-                  return _withDeadline(function () { return symbolAdd(listId, t); })
-                    .then(function () { wroteAnything = true; });
+                  return _withDeadline(function () {
+                    return _checkedInsert(listId, t, function () { attempted[t] = true; });
+                  }).then(function () { wroteAnything = true; });
                 });
               });
               return chain.then(function () {
@@ -978,8 +1037,10 @@
             .then(function (stage) {
               if (stage.state) return stage;
               // A refusal with NOTHING landed is the account answering no. Any
-              // other write failure — transport, deadline, or a refusal after a
-              // landed write — is ambiguous, and the read-back decides.
+              // other write failure — a lost response (status 0, "Failed to
+              // fetch"), a gateway 5xx, the deadline, or a refusal after a
+              // landed write — is ambiguous: the list is read back once and
+              // only every requested ticker present may say 'saved'.
               if (!stage.ok && _isRefusalErr(stage.err) && !wroteAnything) {
                 return rejected(String((stage.err && stage.err.message) ||
                                        (stage.err && stage.err.code) || 'refused'));
@@ -992,12 +1053,14 @@
                   });
                   var confirmed = want.filter(function (t) { return !!onList[t]; });
                   if (confirmed.length !== want.length) return uncertain();
-                  _saveSnapshots(listId, confirmed, o.decisions);
+                  // snapshot only what THIS save inserted and read back
+                  var mine = confirmed.filter(function (t) { return !!attempted[t]; });
+                  var kept = _saveSnapshots(listId, mine, o.decisions);
                   return {
                     state: 'saved', readBackAt: nowISO(),
                     names: want.slice(), already: stage.already,
                     listCount: (rows || []).length,
-                    decisionsKept: !!o.decisions,
+                    decisionsKept: kept > 0,
                     listName: listName, returnFocus: rf
                   };
                 }, function () {
