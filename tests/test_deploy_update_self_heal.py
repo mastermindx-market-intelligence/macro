@@ -174,7 +174,7 @@ def _run_caddy_block(
         HARNESS_TEMPLATE.replace("__APP_DIR__", str(app))
         .replace("__FAKE_ETC_CADDY__", str(etc_caddy))
         .replace("__FAKE_LOG__", str(log))
-        .replace("__BLOCK__", block)
+        .replace("__BLOCK__", block.replace("/etc/caddy/Caddyfile", str(etc_caddy)))
     )
     harness_path = tmp_path / "caddy_block_harness.sh"
     harness_path.write_text(harness, encoding="utf-8")
@@ -409,6 +409,47 @@ def test_patched_update_script_still_passes_bash_syntax_check(tmp_path):
         check=False,
     )
     assert completed.returncode == 0, completed.stderr
+def _movers_before_mirror_block():
+    begin = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
+    end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", begin)
+    return SCRIPT[begin:end] + "\nprintf 'MIRROR_ADMITTED\\n' >> \"$FAKE_LOG\"\n"
+
+
+@pytest.mark.parametrize("candidate_active,installed_active", [(True, True), (True, False), (False, True)])
+def test_movers_stale_generated_pair_cannot_mirror_over_trusted_route(tmp_path, candidate_active, installed_active):
+    # Includes unchanged installed Caddy: its normal diff block would be skipped.
+    candidate = CANDIDATE_CADDY_WITH_MATCHER if candidate_active else CANDIDATE_CADDY_WITHOUT_MATCHER
+    installed = candidate if installed_active and candidate_active else (CANDIDATE_CADDY_WITH_MATCHER if installed_active else INSTALLED_BASELINE_CADDY)
+    result, app, _, log = _run_caddy_block(
+        tmp_path, _movers_before_mirror_block(), candidate=candidate, installed=installed,
+        source_body=COHERENT_MOVERS_BODY, generated_body=STALE_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+    )
+    assert result.returncode != 0
+    assert "refusing site mirror" in result.stderr
+    assert _action_lines(log) == []
+    assert (app / "site.served/movers.html").read_text() == COHERENT_MOVERS_BODY
+
+
+@pytest.mark.parametrize("active", [True, False])
+def test_movers_pre_mirror_pair_admission_preserves_good_and_unrelated_updates(tmp_path, active):
+    candidate = CANDIDATE_CADDY_WITH_MATCHER if active else CANDIDATE_CADDY_WITHOUT_MATCHER
+    body = COHERENT_MOVERS_BODY if active else STALE_MOVERS_BODY
+    result, _, _, log = _run_caddy_block(
+        tmp_path, _movers_before_mirror_block(), candidate=candidate, installed=candidate,
+        source_body=body, generated_body=body, served_body=STALE_MOVERS_BODY,
+    )
+    assert result.returncode == 0, result.stderr
+    assert _action_lines(log) == ["MIRROR_ADMITTED", "BLOCK_COMPLETED"]
+
+
+def test_movers_pre_mirror_guard_precedes_every_site_rsync():
+    start = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
+    end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", start)
+    rsync = SCRIPT.index('rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"')
+    assert start < end < rsync < SCRIPT.index(CADDY_DIFF_LINE)
+
+
 # END MOVERS_SEO_REDIRECT_CADDY_GUARD_REGRESSIONS
 
 

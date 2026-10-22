@@ -295,6 +295,26 @@ if [ "$OLD" != "$NEW" ]; then
 	git -C "$APP_DIR" reset --hard -q FETCH_HEAD
 	REPO_UPDATED=1
 
+	# BEGIN MOVERS_BEFORE_MIRROR_GUARD
+	# A returning older publisher may leave the plain pair stale if its soft
+	# post-rebase sync fails. Once either Caddy generation trusts this route,
+	# refuse to mirror that stale body over the last good served stub.
+	if grep -qE '^[[:space:]]*@movers_seo_redirect[[:space:]]*\{' "$APP_DIR/app/deploy/Caddyfile" ||
+	   grep -qE '^[[:space:]]*@movers_seo_redirect[[:space:]]*\{' /etc/caddy/Caddyfile; then
+		for movers_page in "$APP_DIR/templates/movers.html" "$APP_DIR/site/movers.html"; do
+			if [ -L "$movers_page" ] || [ ! -f "$movers_page" ] || [ ! -s "$movers_page" ]; then
+				echo "macro-update: refusing site mirror — Movers page is symlink, missing or empty: $movers_page" >&2
+				exit 1
+			fi
+		done
+		if ! grep -q 'data-mmx-movers-redirect="1"' "$APP_DIR/templates/movers.html" ||
+		   ! cmp -s "$APP_DIR/templates/movers.html" "$APP_DIR/site/movers.html"; then
+			echo "macro-update: refusing site mirror — canonical Movers marker/pair is stale" >&2
+			exit 1
+		fi
+	fi
+	# END MOVERS_BEFORE_MIRROR_GUARD
+
 	# Publish the served tree ATOMICALLY. `git reset --hard` above rewrites
 	# changed files IN PLACE, so Caddy serves a separate rsync target whose
 	# per-file temp-write + rename keeps every visible file whole.
@@ -399,7 +419,7 @@ if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
 	# retroactively protect a first run that still executes the predecessor
 	# inode after a self-update, and it does not make the approved two-stage
 	# rollout atomic; it only keeps a bad Caddy install from ever happening.
-	if grep -qE '@movers_seo_redirect([^[:alnum:]_-]|$)' "$APP_DIR/app/deploy/Caddyfile"; then
+	if grep -qE '^[[:space:]]*@movers_seo_redirect[[:space:]]*\{' "$APP_DIR/app/deploy/Caddyfile"; then
 		for movers_page in \
 			"$APP_DIR/templates/movers.html" \
 			"$APP_DIR/site/movers.html" \
