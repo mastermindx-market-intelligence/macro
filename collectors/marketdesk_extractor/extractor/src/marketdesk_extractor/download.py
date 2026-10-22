@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import db
 from .config import Config
-from .marketdesk import MarketDeskClient
+from .marketdesk import MarketDeskClient, MarketDeskError, UnsupportedBlobError
 from .schemas import Status
 from .storage import StorageGuardError
 from .utils import (
@@ -120,6 +120,23 @@ def download_pending(
             # Infrastructure failure, not a bad paper. Leave it DISCOVERED and
             # fail the command so launchd can retry after the volume recovers.
             raise
+        except UnsupportedBlobError as e:
+            # A positively identified binary non-PDF is terminal for this
+            # PDF-only archive; other provider failures cannot use this path.
+            res.failed += 1
+            db.set_status(conn, blob_id, Status.SKIPPED_UNSUPPORTED,
+                          error_message=str(e)[:500])
+            log.info("skip confirmed unsupported blob %s: %s", blob_id, e)
+        except MarketDeskError as e:
+            # Rejecting a PDF request is not proof that the document is bad.
+            # Preserve candidate status and stop this pass; no immediate retry
+            # or burst of attempts on later IDs during an access outage.
+            res.failed += 1
+            db.set_status(conn, blob_id, Status.DISCOVERED,
+                          error_message=None)
+            log.warning("provider PDF access unqualified on %s: %s — pass stopped",
+                        blob_id, e)
+            break
         except Exception as e:  # noqa: BLE001 - continue past a bad paper
             res.failed += 1
             db.set_status(conn, blob_id, Status.FAILED, error_message=str(e)[:500])

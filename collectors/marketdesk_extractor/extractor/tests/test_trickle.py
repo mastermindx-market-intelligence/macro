@@ -15,7 +15,8 @@ import pytest
 from marketdesk_extractor import db, trickle
 from marketdesk_extractor.config import Config
 from marketdesk_extractor.marketdesk import (
-    DownloadCapExhausted, MarketDeskClient, MarketDeskError, TransientHTTPError,
+    DownloadCapExhausted, MarketDeskClient, MarketDeskError,
+    ProviderBlobRefused, UnsupportedBlobError, TransientHTTPError,
 )
 from marketdesk_extractor.schemas import Status
 
@@ -744,7 +745,7 @@ def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
     class UnsupportedClient(FakeClient):
         def download_blob(self, blob_id):
             self.downloaded.append(blob_id)
-            raise MarketDeskError("blob unsupported: not a PDF")
+            raise UnsupportedBlobError("blob unsupported: confirmed non-PDF binary")
 
     _patch_sessions(monkeypatch, client_cls=UnsupportedClient)
     state = trickle.AccountState(profile=cfg.profiles[0])
@@ -757,6 +758,123 @@ def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
         assert db.get_by_blob_id(conn, "unsupported")["status"] == (
             Status.SKIPPED_UNSUPPORTED.value
         )
+    finally:
+        trickle._close_sessions([state]);conn.close()
+
+
+@pytest.mark.parametrize("status", [401, 403, 404, 429])
+def test_blob_http_access_rejection_does_not_prove_unsupported(
+    tmp_path, monkeypatch, status,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Rejected:
+        ok = False
+
+        def __init__(self):
+            self.status = status
+
+    class Request:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Rejected()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(ProviderBlobRefused, match="no PDF delivered"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+@pytest.mark.parametrize("body", [b'{"success":false}', b'', b'partial-pdf'])
+def test_blob_unqualified_200_response_preserves_source_identity(
+    tmp_path, monkeypatch, body,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Response:
+        status = 200
+        ok = True
+
+        def body(self):
+            return body
+
+    class Request:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Response()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(ProviderBlobRefused, match="unqualified"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+def test_blob_known_zip_container_is_explicitly_unsupported(
+    tmp_path, monkeypatch,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Response:
+        status = 200
+        ok = True
+
+        def body(self):
+            return b"PK\x03\x04" + b"spreadsheet archive"
+
+    class Request:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Response()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(UnsupportedBlobError, match="confirmed non-PDF"):
+        MarketDeskClient(Context(), cfg).download_blob("known_non_pdf_report")
+    assert Context.request.calls == 1
+
+
+def test_provider_refusal_requeues_without_permanent_skip_or_inline_retry(
+    tmp_path, monkeypatch,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "first", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "second", published_at=NOW - timedelta(minutes=2))
+
+    class RejectedClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise ProviderBlobRefused(f"blob {blob_id} access rejected")
+
+    _patch_sessions(monkeypatch, client_cls=RejectedClient)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        tick = trickle.run_tick(cfg, conn, [state], NOW, dry_run=False)
+        assert tick.provider_refusals == 1
+        assert tick.unsupported == tick.errors == tick.downloaded_new == 0
+        assert state.client.downloaded == ["first"]
+        assert state.transient_retry_after == NOW + timedelta(minutes=5)
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.DISCOVERED.value
+        assert db.trailing_24h_count(conn, state.name, NOW) == 0
+        before = trickle.run_tick(
+            cfg, conn, [state], NOW + timedelta(minutes=4), dry_run=False
+        )
+        assert before.provider_refusals == 0
+        assert state.client.downloaded == ["first"]
     finally:
         trickle._close_sessions([state]);conn.close()
 

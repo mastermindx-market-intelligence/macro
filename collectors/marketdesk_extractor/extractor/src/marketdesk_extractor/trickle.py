@@ -44,6 +44,7 @@ from .marketdesk import (
     DownloadCapExhausted,
     MarketDeskClient,
     MarketDeskError,
+    UnsupportedBlobError,
     SessionExpired,
     TransientHTTPError,
 )
@@ -199,6 +200,7 @@ class TickResult:
     downloaded_backfill: int = 0
     cap_bounces: int = 0
     transient_errors: int = 0  # safely requeued provider TLS/HTTP 5xx
+    provider_refusals: int = 0  # access/ambiguous responses are not bad PDFs
     unsupported: int = 0
     errors: int = 0
     driver_dead: int = 0  # attempts that died on the Playwright transport
@@ -208,7 +210,7 @@ class TickResult:
         return (
             f"downloaded new={self.downloaded_new} backfill={self.downloaded_backfill} "
             f"cap_bounces={self.cap_bounces} transient_errors={self.transient_errors} "
-            f"unsupported={self.unsupported} "
+            f"provider_refusals={self.provider_refusals} unsupported={self.unsupported} "
             f"errors={self.errors} driver_dead={self.driver_dead} "
             f"session_expired={self.session_expired}"
         )
@@ -439,16 +441,29 @@ def run_tick(
                     state.transient_retry_after.isoformat(),
                 )
                 break
-            except MarketDeskError as e:
-                # A non-cap blob that isn't a PDF (ZIP/XLSX/data attachment). The
-                # vault is PDF-only, so this is terminal: mark SKIPPED_UNSUPPORTED
-                # so next_candidate never re-selects it (retrying only wastes quota).
+            except UnsupportedBlobError as e:
+                # Only positively identified non-PDF bytes may be terminal.
                 res.unsupported += 1
                 db.set_status(conn, blob_id, Status.SKIPPED_UNSUPPORTED,
                               error_message=str(e)[:500])
-                log.info("[%s] unsupported blob %s (not a PDF) — skipping: %s",
+                log.info("[%s] confirmed non-PDF blob %s — skipping: %s",
                          state.name, blob_id, e)
                 pulled += 1
+            except MarketDeskError as e:
+                # HTTP access rejection, JSON success:false and unknown bytes do
+                # not establish an unsupported document. Preserve the source
+                # row, make no second inline request, and pause this account.
+                res.provider_refusals += 1
+                db.set_status(conn, blob_id, Status.DISCOVERED,
+                              error_message=None)
+                state.transient_retry_after = now + TRANSIENT_PDF_RETRY_DELAY
+                log.warning(
+                    "[%s] PDF provider access/response unqualified on %s: %s "
+                    "— row preserved, account retry after %s",
+                    state.name, blob_id, e,
+                    state.transient_retry_after.isoformat(),
+                )
+                break
             except Exception as e:  # noqa: BLE001 - bad paper, keep going
                 res.errors += 1
                 if _is_driver_dead(e):
