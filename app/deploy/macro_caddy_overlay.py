@@ -291,12 +291,14 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
         )
     renumber = {}
     reverse = {}
+    active_names = {}
+    active_reverse = {}
     for position, (prev_occ, cand_occ, active_occ) in enumerate(
         zip(prev_occs, cand_occs, active_occs)
     ):
         prev_path, prev_value = prev_occ
         cand_path, cand_value = cand_occ
-        active_path, _active_value = active_occ
+        active_path, active_value = active_occ
         if prev_path != active_path:
             raise ReconcileRefusal(
                 "host route %s on listen %s: active group occurrence %d drifted to "
@@ -317,8 +319,21 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
                 "(only generated names matching group[0-9]+ may change)"
                 % (list(host_key), list(listen_key), prev_value, cand_value)
             )
+        if prev_generated != bool(_GENERATED_GROUP_RE.match(active_value)):
+            raise ReconcileRefusal("active group topology changed between generated and opaque IDs")
+        # Equality classes are semantic: normalization may rename IDs, never
+        # split one shared group or merge two groups, including unchanged IDs.
+        for names, reverse_names, value, label in (
+            (renumber, reverse, cand_value, "candidate"),
+            (active_names, active_reverse, active_value, "active"),
+        ):
+            if (names.setdefault(prev_value, value) != value
+                    or reverse_names.setdefault(value, prev_value) != prev_value):
+                raise ReconcileRefusal(
+                    "inconsistent group renumbering: %s changed group topology" % label
+                )
         if not cand_generated:
-            if cand_value != prev_value:
+            if cand_value != prev_value or active_value != prev_value:
                 raise ReconcileRefusal(
                     "host route %s on listen %s: opaque group id changed %r -> %r"
                     % (list(host_key), list(listen_key), prev_value, cand_value)
@@ -333,13 +348,6 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
                 "host route %s on listen %s: changed group topology (renumbered "
                 "group reference %r sits in different route content)"
                 % (list(host_key), list(listen_key), prev_value)
-            )
-        if renumber.setdefault(prev_value, cand_value) != cand_value or reverse.setdefault(
-            cand_value, prev_value
-        ) != prev_value:
-            raise ReconcileRefusal(
-                "host route %s on listen %s: inconsistent group renumbering %r -> %r"
-                % (list(host_key), list(listen_key), prev_value, cand_value)
             )
     desired = copy.deepcopy(cand_route)
     for (_prev_path, prev_value), (cand_path, cand_value), (_active_path, active_value) in zip(

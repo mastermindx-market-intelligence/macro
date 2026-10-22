@@ -561,3 +561,55 @@ def test_already_current_candidate_is_verified_without_renaming_ids_or_noop_edit
     current = plan_routes(previous, candidate, active)
     repeated = plan_routes(previous, candidate, current)
     assert repeated == current and repeated is not current
+
+
+@pytest.mark.parametrize("channel", ["ordinary", "errors"])
+@pytest.mark.parametrize("changed", ["active", "candidate"])
+@pytest.mark.parametrize("topology", ["split", "merge"])
+def test_group_equality_classes_cannot_split_or_merge(channel, changed, topology):
+    previous, candidate, active = _previous_source(), _candidate_source(), _active_config()
+    old_names = ["group8", "group8", "group10"] if topology == "split" else ["group8", "group9", "group10"]
+    candidate_names = list(old_names)
+    active_names = ["group81", "group81", "group93"] if topology == "split" else ["group81", "group82", "group93"]
+    if changed == "candidate":
+        # The merge includes an unchanged name; skipping unchanged references
+        # would silently erase this unsupported source transition.
+        candidate_names[1] = "group9" if topology == "split" else "group8"
+    else:
+        active_names[1] = "group82" if topology == "split" else "group81"
+    for config, names, opt_in in ((previous, old_names, False),
+                                  (candidate, candidate_names, True),
+                                  (active, active_names, False)):
+        inner = [_root_inner(names[0]), _root_inner(names[1]),
+                 _movers_inner(names[2], with_not=opt_in)]
+        if channel == "errors":
+            config["apps"]["http"]["servers"]["srv0"]["errors"] = {
+                "routes": [_www_host_route(inner)]}
+        else:
+            _www_inner(config, "srv0")[:] = inner
+    snapshots = copy.deepcopy((previous, candidate, active))
+    with pytest.raises(ReconcileRefusal, match="group topology|group renumbering"):
+        plan_routes(previous, candidate, active)
+    assert (previous, candidate, active) == snapshots
+
+
+@pytest.mark.parametrize("channel", ["ordinary", "errors"])
+def test_shared_group_can_be_consistently_renumbered_without_losing_active_ids(channel):
+    previous, candidate, active = _previous_source(), _candidate_source(), _active_config()
+    for config, names, opt_in in ((previous, ['group8', 'group8', 'group10'], False),
+                                  (candidate, ['group30', 'group30', 'group31'], True),
+                                  (active, ['group81', 'group81', 'group93'], False)):
+        inner = [_root_inner(names[0]), _root_inner(names[1]),
+                 _movers_inner(names[2], with_not=opt_in)]
+        if channel == 'errors':
+            config['apps']['http']['servers']['srv0']['errors'] = {
+                'routes': [_www_host_route(inner)]}
+        else:
+            _www_inner(config, 'srv0')[:] = inner
+    result = plan_routes(previous, candidate, active)
+    server = result['apps']['http']['servers']['srv0']
+    routes = server['errors']['routes'] if channel == 'errors' else server['routes']
+    body = next(route for route in routes if route.get('match') == [{'host': WWW_HOST}])
+    inner = body['handle'][0]['routes']
+    assert [route['group'] for route in inner] == ['group81', 'group81', 'group93']
+    assert inner[-1]['match'][0]['not'] == [MMX_NOT]
