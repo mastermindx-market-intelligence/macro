@@ -1,9 +1,14 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t %}
+{% from "_gmi_macros.html.j2" import t, tip, ic, mark, d, asof, sec, tip_core, tip_ext, tip_adm with context %}
 {% from "_gmi_head.html.j2" import head %}
 {% block title %}GMI Explorer — Coverage &amp; receipts{% endblock %}
 {% block seo %}{% set seo_title = 'GMI Explorer — Coverage & receipts | Mastermind' %}{% set seo_desc = 'How many companies are admitted to a theme, out of honest denominators, and the plain-word reason for every company not yet admitted.' %}{% set seo_path = 'gmi-coverage.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
+{#- S4 coverage & receipts (specimen s4_coverage). Every number is the model's;
+    the 200/100/100 sample thresholds are specimen copy — the proof carries no
+    threshold field (GAP). Stack parts read the proof's per-market
+    remainder_by_reason in config/gmi_reason_codes.yml order (= the
+    model.reason_words insertion order); classes are s1..sN. -#}
 {% set N = model.coverage.us.numerator_issuers + model.coverage.cn.numerator_issuers %}
 {% if N == 0 %}
 {% set sub_en = 'No company is admitted to a theme yet. Here is why.' %}
@@ -15,6 +20,96 @@
 {% set sub_en = 'Only ' ~ N ~ ' companies are admitted to a theme so far. Here is why.' %}
 {% set sub_zh = '目前仅有 ' ~ N ~ ' 家公司获准纳入主题。原因如下。' %}
 {% endif %}
-{{ head([('Research','研究'),('Coverage','覆盖率')], 'Coverage & receipts', '覆盖率与凭证', sub_en, sub_zh) }}
-<section class="gmi-sec" data-gmi-surface="coverage"></section>
+{{ head([('Research','研究'),('Coverage','覆盖率')], 'Coverage & receipts', '覆盖率与凭证', sub_en, sub_zh, side=asof(model.asof)) }}
+{% if N == 0 %}
+{% set cap_en = 'companies admitted to any theme' %}
+{% set cap_zh = '家公司获准纳入任何主题' %}
+{% elif N == 1 %}
+{% set cap_en = 'company admitted to a theme' %}
+{% set cap_zh = '家公司已获准纳入主题' %}
+{% else %}
+{% set cap_en = 'companies admitted to a theme' %}
+{% set cap_zh = '家公司已获准纳入主题' %}
+{% endif %}
+{% set core_ids = [] %}
+{% for mid, m in model.micros.items() %}{% if m.tier == 'acceptance' %}{% set _ = core_ids.append(mid) %}{% endif %}{% endfor %}
+{% set EMPTY_N = model.disposition_counts.get('EMPTY', 0) %}
+{% set HELD_N = model.totals.held %}
+{% set ADM_N = model.totals.admitted_micros %}
+{#- the sets note: one specimen-word clause per non-zero population -#}
+{% set note_en = namespace(p=[]) %}
+{% if EMPTY_N == 1 %}{% set _ = note_en.p.append('1 has no admitted company.') %}
+{% elif EMPTY_N %}{% set _ = note_en.p.append(EMPTY_N ~ ' have no admitted company.') %}{% endif %}
+{% if HELD_N == 1 %}{% set _ = note_en.p.append('1 has a link held for review.') %}
+{% elif HELD_N %}{% set _ = note_en.p.append(HELD_N ~ ' have links held for review.') %}{% endif %}
+{% if ADM_N == 1 %}{% set _ = note_en.p.append('1 has an admitted link.') %}
+{% elif ADM_N %}{% set _ = note_en.p.append(ADM_N ~ ' have admitted links.') %}{% endif %}
+{% set note_zh = namespace(p=[]) %}
+{% if EMPTY_N %}{% set _ = note_zh.p.append(EMPTY_N|num ~ '个尚无获准纳入的公司') %}{% endif %}
+{% if HELD_N %}{% set _ = note_zh.p.append(HELD_N|num ~ '个有待审核的关联') %}{% endif %}
+{% if ADM_N %}{% set _ = note_zh.p.append(ADM_N|num ~ '个有已获准纳入的关联') %}{% endif %}
+{%- macro mono(x) -%}{% set m %}<span class="gmi-mono">{{ x }}</span>{% endset %}{{ m }}{%- endmacro -%}
+{#- relationship amendment reason slugs -> the specimen's plain words (GAP: no
+    plain-word table for these slugs lives in the model; unknown slugs print
+    the slug itself). -#}
+{% set REL_REASON = {'part_iii_only_amendment': ('Part III only amendment', '仅修订第三部分')} %}
+{% set edge0 = model.edges[0] if model.edges else none %}
+<section class="gmi-band" aria-labelledby="cov-h"><div class="gmi-band-card">
+<div class="gmi-big0"><span class="gmi-mag-num" id="cov-h">{{ N }}</span><span class="gmi-mag-cap gmi-mag-cap--wide">{{ t(cap_en, cap_zh) }}</span>{{ tip_adm() }}</div>
+<div class="gmi-cov">
+{%- for mkt, mkt_en, mkt_zh in [('us', 'US', '美国'), ('cn', 'China', '中国')] -%}
+{% set mrow = model.coverage[mkt] %}
+{% set bnds = mrow.denominator.issuer_count_bounds %}
+{% set unres = mrow.denominator.eligible_securities_unresolved_issuer %}
+{% set resolved = mrow.denominator.eligible_issuers_resolved %}
+{% if unres == 0 %}
+{% set tp_en = '' %}{% set tp_zh = '' %}
+{% elif resolved == 0 %}
+{% set tp_en = 'The range is wide because none of the ' ~ (unres|num) ~ ' listed securities is matched to a company yet.' %}
+{% set tp_zh = '区间较宽，因为' ~ (unres|num) ~ '只上市证券均尚未匹配到对应公司。' %}
+{% else %}
+{% set tp_en = 'The count is a range because ' ~ (unres|num) ~ ' listed securities are not yet matched to a company.' %}
+{% set tp_zh = '该数字为区间，因为有' ~ (unres|num) ~ '只上市证券尚未匹配到对应公司。' %}
+{% endif %}
+{% if mrow.numerator_issuers > 0 %}
+{% set note = t('Why the rest are not admitted yet', '其余公司尚未纳入的原因') %}
+{% set fill_w = '%.2f'|format(100 * mrow.numerator_issuers / bnds[1]) %}
+{% set track %}<div class="gmi-track"><span class="gmi-track-fill" style="width:{{ fill_w }}%"></span></div>{% endset %}
+{% else %}
+{% set note = t('Why none is admitted yet', '尚无公司纳入的原因') %}
+{% set track %}<div class="gmi-track"><span class="gmi-track-zero"></span></div>{% endset %}
+{% endif %}
+{#- parts with no reason_words entry cannot render (no plain words; the yml is
+    pinned to the proof's codes) — the page test compares the rendered stack
+    against ALL model remainder values, so a dropped part fails loudly. -#}
+{% set rem = mrow.remainder_by_reason %}
+{% set codes = [] %}
+{% for code in model.reason_words %}{% if code in rem %}{% set _ = codes.append(code) %}{% endif %}{% endfor %}
+<div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt">{{ t(mkt_en, mkt_zh) }}</span>
+<span class="gmi-cov-num">{{ mrow.numerator_issuers }}</span><span class="gmi-cov-den">{{ t('of ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' companies', '/ 共 ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' 家公司') }}</span>{% if unres > 0 %}{{ tip(tp_en, tp_zh) }}{% endif %}</div>
+{{ track }}
+<p class="gmi-note gmi-note--flush">{{ note }}</p><div class="gmi-stack" aria-hidden="true">{% for code in codes %}<i class="s{{ loop.index }}" style="flex:{{ rem[code] }} 1 0"></i>{% endfor %}</div><div class="gmi-legend">{% for code in codes %}<span><i class="s{{ loop.index }}"></i><b>{{ rem[code]|num }}</b>{{ t(model.reason_words[code].en, model.reason_words[code].zh) }}</span>{% endfor %}</div></div>
+{%- endfor -%}
+</div>
+</div></section>
+<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel">{{ sec('What is measured', '衡量范围') }}
+<div class="gmi-tally-lab gmi-tally-lab--strong">{{ mark('acc') }}<b class="tnum">{{ model.totals.core|num }}</b>&nbsp;{{ t('core micro-themes', '个核心细分主题') }}{{ tip_core() }}</div>
+<div class="gmi-strip68" aria-hidden="true">{% for mid in core_ids | ordered %}{{ mark(model.micros[mid].kind) }}{% endfor %}</div>
+<p class="gmi-note">{{ t(note_en.p|join(' '), note_zh.p|join('；') ~ '。') }}</p>
+<div class="gmi-tally-lab gmi-tally-lab--wrap">{{ mark('disp') }}<b class="tnum gmi-num-strong">{{ model.totals.extended|num }}</b>&nbsp;{{ t('extended micro-themes are shown on the map but not counted.', '个扩展细分主题在地图上显示，但不计入。') }}{{ tip_ext() }}</div>
+</section><section class="gmi-panel">{{ sec('Corrections log', '更正记录') }}
+<dl class="gmi-dl">{% if edge0 and model.deck %}{% for cl in edge0.correction_lineage %}{% if cl.known_at %}
+{% set rw = REL_REASON.get(cl.reason, (cl.reason, cl.reason)) %}
+{% set sent_en = model.deck.corrections.amendment_not_restated.en|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[0]) %}
+{% set sent_zh = model.deck.corrections.amendment_not_restated.zh|fill(accession=cl.accession, amends_accession=cl.amends_accession, reason=rw[1]) %}
+{#- |safe below only re-wraps accession strings (digits/dash) in gmi-mono spans;
+    every other token is repo-frozen deck text or the reason word pair. -#}
+{% set dd_en %}{{ sent_en|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
+{% set dd_zh %}{{ sent_zh|replace(cl.accession, mono(cl.accession))|replace(cl.amends_accession, mono(cl.amends_accession))|safe }}{% endset %}
+<div><dt>{{ d(cl.known_at[:10]) }}</dt><dd><span class="l-en">{{ dd_en }}</span><span class="l-zh">{{ dd_zh }}</span></dd></div>
+{% endif %}{% endfor %}{% endif %}
+<div><dt>{{ t('Theme links', '主题关联') }}</dt><dd class="gmi-muted">{{ t('Changes are not tracked yet.', '变更尚未跟踪。') }}</dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel">{{ sec('Accuracy check', '准确性抽查') }}
+<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
+<div class="mx-empty-why">{{ t('Needs 200 admitted links (100 US, 100 China) before a sample is drawn. Now ' ~ N ~ '.', '需要200条获准纳入的关联（美国100条、中国100条）后才会抽样。目前为' ~ N ~ '。') }}</div></div></section></div></div>
+<p class="gmi-foot">{{ t('Sources: company filings; exchange symbol directory, ' ~ (model.asof|de) ~ '; review ledger, ' ~ (model.provenance.built_at_utc[:10]|de) ~ '.', '来源：公司申报文件；交易所证券代码目录（' ~ (model.asof|dz) ~ '）；审核记录（' ~ (model.provenance.built_at_utc[:10]|dz) ~ '）。') }}</p>
 {% endblock %}
