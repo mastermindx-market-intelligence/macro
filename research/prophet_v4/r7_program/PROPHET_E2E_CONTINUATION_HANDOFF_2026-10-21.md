@@ -619,3 +619,8 @@ Report: `research/prophet_v4/r7_program/reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2
 - **Then:** Wave B routing packet posted ONCE on #9495 (`research/prophet_v4/r7_program/build_b/WAVE_B_ROUTING_PACKET_2026-10-22.md`; fence first; comment names seat + session id); link from #8444 for B-5 only. Then U4 lane (N-A/N-B/N-C + A2-N3 + nits), U5 after U2; U1 after #9774; U3 after U1+U2.
 - **Orchestrators/reviewers:** all COMPLETED — never re-spawn; message by id only if a return asks. Opus cap 2, currently 0 running.
 - **Main at CP time:** `61f82f588c4f` (#10026 GMI M1 receipt).
+
+#### Addendum 08:1xZ to CP 08:1xZ — U2 #9999 MERGED; landing order amended (F33 R3′)
+- **U2 #9999 MERGED → `aad27efd2f5a` at 2026-10-22T08:07:57Z** at exactly `feb86035` (watcher `b3r3glx4w` full table green; re-run 39739488269 attempt 2 SUCCESS; `gh pr checks` dedupes by name, so the transient-base receipt is not in the table; reviewDecision null (no GitHub review required; the Opus reviewer report is the review); merge-tree clean vs MAIN `2d6558b3`; fence `6306863736` unchanged). `$S/u2export` (12 GB) deleted. B21 U2 is ON MAIN — DO_NOT_REDO.
+- **F33 R3′ (order amendment):** U2 landed before A2 because U2 was fully green first while A2's `ci-pack-0` was still running; the two heads touch disjoint files and both merge-trees were clean, so the F31 R5 order had no remaining reason. A2 #9956 still merges at exactly `31a61ba8` on watcher `b3h3zcqz4` WATCH_END, after a fresh merge-tree vs the MAIN captured in that operation.
+- **Next after A2:** Wave B packet ONCE on #9495; then the U4+U5 lane (`pro-source-b21u4u5-20261022-r1`, never used) on the main that contains A2, packet drafted at `$S/pk/pro-source-b21u4u5-20261022.md`.
