@@ -1,0 +1,56 @@
+{
+  "schema": "intl.current_main_publication_preparation.v1",
+  "at": "2026-10-22T01:00:55.579624+00:00",
+  "operation_id": "intl-country-cockpit-20261018",
+  "pr": 9596,
+  "expected_parent": "c2b0562234abbec883ea91b934ac3d09fa3bae8b",
+  "incoming_main": "25051144947f027c698cd1ce10e3c8824ee6ade9",
+  "product_source_unchanged_after_capture": true,
+  "frozen_proposal_and_approval_unchanged": true,
+  "evidence": [
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/composition.json",
+      "sha256": "039fcb62275e70f6896d9ecfd8386101bc46439c2b41f92a6a060bb2bf893f80"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/refresh_execution.json",
+      "sha256": "82925e2f061bf90e9bd9bdec91909a886d0f25bb7c774244e1e59fe005ed5f63"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/composition_checks.json",
+      "sha256": "8e7c07949b3cb53b953ae798091ee14a081ac41f188b2ad4ffd540c966febc83"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/country_equivalence.json",
+      "sha256": "7d558c834d4934689274b6b3cddff1c6067c08154e39145604c850d5b4f66fdc"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/local_gates.json",
+      "sha256": "7da791323f64a2813a07ca6fa38bc86f8e730962107e780fde0ff7813168f29b"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/p0b_rebind.json",
+      "sha256": "325eddedeb5a323126cbd24a39b040f6ef2863880aa524cf247a9c266e818621"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_reconciliation_20261022/visual_spot_equivalence.json",
+      "sha256": "eb327726befae8a5d6605baef1ab55c7bab02786fa6bd8cb31e7923cc1d64547"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/repair_main25020261022_build_receipt.json",
+      "sha256": "dd37825e6f8bcfbb24225bb8124dcc6d43152165a5b064ea9e8f1e65c8d06446"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/repair_main25020261022/complete_browser_receipt.json",
+      "sha256": "9d27146092a063330127c04190010668170a4c4392b4ca8f950967045b905b28"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/repair_main25020261022/review_counterexamples.json",
+      "sha256": "45310816e67f3d3b3006f72c6d95046807a1cc65f7e1e5f6bc2fb42d1b75cf05"
+    }
+  ],
+  "draft_publication_ready": true,
+  "release_ready": false,
+  "shared_shell_repair_effect_unknown": true,
+  "production_acceptance": false
+}

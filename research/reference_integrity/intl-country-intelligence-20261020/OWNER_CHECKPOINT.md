@@ -1,3 +1,9 @@
+# Current-main continuation — 22 October 2026 UTC
+
+Actual main 25051144947f027c698cd1ce10e3c8824ee6ade9 is now integrated by normal merge c2b0562234abbec883ea91b934ac3d09fa3bae8b. Fresh P0B and International browser evidence passed. See main_reconciliation_20261022/README.md and its exact receipts for this phase. The older published 7e995873 checkpoint and all frozen evidence remain preserved. Publication and current-head CI readback are the next actions; original PR9596 remains the carrier.
+
+---
+
 # Continuation checkpoint — 22 October 2026 UTC
 
 Main composition is now committed locally at `eac74360b9a423ece8b1af786aca5fd29cb48c3f`. Fresh shared-component and standalone International browser evidence passed; the exact composition, preserved parent histories, original failures and remaining Shared Shell/FX/served gates are recorded in `main_composition_20261021/CONTINUATION_CHECKPOINT.md`. The original PR9596 remains the carrier. Publication has not yet occurred at this checkpoint.
