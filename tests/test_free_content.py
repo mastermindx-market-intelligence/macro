@@ -756,8 +756,10 @@ class TestDeterminism:
         result = bfc._check_mode.__wrapped__ if hasattr(bfc._check_mode, '__wrapped__') else None
         # Run check mode: render to tmp inside the function and compare
         # We directly test that rendered output matches itself by calling render_all twice
-        out2 = tmp_path / "verify"
-        out2.mkdir()
+        # Both roots must be named site: write_page derives depth-aware
+        # shared-shell/data-base asset paths from that documented boundary.
+        out2 = tmp_path / "verify" / "site"
+        out2.mkdir(parents=True)
         bfc.render_all(out2)
         for f in out.rglob("*"):
             if f.is_file():

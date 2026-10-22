@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AESI-BULL-20260826",
-  "asof": "2026-10-21",
+  "asof": "2026-10-22",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.2,
@@ -17,16 +17,16 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.16,
+    "dist_to_stop_r": -0.374,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 122.2,
-    "p1": -0.7732,
-    "p2": -0.3866,
+    "horizon_pct_used": 124.4,
+    "p1": -0.9159,
+    "p2": -0.4579,
     "p3": null,
-    "move_r": -1.16,
+    "move_r": -1.374,
     "mfe_r": 0.505,
-    "mae_r": -1.16
+    "mae_r": -1.374
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5799999237060547,
-  "_mae": -3.630000114440918,
+  "_mae": -4.300000190734863,
   "_max_p1": 0.33652820526220545,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 55,
-  "tau": 1.2222
+  "days_elapsed": 56,
+  "tau": 1.2444
 }

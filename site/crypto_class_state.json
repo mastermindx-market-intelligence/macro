@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-21",
+  "as_of": "2026-10-22",
   "universe_coverage": {
-    "as_of": "2026-10-21",
+    "as_of": "2026-10-22",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -38,14 +38,6 @@
         "id": "polkadot",
         "source": "CoinGecko",
         "as_of": "2026-10-15",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
-        "file": "market_m.parquet",
-        "symbol": "M",
-        "id": "memecore",
-        "source": "CoinGecko",
-        "as_of": "2026-10-09",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,7 +162,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-21",
+      "as_of": "2026-10-22",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
@@ -187,7 +179,7 @@
   "market": {
     "stance": "Market cap is lower",
     "total_state": "Falling",
-    "dominance_state": "Rising",
+    "dominance_state": "Steady",
     "fear_state": "Greedy",
     "breadth_state": "Building history",
     "cap_move": "valuation",
@@ -461,26 +453,26 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 4,
-        "support_after": 2,
+        "support_after": 3,
         "level_ratio": 0.9792013096092357,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
-    "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "etf": "Rising",
+    "stablecoins": "Steady",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "stale",
+      "observation": "zero",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -492,7 +484,7 @@
   "heat": {
     "funding": "Unavailable",
     "open_interest": "Leverage light",
-    "volatility": "Volatility compressed",
+    "volatility": "Volatility normal",
     "altseason": "Mixed relative trend"
   },
   "assets": {
@@ -500,13 +492,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,795 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,796 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,953 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,954 daily observations from Coinbase daily OHLCV."
     }
   }
 }
