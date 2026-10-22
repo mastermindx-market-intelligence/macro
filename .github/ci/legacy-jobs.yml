@@ -27039,6 +27039,8 @@ jobs:
       - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/test_us_candidate_episode_recorded_at_clock.py"
       - "config/fundamental_forensics/coverage/**"
       - "contracts/market_os/**"
       - "engine/close_pass/**"
@@ -28092,6 +28094,8 @@ jobs:
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
       - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
         run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
+      - name: US B1 recorded_at writer clock (durable CLI refuses caller clocks; exclusive organ, weight-neutral)
+        run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
