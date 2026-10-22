@@ -12296,6 +12296,10 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
