@@ -160,11 +160,12 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Complete the independently reviewed bounded Tools navigation repair on original draft PR9596,
-  verify its exact-source ordinary build, unchanged country output, standalone and actual-parent journeys,
-  then publish through the registered expected-head Studio publisher and complete current-head hosted CI.
-  Preserve the pre-existing actual-parent saved-focus failure and the separate FX custody, ordinary
-  render/updater and served-user release conditions. See the 22 October Tools repair checkpoint.
+next_action: Publish the independently accepted Tools navigation repair and its completed exact-source
+  evidence on original draft PR9596 after repository guards, then verify current-head hosted CI.
+  Ordinary build, seven-country equivalence, standalone fragments/history and all actual-parent repair
+  checks pass; full parent acceptance retains the saved-focus failure and transport-query warning.
+  Continue those bounded integration repairs and final data-review evidence reconciliation, preserving
+  the separate FX custody, ordinary render/updater and served-user release conditions.
 artifacts:
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md
@@ -343,3 +344,7 @@ The bounded shared ownership listed above covers only the pure same-document cla
 R3 is terminal and NOT_ACCEPTED after independent review found concrete controller/test defects. Root's closed correction under the documented LOWER_TOTAL_OVERHEAD exception has independent source PASS; corrected navigation18/18, independent probes2/2, full International browser198/198 and shared bridge/adapters188/188 pass, and four new cases fail against the rejected controller. Exact-source build and actual-parent runtime acceptance remain pending at this entry. The original failures are retained. See `research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/CHECKPOINT.md` for the current source and process state.
 
 The unchanged actual Terminal parent and predecessor child already fail saved Library-input focus restoration while restoring the recorded scroll position. This limitation remains explicit and cannot be cleared by a successful Tools test or a child focus timer. Frozen reference artifact/source/HTML bindings remain unchanged. No production merge, acquisition, render/updater adoption or complete served acceptance is claimed by this checkpoint.
+
+## 22 October 2026 — Tools runtime acceptance
+
+Source ca4efe7b36a47887c18746ffa9d931e15b97e5f2 has independent bounded source and actual-parent ACCEPT. The ordinary build validates510 retained inputs and preserves all7 approved country sections byte for byte. Fragment/toolbar22, native history28, International browser198 and bridge/adapters188 pass. Actual-parent v9 across17 contexts records816PASS/1FAIL, zero repair-scope failures and153 source-bound responses. The overall failed/exit1 result retains the reproduced saved-focus defect. A separate existing shell transport-query/business-state warning remains open. All owned proof servers stopped and tested parent source remained clean. See main_tools_repair_20261022/CHECKPOINT.md, PRINCIPAL_TOOLS_RUNTIME_REVIEW.md and TOOLS_RUNTIME_SUMMARY.json. This supports the same Draft PR update, not complete parent, data/integration, acquisition or served release approval.

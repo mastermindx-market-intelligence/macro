@@ -1,0 +1,58 @@
+{
+  "recorded_at": "2026-10-22T06:16:22.530305+00:00",
+  "refs": {
+    "frozen_source": "442042e591d255dd24b540ff240edb4c0410c297",
+    "predecessor": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+    "current_source": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2"
+  },
+  "review_path": "research/reference_integrity/intl-country-intelligence-20261020/source_principal/REVIEW.md",
+  "rows": [
+    {
+      "path": "lib/intl_country_inputs.py",
+      "reviewed_sha256": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+      "actual": {
+        "frozen_source": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+        "predecessor": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+        "current_source": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+        "worktree": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108"
+      },
+      "all_match": true
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "reviewed_sha256": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+      "actual": {
+        "frozen_source": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+        "predecessor": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+        "current_source": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+        "worktree": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919"
+      },
+      "all_match": true
+    },
+    {
+      "path": "engine/intl_equity_risk.py",
+      "reviewed_sha256": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+      "actual": {
+        "frozen_source": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+        "predecessor": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+        "current_source": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+        "worktree": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d"
+      },
+      "all_match": true
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "reviewed_sha256": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+      "actual": {
+        "frozen_source": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+        "predecessor": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+        "current_source": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+        "worktree": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0"
+      },
+      "all_match": true
+    }
+  ],
+  "pass": true,
+  "scope": "Unchanged four reviewed production-file bytes preserve the documented source-principal applicability; no new logic review or blanket quant/source/production acceptance is claimed.",
+  "independent_lookup": "No result observed; prior read-only call aborted after4497.3s without PID/output/exit/hashes. Completion unknown; not treated as proof of absence or an approval."
+}

@@ -1,0 +1,18 @@
+{"scope":"1440-en-dark","passed":52,"failed":[{"id":"restoration_focus_matches_saved_view","error":null}]}
+{"scope":"1440-en-light","passed":47,"failed":[]}
+{"scope":"1440-zh-dark","passed":47,"failed":[]}
+{"scope":"1440-zh-light","passed":47,"failed":[]}
+{"scope":"768-en-dark","passed":47,"failed":[]}
+{"scope":"768-en-light","passed":47,"failed":[]}
+{"scope":"768-zh-dark","passed":47,"failed":[]}
+{"scope":"768-zh-light","passed":47,"failed":[]}
+{"scope":"390-en-dark","passed":48,"failed":[]}
+{"scope":"390-en-light","passed":48,"failed":[]}
+{"scope":"390-zh-dark","passed":48,"failed":[]}
+{"scope":"390-zh-light","passed":48,"failed":[]}
+{"scope":"320-en-dark","passed":48,"failed":[]}
+{"scope":"320-en-light","passed":48,"failed":[]}
+{"scope":"320-zh-dark","passed":48,"failed":[]}
+{"scope":"320-zh-light","passed":48,"failed":[]}
+{"scope":"1440-en-dark-query","passed":48,"failed":[]}
+{"status":"failed","passed":816,"failed":1,"contexts":17,"report":"/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v9/observation.json"}

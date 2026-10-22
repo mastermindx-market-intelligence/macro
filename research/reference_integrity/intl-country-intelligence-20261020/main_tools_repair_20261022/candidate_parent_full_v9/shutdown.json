@@ -1,0 +1,14 @@
+{
+  "stopped_at": "2026-10-22T06:26:31.429969+00:00",
+  "processes": {
+    "child": {
+      "pid": 63933,
+      "exit_code": -15
+    },
+    "parent": {
+      "pid": 63935,
+      "exit_code": 0
+    }
+  },
+  "parent_tracked_source_clean": true
+}

@@ -10,7 +10,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const expected=Object.fromEntries(['intl.html','shared_shell_bridge.js','shared_shell.css'].map(name=>['/'+name,hash(fs.readFileSync(path.join(artifact,name)))]));
 fs.mkdirSync(out,{recursive:true});
 if(fs.existsSync(path.join(out,'observation.json')))throw new Error('Existing observation; reconcile it rather than overwrite');
-const report={schema:'intl.actual_parent_acceptance.v8',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
+const report={schema:'intl.actual_parent_acceptance.v9',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
 const pending=[];
 const runtimePath=path.resolve(arg('runtime'));
 const buildReceiptPath=path.resolve(arg('build-receipt'));
@@ -47,7 +47,7 @@ async function settledState(page,label,expectedUrl,options={}){
 }
 const save=()=>fs.writeFileSync(path.join(out,'observation.json'),JSON.stringify(report,null,2)+'\n');
 const check=(scope,id,passed,detail={})=>report.cases.push({scope,id,passed:!!passed,...detail});
-check('binding','runtime_and_source_custody',runtime.parent_source===report.parent_source&&runtime.parent_tracked_source_clean===true&&runtime.artifact===artifact&&runtime.html_sha256===expected['/intl.html']&&buildReceipt.html_sha256===expected['/intl.html']&&buildReceipt.exit_code===0&&hash(subjectController)===hash(builtController)&&hash(subjectBridge)===hash(builtBridge)&&hash(subjectBridge)===hash(pairedBridge)&&hash(subjectBridge)===expected['/shared_shell_bridge.js']&&fs.readFileSync(path.join(artifact,'intl.html'),'utf8').includes(subjectController.toString().trim()),report.source_binding);
+check('binding','runtime_and_source_custody',runtime.parent_source===report.parent_source&&runtime.parent_tracked_source_clean===true&&runtime.artifact===artifact&&runtime.html_sha256===expected['/intl.html']&&buildReceipt.html_sha256===expected['/intl.html']&&buildReceipt.exit_code===0&&buildReceipt.source_commit===report.subject&&hash(subjectController)===hash(builtController)&&hash(subjectBridge)===hash(builtBridge)&&hash(subjectBridge)===hash(pairedBridge)&&hash(subjectBridge)===expected['/shared_shell_bridge.js']&&fs.readFileSync(path.join(artifact,'intl.html'),'utf8').includes(subjectController.toString().trim()),report.source_binding);
 const widths=matrix==='full'?[1440,768,390,320]:[1440];
 const presentations=matrix==='full'?[['en','dark'],['en','light'],['zh','dark'],['zh','light']]:[['en','dark']];
 async function actualFrame(page){
@@ -198,11 +198,38 @@ async function run(browser,width,lang,theme,query=''){
     if(await libraryButton.isVisible())await libraryButton.click();
     else await f.locator('select[data-im-action="set_view"]').selectOption('library');
     await page.waitForURL(u=>u.searchParams.get('view')==='library');
-    const acceptedLibrary=await settledState(page,'library_selected',page.url(),{generation:beforeLibrary.child.generation,acceptedAfter:beforeLibrary.child.acks});
+    const selectedLibrary=await settledState(page,'library_selected',page.url(),{generation:beforeLibrary.child.generation,acceptedAfter:beforeLibrary.child.acks});
+    snapshots.push(selectedLibrary);
+    let acceptedLibrary=selectedLibrary;
     f=await actualFrame(page);
-    await f.locator('a[href$="#intl-leadership-rotation"]').first().waitFor({state:'visible'});
-    snapshots.push(acceptedLibrary);
-    check(scope,'library_selected_through_real_control',await f.locator('a[href$="#intl-leadership-rotation"]').first().isVisible());
+    const libraryLink=f.locator('[data-im-library-group="leaders"] a[href$="#intl-leadership-rotation"]').first();
+    const libraryBefore=await f.locator('[data-im-library-group="leaders"]').evaluate(group=>({
+      id:group.id,active:group.hasAttribute('data-im-library-active'),hidden:group.hidden,
+      mobile:matchMedia('(max-width:600px)').matches,
+      links:[...group.querySelectorAll('a[href$="#intl-leadership-rotation"]')].map(a=>({
+        href:a.getAttribute('href'),visible:a.checkVisibility({checkVisibilityCSS:true}),
+        ancestors:[...function*(n){for(;n&&n!==document.body;n=n.parentElement)yield n;}(a)].map(n=>({
+          tag:n.tagName,id:n.id,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,
+          hidden:n.hidden===true,open:n.tagName==='DETAILS'?n.open:null
+        }))
+      }))
+    }));
+    if(!await libraryLink.isVisible()){
+      // Below 600px the actual Library hides tools until their real group control
+      // is selected. Exercise that user action and its genuine accepted location.
+      const groupControl=f.locator('button[data-im-action="set_library_group"][data-im-group="leaders"]');
+      await groupControl.waitFor({state:'visible'});
+      const control=await groupControl.evaluate(el=>({action:el.getAttribute('data-im-action'),group:el.getAttribute('data-im-group'),text:el.innerText}));
+      await groupControl.click();
+      await page.waitForURL(u=>u.searchParams.get('view')==='library'&&u.searchParams.get('group')==='leaders');
+      acceptedLibrary=await settledState(page,'library_group_selected',page.url(),{generation:selectedLibrary.child.generation,acceptedAfter:selectedLibrary.child.acks});
+      snapshots.push(acceptedLibrary);
+      await libraryLink.waitFor({state:'visible'});
+      const active=await f.locator('[data-im-library-group="leaders"]').evaluate(el=>el.hasAttribute('data-im-library-active'));
+      check(scope,'library_group_selected_through_real_control',libraryBefore.mobile&&active&&await libraryLink.isVisible()&&acceptedLibrary.parent.history===selectedLibrary.parent.history+1&&acceptedLibrary.child.generation===selectedLibrary.child.generation,{before:libraryBefore,control,accepted_url:acceptedLibrary.parent.url});
+    }
+    await libraryLink.waitFor({state:'visible'});
+    check(scope,'library_selected_through_real_control',await libraryLink.isVisible(),{before:libraryBefore,accepted_url:acceptedLibrary.parent.url});
     await ensureTools(page,false);
     const afterViewClosed=await state(page,'tools_after_view_closed');snapshots.push(afterViewClosed);
     f=await actualFrame(page);
@@ -225,7 +252,7 @@ async function run(browser,width,lang,theme,query=''){
     await ensureTools(page,true);
     f=await actualFrame(page);
     const beforeNested=await state(page,'before_nested_after_view_tools');snapshots.push(beforeNested);
-    await f.locator('a[href$="#intl-leadership-rotation"]').first().click();
+    await f.locator('[data-im-library-group="leaders"] a[href$="#intl-leadership-rotation"]').first().click();
     await page.waitForURL(/#intl-leadership-rotation$/);
     await page.waitForTimeout(250);
     const nested=await settledState(page,'nested_first',hashUrl(beforeNested.parent.url,'intl-leadership-rotation'),{generation:beforeNested.child.generation,acceptedAfter:beforeNested.child.acks});snapshots.push(nested);queryCheck(scope,'nested_first',nested,new URL(beforeNested.parent.url).search);
@@ -243,7 +270,7 @@ async function run(browser,width,lang,theme,query=''){
     const nestedClosed=await state(page,'nested_manually_closed');snapshots.push(nestedClosed);
     const closedAncestors=await nestedState(page);
     check(scope,'nested_repeat_closed_precondition',closedAncestors.ancestors.filter(x=>x.id!=='intl-analysis-tools').every(x=>!x.open)&&closedAncestors.ancestors.some(x=>x.id==='intl-legacy-research'&&!x.open)&&nestedClosed.child.tools&&nestedClosed.parent.url===nested.parent.url&&nestedClosed.child.generation===nested.child.generation,closedAncestors);
-    await (await actualFrame(page)).locator('a[href$="#intl-leadership-rotation"]').first().click();
+    await (await actualFrame(page)).locator('[data-im-library-group="leaders"] a[href$="#intl-leadership-rotation"]').first().click();
     await page.waitForTimeout(250);
     const nestedRepeat=await state(page,'nested_repeated');snapshots.push(nestedRepeat);queryCheck(scope,'nested_repeat',nestedRepeat,new URL(beforeNested.parent.url).search);
     const reopened=await nestedState(page);
@@ -274,7 +301,7 @@ async function run(browser,width,lang,theme,query=''){
       }while(Date.now()<deadline);
       if(!viewEvent)throw new Error('No actual parent-observed VIEW_STATE for the focused Library input');
       restoreSeed={parent_url:seeded.parent.url,entry:seeded.parent.entry,history:seeded.parent.history,generation:seeded.child.generation,view:viewEvent.view,heading,observed_at:viewEvent.at};
-      check(scope,'restoration_saved_view_is_discriminating',enabled&&!!restoreSeed.entry&&seeded.child.activeId===restoreSeed.view.focusId&&Math.abs(restoreSeed.view.y-heading.y)>heading.viewport/2&&Math.abs(seeded.child.scroll.y-restoreSeed.view.y)<=2,{seed:restoreSeed});
+      check(scope,'restoration_saved_view_is_discriminating',enabled&&!!restoreSeed.entry&&seeded.child.activeId===restoreSeed.view.focusId&&heading.y>restoreSeed.view.y+heading.viewport+64&&Math.abs(seeded.child.scroll.y-restoreSeed.view.y)<=2,{seed:restoreSeed});
       snapshots.push(seeded);
     }
     for(const [action,expectedUrl,kind] of [['goBack',beforeNested.parent.url,'library'],['goForward',nested.parent.url,'nested']]){
@@ -297,7 +324,7 @@ async function run(browser,width,lang,theme,query=''){
         const baselineBody=samples.every(s=>s.child.activeId===''&&s.child.activeTag==='BODY');
         check(scope,'restoration_scroll_stays_stable',samples.every(scrollMatches),{expected:restoreSeed.view,samples:samples.map(s=>s.child.scroll)});
         check(scope,'restoration_focus_matches_saved_view',focusMatches,{expected_focus:restoreSeed.view.focusId,samples:samples.map(s=>({id:s.child.activeId,tag:s.child.activeTag})),known_baseline_failure:!focusMatches&&baselineBody,baseline_evidence:'baseline_parent_restoration_v7/observation.json',baseline_driver_sha256:'6eb5f118cdd7a64ba00465030b2ef12e04268c01e0af71793570e6f7b320e6c6'});
-        check(scope,'restoration_controller_does_not_steal_focus',focusMatches||baselineBody,{samples:samples.map(s=>({id:s.child.activeId,tag:s.child.activeTag}))});
+        check(scope,'restoration_settled_focus_not_changed_by_controller',focusMatches||baselineBody,{observation_window:'two settled samples after1300ms and another200ms; transient changes are not measured',samples:samples.map(s=>({id:s.child.activeId,tag:s.child.activeTag}))});
         snapshots.push(firstRestored,secondRestored);
       }
     }
