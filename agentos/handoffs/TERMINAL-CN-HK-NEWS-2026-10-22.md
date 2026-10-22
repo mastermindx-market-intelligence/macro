@@ -1,3 +1,46 @@
+---
+workstream: WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT
+session: sol/web-terminal-cn-hk-news-20261021
+model: sol
+ended_because: ci_handoff
+mission: Integrate original Chinese mainland and Hong Kong news into Terminal single-ticker views using the incumbent news and identity owners.
+state_before: Production ticker-news selection covered 503 US securities and had no CN/HK news selections or qualified Chinese feed.
+changed:
+  - path: engine/finlight_news.py
+    what: Bounded original-Chinese provider transport integrated into the existing ticker-news writer.
+  - path: engine/qbus_news_cn_hk.py
+    what: Current canonical CN/HK news selection and exact MIC-qualified aliases without a new identity owner.
+  - path: docs/ops/chinese-ticker-news.md
+    what: Primary-source media research, implementation contract and precise activation requirements.
+verified:
+  - claim: The canonical news regression kernel passes.
+    command: Python pytest using the ticker-news-qbus job's 48 suite list in .github/ci/legacy-jobs.yml.
+    result: 1171 passed and one existing skip; separate lifecycle and supplemental regression cohort passed 84 tests.
+  - claim: Current canonical owner inputs can qualify the expanded news universe without writes.
+    command: build_from_files with include_cn_hk=True and write=False using git show HEAD owner parquets.
+    result: 1669 securities qualified, including 1166 CN/HK listings.
+  - claim: Original Chinese renders in the actual Terminal panel.
+    command: TERMINAL_CROPS=1 npm run test:e2e:responsive -- e2e/ticker-news.spec.ts --grep 'Chinese and Hong Kong tickers' --workers=1
+    result: Three device projects passed with 24 synthetic captures; 51 contract/panel/editorial tests and TypeScript also passed.
+unverified:
+  - claim: Licensed original Chinese headlines are flowing in production.
+    what_would_verify: Authentic publisher receipts and an entity-capable key, qualified production selection, and real mainland/HK Terminal observations with identity and revocation proof.
+unresolved:
+  - Finlight is disabled pending credential and authentic publisher-specific permission records.
+  - Macro 10023 and Terminal 1113 require ordinary exact-head checks, review and release evidence.
+next_actions:
+  - Complete exact-head hosted checks and ordinary release for the disabled source capability.
+  - Install and qualify genuine source access through the existing owners, then prove actual Chinese Terminal flow.
+do_not_redo:
+  - Do not create another news store, identity owner, rights registry, lifecycle or quote universe.
+  - Preserve News cockpit 9612 and Tiingo 8697/8698 holds and existing Chairman-confirmed Tiingo permissions.
+  - Do not retry the terminal pre-effect Fabric census child or equate fixtures with live coverage.
+danger_areas:
+  - Numeric mainland and HK codes require exchange-qualified association, with no guessed A/H or ADR expansion.
+  - A healthy western feed does not prove Chinese coverage, and API access does not grant publisher display rights.
+  - Cached display remains subject to current source-specific rights.
+---
+
 # Terminal CN/HK original Chinese news — 2026-10-22
 
 ## User objective
