@@ -162,3 +162,13 @@ instead of the shared end-of-file append point. Parsed YAML equality before/afte
 proved all 350 job definitions semantically unchanged; the manifest validator passed.
 This reduces an avoidable concurrent append collision without widening permission,
 removing checks or introducing another release owner. Exact new head/run remain GitHub facts.
+
+## CI contract-delta remediation (22 October 2026, follow-on)
+
+The exact-head hosted run 39766825827 at b29552481eb3dcc8622a5e7d2298f31a2c1a6ced failed `contract-delta` because the new Navigator suite was inferred for three unrelated ordinary-change probes. It introduced one 25-weight-second job under templates/index.html, scripts/build_free_content.py and engine/prophet/plan_book.py, exceeding the accepted selection ceilings. The separate ci-pack-3 failure reported `unrun-brain-gateway` timed out after ten minutes during unusually slow Ubuntu dependency acquisition; local evidence does not establish a Navigator test failure or authorize weakening this gate.
+
+The fix curates only the new Navigator job with `scope: exclusive` and 68 scoped paths: six Navigator-owned patterns/identities and 62 exact transitive shared dependencies. The incumbent scope-inference audit computed 85 literal imported/read dependencies and **zero uncovered paths** after curation. A second ancestor-init audit found two extra package initializers, `engine/codex_lane/__init__.py` and `tests/__init__.py`; both were declared and the targeted ancestor census is now empty.
+
+The manifest validator still accepts all 350 job definitions. Direct scope probes show the Navigator job is selected by own engine, client and test changes, and NOT by any of the three offending unrelated probe paths. `git diff --check` passes. This is local ownership/probe evidence; the corrected head still owes hosted contract-delta, CI and gated release outcomes. No ceilings, base tests, production gate or unrelated job timeouts were altered.
+
+Paper was newly inspected from the current Studio carrier: Desktop is connected but the adapter returned `accepted_for_write=false` with catalog mismatch (observed SHA-256 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db; expected ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9). No Paper edit was dispatched, and the oversized active design remains held. Local product save census confirms `lib/user_prefs.py` stores scalar UI/alert preferences and `market_memory_retained_saved.py` is an authorized exact retained-output reader, not a generic market-path storage writer. No substitute store was built.

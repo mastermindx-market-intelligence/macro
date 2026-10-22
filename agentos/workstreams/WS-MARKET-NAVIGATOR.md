@@ -113,3 +113,7 @@ is not mounted and no endpoint or account write was added. Production SSH inspec
 was safety-blocked and is not retryable through another carrier. Browser connector
 reads require the originating extension context; local trusted source is absent.
 Native Paper and independent review remain unproven. Full product is not accepted.
+
+## Extra High CI scope correction (2026-10-22)
+
+The source release remains OPEN, not user-proven. Contract-delta exposed the Navigator suite selecting unrelated ordinary changes. Its job now has curated exclusive paths covering 85 actual literal imported/read dependencies and both separately detected ancestor init files; three formerly offending pack probes no longer select it. The current head still owes hosted proof. Paper is CONNECTED but write-schema incompatible and the active file is unsafe; no Paper write or live endpoint was performed. The personal prefs writer is not a Navigator hypothesis store. Continue the original PR, normal source release and later separately approved consumer/design integration.

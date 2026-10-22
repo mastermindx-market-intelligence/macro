@@ -108,3 +108,13 @@ Next: consume exact-head CI and normal source release; qualify actual entitled s
 binding through an independently approved, non-denied application path; complete safe
 native Paper and existing authenticated Macro/Terminal wiring. No worker START, live
 endpoint, source publication, account save, notification or trading authority exists.
+
+## Extra High source-and-design capability continuation (22 October 2026)
+
+Current protected procedure pin: Mastermind dce821e0d9d67b67b3053290e42fb2ac0bbcdcc1 (compatible 1.0.1). The Chairman selected Extra High; mode alone did not clear source or Paper permissions. M2 host/source writer was verified on the preserved branch at b29552481eb3dcc8622a5e7d2298f31a2c1a6ced with clean worktree before this change. Original PR #10055 merge-on-green was safely removed and read back; the PR remained OPEN, with failure-induced merge-blocked label.
+
+Hosted run 39766825827 exposed an attributable contract-delta selection violation. The new Navigator CI job was curated to exact dependency coverage. Its actual 85-file literal closure had zero misses; two separately audited ancestor initializer omissions were repaired. The manifest validates 350 definitions and exact offending-code probes no longer select Navigator. Preserve the existing experimental/proof increments (190 focused Python tests, 11 import guard tests, 10 Chromium client checks) unless input changed. The current candidate after this commit needs its own check result; do not promote old green evidence.
+
+Independent Paper lane: Studio Paper is CONNECTED on the same oversized `MASTERMIND PAGES` file but current server write catalog is incompatible and `accepted_for_write=false`. Do not mutate that file or invoke another carrier as a fallback. User must create/open an isolated safe file and the same approved adapter schema must become compatible before design writes. Existing browser/product signed-in proof is not established.
+
+Next: publish this narrow CI repair on PR #10055, reconcile exact head and required checks, deliver via normal gates only. Then build the existing-auth/owner-bound product consumer and native Paper visuals; do not substitute UI data or create a parallel personal-state writer. The unrelated Brain Gateway CI timeout during slow Ubuntu package download is not a reason to relax the Navigator safety contracts.
