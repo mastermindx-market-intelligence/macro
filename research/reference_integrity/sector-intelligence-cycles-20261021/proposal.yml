@@ -1480,3 +1480,94 @@ revision_mandate:
   cure: Discharged only by the live proof continuity.yml names (no invented number, signal, sizing or state on the served
     product); no drawn board, specimen or disposition in this file closes it.
   proof: P19-P21 production / natural-update proof recorded in continuity.yml
+# ── Round-2 revision mandate (written 2026-10-22 04:5xZ after the round-2 dual review at ab1e71ac: BLOCK/BLOCK) ──
+# Wave 2 is bounded specimen + manifest work; Paper writes stay frozen (file-size limit). Each row names the
+# SIC-V2 condition it cures; proof for every row = re-freeze at the wave-2 commit + round-3 dual review with
+# first-pass rationale quarantine. Rows marked deferred are declared, not cured, and stay in the coverage matrix.
+revision_mandate_round2:
+- id: VTC-013
+  severity: blocker
+  condition: SIC-V2-C01
+  disposition: planned_resolved_by_change
+  cure: 'cycles_repair: map producer resolved_stance (HOLD / HIGH-RISK BOUNCE / SELL / WAIT / GET READY / TRIM / COUNTERTREND ONLY …)
+    to the six doctrine stances in a documented table (cycles_ia.md + copy deck); draw only the doctrine chip on the face with
+    --ink-ok/--ink-warn/--muted mapping; engine string moves to the provenance drawer; no red instruction ink.'
+- id: VTC-014
+  severity: blocker
+  condition: SIC-V2-C02
+  disposition: planned_resolved_by_change
+  cure: 'brief_repair + cycles_repair: render templates/_sector_central_paper.css.j2 to a static sheet the specimens link; verify
+    .si-page-title/.si-workflow styled and the canvas painted per theme; capture.log records pixel samples at (30,300), (30,h/2),
+    (w-40,h-60), (300,135) for dark + light, desktop + mobile.'
+- id: PRC-029
+  severity: blocker
+  condition: SIC-V2-C05
+  disposition: planned_resolved_by_change
+  cure: 'boards_manifest.yml: supersession/correction notes on boards 01-08 (families → 28-31), 12/13/22 (Brief → 23-26), 16 (ages → 28/29)
+    naming the replacing board; board 01 capabilities_covered reconciled to the capabilities only it still homes (chart/picker/zoom/sheet);
+    one normative board per C01-C28 declared in a capability → board table.'
+- id: VTC-015
+  severity: major
+  condition: SIC-V2-C03
+  disposition: planned_resolved_by_change
+  cure: switcher draws all six workflows (Brief / Explore / Watches / Rotation / Dossier / Cycles) with aria-current on the board's own workflow.
+- id: VTC-016 / PRC-024 / PRC-031
+  severity: major
+  condition: SIC-V2-C04
+  disposition: planned_resolved_by_change
+  cure: provenance drawer (details/summary) holds phase_v2/pos_v2/epoch hashes/paths/Built table; the face carries plain EN/ZH labels; ZH boards localize the search placeholder and mono labels.
+- id: VTC-017 / PRC-030
+  severity: major
+  condition: SIC-V2-C05
+  disposition: planned_resolved_by_change
+  cure: capability → normative-board table in boards_manifest.yml (C01-C13/C22/C25/C26/C28 → 01-08 with correction notes; C14-C21/C23/C24/C27 → 28-31); composite board deferred to the rendered P14-P18 Cycles journey (PAPER_CAPACITY_LIMITED).
+- id: VTC-018
+  severity: major
+  condition: SIC-V2-C06
+  disposition: planned_resolved_by_change
+  cure: board-31 banner reflows inside the 390 frame (overflow-wrap, no one-word lines); chips under an incompatible_generation fixture render muted.
+- id: VTC-019 / PRC-025
+  severity: minor / major
+  condition: SIC-V2-C07
+  disposition: planned_resolved_by_change
+  cure: strip the legacy position/phase number from the drawn 'The read'; boards_manifest states_shown for 28 reworded to what is drawn.
+- id: VTC-008 / VTC-001 (boards 12/13/22, 20/21)
+  severity: carried
+  condition: SIC-V2-C08
+  disposition: planned_resolved_by_change
+  cure: boards 12/13/22 marked superseded in boards_manifest and removed from board 27 DRAWN evidence; boards 20/21 marked stale in the manifest (Paper re-export frozen).
+- id: VTC-002 / VTC-005 (mobile chrome)
+  severity: carried
+  condition: SIC-V2-C09
+  disposition: planned_resolved_by_change
+  cure: mobile capture uses the canonical mobile header markup from templates/_site_nav.html.j2 (wordmark, menu entry, settings) via the nav_static capture at 390.
+- id: VTC-009
+  severity: carried
+  condition: SIC-V2-C10
+  disposition: planned_resolved_by_change
+  cure: components.css:180-183 badge font-size → var(--fs-label) (11px floor).
+- id: PRC-032
+  severity: minor
+  condition: SIC-V2-C11
+  disposition: planned_resolved_by_change
+  cure: proj row labelled "Production projection (not the rhythm window)" in EN/ZH, or dropped.
+- id: PRC-027 / VTC-003
+  severity: major
+  condition: SIC-V2-C12
+  disposition: planned_resolved_by_change
+  cure: render Brief ZH desktop light+dark, Cycles ZH desktop light+dark, Cycles mobile light ZH from the specimens; add rows to boards_manifest and board 27.
+- id: PRC-026 / PRC-028 / PRC-018
+  severity: minor
+  condition: SIC-V2-C13
+  disposition: planned_resolved_by_change
+  cure: README + build_brief.py document stance_act as a builder-side lane label (or add the deck key); Bottoming Watch gate chips drawn per row or declared out of scope in the README.
+- id: VTC-020
+  severity: minor
+  condition: SIC-V2-C14
+  disposition: planned_resolved_by_change
+  cure: plural rule, typed em dashes removed, row glyphs labelled, coverage card full width, lane grid aligned.
+- id: PRC-010..016 / VTC-010 / VTC-012
+  severity: carried
+  condition: SIC-V2-C16
+  disposition: deferred_declared
+  cure: not a wave-2 cure — Time Machine, Narratives, desk watches, Moving/Money, Confluence, Reco tags, per-card language switch and the rules-only boards stay PAPER_CAPACITY_LIMITED with their P14-P18 rendered-proof cells.

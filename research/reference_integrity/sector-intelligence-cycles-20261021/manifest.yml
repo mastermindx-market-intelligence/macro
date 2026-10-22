@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: sector-intelligence-cycles-20261021
 scope: full
-status: in_review
+status: revise
 surface:
   route: sector_central.html
   registry_row: "macro:sector_central"
@@ -22,7 +22,7 @@ lineage:
 reference_files:            # frozen at the commit that lands the exports + specs (set at freeze; never pre-filled)
   - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/
     frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
-    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-22) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-21 after board 22 (6W1R-0) landed in 508539c0"
+    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-31: Paper exports 0-22 + HTML specimen captures 23-31) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-22 at ab1e71ac after repair wave 1 (round-2 dual review BLOCK/BLOCK → revise)"
   - path: design_refs/sector-paper-20261021/
     frozen_sha: ab1e71ac3c58eb6fbb7f11656e64a9213a6cae90
     note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs)"
