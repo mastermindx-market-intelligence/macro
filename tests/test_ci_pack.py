@@ -5172,7 +5172,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_841),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_814),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_816),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5181,6 +5181,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 original Chinese ticker-news coverage (PR #10023): the
+    existing news command gains one required pytest suite, exactly +2
+    estimator units. Hosted contract-delta on head 460467c4510e against
+    tested base 2148a98367be measured free-content 5,814 -> 5,816 with
+    no newly selected jobs; this was its only packing breach. Fund only
+    that measured +2. Keep every job-count, index/plan-book weight, pack,
+    timeout, selector and assertion unchanged. The 11 exact new-module
+    path declarations repair measured closure gaps, not selection limits.
 
     2026-10-21 qualified Today and Research API composition adds exactly five
     estimator units to research-vault-api (7 -> 12) for the two mandatory API
