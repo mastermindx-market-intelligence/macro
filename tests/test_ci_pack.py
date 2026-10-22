@@ -5176,8 +5176,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_848),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_821),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_851),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_824),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5186,6 +5186,10 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Current-main 9b48e798 also retains Prophet journey notifications (+3).
+    Compose that accepted coverage with Treasury (+4 over main): index
+    5,847 -> 5,851 and free-content 5,820 -> 5,824. No other bound changes.
 
     Treasury/current-main composition (2ebafe80) retains the GMI micro-theme
     step below plus the two Treasury suites: +4 units on main, hence
@@ -5211,6 +5215,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     padding; plan-book stays under its 5,600 ceiling. Every job-count ceiling,
     the ten-pack limit, selector code and every prior suite remain unchanged.
     Planning weights are not measured execution times.
+
+    2026-10-21 Prophet B21 U2 journey notifications adds one pytest step,
+    tests/test_prophet_journey_notifications.py (the pure producer half:
+    identity, eligibility, correction table, tier), to the existing
+    code-gated prophet-lab job and declares the new module and the suite in
+    that job's paths. The job was already selected on all three probes, so
+    no job joins any probe; the step costs exactly 3 estimator units (one
+    command plus one tests/test_ path). Composed with main 64ef5131a5f5 (which
+    already carries the 2026-10-22 micro-theme +3 above, so both +3 steps
+    stack), packing_probe_measurements on the exported merge tree measured:
+
+        templates/index.html          135 jobs, 5,844 -> 5,847 weight
+        scripts/build_free_content.py 135 jobs, 5,817 -> 5,820 weight
+        engine/prophet/plan_book.py   128 jobs, 5,593 -> 5,596 weight
+
+    Newly selected jobs: none; all three probes stay at ten packs. Fund only
+    the measured excess: index 5,844 -> 5,847 and build 5,817 -> 5,820, no
+    padding; plan-book stays under its 5,600 ceiling. Every job-count
+    ceiling, the ten-pack limit, selector code and every prior suite remain
+    unchanged. Planning weights are not measured execution times;
+    current-head CI must execute this assertion.
 
     Native refresh e0b639a composes Treasury with protected dabf745b.
     Main now includes both HK lookup and fixed-redirect regression coverage.
