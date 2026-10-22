@@ -36,7 +36,7 @@ _SYMBOL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,35}$")
 _ALLOWED_PARAMS = frozenset({
     "startDate", "endDate", "startExDate", "endExDate", "exDate",
     "resampleFreq", "afterHours", "forceFill", "columns", "asReported",
-    "tickers", "limit", "offset", "sortBy", "tags", "sources", "onlyWithTickers",
+    "tickers", "limit", "offset", "sortBy", "tags", "onlyWithTickers",
     "query",
 })
 
@@ -95,7 +95,8 @@ def symbol_path(symbol: str) -> str:
     return urllib.parse.quote(symbol, safe="")
 
 
-def request_path(source: str, symbol: str | None, params: dict[str, Any] | None = None) -> str:
+def _request_path(source: str, symbol: str | None, params: dict[str, Any] | None = None,
+                  *, legacy_sources: bool = False) -> str:
     if source not in SOURCES:
         raise ValueError("unknown Tiingo source")
     item = SOURCES[source]
@@ -106,7 +107,13 @@ def request_path(source: str, symbol: str | None, params: dict[str, Any] | None 
     else:
         path = item.path
     params = dict(params or {})
-    if not set(params).issubset(_ALLOWED_PARAMS):
+    allowed_params = _ALLOWED_PARAMS
+    if legacy_sources:
+        # Preserve old recorded request bytes; this is never a new-request alias.
+        allowed_params = allowed_params | {"sources"}
+    elif source == "news":
+        allowed_params = allowed_params | {"source"}
+    if not set(params).issubset(allowed_params):
         raise ValueError("unknown Tiingo request parameter")
     for k, v in params.items():
         if v is None or (isinstance(v, str) and len(v) > 150):
@@ -115,6 +122,11 @@ def request_path(source: str, symbol: str | None, params: dict[str, Any] | None 
             raise ValueError("credentials cannot occur in URL")
     query = urllib.parse.urlencode(sorted(params.items()), safe=",")
     return path + ("?" + query if query else "")
+
+
+def request_path(source: str, symbol: str | None, params: dict[str, Any] | None = None) -> str:
+    """Construct a current request; News publisher filtering uses HTTP source."""
+    return _request_path(source, symbol, params)
 
 
 def capture_day(value: str) -> str:
@@ -130,8 +142,13 @@ def capture_day(value: str) -> str:
     return clock.astimezone(timezone.utc).date().isoformat()
 
 
-def validate_request(source: str, symbol: str | None, path: str) -> None:
-    """Bind a relative documented endpoint and every query dimension to its source."""
+def validate_request(source: str, symbol: str | None, path: str, *,
+                     allow_legacy_sources: bool = True) -> None:
+    """Bind the exact recorded endpoint/query, including historical sources keys.
+
+    Historical syntax proves what was requested, not that a publisher filter was
+    honored. New collection/storage must reject the old plural spelling.
+    """
     if not isinstance(path, str):
         raise TiingoArchiveError("invalid request path")
     try:
@@ -139,7 +156,11 @@ def validate_request(source: str, symbol: str | None, path: str) -> None:
         query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True, strict_parsing=True)
         if parts.scheme or parts.netloc or parts.fragment or len(dict(query)) != len(query):
             raise ValueError("ambiguous request")
-        if request_path(source, symbol, dict(query)) != path:
+        params = dict(query)
+        legacy_sources = "sources" in params
+        if legacy_sources and not allow_legacy_sources:
+            raise ValueError("legacy publisher parameter cannot be collected")
+        if _request_path(source, symbol, params, legacy_sources=legacy_sources) != path:
             raise ValueError("noncanonical endpoint or query")
     except (TypeError, ValueError) as exc:
         raise TiingoArchiveError("source endpoint/request context mismatch") from exc
@@ -263,7 +284,7 @@ class Archive:
                        ) -> dict[str, Any]:
         if source not in SOURCES or SOURCES[source].symbol != bool(symbol):
             raise ValueError("invalid source/symbol")
-        validate_request(source, symbol, path)
+        validate_request(source, symbol, path, allow_legacy_sources=False)
         require_space(self.root, floor=self.free_floor)
         received_at = received_at or utc_now()
         day = capture_day(received_at)

@@ -328,3 +328,170 @@ def test_mock_boats_auth_rejection_stops_before_archive(lake, monkeypatch):
                          batch_messages=100, flush_seconds=2, archive=lake)
     assert "DO_NOT_LOG" not in str(exc.value)
     assert not (lake.root / "raw" / "boats-firehose").exists()
+
+
+def test_news_publisher_filter_uses_singular_wire_parameter():
+    assert a.request_path("news", None, {
+        "source": "bloomberg.com,cnbc.com", "limit": 250,
+        "onlyWithTickers": "true", "sortBy": "crawlDate",
+        "startDate": "2026-10-21", "endDate": "2026-10-22",
+    }) == (
+        "/tiingo/news?endDate=2026-10-22&limit=250&onlyWithTickers=true"
+        "&sortBy=crawlDate&source=bloomberg.com,cnbc.com&startDate=2026-10-21"
+    )
+
+
+@pytest.mark.parametrize("source,symbol", [
+    ("eod-bars", "NVDA"), ("news-bulk-index", None), ("crypto-bars", None),
+])
+def test_news_publisher_filter_is_not_a_global_parameter(source, symbol):
+    with pytest.raises(ValueError):
+        a.request_path(source, symbol, {"source": "cnbc.com"})
+
+
+@pytest.mark.parametrize("params", [
+    {"sources": "cnbc.com"},
+    {"source": "cnbc.com", "sources": "bloomberg.com"},
+])
+def test_news_publisher_filter_rejects_plural_before_collection(monkeypatch, params):
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid new query reached network or archive storage")
+
+    class NoStorage:
+        store_response = staticmethod(forbidden)
+
+    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    with pytest.raises(ValueError):
+        a.collect_one(NoStorage(), "news", None, "synthetic-test-key", params)
+
+
+def test_news_publisher_filter_collection_keeps_wire_and_receipt_equal(lake, monkeypatch):
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def read(self, _):
+            return b"[]"
+
+    requests = []
+
+    def stub(req, timeout):
+        requests.append(req)
+        return Response()
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", stub)
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T00:00:00+00:00")
+    result = a.collect_one(lake, "news", None, "synthetic-test-key", {
+        "source": "bloomberg.com,cnbc.com", "limit": 250,
+    })
+    expected = "/tiingo/news?limit=250&source=bloomberg.com,cnbc.com"
+    assert requests[0].full_url == a.API_ORIGIN + expected
+    assert requests[0].get_header("Authorization") == "Token synthetic-test-key"
+    receipt_bytes = next((lake.root / "receipts").rglob("*.json")).read_bytes()
+    receipt = json.loads(receipt_bytes)
+    assert receipt["request_path"] == expected
+    assert receipt["receipt_id"] == result["receipt_id"]
+    assert a.validate_receipt(receipt) == result["receipt_id"]
+    assert b"synthetic-test-key" not in receipt_bytes
+    assert b"synthetic-test-key" not in gzip.decompress((lake.root / result["path"]).read_bytes())
+
+
+@pytest.fixture
+def legacy_news_receipt(lake):
+    # Frozen synthetic output from the pre-fix owner at a92ee6e9. Do not rebuild
+    # this identity using the current constructor or silently rename its query.
+    raw = b'[{"id":"synthetic-news","source":"cnbc.com"}]'
+    receipt = {
+        "schema": "mastermind.tiingo.raw_receipt.v1",
+        "source": "news", "vendor": "tiingo", "symbol": None,
+        "request_path": "/tiingo/news?limit=250&sources=cnbc.com",
+        "observed_at_utc": "2026-10-22T00:00:00+00:00",
+        "publication_time_status": "UNVERIFIED_HISTORICALLY",
+        "rights_status": "PER_PRODUCT_REDISTRIBUTION_NOT_VERIFIED",
+        "http_status": 200, "content_type": "application/json",
+        "raw_path": "raw/news/2026-10-22/all/4b6379df264c6ec0-e2577d5783da4b276ad65ee6.raw.gz",
+        "raw_sha256": "e2577d5783da4b276ad65ee6bedd39ce4a6be906dbf396e12bc5ca4649238417",
+        "raw_bytes": 45, "compressed_bytes": 64, "record_count_hint": 1,
+        "source_modified_at": None,
+        "correction_policy": "APPEND_VINTAGE_NEVER_IN_PLACE",
+        "price_basis_policy": "PRESERVE_VENDOR_RAW_AND_ADJUSTED_AS_DIFFERENT_FIELDS",
+        "receipt_id": "ef027895644252301c09d4b428776475a63f494a344ce89378745d944e833b89",
+    }
+    raw_path = lake.root / receipt["raw_path"]
+    raw_path.parent.mkdir(parents=True)
+    raw_path.write_bytes(gzip.compress(raw, mtime=0))
+    receipt_path = lake.root / "receipts/news/2026-10-22/4b6379df264c6ec0-e2577d5783da4b276ad65ee6.json"
+    receipt_path.parent.mkdir(parents=True)
+    receipt_path.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+    return receipt, raw, raw_path, receipt_path
+
+
+def test_legacy_news_filter_receipt_remains_readable_without_rewriting(lake, legacy_news_receipt):
+    from scripts.tiingo_materialize import verified_raw
+
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = raw_path.read_bytes(), receipt_path.read_bytes()
+    assert a.validate_receipt(receipt) == "ef027895644252301c09d4b428776475a63f494a344ce89378745d944e833b89"
+    assert verified_raw(lake.root, receipt) == raw
+    assert (raw_path.read_bytes(), receipt_path.read_bytes()) == before
+
+
+def test_legacy_news_filter_cannot_be_newly_stored(lake, legacy_news_receipt):
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+    with pytest.raises(a.TiingoArchiveError):
+        lake.store_response("news", None, receipt["request_path"], raw,
+                            received_at="2026-10-22T01:00:00+00:00")
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+def test_legacy_news_filter_renaming_does_not_inherit_receipt_identity(legacy_news_receipt):
+    receipt, _, _, _ = legacy_news_receipt
+    renamed = {**receipt, "request_path": "/tiingo/news?limit=250&source=cnbc.com"}
+    with pytest.raises(a.TiingoArchiveError, match="original receipt identity mismatch"):
+        a.validate_receipt(renamed)
+
+
+def test_legacy_news_filter_and_corrected_capture_keep_distinct_identities(lake, legacy_news_receipt):
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = raw_path.read_bytes(), receipt_path.read_bytes()
+    path = a.request_path("news", None, {"limit": 250, "source": "cnbc.com"})
+    result = lake.store_response("news", None, path, raw,
+                                received_at=receipt["observed_at_utc"])
+    assert result["receipt_id"] != receipt["receipt_id"]
+    assert result["path"] != receipt["raw_path"]
+    assert result["raw_sha256"] == receipt["raw_sha256"]
+    assert (raw_path.read_bytes(), receipt_path.read_bytes()) == before
+
+
+def test_legacy_news_filter_compatibility_preserves_old_non_news_paths():
+    # Old construction allowed plural sources globally; historical readers must
+    # retain those exact bytes without admitting that syntax for new requests.
+    path = "/tiingo/daily/NVDA/prices?sources=cnbc.com"
+    assert a.validate_request("eod-bars", "NVDA", path) is None
+    with pytest.raises(ValueError):
+        a.request_path("eod-bars", "NVDA", {"sources": "cnbc.com"})
+
+
+@pytest.mark.parametrize("path", [
+    "/tiingo/news?source=cnbc.com&sources=bloomberg.com",
+    "/tiingo/news?source=cnbc.com&source=bloomberg.com",
+    "/tiingo/news?sources=cnbc.com&sources=bloomberg.com",
+    "/tiingo/news?source=cnbc.com&limit=250",
+    "/tiingo/news?sources=cnbc.com&limit=250",
+    "/tiingo/news?source=cnbc.com&token=synthetic-test-key",
+    "/tiingo/news?source=cnbc.com&unknown=value",
+    "/tiingo/news?source=cnbc.com#fragment",
+    "https://api.tiingo.com/tiingo/news?source=cnbc.com",
+    "/tiingo/daily/NVDA/prices?source=cnbc.com",
+])
+def test_news_publisher_filter_history_does_not_weaken_path_validation(path):
+    with pytest.raises(a.TiingoArchiveError):
+        a.validate_request("news", None, path)
