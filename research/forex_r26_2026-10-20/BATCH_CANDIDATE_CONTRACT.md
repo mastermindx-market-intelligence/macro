@@ -1,3 +1,42 @@
+# Existing-owner prospective USDJPY contract decisions — 22 October 2026
+
+The accountable recovery owner records the following **design decisions for qualified source review and later existing-owner integration**. They do not adopt the current `/2` policy, admit observations, register a production feed or activate saved conditions. The successful 19:15 readback below is the actual bounded witness. No provider-support or licensing email is required.
+
+| Boundary | Owner design decision | Evidence limit / release condition |
+| --- | --- | --- |
+| Pair and observable | USDJPY only, JPY per USD; Tiingo-reported native historical close, with minute completeness/consistency evidence. Draft contract name: `tiingo.fx.USDJPY.reported-close.utc4h.local/v1`, subject to incumbent naming review. | Never call it midpoint, executable price or a transaction close. Other pairs remain outside this proposed scope; preserve CNH and BRL evidence. |
+| Numeric semantics | Use the existing reader's normalized representation and exact normalized comparisons. Add no rounding or tolerance. | No raw arbitrary-precision equivalence claim. |
+| Interval and calendar | Reuse `4H` and `fx-utc-4h/v1`: half-open UTC slots, a complete aligned 240-minute witness, qualified lineage, post-end observations, native/minute agreement and relevant-vintage checks. Withhold gaps or conflicts; never skip/bridge a slot. | Local qualification after an interval is not vendor immutability. Two observed windows do not prove all holidays, sessions or ten-close live history. |
+| Availability and freshness | Use actual current readback availability. Keep stable older support with its original expired individual state; require newest freshness before its fixed end plus four hours. | Never backdate availability or extend expiry on reread. The recorded 16:00 end expires at 20:00 UTC. |
+| Inventory and corrections | Scope the contract to the existing bounded, observed local receipt inventory and actual two scans, exact binding verification and all relevant observed closed vintages. Preserve originals. A conflicting closed vintage withholds the sequence; no accepted replacement policy is proposed. | Non-atomic scans and incomplete global/vendor correction knowledge remain explicit. If an atomic/global guarantee is required, this contract is insufficient. |
+| Logical identity and revision | Proposed logical identity binds the named contract, literal pair, interval/calendar and UTC start/end. Exclude scan/readback time, receipt order and incidental selected equal witness. Proposed local revision 1 means immutable local-observation semantics, not a vendor revision number. Keep proof receipt identities separately. | An equal reread cannot become a new bar. A conflict cannot silently become revision 2. Final identity naming/encoding requires existing source-owner review before operative use. |
+| Account binding | Future binding must use the normal owned-account, expected-revision mutation and preserve the user's threshold, operator, count and condition expiry. Existing saved rows stay inactive with null feed. | No automatic upgrade or in-memory feed injection. Preserve completed inactive CRUD proof. |
+
+## Concrete incumbent integration sequence
+
+1. Keep `assess_forex_source_batch_candidate` and `read_forex_source_batch_candidate` research-only with unchanged empty eligibility and false admission flags. Their existing candidate projection already supplies pair, interval endpoints, current availability, fixed expiry, slot sequence and close; no additional handoff wrapper or parallel evaluator is needed merely to relabel it.
+2. Obtain qualified source review through the existing owner and original operation constraints. The failed 429 return does not become qualified through this document or a native agent's advice. No replay, new review operation or provider substitution is authorized by these design decisions.
+3. At actual adoption, bind the existing projection to the incumbent evaluator's `pair/feed/interval/calendar/quote_basis/bar_end/available_at/expires_at/bar_sequence/close/observation_id/revision` fields under the reviewed source contract. Preserve `engine/forex_alerts.py::evaluate_price_condition` and its checks.
+4. Preserve a stable delivery deduplication key at the **existing** Alerts/outbox boundary: owned condition ID, exact rule revision, feed contract and ordered observation IDs/revisions. The evaluator's evidence digest includes availability clocks, so `evaluation_id` alone must not create a duplicate delivery on a later equal reread. Keep that digest as evidence.
+5. Existing Terminal validation, `save_forex_watch`, Macro's `templates/forex_watch_client.js` and `ingest/alerts_engine.py` must be integrated together. Current client validation deliberately requires null feed/inactive state. Do not simply relax it. The actual enqueue must atomically qualify owned account, exact active rule revision, rule/source expiry, feed and source eligibility with the existing idempotency boundary; a later disarm PATCH is insufficient.
+6. Qualify the changed source, account/API, expiry/correction/deduplication behavior and genuine delivery path through existing owners before activation. Terminal #1106's original-only review HOLD and the prior deployment safety refusal remain separate gates. Migration 0038 is never reapplied.
+
+The remaining blockers are therefore concrete technical review and incumbent integration/proof boundaries, not an unanswered licensing request. This record provides reviewable decisions without inventing accepted authority or a new lifecycle, account, watch, evaluator, queue, retry or publication plane.
+
+## Recorded actual observation and preserved implementation contract
+
+# Actual version 2 USDJPY observation — 22 October 2026, 19:15 UTC
+
+The existing observed-census reader completed a real marked-receipt readback on source `0a71e8cac5620593975b741abdf8d798900452fd`. Exactly two requests were called once after a bounded absence/effect preflight, using the existing collector, account and archive. The two original receipts were materialized once each. No historical receipt was upgraded.
+
+The 08:00–12:00 supporting interval and 12:00–16:00 latest interval both passed batch support at the actual 19:15:19 UTC readback. Both observed scans contained the same 24 metadata entries; four exact USDJPY views were read, including the preserved old unmarked pair. All relevant selected receipt clock declarations qualified under version 2. See [the metadata-only actual execution receipt](evidence/usdjpy_v2_actual_readback_20261022.json).
+
+The older interval's individual verification/assessment-expiry failures remain present. The latest interval's fixed expiry is **20:00 UTC**, and subsequent readbacks cannot extend it. Equal normalized prices and equal local scans establish only the recorded bounded comparisons. They do not prove all vendor corrections, an atomic/global inventory, producer execution attestation or earlier historical availability.
+
+`batch_checks_satisfied=true` is now an actual observed research result. `CANDIDATE_NOT_ADOPTED`, empty eligible observations and every admission flag remain unchanged. Technical adoption requires the existing owners' explicit identity, observable, calendar, clock/concurrency, correction and account-binding decisions plus qualified review. Licensing/product use is COMPLETE by Chairman attestation; provider approval email is not a remaining step.
+
+## Preserved implementation contract and earlier observations
+
 # Current original-receipt clock contract and policy version 2 — 22 October 2026
 
 The original receipt may declare `observation_clock_contract=local_utc_after_bounded_read_before_http_exit/v1`. The repaired `collect_one` supplies it with the local clock sampled after a successful bounded body read and before response-context teardown. Generic direct `store_response` calls remain unmarked unless they explicitly supply the recognized declaration and a received-at clock. An absent or bounded unknown declaration stays readable; strict policy does not qualify it.

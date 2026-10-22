@@ -1,3 +1,35 @@
+# Current owner checkpoint — real USDJPY version 2 readback, 22 October 2026
+
+**The existing owner completed one bounded USDJPY capture, exact materialization and observed census on source `0a71e8cac5620593975b741abdf8d798900452fd`. Both required adjacent slots passed the batch candidate checks at 19:15:19 UTC. Source admission, account activation and release remain held by their existing gates.**
+
+This supersedes earlier statements that a real marked version 2 capture had not yet been acquired. All earlier receipts and qualifications below remain historical evidence; no completed capture, materialization, census, deployment, migration or render should be replayed to recreate this checkpoint.
+
+## Actual work and evidence custody
+
+- The exact two current-day USDJPY requests were reconciled absent in the observed archive scope, then each called once through the existing collector: one minute and native four hour. The operation ran from 19:10:09.357717 to 19:10:12.702085 UTC: attempted 2, successful 2, new 2, failed 0; 1,156 row hints and 133,849 decoded response bytes. No retry or provider/account/carrier substitution occurred.
+- The original minute and native receipts declare `local_utc_after_bounded_read_before_http_exit/v1`, observed at 19:10:11.062952 and 19:10:12.699180 UTC. The previous 22 observed entries remain byte-identical. The archive now yielded 24 entries in this bounded capture-date scope; this is not a global inventory or quiescence claim.
+- Each exact new receipt was materialized once: 1,151 minute rows and 5 native rows. Full licensed rows stay in the existing private archive. The committed [metadata-only receipt](evidence/usdjpy_v2_actual_readback_20261022.json) binds original receipt, raw, manifest, normalized and operation hashes without price rows.
+- The existing census reader—not a hand-selected pure-function assessment—observed two equal 24-entry scans. It verified four exact views, including both older unmarked receipts without rewriting or silently dropping them. Actual verification was 19:15:19.039429 UTC and assessment 19:15:19.039448 UTC. Result SHA256: `e2b81ed36684d63a179a0335e3c71aa7db80e57cd75e5c4ff6cd201daf8ea2cd`.
+- Required UTC intervals were 08:00–12:00 and 12:00–16:00 on October 22. Batch checks are true, with no failed batch checks. The supporting interval retains its individual expiry failures; current decision support does not manufacture historical availability. The latest interval passed at the recorded readback and has a fixed expiry of 20:00 UTC. Re-reading or this document does not extend it.
+- Policy remains `CANDIDATE_NOT_ADOPTED`; eligible observations are empty and monitoring, DataOS identity, PIT/backtest and redistribution admission flags remain false. The clock marker is an integrity-bound producer declaration, not independent execution attestation or vendor finality. Licensing and intended product use remain **COMPLETE by Chairman attestation**; no Tiingo approval/support email is needed.
+
+The preceding source qualification remains **524 passed in 33.75s**. At the 19:25 UTC read, exact-head fences 39835608532 succeeded and CI 39835608703 was still running; contract-delta and ci-plan had succeeded. Predecessor 01a93e59's CI 39831294081 subsequently became cancelled; its 507 local passes and successful fences remain exact-predecessor evidence, not current-head green CI.
+
+## Ordered continuation and fixed owner boundaries
+
+1. Consume this positive observation and the pending exact-head CI result. Do not recapture or re-run the census merely to obtain a later clock.
+2. Record concrete existing-owner design decisions for literal USDJPY, reported-close/normalized precision, supported UTC scope, current supporting history/newest expiry, bounded observed inventory/corrections, stable observation identity and normal revision-bound account binding. Preserve CNH identity, BRL empty evidence and all other pair evidence. This design work is not source admission or independent review.
+3. Keep the original Forex source review unqualified until qualified existing-owner evidence exists; no replay or changed provider after its terminal 429. Downstream account activation still requires the incumbent Terminal contract, source qualification, normal saved revision and atomic eligibility/fire proof through the existing evaluator and outbox.
+4. Continue Bonds in its existing workspace. Local W4 commit `d67c40527801925ab3323310f72e2cbf070a4ead` is retained; the explicit upstream merge from `7f57e913a5fa17e11001564a31c4c70a425cb102` remains in progress. The actual fixed-input producer/validation/CDI/native page ran once; pricing validation passed. A harness CSS selector false negative is being reconciled from those exact artifacts before remaining single-page asset qualification. W5's affected caller suites now passed 106 tests after truthful synthetic clock/metadata corrections; its original 443-pass/15-fail run remains recorded.
+5. Browser evidence is scoped precisely. The existing Chrome extension can read production. Current candidate loopback navigation failed with ERR_SOCKET_NOT_CONNECTED despite Studio serving the exact artifact. No shared filesystem or forwarding route is evidenced. These technical failures do not establish a blanket browser prohibition; historical R6/R9 action-specific refusals stay untouched. Native source/HTML checks do not replace missing candidate visual proof.
+6. Update committed plans and the existing canonical comments after each material result. Normal pushes use the existing branches, with explicit paths and same-operation reconciliation. Preserve the original dirty/untracked/ignored workspaces.
+
+Current Studio custody remains session `d177af56-3a0b-4b7d-b6eb-27fb2b10189c`, default carrier, selectedHostRef null. The protected compatible Skillpack pin is `05a9eb52a54e29fb7bbd0d40813ed12623b176c7`. Do not select another host to overcome a refusal or connectivity gap.
+
+Macro #9996's immutable accepted head, green CI, covering render **39688064251**, public R26 and proven inactive save/reload/edit/delete remain accepted. **Never reapply migration 0038.** Terminal #1106 stays Draft/HOLD until the original Fabric repair-review yields qualified continuation/review; the prior exact deployment safety refusal remains in force. Preserve held carry/COT and RiskRadar work. No new lifecycle, account, watch, evaluator, queue, retry or publication plane.
+
+## Historical checkpoints — accepted results retained below
+
 # Current owner checkpoint — receipt-clock provenance, 22 October 2026
 
 **The current Forex candidate path now distinguishes declared response-read clocks from unmarked legacy receipt clocks. Its 524-test qualification is complete; source adoption and the broader Forex/Bonds release gates remain open.** This increment descends from published #10052 head `01a93e59d86f3243b19185f94d87c8aea95330dc`. That predecessor's 507-pass response-sampling result, fences 39831294103 success and automatic CI 39831294081 still in progress at the 18:47 UTC read remain evidence on that exact head.
