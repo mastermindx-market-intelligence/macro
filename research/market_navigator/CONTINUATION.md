@@ -118,3 +118,15 @@ Hosted run 39766825827 exposed an attributable contract-delta selection violatio
 Independent Paper lane: Studio Paper is CONNECTED on the same oversized `MASTERMIND PAGES` file but current server write catalog is incompatible and `accepted_for_write=false`. Do not mutate that file or invoke another carrier as a fallback. User must create/open an isolated safe file and the same approved adapter schema must become compatible before design writes. Existing browser/product signed-in proof is not established.
 
 Next: publish this narrow CI repair on PR #10055, reconcile exact head and required checks, deliver via normal gates only. Then build the existing-auth/owner-bound product consumer and native Paper visuals; do not substitute UI data or create a parallel personal-state writer. The unrelated Brain Gateway CI timeout during slow Ubuntu package download is not a reason to relax the Navigator safety contracts.
+
+
+## Latest CI control-plane repair (2026-10-22)
+
+Original PR #10055 remained open at 6ed9008275b15f1cb4de94adbca84403530f9d7b.
+Hosted workflow 39774043837 failed the pinned curated-set assertion
+(794 other cases passed; one skipped). Exact job identity was added to
+CURATED_EXCLUSIVE in existing tests/test_ci_pack.py. Three focused
+source checks passed locally. Publish this fix on the same original branch,
+read back new head and consume its own hosted gate. No duplicate CI job,
+reviewer, or runtime source authority was created. W3 remains separate,
+source-only and awaits its own normal delivery.

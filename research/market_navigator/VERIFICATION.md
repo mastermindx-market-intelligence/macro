@@ -172,3 +172,20 @@ The fix curates only the new Navigator job with `scope: exclusive` and 68 scoped
 The manifest validator still accepts all 350 job definitions. Direct scope probes show the Navigator job is selected by own engine, client and test changes, and NOT by any of the three offending unrelated probe paths. `git diff --check` passes. This is local ownership/probe evidence; the corrected head still owes hosted contract-delta, CI and gated release outcomes. No ceilings, base tests, production gate or unrelated job timeouts were altered.
 
 Paper was newly inspected from the current Studio carrier: Desktop is connected but the adapter returned `accepted_for_write=false` with catalog mismatch (observed SHA-256 1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db; expected ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9). No Paper edit was dispatched, and the oversized active design remains held. Local product save census confirms `lib/user_prefs.py` stores scalar UI/alert preferences and `market_memory_retained_saved.py` is an authorized exact retained-output reader, not a generic market-path storage writer. No substitute store was built.
+
+
+## Hosted curated-membership CI repair (2026-10-22)
+
+The post-curation hosted CI run 39774043837 at exact head
+6ed9008275b15f1cb4de94adbca84403530f9d7b failed one new
+control-plane contract: 794 other cases passed, one was skipped,
+and test_the_curated_exclusive_set_is_actually_declared rejected
+market-navigator-foundation as missing from the existing closed
+CURATED_EXCLUSIVE job membership set. This is a separate gate from
+the now-fixed ordinary-code packing over-selection; it remains enforced.
+
+The owning branch now adds that job ID to the existing pinned membership
+without weakening the assertion, selection ceilings, timeouts or reviews.
+Targeted local checks for curated-membership, explicit-scope coverage and
+exclusive-scope replacement: 3 passed. The new candidate still owes
+hosted CI and independent review. No merge or production claim follows.

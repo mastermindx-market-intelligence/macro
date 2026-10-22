@@ -5009,6 +5009,11 @@ CURATED_EXCLUSIVE = {
     "options-r1-rotation-relative-trend",
     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-sector-holdings-coverage",
+    # 2026-10-22 Market Navigator: the pure research/consumer suite has a
+    # measured exclusive import/read closure. Its previous opaque inference
+    # selected unrelated template and Prophet ordinary-change probes, exceeding
+    # the accepted pack ceilings. Keep the pinned curated-membership invariant.
+    "market-navigator-foundation",
 }
 
 
