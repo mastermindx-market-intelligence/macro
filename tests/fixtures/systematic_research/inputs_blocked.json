@@ -1,0 +1,114 @@
+{
+  "_fixture_note": "SYNTHETIC TEST DATA — invented numbers, not a measured result.",
+  "schema": "systematic_research.v1",
+  "generated_at": "2026-10-22T18:26:00Z",
+  "as_of": "2026-10-21T20:00:00Z",
+  "mode": "RESEARCH_ONLY",
+  "live_orders_enabled": false,
+  "status": "inputs_blocked",
+  "source": {
+    "code_revision": "synthetic0000",
+    "data_revision": "synthetic0002"
+  },
+  "summary": {
+    "candidate_count": 2,
+    "evaluated_count": 0,
+    "capital_eligible_count": 0
+  },
+  "strategies": [
+    {
+      "id": "tsmom_200",
+      "name": "200-session time-series momentum",
+      "family": "Trend following",
+      "horizon_sessions": 21,
+      "status": "blocked",
+      "stance": "Stand aside",
+      "reason": "The price history needed to measure this candidate is incomplete.",
+      "historical": {
+        "state": "unavailable",
+        "sample_start": null,
+        "sample_end": null,
+        "observations": 0,
+        "net_sharpe": null,
+        "net_cagr": null,
+        "max_drawdown": null,
+        "turnover": null,
+        "cost_bps": null,
+        "benchmark_sharpe": null,
+        "limitations": [
+          "No sample was produced, so there is nothing to read."
+        ]
+      },
+      "prospective": {
+        "state": "not_started",
+        "registered": 0,
+        "graded": 0
+      },
+      "paper": {
+        "state": "not_connected"
+      },
+      "capital_eligible": false,
+      "blockers": [
+        "Incomplete daily history for the required instrument family.",
+        "No cost record was compiled for this run."
+      ],
+      "invalidation": [],
+      "instruments": [
+        "Broad equity index futures"
+      ]
+    },
+    {
+      "id": "rsi2_oversold",
+      "name": "Two-session RSI oversold re-entry",
+      "family": "Short-horizon mean reversion",
+      "horizon_sessions": 2,
+      "status": "blocked",
+      "stance": "Stand aside",
+      "reason": "The price history needed to measure this candidate is incomplete.",
+      "historical": {
+        "state": "unavailable",
+        "sample_start": null,
+        "sample_end": null,
+        "observations": 0,
+        "net_sharpe": null,
+        "net_cagr": null,
+        "max_drawdown": null,
+        "turnover": null,
+        "cost_bps": null,
+        "benchmark_sharpe": null,
+        "limitations": [
+          "No sample was produced, so there is nothing to read."
+        ]
+      },
+      "prospective": {
+        "state": "not_started",
+        "registered": 0,
+        "graded": 0
+      },
+      "paper": {
+        "state": "not_connected"
+      },
+      "capital_eligible": false,
+      "blockers": [
+        "Incomplete daily history for the required instrument family.",
+        "No cost record was compiled for this run."
+      ],
+      "invalidation": [],
+      "instruments": [
+        "Large-cap index constituents"
+      ]
+    }
+  ],
+  "data_health": {
+    "state": "blocked",
+    "reasons": [
+      "Daily price history is incomplete for the required instrument family.",
+      "The compiled cost record for this run is empty."
+    ],
+    "last_session": "2026-10-20"
+  },
+  "limitations": [
+    "No candidate has a historical record in this run, so no measured result is shown.",
+    "Nothing on this page is approved for capital, and this page cannot place an order."
+  ]
+}

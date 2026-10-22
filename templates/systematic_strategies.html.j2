@@ -1,0 +1,291 @@
+{# Systematic Strategies — research-only workspace.
+
+   Renders one compiled `systematic_research.v1` artifact projected through the
+   allowlist in `scripts/render_systematic_strategies.py`. Everything shown here
+   is a real contract field: there is no placeholder chart, no sample result and
+   no current recommendation.
+
+   Tier discipline (docs/DESIGN_DOCTRINE.md):
+     Tier 1 GLANCE — title, subtitle, stance, the evidence summary, and each
+       candidate's state / horizon / next unmet prerequisite. Plain words only.
+     Tier 3 STUDY — every measured number lives inside a native <details>
+       disclosure under "View evidence": historical record, forward testing,
+       paper trading, then method and provenance.
+
+   Every control on this page's own body is a native <details>/<summary>
+   disclosure, which is keyboard-operable and announces its own expanded state.
+   The page adds no script of its own and no inert button; the one <script> tag
+   is the shared theme.js the header requires. #}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
+<title>Systematic Strategies — Research Workspace — MastermindX</title>
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+{# The shared header's appearance is owned by navigation-refresh.css (theme.css
+   only raises its z-index), and its behaviour by theme.js. Take all three or the
+   mega-menu renders expanded and every control is dead markup. #}
+<link rel="stylesheet" href="navigation-refresh.css">
+<link rel="stylesheet" href="{{ page_css }}">
+<script src="{{ nav_prefix }}theme.js" defer></script>
+</head>
+<body class="ss-page">
+{% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
+{% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
+{% include "_site_nav.html.j2" %}
+
+<main class="ss-workspace" id="ss-workspace">
+
+  <header class="ss-head">
+    <div class="ss-head-copy">
+      <p class="ss-eyebrow">Research workspace</p>
+      <h1 class="ss-title">Systematic Strategies</h1>
+      <p class="ss-deck">Test small edges. Keep only evidence.</p>
+    </div>
+    <div class="ss-stance" role="group" aria-label="Current stance">
+      <p class="ss-stance-label">Stance</p>
+      <p class="ss-stance-word">{{ report.stance }}</p>
+      <p class="ss-stance-detail">{{ report.stance_detail }}</p>
+    </div>
+  </header>
+
+  {# One as-of, one mode stamp, once per page (Doctrine Law 4). #}
+  <p class="ss-meta">
+    <span class="ss-meta-mode">{{ report.mode_label }}</span>
+    <span class="ss-meta-dot" aria-hidden="true">·</span>
+    <span>Generated <time datetime="{{ report.generated_at_iso }}">{{ report.generated_at_text }}</time></span>
+    <span class="ss-meta-dot" aria-hidden="true">·</span>
+    <span>Live orders disabled</span>
+  </p>
+
+  {% if not report.contract_ok %}
+  {# Fail-closed: the record could not be read, so this page names what is
+     missing instead of showing a candidate it cannot vouch for. #}
+  <section class="ss-panel ss-panel-alert" aria-labelledby="ss-blocked-title">
+    <h2 class="ss-panel-title" id="ss-blocked-title">This record could not be read</h2>
+    <p class="ss-panel-lead">Nothing is shown until the research record is rebuilt in the format this page reads. No results have been estimated in its place.</p>
+    <h3 class="ss-subtitle">What is missing</h3>
+    <ul class="ss-missing">
+      {% for reason in report.blocked_reasons %}
+      <li>{{ reason }}</li>
+      {% endfor %}
+      <li>A compiled research record stamped at or before the present time.</li>
+    </ul>
+    <p class="ss-footnote">No strategy is approved for capital. This page never presents trading controls.</p>
+  </section>
+  {% else %}
+
+  <section class="ss-summary" aria-labelledby="ss-summary-title">
+    <h2 class="ss-visually-hidden" id="ss-summary-title">Evidence summary</h2>
+    <dl class="ss-stats">
+      <div class="ss-stat">
+        <dt>Candidates under study</dt>
+        <dd>{{ report.candidate_count }}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>Reviewed against past data</dt>
+        <dd>{{ report.evaluated_count }}</dd>
+      </div>
+      <div class="ss-stat ss-stat-key">
+        <dt>Approved for capital</dt>
+        <dd>{{ report.capital_eligible_count }}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>Inputs</dt>
+        <dd class="ss-stat-text">{{ report.data_health.state_label }}</dd>
+      </div>
+      <div class="ss-stat">
+        <dt>Latest complete session</dt>
+        <dd class="ss-stat-text">{{ report.data_health.last_session if report.data_health.last_session else 'Not available' }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  {# Data-health reasons stay visible whether or not candidates are shown: a
+     stale page that still has cards must still say the inputs are stale. #}
+  {% if report.data_health.reasons %}
+  <section class="ss-notes ss-notes-blocked" aria-labelledby="ss-inputs-title">
+    <h2 class="ss-subtitle" id="ss-inputs-title">Why the inputs are blocked</h2>
+    <ul class="ss-missing">
+      {% for reason in report.data_health.reasons %}<li>{{ reason }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.data_notes %}
+  <section class="ss-notes" aria-labelledby="ss-notes-title">
+    <h2 class="ss-subtitle" id="ss-notes-title">Data quality</h2>
+    <ul class="ss-missing">
+      {% for note in report.data_notes %}
+      <li>{{ note }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.strategies %}
+  <section class="ss-candidates" aria-labelledby="ss-candidates-title">
+    <h2 class="ss-section-title" id="ss-candidates-title">Candidates</h2>
+    {% for s in report.strategies %}
+    <article class="ss-card" aria-labelledby="ss-card-{{ s.id }}">
+
+      <div class="ss-card-head">
+        <div>
+          <h3 class="ss-card-title" id="ss-card-{{ s.id }}">{{ s.label }}</h3>
+          <p class="ss-card-why">{{ s.reason }}</p>
+        </div>
+        <span class="ss-chip ss-chip--{{ s.state }}">{{ s.state_label }}</span>
+      </div>
+
+      <dl class="ss-card-facts">
+        <div class="ss-fact">
+          <dt>Stance</dt>
+          <dd>{{ s.stance }}</dd>
+        </div>
+        <div class="ss-fact">
+          <dt>Horizon</dt>
+          <dd>{{ s.horizon_text }}</dd>
+        </div>
+        <div class="ss-fact ss-fact-wide">
+          <dt>Next unmet prerequisite</dt>
+          <dd>{{ s.next_prerequisite }}</dd>
+        </div>
+      </dl>
+
+      <details class="ss-evidence">
+        <summary class="ss-evidence-toggle">
+          <span class="ss-evidence-word">View evidence</span>
+        </summary>
+
+        <div class="ss-evidence-body">
+
+          {# ── 1. Historical record — the only place measured numbers appear ── #}
+          <section class="ss-detail" aria-labelledby="ss-hist-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-hist-{{ s.id }}">Historical record</h4>
+            <p class="ss-detail-state">{{ s.historical.state_label }}</p>
+            <dl class="ss-kv">
+              <div><dt>Sample start</dt><dd>{{ s.historical.sample_start if s.historical.sample_start else 'Not available' }}</dd></div>
+              <div><dt>Sample end</dt><dd>{{ s.historical.sample_end if s.historical.sample_end else 'Not available' }}</dd></div>
+              <div><dt>Observations</dt><dd>{{ s.observations }}</dd></div>
+            </dl>
+            <table class="ss-metrics">
+              <caption class="ss-visually-hidden">Measured results for {{ s.label }}, net of the costs shown</caption>
+              <thead>
+                <tr><th scope="col">Measure</th><th scope="col" class="ss-num">Value</th></tr>
+              </thead>
+              <tbody>
+                {% for row in s.historical.metrics %}
+                <tr{% if not row.available %} class="ss-metric-off"{% endif %}>
+                  <th scope="row">{{ row.label }}</th>
+                  <td class="ss-num">{{ row.value }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% if s.historical.limitations %}
+            <h5 class="ss-detail-subtitle">Costs and limitations</h5>
+            <ul class="ss-list">
+              {% for item in s.historical.limitations %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+          </section>
+
+          {# ── 2. Forward testing ─────────────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-pros-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-pros-{{ s.id }}">Forward testing</h4>
+            <p class="ss-detail-state">{{ s.prospective.state_label }}</p>
+            <dl class="ss-kv">
+              <div><dt>Forward records registered</dt><dd>{{ s.prospective.registered }}</dd></div>
+              <div><dt>Forward records graded</dt><dd>{{ s.prospective.graded }}</dd></div>
+            </dl>
+            <p class="ss-detail-note">A historical result is not a forward result. Nothing here is graded against live outcomes yet.</p>
+          </section>
+
+          {# ── 3. Paper trading ───────────────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-paper-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-paper-{{ s.id }}">Paper trading</h4>
+            <p class="ss-detail-state">{{ s.paper.state_label }}</p>
+            <p class="ss-detail-note">No account is connected to this workspace, and no order can be placed from this page.</p>
+          </section>
+
+          {# ── 4. Method and provenance ───────────────────────────────────────── #}
+          <section class="ss-detail" aria-labelledby="ss-method-{{ s.id }}">
+            <h4 class="ss-detail-title" id="ss-method-{{ s.id }}">Method and provenance</h4>
+            <dl class="ss-kv">
+              <div><dt>Input name</dt><dd>{{ s.name if s.name else 'Not available' }}</dd></div>
+              <div><dt>Family</dt><dd>{{ s.family if s.family else 'Not available' }}</dd></div>
+              <div><dt>Model version</dt><dd class="ss-mono">{{ report.versions.code_revision }}</dd></div>
+              <div><dt>Data version</dt><dd class="ss-mono">{{ report.versions.data_revision }}</dd></div>
+            </dl>
+            {% if s.instruments %}
+            <h5 class="ss-detail-subtitle">Instruments</h5>
+            <ul class="ss-list ss-list-inline">
+              {% for item in s.instruments %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            <h5 class="ss-detail-subtitle">What would invalidate this</h5>
+            {% if s.invalidation %}
+            <ul class="ss-list">
+              {% for item in s.invalidation %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% else %}
+            <p class="ss-detail-note">The record names no invalidator for this candidate.</p>
+            {% endif %}
+            {% if s.blockers %}
+            <h5 class="ss-detail-subtitle">Recorded blockers</h5>
+            <ul class="ss-list">
+              {% for item in s.blockers %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+          </section>
+
+        </div>
+      </details>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  {# Useful empty state: name what is missing, never an empty plot. #}
+  <section class="ss-panel ss-panel-empty" aria-labelledby="ss-empty-title">
+    <h2 class="ss-panel-title" id="ss-empty-title">No candidates to show</h2>
+    <p class="ss-panel-lead">This workspace only shows what the research record actually measured. It does not estimate results when a record is missing.</p>
+    <h3 class="ss-subtitle">What is missing</h3>
+    {# The input-readiness panel above already lists any data-health reasons, so
+       this list only carries what is still unaccounted for. #}
+    {% if report.data_health.reasons %}
+    <p class="ss-panel-lead">The reasons are listed above. Until they clear, this workspace will keep showing candidates as blocked rather than as measured results.</p>
+    {% elif report.limitations %}
+    <ul class="ss-missing">
+      {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+    {% else %}
+    <ul class="ss-missing">
+      <li>A compiled research record with at least one evaluated candidate.</li>
+    </ul>
+    {% endif %}
+    <p class="ss-footnote">No strategy is approved for capital. This page never presents trading controls.</p>
+  </section>
+  {% endif %}
+
+  <section class="ss-panel ss-panel-quiet" aria-labelledby="ss-limits-title">
+    <h2 class="ss-panel-title" id="ss-limits-title">What this page does not establish</h2>
+    {% if report.limitations %}
+    <ul class="ss-list">
+      {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+    {% else %}
+    <p class="ss-panel-lead">The research record lists no further limitations beyond those shown with each candidate.</p>
+    {% endif %}
+  </section>
+
+{% endif %}  {# closes: the artifact could not be read #}
+
+</main>
+</body>
+</html>
