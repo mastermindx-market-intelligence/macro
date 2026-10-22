@@ -91,7 +91,7 @@ _symbol_fetch_executor = ThreadPoolExecutor(
 # Inherit the server INFO handler; the unconfigured root drops INFO records.
 _read_observation_log = logging.getLogger("uvicorn.error.market_memory")
 _read_observation_lock = Lock()
-_read_observation_active: dict[int, tuple[str, float]] = {}
+_read_observation_active: dict[int, tuple[str, float, int]] = {}
 _read_observation_sequence = itertools.count(1)
 _READ_OBSERVATION_TAGS = frozenset({
     "legacy_playback_catalog", "retained_macro", "retained_catalog", "retained_saved",
@@ -114,12 +114,13 @@ def _read_observation_start(tag: str) -> int | None:
         return None
     try:
         started = time.monotonic()
+        native_thread_id = threading.get_native_id()
         with _read_observation_lock:
             if len(_read_observation_active) >= _PLAYBACK_MAX_INFLIGHT:
                 return None
             seq = next(_read_observation_sequence)
-            _read_observation_active[seq] = (tag, started)
-        _read_observation_emit("start", tag=tag, seq=seq)
+            _read_observation_active[seq] = (tag, started, native_thread_id)
+        _read_observation_emit("start", tag=tag, seq=seq, native_thread_id=native_thread_id)
         return seq
     except Exception:
         return None
@@ -132,8 +133,9 @@ def _read_observation_finish(seq: int | None, success: bool) -> None:
         with _read_observation_lock:
             entry = _read_observation_active.pop(seq, None)
         if entry is not None:
-            tag, started = entry
+            tag, started, native_thread_id = entry
             _read_observation_emit("finish", tag=tag, seq=seq, success=success,
+                                   native_thread_id=native_thread_id,
                                    elapsed_ms=round((time.monotonic() - started) * 1000, 3))
     except Exception:
         pass
@@ -151,6 +153,7 @@ def _read_observation_stage(seq: int | None, stage: str,
             entry = _read_observation_active.get(seq)
         if entry is not None and entry[0] == 'retained_catalog':
             _read_observation_emit("stage", tag=entry[0], seq=seq, stage=stage,
+                                   native_thread_id=entry[2],
                                    elapsed_ms=round(elapsed_ms, 3),
                                    thread_cpu_ms=round(thread_cpu_ms, 3))
     except Exception:
@@ -176,7 +179,8 @@ def _read_observation_busy(tag: str) -> None:
             holders = tuple(_read_observation_active.items())
         now = time.monotonic()
         _read_observation_emit("busy", tag=tag, holders=[
-            {"seq": seq, "tag": entry[0], "age_ms": round((now - entry[1]) * 1000, 3)}
+            {"seq": seq, "tag": entry[0], "native_thread_id": entry[2],
+             "age_ms": round((now - entry[1]) * 1000, 3)}
             for seq, entry in holders
         ])
     except Exception:
