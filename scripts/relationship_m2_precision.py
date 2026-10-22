@@ -3,7 +3,11 @@
 
 ``sample`` renders committed observation rows into blind review packs: one
 plain-English claim next to its verbatim excerpt per item, plus deliberately
-wrong decoy claims that measure the reviewer.  ``score`` recomputes the sample
+wrong decoy claims that measure the reviewer.  The population is gated by the
+producer's observation package (--package): only package observations marked
+``verified`` with disposition ``edge``/``non_edge`` are sampled; the rest are
+recorded in the manifest's ``not_admitted``, never used as claims or decoys.
+``score`` recomputes the sample
 from the current inputs, checks the verdicts against the review rules, and
 writes the precision report (per-stratum Wilson intervals, a stratified-normal
 weighted overall, field error counts, and the decoy acceptance rate that decides
@@ -48,6 +52,10 @@ DEFAULT_SOURCES = (
 DEFAULT_LEAVES = (
     REPO_ROOT
     / "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json"
+)
+DEFAULT_PACKAGE = (
+    REPO_ROOT
+    / "data/company_intelligence/relationships/observation_package.v2.json"
 )
 DEFAULT_SEED = "gmi-rel-m2-precision-v1"
 GUIDE_NAME = "GUIDE.md"
@@ -207,6 +215,19 @@ def _load_leaves(text: str):
     return domain_of, None
 
 
+def _load_package(text) -> tuple:
+    """The observations list of an observation_package.v2.json file."""
+    path = text if isinstance(text, Path) else Path(text)
+    try:
+        doc = json.loads(path.read_bytes().decode("utf-8"))
+    except (OSError, ValueError) as error:
+        return None, _fail(f"package file {path} is unreadable or not JSON ({error})")
+    observations = doc.get("observations") if isinstance(doc, dict) else None
+    if not isinstance(observations, list):
+        return None, _fail(f"package file {path} carries no observations list")
+    return observations, None
+
+
 def _used_excerpt_relpaths(file_rows, excerpt_index) -> set:
     used = set()
     for _relpath, _lineno, row in file_rows:
@@ -220,13 +241,14 @@ def _used_excerpt_relpaths(file_rows, excerpt_index) -> set:
 
 
 def _build_inputs(extraction_dir: Path, extraction_files, used_relpaths: set,
-                  sources_dir: Path, leaves_path: Path) -> dict:
+                  sources_dir: Path, leaves_path: Path, package_path: Path) -> dict:
     inputs: dict = {}
     for path in extraction_files:
         inputs[_input_path(path)] = _sha_file(path)
     for relpath in sorted(used_relpaths):
         inputs[_input_path(sources_dir / relpath)] = _sha_file(sources_dir / relpath)
     inputs[_input_path(leaves_path)] = _sha_file(leaves_path)
+    inputs[_input_path(package_path)] = _sha_file(package_path)
     return inputs
 
 
@@ -328,11 +350,19 @@ def cmd_sample(args) -> int:
     rows, error = _dedupe_rows(file_rows)
     if error is not None:
         return error
+    package_observations, error = _load_package(args.package)
+    if error is not None:
+        return error
+    admitted_rows, not_admitted, error = prec.admit_by_package(
+        rows, package_observations
+    )
+    if error is not None:
+        return error
 
     sources_dir = Path(args.sources)
     excerpt_index = _index_sources(sources_dir)
     population, excluded = prec.build_population(
-        rows,
+        admitted_rows,
         excerpt_index,
         domain_of,
         replay.verify_excerpt,
@@ -366,6 +396,7 @@ def cmd_sample(args) -> int:
         "population_total": len(population),
         "population_by_stratum": {s: plan["sizes"][s] for s in sorted(plan["sizes"])},
         "allocation": {s: plan["alloc"][s] for s in sorted(plan["alloc"])},
+        "not_admitted": not_admitted,
         "excluded": {
             "EXCERPT_MISSING": excluded["EXCERPT_MISSING"],
             "EXCERPT_CORRUPT": excluded["EXCERPT_CORRUPT"],
@@ -377,6 +408,7 @@ def cmd_sample(args) -> int:
             _used_excerpt_relpaths(file_rows, excerpt_index),
             sources_dir,
             Path(args.leaves),
+            Path(args.package),
         ),
     }
 
@@ -440,6 +472,16 @@ def cmd_sample(args) -> int:
         "excluded EXCERPT_CORRUPT ids: "
         + (", ".join(excluded["EXCERPT_CORRUPT"]) or "(none)")
     )
+    print(
+        "not_admitted: "
+        + (
+            ", ".join(
+                f"{bucket}={len(ids)}"
+                for bucket, ids in sorted(not_admitted.items())
+            )
+            or "(none)"
+        )
+    )
     return 0
 
 
@@ -460,9 +502,17 @@ def _recompute(salt: bytes, args, manifest: dict):
     rows, error = _dedupe_rows(file_rows)
     if error is not None:
         return None, error
+    package_observations, error = _load_package(args.package)
+    if error is not None:
+        return None, error
+    admitted_rows, not_admitted, error = prec.admit_by_package(
+        rows, package_observations
+    )
+    if error is not None:
+        return None, error
     excerpt_index = _index_sources(sources_dir)
     population, excluded = prec.build_population(
-        rows,
+        admitted_rows,
         excerpt_index,
         domain_of,
         replay.verify_excerpt,
@@ -480,6 +530,7 @@ def _recompute(salt: bytes, args, manifest: dict):
         _used_excerpt_relpaths(file_rows, excerpt_index),
         sources_dir,
         leaves_path,
+        Path(args.package),
     )
     return {
         "items": items,
@@ -487,8 +538,30 @@ def _recompute(salt: bytes, args, manifest: dict):
         "population": population,
         "sizes": plan["sizes"],
         "excluded": excluded,
+        "not_admitted": not_admitted,
         "inputs": inputs,
     }, None
+
+
+def _current_inputs(args) -> dict:
+    """The input hashes over the CURRENT roots (score's drift part 2).
+
+    Deliberately admission-free: an input-set change must be named INPUT_DRIFT
+    even when the changed set would also fail the package gate.
+    """
+    extraction_dir = Path(args.extraction)
+    if not extraction_dir.is_dir():
+        return {}
+    excerpt_index = _index_sources(Path(args.sources))
+    file_rows, _error = _load_file_rows(extraction_dir)
+    return _build_inputs(
+        extraction_dir,
+        _extraction_files(extraction_dir),
+        _used_excerpt_relpaths(file_rows or [], excerpt_index),
+        Path(args.sources),
+        Path(args.leaves),
+        Path(args.package),
+    )
 
 
 def cmd_score(args) -> int:
@@ -516,17 +589,32 @@ def cmd_score(args) -> int:
         if _sha_file(path) != sha:
             return _fail(f"INPUT_DRIFT: recorded input {relpath} changed on disk")
 
+    # Input drift, part 2: the current input set must equal the recorded one
+    # (a file added to or removed from an inputs root is drift too).  Checked
+    # before the recompute so an input-set change is always named as drift.
+    recorded = manifest.get("inputs") or {}
+    inputs_now = _current_inputs(args)
+    for relpath in sorted(set(recorded) | set(inputs_now)):
+        if recorded.get(relpath) != inputs_now.get(relpath):
+            return _fail(f"INPUT_DRIFT: {relpath} is not the recorded input set")
+
     state, error = _recompute(salt, args, manifest)
     if error is not None:
         return error
 
-    # Input drift, part 2: the recomputed input set must equal the recorded one
-    # (a file added to or removed from an inputs root is drift too).
-    recorded = manifest.get("inputs") or {}
-    recomputed = state["inputs"]
-    for relpath in sorted(set(recorded) | set(recomputed)):
-        if recorded.get(relpath) != recomputed.get(relpath):
-            return _fail(f"INPUT_DRIFT: {relpath} is not the recorded input set")
+    # The not_admitted buckets must recompute identically: a package whose
+    # refusals moved is no longer the sample's population.
+    recorded_not_admitted = manifest.get("not_admitted")
+    if recorded_not_admitted != state["not_admitted"]:
+        recorded_n = sum(
+            len(ids) for ids in (recorded_not_admitted or {}).values()
+        )
+        recomputed_n = sum(len(ids) for ids in state["not_admitted"].values())
+        return _fail(
+            f"NOT_ADMITTED_MISMATCH: the manifest records {recorded_n} "
+            "not_admitted observations but the current inputs recompute "
+            f"{recomputed_n}; re-run `sample`"
+        )
 
     review_dir = sample_dir / REVIEW_DIR
     reviewed_ids = set()
@@ -715,7 +803,7 @@ def cmd_score(args) -> int:
             and acceptance_rate <= prec.RELIABLE_MAX_ACCEPTANCE
         ),
         "codes": dict(sorted(codes.items())),
-        "inputs": recomputed,
+        "inputs": state["inputs"],
     }
     report_validator = _validator(prec.REPORT_SCHEMA)
     problems = _problems(report_validator, report)
@@ -798,6 +886,7 @@ def main(argv=None) -> int:
     sample.add_argument("--extraction", default=str(DEFAULT_EXTRACTION))
     sample.add_argument("--sources", default=str(DEFAULT_SOURCES))
     sample.add_argument("--leaves", default=str(DEFAULT_LEAVES))
+    sample.add_argument("--package", default=str(DEFAULT_PACKAGE))
     sample.set_defaults(handler=cmd_sample)
 
     score = subparsers.add_parser(
@@ -809,6 +898,7 @@ def main(argv=None) -> int:
     score.add_argument("--extraction", default=str(DEFAULT_EXTRACTION))
     score.add_argument("--sources", default=str(DEFAULT_SOURCES))
     score.add_argument("--leaves", default=str(DEFAULT_LEAVES))
+    score.add_argument("--package", default=str(DEFAULT_PACKAGE))
     score.add_argument(
         "--allow-missing",
         action="store_true",

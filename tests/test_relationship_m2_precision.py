@@ -159,28 +159,50 @@ def _write_json(path: Path, doc: dict) -> None:
     )
 
 
+def _package_observation(row: dict, **overrides: object) -> dict:
+    """A package observation admitting `row`, or the given overrides."""
+    observation = {
+        "observation_id": row["observation_id"],
+        "source_state": "verified",
+        "disposition": "non_edge",
+    }
+    observation.update(overrides)
+    return observation
+
+
 def _fixture(
     tmp_path: Path,
     rows: list[dict],
     excerpts: dict[str, dict],
     domain_of: dict[str, str],
 ) -> dict:
-    """Write a synthetic extraction/sources/leaves triple under tmp_path."""
+    """Write a synthetic extraction/sources/leaves/package quadruple under tmp_path.
+
+    The package carries every row as a verified non_edge observation, so the
+    sample's population is the extraction rows themselves; tests that need
+    refused rows build their packages by hand.
+    """
     extraction = tmp_path / "extraction"
-    extraction.mkdir()
+    extraction.mkdir(parents=True)
     (extraction / "rows.jsonl").write_text(
         "\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8"
     )
     sources = tmp_path / "sources"
-    sources.mkdir()
+    sources.mkdir(parents=True)
     for accession, doc in excerpts.items():
         _write_json(sources / f"{accession}.json", doc)
     leaves = tmp_path / "leaves.json"
     _write_json(leaves, {"domain_of": domain_of})
+    package = tmp_path / "package.json"
+    _write_json(
+        package,
+        {"observations": [_package_observation(row) for row in rows]},
+    )
     return {
         "extraction": extraction,
         "sources": sources,
         "leaves": leaves,
+        "package": package,
         "rows": {row["observation_id"]: row for row in rows},
     }
 
@@ -216,6 +238,8 @@ def _sample(fx: dict, out: Path, salt: Path, *extra: str) -> subprocess.Complete
         str(fx["sources"]),
         "--leaves",
         str(fx["leaves"]),
+        "--package",
+        str(fx["package"]),
         *extra,
     )
 
@@ -241,6 +265,8 @@ def _score(
         str(fx["sources"]),
         "--leaves",
         str(fx["leaves"]),
+        "--package",
+        str(fx["package"]),
         *extra,
     )
 
@@ -712,6 +738,82 @@ def test_decoy_kinds_cycle_and_fallback(tmp_path):
     assert "decoys_short" in proc_short.stdout
 
 
+# --- package admission (the population is the package's edge/non_edge set) ----
+
+
+def _package_admission_rows() -> tuple[list, list]:
+    """(file_rows, ids): 4 deduplicated-shape rows with distinct ids."""
+    rows = [
+        _repointed_row(_m1_row(), byte_start=0, byte_end=300 + index)
+        for index in range(4)
+    ]
+    ids = [row["observation_id"] for row in rows]
+    file_rows = [("rows.jsonl", index + 1, row) for index, row in enumerate(rows)]
+    return file_rows, ids
+
+
+def _package_obs(*ids: str, source_state: str = "verified",
+                 disposition: str = "non_edge", **extra: object) -> list[dict]:
+    return [
+        {
+            "observation_id": observation_id,
+            "source_state": source_state,
+            "disposition": disposition,
+            **extra,
+        }
+        for observation_id in ids
+    ]
+
+
+def test_admit_by_package_buckets():
+    file_rows, ids = _package_admission_rows()
+    package = (
+        _package_obs(ids[0], disposition="edge")
+        + _package_obs(ids[1])
+        + _package_obs(ids[2], disposition="refused", refusal_reason="provider_unnamed")
+        + _package_obs(ids[3], source_state="unverified", disposition="edge")
+    )
+    admitted, not_admitted, error = prec.admit_by_package(file_rows, package)
+    assert error is None
+    # Only the verified edge/non_edge rows are admitted, in file_rows order.
+    assert [row["observation_id"] for _f, _l, row in admitted] == [ids[0], ids[1]]
+    # The rest are recorded per bucket, sorted, with no empty keys.
+    assert not_admitted == {
+        "verified/refused": [ids[2]],
+        "unverified/edge": [ids[3]],
+    }
+
+
+def test_admit_by_package_mismatch_fails_closed():
+    file_rows, ids = _package_admission_rows()
+
+    # A row absent from the package.
+    admitted, not_admitted, error = prec.admit_by_package(
+        file_rows, _package_obs(*ids[:3])
+    )
+    assert error is not None and error.startswith("PACKAGE_MISMATCH")
+    assert "1 extraction observations not in package" in error
+    assert f"first: {ids[3]}" in error
+    assert admitted is None and not_admitted is None
+
+    # A package id absent from the rows.
+    admitted, not_admitted, error = prec.admit_by_package(
+        file_rows, _package_obs(*ids, "obs:doesnotexist0000")
+    )
+    assert error is not None and error.startswith("PACKAGE_MISMATCH")
+    assert "1 package observations not in extraction" in error
+    assert "first: obs:doesnotexist0000" in error
+    assert admitted is None and not_admitted is None
+
+    # A duplicated package observation_id.
+    duplicated = _package_obs(ids[0]) + _package_obs(*ids[1:])
+    duplicated.insert(1, dict(duplicated[0]))
+    admitted, not_admitted, error = prec.admit_by_package(file_rows, duplicated)
+    assert error is not None and error.startswith("PACKAGE_MISMATCH")
+    assert "duplicate" in error
+    assert admitted is None and not_admitted is None
+
+
 # --- Q1: population and exclusions ------------------------------------------------
 
 
@@ -840,6 +942,101 @@ def test_population_real_m1_rows(tmp_path):
         for o in package["observations"]
         if o["disposition"] == "edge"
     }
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_real_not_admitted_is_the_package_refusals(tmp_path):
+    salt = _salt_file(tmp_path, "salt.bin")
+    out = tmp_path / "s"
+    proc = _run_cli(
+        "sample",
+        "--salt-file",
+        str(salt),
+        "--out-dir",
+        str(out),
+        "--n",
+        "4",
+        "--decoys",
+        "2",
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    manifest = json.loads((out / "manifest.json").read_text("utf-8"))
+    package = json.loads(
+        (
+            REPO_ROOT
+            / "data/company_intelligence/relationships/observation_package.v2.json"
+        ).read_text("utf-8")
+    )
+    non_sampled = [
+        o
+        for o in package["observations"]
+        if o["disposition"] not in ("edge", "non_edge")
+    ]
+    # The not_admitted buckets are exactly the package's non-sampled rows,
+    # re-derived here — no literal ids.
+    assert manifest["not_admitted"] == {
+        "verified/refused": sorted(o["observation_id"] for o in non_sampled)
+    }
+    assert {o["source_state"] for o in non_sampled} == {"verified"}
+    assert len(manifest["not_admitted"]["verified/refused"]) == len(non_sampled)
+    # The sampled population is everything the package carries minus the
+    # refusals: none of them is ever sampled, weighted or a decoy.
+    assert manifest["population_total"] == (
+        len(package["observations"]) - len(non_sampled)
+    )
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_score_refuses_package_drift(tmp_path):
+    package_path = (
+        REPO_ROOT
+        / "data/company_intelligence/relationships/observation_package.v2.json"
+    )
+    package_copy = tmp_path / "package_copy.json"
+    package_copy.write_bytes(package_path.read_bytes())
+    salt = _salt_file(tmp_path, "salt.bin")
+    out = tmp_path / "s"
+    proc = _run_cli(
+        "sample",
+        "--salt-file",
+        str(salt),
+        "--out-dir",
+        str(out),
+        "--n",
+        "4",
+        "--decoys",
+        "2",
+        "--package",
+        str(package_copy),
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    # Mutate the COPY: one non_edge observation becomes refused.  The recorded
+    # input hash no longer matches, so score refuses as drift.
+    doc = json.loads(package_copy.read_text("utf-8"))
+    victim = next(
+        o for o in doc["observations"] if o["disposition"] == "non_edge"
+    )
+    victim["disposition"] = "refused"
+    package_copy.write_text(
+        json.dumps(doc, sort_keys=True, indent=1, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    verdicts = tmp_path / "v_empty"
+    verdicts.mkdir()
+    scored = _run_cli(
+        "score",
+        "--sample-dir",
+        str(out),
+        "--verdicts",
+        str(verdicts),
+        "--salt-file",
+        str(salt),
+        "--allow-missing",
+        "--package",
+        str(package_copy),
+    )
+    assert scored.returncode != 0, scored.stdout + scored.stderr
+    assert "INPUT_DRIFT" in scored.stdout + scored.stderr
 
 
 # --- Q9: scoring ------------------------------------------------------------------
@@ -1057,14 +1254,17 @@ def test_score_refuses_drift_salt_and_sample_mismatch(tmp_path):
     assert scored.returncode == 2
     assert "SALT_MISMATCH" in scored.stdout + scored.stderr
 
-    # INPUT_DRIFT: an extraction file added after the sample.
+    # INPUT_DRIFT: an extraction file added after the sample.  Its own
+    # fixture: the added file must not leak into the sections below, whose
+    # samples are package-gated over exactly the fixture's rows.
+    fx_drift = _eight_row_fixture(tmp_path / "fx_drift")
     out = tmp_path / "s_drift"
-    assert _sample(fx, out, salt, "--n", "6", "--decoys", "0").returncode == 0
+    assert _sample(fx_drift, out, salt, "--n", "6", "--decoys", "0").returncode == 0
     extra_row = _repointed_row(_m1_row(), byte_start=0, byte_end=999)
-    (fx["extraction"] / "late.jsonl").write_text(
+    (fx_drift["extraction"] / "late.jsonl").write_text(
         json.dumps(extra_row) + "\n", encoding="utf-8"
     )
-    scored = _score(fx, out, salt, vdir, "--allow-missing")
+    scored = _score(fx_drift, out, salt, vdir, "--allow-missing")
     assert scored.returncode == 2
     assert "INPUT_DRIFT" in scored.stdout + scored.stderr
     assert "late.jsonl" in scored.stdout + scored.stderr

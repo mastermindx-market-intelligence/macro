@@ -182,6 +182,7 @@ MANIFEST_SCHEMA = {
         "population_total",
         "population_by_stratum",
         "allocation",
+        "not_admitted",
         "excluded",
         "counters",
         "inputs",
@@ -213,6 +214,10 @@ MANIFEST_SCHEMA = {
         "population_total": {"type": "integer", "minimum": 0},
         "population_by_stratum": {"type": "object"},
         "allocation": {"type": "object"},
+        "not_admitted": {
+            "type": "object",
+            "additionalProperties": {"type": "array", "items": {"type": "string"}},
+        },
         "excluded": {
             "type": "object",
             "required": ["EXCERPT_MISSING", "EXCERPT_CORRUPT"],
@@ -657,6 +662,72 @@ def build_decoys(population: list, selected_ids: set, d: int, key_fn) -> tuple:
 
 
 # --- Q1/Q3: population and selection ------------------------------------------------
+
+
+def admit_by_package(file_rows, package_observations) -> tuple:
+    """(admitted_rows, not_admitted, error) — the package-gated population.
+
+    ``file_rows`` is the deduplicated [(relpath, lineno, row)] triples; the
+    package is the ``observations`` list of observation_package.v2.json.
+    Membership is exact on ``observation_id`` in BOTH directions: any
+    extraction row the package does not carry, any package observation the
+    extraction does not carry, and a duplicated package observation_id all
+    fail closed with a ``PACKAGE_MISMATCH`` error — a population that
+    silently dropped either side would not be the package's population.  A
+    row is admitted iff its package observation has ``source_state ==
+    "verified"`` and ``disposition`` in ``("edge", "non_edge")``; every other
+    row is recorded under ``not_admitted["<source_state>/<disposition>"]`` as
+    a sorted list of observation ids, never dropped silently (a refused
+    observation is not a claim the package makes, so it must never be
+    sampled, weighted or used as a decoy).  ``admitted_rows`` keeps the input
+    order of ``file_rows``, so sampler determinism is unchanged for admitted
+    rows.  Pure: no file IO, no clock, no network.
+    """
+    package_by_id: dict = {}
+    for observation in package_observations:
+        observation_id = observation.get("observation_id")
+        if observation_id in package_by_id:
+            return None, None, (
+                "PACKAGE_MISMATCH: duplicate package observation_id; "
+                f"first: {observation_id}"
+            )
+        package_by_id[observation_id] = observation
+    row_ids = set()
+    missing_from_package: list = []
+    for _relpath, _lineno, row in file_rows:
+        observation_id = row.get("observation_id")
+        row_ids.add(observation_id)
+        if observation_id not in package_by_id:
+            missing_from_package.append(observation_id)
+    missing_from_rows = [
+        observation_id
+        for observation_id in (
+            observation.get("observation_id") for observation in package_observations
+        )
+        if observation_id not in row_ids
+    ]
+    if missing_from_package or missing_from_rows:
+        first = missing_from_package[0] if missing_from_package else missing_from_rows[0]
+        return None, None, (
+            f"PACKAGE_MISMATCH: {len(missing_from_package)} extraction observations "
+            f"not in package, {len(missing_from_rows)} package observations not in "
+            f"extraction; first: {first}"
+        )
+    admitted: list = []
+    buckets: dict = {}
+    for relpath, lineno, row in file_rows:
+        observation = package_by_id[row.get("observation_id")]
+        state = observation.get("source_state")
+        disposition = observation.get("disposition")
+        if state == "verified" and disposition in ("edge", "non_edge"):
+            admitted.append((relpath, lineno, row))
+            continue
+        bucket = f"{state}/{disposition}"
+        buckets.setdefault(bucket, []).append(row.get("observation_id"))
+    not_admitted = {
+        bucket: sorted(ids) for bucket, ids in sorted(buckets.items())
+    }
+    return admitted, not_admitted, None
 
 
 def build_population(file_rows, excerpt_index, domain_of: dict, verify) -> tuple:
