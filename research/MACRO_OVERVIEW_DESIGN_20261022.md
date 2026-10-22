@@ -120,5 +120,11 @@ owner or claim a Core Web Vitals certification. The final resting layouts and
 interaction states are the acceptance evidence above.
 
 The independent reviewer supplied visual critique and examined the semantics of
-the baseline test repairs. Source verification is root-owned; no independent
-source-code PASS is claimed.
+the baseline test repairs. A subsequent bounded source review of the new CSS/JS
+includes and changed hero, events, and Fed/Policy markup at `a3e7e82187d2` found
+no material regressions. Runtime and production verification remain root-owned.
+
+The first CI run caught an unwired new test module. The eleven Fed/Policy cases
+were moved intact into the existing `tests/test_macro_glance.py` suite, which the
+dashboard-organs CI job already executes. Its 18 cases pass after consolidation;
+no waiver or CI-authority configuration change is involved.
