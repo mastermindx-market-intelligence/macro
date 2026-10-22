@@ -24,6 +24,10 @@ full-day extrapolations violate a unit delta-change bound. DAILY_DATA_AUDIT.json
 records 1114 official VIX1D daily rows, 78 low<=6.88 observations, zero close<=6.88.
 These are numerical/measurement findings, not forecasts or profitability validation.
 
+Source publication is proven for the initial foundation candidate, not merge or
+production. INTEGRATION_CONTRACT.md preserves the discovered Market Memory clock-name
+mismatch; never map observed_at fields by spelling.
+
 ## Preserve
 
 Existing market-state, regime, Greek, finite-scenario, Market Memory, shared navigation
@@ -33,8 +37,9 @@ No paid acquisition, alert or trade was activated. No Paper design mutation occu
 
 ## Next bounded actions
 
-1. Commit/push this verified foundation and open its normal PR. No source commit or
-   PR exists at this written revision; use current Git readback rather than assume one.
+1. Continue macro PR #10055 on the preserved branch. Initial published candidate
+   5c9b747049d40ea1486889cd1ab4ae97c452aff5 was read back from origin; check only the
+   current exact head, required CI and material upstream changes before delivery.
 2. Consume required CI checks and normal source release; no merge or deployment claim
    is established by this checkpoint.
 3. Preserve the completed 80-test suite, 8-case browser study, 350-job manifest

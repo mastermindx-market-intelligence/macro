@@ -133,6 +133,11 @@ bar completion and quality. Operational reads obey:
 
 `observed_at <= received_at <= available_at <= decision_cutoff < valid_until`.
 
+**Adapter warning:** these generic clock names are not a field-by-field mapping to
+Market Memory. Its `observed_at` is a capture clock with different ordering. The
+lossless boundary and exact verified mismatch are specified in INTEGRATION_CONTRACT.md;
+retain the incumbent context or translate by meaning, never by matching field names.
+
 A late revision retains its original market date but cannot be known before its actual
 availability. Historical reads use the incumbent `AsKnownAtReader` and validator.
 Public reconstruction, current-snapshot backfill and operational point-in-time capture

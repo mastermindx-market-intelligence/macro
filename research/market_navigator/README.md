@@ -12,6 +12,8 @@ The initial source is a read-only consumer with every signal/trade/alert authori
   findings, data requirements and executed numerical/measurement audits.
 - [Interactive design study](preview.html): desktop/mobile, English/Chinese,
   dark/light, unavailable-state behavior; explicitly not applied to Paper.
+- [Integration contract](INTEGRATION_CONTRACT.md): clock semantics, source verification,
+  product integration and save/restore boundaries.
 - [Verification](VERIFICATION.md): exact checks and what each does not prove.
 - [Continuation](CONTINUATION.md): source custody, unfinished obligations and next action.
 - [Agent OS workstream](../../agentos/workstreams/WS-MARKET-NAVIGATOR.md).

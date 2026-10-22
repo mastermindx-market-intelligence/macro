@@ -15,7 +15,8 @@ ambiguity: scoped
 waves:
   - id: W0
     title: Architecture, research initiation and deterministic composition
-    status: in_progress
+    status: awaiting_ci
+    pr: 10055
   - id: W1
     title: Existing-owner source adapters and point-in-time qualification
     status: todo
@@ -41,7 +42,7 @@ waves:
     status: todo
     depends_on: [W3, W4]
 next_action: >-
-  Complete and deliver the bounded source foundation, then bind a safe Paper file
+  Consume exact-head CI and deliver foundation PR 10055, then bind a safe Paper file
   and verify existing source-adapter receipts before production UI integration.
 owns_paths:
   - engine/market_navigator*.py
@@ -55,6 +56,7 @@ artifacts:
   - research/market_navigator/DAILY_DATA_AUDIT.json
   - research/market_navigator/CONTINUATION.md
   - research/market_navigator/VERIFICATION.md
+  - research/market_navigator/INTEGRATION_CONTRACT.md
   - research/market_navigator/preview.html
   - research/market_navigator/SOURCE_ADAPTER_AUDIT.json
 landmines:
