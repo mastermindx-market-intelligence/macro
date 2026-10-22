@@ -293,6 +293,8 @@ def test_production_head_keeps_canonical_theme_through_publication(repo):
     theme = (source / "templates/theme.css").read_bytes()
     for name in ("theme.css", "product-nav-icons.css", "navigation-refresh.css"):
         (site / name).write_bytes((source / "templates" / name).read_bytes())
+    from lib.shared_shell import copy_shared_shell_asset
+    copy_shared_shell_asset(site)
     env = Environment(loader=FileSystemLoader(source / "templates"),
                       autoescape=True, undefined=StrictUndefined)
     # Render the production head, including its actual style partials, without
@@ -322,3 +324,42 @@ def test_production_head_keeps_canonical_theme_through_publication(repo):
     # A second normalization pass must not introduce a broken preload or churn.
     assert externalize(site) == 0
     assert make_optimizer(site)(destination.read_text(), site) == optimized
+
+
+def test_commodities_runtime_logo_config_revalidates_after_publication():
+    """Render the production navigation and retain the deploy-time asset contract."""
+    import re
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    from scripts.optimize_assets import make_optimizer
+
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates/commodities.html.j2").read_text()
+    # Use the native template through its real navigation include; no collectors
+    # or legacy commodity calculations are needed for the browser asset boundary.
+    prefix = template.split("{# Aurora layer", 1)[0] + "</body></html>"
+    env = Environment(loader=FileSystemLoader(root / "templates"),
+                      autoescape=True, undefined=StrictUndefined)
+    rendered = env.from_string(prefix).render(as_of="2026-10-16", commodity_workspace=False)
+    site = root / "site"
+    optimize = make_optimizer(site)
+    for html in (rendered, (site / "commodities.html").read_text()):
+        normalized = optimize(html, site)
+        tags = re.findall(r'<script\b(?=[^>]*\bsrc="logo_config\.js[^" ]*")[^>]*>', normalized)
+        assert len(tags) == 1
+        assert 'src="logo_config.js?runtime-config"' in tags[0]
+        assert re.search(r"\bdefer(?:\s|>)", tags[0])
+        assert optimize(normalized, site) == normalized
+
+
+def test_published_commodities_keeps_canonical_theme_before_page_styles():
+    """A concurrent publisher must not silently drop the accepted theme include."""
+    import re
+    from urllib.parse import urlsplit
+
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "site/commodities.html").read_text()
+    head = html.split("</head>", 1)[0]
+    styles = re.findall(r'<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"', head)
+    paths = [urlsplit(ref).path for ref in styles]
+    assert paths.count("theme.css") == 1
+    assert paths.index("theme.css") < next(i for i, path in enumerate(paths) if path.startswith("assets/css/"))

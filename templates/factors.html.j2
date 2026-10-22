@@ -1529,7 +1529,7 @@
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&dw.classList.contains('on')) close(); });
     /* deep link: factors.html#f/value opens Value straight from a shared URL */
     function fromHash(){ const m=(location.hash||'').match(/^#f\/([\w]+)$/); if(m&&FX_F[m[1]]) open(m[1]); }
-    addEventListener('hashchange',fromHash); fromHash();
+    addEventListener('hashchange',fromHash); addEventListener('mmx:shell-location',fromHash); fromHash();
 
     /* ── explorer tabs — build from the panes actually present ──────────── */
     const TAB=[['chart','Chart','图表'],['moves','Recent moves','近期变动'],['quilt','Quilt','拼布']];
