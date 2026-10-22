@@ -472,6 +472,17 @@ class Materialization:
     #: an outage weapon. Structural evidence only — no ticker literals anywhere in the
     #: logic that produces this list.
     company_mint_refusals: list[dict] = field(default_factory=list)
+    #: ORCH-PIPE 2026-10-21 (lane B1) — typed refusals from the activity-history fold
+    #: and its projection: the fold refused wholesale (ACTIVITY_FOLD_REFUSED), one per
+    #: refused/retained fold outcome (code = the fold's own reason), and one per
+    #: refused projection (endpoint absent, edge-id collision). Never a raise — same
+    #: nightly-bake rule as company_mint_refusals. Empty when ``activity_events`` is
+    #: None (the ledger is the only input; its absence is today's production state).
+    activity_refusals: list[dict] = field(default_factory=list)
+    #: Compact summary of the same fold: counts of current/history/retained/refused/
+    #: excluded_after_cutoff, projected_edges, projected_evidence, knowledge_cutoff.
+    #: Empty when the fold was refused wholesale or ``activity_events`` is None.
+    activity_fold: dict = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -1615,22 +1626,35 @@ def build(*, era: str, belief_time: str | None = None,
           finviz_history_path: Path | None = None,
           finviz_live_tree_path: Path | None = None,
           substrate_dir: Path | None = None,
-          retired_node_ids: frozenset[str] | None = None) -> Materialization:
+          retired_node_ids: frozenset[str] | None = None,
+          activity_events: list[dict] | None = None) -> Materialization:
     """Compute the whole graph view. Pure: reads inputs, writes nothing.
 
     ``retired_node_ids`` (V4-D2B3, R-A6): node_ids whose latest ``node_lifecycle``
     status is retired/merged, read by the caller (the impure orchestrator) and handed
     in as a plain frozenset — materialize itself never touches the store.
+
+    ``activity_events`` (ORCH-PIPE 2026-10-21, lane B1): curated activity-membership
+    history events, folded with :func:`apply_activity_membership_events` as of
+    ``computed_at`` and projected into MEMBER_OF edges + evidence receipts by
+    :func:`project_activity_memberships`. ``None`` — no ledger present — is the exact
+    pre-fold path, byte-identical. The fold itself has no authority (its ``authority``
+    dict stays all-False); this projection of GRANTED+ACCEPT current beliefs is the
+    admitting act. NEVER raises on activity input — every failure becomes a typed
+    refusal row (nightly-bake rule, same as company_mint_refusals).
     """
     if era not in ("reconstruction", "observed"):
         raise ValueError(f"era must be reconstruction|observed, got {era!r}")
     root = Path(__file__).resolve().parent.parent.parent
-    return _Builder(
+    # Hoisted ONCE so the builder and the activity fold see the same stamps.
+    computed_at = computed_at or utc_now_stamp()
+    belief_time = belief_time or utc_today()
+    mat = _Builder(
         data_dir=data_dir or config.data_dir(),
         crosswalk_path=crosswalk_path or (root / "config" / "theme_crosswalk.yml"),
         era=era,
-        belief_time=belief_time or utc_today(),
-        computed_at=computed_at or utc_now_stamp(),
+        belief_time=belief_time,
+        computed_at=computed_at,
         raw_snapshot=raw_snapshot,
         ths_history=ths_history,
         finviz_seed_path=finviz_seed_path,
@@ -1639,6 +1663,44 @@ def build(*, era: str, belief_time: str | None = None,
         substrate_dir=substrate_dir,
         retired_node_ids=retired_node_ids,
     ).run()
+    if activity_events is None:
+        return mat
+    try:
+        fold = apply_activity_membership_events(activity_events,
+                                                knowledge_cutoff=computed_at)
+    except ActivityHistoryRefusal as exc:
+        mat.activity_refusals.append(
+            {"code": "ACTIVITY_FOLD_REFUSED", "reason": exc.code, "detail": str(exc)})
+        return mat
+    # Surface the fold's own refusals and retained removals verbatim (code = reason);
+    # a retained removal is a refused deletion, and the nightly must see it.
+    for row in fold["refused"] + fold["retained"]:
+        mat.activity_refusals.append(dict(row, code=row["reason"]))
+    edges, evidence, refusals = project_activity_memberships(
+        fold, events=activity_events, belief_time=belief_time, era=era,
+        computed_at=computed_at,
+        node_ids={str(n["node_id"]) for n in mat.nodes},
+        edge_ids={str(e["edge_id"]) for e in mat.edges})
+    mat.activity_refusals.extend(refusals)
+    mat.activity_fold = {
+        "current": len(fold["current"]), "history": len(fold["history"]),
+        "retained": len(fold["retained"]), "refused": len(fold["refused"]),
+        "excluded_after_cutoff": len(fold["excluded_after_cutoff"]),
+        "projected_edges": len(edges), "projected_evidence": len(evidence),
+        "knowledge_cutoff": computed_at,
+    }
+    # Merge and RE-SORT exactly the way _Builder.run() sorts (keep-first on id — the
+    # same first-writer-wins discipline as _edge/_evidence_ref).
+    if edges:
+        merged = {e["edge_id"]: e for e in mat.edges}
+        merged.update((e["edge_id"], e) for e in edges)
+        mat.edges = [merged[k] for k in sorted(merged)]
+    if evidence:
+        merged_ev = {e["evidence_id"]: e for e in mat.evidence}
+        for row in evidence:
+            merged_ev.setdefault(row["evidence_id"], row)
+        mat.evidence = [merged_ev[k] for k in sorted(merged_ev)]
+    return mat
 
 
 # ---------------------------------------------------------------------------
@@ -2369,3 +2431,120 @@ def apply_activity_membership_events(events: list[dict], *, knowledge_cutoff: st
         "excluded_after_cutoff": excluded,
         "authority": {"may_materialize_edges": False, "may_publish": False, "may_rank": False},
     }
+
+
+# ---------------------------------------------------------------------------
+# Activity-history projection (ORCH-PIPE 2026-10-21, lane B1)
+# ---------------------------------------------------------------------------------------
+
+#: The deterministic formula id stamped on every edge the projector mints — parallel to
+#: CONFIDENCE_BASIS ("membership_doc.v1") and "membership_pit.ths.v1": a basis names HOW
+#: a row came to be believed, never how much to trust it.
+ACTIVITY_HISTORY_CONFIDENCE_BASIS = "activity_history.v1"
+
+
+def project_activity_memberships(
+        fold: dict, *, events: list[dict], belief_time: str, era: str,
+        computed_at: str, node_ids: set[str],
+        edge_ids: set[str]) -> tuple[list[dict], list[dict], list[dict]]:
+    """Project a folded activity history into edges.v1 MEMBER_OF + evidence.v1 rows.
+
+    Pure: same inputs -> same outputs (sorted), no I/O, no clock reads. For every
+    CURRENT belief the fold produced (GRANTED + ACCEPT, post-cutoff, post-supersession):
+
+    * one ``operator_curation`` EVIDENCE receipt citing the event id, dated by the
+      curation decision. evidence.v1: ``provider``/``claim_type`` are null on
+      first-party receipts, and an operator curation IS first-party; ``effective_at``
+      stays null unless the event's clock states a KNOWN effective date.
+    * at most ONE MEMBER_OF edge per (source, target) pair — beliefs from different
+      memberships that name the same pair share one edge — its ``valid_from`` the
+      group's earliest effective date (the event's KNOWN ``effective_at``, else the
+      belief's knowledge date), ``date_provenance="activity_history"``, citing the
+      group's sorted evidence ids.
+
+    A curated, receipted activity membership is a FIRST-CLASS evidence-grain fact, not
+    a composition of membership with expression (ORCH-PIPE ruling E, 2026-10-21): so
+    these are the only company->theme edges this store may ever carry.
+
+    Refusals, never raises, never a minted node:
+      ACTIVITY_FOLD_REFUSED              — (recorded by build(), not here)
+      ACTIVITY_ENDPOINT_NODE_ABSENT      — an endpoint has no node row in this build;
+      ACTIVITY_EDGE_COLLIDES_WITH_EXISTING — the deterministic edge_id already exists
+                                           (the group gets no projection at all, its
+                                           receipts included: an edge nobody cites is
+                                           not published).
+    """
+    by_sha = {str(e.get("event_sha256")): e for e in events if isinstance(e, dict)}
+    refusals: list[dict] = []
+    groups: dict[tuple[str, str], dict] = {}
+    for belief in fold.get("current", []):
+        src = str(belief["endpoints"]["source_node_id"])
+        dst = str(belief["endpoints"]["target_node_id"])
+        missing = [n for n in (src, dst) if n not in node_ids]
+        if missing:
+            refusals.append({
+                "code": "ACTIVITY_ENDPOINT_NODE_ABSENT",
+                "membership_id": str(belief.get("membership_id")),
+                "event_sha256": str(belief.get("event_sha256")),
+                "missing": missing,
+            })
+            continue
+        # The fold validated every event, so the belief's event is always present in
+        # ``events``; the .get() chain only keeps this total over adversarial input.
+        event = by_sha.get(str(belief.get("event_sha256"))) or {}
+        effective = (event.get("clocks") or {}).get("effective_at") or {}
+        known_effective = (str(effective["value"])
+                           if effective.get("state") == "KNOWN" and effective.get("value")
+                           else None)
+        valid_from = known_effective or str(belief.get("knowledge_from"))[:10]
+        event_id = str(event.get("event_id") or belief.get("membership_id"))
+        published_at = str((belief.get("curation") or {}).get("decided_at"))[:10]
+        evidence_id = evidence_id_for("operator_curation", event_id, published_at)
+        group = groups.setdefault((src, dst), {"valid_from": valid_from, "evidence": [],
+                                               "membership_ids": []})
+        group["valid_from"] = min(group["valid_from"], valid_from)
+        group["membership_ids"].append(str(belief.get("membership_id")))
+        group["evidence"].append({
+            "evidence_id": evidence_id, "kind": "operator_curation",
+            "published_at": published_at, "effective_at": known_effective,
+            "source_ref": event_id,
+            # Mint-time snapshot (§9.4): first-party curation is internal-usable;
+            # display/redistribution stay false — the rights registry, not the
+            # curator, owns those answers and can move after this row is written.
+            "licensing_internal_ok": True, "licensing_display_ok": False,
+            "licensing_redistribution_ok": False,
+            "retention": None, "computed_at": computed_at,
+            "provider": None, "claim_type": None,
+        })
+    edges: list[dict] = []
+    evidence: list[dict] = []
+    for (src, dst), group in groups.items():
+        edge_id = edge_id_for("MEMBER_OF", src, dst, group["valid_from"])
+        if edge_id in edge_ids:
+            refusals.append({
+                "code": "ACTIVITY_EDGE_COLLIDES_WITH_EXISTING",
+                "edge_id": edge_id, "src": src, "dst": dst,
+                "membership_ids": sorted(group["membership_ids"]),
+            })
+            continue
+        edge_ids.add(edge_id)
+        row = {
+            "edge_id": edge_id, "type": "MEMBER_OF", "src": src, "dst": dst,
+            "valid_from": group["valid_from"], "valid_to": None,
+            "evidence_time": group["valid_from"], "belief_time": belief_time,
+            "era": era, "source_class": "curated",
+            "date_provenance": "activity_history",
+            "evidence_refs": sorted(e["evidence_id"] for e in group["evidence"]),
+            "confidence_basis": ACTIVITY_HISTORY_CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        }
+        for f in RESERVED_EDGE_FIELDS:
+            row[f] = None
+        edges.append(row)
+        evidence.extend(group["evidence"])
+    edges.sort(key=lambda r: r["edge_id"])
+    evidence.sort(key=lambda r: r["evidence_id"])
+    refusals.sort(key=lambda r: (str(r.get("code")),
+                                 json.dumps(r, sort_keys=True, ensure_ascii=False,
+                                            default=str)))
+    return edges, evidence, refusals
