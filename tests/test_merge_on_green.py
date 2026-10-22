@@ -10254,3 +10254,311 @@ def test_raw_page_does_not_extend_the_old_concluded_main_walk(monkeypatch):
     run, why = MOG._newest_concluded_main_run("acme/widgets", "ci.yml", "read")
     assert run is None and "all cancelled" in why
     assert len(calls) == 1
+
+
+# Retained Fabric test leaf ci-main-proof-reader-01a15d64-tests (GLM Flash).
+# Raw artifact SHA256 8dce0698795d90b1973a12c3feec4a2e54c0917eb9267608bae1e2684c2be8e3.
+# Parent adjudication: contradictory same-endpoint workflow/head identity refuses;
+# singleton freshness fallback remains; equal-date IDs must descend. Raw source is
+# retained unchanged outside Git; this namespaced composition cannot hydrate input.
+
+import copy
+
+import pytest
+
+import scripts.merge_on_green as MOG
+
+_FABRIC_REPO = "acme/widgets"
+_FABRIC_WORKFLOW = "integration-baseline.yml"
+_FABRIC_WORKFLOW_PATH = ".github/workflows/" + _FABRIC_WORKFLOW
+_FABRIC_REPO_ID = 12
+
+_FABRIC_SHA_A = "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+_FABRIC_SHA_B = "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c"
+_FABRIC_SHA_C = "ab12cd34ef56ab12cd34ef56ab12cd34ef56ab12"
+
+_FABRIC_BASE_ROW = {
+    "id": 101,
+    "workflow_id": 4242,
+    "path": _FABRIC_WORKFLOW_PATH,
+    "head_branch": "main",
+    "event": "push",
+    "repository": {"id": _FABRIC_REPO_ID, "full_name": _FABRIC_REPO},
+    "head_repository": {"id": _FABRIC_REPO_ID, "full_name": _FABRIC_REPO},
+    "head_sha": _FABRIC_SHA_A,
+    "created_at": "2026-01-15T10:30:00Z",
+    "status": "completed",
+    "conclusion": "success",
+}
+
+
+def _fabric_row(**overrides):
+    """Return a fresh deepcopy of the baseline row, optionally overridden."""
+    row = copy.deepcopy(_FABRIC_BASE_ROW)
+    row.update(overrides)
+    return row
+
+
+def _fabric_payload(rows, total_count=None):
+    payload = {"workflow_runs": rows}
+    if total_count is not None:
+        payload["total_count"] = total_count
+    return payload
+
+
+def _fabric_qualified(rows, lookback=10, total_count=None):
+    return MOG._qualified_main_workflow_runs(
+        _FABRIC_REPO, _FABRIC_WORKFLOW, _fabric_payload(rows, total_count=total_count), lookback
+    )
+
+
+def _fabric_ids(result):
+    return [row["id"] for row in result]
+
+
+def test_fabric_green_main_run_is_qualified_and_preserved():
+    row = _fabric_row(id=501)
+    result = _fabric_qualified([row], total_count=1)
+    assert _fabric_ids(result) == [501]
+    assert result[0]["head_branch"] == "main"
+    assert result[0]["head_sha"] == _FABRIC_SHA_A
+    assert result[0]["status"] == "completed"
+    assert result[0]["conclusion"] == "success"
+
+
+def test_fabric_empty_run_list_is_valid():
+    assert _fabric_qualified([], lookback=5, total_count=0) == []
+    assert _fabric_qualified([], lookback=1) == []
+
+
+_FABRIC_FOREIGN_MUTATIONS = [
+    (
+        "fork-repository",
+        lambda row: row.update(repository={"id": 99, "full_name": "acme/widgets-fork"}),
+    ),
+    (
+        "foreign-head-repository",
+        lambda row: row.update(head_repository={"id": 77, "full_name": "octo/fork-copy"}),
+    ),
+    ("pull-request-event", lambda row: row.update(event="pull_request")),
+    ("other-branch", lambda row: row.update(head_branch="release/1.2")),
+    (
+        "other-workflow-path",
+        lambda row: row.update(path=".github/workflows/other-baseline.yml"),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [case[1] for case in _FABRIC_FOREIGN_MUTATIONS],
+    ids=[case[0] for case in _FABRIC_FOREIGN_MUTATIONS],
+)
+def test_fabric_affirmative_foreign_rows_are_skipped(mutate):
+    # The foreign row is newer: skipping it must still surface the older green.
+    newer_foreign = _fabric_row(id=601, created_at="2026-01-15T12:00:00Z")
+    mutate(newer_foreign)
+    older_green = _fabric_row(id=602, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T09:00:00Z")
+    # A same-endpoint main row with contradictory workflow/head identity is
+    # ambiguous, rather than affirmative foreign-branch/event evidence.
+    if newer_foreign["path"] != _FABRIC_WORKFLOW_PATH or newer_foreign["head_repository"]["full_name"] != _FABRIC_REPO:
+        with pytest.raises(RuntimeError):
+            _fabric_qualified([newer_foreign, older_green])
+    else:
+        assert _fabric_ids(_fabric_qualified([newer_foreign, older_green])) == [602]
+
+
+_FABRIC_MISSING_IDENTITY_CASES = [
+    ("no-head-branch", "head_branch", None),
+    ("no-event", "event", None),
+    ("no-repository", "repository", None),
+    ("repository-without-full-name", "repository", "full_name"),
+    ("no-head-repository", "head_repository", None),
+]
+
+
+@pytest.mark.parametrize(
+    "key,subkey",
+    [case[1:] for case in _FABRIC_MISSING_IDENTITY_CASES],
+    ids=[case[0] for case in _FABRIC_MISSING_IDENTITY_CASES],
+)
+def test_fabric_missing_identity_fields_are_ambiguous_not_foreign(key, subkey):
+    # A row without branch/repo/event identity cannot be assumed foreign, so
+    # the older green behind it must not be reached past it.
+    newer = _fabric_row(id=701, created_at="2026-01-15T12:00:00Z")
+    if subkey is None:
+        del newer[key]
+    else:
+        del newer[key][subkey]
+    older_green = _fabric_row(id=702, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T09:00:00Z")
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([newer, older_green])
+
+
+def test_fabric_ambiguous_newer_row_blocks_older_green():
+    # A malformed value on a row that otherwise looks like main is ambiguity,
+    # not foreignness: refuse instead of silently settling for the older green.
+    malformed_newer = _fabric_row(id=801, created_at="2026-01-15T12:00:00Z", head_sha="nothex")
+    older_green = _fabric_row(id=802, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T09:00:00Z")
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([malformed_newer, older_green])
+
+
+_FABRIC_MALFORMED_MUTATIONS = [
+    ("zero-id", lambda row: row.update(id=0)),
+    ("negative-id", lambda row: row.update(id=-7)),
+    ("string-id", lambda row: row.update(id="901")),
+    ("null-id", lambda row: row.update(id=None)),
+    ("missing-id", lambda row: row.pop("id")),
+    ("zero-workflow-id", lambda row: row.update(workflow_id=0)),
+    ("string-workflow-id", lambda row: row.update(workflow_id="4242")),
+    ("missing-path", lambda row: row.pop("path")),
+    ("short-sha", lambda row: row.update(head_sha="e5f6")),
+    ("uppercase-sha", lambda row: row.update(head_sha=_FABRIC_SHA_A.upper())),
+    ("non-hex-sha", lambda row: row.update(head_sha="g" + _FABRIC_SHA_A[1:])),
+    ("unknown-status", lambda row: row.update(status="finished")),
+    ("missing-status", lambda row: row.pop("status")),
+    ("garbage-created-at", lambda row: row.update(created_at="not-a-timestamp")),
+    ("empty-created-at", lambda row: row.update(created_at="")),
+    ("missing-created-at", lambda row: row.pop("created_at")),
+]
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [case[1] for case in _FABRIC_MALFORMED_MUTATIONS],
+    ids=[case[0] for case in _FABRIC_MALFORMED_MUTATIONS],
+)
+def test_fabric_malformed_row_values_are_refused(mutate):
+    row = _fabric_row(id=901)
+    mutate(row)
+    if "created_at" not in row:
+        # A single row needs no pairwise ordering. The existing consumer still
+        # refuses green when none of its freshness dates can be established.
+        assert _fabric_ids(_fabric_qualified([row])) == [901]
+        assert MOG._baseline_age_hours(row) is None
+    else:
+        with pytest.raises(RuntimeError):
+            _fabric_qualified([row])
+
+
+@pytest.mark.parametrize(
+    "status,conclusion",
+    [
+        ("completed", "success"),
+        ("completed", "failure"),
+        ("completed", "timed_out"),
+        ("completed", "cancelled"),
+        ("queued", None),
+        ("in_progress", None),
+        ("requested", None),
+        ("waiting", None),
+        ("pending", None),
+    ],
+)
+def test_fabric_status_conclusion_combinations_are_qualified(status, conclusion):
+    row = _fabric_row(id=1001, status=status, conclusion=conclusion)
+    assert _fabric_ids(_fabric_qualified([row])) == [1001]
+
+
+@pytest.mark.parametrize(
+    "status,conclusion",
+    [
+        ("completed", None),
+        ("queued", "success"),
+        ("in_progress", "failure"),
+        ("requested", "cancelled"),
+    ],
+)
+def test_fabric_incompatible_status_conclusion_combinations_are_refused(status, conclusion):
+    row = _fabric_row(id=1002, status=status, conclusion=conclusion)
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([row])
+
+
+def test_fabric_newest_first_order_is_preserved_including_red_before_older_green():
+    newest_green = _fabric_row(id=1104, created_at="2026-01-15T12:00:00Z")
+    tied_red = _fabric_row(
+        id=1103,
+        status="completed",
+        conclusion="failure",
+        created_at="2026-01-15T10:30:00Z",
+    )
+    tied_green = _fabric_row(id=1102, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T10:30:00Z")
+    older_green = _fabric_row(id=1101, head_sha=_FABRIC_SHA_C, created_at="2026-01-15T09:00:00Z")
+    result = _fabric_qualified([newest_green, tied_red, tied_green, older_green])
+    assert _fabric_ids(result) == [1104, 1103, 1102, 1101]
+
+    # A newer red run stays ahead of the older green it supersedes.
+    newer_red = _fabric_row(
+        id=1150,
+        status="completed",
+        conclusion="failure",
+        created_at="2026-01-15T11:00:00Z",
+    )
+    older_only_green = _fabric_row(id=1151, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T08:00:00Z")
+    assert _fabric_ids(_fabric_qualified([newer_red, older_only_green])) == [1150, 1151]
+
+
+def test_fabric_reversed_order_duplicate_id_and_unstable_workflow_id_are_refused():
+    older = _fabric_row(id=1301, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T09:00:00Z")
+    newer = _fabric_row(id=1302, created_at="2026-01-15T11:00:00Z")
+    # Ascending order breaks the newest-first page invariant.
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([older, newer])
+
+    first = _fabric_row(id=1401, created_at="2026-01-15T11:00:00Z")
+    second = _fabric_row(id=1401, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T10:00:00Z")
+    # Run ids must be unique within the page.
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([first, second])
+
+    ours = _fabric_row(id=1501, created_at="2026-01-15T11:00:00Z")
+    stray = _fabric_row(id=1502, head_sha=_FABRIC_SHA_B, created_at="2026-01-15T10:00:00Z")
+    stray["workflow_id"] = 9999
+    # workflow_id must stay stable across the page.
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([ours, stray])
+
+
+def test_fabric_lookback_overflow_refused_but_full_bounded_page_valid():
+    shas = [_FABRIC_SHA_A, _FABRIC_SHA_B, _FABRIC_SHA_C]
+    rows = [
+        _fabric_row(
+            id=1600 + i,
+            head_sha=shas[i % 3],
+            created_at="2026-01-15T1%d:00:00Z" % (3 - i),
+        )
+        for i in range(4)
+    ]
+    # More rows than lookback is refused outright.
+    with pytest.raises(RuntimeError):
+        _fabric_qualified(rows, lookback=3)
+
+    # A page of exactly lookback rows is valid, fully qualified, and the
+    # result never implies another page should be fetched.
+    full_page = rows[:3]
+    assert _fabric_ids(_fabric_qualified(full_page, lookback=3)) == [1600, 1601, 1602]
+
+    # A single row already exceeds a zero lookback.
+    with pytest.raises(RuntimeError):
+        _fabric_qualified([_fabric_row(id=1700)], lookback=0)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        "workflow_runs",
+        {},
+        {"total_count": 0},
+        {"workflow_runs": None},
+        {"workflow_runs": "nope"},
+        {"workflow_runs": ["not-a-dict"]},
+        {"workflow_runs": [[]]},
+    ],
+)
+def test_fabric_malformed_payload_containers_are_refused(payload):
+    with pytest.raises(RuntimeError):
+        MOG._qualified_main_workflow_runs(_FABRIC_REPO, _FABRIC_WORKFLOW, payload, 10)

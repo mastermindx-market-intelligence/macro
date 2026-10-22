@@ -4314,7 +4314,10 @@ def _qualified_main_workflow_runs(
                 "queued", "in_progress", "completed", "requested", "waiting", "pending"
             }
             or (row.get("status") != "completed" and row.get("conclusion") is not None)
-            or (row.get("conclusion") is not None and not isinstance(row["conclusion"], str))
+            or (row.get("status") == "completed" and row.get("conclusion") not in (
+                "success", "failure", "neutral", "cancelled", "skipped", "timed_out",
+                "action_required", "stale", "startup_failure",
+            ))
         ):
             raise RuntimeError("main workflow run identity is unproven")
         created_text = row.get("created_at")
