@@ -40,3 +40,7 @@ The consolidation does not move the frozen `proposed_dock4_repair` artifact, can
 The owner observed a complete byte/mode round trip after compression. Independent review compared every manifest path, blob and size against immutable GitHub content and reviewed the preparation procedure. The independent reviewer did not claim to have read the compressed archive itself; the direct execution receipt supplies that observation.
 
 This is an evidence-storage correction. It does not establish authority clearance, hosted CI success, protected-main adoption, production acquisition or served acceptance.
+
+## Ordinary-file GS guard fixture retained
+
+Subsequent full CI dependency inspection identified one required ordinary file: `research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css`. Its exact `d7be48a7…` bytes are restored unchanged at that original path before publication. It also remains in the259-member archive. Consequently258 original paths are consolidated out of the checkout. The GS guard, its positive/negative cases and manifest enrollment are unchanged. See `GS_THEME_FIXTURE_QUALIFICATION.json`.
