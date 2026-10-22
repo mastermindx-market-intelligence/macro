@@ -61,7 +61,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="illus.css?v=cbe6a0b4">
-<link rel="stylesheet" href="assets/css/ebe31e14.css?v=ebe31e14">
+<link rel="stylesheet" href="assets/css/a29822ca.css?v=a29822ca">
 <link rel="stylesheet" href="assets/css/080bfc12.css?v=080bfc12">
 
 
@@ -69,6 +69,7 @@
 <link rel="stylesheet" href="assets/css/c45789fd.css?v=c45789fd">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 <link rel="preload" as="style" href="assets/css/fa07e99a.css?v=fa07e99a">
+<link rel="preload" as="style" href="assets/css/1820ffed.css?v=1820ffed">
 </head>
 <body>
 
@@ -411,17 +412,17 @@
     </a>
     
     <a class="mx-chg-row" href="#stress">
-      <span class="mx-chg-when tnum">09-17</span>
+      <span class="mx-chg-when tnum">09-10</span>
       <span class="mx-chg-name"><span class="l-en">Rates vol</span><span class="l-zh">利率波动</span></span>
-      <span class="mx-chg-what"><span class="l-en">Rates volatility (MOVE) → calm</span><span class="l-zh">利率波动（MOVE）→ 平静</span></span>
+      <span class="mx-chg-what"><span class="l-en">Rates volatility (MOVE) → normal</span><span class="l-zh">利率波动（MOVE）→ 正常</span></span>
       <span class="mx-stance mx-stance-muted"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察，勿追</span></span>
       <span class="mx-chg-chev">›</span>
     </a>
     
-    <a class="mx-chg-row" href="#stress">
-      <span class="mx-chg-when tnum">09-10</span>
-      <span class="mx-chg-name"><span class="l-en">Rates vol</span><span class="l-zh">利率波动</span></span>
-      <span class="mx-chg-what"><span class="l-en">Rates volatility (MOVE) → normal</span><span class="l-zh">利率波动（MOVE）→ 正常</span></span>
+    <a class="mx-chg-row" href="#curve">
+      <span class="mx-chg-when tnum">09-01</span>
+      <span class="mx-chg-name"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
+      <span class="mx-chg-what"><span class="l-en">Curve regime → Bear flattener</span><span class="l-zh">曲线形态 → 熊市平坦</span></span>
       <span class="mx-stance mx-stance-muted"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察，勿追</span></span>
       <span class="mx-chg-chev">›</span>
     </a>
@@ -463,7 +464,7 @@
       <div class="panel" id="credit">
         <div class="mx-sec"><h2 class="l-en">Credit</h2><h2 class="l-zh">信用</h2></div>
         <p class="drv-read"><b><span class="l-en">Normal</span><span class="l-zh">正常</span>.</b>
-          <span class="l-en">spreads unremarkable</span><span class="l-zh">利差平稳</span> · <span class="l-en">Company-bond stress is low; AI borrowing costs bear watching.</span><span class="l-zh">整体压力仍低；AI公司的借贷成本值得关注。</span> <a href="#corpcredit"><span class="l-en">Corporate bond desk →</span><span class="l-zh">公司债观察台 →</span></a></p>
+          <span class="l-en">spreads unremarkable</span><span class="l-zh">利差平稳</span> · <span class="l-en">The credit source is readable, but a current credit assessment has not been confirmed.</span><span class="l-zh">信用数据源可读取，但当前信用状况研判尚未确认。</span> <a href="#corpcredit"><span class="l-en">Corporate bond desk →</span><span class="l-zh">公司债观察台 →</span></a></p>
         <div class="mtiles2">
           <div class="mtile"><div class="mtile-lbl"><span class="l-en">HY OAS</span><span class="l-zh">高收益利差</span></div><div class="mtile-val tnum">3.29%</div></div>
           <div class="mtile"><div class="mtile-lbl"><span class="l-en">IG OAS</span><span class="l-zh">投资级利差</span></div><div class="mtile-val tnum">0.87%</div></div>
@@ -530,6 +531,8 @@
         <div class="flag info" style="margin-top:10px">ℹ <span class="l-en">Context only. The same factors helped most with drawdown control, not precise return timing.</span><span class="l-zh">仅供参考。同类因子主要帮助控制回撤，而非精确择时收益。</span></div>
         
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of Oct 20, 2026</span><span class="l-zh">截至 2026年10月20日</span></div>
+        <button type="button" class="gbtn gbtn-quiet bonds-duration-open" data-duration-open aria-haspopup="dialog" aria-controls="bonds-duration-dialog" disabled><span class="l-en">Preview price impact →</span><span class="l-zh">预览价格影响 →</span></button>
+        <p class="sub faint" data-duration-unavailable><span class="l-en">Preview unavailable: JavaScript and native dialog support are required. Market information is unaffected.</span><span class="l-zh">预览不可用：需要 JavaScript 与原生对话框支持。市场信息不受影响。</span></p>
       </div>
 
       <div class="panel" id="stress">
@@ -828,6 +831,256 @@
   </section>
   
 
+  
+  <section class="landing" id="bond-explanations">
+    <p class="landing-kicker"><span class="l-en">WHY BONDS ARE MOVING</span><span class="l-zh">债券为何波动</span></p>
+    <div class="card">
+      <h2><span class="l-en">Competing explanations — keep the disagreement visible</span><span class="l-zh">竞争性解释 — 保留分歧</span></h2>
+      <p class="sub faint"><span class="l-en">Five evidence rows from existing owners. They are descriptive/mechanical context, not probabilities, forecasts or a forced single story.</span><span class="l-zh">来自现有权威来源的五条证据路径。它们是描述性/机制性背景，不是概率、预测或强行归一的单一叙事。</span></p>
+      
+      <p class="sub faint"><span class="l-en">Source join</span><span class="l-zh">来源连接</span> · insufficient</p>
+
+      
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">Policy / real-rate tightening</span><span class="l-zh">政策 / 实际利率紧缩</span></b>
+          <span class="sub faint"> · withheld</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+        <p class="sub faint"><b><span class="l-en">Withheld</span><span class="l-zh">暂不判断</span>:</b> <span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Supports</span><span class="l-zh">支持</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Fed-funds futures price a +81bp 12-month policy-rate change.</span><span class="l-zh">联邦基金期货定价未来12个月政策利率变动+81基点。</span>
+            <span> · fed_path.implied_bp_12m · 2026-10-20</span>
+            
+              <span> · </span><span class="l-en">A futures-implied path is a market price, not a forecast edge.</span><span class="l-zh">期货隐含路径是市场价格，不是预测优势。</span>
+            
+          </div>
+          
+          
+        
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Missing / withheld</span><span class="l-zh">缺失 / 暂不使用</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Real-rate speed is unavailable.</span><span class="l-zh">实际利率速度不可用.</span>
+            <span> · yield_curve.momentum.real10y_speed_bp</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Front-end yield speed is unavailable.</span><span class="l-zh">前端收益率速度不可用。</span>
+            <span> · yield_curve.momentum.front2y_speed_bp</span>
+            
+          </div>
+          
+          
+        
+      </details>
+      
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">Growth / cut repricing</span><span class="l-zh">增长 / 降息重新定价</span></b>
+          <span class="sub faint"> · withheld</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+        <p class="sub faint"><b><span class="l-en">Withheld</span><span class="l-zh">暂不判断</span>:</b> <span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Supports</span><span class="l-zh">支持</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Credit is widening but remains in the normal band.</span><span class="l-zh">信用利差widening，但仍处于normal区间。</span>
+            <span> · pillars.credit · 2026-10-20</span>
+            
+          </div>
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Contradicts</span><span class="l-zh">反驳</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Fed-funds futures price +81bp over 12 months.</span><span class="l-zh">联邦基金期货定价未来12个月变动+81基点。</span>
+            <span> · fed_path.implied_bp_12m · 2026-10-20</span>
+            
+              <span> · </span><span class="l-en">Market pricing is reactive context, not a recession probability.</span><span class="l-zh">市场定价是反应性背景，不是衰退概率。</span>
+            
+          </div>
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Missing / withheld</span><span class="l-zh">缺失 / 暂不使用</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Recession-state evidence is incomplete.</span><span class="l-zh">衰退状态证据不完整。</span>
+            <span> · yield_curve.recession</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Front-end repricing is unavailable.</span><span class="l-zh">前端重新定价不可用。</span>
+            <span> · yield_curve.momentum.front2y_speed_bp</span>
+            
+          </div>
+          
+          
+        
+      </details>
+      
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">Inflation / reflation</span><span class="l-zh">通胀 / 再通胀</span></b>
+          <span class="sub faint"> · withheld</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">This inflation interpretation joins rates and breakeven evidence whose calculation dates are missing or different; keep the readings separate.</span><span class="l-zh">该通胀解释需要合并利率与盈亏平衡证据，但其计算日期缺失或不一致；应分别保留这些读数。</span></p>
+        
+        <p class="sub faint"><b><span class="l-en">Withheld</span><span class="l-zh">暂不判断</span>:</b> <span class="l-en">This inflation interpretation joins rates and breakeven evidence whose calculation dates are missing or different; keep the readings separate.</span><span class="l-zh">该通胀解释需要合并利率与盈亏平衡证据，但其计算日期缺失或不一致；应分别保留这些读数。</span></p>
+        
+
+        
+          
+          
+        
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Missing / withheld</span><span class="l-zh">缺失 / 暂不使用</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">63-day breakeven change is unavailable.</span><span class="l-zh">63日盈亏平衡变动不可用。</span>
+            <span> · breakeven_decomp.velocity_bp.chg_63d_bp</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Real-versus-inflation move decomposition is incomplete.</span><span class="l-zh">实际利率与通胀补偿的变动分解不完整。</span>
+            <span> · yield_curve.momentum + breakeven_decomp</span>
+            
+          </div>
+          
+          
+        
+      </details>
+      
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">Term premium / supply</span><span class="l-zh">期限溢价 / 供给</span></b>
+          <span class="sub faint"> · withheld</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+        <p class="sub faint"><b><span class="l-en">Withheld</span><span class="l-zh">暂不判断</span>:</b> <span class="l-en">This mechanism joins Bonds and transmission evidence whose calculation dates are missing or different; inspect the dated evidence separately.</span><span class="l-zh">该机制需要合并债券与传导证据，但其计算日期缺失或不一致；请分别查看带日期的证据。</span></p>
+        
+
+        
+          
+          
+        
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Missing / withheld</span><span class="l-zh">缺失 / 暂不使用</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Kim-Wright term-premium evidence is incomplete.</span><span class="l-zh">Kim-Wright期限溢价模型证据不完整。</span>
+            <span> · yield_curve.regime + pillars.real_inflation.term_premium</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">A second independent term-premium model is not supplied, so no model band is available.</span><span class="l-zh">未提供第二个独立期限溢价模型，因此无法形成模型区间。</span>
+            <span> · not supplied by current Bonds contracts · 2026-10-20</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Direct Treasury supply / auction confirmation is not supplied to this projection.</span><span class="l-zh">本投影未提供直接的国债供给 / 拍卖确认。</span>
+            <span> · not supplied by current Bonds contracts · 2026-10-20</span>
+            
+          </div>
+          
+          
+        
+      </details>
+      
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">Funding / liquidity stress</span><span class="l-zh">资金 / 流动性压力</span></b>
+          <span class="sub faint"> · insufficient</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">One or more required funding-stress owners are unavailable.</span><span class="l-zh">一个或多个必要的资金压力权威来源不可用。</span></p>
+        
+
+        
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Contradicts</span><span class="l-zh">反驳</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">MOVE remains in the normal absolute band despite a high percentile (94.0%); relative elevation alone does not confirm plumbing stress.</span><span class="l-zh">MOVE绝对区间仍为normal，尽管分位数较高（94.0%）；相对偏高本身不能确认资金管道压力。</span>
+            <span> · pillars.stress.move_band · 2026-10-20</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Repo stress and reserve scarcity are both off.</span><span class="l-zh">回购压力与准备金稀缺均未触发。</span>
+            <span> · pillars.stress.repo_stress + reserve_scarcity · 2026-10-20</span>
+            
+          </div>
+          
+          
+        
+          
+          
+          <div class="sub" style="margin-top:8px"><b><span class="l-en">Missing / withheld</span><span class="l-zh">缺失 / 暂不使用</span></b></div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Systemic funding-stress state is unavailable.</span><span class="l-zh">系统性资金压力状态不可用。</span>
+            <span> · conditions.systemic_stress</span>
+            
+          </div>
+          
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">Market-depth, collateral and margin/liquidation evidence is not supplied to this projection.</span><span class="l-zh">本投影未提供市场深度、抵押品以及保证金/清算证据。</span>
+            <span> · not supplied by current Bonds contracts · 2026-10-20</span>
+            
+          </div>
+          
+          
+        
+      </details>
+      
+      <p class="sub faint" style="margin-top:10px"><span class="l-en">Display-only evidence. No score, probability, alert, holding, trade or market state is changed here.</span><span class="l-zh">仅展示证据。本区不会改变评分、概率、提醒、持仓、交易或市场状态。</span></p>
+    </div>
+  </section>
+  
+
   <!-- ===================== LANDING: FED PATH ===================== -->
   
   <section class="landing" id="fed-path">
@@ -904,478 +1157,12 @@
   </div>
 
   
-  
-  <div class="card cs-card cs-amber">
-    <h2><span class="l-en">Overall read</span><span class="l-zh">整体研判</span></h2>
-    <div class="cc-hero-state">
-      <span class="l-en">Credit stress: low</span><span class="l-zh">信用压力：低</span>
-    </div>
-    <div>
-      <span class="stance-pill stance-amber">
-        <span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观望 · 勿追</span>
-      </span>
-    </div>
-    <div class="cc-verdict-lead">
-      <span class="l-en">Company-bond stress is low; AI borrowing costs bear watching.</span><span class="l-zh">整体压力仍低；AI公司的借贷成本值得关注。</span>
-    </div>
-    <div class="cc-as-of"><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-10</div>
-  </div>
-
-  
-  <div class="card" style="margin-top:0">
-    <h2><span class="l-en">Spread gauges</span><span class="l-zh">利差仪表</span></h2>
-    <div class="cc-mkt-strip">
-      
-      <div class="cc-mkt-chip chip-amber"
-           data-tip-en="Top-rated companies — the safest corporate borrowers. Extra yield over Treasuries: AAA +0.43%, AA +0.61%. It has risen 0.03 points over 21 days, faster than about 8 in 10 past readings. The level is still low by history; it is the pace that stands out. Colour follows whichever of the two rating tiers is moving faster. Shown for context — not a buy signal."
-           data-tip-zh="最高评级企业——最安全的公司借款人。相对国债额外收益率：AAA +0.43%、AA +0.61%。21日上升0.03个百分点，快于约十分之八的历史读数。绝对水平仍处历史低位，值得注意的是变化速度。颜色取两档评级中变化更快者。仅为提示，非买入信号。">
-        <span class="chip-label">
-          <span class="l-en">Safest borrowers: edging up</span><span class="l-zh">最安全借款人：小幅上行</span>
-        </span>
-        <span class="chip-sub cc-sub-amber">
-          <span class="l-en">modest drift</span><span class="l-zh">温和漂移</span>
-        </span>
-      </div>
-      
-      <div class="cc-mkt-chip chip-amber"
-           data-tip-en="Investment-grade extra yield over Treasuries; 21-day change velocity indicates direction."
-           data-tip-zh="投资级相对国债额外收益率；21日变化速度显示走阔/收窄方向。">
-        <span class="chip-label">
-          <span class="l-en">Quality-grade: creeping wider</span><span class="l-zh">投资级：微幅走阔</span>
-        </span>
-        <span class="chip-sub cc-sub-amber">
-          <span class="l-en">+0.81%</span><span class="l-zh">额外收益率 +0.81%</span>
-        </span>
-      </div>
-      
-      <div class="cc-mkt-chip chip-calm"
-           data-tip-en="High-yield extra yield; 21-day change mid-range."
-           data-tip-zh="高收益额外收益率；21日变化处于中位。">
-        <span class="chip-label">
-          <span class="l-en">Junk: steady</span><span class="l-zh">高收益：平稳</span>
-        </span>
-        <span class="chip-sub cc-sub-calm">
-          <span class="l-en">+2.67%</span><span class="l-zh">额外收益率 +2.67%</span>
-        </span>
-      </div>
-      
-      <div class="cc-mkt-chip chip-calm"
-           data-tip-en="The gap between junk and quality yields is a classic late-cycle gauge; compression to extremes preceded 2007 and 2021 tops."
-           data-tip-zh="高低评级利差是经典的周期后段指标；压缩至极端曾出现在2007与2021顶部之前。">
-        <span class="chip-label">
-          <span class="l-en">Junk-vs-quality gap: steady</span><span class="l-zh">高低评级利差：平稳</span>
-        </span>
-        <span class="chip-sub cc-sub-calm">
-          <span class="l-en">gap mid-range</span><span class="l-zh">利差居中</span>
-        </span>
-      </div>
-      
-      <div class="cc-mkt-chip chip-amber"
-           data-tip-en="CCC-vs-BB gap 9.0 points — the lowest-rated tier historically moves first in credit turns."
-           data-tip-zh="CCC与BB利差9.0点——历史上最低评级层级在信用拐点时最先变动。">
-        <span class="chip-label">
-          <span class="l-en">Weakest borrowers: widening</span><span class="l-zh">最弱借款人：走阔</span>
-        </span>
-        <span class="chip-sub cc-sub-amber">
-          <span class="l-en">CCC tier moving first</span><span class="l-zh">CCC层级率先变动</span>
-        </span>
-      </div>
-      
-      
-    </div>
-  </div>
-
-  
-  <div class="card" style="margin-top:0">
-    <h2><span class="l-en">AI &amp; tech themes</span><span class="l-zh">AI与科技主题</span></h2>
-    <div class="cc-theme-tiles">
-      
-      <div class="cc-tile t-amber"
-           data-tip-en="158 bonds, $811M par tracked across MSFT/AMZN/META/GOOGL/ORCL; avg maturity 7.6y; extra yield +0.80% vs matched Treasuries (par-weighted, yield-to-maturity basis); prices are fund-reported estimates."
-           data-tip-zh="追踪MSFT/AMZN/META/GOOGL/ORCL共158只债券、面值8.11亿美元；平均期限7.6年；相对同期限国债额外收益+0.80%（面值加权、到期收益率口径）；价格为基金披露估值。">
-        <div class="t-name">
-          
-          <span class="l-en">Hyperscalers</span><span class="l-zh">超大规模云商</span>
-          
-        </div>
-        <div class="t-val">
-          +0.8%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span class="l-en">5 giants · Oracle on watch</span><span class="l-zh">5家巨头 · 甲骨文在观察名单</span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">-0.06%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-amber">
-          <span class="l-en">Watch</span><span class="l-zh">观望</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-red"
-           data-tip-en="4 bonds, $116M par; junk-rated (B+); the highest borrowing cost of any theme we track; converts and private loans not visible here."
-           data-tip-zh="4只债券、面值1.16亿美元；高收益级（B+）；为所有主题中借贷成本最高；可转债与私募贷款不在此覆盖范围。">
-        <div class="t-name">
-          
-          <a href="basket/ai_neoclouds.html" style="color:var(--muted);text-decoration:none">
-            <span class="l-en">AI clouds</span><span class="l-zh">新型AI云商</span>
-          </a>
-          
-        </div>
-        <div class="t-val">
-          +7.2%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span class="l-en">CoreWeave only — junk-rated</span><span class="l-zh">仅CoreWeave · 高收益级</span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">+0.31%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-red">
-          <span class="l-en">Watch closely</span><span class="l-zh">密切观望</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-amber"
-           data-tip-en="9 bonds, $33M par (MU investment-grade + STX junk); SanDisk&#39;s loan and Samsung/SK Hynix paper are not index-visible."
-           data-tip-zh="9只债券、面值3300万美元（美光投资级+希捷高收益）；闪迪贷款及三星/海力士债券不在指数覆盖内。">
-        <div class="t-name">
-          
-          <a href="basket/memory_storage.html" style="color:var(--muted);text-decoration:none">
-            <span class="l-en">Memory chips</span><span class="l-zh">存储芯片</span>
-          </a>
-          
-        </div>
-        <div class="t-val">
-          +1.0%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span class="l-en">Micron + Seagate mix</span><span class="l-zh">美光与希捷组合</span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">-0.97%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-amber">
-          <span class="l-en">Watch</span><span class="l-zh">观望</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-calm"
-           data-tip-en="44 bonds, $147M par across Vistra/Constellation/NextEra; tightest theme — the market sees contracted nuclear cash flows as safe."
-           data-tip-zh="44只债券、面值1.47亿美元（Vistra/Constellation/NextEra）；利差最窄——市场视核电长约现金流为安全。">
-        <div class="t-name">
-          
-          <span class="l-en">AI power</span><span class="l-zh">AI电力</span>
-          
-        </div>
-        <div class="t-val">
-          +0.6%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span style="min-height:18px;display:block"></span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">-0.04%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-calm">
-          <span class="l-en">Ignore</span><span class="l-zh">无需关注</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-calm"
-           data-tip-en="18 bonds, $50M par (Equinix, Digital Realty)."
-           data-tip-zh="18只债券、面值5000万美元（Equinix、Digital Realty）。">
-        <div class="t-name">
-          
-          <span class="l-en">Data-centre landlords</span><span class="l-zh">数据中心业主</span>
-          
-        </div>
-        <div class="t-val">
-          +0.7%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span style="min-height:18px;display:block"></span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">+0.04%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-calm">
-          <span class="l-en">Ignore</span><span class="l-zh">无需关注</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-calm"
-           data-tip-en="25 bonds, $61M par (Dell)."
-           data-tip-zh="25只债券、面值6100万美元（戴尔）。">
-        <div class="t-name">
-          
-          <span class="l-en">AI hardware</span><span class="l-zh">AI硬件</span>
-          
-        </div>
-        <div class="t-val">
-          +0.6%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span style="min-height:18px;display:block"></span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">+0.02%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-calm">
-          <span class="l-en">Ignore</span><span class="l-zh">无需关注</span>
-        </span>
-      </div>
-      
-      <div class="cc-tile t-neutral"
-           data-tip-en="44 bonds, $134M par (AT&amp;T/Verizon). The 1996-2002 telecom debt boom is the closest historical rhyme to today&#39;s AI build-out — this control group anchors the comparison."
-           data-tip-zh="44只债券、面值1.34亿美元（AT&amp;T/Verizon）。1996-2002电信债务潮是当前AI建设最接近的历史对照——该组用作比较基准。">
-        <div class="t-name">
-          
-          <span class="l-en">Telecom — the 1990s echo</span><span class="l-zh">电信 · 90年代对照组</span>
-          
-        </div>
-        <div class="t-val">
-          +0.7%
-        </div>
-        <div class="t-sub">
-          
-          
-          <span style="min-height:18px;display:block"></span>
-          
-          
-          <span style="font-size:10px;color:var(--faint);display:block;margin-top:2px">-0.00%/21d</span>
-          
-        </div>
-        <span class="t-stance ts-neutral">
-          <span class="l-en">Context</span><span class="l-zh">对照参考</span>
-        </span>
-      </div>
-      
-    </div>
-  </div>
-
-  
-  <div class="card" style="margin-top:0">
-    <h2><span class="l-en">On the watch list</span><span class="l-zh">观察名单</span></h2>
-    <div class="cc-watch-strip">
-
-      
-      
-      
-      <div class="cc-watch-chip wc-amber"
-           data-tip-en="Oracle bonds yield 1.53% over Treasuries vs 0.77% for quality-grade peers at the same maturities; all three rating agencies have Oracle on negative outlook. A downgrade to junk would be the largest such event in history."
-           data-tip-zh="甲骨文债券相对国债收益率高1.53%，同期限投资级同行仅0.77%；三大评级机构均给予负面展望。若降至高收益级将成史上最大规模降级事件。">
-        <span style="font-weight:700">ORCL</span> —
-        
-        <span class="l-en">Oracle pays +0.8% over similar bonds — the market votes before the raters</span><span class="l-zh">甲骨文比同级债券多付0.8% · 市场先于评级机构投票</span>
-        
-      </div>
-      
-
-      
-      
-      
-      <div class="cc-watch-chip wc-neutral">
-        <span class="l-en">No fallen-angel candidates in motion</span><span class="l-zh">暂无天使跌落候选</span>
-      </div>
-      
-      
-
-      
-
-    </div>
-  </div>
-
-  
-  
-  
-  <div class="card cs-card cs-amber"
-       data-tip-en="Market-wide bond tape from actual trades. Price lows can reflect Treasury yields rising rather than company stress — read alongside the extra-yield gauges above. Our own fund-level tape ships separately once history accrues; the two are never blended."
-       data-tip-zh="基于真实成交的全市场债券行情。价格新低可能源于国债收益率上行而非公司风险——请结合上方额外收益指标解读。我们自建的基金层面行情将在数据积累后单独展示，两者不混合。">
-    <h2><span class="l-en">Bond market tape</span><span class="l-zh">债券市场行情</span></h2>
-    
-    <div class="cc-tape-line">
-      <span class="l-en"><span class="l-en">Latest:</span><span class="l-zh">最新：</span> 23.7% <span class="l-en">of bonds rose</span><span class="l-zh">债券上涨</span> · 19.4% <span class="l-en">touched 1-year lows</span><span class="l-zh">创一年新低</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-09</span>
-      <span class="l-zh">最新：23.7%债券上涨 · 19.4%创一年新低 · 截至2026-09-09</span>
-    </div>
-    
-    <span class="cc-source-chip"><span class="l-en">FINRA trade data</span><span class="l-zh">FINRA成交数据</span></span>
+  <div class="card cs-card cs-neutral" data-card="credit-currentness-unconfirmed">
+    <h2><span class="l-en">Current credit reading unconfirmed</span><span class="l-zh">当前信用读数未确认</span></h2>
+    <p class="cc-verdict-lead"><span class="l-en">The credit source is readable, but a current credit assessment has not been confirmed.</span><span class="l-zh">信用数据源可读取，但当前信用状况研判尚未确认。</span></p>
+    <div class="cc-as-of"><span class="l-en">Source date</span><span class="l-zh">数据源日期</span>: 2026-09-10</div>
   </div>
   
-
-  
-  
-  <div class="card cs-card cs-neutral">
-    <h2><span class="l-en">When the debt comes due</span><span class="l-zh">债务到期分布</span></h2>
-    <div class="cc-mat-wall">
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">Hyperscalers</span><span class="l-zh">超大规模云商</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:354.9"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:129.1"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:216.3"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:111.1"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">AI clouds</span><span class="l-zh">新型AI云商</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:58.4"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:57.7"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">Memory chips</span><span class="l-zh">存储芯片</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:2.6"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:4.3"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:26.1"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:0.4"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">AI power</span><span class="l-zh">AI电力</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:92.6"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:14.5"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:16.9"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:23.3"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">Data-centre landlords</span><span class="l-zh">数据中心业主</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:33.3"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:10.9"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:5.3"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:0.4"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">AI hardware</span><span class="l-zh">AI硬件</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:32.5"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:12.8"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:13.4"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:2.5"></span>
-          
-        </div>
-      </div>
-      
-      <div class="cc-mat-row">
-        <span class="cc-mat-label">
-          <span class="l-en">Telecom — the 1990s echo</span><span class="l-zh">电信 · 90年代对照组</span>
-        </span>
-        <div class="cc-mat-bars">
-          
-          <span class="cc-mat-seg cc-seg-1" style="flex:36.7"></span>
-          
-          <span class="cc-mat-seg cc-seg-2" style="flex:24.3"></span>
-          
-          <span class="cc-mat-seg cc-seg-3" style="flex:55.1"></span>
-          
-          <span class="cc-mat-seg cc-seg-4" style="flex:17.7"></span>
-          
-        </div>
-      </div>
-      
-    </div>
-    <div class="cc-mat-legend">
-      <span><span class="cc-dot" style="background:color-mix(in srgb,var(--amber) 80%,var(--red))"></span><span class="l-en">0–1y</span><span class="l-zh">0–1年</span></span>
-      <span><span class="cc-dot" style="background:var(--amber)"></span><span class="l-en">1–3y</span><span class="l-zh">1–3年</span></span>
-      <span><span class="cc-dot" style="background:color-mix(in srgb,var(--blue) 60%,var(--faint))"></span><span class="l-en">3–5y</span><span class="l-zh">3–5年</span></span>
-      <span><span class="cc-dot" style="background:var(--blue)"></span><span class="l-en">5–10y</span><span class="l-zh">5–10年</span></span>
-      <span><span class="cc-dot" style="background:var(--indigo)"></span><span class="l-en">10y+</span><span class="l-zh">10年+</span></span>
-    </div>
-    <p class="sub faint" style="margin:8px 0 0;font-size:11px"><span class="l-en">All themes had zero bonds maturing within 1 year as of 2026-09-10.</span><span class="l-zh">截至2026-09-10，所有主题均无1年内到期债券。</span></p>
-  </div>
-  
-
-  
-  <div class="card cs-card cc-delayed cs-neutral" data-card="stocks-vs-bonds">
-    <h2><span class="l-en">Stocks vs their bonds</span><span class="l-zh">股票与其债券</span></h2>
-    
-    <p class="cc-verdict-lead">
-      
-      <span class="l-en">Data delayed since 08 Sep 2026</span><span class="l-zh">数据自 2026年9月8日 起未更新</span>
-      
-    </p>
-    <p class="empty-why">
-      
-      <span class="l-en">The daily series has not updated, so the divergence read cannot be scored.</span><span class="l-zh">日度序列尚未更新，因此无法计算背离读数。</span>
-      
-    </p>
-    
-  </div>
-
-  
-  <div class="cc-foot-note">
-    <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
-  </div>
-
 
 
 
@@ -1885,7 +1672,7 @@
   <!-- ===================== ALERT TIMELINE ===================== -->
   
   <div class="card" id="timeline" style="margin-top:20px">
-    <h2><span class="l-en">Bond state-change timeline</span><span class="l-zh">债券状态变化时间线</span> <span class="faint">· 14 <span class="l-en">events · last</span><span class="l-zh">事件 · 近</span> 120d</span></h2>
+    <h2><span class="l-en">Bond state-change timeline</span><span class="l-zh">债券状态变化时间线</span> <span class="faint">· 5 <span class="l-en">events · last</span><span class="l-zh">事件 · 近</span> 120d</span></h2>
     <div class="timeline">
     
       <div class="tl-day"><span class="l-en">Wed Sep 30</span><span class="l-zh">9月30日 周三</span></div>
@@ -1901,14 +1688,6 @@
       <div class="tl-ev sev-medium">
         <span class="tl-type"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
         <span class="tl-head"><span class="l-en">HY credit widened to normal</span><span class="l-zh">高收益信用走阔至正常</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Thu Sep 17</span><span class="l-zh">9月17日 周四</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Rates vol</span><span class="l-zh">利率波动</span></span>
-        <span class="tl-head"><span class="l-en">Rates volatility (MOVE) → calm</span><span class="l-zh">利率波动（MOVE）→ 平静</span></span>
       </div>
       
     
@@ -1928,75 +1707,11 @@
       </div>
       
     
-      <div class="tl-day"><span class="l-en">Mon Aug 31</span><span class="l-zh">8月31日 周一</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull flattener</span><span class="l-zh">曲线形态 → 牛市平坦</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Thu Aug 27</span><span class="l-zh">8月27日 周四</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull steepener</span><span class="l-zh">曲线形态 → 牛市陡峭</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Fri Aug 21</span><span class="l-zh">8月21日 周五</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull steepener</span><span class="l-zh">曲线形态 → 牛市陡峭</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Thu Aug 20</span><span class="l-zh">8月20日 周四</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull steepener</span><span class="l-zh">曲线形态 → 牛市陡峭</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Fri Jul 31</span><span class="l-zh">7月31日 周五</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Rates vol</span><span class="l-zh">利率波动</span></span>
-        <span class="tl-head"><span class="l-en">Rates volatility (MOVE) → normal</span><span class="l-zh">利率波动（MOVE）→ 正常</span></span>
-      </div>
-      
-    
       <div class="tl-day"><span class="l-en">Tue Jul 14</span><span class="l-zh">7月14日 周二</span></div>
       
       <div class="tl-ev sev-info">
         <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
         <span class="tl-head"><span class="l-en">Curve regime → Bear steepener</span><span class="l-zh">曲线形态 → 熊市陡峭</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Wed Jul 08</span><span class="l-zh">7月8日 周三</span></div>
-      
-      <div class="tl-ev sev-high">
-        <span class="tl-type"><span class="l-en">Rates vol</span><span class="l-zh">利率波动</span></span>
-        <span class="tl-head"><span class="l-en">Rates volatility (MOVE) → crisis</span><span class="l-zh">利率波动（MOVE）→ 危机</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Mon Jul 06</span><span class="l-zh">7月6日 周一</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull flattener</span><span class="l-zh">曲线形态 → 牛市平坦</span></span>
-      </div>
-      
-    
-      <div class="tl-day"><span class="l-en">Thu Jul 02</span><span class="l-zh">7月2日 周四</span></div>
-      
-      <div class="tl-ev sev-info">
-        <span class="tl-type"><span class="l-en">Curve</span><span class="l-zh">曲线</span></span>
-        <span class="tl-head"><span class="l-en">Curve regime → Bull flattener</span><span class="l-zh">曲线形态 → 牛市平坦</span></span>
       </div>
       
     
@@ -2012,39 +1727,268 @@
       <p><span class="l-en">Start with the health score, then check which leg is driving it: curve, credit, real rates, rates volatility, funding stress or stock-bond correlation.</span><span class="l-zh">先看健康度评分，再看驱动分项：曲线、信用、实际利率、利率波动、资金压力或股债相关性。</span></p>
       <p><span class="l-en">The compass and transmission sections are context. They summarize duration lean and cross-asset pressure, but they are not standalone trade calls.</span><span class="l-zh">罗盘与传导部分是背景信息。它们概括久期倾向与跨资产压力，但不是独立交易信号。</span></p>
       <p><span class="l-en">Thresholds use practitioner levels; calibration only labels how useful each leg has been. Data comes mainly from FRED, Yahoo, ECB, Japan MoF, BIS, OECD and Treasury auction results.</span><span class="l-zh">阈值采用常用市场水平；校准只标注各分项过去有多有用。数据主要来自FRED、Yahoo、欧洲央行、日本财务省、BIS、OECD与美债拍卖结果。</span></p>
-      <p class="meta-foot"><span class="l-en">History</span><span class="l-zh">历史</span> 1927-12-30..2026-10-20 · <span class="l-en">built</span><span class="l-zh">构建于</span> 2026-10-22 10:33 UTC</p>
+      <p class="meta-foot"><span class="l-en">History</span><span class="l-zh">历史</span> 1927-12-30..2026-10-20 · <span class="l-en">built</span><span class="l-zh">构建于</span> 2026-10-22 10:19 UTC</p>
     </div>
   </div>
 </div>
 
+
+
+<link rel="stylesheet" href="assets/css/1820ffed.css?v=1820ffed">
+<noscript><p class="sub faint"><span class="l-en">The price-impact preview needs JavaScript. The market read is unaffected.</span><span class="l-zh">价格影响预览需要 JavaScript；市场解读不受影响。</span></p></noscript>
+<dialog id="bonds-duration-dialog" class="bonds-duration-dialog" data-duration-origin="illustrative" data-duration-state="unavailable" aria-labelledby="duration-title" aria-describedby="duration-scope">
+  <header class="duration-header">
+    <div><p class="duration-eyebrow"><span class="l-en">Illustrative duration · scenario preview</span><span class="l-zh">久期示例 · 情景预览</span></p>
+      <p id="duration-scope" class="duration-scope"><span class="l-en">Example positions, not live holdings. Not a forecast.</span><span class="l-zh">仅为示例，并非实际持仓；不是预测。</span></p></div>
+    <button type="button" class="gbtn gbtn-quiet duration-close" data-duration-close><span aria-hidden="true">×</span><span class="sr-only"><span class="l-en">Close duration review</span><span class="l-zh">关闭久期预览</span></span></button>
+  </header>
+  <div class="duration-body">
+    <h2 id="duration-title" tabindex="-1"><span class="l-en" data-duration-title-en>Review the yield shock.</span><span class="l-zh" data-duration-title-zh>查看收益率变动情景。</span></h2>
+    <p class="duration-intro"><span class="l-en">This changes only the scenario preview, never the market read.</span><span class="l-zh">仅调整情景预览，不改变市场解读。</span></p>
+    <form class="duration-editor" data-duration-editor data-duration-form hidden novalidate>
+      <label for="duration-yield-shock"><span class="l-en">Yield shock · basis points</span><span class="l-zh">收益率变动 · 基点</span></label>
+      <div class="duration-input-row"><input id="duration-yield-shock" data-duration-input type="text" inputmode="decimal" value="50" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="duration-input-help duration-error" disabled><span><span class="l-en">bp</span><span class="l-zh">基点</span></span></div>
+      <label class="duration-small" for="duration-yield-slider"><span class="l-en">Adjust the example shock</span><span class="l-zh">调整示例变动幅度</span></label>
+      <input id="duration-yield-slider" data-duration-slider type="range" min="-300" max="300" step="any" value="50" disabled>
+      <p id="duration-input-help" class="duration-small"><span class="l-en">100 bp = 1 percentage point. Enter −300 to +300 bp; nothing is silently capped.</span><span class="l-zh">100 基点等于 1 个百分点。可输入 −300 至 +300 基点，不会自动截断。</span></p>
+      <div class="duration-editor-actions"><button type="submit" class="gbtn"><span class="l-en">Review estimate</span><span class="l-zh">查看估算</span></button><button type="button" class="gbtn gbtn-quiet" data-duration-reset disabled><span class="l-en">Reset to +50 bp</span><span class="l-zh">恢复 +50 基点</span></button></div>
+    </form>
+    <div id="duration-error" class="duration-error" data-duration-error hidden><span class="l-en" data-duration-error-en></span><span class="l-zh" data-duration-error-zh></span></div>
+    <div class="duration-shock"><span><span class="l-en">Selected yield shock</span><span class="l-zh">所选收益率变动</span></span><strong><span class="l-en" data-duration-shock-en>Not calculated</span><span class="l-zh" data-duration-shock-zh>未计算</span></strong></div>
+    <div class="duration-results">
+      
+      <div class="duration-position" data-duration-row data-position-id="example-intermediate" data-position-value="10000" data-modified-duration="5.0">
+        <div class="duration-position-label"><span class="l-en">5.0-year modified duration</span><span class="l-zh">5.0 年修正久期</span></div>
+        <output class="duration-value" data-duration-value hidden></output>
+        <span class="duration-empty" data-duration-empty><span class="l-en">Not calculated</span><span class="l-zh">未计算</span></span>
+        <p class="duration-small"><span class="l-en">$10,000 example position</span><span class="l-zh">10,000 美元示例头寸</span></p>
+        <span class="duration-percent" data-duration-percent hidden></span>
+      </div>
+      
+      <div class="duration-position" data-duration-row data-position-id="example-long" data-position-value="10000" data-modified-duration="14.8">
+        <div class="duration-position-label"><span class="l-en">14.8-year modified duration</span><span class="l-zh">14.8 年修正久期</span></div>
+        <output class="duration-value" data-duration-value hidden></output>
+        <span class="duration-empty" data-duration-empty><span class="l-en">Not calculated</span><span class="l-zh">未计算</span></span>
+        <p class="duration-small"><span class="l-en">$10,000 example position</span><span class="l-zh">10,000 美元示例头寸</span></p>
+        <span class="duration-percent" data-duration-percent hidden></span>
+      </div>
+      
+    </div>
+    <section class="duration-limit duration-missing">
+      <strong><span class="l-en">Missing evidence · partial estimate</span><span class="l-zh">资料不全 · 仅为部分估算</span></strong>
+      <p><span class="l-en">Convexity and complete cash flows are unavailable—not zero. These price estimates exclude convexity, coupon income, fees, transaction costs and credit-spread changes.</span><span class="l-zh">缺少凸性与完整现金流资料，不会按零补齐。价格估算不含凸性、票息、费用、交易成本及信用利差变化。</span></p>
+    </section>
+    <section class="duration-limit">
+      <strong><span class="l-en">Input and accuracy limits</span><span class="l-zh">输入与精度限制</span></strong>
+      <p><span class="l-en">The −300 to +300 bp entry range is not an accuracy guarantee. Linear duration is most useful for small parallel yield moves; large moves and curve twists need a fuller model.</span><span class="l-zh">−300 至 +300 基点只是输入范围，不保证估算精度。线性久期主要适用于小幅、平行的收益率变动；大幅变动与曲线扭转需要更完整的模型。</span></p>
+    </section>
+    <p class="duration-state" role="status" aria-live="polite" aria-atomic="true"><span class="l-en" data-duration-state-en>Calculator unavailable. Independent rate and credit evidence is unchanged.</span><span class="l-zh" data-duration-state-zh>计算器不可用；独立的利率与信用信息保持不变。</span></p>
+  </div>
+  <footer class="duration-footer">
+    <div class="duration-footer-actions"><button type="button" class="gbtn gbtn-cta duration-edit" data-duration-edit disabled><span class="l-en" data-duration-edit-en>Edit assumptions →</span><span class="l-zh" data-duration-edit-zh>编辑假设 →</span></button><button type="button" class="gbtn gbtn-quiet" data-duration-close><span class="l-en">Return to Bonds brief</span><span class="l-zh">返回债券简报</span></button></div>
+    <p class="duration-footer-note"><span class="l-en">Your draft is retained only in this page. No watch, position, trade or market-state changes.</span><span class="l-zh">草稿仅保留在当前页面，不创建监控、不调整持仓、不交易，也不改变市场判断。</span></p>
+  </footer>
+</dialog>
 <script src="theme.js?v=a46f6677" defer></script>
+<script type="module">
+// Paper R11 -> the existing Macro Bonds route. This module owns only an in-page preview.
+// The three pure R11 functions are retained verbatim from the reviewed source ZIP
+// SHA-256 9cbdaa99307ee4d575b7051e1940dd8dc18f09d26452b30bf363ecdb6d54f9b8.
+// No fixture market narratives, signal engine, storage, network or trade action is imported.
+const finite = (value) => typeof value === 'number' && Number.isFinite(value);
+const text = (value) => typeof value === 'string' && value.trim().length > 0;
+
+export function calculateDurationScenario({positionValue, durationYears, yieldChangeBp}) {
+  if (!finite(positionValue) || positionValue <= 0) throw new TypeError('position value must be a positive finite number');
+  if (!finite(durationYears) || durationYears <= 0) throw new TypeError('duration must be a positive finite number');
+  if (!finite(yieldChangeBp)) throw new TypeError('yield change must be a finite number');
+  const rawPct = -durationYears * yieldChangeBp / 100;
+  const rawAmount = positionValue * (-durationYears * yieldChangeBp / 10000);
+  if (!finite(rawPct) || !finite(rawAmount)) throw new RangeError('finite inputs caused arithmetic overflow');
+  const normalize = (v) => Object.is(v, -0) ? 0 : v;
+  return {
+    priceChangePct: normalize(Number(rawPct.toFixed(4))),
+    priceChangeAmount: normalize(Number(rawAmount.toFixed(2))),
+  };
+}
+
+// One atomic preview: validate every input before exposing any result. The
+// interface range is not a financial accuracy guarantee for large yield moves.
+export function buildDurationPreview({shockInput, positions} = {}) {
+  const invalid = (field, message) => ({state: 'invalid', field, message, yieldChangeBp: null, results: []});
+  let yieldChangeBp;
+  if (typeof shockInput === 'number') yieldChangeBp = shockInput;
+  else if (typeof shockInput === 'string' && /^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(shockInput.trim())) yieldChangeBp = Number(shockInput.trim());
+  else return invalid('yieldChangeBp', 'Enter a number from −300 to +300 basis points.');
+  if (!finite(yieldChangeBp) || Math.abs(yieldChangeBp) > 300)
+    return invalid('yieldChangeBp', 'Enter a number from −300 to +300 basis points.');
+  if (!Array.isArray(positions) || positions.length === 0)
+    return invalid('positions', 'Position and modified-duration inputs are unavailable.');
+  const seen = new Set();
+  const results = [];
+  for (const row of positions) {
+    if (!row || !text(row.id) || seen.has(row.id)) return invalid('positions', 'Each position needs a distinct identity.');
+    seen.add(row.id);
+    try { results.push({id: row.id, ...calculateDurationScenario({...row, yieldChangeBp})}); }
+    catch { return invalid('positions', 'Position or modified duration is invalid. No results are shown.'); }
+  }
+  return {state: 'valid', field: null, message: null, yieldChangeBp, results,
+    approximation: 'First-order parallel-yield price estimate only. Large shocks can materially reduce accuracy.'};
+}
+
+export function describeYieldShock(yieldChangeBp) {
+  if (!Number.isFinite(yieldChangeBp)) {
+    throw new TypeError('yield change must be a finite number');
+  }
+  if (yieldChangeBp === 0) return 'What if yields do not change?';
+  const direction = yieldChangeBp > 0 ? 'rise' : 'fall';
+  return `What would a ${(Math.abs(yieldChangeBp) / 100).toFixed(2)} percentage-point ${direction} in yields do?`;
+}
+
+const numberFromMetadata = (value) => typeof value === 'string' && /^[+]?(?:\d+\.?\d*|\.\d+)$/.test(value.trim()) ? Number(value.trim()) : NaN;
+const signed = (value) => `${value < 0 ? '−' : value > 0 ? '+' : ''}${Math.abs(value)}`;
+const money = (value) => `${value < 0 ? '−' : value > 0 ? '+' : ''}$${Math.abs(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+const mounted = new WeakMap();
+
+/** Native dialog owns focus containment/Escape. The draft exists only in this DOM. */
+export function mountDurationWorkflow(root) {
+  if (!root?.querySelector || !root?.querySelectorAll) return () => {};
+  if (mounted.has(root)) return mounted.get(root);
+  const dialog = root.querySelector('#bonds-duration-dialog');
+  const triggers = [...root.querySelectorAll('[data-duration-open]')];
+  const notice = root.querySelector('[data-duration-unavailable]');
+  for (const trigger of triggers) trigger.disabled = true;
+  if (!dialog) return () => {};
+  const keys = ['input', 'slider', 'form', 'editor', 'edit', 'reset', 'title-en', 'title-zh',
+    'state-en', 'state-zh', 'error', 'error-en', 'error-zh', 'shock-en', 'shock-zh', 'edit-en', 'edit-zh'];
+  const fields = Object.fromEntries(keys.map(key => [key, dialog.querySelector(`[data-duration-${key}]`)]));
+  const title = dialog.querySelector('#duration-title');
+  const closes = [...dialog.querySelectorAll('[data-duration-close]')];
+  const rows = [...dialog.querySelectorAll('[data-duration-row]')].map(node => ({node,
+    value: node.querySelector('[data-duration-value]'), empty: node.querySelector('[data-duration-empty]'),
+    percent: node.querySelector('[data-duration-percent]')}));
+  function clear() {
+    for (const row of rows) {
+      if (row.value) { row.value.textContent = ''; row.value.hidden = true; }
+      if (row.empty) row.empty.hidden = false;
+      if (row.percent) { row.percent.textContent = ''; row.percent.hidden = true; }
+    }
+  }
+  clear();
+  const supported = typeof dialog.showModal === 'function' && typeof dialog.close === 'function';
+  if (!supported || !triggers.length || !closes.length || keys.some(k => !fields[k]) ||
+      rows.length !== 2 || rows.some(r => !r.value || !r.empty || !r.percent)) {
+    if (notice) notice.hidden = false;
+    dialog.dataset.durationState = 'unavailable';
+    return () => {};
+  }
+  const pair = (key, en, zh) => { fields[`${key}-en`].textContent = en; fields[`${key}-zh`].textContent = zh; };
+  const listeners = [];
+  let lastTrigger = null;
+  let disposed = false;
+  function listen(node, event, fn) { node.addEventListener(event, fn); listeners.push([node, event, fn]); }
+  function render() {
+    clear(); // Clear BOTH rows before validating any row; no stale partial comparison.
+    pair('shock', 'Not calculated', '未计算');
+    const originValid = dialog.dataset.durationOrigin === 'illustrative';
+    const preview = buildDurationPreview({shockInput: fields.input.value,
+      positions: originValid ? rows.map(({node}) => ({id: node.dataset.positionId,
+        positionValue: numberFromMetadata(node.dataset.positionValue),
+        durationYears: numberFromMetadata(node.dataset.modifiedDuration)})) : []});
+    // Unknown input identity is an unavailable lane, not an excuse to reuse demo holdings.
+    const shockError = originValid && preview.field === 'yieldChangeBp';
+    fields.input.setAttribute('aria-invalid', String(shockError));
+    fields.slider.disabled = preview.state !== 'valid';
+    fields.error.hidden = preview.state === 'valid';
+    fields.edit.hidden = preview.state !== 'valid' && !shockError;
+    if (preview.state !== 'valid') {
+      dialog.dataset.durationState = shockError ? 'invalid' : 'unavailable';
+      pair('title', 'Result unavailable.', '无法提供估算。');
+      pair('error', shockError ? 'Enter a number from −300 to +300 basis points. Nothing is capped; previous estimates are removed.' : 'Example inputs are unavailable. No sourced holdings or substitute values are inferred.',
+        shockError ? '请输入 −300 至 +300 基点之间的数值。不会自动截断；原有估算已清除。' : '示例输入不可用；不会推断实际持仓，也不会用其他数值替代。');
+      pair('edit', 'Correct yield shock →', '修正收益率变动 →');
+      pair('state', 'No scenario estimate is shown. Independent rate and credit evidence is unchanged.', '不显示情景估算；独立的利率与信用信息保持不变。');
+      return false;
+    }
+    dialog.dataset.durationState = 'valid';
+    const shock = preview.yieldChangeBp;
+    pair('title', shock === 0 ? 'No yield change is selected.' : `A ${signed(shock)} bp yield shock is selected.`,
+      shock === 0 ? '所选情景：收益率不变。' : `所选情景：收益率变动 ${signed(shock)} 基点。`);
+    pair('shock', `${signed(shock)} bp`, `${signed(shock)} 基点`);
+    fields.slider.value = String(shock);
+    fields.slider.setAttribute('aria-valuetext', String(shock));
+    const byId = new Map(preview.results.map(row => [row.id, row]));
+    for (const row of rows) {
+      const result = byId.get(row.node.dataset.positionId);
+      row.value.textContent = money(result.priceChangeAmount); row.value.hidden = false;
+      row.empty.hidden = true;
+      row.percent.textContent = `${signed(result.priceChangePct)}%`; row.percent.hidden = false;
+    }
+    pair('error', '', '');
+    pair('edit', 'Edit assumptions →', '编辑假设 →');
+    pair('state', 'Illustrative first-order price estimates only. Independent rate and credit evidence is unchanged.', '仅为一阶价格估算示例；独立的利率与信用信息保持不变。');
+    return true;
+  }
+  const edit = () => { fields.editor.hidden = false; fields.input.focus(); fields.input.select(); };
+  listen(fields.input, 'input', render);
+  listen(fields.slider, 'input', () => { fields.input.value = fields.slider.value; render(); });
+  listen(fields.reset, 'click', () => { fields.input.value = '50'; render(); fields.input.focus(); });
+  listen(fields.edit, 'click', edit);
+  listen(fields.form, 'submit', event => {
+    event.preventDefault();
+    if (render()) { fields.editor.hidden = true; title?.focus(); }
+    else edit();
+  });
+  listen(dialog, 'close', () => { lastTrigger?.focus(); });
+  for (const close of closes) listen(close, 'click', () => { dialog.close(); });
+  for (const trigger of triggers) listen(trigger, 'click', () => {
+    if (disposed || dialog.open) return;
+    lastTrigger = trigger;
+    render();
+    try { dialog.showModal(); title?.focus(); }
+    catch {
+      clear(); dialog.dataset.durationState = 'unavailable';
+      for (const button of triggers) button.disabled = true;
+      if (notice) notice.hidden = false;
+    }
+  });
+  render();
+  fields.input.disabled = false; fields.reset.disabled = false; fields.edit.disabled = false;
+  for (const trigger of triggers) trigger.disabled = false;
+  if (notice) notice.hidden = true;
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    if (dialog.open) dialog.close();
+    for (const [node, event, fn] of listeners) node.removeEventListener(event, fn);
+    clear(); dialog.dataset.durationState = 'unavailable';
+    fields.input.disabled = true; fields.slider.disabled = true; fields.reset.disabled = true; fields.edit.disabled = true;
+    for (const trigger of triggers) trigger.disabled = true;
+    if (notice) notice.hidden = false;
+    mounted.delete(root);
+  };
+  mounted.set(root, dispose);
+  return dispose;
+}
+
+// Inline modules run after HTML parsing, so the existing route's drawer is present.
+if (typeof document !== 'undefined') mountDurationWorkflow(document);
+</script>
 <script defer src="illus.js?v=8e0a3779"></script>
 <script>
 /* scroll reveal — cards + hero rise into view (reduced-motion parks them shown) */
 (function(){var els=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion:reduce)').matches){els.forEach(function(e){e.classList.add('in');});return;}
 var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
 els.forEach(function(e){io.observe(e);});})();
-/* LENS `?` — pointerdown toggle so tap at 390 does not flash-and-vanish (S1). */
+/* Keep pointer focus from opening Lens before its click-toggle runs.
+   Shared theme.js owns all tooltip rendering, activation and dismissal. */
 (function(){
   document.addEventListener('pointerdown', function(e){
     var q = e.target && e.target.closest && e.target.closest('.wrap .lens-q');
     if(!q) return;
     e.preventDefault();
     e.stopPropagation();
-    var was = q.classList.contains('cnx-tip-open');
-    document.querySelectorAll('.wrap .lens-q.cnx-tip-open').forEach(function(el){
-      el.classList.remove('cnx-tip-open');
-    });
-    if(!was) q.classList.add('cnx-tip-open');
   }, true);
-  document.addEventListener('keydown', function(e){
-    var t = e.target;
-    if(!t || !t.classList || !t.classList.contains('lens-q')) return;
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      t.classList.toggle('cnx-tip-open');
-    }
-  });
 })();
 </script>
 <footer class="site-footer">

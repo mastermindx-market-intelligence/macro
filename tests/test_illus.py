@@ -487,3 +487,117 @@ def test_session_filmstrip_ilx_css_carries_the_new_static_rules_only():
     # ancestor) still resolves --oew-accent/--oew-stamp/--hair correctly.
     assert "--oew-accent: #8e97c8;" in film_block
     assert "--oew-accent: #4c55a8;" in css[css.index('html[data-theme="light"] .oew-film'):]
+
+
+# R11's opt-in category domain must not alter existing Signal-Ink callers.
+def test_ordinal_domain_preserves_recorded_default_bytes():
+    from hashlib import sha256
+    cases = [({'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5]}, {'kind': 'line', 'baseline': 0, 'aria_en': 'Preserved default'}, '821036b3b793e489d049515575f13e2c36ba4272159327b9f08b08a774b1edb7'), ({'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5]}, {'kind': 'area', 'baseline': 0, 'aria_en': 'Preserved default'}, '0d1b4d93ced475b535bf73343cbd63ac014d1d734e1a6dfbee95faab8855c343'), ({'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5]}, {'kind': 'baseline', 'baseline': 0, 'aria_en': 'Preserved default'}, '9965f27f5c7cbed27d061d80802f263043ad62f75e8e41436b6dd324ecbcbaef'), ({'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5]}, {'kind': 'drawdown', 'baseline': 0, 'aria_en': 'Preserved default'}, '8657f6537791f5db3c3eefd70c6cf07e6b6360a168b6247801a74745121971e0'), ({'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5]}, {'kind': 'bars', 'baseline': 0, 'aria_en': 'Preserved default'}, 'bb6066111561fca50a230b8f9194484f9b38c1ed076f3567563004c1e2d62d6f'), ([{'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [0, -1, 2, None, 4, 1, -2, 3, 5], 'label_en': 'Current'}, {'dates': ['d0', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'], 'vals': [2, 1, None, 3, 0, -1, 4, 2, 1], 'label_en': 'Prior'}], {'kind': 'multi', 'baseline': 0, 'aria_en': 'Preserved default'}, 'af2731954584db62f242df5cdc761bb5937fdf66c2e9812dafeaf99ddb758b94'), ({'dates': [], 'vals': []}, {'kind': 'line'}, '67781e60323cd8bcaee297d66177b813d074be1027743fc61319491330d09c1b'), ([], {'kind': 'multi'}, '67781e60323cd8bcaee297d66177b813d074be1027743fc61319491330d09c1b')]
+    for data, kwargs, expected in cases:
+        assert sha256(I.illus(data, **kwargs).encode()).hexdigest() == expected
+        assert sha256(I.illus(data, ordinal_domain=None, **kwargs).encode()).hexdigest() == expected
+
+
+_ORDINAL_TENORS = ["3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "30y"]
+
+
+def _ordinal_series(values, *, labels=None):
+    return {"dates": list(_ORDINAL_TENORS if labels is None else labels),
+            "vals": list(values), "label_en": "Observed"}
+
+
+def _ordinal_xs(fragment):
+    paths = re.findall(r'<path class="ilx-path ilx-m" d="([^"]+)"', fragment)
+    return [[float(x) for x in re.findall(r"(?:M|L)([-0-9.]+) ", path)]
+            for path in paths]
+
+
+def test_ordinal_complete_domain_is_byte_identical_to_existing_multi():
+    series = [_ordinal_series(range(9)), _ordinal_series(range(8, -1, -1))]
+    assert I.illus(series, kind="multi", ordinal_domain=_ORDINAL_TENORS) == I.illus(series, kind="multi")
+
+
+def test_ordinal_missing_tenors_keep_shared_positions_and_observed_endpoints():
+    for omitted, expected in [
+        ({1}, [0, 140, 210, 280, 350, 420, 490, 560]),
+        ({0}, [70, 140, 210, 280, 350, 420, 490, 560]),
+        ({8}, [0, 70, 140, 210, 280, 350, 420, 490]),
+        ({1, 2, 5}, [0, 210, 280, 420, 490, 560]),
+        ({0, 1, 7, 8}, [140, 210, 280, 350, 420]),
+    ]:
+        values = [None if i in omitted else i - 4 for i in range(9)]
+        out = I.illus([_ordinal_series(values), _ordinal_series(range(9))],
+                      kind="multi", ordinal_domain=_ORDINAL_TENORS, baseline=0)
+        assert _ordinal_xs(out) == [expected, [0, 70, 140, 210, 280, 350, 420, 490, 560]]
+        dots = [float(x) for x in re.findall(r'<circle class="ilx-dot ilx-m" cx="([^"]+)"', out)]
+        assert dots == [expected[-1], 560]
+        assert '<span class="ilx-d ilx-d0">3m</span>' in out
+        assert '<span class="ilx-d ilx-d1">30y</span>' in out
+
+
+def test_ordinal_shared_gaps_preserve_the_full_domain():
+    values = [None, 0, None, -1, 2, None, 3, None, 4]
+    out = I.illus([_ordinal_series(values), _ordinal_series(values)],
+                  kind="multi", ordinal_domain=tuple(_ORDINAL_TENORS))
+    assert _ordinal_xs(out) == [[70, 210, 280, 420, 560]] * 2
+    geometry = " ".join(re.findall(r'<path class="ilx-path ilx-m" d="([^"]+)"', out)).lower()
+    assert "nan" not in geometry and "inf" not in geometry
+
+
+def test_ordinal_admission_keeps_the_existing_four_observation_threshold():
+    three = _ordinal_series([0, None, None, 1, None, None, None, None, 2])
+    four = _ordinal_series([0, None, 1, None, 2, None, None, None, 3])
+    assert "ilx-null" in I.illus([three], kind="multi", ordinal_domain=_ORDINAL_TENORS)
+    out = I.illus([three, four], kind="multi", ordinal_domain=_ORDINAL_TENORS)
+    assert _ordinal_xs(out) == [[0, 140, 280, 560]]
+
+
+def test_ordinal_downsampling_preserves_category_positions_and_extremes():
+    labels = [f"category-{i}" for i in range(50)]
+    values = [i for i in range(50)]
+    values[13], values[31] = -100, 200
+    values[1], values[25] = None, None
+    out = I.illus([_ordinal_series(values, labels=labels)], kind="multi",
+                  ordinal_domain=labels, max_points=8)
+    xs = _ordinal_xs(out)[0]
+    grid = {round(i / 49 * 560, 2) for i in range(50)}
+    assert set(xs) <= grid
+    assert xs[0] == 0 and xs[-1] == 560
+    assert round(13 / 49 * 560, 2) in xs
+    assert round(31 / 49 * 560, 2) in xs
+    assert round(1 / 49 * 560, 2) not in xs
+    assert round(25 / 49 * 560, 2) not in xs
+
+
+def test_ordinal_malformed_domain_or_series_is_honest_null():
+    good = _ordinal_series(range(9))
+    for domain in ["3m,30y", [], ["3m"], ["3m", "3m"], ["3m", ""],
+                   ["3m", " "], ["3m", 30], ["3m", ["30y"]]]:
+        out = I.illus([good], kind="multi", ordinal_domain=domain)
+        assert "ilx-null" in out and 'class="ilx-path ilx-m"' not in out
+    bad_series = [
+        {"dates": _ORDINAL_TENORS[:-1], "vals": list(range(9))},
+        {"dates": _ORDINAL_TENORS, "vals": list(range(8))},
+        {"dates": list(reversed(_ORDINAL_TENORS)), "vals": list(range(9))},
+        {"dates": ["unknown"] + _ORDINAL_TENORS[1:], "vals": list(range(9))},
+        {"dates": [_ORDINAL_TENORS[1]] + _ORDINAL_TENORS[1:], "vals": list(range(9))},
+        {"dates": _ORDINAL_TENORS, "vals": None},
+        None, 5,
+        _ordinal_series([float("inf")] + list(range(8))),
+        _ordinal_series([float("-inf")] + list(range(8))),
+    ]
+    for bad in bad_series:
+        assert "ilx-null" in I.illus([good, bad], kind="multi", ordinal_domain=_ORDINAL_TENORS)
+    assert "ilx-null" in I.illus({"unexpected": good}, kind="multi", ordinal_domain=_ORDINAL_TENORS)
+    assert "ilx-null" in I.illus(good, kind="line", ordinal_domain=_ORDINAL_TENORS)
+
+
+def test_ordinal_is_deterministic_does_not_mutate_and_keeps_three_series_limit():
+    import copy
+    series = [_ordinal_series([0, None, -1, 2, 3, None, 4, 5, 6])] * 3
+    domain = list(_ORDINAL_TENORS)
+    original = copy.deepcopy((series, domain))
+    first = I.illus(series, kind="multi", ordinal_domain=domain)
+    assert I.illus(series + [None], kind="multi", ordinal_domain=domain) == first
+    assert I.illus(series, kind="multi", ordinal_domain=domain) == first
+    assert (series, domain) == original

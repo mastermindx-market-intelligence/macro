@@ -100,3 +100,34 @@ Keyed on the `.ilx-in` class (added by `illus.js` via IntersectionObserver, thre
 
 Paired copies (`templates/` ↔ `site/`) must byte-match; `python -m
 scripts.check_template_site_sync --fix` heals them.
+
+
+## Explicit ordinal domains for multi-series comparisons
+
+The optional ordinal_domain argument to the multi-series renderer defines one
+shared categorical axis. Omitted or None preserves existing rendering bytes for
+every kind. This option is not an elapsed-time or numeric-maturity axis.
+
+The domain must be a list or tuple of at least two unique, nonempty string
+labels. Every considered series (the existing first-three-series limit) must
+supply that full ordered label sequence and an equal-length value list or
+tuple. Missing values keep their category slots when cleaned; observed points
+retain their original category positions through downsampling. Lines connect
+known observations as before, without interpolating or inventing values. End
+dots mark each line's last observed category, while corner captions show the
+full domain. Existing four-observation admission remains unchanged.
+
+Malformed domain/series alignment, non-finite retained values, or a non-multi
+call with this option returns the existing honest-null fragment. Default
+callers retain existing validation and behavior.
+
+Bonds' current/three-month/year Treasury comparison is the initial consumer:
+3m, 6m, 1y, 2y, 3y, 5y, 7y, 10y, 30y. This preserves category positions when a
+tenor is missing and keeps the existing two-snapshot admission. It makes no
+claim that these categories are equally spaced in elapsed maturity.
+
+Shared-source composition: RiskRadar Draft PR #8721 at
+1f93cf99d4cfabaec91c4646c8856e6d242b6f04 independently adds minus and id_prefix.
+Preserve those options and its finishing wrapper when composing the public
+signature. This R11 change does not adopt or release that held carrier, and
+source compatibility is not independent review or browser proof.

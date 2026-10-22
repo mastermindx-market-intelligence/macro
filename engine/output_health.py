@@ -747,6 +747,21 @@ FRESH_UNASSESSABLE = "unassessable"
 FRESH_BLIND = "blind"
 
 
+def assess_producer_freshness(
+    *,
+    entry: Mapping[str, Any],
+    obs: Mapping[str, Any],
+    now: datetime,
+) -> dict[str, Any]:
+    """Expose the incumbent producer-currentness policy to display consumers.
+
+    This is only the producer axis, not the joined output-health verdict. The
+    declared watermark, SLA, date-only uncertainty and reason codes remain owned
+    by the existing resolver. No I/O or clock is introduced here.
+    """
+    return _producer_freshness(entry=entry, obs=obs, now=utc(now))
+
+
 def _producer_freshness(
     *,
     entry: Mapping[str, Any],
