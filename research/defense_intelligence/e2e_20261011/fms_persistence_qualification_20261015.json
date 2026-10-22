@@ -1,0 +1,43 @@
+{
+  "observed_at": "2026-10-15T19:07:03.274367+00:00",
+  "source_base": "b1c958647c6973f0edad70d00b9837e47af54d25",
+  "review_run": "defense-fms-persist-bounded-review-01a13300-a",
+  "review_result_sha256": "1a83a7022503d1708c8084f18b897f2df1dc341b202aef95faa8016084584e3c",
+  "source_sha256": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1",
+  "changes": [
+    "Replace only acquire.persist plain push with reviewed bounded helper",
+    "Retain exact run/attempt persistence receipt and four FMS outputs with always() artifact",
+    "Include helper in publisher source closure"
+  ],
+  "preserved": [
+    "schedule",
+    "concurrency and cancellation policy",
+    "target branch checkout",
+    "collector and R2 invocation",
+    "publisher job and conditions",
+    "all non-source-closure baseline fields"
+  ],
+  "legacy_operations_preserved": 33,
+  "source_drift_negative_controls": 6,
+  "actual_baseline_loader_pass": true,
+  "new_baseline_sha256": "ff92466042d156cf5f078b62f89966b4bb817da20d1d55f77c47137a2b76d503",
+  "acquisition_publication_or_CAS_performed": false,
+  "review_findings": {
+    "F1": "Not reproduced on actual Git protocol: witness substitutes a false result after a successful push. Git documents [rejected] as not sent; helper only retries exact single-ref porcelain contention. REFUSED is not a no-effect statement, and expected_commit is already durably recorded. Unknown real responses remain sticky.",
+    "F2": "Confirmed independently by parent real-Git interleaving; fixed exclusive atomic initial receipt creation. Earlier confirmed record remains byte-identical.",
+    "F3": "Confirmed parent rename, Unicode and newline cases; fixed NUL-delimited --no-renames diff in both source guards.",
+    "F4": "Not accepted as a demonstrated current dependency gap. Actual native collector imports fms_notifications, fms_cases and r2_store, whose native imports are standard library or declared third-party requirements. All native files/package initializers, workflow, requirements and staged inputs are guarded. Reviewer engine/base, engine/graph, arbitrary CSV, Dockerfile and Makefile are synthetic unrelated paths. Future added imports change a guarded source file and therefore refuse.",
+    "F5": "Confirmed and strengthened: missing projection could also be pushed when no remote advance occurred. All four regular blob entries are now validated before receipt/push, with four real-Git deletion controls passing.",
+    "F6": "Keep fail-closed unknown on ambiguous server output; do not reinterpret explicit SSH permission denial as transient retry authority. Actual known permission denials remain terminal.",
+    "F7": "Origin hash is consistency, not authorization; recorded before push, contrary to review prose. Caller remains the existing selected-ref Actions checkout, not an arbitrary destination grant. Current workflow binding must be verified on integration.",
+    "F8": "Original author identity/time now preserved in transplant; no commit-signature claim or new signing policy.",
+    "F9": "Optional Git index locks disabled; explicit same-origin fetch still maintains normal tracking metadata, and no claim of zero Git metadata writes is made.",
+    "F10": "Do not create another idempotency registry. Existing run/attempt receipt is immutable and must be reused; another path cannot authorize retry.",
+    "F11": "Atomic receipt temporary file is now removed on link/replace outcome; remaining cosmetic/unreachable-object notes do not change effect safety."
+  },
+  "affected_checks": {
+    "fms_suite": "145 passed, 1 skipped; 144 passed before staged fixture materialization, remaining idempotence case passed after it",
+    "publisher_preflight": "52 passed including helper-drift control",
+    "no_whole_suite_repetition": "Reused the 144 unaffected passing cases and reran only missing-fixture case plus changed publisher-preflight suite"
+  }
+}

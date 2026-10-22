@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-19T23:32:01.714082+00:00",
+  "base": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+  "candidate_parent": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+  "all_other_jobs_match_main": true,
+  "all_prior_816_paths_retained": true,
+  "all_other_bonds_job_fields_equal": true,
+  "current_path_count": 870,
+  "test_file_only_one_added_curation_member_vs_main": true,
+  "protected_r33": {
+    "research/bonds_transmission_r30_2026-10-18/r33/reference/index.html": {
+      "equal_to_19ef": true,
+      "sha256": "6565f567302e39d16a9849609532f669b122045fd059a3c5e084b8caef0fc15f"
+    },
+    "research/bonds_transmission_r30_2026-10-18/r33/source-adapter.js": {
+      "equal_to_19ef": true,
+      "sha256": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2"
+    },
+    "research/bonds_transmission_r30_2026-10-18/r33/source-inspector.js": {
+      "equal_to_19ef": true,
+      "sha256": "50dfdeb2f54fe59c7144ccd0eafc22ffb257a86088e8e203802efe4b73334f36"
+    },
+    "research/bonds_transmission_r30_2026-10-18/r33/validation.json": {
+      "equal_to_19ef": true,
+      "sha256": "09f53b28c82b7e581a00c7f9698522c12b91834941de96ddbeed77b30780a3f0"
+    }
+  },
+  "controller_equal_to_main": {
+    "scripts/merge_on_green.py": true,
+    ".github/workflows/merge-on-green.yml": true
+  }
+}

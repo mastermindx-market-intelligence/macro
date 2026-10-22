@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SBRA-BULL-20260821",
-  "asof": "2026-10-17",
+  "asof": "2026-10-21",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 53.3,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 72.3,
+    "validity": 84.6,
     "progress": 0.0,
-    "pace": 54.9,
+    "pace": 36.0,
     "retention": 50.0,
-    "overlay": 26.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.787,
+    "dist_to_stop_r": 0.884,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 30.4,
-    "p1": -0.1421,
-    "p2": -0.0711,
+    "horizon_pct_used": 37.5,
+    "p1": -0.0775,
+    "p2": -0.0388,
     "p3": null,
-    "move_r": -0.213,
+    "move_r": -0.116,
     "mfe_r": 0.0,
     "mae_r": -0.38
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 17,
-  "tau": 0.3036
+  "days_elapsed": 21,
+  "tau": 0.375
 }

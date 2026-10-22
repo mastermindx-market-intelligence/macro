@@ -19,6 +19,7 @@ Usage: python -m scripts.build_macro_context
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import math
@@ -590,6 +591,8 @@ def _build_risk_radar(world_state: dict | None, snapshot: dict | None) -> dict:
         "dd_h10": dp.get("h10"),
         "dd_h21": dp.get("h21"),
         "dd_evidence": dp.get("calibration_evidence"),
+        "dd_lift_note_en": dp.get("lift_note_en"),
+        "dd_lift_note_zh": dp.get("lift_note_zh"),
         "dd_base_h5": dp.get("base_h5"),
         "dd_base_h10": dp.get("base_h10"),
         "dd_base_h21": dp.get("base_h21"),
@@ -1065,6 +1068,7 @@ def _build_headwind_tailwind(world_state: dict | None, snapshot: dict | None) ->
     rt = ws.get("rates_transmission") or {}
     fx = ws.get("fx_dollar") or {}
     labels = (snapshot or {}).get("labels", {})
+    gate = rt.get("scored_status") if isinstance(rt.get("scored_status"), dict) else {}
 
     fx_tx = (fx.get("transmission") or {})
     dollar_desk = (fx.get("dollar_desk") or {})
@@ -1075,6 +1079,8 @@ def _build_headwind_tailwind(world_state: dict | None, snapshot: dict | None) ->
             "tailwinds": rt.get("tailwinds", []),
             "asof": rt.get("asof"),
             "state": rt.get("state", {}),
+            "scored_status_en": gate.get("en"),
+            "scored_status_zh": gate.get("zh"),
         },
         "fx": {
             "headwind_for": fx_tx.get("headwind_for", []),
@@ -1183,7 +1189,8 @@ def _build_contradictions(world_state: dict | None) -> dict:
         "n_note": by_sev.get("note", 0),
         "top_pair_ids": co.get("top_pair_ids", []),
         "note": co.get("note", ""),
-        "cross_asset_verdict": (ws.get("verdict") or {}).get("cross_asset", {}).get("verdict") if isinstance(ws.get("verdict"), dict) else None,
+        "cross_asset_verdict": ({} if not isinstance(_cf := ws.get("cross_asset_flows"), dict) else
+            _cf if isinstance(_cf.get("confirm"), dict) else {}).get("confirm", {}).get("verdict"),
         "n_divergences": (ws.get("intelligence") or {}).get("n_divergences"),
     }
 
@@ -1344,6 +1351,22 @@ def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
     return None
 
 
+
+def _decision_fx_current(labels, world_fx, snapshot, field, fallback_field, today):
+    """Current FX selection: explicit null wins; fallback needs a matching source date.
+
+    Dates are a compatibility check, not a freshness claim. Newer explicit-null
+    snapshots must never be filled from an older world-state value.
+    """
+    if field in labels:
+        return labels[field]
+    source = _decision_source_receipt(snapshot, "data/forex/latest.json", today)
+    asof = world_fx.get("asof")
+    if source["date_status"] != "known" or not asof or source["asof"] != str(asof)[:10]:
+        return None
+    return world_fx.get(fallback_field)
+
+
 def _build_decision_workspaces(
     snapshot: dict | None,
     world_state: dict | None,
@@ -1494,8 +1517,8 @@ def _build_decision_workspaces(
     radar = fx.get("regime_radar") if isinstance(fx.get("regime_radar"), dict) else {}
     fx_current = {
         "usd_trend": fx_labels.get("usd_trend") or desk.get("trend"),
-        "usd_regime": fx_labels.get("usd_regime") or fx.get("regime"),
-        "fx_risk": fx_labels.get("fx_risk") or fx.get("risk"),
+        "usd_regime": _decision_fx_current(fx_labels, fx, snap, "usd_regime", "regime", today),
+        "fx_risk": _decision_fx_current(fx_labels, fx, snap, "fx_risk", "risk", today),
         "desk_lean": desk.get("lean"),
         "real_rate_regime": fx_labels.get("real_rate_regime") or desk.get("real_rate_regime"),
         "fed_path_lean": fx_labels.get("fed_path_lean") or desk.get("fed_path_lean"),
@@ -1600,6 +1623,199 @@ def _build_decision_workspaces(
         "bonds": bonds,
         "forex": forex,
     }
+
+
+def _publication_json(value: Any, path: str = "$", invalid: list | None = None) -> Any:
+    """Make loaded JSON serializable without silently treating NaN as an observation."""
+    if invalid is None:
+        invalid = []
+    if isinstance(value, float) and not math.isfinite(value):
+        invalid.append({"path": path, "reason": "non_finite_number", "raw": repr(value)})
+        return None
+    if isinstance(value, dict):
+        return {key: _publication_json(item, f"{path}.{key}", invalid) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_publication_json(item, f"{path}[{i}]", invalid) for i, item in enumerate(value)]
+    return value
+
+
+def _publication_sha256(value: Any) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _publication_clock(raw: Any, today: str) -> dict:
+    """A component date is not an underlying observation or availability clock."""
+    result = {"reported_value": raw, "asof": None, "date_status": "missing", "age_days": None}
+    if raw is None:
+        return result
+    try:
+        if not isinstance(raw, str) or len(raw) != 10:
+            raise ValueError("expected a calendar date")
+        parsed = date.fromisoformat(raw)
+        result.update(asof=parsed.isoformat(), age_days=(date.fromisoformat(today) - parsed).days)
+        result["date_status"] = "future" if result["age_days"] < 0 else "known"
+    except (TypeError, ValueError):
+        result["date_status"] = "malformed"
+    return result
+
+
+def _build_decision_publication(
+    vm: dict, snapshot: dict | None, world_state: dict | None,
+    regime_data: dict | None, transitions: list[dict], today: str, built_at: str,
+) -> dict:
+    """Publish the existing VM selection with descriptive, non-admitting provenance.
+
+    Fingerprints cover the loaded objects passed to the VM, never a later file read.
+    They identify normalized parsed content, not file bytes, custody or retained evidence.
+    The existing five-key hub and the Bonds/Forex selection logic stay unchanged.
+    """
+    inputs = {"snapshot": snapshot, "world_state": world_state, "regime": regime_data, "transitions": transitions}
+    paths = {
+        "snapshot": "data/macro_snapshots/latest.json",
+        "world_state": "data/neuralweb/world_state.json",
+        "regime": "data/regime/latest.json",
+        "transitions": "data/macro_snapshots/transitions.jsonl",
+    }
+    fingerprints = {}
+    for key, value in inputs.items():
+        invalid: list[dict] = []
+        normalized = _publication_json(value, "$", invalid)
+        fingerprints[key] = {
+            "path": paths[key],
+            "loaded_state": "absent_or_unreadable" if value is None else (
+                "empty_or_unavailable" if key == "transitions" and not value else "loaded"
+            ),
+            "representation": "last_60_parsed_rows_in_loader_order" if key == "transitions" else "parsed_json",
+            "sha256": _publication_sha256({"value": normalized, "invalid_values": invalid}),
+            "invalid_values": invalid,
+        }
+
+    def get(source: str, field: str) -> Any:
+        value = inputs[source]
+        for part in field.split("."):
+            value = value.get(part) if isinstance(value, dict) else None
+        return value
+
+    def clock(source: str, field: str) -> dict:
+        return {"source_file": paths[source], "source_path": field,
+                "kind": "component_date", **_publication_clock(get(source, field), today)}
+
+    clocks = {
+        "snapshot": clock("snapshot", "asof"),
+        "snapshot_oldest_component": clock("snapshot", "oldest_component_asof"),
+        "rates_credit": clock("world_state", "rates_credit.as_of"),
+        "cross_asset": clock("world_state", "cross_asset_flows.asof"),
+        "regime": clock("regime", "asof"),
+        "fx_dollar": clock("world_state", "fx_dollar.asof"),
+    }
+    lineage: dict[str, dict] = {}
+
+    def field(target: str, source: str, primary: str, component: str,
+              fallback: str | None = None, upstream: str | None = None) -> None:
+        candidates = [{"source_file": paths[source], "source_path": primary}]
+        selected_source, selected_path, selection = source, primary, "direct"
+        value = get(source, primary)
+        if fallback is not None:
+            candidates.append({"source_file": paths["world_state"], "source_path": fallback})
+            # Match the existing producer's `primary or fallback`, including an empty label.
+            if not value:
+                selected_source, selected_path, selection = "world_state", fallback, "fallback"
+                component, upstream = "rates_credit", None
+                value = get("world_state", fallback)
+            else:
+                selection = "primary"
+        selected = value is not None
+        sources = get("snapshot", "sources")
+        reported_upstream = None
+        if selected and upstream:
+            reported_upstream = {"path": upstream, "kind": "snapshot_reported_source_date",
+                                 **_publication_clock(sources.get(upstream) if isinstance(sources, dict) else None, today)}
+        lineage[target] = {
+            "source_kind": "owner_projection",
+            "selection": selection if selected else "missing",
+            "source_file": paths[selected_source] if selected else None,
+            "source_path": selected_path if selected else None,
+            "attempted_paths": candidates,
+            "component_clock": component if selected else None,
+            "reported_upstream": reported_upstream,
+            "observation_asof": None,
+            "available_at": None,
+            "underlying_source_family": None,
+        }
+
+    for name, label, fallback in (
+        ("health", "bond_health_label", "health_label"),
+        ("cycle", "bond_cycle_phase", "cycle_phase"),
+        ("duration_lean", "bond_duration_bucket", "bond_compass.duration.bucket"),
+        ("curve_trade", "bond_curve_lean", "bond_compass.curve_trade.lean"),
+    ):
+        field(f"current_read.{name}", "snapshot", f"labels.bonds.{label}", "snapshot",
+              f"rates_credit.{fallback}", "data/bonds/bond_health.json")
+    for name in ("yield_curve_regime", "recession_risk"):
+        field(f"current_read.{name}", "snapshot", f"labels.transmission.{name}", "snapshot",
+              upstream="data/transmission/latest.json")
+    for target, source in (
+        ("mechanism_evidence.fed_path.policy_rate", "fed_path.policy_rate"),
+        ("mechanism_evidence.fed_path.implied_bp_12m", "fed_path.implied_bp_12m"),
+        ("mechanism_evidence.real_10y", "drivers_for.forex.real_10y"),
+        ("mechanism_evidence.term_premium", "drivers_for.forex.term_premium"),
+        ("mechanism_evidence.curve_slope_10y3m", "bond_compass.curve_trade.slope_10y3m"),
+    ):
+        field(target, "world_state", f"rates_credit.{source}", "rates_credit")
+    for domain, names in (("equities", ("note_en", "hy_oas", "credit_canary", "stock_bond_corr")),
+                          ("forex", ("note_en", "real_10y", "term_premium"))):
+        for name in names:
+            field(f"transmission.{domain}.{name}", "world_state", f"rates_credit.drivers_for.{domain}.{name}", "rates_credit")
+    for name, path in (("asof", "asof"), ("regime", "regime"), ("funding_state", "funding_state"), ("confirm_verdict", "confirm.verdict")):
+        field(f"cross_asset.{name}", "world_state", f"cross_asset_flows.{path}", "cross_asset")
+
+    vintages = get("regime", "conditions.vintages")
+    relevant = {"ebp", "recession_risk", "hy_oas", "us10y", "real_10y", "term_premium",
+                "move", "ofr_fsi", "nfci", "anfci", "stlfsi", "sofr_iorb", "repo"}
+    related_vintages = {}
+    if isinstance(vintages, dict):
+        for key in sorted(relevant.intersection(vintages)):
+            vintage = vintages[key]
+            if not isinstance(vintage, dict):
+                continue
+            related_vintages[key] = {
+                "source_file": paths["regime"], "source_path": f"conditions.vintages.{key}",
+                "relationship": "related_regime_input_not_matched_field_observation",
+                "reported": {k: vintage.get(k) for k in ("asof", "age_days", "stale", "cadence_days")},
+                "clock": _publication_clock(vintage.get("asof"), today),
+            }
+
+    payload = {
+        "schema": "macro_context.decision_publication.v1",
+        "display_only": True, "claim_scope": "projection_only", "probability_policy": "withheld",
+        "hub": {key: vm[key] for key in ("asof", "macro_context_id", "n_transitions_14d", "headline_en", "headline_zh")},
+        "decision_workspaces": vm["decision_workspaces"],
+        "publication": {
+            "producer": "scripts/build_macro_context.py",
+            "validation_date": today,
+            "identity_scope": "normalized_loaded_inputs_and_projection_excluding_build_time",
+            "hash_algorithm": "sha256_python_sorted_compact_utf8_json",
+            "identity_use": "content_comparison_only_not_authenticated_or_retained_evidence",
+            "input_fingerprints": fingerprints,
+            "component_clocks": clocks,
+            "reported_world_state_produced_at": get("world_state", "produced_at"),
+            "reported_world_state_inputs_hash": get("world_state", "inputs_hash"),
+            "reported_cross_asset_stale": get("world_state", "cross_asset_flows.stale"),
+            "field_lineage_scope": "bonds_scalar_display_fields",
+            "field_lineage": {"bonds": lineage},
+            "related_vintages": related_vintages,
+            "changes_scope": "selected_label_transitions_not_event_ledger_or_complete_history",
+            "clock_policy": "component_dates_do_not_establish_observation_time_availability_or_vendor_freshness",
+        },
+    }
+    invalid_output: list[dict] = []
+    payload = _publication_json(payload, "$", invalid_output)
+    payload["publication"]["invalid_values"] = invalid_output
+    payload["publication"]["content_sha256"] = _publication_sha256(payload)
+    payload["publication"]["built_at"] = built_at
+    return payload
+
 
 
 def _build_view_model(
@@ -1733,6 +1949,24 @@ def main() -> int:
     }
     (hub_dir / "latest.json").write_text(json.dumps(hub, indent=2, ensure_ascii=False))
     log.info("wrote data/macro_context/latest.json — id=%s", vm["macro_context_id"])
+
+    # Additive publication from the same VM; latest.json retains its five-key contract.
+    publication = _build_decision_publication(
+        vm, snapshot, world_state, regime, transitions, today,
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+    )
+    publication_text = json.dumps(publication, indent=2, ensure_ascii=False, allow_nan=False)
+    (hub_dir / "decision_workspaces.json").write_text(publication_text, encoding="utf-8")
+    # The render lane ships site/, not data/. Mirror these exact publisher bytes
+    # under the existing default-deny static payload boundary. Do not inline the
+    # publication into a public HTML shell or the public presentation-asset tree.
+    # Bonds reads this at inspection time, so its independent build order cannot
+    # select an earlier cycle or create a second projection owner.
+    publication_dir = site / "macro-context-data"
+    publication_dir.mkdir(parents=True, exist_ok=True)
+    (publication_dir / "decision_workspaces.json").write_text(publication_text, encoding="utf-8")
+    log.info("wrote data/macro_context and site/macro-context-data/decision_workspaces.json — content=%s",
+             publication["publication"]["content_sha256"])
     return 0
 
 

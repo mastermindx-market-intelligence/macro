@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TMUS-BULL-20260707",
-  "asof": "2026-10-17",
+  "asof": "2026-10-21",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.9,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 38.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.237,
+    "dist_to_stop_r": -0.239,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 144.4,
-    "p1": -0.8248,
-    "p2": -0.4124,
+    "horizon_pct_used": 153.3,
+    "p1": -0.8261,
+    "p2": -0.413,
     "p3": null,
-    "move_r": -1.237,
+    "move_r": -1.239,
     "mfe_r": 0.188,
-    "mae_r": -1.237
+    "mae_r": -1.239
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 3.900003051757807,
-  "_mae": -25.610006713867193,
+  "_mae": -25.650000000000006,
   "_max_p1": 0.12560396301957516,
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 65,
-  "tau": 1.4444
+  "days_elapsed": 69,
+  "tau": 1.5333
 }

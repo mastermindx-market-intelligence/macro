@@ -1,5 +1,13 @@
 # CDI continuation - resume the existing implementation
 
+## October 22 source composition — next action supersedes the older sequence
+
+The maturity integration is committed as 4d345a59ac8fb595cc8cfaf4435f51fcd0eae706 in the original data workspace. Current-main/R33 integration would collide with 50 retained modified data files, so source composition uses the admitted isolated operation ccw-cdi-source-integration-20261022-sol-001 at /Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001. The original data workspace remains at 4d345a5 with all 775 preserved paths; do not reset, clean, stash or copy new main data over it.
+
+The source composition with R33 03e2bbf1f2f5aacb86e21eca33dba8cacbeb0f1c has one resolved CI-declaration conflict. It retains all R33 paths/suites and the original CDI VM and bounded-solver suites; no job is removed. On tree 7ac3a08eeed07ff27811d6640926a6a1bbf650ba, 258 affected contracts passed and two committed-page checks initially failed because sparse checkout omitted their files. Restoring the exact index HTML and fingerprinted CSS made those two checks pass; no product source changed. The initial failure remains in [the composition receipt](evidence/source_composition_20261022.json).
+
+Next: merge observed current main 1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7 in this source workspace, run the four affected curation guards, then update the final source identity and publish to the existing PR9590 branch only. The original PR stays Draft. R33 exact-head CI39751798516 is green, but its independent review returned an unqualified 429; it is not release acceptance for this composition. Browser/platform restrictions, independent review and native/production acceptance remain open. No new CI run, render, provider replay or deployment is authorized by this record.
+
 ## October 22 accountable recovery — current next action
 
 This section supersedes the stopping reason and next-step text in the October 18 records below; their accepted results and original failures remain evidence. Chris assigned completion of both Forex and Bond programs to the current recovery owner. Protected compatible Skillpack pin: `230e9a301ed774e79410829f1b5c049226fa59f1`. Joint navigation: [Macro #9996 checkpoint 6336042815](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). CDI takeover/readback: [comment 6337092277](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277).

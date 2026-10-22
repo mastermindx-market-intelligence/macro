@@ -13,7 +13,7 @@ status: active
 program: executive-os
 p0: EXECUTIVE_OS
 repos: [macro, mastermind]
-owner: fable-meta-ceo
+owner: astra-meta-ceo
 class: build
 blast_radius: irreversible
 ambiguity: scoped
@@ -30,26 +30,116 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Merge the 2026-10-18 Lane R handoff; then refresh WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 with the
-      installed 08d78873 facts (S2 installed 04:08Z, not accepted, not armed, read side running from
-      it; the 91c1cac5 supersede_unstarted_v1 acceptance bound to JOB-003 is superseded by descriptor
-      6594613b…) in a follow-up PR.
+      Record the October21 directly assigned Astra integration and accepted Sol returns in
+      the existing Mastermind ledger/programme and this workstream. The October19 handoff is
+      retained history; #1637 already merged and installed80f, Gate B already passed. Preserve
+      original host-operation custody and explicit refusals. Next durable delta is qualified
+      original #1362 integration plus resolved host readiness/acceptance prerequisites.
   - id: R1
-    title: Requalify codex-01 provider readiness with the existing credential (Mastermind PR 1591), then supersede the prepared 91c1cac5 acceptance with the current-master successor S2 = 08d78873 (root JOB-003; terminal JOB-006 carried)
+    title: Resolve installed80f credential qualification and current Control-start custody, then the reserved readiness and sealed acceptance operation
     status: in_progress
     depends_on: [A0]
     next_action: >
-      2026-10-18 04:2xZ (seat 873aabd3): PR 1591 MERGED (master 08d7887335ee8aea11f0809e0660a5298c3ef68c);
-      the ONE canary PASSED 03:59:35Z with the unchanged credential; stop-readside, the supersede prepare
-      (descriptor 6594613b…) and install SUCCEEDED 04:08Z; acceptance REFUSED fail-closed — control
-      account directory group set drifted (_mastermind_exec sits in gid 470 _mastermind_minimax from
-      the finite lane's 2026-10-14 host registration while control.json has no fabric_attended_probe;
-      PR 1563 merged 2026-10-17T23:57:29Z but finite_definition_publication and finite-control-stage were never run).
-      The receipt's 30-minute margin lapsed 04:26:45Z, so the one canary is spent. Read side restored
-      from 08d78873 at 04:17Z. HOLD for the Chairman's decision, asked once — (a) finite host
-      publication + finite-control-stage, then stop-readside, ONE further canary, acceptance.sh, the
-      read-only arming review, arm; or (b) hold installed-unaccepted. Never a second canary, group
-      change or control.json edit without his word; never cancel JOB-003.
+      CURRENT October21 — #1637 merged and installed80f384b8; Gate B accepted, no reinstall,
+      migration or maintenance preparation needed. Control PID98032 is enabled/running since
+      10:02:41UTC; ordinary worker disabled. Current start operation/requestID remains unknown,
+      while the autonomy receipt is only a dated October19 DISARMED projection. Native root's
+      original controller41117 returned credential_identity_changed_during_probe before inference;
+      no canary spent, October20 09:00UTC deadline expired. Retained receipt2bca56bc does not match
+      the installed fixed drift predecessor654abd66; a new deadline alone is not a repair. Resolve
+      actual host-operation attribution and lawful qualification through existing controls before
+      the reserved new human canary decision. Use canonical descriptor digest359eac8e for future
+      qualified acceptance, not descriptor file hash15359f28. No replay, credential replacement,
+      service action or arm is granted. See the canonical ledger October21 evidence delta.
+      HISTORY 2026-10-19 04:4xZ (seat 873aabd3, Opus 5.5 from 04:3xZ): ACCEPTANCE OF bcf4a2f7 FAILED AND
+      THE FIX IS COMMISSIONED. Gate B passed 01:12:23Z (receipt 17330b78…, root 0600). The
+      Chairman's ONE canary passed 01:16:01Z on the renew-device-revalidation route (unchanged
+      codex-01 credential, expiry 02:12:00Z) and is SPENT. acceptance.sh (descriptor 7da3c957…)
+      exited 1 at 01:18:08Z with "host service status failed with exit 1" after Control booted to
+      READY under control.json 74366b97…, so the S2 boot defect is fixed in practice. Root cause
+      (read-only, source-pinned) — with workspace_acquisition in control.json, Control hosts the
+      Chairman Control Room as a ThreadingHTTPServer on 127.0.0.1:8787 in-process
+      (executive_os_phase1c.py ~2283-2332, executive_service.py ~3797,
+      workspace_control_room_lifecycle.py ~41-55), and status.sh check_listeners plus
+      acceptance._assert_no_public_listener fail on ANY TCP LISTEN under the service accounts. The
+      Oct 11 pass ran without workspace_acquisition, so the installed composition has never
+      passed. Auditor a59b7a4984ee30c91 FINAL — ARM_NOT_ADMISSIBLE; a loopback allowlist is
+      dishonest (GET / is unauthenticated and serves the token, so uids 470 and 457 could drive
+      mutating POSTs); admissible fixes are (b) an AF_UNIX socket with owner and mode checks and a
+      peer-uid allowlist or (c) an out-of-process Chairman-uid reader over control.sock; the
+      acceptance _run failure-artifact defect rides the same release. The fix release is
+      commissioned to Opus sub-orchestrator ab51377778db486f1 (fabric labour, DRAFT PR, consumer
+      census first). Host — bcf4a2f7 installed-unaccepted, UNARMED, STOPPED, quiescent. Next —
+      review routing, merge, host chain on the new master sha, ONE Chairman canary asked once,
+      acceptance, auditor refresh, arm, Phase F.
+      HISTORY (2026-10-19 00:3xZ, seat 873aabd3): S3-PRIME INSTALLED. PR 1623 (child local_f20294a5, head
+      dec1daaa, maintenance module +41/-15, historical=True only at the prior-carry call, candidate
+      paths strict, closed two-generation set, test-only REVIEWED_FILES pin recomputed = MATCH) was
+      reviewed ONCE by the PR 1609 reviewer (verdict MERGE, 315 tests, one minor non-blocking
+      comment/docs finding) and MERGED 2026-10-18 14:44:00Z = master ba48cd87. Master then moved
+      (PR 1622, PR 1624 docs, PR 1625 fabric quota handoff) to
+      bcf4a2f72538682f2fbe4902f6417e59cd038678; the ordinary install policy admits only the clone's exact
+      origin/master, and the ba48cd87...bcf4a2f7 compare touches 28 files all outside
+      ops/executive_os, app and config (subtree ids identical), so the install sha is bcf4a2f7.
+      Host chain on bcf4a2f7 — clone Mastermind-bcf4a2f7; os-web-assets digest eec03841…;
+      root-only install-inputs (control successor 74366b97…, only proof_base_sha and
+      proof_source_repository changed); runbook step 4 ONCE 00:17:22Z rc 0 — the S3-prime tool
+      ADMITTED the historical 738581ef → 0123ad5a legacy link on the live host and prepared bundle
+      acceptance-maintenance/bcf4a2f7… with descriptor_sha256 7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12
+      (the acceptance flag value); install.sh run 1 REFUSED pre-mutation on the Python runtime
+      seal (67 root __pycache__ pycs written 10-18 09:1xZ by a seat sudo python probe without -B),
+      remedied with the seat's remove_stray_pycache.py (exactly the 67 flagged files) and codesign
+      re-verified clean; run 2 (plain mode, no --protected-master-sha) rc 0 at 00:25Z — installed
+      exact Executive OS release bcf4a2f7, admin checkout, four LaunchDaemons plists OK, worker
+      broker config v4 valid, privileged action broker armed, services stopped. autonomy-control.sh
+      from the installed copy (releases/bcf4a2f7…/ops/executive_os — a clone copy refuses) read
+      CONFIG_DRIFT (installed = expected, service_state STOPPED, both arms false); the release's own
+      disarm re-bound the receipt — transaction autonomy-595595aa4389, state DISARMED, status
+      UNARMED. launchd services absent; uid 451 distnoted only. S3 954842ae clone, assets and
+      install-inputs are inert history. The ONE option-(a) canary is SPENT; acceptance (within 28
+      minutes of a passing canary, with the descriptor digest above) and arm need a NEW readiness
+      receipt = the single Chairman question, asked once now, as promised. The arming review HOLD
+      stands until acceptance passes and the same auditor refreshes.
+      HISTORY (2026-10-18 13:5xZ, seat 873aabd3): PR 1609 MERGED 12:39:00Z after three reviews by one
+      read-only Opus reviewer (HOLD, HOLD, MERGE, MERGE after the D8 identity-guard repair) —
+      S3 = master 954842ae. S3 staged on the host (clone Mastermind-954842ae, inert assets
+      5cd12476…, root-only install-inputs 378c3bae…); runbook step 4 (maintenance supersede-prejob
+      of 08d78873 under successor 954842ae, with the S3 tool, before install.sh) RAN ONCE and was
+      REFUSED `interrupted acceptance receipt schema drifted` with nothing written. Root cause
+      confirmed read-only — the terminal carry walk (prior_carry_material → validate_carry_receipt
+      → validate_prior_carry_binding, line 294 at 954842ae) re-validates every historical
+      supersede link; for 738581ef (interrupted_prejob_sha 0123ad5a, Oct 11) prejob_evidence meets
+      the LEGACY six-key protected-group receipt, while PR 1609 Part B demands the eight-key shape
+      on every link. The S2 module accepts 0123ad5a with the sealed digest 3fe6d621… and refuses
+      08d78873; S3 is the mirror image; the digest hashes receipt bytes only. Remedy = S3-prime,
+      a reviewed Mastermind fix commissioned 13:4xZ to the same child session local_f20294a5 (by
+      message, never re-spawned) — historical=True only at the line-294 call admitting a CLOSED
+      two-generation set, candidate paths strict, every other check unchanged, tests a–d, test-only
+      REVIEWED_FILES pin refresh. install.sh NOT run for 954842ae and never will be; a second
+      identical step 4 is banned; host control plane still DARK. Then — review by the PR 1609
+      reviewer, merge, re-clone/re-stage S3-prime, step 4 ONCE, install.sh, status + disarm on
+      CONFIG_DRIFT, ask the Chairman ONCE for one new readiness canary.
+      HISTORY (2026-10-18 07:2xZ, option (a) RAN): finite host publication and
+      finite-control-stage DONE (control.json 5ed3857d… now carries fabric_attended_probe; the stage
+      needed the release's own disarm rebind autonomy-ea0086af6ee4 first because install.sh never
+      re-binds the receipt); stop-readside DONE; Gate B receipt 42e1ac39… (06:55:45Z); the ONE further
+      canary PASSED 06:57:19Z through the renew-device-revalidation route on the unchanged credential
+      (deadline 07:54:47Z, margin lapsed 07:24:47Z — SPENT); acceptance.sh ran once 07:0xZ and FAILED
+      without a receipt because S2 Control cannot boot with both the finite stanza and
+      dialogue_wake_retry_policy (digest(_jsonable(raw)) in AttendedControlProbeSource.from_startup
+      raises TypeError on the WakeRetryPolicy dataclass — scripts/executive_os_phase1c.py 2916/3017,
+      control_plane/fabric_attended_canary.py 25/145; 66 launchd respawns), and acceptance's own
+      cleanup skipped its stop on a raw TimeoutExpired. The seat ran the release's skipped cleanup
+      (service-control.sh stop, 07:10:53Z) — both services absent, service uids quiescent, host
+      control plane DARK (start-readside would crash-loop; not run). Independent arming review
+      (read-only Opus) FINAL verdict HOLD / ARM_NOT_ADMISSIBLE. Remedy = reviewed S3 (child session
+      local_f20294a5, frozen spec — dataclass branch in _jsonable, cleanup that always stops, three
+      tests), install S3, status + disarm on CONFIG_DRIFT, then ask the Chairman ONCE for one new
+      readiness canary; never a canary on seat authority, never start S2, never hand-edit control.json.
+      HISTORY (2026-10-18 04:2xZ): PR 1591 MERGED (master 08d7887335ee8aea11f0809e0660a5298c3ef68c);
+      the first canary PASSED 03:59:35Z; install SUCCEEDED 04:08Z; acceptance REFUSED fail-closed on
+      the finite lane's undeclared gid 470 grant (control.json then had no fabric_attended_probe); the
+      receipt margin lapsed 04:26:45Z; read side restored 04:17Z; the Chairman chose (a).
       HISTORY (2026-10-17 13:5xZ correction): the live codex-01 readiness receipt was a FAILED
       canary (observed 2026-10-12T07:08Z, refusal provider_turn_failed, provider error terms
       capacity/model, identity refusal none) and every automated requalification route refuses it
@@ -67,10 +157,13 @@ waves:
     status: todo
     depends_on: [R1]
     next_action: >
-      Foreground-only first: autonomy-control.sh status --expected-sha <S'> (the installed successor,
+      Foreground-only first: autonomy-control.sh status --expected-sha <S3> (the installed successor,
       not 91c1cac5), arm-quiesce-control-uid, arm --gate-b-receipt …, ceo-submit-arm, ceo-submit-status;
-      only once the S' acceptance receipt exists, the read-only review of the arming sequence has
-      returned, and all four predicates read true.
+      only once the S3 acceptance receipt exists, the read-only review of the arming sequence has
+      returned (the S2 verdict is HOLD), and all four predicates read true. Design first (auditor gap 5):
+      a --foreground-only arm publishes minimax.attended while the finite bridge is unloaded and
+      start-finite refuses once anything is armed (finite_service_lifecycle.py 349–353), so the
+      bridge-start and arm order must be settled before the arm.
   - id: R3
     title: Dispose historical queued roots JOB-002, JOB-003, JOB-013 through their original parents
     status: todo
@@ -83,8 +176,9 @@ waves:
     status: todo
     depends_on: [R1]
     next_action: >
-      After the readiness receipt passes again (human rotation + one --verify-ready), enable and
-      kickstart com.mastermind.executive.worker.codex as the S' acceptance requires;
+      After S3 is installed and the Chairman authorizes one new readiness canary (the renew route on
+      the unchanged credential), enable and kickstart com.mastermind.executive.worker.codex as the S3
+      acceptance requires;
       one COMPLETED attempt per quota class; Fabric bridge shows a sealed assignment snapshot.
   - id: A1
     title: Install the OS executive transport and the root-sealed Studio opt-in
@@ -122,27 +216,71 @@ landmines:
   - Sol's open sol/web-* PRs (1570 1569 1568 1566 1553 1542 1536 1515 1477 1473) and codex 1563 are live writers on the gateway, app and fabric surfaces; extend, never compete.
   - Fable is never enrolled with mastermind.executive.intent.submit (rejected by design). Personal-Pro realm re-enrollment is a human/provider ceremony named once, not probed.
   - Fabric kit files pools.yaml, pick.py and RELAUNCH_QUEUE.txt belong to another lane; read-only.
-  - _mastermind_exec carries gid 470 _mastermind_minimax (finite lane host registration 2026-10-14) while control.json declares no fabric_attended_probe — acceptance of ANY release fails closed until the finite publication chain (finite_definition_publication.py plus finite-control-stage) runs or the Chairman rules; never strip the grant, weaken the check or hand-edit control.json.
+  - _mastermind_exec carries gid 470 _mastermind_minimax (finite lane host registration 2026-10-14); since 2026-10-18 06:22:37Z control.json 5ed3857d… declares the matching fabric_attended_probe stanza (finite publication chain DONE under the Chairman's option (a)); never strip the grant, weaken the check, hand-edit control.json or un-stage the stanza on seat authority.
+  - S2 = 08d78873 Control is UNBOOTABLE under control.json 5ed3857d… — with both fabric_attended_probe and dialogue_wake_retry_policy present, AttendedControlProbeSource.from_startup computes digest(_jsonable(raw)) and _jsonable (scripts/executive_os_phase1c.py 3017) has no dataclass branch for WakeRetryPolicy, so Control dies at startup and launchd respawns it every ten seconds. Never service-control.sh start, restart or start-readside under S2; the host control plane stays DARK until a fixed release (S3) is installed. acceptance.py cleanup_after_failure also skips its own service stop on a raw TimeoutExpired (only AcceptanceError is caught), so a failed acceptance can leave daemons live — the release's own service-control.sh stop is the remedy.
+  - install.sh rewrites control.json without re-binding autonomy-state-v1.json, so every install leaves CONFIG_DRIFT; finite-control-stage and arm refuse until the release's own autonomy-control.sh disarm re-binds the receipt (a new transaction). Staging run_command reports a pre-marker refusal as EFFECT_UNKNOWN — inspect the marker before believing an effect happened.
+  - sudo launchctl print user/<uid> on a quiescent service uid materializes the domain and spawns a distnoted, breaking the arm's uid quiescence check; observe with ps only and undo with launchctl bootout user/<uid>.
   - Acceptance and arm both require a readiness receipt with at least 30 minutes of margin; a canary passed at the top of an install chain is spent if acceptance cannot run within that window.
   - Python tests at the pin need the repo root on sys.path and the macro checkout's tests/ package off it (python -P), or tests.test_executive_ceo_ingress resolves into macro.
   - Agent OS records are not liveness — the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
+  - S3 = 954842ae cannot be installed — PR 1609 Part B made prejob_evidence demand the eight-key protected-group receipt on EVERY supersede_prejob link, and the terminal carry walk re-validates the historical 738581ef → 0123ad5a link whose Oct 11 receipt is the legacy six-key generation; the supersede prepare for any successor refuses `interrupted acceptance receipt schema drifted` until S3-prime (historical two-generation admission at the line-294 call only) is installed. Never weaken the tool on the host, never edit receipts or bundles, never run install.sh before the supersede bundle exists.
+  - autonomy-control.sh refuses unless its RELEASE_ROOT equals /Library/Application Support/MastermindExecutive/releases/<expected sha> — run status, disarm and arm from the installed copy, never from a release clone.
+  - A root run of the framework Python without -B writes stdlib __pycache__ pycs under /Library/Frameworks/Python.framework/Versions/3.12 and install.sh then refuses pre-mutation (runtime seal invalid; codesign reports file added) — verify the seal with codesign --verify --deep --strict before every install and remove exactly the flagged pycs with the seat's remove_stray_pycache.py.
+  - In ordinary exact_protected_master mode install.sh must NOT receive --protected-master-sha (a frozen-mode-only argument, refused), and only the clone's exact origin/master is installable or acceptable — a reviewed squash that master has moved past (ba48cd87) is uninstallable unless the moved master's executive_os, app and config subtrees are proven identical.
+  - install.sh leaves CONFIG_DRIFT after every install (no receipt rebind); the remedy is the installed release's own autonomy-control.sh disarm, which writes a new transaction (autonomy-595595aa4389 for bcf4a2f7) — never hand-edit autonomy-state-v1.json or control.json.
+  - Under any control.json that carries workspace_acquisition, Control binds the hosted Control Room on 127.0.0.1 (workspace_control_room.port 8787) inside the Control process, and the host proof (status.sh check_listeners, acceptance._assert_no_public_listener) fails on that row; acceptance of bcf4a2f7 under control.json 74366b97… cannot pass. Never add a loopback or port allowlist to either proof (rejected by the auditor as dishonest because the unauthenticated GET / serves the Control Room token to any local uid), never strip workspace_acquisition or workspace_control_room from control.json, and never run acceptance under a config that lacks the installed keys to make it pass; the fix moves the Control Room off TCP in a reviewed release.
+  - acceptance._run discards the failing step's stdout and stderr, so a failed acceptance names only the step; read the release's own failure-control-status.json and the service logs, and keep the bounded failure-artifact fix in the reviewed release.
+  - The agent-relay launchd job is a KeepAlive crash loop (exit 2, old release 326c8469, uid 457) owned by the relay owner; never signal, boot out or restart it from this seat.
 do_not_redo:
   - The 2026-10-17 Phase A census (ledger §1 and §5) — reuse until an installed SHA, installed config or runtime DB fact changes.
   - The install of 91c1cac5 and the acceptance receipt for 25c4b792.
   - Mastermind PRs 1283, 1560, 1543, 1534/1537, 1544, 1527, 1509, 1558 and the R2 master plan §17 (accepted work enumerated in the ledger §4).
   - The 213-test transport run at a552a5e5 (plan §6) until the transport source changes.
+  - Mastermind PR 1591 (merged, reviewed once, verdict MERGE), PR 1598 (merged 2026-10-18 05:20:00Z) and PR 1609 (merged 2026-10-18 12:39:00Z, three reviews, final MERGE) — never re-review, re-merge, re-enqueue or add commits.
+  - The S3 staging for 954842ae (clone, assets, install-inputs) and the ONE step-4 supersede attempt (refused) plus its root-cause diagnosis — never repeat step 4 for 954842ae; S3-prime is the written remedy.
+  - Mastermind PR 1623 (merged 2026-10-18 14:44:00Z, one read-only review, verdict MERGE, 315 tests) — never re-review, re-merge or add commits; its minor comment/docs finding is a follow-up by message to child local_f20294a5 only.
+  - The bcf4a2f7 host chain — clone Mastermind-bcf4a2f7, assets eec03841…, install-inputs 74366b97…, the ONE step-4 supersede (descriptor 7da3c957…), the seal repair (67 pycs), install.sh run 2 (2026-10-19 00:25Z), status and disarm autonomy-595595aa4389 — never repeat any step; the bundle and the installed release are the inputs to acceptance.
+  - The install-sha decision (bcf4a2f7 over ba48cd87) and its subtree-identity proof (ops/executive_os 28d73c2f…, app 75492340…, config d5bc9c07…) — reuse until master moves again before acceptance.
+  - The 2026-10-18 option (a) host chain — finite host publication, finite-control-stage (marker 06:22:37Z), disarm transaction autonomy-ea0086af6ee4, Gate B receipt 42e1ac39…, the 06:57:19Z canary, the single S2 acceptance run and its root-cause diagnosis, the 07:10:53Z service stop, the arming review's FINAL HOLD verdict for S2.
+  - The bcf4a2f7 acceptance chain of 2026-10-19 — Gate B receipt 17330b78…, the 01:16:01Z canary (SPENT), the single acceptance run (rc 1 at 01:18:08Z), its read-only root-cause diagnosis and the auditor's FINAL ARM_NOT_ADMISSIBLE with its (b)/(c) design ruling — never rerun acceptance under release bcf4a2f7 with control.json 74366b97…, never reuse the spent readiness receipt for arm.
+  - The Control Room off-TCP fix commission (Opus sub-orchestrator ab51377778db486f1, 2026-10-19 04:3xZ) — continue by message only, never re-spawn or duplicate while it runs or awaits consumption.
+  - Mastermind PR 1626 (comment/docs follow-up to PR 1623, head 00aad308, one read-only review 2026-10-19, verdict MERGE FINAL, 347 tests) — never re-review or add commits; merge it once.
 next_action: >
-  Lane R is HELD at the Chairman's decision (asked once 2026-10-18 04:2xZ): S2 = 08d78873 is
-  INSTALLED (04:08Z) with the read side running from it, acceptance REFUSED on the finite lane's
-  undeclared gid 470 host grant, and the one canary's receipt margin lapsed 04:26:45Z. On (a) the
-  finite host publication + finite-control-stage land first, then stop-readside, ONE further
-  canary, acceptance.sh, the read-only arming review, arm, Phase F; on (b) S2 stays
-  installed-unaccepted. Meanwhile, with no host mutation: land the 2026-10-18 Lane R handoff,
-  consume the child session's follow-up Mastermind docs PR, Lane A inputs (publication owner
-  still unnamed).
+  Current integrator Astra/root01a15741 consumes four verified Sol6.1/high slices under Chris's
+  direct October21 assignment. Complete original #1362 integration at dd9f1bbc through its
+  changed-risk review and exact-head CI; original local staged work remains preserved. Fabric
+  review returned rc78 canonical_source_unreadable before provider work, so no review verdict;
+  same-path admission diagnosis owns that dependency, without retry or provider failover.
+  Resolve R1 current Control-start requestID and lawful credential qualification before asking
+  the reserved new canary decision.80f installation and Gate B are accepted and must not repeat.
+  App signed-out browser behavior passes; sealed OS Executive/Studio transport composition and
+  authenticated Web/native result consumption remain. Preserve #1515 occupied/refused edits,
+  Macro9941/9340 updater custody, #633 unknown effect and original runtime roots. Then qualify
+  one normal and one interrupted Chairman journey across H1-H8, with original-parent result
+  consumption and durable Agent OS outcome. MISSION_COMPLETE remains false.
 ---
 
 ## Context
+
+**Current commission (October21).** Chris directly assigned Astra root
+`01a15741-5e68-7803-8eb4-ccac74a6c04b` the complete masterplan at Mastermind
+`8dd8bebfc525d6f688d7356027f3c3279be93759`,
+`research/EXECUTIVE_ECOSYSTEM_ASTRA_CEO_HANDOFF_2026-10-21.md`.
+Four Sol6.1/high coordinators own release, bridge, app and Fabric integration. Their verified
+ancestry, bounded returns and actual admission/results are retained in the existing root checkpoint
+`/Volumes/Mastermind/evidence/mmos-commission-01a15741/CURRENT.md` and linked canonical ledger/plan.
+This changes programme integration ownership, not original Fable host-operation custody or any
+real refusal. Current evidence supersedes stale instructions below; dated release history is retained.
+
+Verified October21: #1637 installed80f; original Gate B accepted; current Control running; no fresh
+acceptance/arm; descriptor canonical digest359eac differs from byte hash15359; #1359 facade reachable;
+all83 native adapter sequence11 files match their manifest; #1643 and #1652 merged. One supported
+Executive state read returned backend_unavailable; session_targets returned an empty list. Public
+signed-out `/os/` desktop keyboard/preview and390px responsive proof passed, with zero preview requests;
+this is not authenticated H8. Provenance: retained `masterplan-release.md`, `masterplan-fabric.md`,
+`masterplan-app.md`, `bridge-publication.json` and `masterplan-app-negative-browser.json` under the
+same evidence root, plus the canonical Mastermind ledger's October21 delta. No extra census or
+generated Agent OS view was created.
 
 **Brief.** Chairman mission "FABLE CEO META — Executive Ecosystem Completion Mission" (2026-10-17),
 held by the Fable Meta-CEO seat (Claude session `873aabd3`). The seat owns programme-level

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FDX-BULL-20260810",
-  "asof": "2026-10-17",
+  "asof": "2026-10-21",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 20.5,
-  "raw_confidence": 20.0,
-  "delta_vs_base": -39.5,
+  "management_confidence": 21.4,
+  "raw_confidence": 22.0,
+  "delta_vs_base": -38.6,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 10.6,
+    "validity": 22.7,
     "progress": 0.0,
-    "pace": 3.3,
-    "retention": 1.9,
-    "overlay": 29.9
+    "pace": 0.0,
+    "retention": 9.4,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.211,
+    "dist_to_stop_r": 0.334,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 144.4,
-    "p1": -0.5259,
-    "p2": -0.263,
+    "horizon_pct_used": 153.3,
+    "p1": -0.4442,
+    "p2": -0.2221,
     "p3": null,
-    "move_r": -0.789,
+    "move_r": -0.666,
     "mfe_r": 0.0,
     "mae_r": -0.919
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 65,
-  "tau": 1.4444
+  "days_elapsed": 69,
+  "tau": 1.5333
 }
