@@ -1,5 +1,26 @@
 # Bonds R11 — source integration and completion plan
 
+## Current-main composition checkpoint — 22 October 2026
+
+This same-owner descendant composes published R11 head04b13fbbae71f109f23f8b43ad1a5fa59ee75151 with main ce93903889ea50056e9f4890422dad044c31c65a. The intervening8c23f6b26a36ce20f5842590e41bb9d78bff1bac to ce939 change is data-only; the inspected code/config/test/template trees are identical. Do not restart or repeatedly chase data-only main commits.
+
+The generated site/bonds.html conflict retains the exact earlier R11 artifact SHA2567bd4c6ea367d801591ae97373ad6d834282ea0202d5dbb3fe2821a2f28dc1626. Runtime source hashes from the existing merge intent remained unchanged. This preserves earlier native evidence on its491 immutable1b input image; it does not claim a new build on incoming data or combined CDI source. The first resolution attempt applied the merge, then encountered a missing sparse site directory; only that resolution was resumed. The merge was not replayed.
+
+The initial current-main guard run passed4 and failed only plan-book packing weight5602 against5600. The whole tests/test_credit_cycle.py suite moved from the existing ccw-w3-credit-momentum job into the existing dashboard-render-contract job, whose dependency environment and engine/collector scope already cover it. Its exact test path was declared. The named suite multiset, assertions, code gates, scope modes, ordinary estimator, timeouts, dependencies, ancestor bound and every job/weight/pack ceiling were preserved. All4 affected curation/closure/packing/ancestor guards then passed in180.61s. The prior one-object source check and all unchanged runtime/source/native evidence remain scoped to their recorded identities; no aggregate unique-test count is invented.
+
+### Continue on the existing owners
+
+1. Normally push this merge descendant to the existing #8241 branch with expected remote04b13; consume ordinary automatic CI for the exact published head. Keep Draft/HOLD and auto-merge unset. Record any conflict or CI failure before changing source.
+2. Merge this qualified source descendant into existing CDI local checkpointc1b122743e1c7164bc861208af117ca61a53d78c. Preserve its300-test and5-guard receipts. Add app/treasury_history.py and lib/treasury_daily_history.py to the actual existing CDI exclusive dependency closure, as evidenced by hosted contract and pack1 on24bc.
+3. Qualify the resulting composition, then execute one native build from the actual combined R11/CDI/R33 source with the already manifested502 retained inputs. Establish all four UI surfaces and the final asset closure before staging generated output. Preserve the old491/502-input native receipts as distinct evidence; no provider capture or producer restamp.
+4. Browser administrator denial, independent-review requirements and production acceptance remain open. No browser/profile/host workaround, new publication plane, refused Terminal deployment or Fabric replay is authorized. Broader Bonds future-observation/CDS gates remain genuine future gates.
+
+The current joint Forex/Bonds master plan is committed at2743fb06245d18edcbeb3f00be08b24164a348e3 in research/forex_r26_2026-10-20/MASTER_PLAN.md, with the bounded Forex census328-pass run, separate closure pass and unsupported08:00/12:00 acquisition result. Tiingo intended-use licensing remains complete by Chairman attestation.
+
+## Retained prior source/native checkpoint
+
+The following preserves the earlier04b13 source/native qualification and original-workspace custody. Its then-pending merge/push instructions are superseded by the current section.
+
 Updated 22 October 2026. Owner carrier: Macro PR #8241, Draft/HOLD. This document records source qualification and exact next steps for the current recovery session and its successor. Release acceptance remains separate.
 
 [Canonical R11 continuation](https://github.com/mastermindx-market-intelligence/macro/pull/8241#issuecomment-6337543975) · [Joint Forex/Bonds plan](https://github.com/mastermindx-market-intelligence/macro/blob/537dfc4124731d704770aa6e110943ee220809fc/research/forex_r26_2026-10-20/MASTER_PLAN.md) · [Joint latest checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815)

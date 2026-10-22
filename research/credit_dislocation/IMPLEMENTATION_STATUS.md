@@ -1,5 +1,26 @@
 ## Current source composition checkpoint — 22 October 2026
 
+## Current implementation status — 22 October 2026
+
+**Source/native composition qualified; Draft/HOLD for browser/visual evidence, review and release.** This commit composes R11/CDI/R33 on currentmaince939, preserving every accepted older result.
+
+| Boundary | Current result |
+| --- | --- |
+| Current source composition | 300PASS20.10s on a47838a4;4curation guardsPASS178.29s. The two actual Treasury closure paths are declared; coverage and limits unchanged. |
+| Actual native build | One entry completed exit0,11.835s;502 unchanged retained inputs. Four surfaces present; page/machine explanation object shared; canonical yield result unchanged. |
+| Current credit | Readable2026-09-10 source, currentness unconfirmed; current gauges/themes/FINRA/maturity/market_state withheld. |
+| Historical CDI | Independent dated comparison remains present:18issuers,311bonds,0paired; sourceOct15/artifactOct18;age5atbuild;displayonly/allauthorityfalse/CDSfalse/predictionfalse. |
+| Asset closure | HTML521406bytes SHA256f50ac4fe92898a44b24c74442fbe2df1487948c79b2a2ef78d7885ea7c33b0d9;27refs/29artifacts/6fonts;no dynamic-network/browser claim. |
+| Final artifact contracts | 2PASS1.86s on ccf34ef6d5ad8ebaed82a6aff42ec0a07e5c6297. |
+| Retained failures | Old09:48 guard receipt preserved after filename collision; only unstarted guards resumed. Native CSS-class assumption corrected against actual ID-scoped full stylesheet, same artifact, no rebuild. |
+| Current visual gate | Published24bc pack3 detected no owning EVIDENCE.yml for the current CDI partial. R11 accepted records also retain missing duration evidence and administrator denial. No supported current browser receipt exists; historical captures are retained without relabelling. |
+| Review/production | No new accepted independent review, browser or production acceptance. Existing original429/Terminal deployment refusal/migration0038 boundaries retained. |
+| Broader program | Genuine CDS,prospective21/63/126-session and typed Investigationv2/source-owner evidence remain outstanding. |
+
+See MASTERPLAN.md, CONTINUATION.md and evidence/combined_native_current_main_20261022.json for exact proof and successor steps. Same #9590 owner; normal push and ordinary exact-head CI only. Tiingo licensing/intended Forex use remains complete by Chairman attestation.
+
+## Retained earlier status
+
 This containing local commit records the qualified R11 + CDI/R33 source composition. It is a source checkpoint before current-main reconciliation and the actual combined native build. The existing PR remains published at24bc32a9c480906801daaab03c4267e0dc10efba until the later canonical publication receipt establishes a descendant. Draft/HOLD and all inherited R33 review/browser/production gates remain.
 
 Parents:24bc32a9c480906801daaab03c4267e0dc10efba + R1104b13fbbae71f109f23f8b43ad1a5fa59ee75151. Qualified source treeff1e93c35cbaf36eab0550ac7dd5ef1993445057. The combined builder retains CDI's latest single maturity snapshot, independently dated historical CDI, R11 currentness withholding, one explanation object for page/machine, the incumbent yield snapshot, ordinal geometry and the R33 inspector. The maturity regression now supplies an explicit compatible aware October17 clock; no policy or assertion was weakened.

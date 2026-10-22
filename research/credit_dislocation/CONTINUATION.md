@@ -1,5 +1,42 @@
 ## Current source composition checkpoint — 22 October 2026
 
+## Replacement-session continuation — current combined source, 22 October 2026
+
+Read MASTERPLAN.md and evidence/combined_native_current_main_20261022.json before acting. The canonical #9590 comment6337092277 and joint #9996 comment6336042815 record later push/CI outcomes. Refresh a compatible protected Mastermind pin; continue these same owners and workspaces.
+
+The current composition is c1b122743e1c7164bc861208af117ca61a53d78c +143f8c209747a3b36b7e16a4736491f3cad2a6c6. Source treea47838a4ad3ef3021956641efce5438a1cc6889b passed300 tests and4 separate curation guards. Artifact treeccf34ef6d5ad8ebaed82a6aff42ec0a07e5c6297 passed both final artifact tests after one actual native build and full declared-resource closure. Native HTML SHA256f50ac4fe92898a44b24c74442fbe2df1487948c79b2a2ef78d7885ea7c33b0d9.
+
+### Reconcile before continuing
+
+- Same isolated workspace: /Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001; branchsol/web-ccw-cdi-source-integration-20261022-sol-001. Same remote owner branchclaude/ssd-ccw-dislocation-v1-cc87720e59421398, PR#9590.
+- Compare local HEAD/index/MERGE_HEAD with the source-commit/publication intent and result in .cdi-proof/integration-20261022. Commit/push may already be APPLIED; never replay to recover output. Published pre-update remote is24bc32a9c480906801daaab03c4267e0dc10efba; use the canonical latest state if a later push is recorded.
+- Read current automatic CI by its exact head/run and reuse completed evidence. Earlier24bc CI39773798380 closure/pack1 failures are repaired here; pack3's missing owning visual receipt is still a genuine HOLD.
+- Original dirty/untracked/ignored CDI and R11 workspaces, held carry/COT/RiskRadar branches, immutable Macro#9996 head/green CI/render39688064251 and proven inactive-condition CRUD remain preserved. No reset, clean, stash, broad add or force push.
+
+### Existing proof files — consume, do not rerun unchanged
+
+Current source: current-main-source-tests.json; current guards: r11-current-main-curation-guards.json; filename collision reconciliation: current-main-guard-filename-collision.json. The09:48 current-main-curation-guards.json is a different historical failure and must not be overwritten or cited as the current result.
+
+Combined inputs: combined-native-input-hydration.json SHA256359c4bd7347c4ebf4231c1f0f2233c551f611dab728d5a5e3695843e3bfc7fbc, reusing prior manifest3cf85a58c1cd01abb3be7316a713e2c0ac714cae4a06c621b53f5daf513d423b. The502 exact retained input files live in .cdi-proof/combined-native-20261022; this image contains no synthesized source observations. Optional transmission/regime latest inputs remain absent.
+
+Actual native: combined-native-build.json and log/process receipt retain the original CSS-selector qualification failure after a successful build. combined-native-qualified.json SHA2565d0db74b10b734c55ced417c0929cf488c1f48742134348183ed055fdcb1335a reconciles the same artifact against the full exact existing ID-scoped CSS; it is not another build. combined-native-assets.json SHA2563e5edc496ef74bc01b18690d405d60f57520c62b8ba32a3eb23e053a7eecc92a proves27 declared refs/29 artifacts/six fonts. combined-artifact-stage-result.json and combined-artifact-tests.json bind the final two tests to ccf34ef6. Native source/render/resource proof is complete on this scope; dynamic network behavior/browser/production remains unproved.
+
+### Browser acceptance owed through the existing owner
+
+ERR_BLOCKED_BY_ADMINISTRATOR remains binding. Obtain actual admission/restoration and the accepting operator; do not create another browser/profile/session/host or reinterpret native HTML as browser proof. Use the existing product capture process and the actual qualified route with its permitted origin, session and network conditions.
+
+Record eight current cells:1440ENdark,1440ENlight,1440ZHdark,1440ZHlight,390ENdark,390ENlight,390ZHdark,390ZHlight. Preserve exact source/artifact identities and verify states were applied. Capture owed hover/focus and interactions from the actual full diff: CDI issuer summary hover/expansion and dated historical detail; R11 duration unavailable/invalid/fractional-shock/edit/reset/close/focus-return; R33 protected inspector behavior remains within its accepted owner boundary. Preserve bilingual copy, partial/absent sources and no overflow. Do not invent passing captures or use older four-cell/synthetic component evidence as current full-route acceptance.
+
+The existing visual guard requires EVIDENCE.yml under mockups/refs or mockups/evidence, schema mastermind.page_evidence_receipt.v1, literal changed_paths and an actual mastermind.p0_evidence.v2 capture manifest. The current CDI partial and R11 duration partial have no qualified owning receipt. All existing source, synthetic and R33 captures remain accepted only for their recorded subject.
+
+### Other owner gates
+
+Draft/HOLD remains until exact CI, qualified review, browser/visual acceptance and authorized release proof satisfy the existing gates. Terminal#1106's original repair-review-only condition and explicit deployment safety refusal remain intact. Original terminal429 reviews are not accepted continuation and must not be replayed or sent to another provider. Migration0038 already applied. Broader CDS/prospective21/63/126-session/Investigationv2 source contracts remain future evidence requirements.
+
+Forex continues on #10052 head2743fb0 with bounded census source qualified but actual08:00/12:00 support absent/admissionfalse. Licensing/intended use is COMPLETE by Chairman attestation; no outreach. Keep the exact source/calendar/revision-safe feed and incumbent evaluator/outbox contracts separate from inactive CRUD.
+
+## Retained prior continuation — historical steps and evidence
+
 This containing local commit records the qualified R11 + CDI/R33 source composition. It is a source checkpoint before current-main reconciliation and the actual combined native build. The existing PR remains published at24bc32a9c480906801daaab03c4267e0dc10efba until the later canonical publication receipt establishes a descendant. Draft/HOLD and all inherited R33 review/browser/production gates remain.
 
 Parents:24bc32a9c480906801daaab03c4267e0dc10efba + R1104b13fbbae71f109f23f8b43ad1a5fa59ee75151. Qualified source treeff1e93c35cbaf36eab0550ac7dd5ef1993445057. The combined builder retains CDI's latest single maturity snapshot, independently dated historical CDI, R11 currentness withholding, one explanation object for page/machine, the incumbent yield snapshot, ordinal geometry and the R33 inspector. The maturity regression now supplies an explicit compatible aware October17 clock; no policy or assertion was weakened.

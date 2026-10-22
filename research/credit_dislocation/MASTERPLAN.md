@@ -1,5 +1,54 @@
 ## Current source composition checkpoint — 22 October 2026
 
+## Current combined-source checkpoint — 22 October 2026, 12:52 UTC
+
+**The R11/CDI/R33 source composition and actual native artifact are qualified. The broader Bonds project remains Draft/HOLD.** Browser acceptance, owning visual receipts, qualified independent review and production/future-observation gates remain open. Source/native success is not a release grant.
+
+### Source and native identity
+
+This merge descends from local checkpointc1b122743e1c7164bc861208af117ca61a53d78c and qualified R11 current-main head143f8c209747a3b36b7e16a4736491f3cad2a6c6. The latter includes maince93903889ea50056e9f4890422dad044c31c65a. The current qualified source tree is a47838a4ad3ef3021956641efce5438a1cc6889b. Only the two actual Treasury imports app/treasury_history.py and lib/treasury_daily_history.py were added to the existing exclusive credit-desk dependency declaration; suite coverage, scopes, ordinary estimates, gates and ceilings remain intact.
+
+| Qualification | Executed result |
+| --- | --- |
+| Current combined source | 300 tests passed in20.10s at12:40:06UTC; the2 generated-artifact tests were deferred until the real build. |
+| Current scope/closure/packing/ancestor guards | 4 passed in178.29s at12:44:32UTC. Source tree and working bytes unchanged. |
+| Input image | 502 files,50,156,112 bytes:16 retained original files and486 immutable1b3166c7 fallbacks. Every byte/hash matches the prior input manifest. No collector, producer or provider run; dates preserved. |
+| Actual combined native build | scripts.build_bonds.main completed once, exit0,11.835s. All four surfaces present once. One actual explanation object reached Jinja and bond_health.json; canonical yield object preserved. No denied network/process/outside-proof write attempt. |
+| Asset package | Final HTML521,406bytes, SHA256f50ac4fe92898a44b24c74442fbe2df1487948c79b2a2ef78d7885ea7c33b0d9. All27 declared resource references resolve;29 artifact records include six Inter fonts. Dynamic JS/API closure and browser behavior remain unproved. |
+| Final generated contracts | Both tests passed in1.86s at12:51:11UTC. Artifact treeccf34ef6d5ad8ebaed82a6aff42ec0a07e5c6297; only site/bonds.html and new CSS60993b61/b55f14d4 differ from the qualified source tree. Other materialized assets match the existing index exactly. |
+
+The actual input image leaves data/transmission/latest.json and data/regime/latest.json absent. That absence remains evidence absence, not a manufactured explanation source. The four surfaces are competing explanations, duration preview, independent historical CDI and the R33 source inspector. The actual duration module remains illustrative, initially unavailable and bilingual. The accepted strict adapter precedes the inspector and retains the protected payload path.
+
+The readable credit-momentum source is dated2026-09-10. Its incumbent currentness verdict is blind/date_only_calendar_unknown, producer_currentfalse: gauges, themes, FINRA and maturity rows are withheld and machine market_state is null. CDI remains independently readable: source date2026-10-15, artifact date2026-10-18, age5 sessions at this actual build,18 issuers,311 mapped bonds,0 paired issuers. Display-only and rank/size/gate/escalatefalse, CDSfalse and prediction_validatedfalse remain intact. Pricing qualification stays bound to its retained observation; it is not predictive or current-market validation.
+
+### Retained failures and exact recoveries
+
+The initial current-main merge/source-test process completed the merge and300-test run, then exclusive log creation refused a filename already occupied by an09:48 historical receipt. That historical receipt remained untouched; only the unstarted guards ran under a distinct proof filename. No merge or source-test replay.
+
+The actual native entry succeeded. Its first qualification wrapper incorrectly searched for a .bonds-source-dialog class; the existing inspector uses #bonds-source-dialog. The full exact CSS partial and both ID selectors were already present in the generated HTML. A separate qualification reconciliation retained the failed wrapper receipt and proved that same HTML/source/input identity. No source change or native rebuild occurred.
+
+### Current CI and release gates
+
+Published parent24bc CI39773798380 detected the two Treasury closure paths in contract-delta and pack1; the current composition repairs and locally qualifies them. Its earnings, import, design-token and other completed packs passed. Pack3 separately failed the existing visual-evidence gate: templates/_credit_dislocation.html.j2 lacks an owning EVIDENCE.yml. Its196 governance tests and design ratchet passed; the ratchet reported0 blocking findings. The older token issue and missing visual receipt are distinct defects.
+
+No inspected retained receipt proves the current CDI presentation. The September component captures have four cells; October15 proof covers32 synthetic component cases with full_routefalse/native_oct15false and an older partial hash. R33's24 captures belong to its source inspector. These accepted results remain retained on their actual scope. R11's accepted source/input comments5926458015 and5928315553 explicitly retain its missing duration visual receipt and ERR_BLOCKED_BY_ADMINISTRATOR.
+
+The existing product/capture owner must obtain genuine browser admission and the recorded accepting operator. Required current evidence uses schema mastermind.page_evidence_receipt.v1 with exact changed_paths and a real mastermind.p0_evidence.v2 manifest under the existing mockups evidence/refs ownership. The matrix is1440/390 × EN/ZH × dark/light; owed hover/focus/interaction states must be captured honestly. At minimum the CDI partial and R11 duration partial remain uncovered. Evaluate the full base-to-candidate diff for the complete owed set. No older capture may be relabelled current and no fabricated receipt or guard waiver is permitted.
+
+### Continue
+
+1. Commit this exact qualified source/artifact/documentation composition and normally push the same #9590 branch with expected remote24bc32a9c480906801daaab03c4267e0dc10efba. Keep Draft/HOLD and auto-merge unset. Reconcile exact APPLIED state; consume its ordinary automatic CI once. Do not rerun known blocked gates merely to seek a favorable result.
+2. Preserve the original browser denial. Through the existing owner, obtain actual admission/operator and qualify this exact presentation and interaction matrix; then commit genuine owning receipts and consume the affected gates.
+3. Retain original-only Fabric review constraints, R33 unqualified429 and Terminal#1106 Draft/HOLD. No provider/account/carrier workaround and no retry of the refused Terminal deployment. No migration0038 replay.
+4. Existing CDS evidence, W8 prospective21/63/126-session observations, typed Investigationv2 owner contract and authorized production proof remain separate genuine gates. Do not synthesize future data.
+5. Forex #10052 now publishes2743fb06245d18edcbeb3f00be08b24164a348e3. Its328-test bounded census and separate closure pass are retained; actual08:00/12:00 support remains absent, with0 eligible observations. CI39779646696 is being consumed. Tiingo licensing/intended use is COMPLETE by Chairman special-license attestation; no support/licensing email.
+
+Protected compatible pin: Mastermind@230e9a301ed774e79410829f1b5c049226fa59f1. [Joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) · [CDI current receipt](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) · [R11 current receipt](https://github.com/mastermindx-market-intelligence/macro/pull/8241#issuecomment-6337543975). Exact compact evidence: evidence/combined_native_current_main_20261022.json.
+
+## Retained earlier checkpoints — original evidence scope
+
+The current section supersedes earlier pending merge/build instructions. Earlier source, pricing, native and CI receipts remain retained on their recorded identities.
+
 This containing local commit records the qualified R11 + CDI/R33 source composition. It is a source checkpoint before current-main reconciliation and the actual combined native build. The existing PR remains published at24bc32a9c480906801daaab03c4267e0dc10efba until the later canonical publication receipt establishes a descendant. Draft/HOLD and all inherited R33 review/browser/production gates remain.
 
 Parents:24bc32a9c480906801daaab03c4267e0dc10efba + R1104b13fbbae71f109f23f8b43ad1a5fa59ee75151. Qualified source treeff1e93c35cbaf36eab0550ac7dd5ef1993445057. The combined builder retains CDI's latest single maturity snapshot, independently dated historical CDI, R11 currentness withholding, one explanation object for page/machine, the incumbent yield snapshot, ordinal geometry and the R33 inspector. The maturity regression now supplies an explicit compatible aware October17 clock; no policy or assertion was weakened.
