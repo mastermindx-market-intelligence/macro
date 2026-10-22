@@ -5182,6 +5182,30 @@ jobs:
         # published there. An engine checkout never holds that store, so listing it here only ever
         # produced a nightly publish_r2 refusal warning (under the _DATA_DIR_MIN_FILES floor).
         run: python -m scripts.publish_r2 --dirs ohlc,intlohlc,canadaohlc,subsectorohlc,subsectorohlc_russell,subsectorohlc_nasdaq,stockdata,intlstockdata,canadastockdata,intraday,feeds,stock_personality,oddsmatrix,odds_ohlcv,seasonalitydata/entities || echo "::warning::R2 publish failed (non-fatal)"
+      - name: publish complete US OHLC generation to the existing site origin
+        if: always()
+        timeout-minutes: 20
+        env:
+          OHLC_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        # The producer receipt binds this main-branch run before output-commit
+        # rebasing. The publisher verifies it, the pinned SSH host and the
+        # receiver's predecessor fence; missing/partial output is a visible failure.
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "${OHLC_DEPLOY_KEY:-}" ]; then
+            echo "::error::OHLC origin delivery requires the existing VPS deploy key"
+            exit 1
+          fi
+          key_file=$(mktemp "${RUNNER_TEMP}/ohlc-deploy-key.XXXXXX")
+          trap 'rm -f -- "$key_file"' EXIT
+          printf '%s\n' "$OHLC_DEPLOY_KEY" > "$key_file"
+          unset OHLC_DEPLOY_KEY
+          python -m scripts.publish_ohlc publish \
+            --manifest site/_tmp/ohlc-complete.json \
+            --payload-dir site/ohlc \
+            --evidence-dir "${HOME}/.local/state/macro-ohlc-delivery/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --ssh-key "$key_file"
       - name: verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)
         # The publish step swallows every failure (incl. the exit-0 no-op when the R2_*
         # secrets are absent/expired), so the live site would serve stale per-ticker data
