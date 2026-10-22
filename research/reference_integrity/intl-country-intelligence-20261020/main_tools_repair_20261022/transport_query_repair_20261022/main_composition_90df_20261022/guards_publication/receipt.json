@@ -1,0 +1,128 @@
+{
+  "schema": "intl.repair_repository_guards.v1",
+  "started_at": "2026-10-22T08:18:25.351597+00:00",
+  "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+  "observed_main": "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+  "merge_base": "90df0e302637ade26b894aee46141b6a1813a630",
+  "driver_sha256": "f9535710e64a4f5303d62181808dbe43fbd8321af32453bc7ddaa95dfaf009d6",
+  "diff": {
+    "path": "/tmp/intl-tools-guards-48b5c3312a22-qzk92nrh/full-pr.diff",
+    "bytes": 495754351,
+    "sha256": "2e5d0f500fb7254414dcdb265670840133ea8c25c35f5b361f386c7b6097583f"
+  },
+  "changed_path_count": 2486,
+  "checks": [
+    {
+      "name": "frozen_reference_evaluation",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py",
+        "--evaluate",
+        "intl-country-intelligence-20261020"
+      ],
+      "started_at": "2026-10-22T08:18:25.620546+00:00",
+      "completed_at": "2026-10-22T08:18:26.734752+00:00",
+      "duration_seconds": 1.11,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/frozen_reference_evaluation.log",
+      "log_sha256": "ed2e60d55cac054303fbdaa81f73f2ca3695c7b67c1e003b94444c901c25480f",
+      "error": null
+    },
+    {
+      "name": "reference_integrity_registry",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_reference_integrity.py"
+      ],
+      "started_at": "2026-10-22T08:18:25.620745+00:00",
+      "completed_at": "2026-10-22T08:18:27.960402+00:00",
+      "duration_seconds": 2.34,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/reference_integrity_registry.log",
+      "log_sha256": "918a7795bf9a334a6c3a4d5bd03f753f169739d65b18ce87aefcc79ea7bd5992",
+      "error": null
+    },
+    {
+      "name": "runtime_style_injection",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "started_at": "2026-10-22T08:18:26.735317+00:00",
+      "completed_at": "2026-10-22T08:18:27.925991+00:00",
+      "duration_seconds": 1.19,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/runtime_style_injection.log",
+      "log_sha256": "0aa92315dcaf77a019bdb22d6fdd6efccf0e0260cd411b0533d2f84f0e0aa331",
+      "error": null
+    },
+    {
+      "name": "receipt_closure",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/changed_paths.txt"
+      ],
+      "started_at": "2026-10-22T08:18:27.936181+00:00",
+      "completed_at": "2026-10-22T08:18:28.065289+00:00",
+      "duration_seconds": 0.13,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/receipt_closure.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": null
+    },
+    {
+      "name": "visual_evidence",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-tools-guards-48b5c3312a22-qzk92nrh/full-pr.diff"
+      ],
+      "started_at": "2026-10-22T08:18:27.969640+00:00",
+      "completed_at": "2026-10-22T08:18:34.485913+00:00",
+      "duration_seconds": 6.52,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": null
+    },
+    {
+      "name": "design_system",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-tools-guards-48b5c3312a22-qzk92nrh/full-pr.diff"
+      ],
+      "started_at": "2026-10-22T08:18:28.065769+00:00",
+      "completed_at": "2026-10-22T08:18:38.156553+00:00",
+      "duration_seconds": 10.09,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/design_system.log",
+      "log_sha256": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40",
+      "error": null
+    },
+    {
+      "name": "agentos",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "started_at": "2026-10-22T08:18:34.486410+00:00",
+      "completed_at": "2026-10-22T08:18:37.125821+00:00",
+      "duration_seconds": 2.64,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/guards_publication/agentos.log",
+      "log_sha256": "ede62d04407ca0c8adf4557ed4eac9c4bd161d3c7cdb705fd0ebab8e942241bd",
+      "error": null
+    }
+  ],
+  "completed_at": "2026-10-22T08:18:38.173680+00:00",
+  "head_unchanged": true,
+  "pass": true
+}

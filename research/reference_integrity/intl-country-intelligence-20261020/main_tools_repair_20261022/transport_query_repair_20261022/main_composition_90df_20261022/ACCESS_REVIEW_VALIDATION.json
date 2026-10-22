@@ -1,0 +1,19 @@
+{
+  "schema": "intl.composed_access_boundary_validation.v1",
+  "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+  "started_at": "2026-10-22T08:32:20.509816+00:00",
+  "completed_at": "2026-10-22T08:34:28.365253+00:00",
+  "command": [
+    "/private/tmp/intl-country-cockpit-ci-20261021/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_site_access_boundary.py",
+    "-q",
+    "-rs"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 127.88,
+  "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/access_boundary_tests.log",
+  "log_sha256": "39fe6f37013a97770557deea80a61f42f92077019a68581b1475e413ca0cc4b1",
+  "caddy_executable_present": true
+}
