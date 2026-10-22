@@ -9410,6 +9410,17 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/site_access.yml"
       - "mockups/evidence/intl-gs-w3u/manifest.json"
+      - "tests/__init__.py"
+      - "scripts/__init__.py"
+      # measured render closure of the real intl.html fixture path
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
