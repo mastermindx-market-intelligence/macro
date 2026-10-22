@@ -543,6 +543,18 @@
       })
       .catch(function () { return headers; });
   }
+  /* Fixed per-request deadline. The whole exchange — auth session lookup,
+   * fetch and body decoding — must complete inside it; a stage that stalls
+   * is aborted and the request settles as an ordinary unavailable failure
+   * with a manual retry. The bound is a module constant, never a
+   * caller-supplied limit. */
+  var REQUEST_DEADLINE_MS = 120000;
+  function deadlineError() {
+    var error = new Error('request_deadline_exceeded');
+    error.name = 'MMRetainedDeadlineError';
+    error.deadline = true;
+    return error;
+  }
   function apiFetch(path, params, kind) {
     var dispatchSlot = { epoch: state.epoch, authEpoch: state.authEpoch };
     var query = '';
@@ -552,13 +564,21 @@
       return encodeURIComponent(key) + '=' + encodeURIComponent(String(params[key]));
     }).join('&');
     if (query) query = '?' + query;
-    return withAuth({ Accept: 'application/json' }).then(function (headers) {
+    var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : 'abort');
+    var controller = null;
+    var timer = null;
+    var expired = false;
+    function clearDeadline() {
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    }
+    var request = withAuth({ Accept: 'application/json' }).then(function (headers) {
       if (commitGate(dispatchSlot, state)) { var stale = new Error('superseded'); stale.name = 'AbortError'; throw stale; }
+      /* A session that resolved after the deadline must not dispatch. */
+      if (expired) throw deadlineError();
       /* Main-result requests and source-inspection requests get separate
        * abort slots so inspecting a case never cancels a results load. */
-      var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : 'abort');
       if (state[storeKey]) { try { state[storeKey].abort(); } catch (error) { /* already gone */ } }
-      var controller = new AbortController();
+      controller = new AbortController();
       state[storeKey] = controller;
       return fetch(apiBase() + API + path + query, {
         credentials: 'same-origin',
@@ -583,6 +603,27 @@
           return { payload: payload, etag: etag, contentEncoding: contentEncoding };
         });
       });
+    });
+    /* One fixed deadline covers the entire exchange above. On expiry the
+     * deadline settles first, then any started fetch is aborted, so the
+     * request surfaces as an ordinary unavailable failure and a late
+     * response or body can never commit. The timer clears on either
+     * settlement and the losing branch stays handled — no unhandled
+     * rejection and no revival. */
+    var deadline = new Promise(function (resolve, reject) {
+      timer = setTimeout(function () {
+        timer = null;
+        expired = true;
+        reject(deadlineError());
+        if (controller) { try { controller.abort(); } catch (error) { /* already gone */ } }
+      }, REQUEST_DEADLINE_MS);
+    });
+    return Promise.race([request, deadline]).then(function (result) {
+      clearDeadline();
+      return result;
+    }, function (error) {
+      clearDeadline();
+      throw error;
     });
   }
 
@@ -612,6 +653,7 @@
     if (!error) return 'unavailable';
     if (error.contractCode) return 'unavailable';
     if (error.name === 'AbortError') return 'aborted';
+    if (error.deadline) return 'unavailable';
     var status = error.status;
     if (status === 401) return 'auth_required';
     if (status === 402) return 'subscription';
@@ -808,6 +850,32 @@
       sourceField: state.sourceField, sourceContext: state.sourceContext, outcomeLens: intent.outcomeLens, catalogOffset: intent.catalogOffset };
   }
 
+  /* A complete historical/current reference is syntactically self-describing:
+   * query, subject, generation pin, registered method, exact cutoff and
+   * context. The retained endpoint validates every one of them against the
+   * response owner, so the discovery catalog is not needed as authority.
+   * Saved output keeps requiring the catalog because its capture id is
+   * published only there; nothing else may substitute for a missing field. */
+  function completeCompareRef(intent) {
+    if (!intent || (intent.mode !== 'historical' && intent.mode !== 'current')) return false;
+    if (!isToken(intent.query) || !isToken(intent.subject) || !isToken(intent.gen)
+        || !isToken(intent.method) || !isToken(intent.context)) return false;
+    if (typeof intent.genSha !== 'string' || !SHA256_RE.test(intent.genSha)) return false;
+    return isUtc(intent.cutoff);
+  }
+
+  /* Open a pinned comparison straight from its own exact reference: exactly
+   * one retained read, no catalog request dispatched before or alongside it,
+   * and no invented selected catalog entry. The picker keeps telling the
+   * truth — the saved-capture list simply has not been loaded. */
+  function runExactReference(intent) {
+    state.selected = null;
+    state.referenceInvalid = false;
+    renderCatalogDependentControls();
+    if (!writeUrlIntent(publishableIntent(intent))) return;
+    return runCompare(intent);
+  }
+
   /* Saved output mode: exact operational PIT playback only. No retained
    * analysis, no legacy recomputed substitution, ever. */
   function runSaved(intent) {
@@ -864,7 +932,10 @@
       }
       state.committed = { kind: 'compare', intent: intent, data: compare };
       if (state.sourceContext) {
-        if (!compare.sourceCards[state.sourceContext]) return renderTypedUnavailable('missing_exact_capture', 'source_context_not_in_selected_comparison');
+        var selectedSource = state.sourceContext === intent.context || compare.neighbors.some(function (neighbor) {
+          return neighbor.contextId === state.sourceContext;
+        });
+        if (!selectedSource || !compare.sourceCards[state.sourceContext]) return renderTypedUnavailable('missing_exact_capture', 'source_context_not_in_selected_comparison');
         state.sourceCase = { contextId: state.sourceContext, data: compare.sourceCards[state.sourceContext] };
       }
       renderCommitted();
@@ -925,6 +996,7 @@
     else if (notice.kind === 'request') renderRequestFailureNotice(notice);
     else if (notice.kind === 'signed_out') renderSignedOutNotice(notice);
     else if (notice.kind === 'prompt') renderCatalogPromptNotice();
+    else if (notice.kind === 'catalog_not_loaded') renderCatalogNotLoadedNotice();
     else if (notice.kind === 'loading') {
       ui.status.setAttribute('data-mmr-state', 'loading');
       ui.status.textContent = copy('Loading saved evidence', '正在加载已保存依据');
@@ -1068,6 +1140,23 @@
       '在上方选择一条已保存的 SPY 记录，然后打开或比较它。');
   }
 
+  function renderCatalogNotLoaded() {
+    state.notice = { kind: 'catalog_not_loaded' };
+    renderNotice();
+  }
+
+  /* Stated only when no catalog is held: an unloaded list is a loading fact,
+   * never a sign-in requirement and never evidence about any reference. */
+  function renderCatalogNotLoadedNotice() {
+    ui.status.setAttribute('data-mmr-state', 'idle');
+    ui.status.textContent = copy('Saved captures not loaded', '已保存记录尚未加载');
+    ui.resultBody.innerHTML = banner('catalog_not_loaded',
+      'The saved-capture list is not loaded', '已保存记录列表尚未加载',
+      'No saved-capture list has been loaded, so no other registered method can be offered here. Browse the saved captures to choose one.',
+      '尚未加载已保存记录列表，因此这里无法提供其他注册方法。请浏览已保存记录以选择。',
+      actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
+  }
+
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
@@ -1077,6 +1166,10 @@
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
       ui.loadMoreButton.hidden = true;
       ui.scopeLine.textContent = copy('Saved house macro readings associated with SPY.', '与 SPY 关联的已保存内部宏观解读。');
+      /* No catalog is presented: a prior current-mode explanation must not
+       * survive sign-out, refusal or an invalid selection in any locale. */
+      ui.cutoffNote.hidden = true;
+      ui.cutoffNote.textContent = '';
       return;
     }
     var options = catalog.entries.map(function (entry) {
@@ -1166,7 +1259,19 @@
 
   function renderSelectedClock() {
     var entry = state.selected;
-    if (!entry) { ui.originalClock.hidden = true; return; }
+    if (!entry) {
+      /* A pinned citation opened without the catalog has no selected catalog
+       * entry to quote. Only the source card bound to this comparison may
+       * be shown, and the absent list is never presented as freshness. */
+      var card = state.committed && state.committed.kind === 'compare'
+        ? state.committed.data.sourceCards[state.committed.intent.context] : null;
+      if (!card) { ui.originalClock.hidden = true; ui.originalClock.innerHTML = ''; return; }
+      ui.originalClock.hidden = false;
+      ui.originalClock.innerHTML = esc(copy('Original packet cutoff', '原始记录截至')) + ': <strong>' +
+        esc(clockLabel(card.asKnownAt)) + '</strong>' +
+        (card.capturedAt ? ' · ' + esc(copy('captured ', '捕获于 ')) + esc(clockLabel(card.capturedAt)) : '');
+      return;
+    }
     ui.originalClock.hidden = false;
     ui.originalClock.innerHTML = esc(copy('Original packet cutoff', '原始记录截至')) + ': <strong>' +
       esc(clockLabel(entry.asKnownAt)) + '</strong>' +
@@ -1328,18 +1433,30 @@
   function methodMarkup(compare) {
     var method = compare.methodSpec;
     var fields = Array.isArray(method.fields) && method.fields.length ? method.fields : FIELDS;
+    var distances = compare.neighbors.filter(function (neighbor) { return neighbor.distanceQ18 !== null; });
     return '<dl class="mmr-coverage">' +
       '<div><dt>' + esc(copy('Registered method', '注册方法')) + '</dt><dd><code>' + esc(method.methodSpecId) + '</code></dd></div>' +
       '<div><dt>' + esc(copy('Compared fields', '比较字段')) + '</dt><dd>' + esc(fields.map(fieldLabel).join(copy(', ', '、'))) + '</dd></div>' +
       (method.exclusionDays === null ? '' : '<div><dt>' + esc(copy('Calendar-day exclusion', '自然日排除')) + '</dt><dd>' + esc(String(method.exclusionDays)) + '</dd></div>') +
       '</dl><p class="mmr-note">' + esc(copy(
         'Equal fixed rules over five house fields; two numeric score differences and three categorical equal/mismatch checks. No fitted probabilities, no trading verdict, and the returned count is a similarity selection — not independent trials.',
-        '五项内部字段按固定等权规则比较：两项数值评分差值与三项类别一致/不一致检查。无拟合概率、无交易结论；返回数量是相似度选择，不是独立试验次数。')) + '</p>';
+        '五项内部字段按固定等权规则比较：两项数值评分差值与三项类别一致/不一致检查。无拟合概率、无交易结论；返回数量是相似度选择，不是独立试验次数。')) + '</p>' +
+      (distances.length ? '<h3>' + esc(copy('Exact case distances', '案例的确切距离')) + '</h3><p class="mmr-note">' +
+        esc(copy('Smaller distances mean closer readings under this fixed comparison rule. They are not probabilities.',
+                 '按此固定比较规则，距离越小表示解读越接近。距离不是概率。')) + '</p><dl class="mmr-coverage">' +
+        distances.map(function (neighbor) {
+          return '<div><dt>' + esc(caseClock(neighbor)) + '</dt><dd><code>' +
+            esc(String(neighbor.distanceQ18)) + '</code></dd></div>';
+        }).join('') + '</dl>' : '');
+  }
+
+  function caseClock(neighbor) {
+    var entry = findEntry(neighbor.contextId);
+    return neighbor.sourceCard ? clockLabel(neighbor.sourceCard.eventTime) : (entry ? clockLabel(entry.eventTime) : neighbor.contextId);
   }
 
   function caseMarkup(neighbor, index) {
-    var entry = findEntry(neighbor.contextId);
-    var when = neighbor.sourceCard ? clockLabel(neighbor.sourceCard.eventTime) : (entry ? clockLabel(entry.eventTime) : neighbor.contextId);
+    var when = caseClock(neighbor);
     var rows = neighbor.differences && neighbor.differences.length
       ? neighbor.differences
       : (neighbor.state && state.committed.data.selectedState ? differenceRows(state.committed.data.selectedState, neighbor.state) : null);
@@ -1347,7 +1464,6 @@
     return '<article class="mmr-case" data-mmr-context="' + esc(neighbor.contextId) + '">' +
       '<div class="mmr-case-head"><h3>' + esc(when) + '</h3><span>' + esc(copy('Saved house output', '已保存的内部输出')) + '</span></div>' +
       '<p class="mmr-case-diff">' + summary + '</p>' +
-      (neighbor.distanceQ18 === null ? '' : '<p class="mmr-case-distance">' + esc(copy('Retrieval distance ', '检索距离 ')) + '<code>' + esc(String(neighbor.distanceQ18)) + '</code></p>') +
       '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="inspect" data-mmr-context="' + esc(neighbor.contextId) + '">' +
       esc(copy('Inspect source', '核对来源')) + '</button></article>';
   }
@@ -1369,6 +1485,9 @@
       '</div>' +
       '<p class="mmr-lead">' + esc(copy('Compare the house readings; a match does not establish what comes next.',
         '比较内部解读；相似案例不代表未来结果。')) + '</p>' + staleNoticeIfNeeded({ intent: committed.intent });
+    if (!state.catalog) {
+      body += '<p class="mmr-note">' + actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select') + '</p>';
+    }
     if (compare.status === 'VALID_EMPTY' || compare.status === 'ABSTAINED' || !returned) {
       body += banner('valid_empty',
         'No comparable saved cases', '暂无可比的已保存案例',
@@ -1384,7 +1503,7 @@
       body += compare.neighbors.map(function (neighbor, index) { return caseMarkup(neighbor, index); }).join('');
     }
     body += '<details class="mmr-disc"><summary>' + esc(copy('Coverage and exclusions — see what was left out', '覆盖与排除 — 查看未纳入的记录')) + '</summary>' + coverageMarkup(compare) + '</details>' +
-      '<details class="mmr-disc"><summary>' + esc(copy('Comparison method — five fields, fixed rules', '比较方法 — 五项字段、固定规则')) + '</summary>' + methodMarkup(compare) + '</details>' +
+      '<details class="mmr-disc"><summary>' + esc(copy('Comparison method & distances', '比较方法与距离')) + '</summary>' + methodMarkup(compare) + '</details>' +
       outcomeBlock();
     ui.resultBody.innerHTML = body;
 
@@ -1467,7 +1586,12 @@
       return applyIntent(restored.intent, {persist:false});
     }
     var intent = currentIntent();
-    if (!state.catalog) return loadCatalog(intent);
+    if (!state.catalog) {
+      /* A manual retry reissues the pinned reference itself — never a catalog
+       * read followed by re-derived defaults. */
+      if (completeCompareRef(intent)) return runCompare(intent);
+      return loadCatalog(intent);
+    }
     if (!state.selected) return renderCatalogPrompt();
     if (state.mode === 'saved') return runSaved(intent);
     return runCompare(intent);
@@ -1480,7 +1604,23 @@
     state.mode = mode;
     renderModeButtons();
     renderCutoffControl();
-    if (!state.catalog) { writeUrlIntent(publishableIntent(currentIntent())); return; }
+    if (!state.catalog) {
+      if (!changed) { writeUrlIntent(publishableIntent(currentIntent())); return; }
+      /* No catalog is held, so no per-mode method can be derived here and the
+       * previous mode's registered method may never be reused: the pinned
+       * reference cannot be dispatched from this mode. Say so plainly and
+       * offer the explicit browse instead of guessing a method. */
+      beginIntent();
+      state.selected = null;
+      state.sourceContext = null; state.sourceField = null;
+      ui.sourceBody.innerHTML = ''; closeSourcePanel();
+      ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
+      if (state.intent) state.intent.method = null;
+      renderCatalogDependentControls();
+      writeUrlIntent(publishableIntent(currentIntent()));
+      renderCatalogNotLoaded();
+      return;
+    }
     if (!state.selected) { writeUrlIntent(publishableIntent(currentIntent())); renderCatalogPrompt(); return; }
     if (changed || !state.committed) {
       state.intent.method = defaultMethodId(mode);
@@ -1504,7 +1644,14 @@
     state.outcomeLens = intent.outcomeLens || null;
     state.sourceField = intent.sourceField || null;
     state.sourceContext = intent.sourceContext || null;
-    if (!state.catalog || (intent.gen && state.catalog.generation.generationId !== intent.gen)
+    if (!state.catalog) {
+      /* A complete pinned reference opens through the retained endpoint
+       * itself. The catalog is neither awaited nor speculatively requested,
+       * and its absence is never read as evidence about the reference. */
+      if (completeCompareRef(state.intent)) return runExactReference(state.intent);
+      return loadCatalog(state.intent);
+    }
+    if ((intent.gen && state.catalog.generation.generationId !== intent.gen)
         || (intent.genSha && state.catalog.generation.generationSha256 !== intent.genSha)
         || (intent.context && !state.catalog.entries.some(function (entry) { return entry.contextId === intent.context && entry.catalogOffset === String(intent.catalogOffset || '0'); }))) {
       return loadCatalog(intent);
@@ -1690,6 +1837,9 @@
     });
     ui.primaryButton.addEventListener('click', function () {
       if (!state.selected) {
+        /* With no catalog held, a pinned reference is still actionable: the
+         * primary action routes it instead of focusing a disabled picker. */
+        if (!state.catalog && completeCompareRef(currentIntent())) return runCurrentIntent();
         ui.captureSelect.focus();
         return;
       }
@@ -1730,6 +1880,9 @@
       return;
     }
     applyIntent(parsed.intent, { persist: false });
+    /* Name the picker's real state once the requested mode is known: an
+     * unloaded list is a loading fact, not a sign-in requirement. */
+    renderCatalogDependentControls();
   }
 
   /* Bounded test hook: pure helpers only, registered by a test runner
@@ -1747,6 +1900,7 @@
       differenceRows: differenceRows,
       summarizeDifferences: summarizeDifferences,
       parseUrlIntent: parseUrlIntent,
+      completeCompareRef: completeCompareRef,
       commitGate: commitGate,
       isUtc: isUtc,
       formatUtc: formatUtc,

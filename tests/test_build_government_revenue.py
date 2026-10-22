@@ -135,9 +135,21 @@ def _write_dod_budget_source_bundle(root: Path) -> None:
     )
 
 
+def _render_dependency_assets(templates: Path) -> None:
+    """Minimal builder fixtures retain their test HTML and use real render assets."""
+    import shutil
+    canonical = Path(__file__).resolve().parents[1] / "templates"
+    for name in ("government-revenue-page.js.j2", "theme.css", "product-nav-icons.css",
+                 "government-revenue-sbir.css", "government-revenue-investor.css",
+                 "government-revenue-theme-context.css", "government-revenue-parity.css"):
+        shutil.copyfile(canonical / name, templates / name)
+    shutil.copytree(canonical / "fonts", templates / "fonts", dirs_exist_ok=True)
+
+
 def test_builder_writes_canonical_site_twin_and_page(tmp_path: Path, monkeypatch) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",
@@ -188,6 +200,7 @@ def test_site_only_rebuild_uses_canonical_bytes_without_recalculation(
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     template = templates / "government_revenue.html.j2"
     template.write_text("<main>v1 {{ payload_json|safe }}</main>", encoding="utf-8")
     monkeypatch.setattr(build_government_revenue, "build_payload", lambda **_kwargs: _payload())
@@ -238,6 +251,7 @@ def test_builder_builds_budget_program_graph_from_a_complete_triad(
     test_builder_refuses_fixture_only_dod_bundle_activation)."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     templates.joinpath("government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -264,6 +278,7 @@ def test_builder_refuses_a_partial_dod_bundle_even_with_activation_enabled(
     partial-bundle check, so this is unaffected by Stage 2b activation)."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     templates.joinpath("government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -284,6 +299,7 @@ def test_builder_leaves_budget_rail_absent_when_no_triad_member_exists(
     bundle, which is a hard failure."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     templates.joinpath("government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -302,6 +318,7 @@ def test_site_only_rebuild_fails_closed_on_generation_mismatch(
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -322,6 +339,7 @@ def test_site_only_requires_the_committed_subaward_twin_when_prime_dossier_exist
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -336,6 +354,7 @@ def test_site_only_requires_the_committed_subaward_twin_when_prime_dossier_exist
 def test_builder_rejects_partial_idv_source_bundle(tmp_path: Path, monkeypatch) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     templates.joinpath("government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -351,6 +370,7 @@ def test_builder_rejects_partial_idv_source_bundle(tmp_path: Path, monkeypatch) 
 def test_site_only_rejects_public_only_idv_dossier(tmp_path: Path, monkeypatch) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     templates.joinpath("government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -368,6 +388,7 @@ def test_builder_atomically_persists_exact_embedded_recipient_coverage(
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -412,6 +433,7 @@ def test_site_only_requires_committed_graph_and_coverage_without_recalculation(
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -442,6 +464,7 @@ def test_builder_rejects_receipt_bound_activation_without_curated_graph(
 ) -> None:
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
@@ -746,6 +769,7 @@ def test_generic_baskets_builder_cannot_write_government_projection() -> None:
 def test_build_government_revenue_writes_d5_dossier_and_program_link_end_to_end(tmp_path):
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",
@@ -795,6 +819,7 @@ def test_build_government_revenue_writes_d5_dossier_and_program_link_end_to_end(
 def test_build_government_revenue_composes_a_real_dossier_when_canonical_ontology_exists(tmp_path):
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",
@@ -834,6 +859,7 @@ def test_build_site_only_mirrors_both_d5_twins_byte_identical_when_canonical_exi
     recomputing build_payload (which is monkeypatched to explode if called)."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",
@@ -886,6 +912,7 @@ def test_build_site_only_skips_d5_twins_quietly_when_canonical_absent(tmp_path):
     fabricating a bundle."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",
@@ -933,6 +960,7 @@ def test_build_site_only_raises_on_a_refused_canonical_ontology(tmp_path):
     other canonical-invalid case in that function, never silently skip."""
     templates = tmp_path / "templates"
     templates.mkdir()
+    _render_dependency_assets(templates)
     (templates / "government_revenue.html.j2").write_text(
         "<title>Government Revenue</title><script>{{ payload_json|safe }}</script>",
         encoding="utf-8",

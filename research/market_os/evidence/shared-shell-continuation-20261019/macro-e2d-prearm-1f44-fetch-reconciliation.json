@@ -1,0 +1,57 @@
+{
+  "observed_at": "2026-10-20T05:47:26.288236+00:00",
+  "reconciles_pid": 98787,
+  "original_action": "git fetch --no-tags origin 1f44ac1873ac8dba2147ad91567446fbbe0a83ea",
+  "original_exit": 1,
+  "original_error": "subprocess.TimeoutExpired after60s; no merge preview ran",
+  "reads": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "cat-file",
+        "-t",
+        "1f44ac1873ac8dba2147ad91567446fbbe0a83ea"
+      ],
+      "exit": 0,
+      "stdout": "commit\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "FETCH_HEAD"
+      ],
+      "exit": 128,
+      "stdout": "FETCH_HEAD\n",
+      "stderr": "fatal: ambiguous argument 'FETCH_HEAD': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\n"
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "show",
+        "-s",
+        "--format=%H %T %P",
+        "1f44ac1873ac8dba2147ad91567446fbbe0a83ea"
+      ],
+      "exit": 0,
+      "stdout": "1f44ac1873ac8dba2147ad91567446fbbe0a83ea eecc013632840d7e9088fd67ddf96382f49acec6 48e1faa44478e4da1a12a65ea427c0909644edbe\n",
+      "stderr": ""
+    }
+  ],
+  "fetch_retried": false
+}

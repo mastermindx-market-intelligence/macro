@@ -71,7 +71,7 @@ from zoneinfo import ZoneInfo
 
 __all__ = [
     "IdentityError",
-    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "TXSE", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "ListingKey",
@@ -97,6 +97,7 @@ __all__ = [
     "VendorAliasTable",
     "AliasResolution", "ReferenceReadReceipt", "ReferenceSnapshot",
     "validate_reference_snapshot",
+    "OPTION_ROOT_KIND", "option_underlying_kind", "option_root_binding_sha256",
     "SecurityIssuerRow",
     "IssuerMaster",
 ]
@@ -121,6 +122,7 @@ XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
 ARCX = "ARCX"   # ISO 10383 NYSE Arca segment; reference-probe admission only
+TXSE = "TXSE"   # Texas Stock Exchange (ISO 10383 operating MIC; dark segment TXSD not admitted)
 XSHG = "XSHG"   # Shanghai Stock Exchange
 XSHE = "XSHE"   # Shenzhen Stock Exchange
 XBSE = "XBSE"   # Beijing Stock Exchange
@@ -129,20 +131,23 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 #: D00.A1.1 — CLOSED venue-clock map (same human-once-in-a-diff law as KNOWN_MICS).
 VENUE_TZ: Mapping[str, str] = MappingProxyType({
     BATS: "America/New_York", XNYS: "America/New_York", XNAS: "America/New_York",
     XASE: "America/New_York", ARCX: "America/New_York",
+    # TXSE is a Dallas venue but trades the national-market Eastern session, the same
+    # reason BATS (Lenexa, KS) reads the New York clock: the trade date is the tape's.
+    TXSE: "America/New_York",
     XTSE: "America/Toronto", XTSX: "America/Toronto",
     XHKG: "Asia/Hong_Kong",
     XSHG: "Asia/Shanghai", XSHE: "Asia/Shanghai", XBSE: "Asia/Shanghai",
 })
 #: D00.A1.2 — CLOSED listing-currency map; no FX is ever applied anywhere.
 VENUE_CURRENCY: Mapping[str, str] = MappingProxyType({
-    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD",
+    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD", TXSE: "USD",
     XTSE: "CAD", XTSX: "CAD",
     XHKG: "HKD",
     XSHG: "CNY", XSHE: "CNY", XBSE: "CNY",
@@ -698,6 +703,8 @@ def _as_date(value: date | str | None) -> date | None:
 # receipt. Candidate input consumers must additionally bind their actual snapshot
 # read by the decision cutoff in the existing input bundle.
 NATIVE_REFERENCE_VENDOR = "polygon"
+SEC_FILING_CUSIP_VENDOR = "sec_filing_cusip"
+_SEALED_REFERENCE_VENDORS = frozenset({NATIVE_REFERENCE_VENDOR, SEC_FILING_CUSIP_VENDOR})
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -737,6 +744,56 @@ def alias_binding_sha256(vendor: str, vendor_symbol: str, security_id_: str,
     }
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                      ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+
+
+OPTION_ROOT_KIND = "occ_root"
+_OPTION_ROOT_RE = re.compile(r"[A-Z0-9](?:[A-Z0-9.-]{0,13}[A-Z0-9])?")
+
+
+def _option_root_query(vendor: str, root: str, on: date) -> None:
+    """Exact source namespace/root/event date, without ticker coercion."""
+    if not isinstance(vendor, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", vendor):
+        raise IdentityError("option root requires an exact vendor namespace")
+    if not isinstance(root, str) or not _OPTION_ROOT_RE.fullmatch(root) or ".." in root:
+        raise IdentityError("option root requires an exact producer root")
+    if type(on) is not date:
+        raise IdentityError("option root requires an explicit event date")
+
+
+def _option_date(value: object) -> date | None:
+    """Strict root-row record bounds; legacy alias conversion stays unchanged."""
+    if value is None or type(value) is date:
+        return value
+    if isinstance(value, str) and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            pass
+    raise IdentityError("option root bound must be an exact ISO date")
+
+
+def option_underlying_kind(target: str) -> str:
+    """Validate SEC/IDX syntax exactly; does not mint or admit a canonical record."""
+    if not isinstance(target, str):
+        raise IdentityError("option underlying must be a canonical SEC or IDX id")
+    if target.startswith("IDX:"):
+        provider, code = parse_index_id(target)
+        if index_id(provider, code) == target:
+            return "index"
+    elif target.startswith("SEC:"):
+        kind, key = parse_id(target)
+        if kind == "security" and security_id(key) == target:
+            return "security"
+    raise IdentityError("option underlying must be an exact canonical SEC or IDX id")
+
+
+def option_root_binding_sha256(vendor: str, root: str, underlying_id: str,
+                               valid_from: date, valid_to: date | None,
+                               known_at: datetime | str, evidence_sha256: str) -> str:
+    """Domain-separated integrity seal; neither source authentication nor admission."""
+    row_seal = alias_binding_sha256(vendor, root, underlying_id, valid_from,
+                                    valid_to, known_at, evidence_sha256)
+    return hashlib.sha256((OPTION_ROOT_KIND + "\n" + row_seal).encode("ascii")).hexdigest()
 
 
 @dataclass(frozen=True, slots=True)
@@ -779,30 +836,71 @@ class AliasRow:
     alias_family_id: str | None = None
     alias_revision_id: str | None = None
 
+    # None is the legacy reversible namespace. Only the forward occ_root relation
+    # is added here; other prose-spec alias kinds are not implemented by this API.
+    alias_kind: str | None = None
+
     def __post_init__(self) -> None:
         if self.vendor == "listing" or any(v is not None for v in
                 (self.attempt_id, self.alias_family_id, self.alias_revision_id)):
             raise IdentityError("revisioned/listing alias requires observation history context")
-        if self.vendor != NATIVE_REFERENCE_VENDOR:
+        if self.alias_kind not in (None, OPTION_ROOT_KIND):
+            raise IdentityError("unsupported alias relation kind")
+        if self.alias_kind == OPTION_ROOT_KIND:
+            _option_root_query(self.vendor, self.vendor_symbol, self.valid_from)
+            option_underlying_kind(self.security_id)
+            if self.valid_to is not None and (type(self.valid_to) is not date or self.valid_to <= self.valid_from):
+                raise IdentityError("option root invalid event-date bounds")
+            clock = _aware_utc(self.known_at, "known_at")
+            if clock.date() < self.valid_from:
+                raise IdentityError("option evidence precedes its reference date")
+            object.__setattr__(self, "known_at", clock)
+            if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
+                raise IdentityError("option root missing evidence digest")
+            expected = option_root_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
+                                                 self.valid_from, self.valid_to, clock, self.evidence_sha256)
+            if self.binding_sha256 != expected:
+                raise IdentityError("option root binding seal mismatch")
             return
+        if self.vendor not in _SEALED_REFERENCE_VENDORS:
+            return
+        if self.vendor == SEC_FILING_CUSIP_VENDOR:
+            if (not isinstance(self.vendor_symbol, str)
+                    or not re.fullmatch(r"[0-9A-Z]{9}", self.vendor_symbol)
+                    or not isinstance(self.security_id, str)
+                    or not self.security_id.startswith("SEC:")):
+                raise IdentityError("SEC filing requires an exact CUSIP and canonical security")
+            parse_id(self.security_id)
+            if (type(self.valid_from) is not date or type(self.valid_to) is not date
+                    or self.valid_to != self.valid_from + timedelta(days=1)):
+                raise IdentityError("SEC filing binding is restricted to its evidenced observation day")
+        reference_label = "SEC filing" if self.vendor == SEC_FILING_CUSIP_VENDOR else "polygon"
         clock = _aware_utc(self.known_at, "known_at")
         object.__setattr__(self, "known_at", clock)
         if self.valid_from is None or isinstance(self.valid_from, datetime):
-            raise IdentityError("polygon reference requires a dated valid_from")
+            raise IdentityError(f"{reference_label} reference requires a dated valid_from")
         if clock.date() < self.valid_from:
-            raise IdentityError("polygon evidence precedes its reference date")
+            raise IdentityError(f"{reference_label} evidence precedes its reference date")
         if self.valid_to is not None and self.valid_to <= self.valid_from:
-            raise IdentityError("polygon invalid event-date bounds")
+            raise IdentityError(f"{reference_label} invalid event-date bounds")
         if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
-            raise IdentityError("polygon missing evidence digest")
+            raise IdentityError(f"{reference_label} missing evidence digest")
         expected = alias_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
                                         self.valid_from, self.valid_to, clock,
                                         self.evidence_sha256)
         if self.binding_sha256 != expected:
-            raise IdentityError("polygon alias binding seal mismatch")
+            raise IdentityError(f"{reference_label} alias binding seal mismatch")
+
+    @property
+    def underlying_kind(self) -> str | None:
+        return option_underlying_kind(self.security_id) if self.alias_kind == OPTION_ROOT_KIND else None
 
     def covers(self, on: date, *, decision_at: datetime | str | None = None) -> bool:
-        if self.vendor == NATIVE_REFERENCE_VENDOR:
+        if self.vendor == SEC_FILING_CUSIP_VENDOR and type(on) is not date:
+            raise IdentityError("SEC filing requires an exact event date")
+        if self.alias_kind == OPTION_ROOT_KIND:
+            _option_root_query(self.vendor, self.vendor_symbol, on)
+        if self.alias_kind == OPTION_ROOT_KIND or self.vendor in _SEALED_REFERENCE_VENDORS:
             cutoff = _aware_utc(decision_at, "decision_at")
             if cutoff < self.known_at or on > cutoff.date():
                 return False
@@ -826,12 +924,13 @@ class VendorAliasTable:
     but cannot say "MMC meant MMC before 2026-01-14".  A backfill that reads history
     through a timeless map re-labels the past, and nothing downstream can see it.
 
-    Both directions are required to be UNAMBIGUOUS in time: constructing a table
+    Ordinary aliases require both directions to be UNAMBIGUOUS in time: constructing a table
     where two rows for one ``(vendor, vendor_symbol)`` — or one
     ``(vendor, security_id)`` — overlap raises, because a translation layer that can
     return either of two answers is not a translation layer.  Loading is from plain
     mappings (:meth:`from_records`); reading a file is the caller's job, so this
-    class stays importable in a lane with no filesystem.
+    class stays importable in a lane with no filesystem. The explicit occ_root
+    namespace is forward-only; several roots may name the same typed underlying.
     """
 
     __slots__ = ("_rows", "_observation_state")
@@ -854,16 +953,19 @@ class VendorAliasTable:
             if any(_null_to_none(rec.get(k)) is not None for k in _REVISION_FIELDS):
                 raise IdentityError("revisioned alias requires observation history context")
             try:
+                kind = _null_to_none(rec.get("alias_kind"))
+                root_relation = kind == OPTION_ROOT_KIND
                 rows.append(
                     AliasRow(
-                        vendor=str(rec["vendor"]),
-                        vendor_symbol=str(rec["vendor_symbol"]),
-                        security_id=str(rec["security_id"]),
-                        valid_from=_as_date(rec.get("valid_from")),
-                        valid_to=_as_date(rec.get("valid_to")),
+                        vendor=rec["vendor"] if root_relation else str(rec["vendor"]),
+                        vendor_symbol=rec["vendor_symbol"] if root_relation else str(rec["vendor_symbol"]),
+                        security_id=rec["security_id"] if root_relation else str(rec["security_id"]),
+                        valid_from=_option_date(_null_to_none(rec.get("valid_from"))) if root_relation else _as_date(rec.get("valid_from")),
+                        valid_to=_option_date(_null_to_none(rec.get("valid_to"))) if root_relation else _as_date(rec.get("valid_to")),
                         known_at=_null_to_none(rec.get("known_at")),
                         evidence_sha256=_null_to_none(rec.get("evidence_sha256")),
                         binding_sha256=_null_to_none(rec.get("binding_sha256")),
+                        alias_kind=kind,
                     )
                 )
             except KeyError as exc:
@@ -878,10 +980,12 @@ class VendorAliasTable:
 
     def _assert_unambiguous(self) -> None:
         for field in ("vendor_symbol", "security_id"):
-            buckets: dict[tuple[str, str], list[AliasRow]] = {}
+            buckets: dict[tuple[str | None, str, str], list[AliasRow]] = {}
             for row in self._rows:
-                buckets.setdefault((row.vendor, getattr(row, field)), []).append(row)
-            for (vendor, value), group in buckets.items():
+                if field == "security_id" and row.alias_kind == OPTION_ROOT_KIND:
+                    continue  # many roots may name one underlying; no reverse API
+                buckets.setdefault((row.alias_kind, row.vendor, getattr(row, field)), []).append(row)
+            for (_, vendor, value), group in buckets.items():
                 for i, a in enumerate(group):
                     for b in group[i + 1:]:
                         if a.overlaps(b):
@@ -901,7 +1005,7 @@ class VendorAliasTable:
         if vendor in _CLOCKED_ALIAS_VENDORS:
             _aware_utc(decision_at, "decision_at")
         for row in self._rows:
-            if row.vendor == vendor and row.vendor_symbol == vendor_symbol and row.covers(on, decision_at=decision_at):
+            if row.alias_kind is None and row.vendor == vendor and row.vendor_symbol == vendor_symbol and row.covers(on, decision_at=decision_at):
                 return row.security_id
         return None
 
@@ -915,8 +1019,33 @@ class VendorAliasTable:
         if vendor in _CLOCKED_ALIAS_VENDORS:
             _aware_utc(decision_at, "decision_at")
         for row in self._rows:
-            if row.vendor == vendor and row.security_id == security_id_ and row.covers(on, decision_at=decision_at):
+            if row.alias_kind is None and row.vendor == vendor and row.security_id == security_id_ and row.covers(on, decision_at=decision_at):
                 return row.vendor_symbol
+        return None
+
+    def resolve_option_underlying(self, vendor: str, root: str, on: date, *,
+                                  decision_at: datetime | str,
+                                  evidence_bytes: bytes) -> AliasRow | None:
+        """Forward-only, evidence-bearing lookup of an explicitly admitted root row.
+
+        Caller supplies the exact retained source bytes, an event date from the
+        snapshot, and a decision cutoff. Matching bytes/seal prove integrity only.
+        Source-specific semantics, canonical-record existence, actual availability,
+        rights and snapshot admission remain the existing ingestion owner's job.
+        There is no fallback to ordinary ticker aliases or reverse root selection.
+        """
+        if self._observation_state is not None:
+            raise IdentityError("option root requires its own admitted observation context")
+        _option_root_query(vendor, root, on)
+        _aware_utc(decision_at, "decision_at")
+        for row in self._rows:
+            if (row.alias_kind == OPTION_ROOT_KIND and row.vendor == vendor
+                    and row.vendor_symbol == root and row.covers(on, decision_at=decision_at)):
+                if type(evidence_bytes) is not bytes or not evidence_bytes:
+                    raise IdentityError("retained option-root source bytes required")
+                if hashlib.sha256(evidence_bytes).hexdigest() != row.evidence_sha256:
+                    raise IdentityError("option-root source bytes do not match retained digest")
+                return row
         return None
 
     @staticmethod
@@ -944,7 +1073,7 @@ class VendorAliasTable:
 
 
 # ── Pure observation history (publication/adapter activation is separate) ──────
-_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing"})
+_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing", SEC_FILING_CUSIP_VENDOR})
 _OBSERVATION_SCHEMA = "mastermind.identity_observations.v1"
 _ARTIFACT_NAMES = (
     "security_master.parquet", "vendor_aliases.parquet", "issuer_master.parquet",

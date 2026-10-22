@@ -1,0 +1,27 @@
+{
+  "record_type": "retained_original_owner_proof_reconciliation",
+  "original_pr": 9548,
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017",
+  "observed_at": "2026-10-19T09:24:15.805857+00:00",
+  "head": "2e017f066e102c698f711db0eb2eee0138232c5f",
+  "branch": "sol/web-macro-fear-greed-dynamics-20261017",
+  "tracked_and_untracked_clean": true,
+  "required_input": "5ef7a7f39f99232bf9b574c7603da1011ee3af66",
+  "required_input_present_now": true,
+  "retained_log": {
+    "source": "/tmp/fgi9548-sni-lock-repair-test-20261018.log",
+    "bytes": 1089,
+    "sha256": "30cd5b9bdfb37e36e3aee27292a4444952aba901b823e109e46f990a47fe4aa2",
+    "result": "60 passed,1 warning in445.30s; no skips reported in this aggregate",
+    "mtime": "2026-10-19T00:00:11.543060Z"
+  },
+  "missing": [
+    "Historical invocation or node IDs showing both regeneration tests were among those60.",
+    "Exact tested source SHA in execution evidence.",
+    "Required input's historical availability and use."
+  ],
+  "historical_macro_ad65_classification": "UNKNOWN remains unchanged",
+  "counsel": "/root/sni_receipt_counsel reviewed parent-supplied retained evidence and agreed the aggregate does not close execution-identity gaps.",
+  "test_rerun": false,
+  "source_edit": false
+}

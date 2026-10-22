@@ -8,27 +8,146 @@ assert.ok(sourcePath,'Pass actual retained JS source path as first argument');
 const original=fs.readFileSync(sourcePath,'utf8');
 const examples=JSON.parse(fs.readFileSync(process.argv[3]||path.join(__dirname,'owner-fixtures.json'),'utf8')).examples;
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
+let unhandledRejections=0;process.on('unhandledRejection',()=>{unhandledRejections++;});
 function element(){return {innerHTML:'',textContent:'',hidden:false,classList:{add(){},remove(){},toggle(){}},setAttribute(){},removeAttribute(){},querySelector(){return null;},insertAdjacentHTML(){},focus(){},scrollIntoView(){}};}
 function setup(){
  const requests=[],published=[];let responsePayload=null,responseHeaders={},localeLanguage='zh',signinWrites=0;
+ let holdResponse=false,holdBody=false,heldResponse=null,heldBody=null;
+ const timers=new Map();let timerSeq=0;
  const location={href:'https://example.test/market_memory.html',search:''};
  const window={location:{origin:'https://example.test'},addEventListener(){},MarketMemoryIntent:{target(patch){assert.deepEqual(Object.keys(patch),['language']);return {ok:true,target:'/market_memory.html?mm_lang='+patch.language};},resumeStatus(){return {ok:true};},oauthPreservation(){return {ok:true};},signinHref(){signinWrites++;return {ok:true,href:'/?signin=1&ret=%2Fmarket_memory.html'};},replace(patch){published.push(JSON.parse(JSON.stringify(patch)));return {ok:true};}}};
  const locale=/document\.addEventListener\('langchange', function \(\) \{([\s\S]*?)\n    \}\);/.exec(original);
  assert.ok(locale,'Actual locale callback must be available for this regression');
  const anchor='var ui = {};';assert.equal(original.split(anchor).length,2,'Review anchor must be unique');
- const instrumented=original.replace(anchor,anchor+` globalThis.review={state:state,ui:ui,applyIntent:applyIntent,loadCatalog:loadCatalog,runCurrentIntent:runCurrentIntent,deepLinkMismatch:deepLinkMismatch,onPopState:onPopState,runCompare:runCompare,runSaved:runSaved,loadMoreCatalog:loadMoreCatalog,normalizeCatalog:normalizeCatalog,selectEntry:selectEntry,renderRequestFailure:renderRequestFailure,renderTypedUnavailable:renderTypedUnavailable,authRedact:authRedact,renderCatalogPrompt:renderCatalogPrompt,locale:function(){${locale[1]}}};`);
- const context={window,URL,URLSearchParams,AbortController,console:{info(){}},location,history:{},document:{readyState:'loading',addEventListener(){},documentElement:{getAttribute(){return localeLanguage;}}},fetch(url,options){requests.push({url,options});if(responsePayload){const payload=responsePayload;responsePayload=null;return Promise.resolve({ok:true,headers:{get(name){return responseHeaders[name.toLowerCase()]||null;}},json(){return Promise.resolve(payload);}});}return new Promise(()=>{});}};
+ const instrumented=original.replace(anchor,anchor+` globalThis.review={state:state,ui:ui,applyIntent:applyIntent,loadCatalog:loadCatalog,runCurrentIntent:runCurrentIntent,deepLinkMismatch:deepLinkMismatch,onPopState:onPopState,runCompare:runCompare,runSaved:runSaved,loadMoreCatalog:loadMoreCatalog,normalizeCatalog:normalizeCatalog,selectEntry:selectEntry,renderRequestFailure:renderRequestFailure,renderTypedUnavailable:renderTypedUnavailable,authRedact:authRedact,renderCatalogPrompt:renderCatalogPrompt,apiFetch:apiFetch,stateKindFor:stateKindFor,setMode:setMode,locale:function(){${locale[1]}}};`);
+ const responseLike=payload=>({ok:true,headers:{get(name){return responseHeaders[name.toLowerCase()]||null;}},json(){return Promise.resolve(payload);}});
+ const context={window,URL,URLSearchParams,AbortController,console:{info(){}},location,history:{},document:{readyState:'loading',addEventListener(){},documentElement:{getAttribute(){return localeLanguage;}}},
+  setTimeout(fn,ms){const id=++timerSeq;timers.set(id,{fn,ms});return id;},
+  clearTimeout(id){timers.delete(id);},
+  fetch(url,options){requests.push({url,options});
+   if(holdResponse){holdResponse=false;return new Promise(resolve=>{heldResponse=resolve;});}
+   if(holdBody){holdBody=false;return Promise.resolve({ok:true,headers:{get(name){return responseHeaders[name.toLowerCase()]||null;}},json(){return new Promise(resolve=>{heldBody=resolve;});}});}
+   if(responsePayload){const payload=responsePayload;responsePayload=null;return Promise.resolve(responseLike(payload));}
+   return new Promise(()=>{});}};
  context.globalThis=context;vm.runInNewContext(instrumented,context,{filename:sourcePath});
  const r=context.review,s=r.state;
  ['status','resultBody','sourceBody','sourceHeading','captureSelect','cutoffSelect','loadMoreButton','scopeLine','cutoffNote','originalClock','primaryButton','modeNote','sourcePanel'].forEach(k=>r.ui[k]=element());r.ui.tabs={saved:element(),historical:element(),current:element()};
  const catalog=r.normalizeCatalog(examples.catalog_historical.body),a=catalog.entries[0],b=catalog.entries[1];
  const intent={mode:'historical',query:b.queryId,context:b.contextId,subject:catalog.subject.subjectId,gen:catalog.generation.generationId,genSha:catalog.generation.generationSha256,method:catalog.methods.historical_hypothetical.methodSpecId,cutoff:examples.retained_historical.request.query.query_cutoff,catalogOffset:'0'};
  s.catalog=catalog;s.mode='historical';
- return {r,s,catalog,a,b,intent,requests,published,location,signinWrites(){return signinWrites;},setLang(value){localeLanguage=value;},respond(payload,headers={}){responsePayload=payload;responseHeaders=headers;}};
+ return {r,s,catalog,a,b,intent,requests,published,location,window,signinWrites(){return signinWrites;},setLang(value){localeLanguage=value;},respond(payload,headers={}){responsePayload=payload;responseHeaders=headers;},
+  hangNextResponse(){holdResponse=true;},releaseResponse(payload){const resolve=heldResponse;heldResponse=null;resolve(responseLike(payload));},
+  hangNextBody(){holdBody=true;},releaseBody(payload){const resolve=heldBody;heldBody=null;resolve(payload);},
+  pendingDeadlines(){return timers.size;},
+  fireDeadline(){let oldest=null;for(const entry of timers){if(oldest===null||entry[0]<oldest[0])oldest=entry;}if(!oldest)return 0;timers.delete(oldest[0]);oldest[1].fn();return 1;},
+  fireAllDeadlines(){const list=[...timers.values()];timers.clear();for(const t of list)t.fn();return list.length;},
+  deadlineMs(){return [...timers.values()].map(t=>t.ms);}};
 }
 let count=0,failures=0;
 async function test(name,fn){try{await fn();count++;console.log('PASS '+name);}catch(error){failures++;console.error('FAIL '+name+'\n'+error.message);}}
+const catalogReads=x=>x.requests.filter(r=>r.url.includes('/macro/retained/catalog')).length;
+const retainedReads=x=>x.requests.filter(r=>/\/macro\/retained\?/.test(r.url)).length;
+const ownerMutation=(examples,key,value)=>{const body=JSON.parse(JSON.stringify(examples.retained_historical.body));body.owner[key]=value;return body;};
 (async()=>{
+ await test('a complete exact citation opens with one retained read and zero catalog reads',async()=>{const x=setup();x.s.catalog=null;x.hangNextResponse();
+  x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.requests.length,1,'the pinned reference must dispatch exactly one request');
+  assert.equal(retainedReads(x),1);assert.equal(catalogReads(x),0,'the discovery catalog is neither awaited nor requested');
+  const u=new URL(x.requests[0].url,'https://example.test');
+  assert.equal(u.pathname,'/api/market-memory/v1/macro/retained');
+  for (const [k,v] of [['query_id',x.intent.query],['subject_id',x.intent.subject],['generation_id',x.intent.gen],['generation_sha256',x.intent.genSha],['method_spec_id',x.intent.method],['query_cutoff',x.intent.cutoff]]) assert.equal(u.searchParams.get(k),v,k);
+  assert.equal(u.searchParams.get('limit'),'8');
+  assert.equal(x.s.catalog,null,'no catalog may be invented for a direct citation');
+  assert.equal(x.s.selected,null,'no selected catalog entry may be fabricated');
+  assert.match(x.r.ui.captureSelect.innerHTML,/已保存记录尚未加载/,'the picker must say the list is not loaded');
+  x.releaseResponse(examples.retained_historical.body);await tick();
+  assert.equal(x.s.committed.kind,'compare');assert.equal(x.s.committed.data.sourceCards[x.intent.context].contextId,x.intent.context);
+  assert.equal(x.requests.length,1,'no catalog read may follow the committed comparison');
+  assert.equal(x.r.ui.originalClock.hidden,false,'the validated source-card clock is shown');
+  assert.match(x.r.ui.originalClock.innerHTML,/原始记录截至/);});
+ await test('an unsettled or unavailable catalog cannot delay or replace the pinned comparison',async()=>{const x=setup();x.s.catalog=null;x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.requests.length,1);assert.equal(x.pendingDeadlines(),1,'the direct exchange is covered by the fixed deadline');
+  assert.deepEqual(x.deadlineMs(),[120000],'the fixed per-request deadline is unchanged for the direct route');
+  x.fireDeadline();await tick();
+  assert.equal(x.requests.length,1,'expiry must not issue another request');assert.equal(catalogReads(x),0);
+  assert.equal(x.s.committed,null);assert.equal(x.s.selected,null);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="retry"/);
+  assert.doesNotMatch(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/,'an unavailable list is never reported as a sign-in requirement');});
+ await test('selected and neighbour source focus bind exactly without a catalog',async()=>{const x=setup(),context=examples.retained_historical.body.neighbors[0].context_id;x.s.catalog=null;
+  x.r.applyIntent({...x.intent,sourceContext:context,sourceField:'growth_score'},{persist:false});x.respond(examples.retained_historical.body);await tick();
+  assert.equal(x.s.committed.kind,'compare');assert.ok(x.s.committed.data.neighbors.some(n=>n.contextId===context),'focus must belong to the returned neighbours');
+  assert.equal(x.s.sourceCase.contextId,context);assert.equal(x.r.ui.sourcePanel.hidden,false);
+  assert.match(x.r.ui.sourceBody.innerHTML,/\/state\/growth_score/);});
+ await test('an unknown or mismatched source focus refuses before anything renders',async()=>{const x=setup();x.s.catalog=null;
+  x.r.applyIntent({...x.intent,sourceContext:'mmctx_'+('9'.repeat(64))},{persist:false});x.respond(examples.retained_historical.body);await tick();
+  assert.equal(x.s.committed,null,'no comparison may render behind an unknown focus');assert.equal(x.s.sourceCase,null);
+  assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.equal(x.r.ui.originalClock.innerHTML,'');
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="missing_exact_capture"/);assert.equal(x.requests.length,1,'denial must not re-dispatch');});
+ await test('the explicit cutoff is sent verbatim and a refusal never substitutes one',async()=>{const x=setup(),cutoff='2026-08-19T09:30:00.000250Z';x.s.catalog=null;
+  x.r.applyIntent({...x.intent,cutoff},{persist:false});await tick();
+  assert.equal(new URL(x.requests[0].url,'https://example.test').searchParams.get('query_cutoff'),cutoff);
+  assert.equal(x.s.intent.cutoff,cutoff);assert.equal(catalogReads(x),0);
+  x.r.renderRequestFailure({status:404,reason:'cutoff_not_supported'});
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unsupported_cutoff"/);assert.equal(x.s.intent.cutoff,cutoff,'refusal must not shift the requested cutoff');
+  x.respond(examples.retained_historical.body);x.r.runCurrentIntent();await tick();
+  assert.equal(new URL(x.requests.at(-1).url,'https://example.test').searchParams.get('query_cutoff'),cutoff,'manual retry keeps the exact refused cutoff');
+  assert.equal(x.requests.length,2);assert.equal(catalogReads(x),0);});
+ await test('every owner identity or pin mismatch rejects the pinned comparison',async()=>{for(const key of ['query_id','subject_id','requested_subject_id','generation_id','generation_sha256','query_cutoff','context_id']){
+  const x=setup();x.s.catalog=null;x.respond(ownerMutation(examples,key,'deliberately_wrong'));x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.s.committed,null,key);assert.equal(x.s.selected,null,key);assert.equal(x.s.catalog,null,key);
+  assert.equal(x.r.ui.sourceBody.innerHTML,'',key);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/,key);
+  assert.equal(x.requests.length,1,key);}});
+ await test('incomplete, saved and explicit browse references still go through the catalog',async()=>{
+  const partial=setup(),noMethod={...partial.intent};delete noMethod.method;partial.s.catalog=null;
+  partial.r.applyIntent(noMethod,{persist:false});await tick();
+  assert.equal(partial.requests.length,1);assert.equal(catalogReads(partial),1);assert.equal(retainedReads(partial),0);assert.equal(partial.s.committed,null);
+  const saved=setup(),q=examples.saved.request.query;saved.s.catalog=null;saved.s.mode='saved';
+  saved.r.applyIntent({mode:'saved',query:q.query_id,context:q.context_id,subject:q.subject_id,gen:q.generation_id,genSha:q.generation_sha256,cutoff:q.query_cutoff},{persist:false});await tick();
+  assert.equal(saved.requests.length,1);assert.equal(catalogReads(saved),1,'saved output still needs the capture id published by the catalog');assert.equal(retainedReads(saved),0);
+  const browse=setup();browse.s.catalog=null;browse.r.applyIntent({mode:'historical'},{persist:false});await tick();
+  assert.equal(browse.requests.length,1);assert.equal(catalogReads(browse),1);assert.equal(retainedReads(browse),0);
+  assert.equal(new URL(browse.requests[0].url,'https://example.test').searchParams.get('mode'),'historical_hypothetical');});
+ await test('manual retry reissues the identical pinned request and nothing retries on its own',async()=>{const x=setup();x.s.catalog=null;
+  x.r.applyIntent(x.intent,{persist:false});await tick();const first=x.requests[0].url;
+  x.r.renderRequestFailure({status:503,retryAfter:3});await tick();
+  assert.equal(x.requests.length,1,'no automatic retry may follow a failure');
+  assert.doesNotMatch(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="focus-capture-select"/,'the direct view must still offer the explicit browse');
+  x.respond(examples.retained_historical.body);x.r.runCurrentIntent();await tick();
+  assert.equal(x.requests.length,2);assert.equal(x.requests[1].url,first,'manual retry must reuse the exact intent, not re-derived defaults');
+  assert.equal(x.s.committed.kind,'compare');assert.equal(catalogReads(x),0);});
+ await test('sign-out while a pinned comparison is in flight cannot revive it',async()=>{const x=setup();x.s.catalog=null;x.hangNextResponse();
+  x.r.applyIntent(x.intent,{persist:false});await tick();assert.equal(x.requests.length,1);
+  x.r.authRedact();assert.equal(x.s.committed,null);assert.equal(x.s.sourceCase,null);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/);
+  x.releaseResponse(examples.retained_historical.body);await tick();await tick();
+  assert.equal(x.s.committed,null,'a response arriving after sign-out must not commit');assert.equal(x.s.sourceCase,null);
+  assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/);
+  assert.equal(x.requests.length,1);});
+ await test('a late catalog page can neither be adopted nor stand beside the pinned comparison',async()=>{const x=setup();x.s.catalog=null;x.hangNextResponse();
+  x.r.loadCatalog({mode:'historical',query:x.intent.query,context:x.intent.context,subject:x.intent.subject,gen:x.intent.gen,genSha:x.intent.genSha,cutoff:x.intent.cutoff});await tick();
+  assert.equal(x.requests.length,1);assert.equal(catalogReads(x),1);
+  x.respond(examples.retained_historical.body);x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.requests.length,2,'the pinned reference dispatches its own read, never a speculative parallel catalog');
+  assert.equal(x.requests[0].options.signal.aborted,true,'the superseded catalog read is aborted');
+  assert.equal(retainedReads(x),1);assert.equal(catalogReads(x),1);
+  x.releaseResponse(examples.catalog_historical.body);await tick();await tick();
+  assert.equal(x.s.catalog,null,'a late catalog page must not be adopted');
+  assert.equal(x.s.committed.kind,'compare','the pinned comparison still stands');assert.equal(x.requests.length,2);});
+ await test('switching mode never infers the other mode\'s registered method',async()=>{const x=setup();x.s.catalog=null;x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.requests.length,1);
+  x.r.setMode('current',{persist:true});
+  assert.equal(x.s.committed,null,'the previous mode\'s comparison cannot survive a mode change');
+  assert.equal(x.s.intent.method,null,'no method may be carried over from the other mode');
+  assert.equal(x.requests.length,1,'nothing may be dispatched without a method for this mode');
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="catalog_not_loaded"/);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="focus-capture-select"/);
+  x.setLang('en');x.r.locale();assert.match(x.r.ui.resultBody.innerHTML,/not loaded/i);
+  x.setLang('zh');x.r.locale();assert.match(x.r.ui.resultBody.innerHTML,/尚未加载/);
+  x.r.runCurrentIntent();await tick();
+  assert.equal(x.requests.length,2,'without a method the explicit browse is the only route');
+  assert.equal(new URL(x.requests[1].url,'https://example.test').searchParams.get('mode'),'current_contextual_support');
+  assert.equal(retainedReads(x),1,'no comparison may be dispatched with a borrowed method');});
  await test('mixed query/context and incomplete capture tuples refuse',()=>{const x=setup();assert.equal(x.r.deepLinkMismatch({...x.intent,query:x.a.queryId},x.catalog),'query_context');const partial={...x.intent};delete partial.cutoff;assert.equal(x.r.deepLinkMismatch(partial,x.catalog),'incomplete_capture_reference');});
  await test('cached wrong subject refuses without evidence commit',()=>{const x=setup();x.r.applyIntent({...x.intent,subject:'mmsecurity_wrong'},{persist:false});assert.equal(x.s.committed,null);assert.equal(x.s.selected,null);assert.equal(x.s.catalog,null);assert.equal(x.requests.length,0);});
  await test('nonzero-offset restore preserves explicit requested generation over cached generation',async()=>{const x=setup();const pin='mmgeneration_'+('1'.repeat(64)),sha='2'.repeat(64);x.r.applyIntent({...x.intent,gen:pin,genSha:sha,catalogOffset:'20'},{persist:false});await tick();assert.equal(x.requests.length,1);const u=new URL(x.requests[0].url,'https://example.test');assert.equal(u.searchParams.get('generation_id'),pin);assert.equal(u.searchParams.get('generation_sha256'),sha);assert.equal(u.searchParams.get('offset'),'20');});
@@ -46,5 +165,50 @@ async function test(name,fn){try{await fn();count++;console.log('PASS '+name);}c
  await test('typed unavailable notices translate without replaying redaction or invalidating intent',()=>{for(const kind of ['oauth_return_unavailable','missing_exact_capture','deep_link_mismatch','catalog_contract']){const x=setup();x.setLang('en');x.s.intent=x.intent;x.r.renderTypedUnavailable(kind,'private_internal_reason');const epoch=x.s.epoch,en=x.r.ui.resultBody.innerHTML;x.setLang('zh');x.r.locale();assert.notEqual(x.r.ui.resultBody.innerHTML,en);assert.equal(x.s.epoch,epoch);assert.equal(x.s.referenceInvalid,true);assert.equal(x.requests.length,0);assert.equal(x.s.catalog,null);assert.equal(x.s.selected,null);assert.equal(x.r.ui.sourceBody.innerHTML,'');x.setLang('en');x.r.locale();assert.equal(x.r.ui.resultBody.innerHTML,en);assert.equal(JSON.stringify(x.s.intent),JSON.stringify(x.intent));}});
  await test('signed-out notice translates while private source and original clock stay cleared',()=>{const x=setup();x.setLang('en');x.s.committed={data:{private:true}};x.s.sourceCase={data:{private:true}};x.r.ui.sourceBody.innerHTML='PRIVATE_SOURCE';x.r.ui.originalClock.innerHTML='PRIVATE_CLOCK';x.r.authRedact();const signinWrites=x.signinWrites(),epoch=x.s.epoch,authEpoch=x.s.authEpoch,en=x.r.ui.resultBody.innerHTML;x.setLang('zh');x.r.locale();assert.match(x.r.ui.resultBody.innerHTML,/退出登录后/);assert.match(x.r.ui.resultBody.innerHTML,/mm_lang%3Dzh/,'signed-out link must retain the selected locale');assert.equal(x.s.epoch,epoch);assert.equal(x.s.authEpoch,authEpoch);assert.equal(x.signinWrites(),signinWrites,'signed-out locale must not rewrite OAuth resume storage');assert.equal(x.s.committed,null);assert.equal(x.s.sourceCase,null);assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.equal(x.r.ui.originalClock.innerHTML,'');assert.equal(x.r.ui.originalClock.hidden,true);assert.equal(x.requests.length,0);x.setLang('en');x.r.locale();assert.equal(x.r.ui.resultBody.innerHTML,en);});
  await test('prompt translates and a newly pending request cannot revive the previous notice',async()=>{const x=setup();x.setLang('en');x.r.renderCatalogPrompt();x.setLang('zh');x.r.locale();assert.match(x.r.ui.resultBody.innerHTML,/请选择一条已保存记录/);x.s.catalog=null;x.r.loadCatalog(x.intent);await tick();const html=x.r.ui.resultBody.innerHTML,epoch=x.s.epoch;x.setLang('en');x.r.locale();assert.equal(x.r.ui.resultBody.innerHTML,html);assert.equal(x.requests.length,1);assert.equal(x.s.epoch,epoch);assert.equal(x.requests[0].options.signal.aborted,false);assert.equal(x.r.ui.primaryButton.textContent,'Compare cases');assert.equal(x.r.ui.status.textContent,'Loading saved evidence');x.setLang('zh');x.r.locale();assert.equal(x.r.ui.status.textContent,'正在加载已保存依据');assert.equal(x.s.epoch,epoch);assert.equal(x.requests.length,1);});
+ await test('stale current cutoff note is hidden and cleared whenever no catalog is presented',()=>{const x=setup(),zh='本次请求的服务器参考截至时间 · 来源：运行时请求时钟。',en='Server reference cutoff for this request · origin: runtime request clock.';x.s.intent={...x.intent,mode:'current',cutoff:x.catalog.requestClock.referenceCutoffUtc};x.s.mode='current';x.setLang('zh');x.r.locale();assert.equal(x.r.ui.cutoffNote.hidden,false);assert.equal(x.r.ui.cutoffNote.textContent,zh);assert.equal(x.requests.length,0);x.r.authRedact();assert.equal(x.s.catalog,null);assert.equal(x.r.ui.cutoffNote.hidden,true,'signout must hide the stale cutoff note');assert.equal(x.r.ui.cutoffNote.textContent,'','signout must clear the stale cutoff note');x.setLang('en');x.r.locale();assert.equal(x.r.ui.cutoffNote.hidden,true);assert.equal(x.r.ui.cutoffNote.textContent,'','English locale must not revive the stale note');x.setLang('zh');x.r.locale();assert.equal(x.r.ui.cutoffNote.hidden,true);assert.equal(x.r.ui.cutoffNote.textContent,'','Chinese locale must not revive the stale note');x.s.catalog=x.catalog;x.setLang('en');x.r.locale();assert.equal(x.r.ui.cutoffNote.hidden,false);assert.equal(x.r.ui.cutoffNote.textContent,en);x.setLang('zh');x.r.locale();assert.equal(x.r.ui.cutoffNote.hidden,false);assert.equal(x.r.ui.cutoffNote.textContent,zh);assert.equal(x.requests.length,0);});
+ await test('stalled fetch stops at the fixed deadline as an ordinary unavailable failure',async()=>{for(const run of ['compare','catalog']){const x=setup();if(run==='compare')x.r.runCompare(x.intent);else x.r.loadCatalog({mode:'historical',gen:x.intent.gen,genSha:x.intent.genSha});await tick();assert.equal(x.requests.length,1,run+' must issue exactly one request');assert.equal(x.pendingDeadlines(),1,run+' exchange must be covered by one deadline');x.fireDeadline();await tick();assert.equal(x.requests.length,1,'expiry must not issue another request');assert.equal(x.requests[0].options.signal.aborted,true,'a started fetch must be aborted on expiry');assert.equal(x.pendingDeadlines(),0,'timer must clear on rejection');assert.equal(x.s.committed,null);assert.equal(x.s.sourceCase,null);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/,'expiry must settle as unavailable, not silently');assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="retry"/,'manual retry action must be offered');assert.equal(x.r.stateKindFor({name:'MMRetainedDeadlineError',deadline:true}),'unavailable');}});
+ await test('stalled response body stops at the deadline and a late body can never commit',async()=>{const x=setup();x.hangNextBody();x.r.runCompare(x.intent);await tick();assert.equal(x.requests.length,1);assert.equal(x.pendingDeadlines(),1,'the deadline must cover body decoding too');x.fireDeadline();await tick();assert.equal(x.s.committed,null);assert.equal(x.pendingDeadlines(),0);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/);x.releaseBody(examples.retained_historical.body);await tick();await tick();await tick();assert.equal(x.s.committed,null,'a body arriving after expiry must not commit evidence');assert.equal(x.requests.length,1);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/);});
+ await test('a late auth session cannot dispatch after the deadline',async()=>{const x=setup();let releaseAuth;const gate=new Promise(resolve=>{releaseAuth=resolve;});x.window.MDXAuth={client(){return gate.then(()=>({auth:{getSession:()=>Promise.resolve({data:{session:{access_token:'mm_session_token'}}})}}));}};x.r.runCompare(x.intent);await tick();assert.equal(x.requests.length,0,'no request before the auth session resolves');assert.equal(x.pendingDeadlines(),1,'the deadline must cover the auth stage');x.fireDeadline();await tick();assert.equal(x.requests.length,0);assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/);releaseAuth();await tick();await tick();await tick();assert.equal(x.requests.length,0,'a session resolving after expiry must not dispatch');assert.equal(x.pendingDeadlines(),0);assert.equal(x.s.committed,null);});
+ await test('a completed request clears its deadline timer on resolve',async()=>{const x=setup();x.respond(examples.retained_historical.body);x.r.runCompare(x.intent);await tick();assert.equal(x.s.committed.kind,'compare');assert.equal(x.pendingDeadlines(),0,'timer must clear on resolve');const y=setup();y.respond(examples.catalog_historical.body);y.r.loadCatalog({mode:'historical',gen:y.intent.gen,genSha:y.intent.genSha});await tick();assert.equal(y.requests.length,1);assert.ok(y.s.catalog);assert.equal(y.pendingDeadlines(),0,'catalog timer must clear on resolve');});
+ await test('superseding intent plus a fired stale timer cannot revive superseded evidence',async()=>{const x=setup();x.r.runCompare(x.intent);await tick();x.respond(examples.catalog_historical.body);x.r.loadCatalog({mode:'historical',gen:x.intent.gen,genSha:x.intent.genSha});await tick();assert.equal(x.requests.length,2);assert.equal(x.requests[0].options.signal.aborted,true,'superseded request must be aborted by the new intent');assert.equal(x.pendingDeadlines(),1,'only the live catalog deadline remains armed');x.fireDeadline();await tick();await tick();assert.equal(x.requests.length,2,'the fired stale deadline must not issue anything');assert.equal(x.s.committed,null,'the stale deadline must not revive superseded evidence');assert.equal(x.s.sourceCase,null);assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="prompt"/);assert.doesNotMatch(x.r.ui.resultBody.innerHTML,/data-mmr-state="unavailable"/);});
+ await test('signout plus a fired stale timer cannot revive private data',async()=>{const x=setup();x.s.committed={kind:'compare',data:{private:true}};x.s.sourceCase={data:{private:true}};x.r.ui.sourceBody.innerHTML='PRIVATE_SOURCE';x.r.ui.originalClock.innerHTML='PRIVATE_CLOCK';x.r.runCompare(x.intent);await tick();x.r.authRedact();await tick();assert.equal(x.s.committed,null);assert.equal(x.s.sourceCase,null);assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/);x.fireDeadline();await tick();await tick();assert.equal(x.s.committed,null,'the stale deadline must not revive committed evidence after signout');assert.equal(x.s.sourceCase,null);assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.equal(x.r.ui.originalClock.hidden,true);assert.equal(x.r.ui.originalClock.innerHTML,'');assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="auth_required"/,'the signed-out notice must stand');assert.equal(x.requests.length,1,'no new request may follow the fired stale deadline');assert.equal(x.pendingDeadlines(),0);});
+ await test('expiry settles one request and manual retry preserves the exact selection',async()=>{const x=setup();x.s.selected=x.b;x.s.intent=x.intent;x.r.runCompare(x.intent);await tick();const first=x.requests[0].url;x.fireDeadline();await tick();assert.equal(x.requests.length,1,'expiry causes exactly one request');assert.equal(x.s.selected.contextId,x.b.contextId,'the exact selection must survive expiry');assert.equal(JSON.stringify(x.s.intent),JSON.stringify(x.intent));assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="retry"/);x.respond(examples.retained_historical.body);x.r.runCurrentIntent();await tick();assert.equal(x.requests.length,2);assert.equal(x.requests[1].url,first,'manual retry must reissue the identical request');assert.equal(x.s.committed.kind,'compare');assert.equal(x.s.selected.contextId,x.b.contextId);assert.equal(x.pendingDeadlines(),0);});
+ await test('apiFetch itself settles a stalled exchange as a deadline failure',async()=>{const x=setup();let caught=null;const settled=x.r.apiFetch('/macro/retained',{query_id:'mmquery_'+('a'.repeat(64))},'compare').catch(error=>{caught=error;});await tick();assert.equal(x.requests.length,1);assert.equal(x.pendingDeadlines(),1);x.fireDeadline();for(let i=0;i<10;i+=1)await tick();assert.ok(caught,'apiFetch must reject on deadline expiry');assert.equal(caught.deadline,true);assert.equal(caught.name,'MMRetainedDeadlineError');assert.equal(x.requests[0].options.signal.aborted,true);assert.equal(x.pendingDeadlines(),0);await settled;});
+ await test('rejected URL-intent publication cannot dispatch an exact reference',async()=>{const x=setup();x.s.catalog=null;
+  x.window.MarketMemoryIntent.replace=()=>({ok:false,reason:'rejected_exact_reference'});
+  x.respond(examples.retained_historical.body);x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.requests.length,0,'the intent owner refusal must stop dispatch');assert.equal(x.s.committed,null);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-state="missing_exact_capture"/);});
+ await test('changing mode clears already rendered direct source evidence and clocks',async()=>{const x=setup();x.s.catalog=null;
+  x.respond(examples.retained_historical.body);x.r.applyIntent({...x.intent,sourceContext:examples.retained_historical.body.neighbors[0].context_id},{persist:false});await tick();
+  assert.ok(x.r.ui.sourceBody.innerHTML.length>0);assert.equal(x.r.ui.originalClock.hidden,false);
+  x.r.setMode('current',{persist:true});assert.equal(x.s.committed,null);assert.equal(x.s.sourceCase,null);
+  assert.equal(x.r.ui.sourceBody.innerHTML,'','the prior mode source must not survive the cleared intent');
+  assert.equal(x.r.ui.originalClock.innerHTML,'');assert.equal(x.r.ui.originalClock.hidden,true);});
+ await test('a successful direct comparison keeps explicit browse reachable',async()=>{const x=setup();x.s.catalog=null;
+  x.respond(examples.retained_historical.body);x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.s.committed.kind,'compare');assert.equal(x.requests.length,1);
+  assert.match(x.r.ui.resultBody.innerHTML,/data-mmr-action="focus-capture-select"/,'an unloaded picker must not strand the browsing path');});
+ await test('a focused extra source card outside the query and returned neighbors refuses',async()=>{const x=setup();x.s.catalog=null;
+  const body=JSON.parse(JSON.stringify(examples.retained_historical.body)),context='mmctx_'+('7'.repeat(64));
+  body.source_cards.push({...body.source_cards[0],context_id:context});
+  x.respond(body);x.r.applyIntent({...x.intent,sourceContext:context},{persist:false});await tick();
+  assert.equal(x.s.committed,null,'source focus must belong to the actual selected comparison');assert.equal(x.s.sourceCase,null);
+  assert.equal(x.r.ui.sourceBody.innerHTML,'');assert.equal(x.requests.length,1);});
+ await test('a current-mode citation reopens its actual returned neighbor and all five quoted fields',async()=>{const x=setup(),ex=examples.retained_current,q=ex.request.query,context=ex.body.neighbors[0].context_id;x.s.catalog=null;
+  const intent={mode:'current',query:q.query_id,subject:q.subject_id,gen:q.generation_id,genSha:q.generation_sha256,method:q.method_spec_id,cutoff:q.query_cutoff,context:ex.body.owner.context_id,sourceContext:context};
+  x.respond(ex.body);x.r.applyIntent(intent,{persist:false});await tick();
+  assert.equal(x.s.mode,'current');assert.equal(x.s.committed.kind,'compare');assert.equal(x.s.sourceCase.contextId,context);
+  assert.equal(x.requests.length,1);assert.equal(catalogReads(x),0);const sent=new URL(x.requests[0].url,'https://example.test').searchParams;
+  for(const [key,value] of Object.entries(q))assert.equal(sent.get(key),String(value),key);
+  for(const field of ['growth_score','inflation_score','quad','liquidity_overlay','cycle_tag'])assert.match(x.r.ui.sourceBody.innerHTML,new RegExp('/state/'+field));
+  assert.equal(x.s.sourceCase.data.facts.length,5);assert.equal(x.s.selected,null);});
+ await test('direct references reject a changed returned mode or registered method',async()=>{for(const mutation of ['mode','method_id','method_mode']){const x=setup();x.s.catalog=null;
+  const body=JSON.parse(JSON.stringify(examples.retained_historical.body));
+  if(mutation==='mode')body.mode='current_contextual_support';else if(mutation==='method_id')body.method_spec.method_spec_id='mmretainedmethod_'+('8'.repeat(64));else body.method_spec.mode='current_contextual_support';
+  x.respond(body);x.r.applyIntent(x.intent,{persist:false});await tick();
+  assert.equal(x.s.committed,null,mutation);assert.equal(x.s.sourceCase,null,mutation);assert.equal(x.r.ui.sourceBody.innerHTML,'',mutation);assert.equal(x.requests.length,1,mutation);}});
+ for(let drain=0;drain<5;drain+=1)await tick();
+ assert.equal(unhandledRejections,0,'deadline settlement must not leak unhandled rejections');
  console.log('RESULT passed='+count+' failed='+failures+' independent state cases');console.log('SOURCE_SHA256 '+crypto.createHash('sha256').update(original).digest('hex'));assert.equal(failures,0,'Independent state regressions failed');
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

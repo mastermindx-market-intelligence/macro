@@ -1053,6 +1053,67 @@ NEW_DEFS = ("transaction_observation", "transaction_binding", "transaction_filin
             "transaction_usage", "instrument_version", "share_reconciliation", "realized_cash")
 DELTA_DEFS = ("compatibility", "input_family", "input_schema")
 DELTA_TABLES = ("COMPATIBLE_INPUT_SCHEMAS", "PROJECTION_COMPATIBILITY")
+# I2 (SPEC_I2 §1, state contract 2.3.0) landed after X0 and is itself purely
+# additive over this frozen 2.1.0 surface: it widens three $defs / five tables
+# (a structure on economic_term, the I2 term names and units, and the
+# conversion-only ``physical`` settlement) and adds the structure vocabularies
+# below. Everything else X0 froze must still be byte-identical; the I2 names are
+# listed explicitly so an undeclared change can never hide behind the delta.
+I2_DELTA_DEFS = ("economic_term", "economic_term_name", "settlement")
+I2_DELTA_TABLES = ("ECONOMIC_TERM_EFFECTIVE_NAMES", "ECONOMIC_TERM_FLAG_NAMES",
+                   "ECONOMIC_TERM_NAMES", "ECONOMIC_TERM_UNITS", "SETTLEMENTS")
+I2_NEW_DEFS = (
+    "accrual", "accrual_compounding", "accrual_day_count", "anti_dilution",
+    "anti_dilution_method", "below_floor_rule", "branch_elected_by", "condition_comparison",
+    "condition_threshold_kind", "conversion_condition", "floor_basis", "nullable_rounding",
+    "percent_quantity", "price_aggregation", "price_combine", "price_component",
+    "price_component_source", "price_formula", "price_measure", "price_term_name",
+    "price_window_end", "reset_event", "reset_rule", "reset_schedule", "rounding",
+    "rounding_mode", "settlement_branch_name", "settlement_branches", "share_adjustment",
+    "structure_kind",
+)
+I2_NEW_TABLES = (
+    "ACCRUAL_COMPOUNDING", "ACCRUAL_DAY_COUNTS", "ANTI_DILUTION_METHODS", "BELOW_FLOOR_RULES",
+    "BRANCH_ELECTED_BY", "CONDITION_COMPARISONS", "CONDITION_THRESHOLD_KINDS",
+    "ECONOMIC_TERM_PRICE_FORMULA_NAMES", "ECONOMIC_TERM_STRUCTURE_NAMES",
+    "ECONOMIC_TERM_STRUCTURE_TYPES", "FLOOR_BASES", "PRICE_AGGREGATIONS", "PRICE_COMBINES",
+    "PRICE_COMPONENT_SOURCES", "PRICE_MEASURES", "PRICE_TERM_NAMES", "PRICE_WINDOW_ENDS",
+    "RESET_RULES", "ROUNDING_MODES", "SETTLEMENT_BRANCH_NAMES", "SHARE_ADJUSTMENTS",
+    "STRUCTURE_KINDS", "_QUANTITY_FIELDS", "_STRUCTURE_CLASS_NAMES", "_STRUCTURE_RECORD_KEYS",
+)
+# The public surface I2 exports: its vocabularies plus the structure classes and
+# the record decoder. STRUCTURE_TYPES_BY_KIND maps names to classes, so it is
+# exported but not a digestible table.
+I2_ALL_ADDITIONS = tuple(name for name in I2_NEW_TABLES if not name.startswith("_")) + (
+    "Accrual", "AntiDilution", "ConversionCondition", "PriceComponent", "PriceFormula",
+    "ResetEvent", "ResetSchedule", "SettlementBranches", "STRUCTURE_TYPES_BY_KIND",
+    "structure_from_record",
+)
+# S0 (SPEC_S0 §8, state contract 2.4.0) landed after I2 and is likewise purely
+# additive over this frozen 2.1.0 surface: it adds the ``scenario_result`` record
+# and the seven declarative sub-records a composer emits beside the three
+# component records, plus their vocabularies. It widens exactly two tables —
+# ``RECORD_SCHEMAS`` (one new record schema) and ``INTERFACE_OWNERSHIP`` (the
+# composer's own row, which §8 requires) — and rewrites no existing $def.
+S0_DELTA_TABLES = ("INTERFACE_OWNERSHIP", "RECORD_SCHEMAS")
+S0_NEW_DEFS = (
+    "action_check", "action_check_status", "action_owner", "authorized_headroom_disclosure",
+    "authorized_headroom_status", "cash_reconciliation", "coverage_period", "coverage_status",
+    "exact_number_text", "issuance_row", "joint_check", "joint_check_status",
+    "nullable_exact_number_text", "nullable_signed_decimal", "nullable_signed_usd_quantity",
+    "price_basis", "reconciliation_status", "result_id", "scenario_result",
+    "scenario_share_quantity", "signed_decimal", "signed_usd_quantity",
+)
+S0_NEW_TABLES = (
+    "ACTION_CHECK_STATUSES", "ACTION_OWNERS", "AUTHORIZED_HEADROOM_STATUSES", "COVERAGE_STATUSES",
+    "ISSUANCE_ROW_BASES", "JOINT_CHECK_STATUSES", "PRICE_BASIS_COMPONENTS", "PRICE_BASIS_KINDS",
+    "RECONCILIATION_STATUSES",
+)
+S0_ALL_ADDITIONS = S0_NEW_TABLES + (
+    "ActionCheck", "AuthorizedHeadroomDisclosure", "COVERAGE_SCENARIO_ONLY_NOTE",
+    "CashReconciliation", "CoveragePeriod", "IssuanceRow", "JointCheck", "PriceBasis",
+    "ScenarioResult", "SignedQuantity",
+)
 
 
 def load_baseline() -> dict:
@@ -1089,13 +1150,21 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
     unchanged = 0
     for name, digest in baseline["schema_defs"].items():
         assert name in defs, name
-        if name in DELTA_DEFS:
+        if name in DELTA_DEFS or name in I2_DELTA_DEFS:
             continue
         assert c.sha256_of(defs[name]) == digest, f"$def {name} changed"
         unchanged += 1
-    assert unchanged == len(baseline["schema_defs"]) - len(DELTA_DEFS)
-    assert set(defs) == set(baseline["schema_defs"]) | set(baseline["added_schema_defs"])
+    assert unchanged == len(baseline["schema_defs"]) - len(DELTA_DEFS) - len(I2_DELTA_DEFS)
+    assert set(defs) == (set(baseline["schema_defs"]) | set(baseline["added_schema_defs"])
+                         | set(I2_NEW_DEFS) | set(S0_NEW_DEFS))
     assert sorted(baseline["added_schema_defs"]) == sorted(NEW_DEFS)
+    # I2 only widened the three $defs it declares: the structure attachment, the
+    # term-name enum and the settlement enum each grow, nothing is dropped.
+    for name in I2_DELTA_DEFS:
+        assert c.sha256_of(defs[name]) != baseline["schema_defs"][name], name
+    assert set(defs["settlement"]["enum"]) == set(c.SETTLEMENTS)
+    assert "physical" in defs["settlement"]["enum"]
+    assert set(defs["economic_term_name"]["enum"]) == set(c.ECONOMIC_TERM_NAMES)
 
     # The three forced deltas: the version const and the two mirrored enums.
     base_compatibility = baseline["declared_schema_deltas"]["compatibility"]
@@ -1125,11 +1194,16 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
     live = live_tables()
     for name, digest in baseline["module_tables"].items():
         assert name in live, name
-        if name in DELTA_TABLES:
+        if name in DELTA_TABLES or name in I2_DELTA_TABLES or name in S0_DELTA_TABLES:
             continue
         assert live[name] == digest, f"vocabulary {name} changed"
-    assert set(live) - set(baseline["module_tables"]) == set(
-        baseline["declared_module_deltas"]["added_module_tables"])
+    assert set(live) - set(baseline["module_tables"]) == (
+        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_NEW_TABLES)
+        | set(S0_NEW_TABLES))
+    for name in I2_DELTA_TABLES:
+        assert live[name] != baseline["module_tables"][name], name
+    for name in S0_DELTA_TABLES:
+        assert live[name] != baseline["module_tables"][name], name
 
     for family, schemas in baseline["base_compatible_input_schemas"].items():
         assert list(c.COMPATIBLE_INPUT_SCHEMAS[family]) == schemas, family
@@ -1141,14 +1215,18 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
         "state_contract_version": c.STATE_CONTRACT_VERSION,
     }
     assert set(baseline["base_all"]) <= set(c.__all__)
-    assert set(c.__all__) - set(baseline["base_all"]) == set(
-        baseline["declared_module_deltas"]["added_module_tables"])
+    assert set(c.__all__) - set(baseline["base_all"]) == (
+        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_ALL_ADDITIONS)
+        | set(S0_ALL_ADDITIONS))
     for name, values in baseline["declared_module_deltas"]["added_module_tables"].items():
         assert list(getattr(c, name)) == values, name
 
 
-def test_contract_version_2_2_0():
-    assert c.STATE_CONTRACT_VERSION == "capital-structure-state-contracts/2.2.0"
+def test_contract_version_at_least_2_2_0():
+    # X0 shipped as 2.2.0; later additive minors (I2 = 2.3.0) may follow, but the
+    # major stays 2 and the minor never regresses below the X0 delta.
+    major, minor, _patch = c.STATE_CONTRACT_VERSION.rsplit("/", 1)[1].split(".")
+    assert (int(major), int(minor)) >= (2, 2)
     schema = c.load_state_schema()
     assert schema["properties"]["contract_version"]["const"] == c.STATE_CONTRACT_VERSION
     compatibility = schema["$defs"]["compatibility"]["properties"]["state_contract_version"]

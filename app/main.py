@@ -1039,6 +1039,148 @@ def _user_display_name(user: dict) -> str | None:
     return " ".join(parts) or None
 
 
+@app.get("/api/gmi/bea/industry/{industry_code}")
+def gmi_bea_industry_current(
+    industry_code: str,
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Authenticated BEA GVC read *availability*, never unadmitted industry data.
+
+    The current Data OS owner alone qualifies original L0/L1 native bytes and
+    correction clocks. That source is not installed, so this route deliberately
+    exposes only an uncacheable typed UNAVAILABLE packet. A subsequent owner's
+    accepted native-reader binding is needed before any data-serving expansion.
+    """
+    from engine.market_ontology.bea_gvc_current import (
+        candidate_packet_bytes, current_industry_candidate,
+        is_exact_source_industry_code,
+    )
+    from lib.dataos.registry import load_registry
+    from app.paywall import enforce_site_full
+
+    # This is a paid descriptive-data desk, not a switch-optional registered
+    # route. Reuse the incumbent paywall's always-on premium entitlement check.
+    # Refuse free users BEFORE revealing source registry availability.
+    enforce_site_full(user, always=True)
+
+    # Distinguish an invalid CLIENT query (422) from malformed SERVER-side
+    # native/source evidence (503). Both checks happen before any source read.
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(
+            422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    # The route is CURRENT-only: never ignore a historical/as-of query while
+    # returning the retrospective May-2026 edition.
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    try:
+        # The canonical Data OS registry path is owned by lib/dataos/registry.py.
+        registry = load_registry()
+        packet = current_industry_candidate(
+            registry, industry_code_exact=industry_code,
+        )
+        if packet["status"] != "UNAVAILABLE":
+            # This endpoint has no owner-bound original-byte read capability.
+            # Never return a caller-forged "positive" candidate in a live API.
+            raise HTTPException(
+                503, detail={"error": "BEA_NATIVE_OWNER_READ_NOT_ADMITTED"})
+        payload = candidate_packet_bytes(packet)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        # Coarsen the SERVER failure to its class, never log the original path
+        # or user/source contents. The client gets a stable typed 503.
+        log.warning("gmi BEA native source refusal (%s)", type(exc).__name__)
+        raise HTTPException(
+            503, detail={"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}) from None
+    return Response(
+        content=payload, media_type="application/json", status_code=503,
+        headers={"Cache-Control": "private, no-store"},
+    )
+
+
+def _gmi_bea_static_response(file_name: str, media_type: str) -> Response:
+    """Serve only a fixed, reviewed UI source file; not a data workspace file."""
+    allowed_assets = {
+        "gmi_bea_view.html": "text/html",
+        "gmi_bea_view.js": "application/javascript",
+        "gmi_bea_view.css": "text/css",
+    }
+    try:
+        # Fixed source-asset allowlist; no browser-supplied filesystem path.
+        if allowed_assets.get(file_name) != media_type:
+            raise ValueError("unexpected static asset")
+        content = Path(__file__).with_name(file_name).read_bytes()
+        if not content or len(content) > 131072:
+            raise ValueError("unexpected static view byte size")
+    except Exception as exc:
+        log.warning("gmi BEA UI unavailable (%s)", type(exc).__name__)
+        raise HTTPException(
+            503, detail={"error": "BEA_HUMAN_VIEW_UNAVAILABLE"}) from None
+    headers = {
+        "Cache-Control": "private, no-store",
+        "X-Content-Type-Options": "nosniff",
+    }
+    if media_type == "text/html":
+        headers["Content-Security-Policy"] = (
+            "default-src 'none'; script-src 'self'; style-src 'self'; "
+            "connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
+            "form-action 'self'"
+        )
+        headers["Referrer-Policy"] = "no-referrer"
+    return Response(content=content, media_type=media_type, headers=headers)
+
+
+@app.get("/api/gmi/bea/industry/{industry_code}/view")
+def gmi_bea_industry_human_view(
+    industry_code: str,
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Paid human shell; source values come ONLY from the incumbent BEA API."""
+    from app.paywall import enforce_site_full
+    from engine.market_ontology.bea_gvc_current import is_exact_source_industry_code
+
+    enforce_site_full(user, always=True)
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    # The HTML is source-free. Browser calls the existing paid availability API,
+    # which is still typed UNAVAILABLE until native owner admission.
+    return _gmi_bea_static_response("gmi_bea_view.html", "text/html")
+
+
+@app.get("/api/gmi/bea/assets/view.js")
+def gmi_bea_industry_human_script(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin UI logic. Never serves provider/source files."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.js", "application/javascript")
+
+
+@app.get("/api/gmi/bea/assets/view.css")
+def gmi_bea_industry_human_styles(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin styles; the existing paid authority remains controlling."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.css", "text/css")
+
+
 @app.get("/api/me")
 def me(user: dict = Depends(require_user)) -> dict:
     """Whoami + entitlement + chat budget.
@@ -1496,6 +1638,9 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # already returned — ZERO extra network calls. Server-derived like user_email, so
         # the body can never set it; a guest record carries none and reads as {}.
         account_prefs=user_prefs.read_user_prefs(user),
+        # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
+        # by require_user as `_access_token`; a guest has none. Never re-extracted here.
+        user_jwt="" if is_guest else (user.get("_access_token") or ""),
     )
 
     if result.get("quota_exhausted"):
@@ -1565,6 +1710,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             guest_aid=guest_aid,
             guest_ip=guest_ip,
             account_prefs=account_prefs,
+            # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
+            user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.
@@ -1691,6 +1838,8 @@ _CHART_STATE_BODY_MAX = 64 * 1024   # ~64KB serialized body cap (reject bigger s
 
 class ChartStateRequest(BaseModel):
     client: str = Field(..., max_length=32, description="Chart client id, e.g. 'terminal'")
+    origin_id: str = Field("", max_length=64, description="Opaque ai-context mount id; empty for legacy clients")
+    context_revision: int | None = Field(None, ge=0, description="ai-context revision for the mirrored chart state")
     session: dict = Field(..., description="Current chart session (symbol/tf/indicators/range/capabilities/drawings)")
     acks: list[dict] | None = Field(None, description="Optional command acks with fit metrics")
 
@@ -1698,7 +1847,12 @@ class ChartStateRequest(BaseModel):
     def _bound_body(self) -> "ChartStateRequest":
         """Reject an oversized payload — the session/acks JSON must fit the body cap."""
         try:
-            size = len(json.dumps({"session": self.session, "acks": self.acks or []}, default=str))
+            size = len(json.dumps({
+                "origin_id": self.origin_id,
+                "context_revision": self.context_revision,
+                "session": self.session,
+                "acks": self.acks or [],
+            }, default=str))
         except Exception:  # noqa: BLE001 — unserializable → treat as too large/bad
             raise ValueError("chart state not serializable")
         if size > _CHART_STATE_BODY_MAX:
@@ -1711,14 +1865,22 @@ def brain_chart_state(body: ChartStateRequest,
                       user: dict = Depends(require_user)):
     """Store the latest chart state for this user + client (CMX W2, masterplan §2.2).
 
-    POST body: {client, session, acks?}. Auth: verified user (401 without a valid session).
+    POST body: {client, origin_id?, context_revision?, session, acks?}.
+    Auth: verified user (401 without a valid session).
     No quota is debited — this is telemetry the Brain reads via read_chart_state.
     Response: {ok: true}.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
     client = (body.client or "").strip().lower()[:32] or "terminal"
-    gw.put_chart_state(user_id, client, body.session)
+    gw.put_chart_state(
+        user_id,
+        client,
+        body.session,
+        origin_id=body.origin_id,
+        context_revision=body.context_revision,
+        acks=body.acks,
+    )
     return {"ok": True}
 
 
@@ -2296,6 +2458,10 @@ except Exception as _government_revenue_exc:  # noqa: BLE001
 from app.research import router as research_router  # noqa: E402
 app.include_router(research_router)
 
+# Registered-user Macro Command reads use the qualified served publication.
+from app.macro_command import router as macro_command_router  # noqa: E402
+app.include_router(macro_command_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing
@@ -2384,6 +2550,11 @@ app.include_router(ontology_explorer_router)
 from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
 
+# Exact, entitled institutional research reads share the existing Forensics
+# authentication/entitlement boundary; the private catalog is never a site asset.
+from app.institutional_research import router as institutional_research_router  # noqa: E402
+app.include_router(institutional_research_router)
+
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
 # product projection. Its router performs early site_full enforcement before
 # touching the isolated read-only public generation root. This route is a paid
@@ -2393,6 +2564,10 @@ app.include_router(forensics_router)
 # does not couple unrelated API consumers to those optional product packages.
 from app.biocatalyst import router as biocatalyst_router  # noqa: E402
 app.include_router(biocatalyst_router)
+
+# Device-native MedTech product data; source acquisition remains worker-only.
+from app.medtech import router as medtech_router  # noqa: E402
+app.include_router(medtech_router)
 
 # Prophet Operator Lab (LAB-0 / V4-B5A): authenticated, read-only projection of
 # canonical Radar live output + Prophet plan data into six frozen Lab boards.

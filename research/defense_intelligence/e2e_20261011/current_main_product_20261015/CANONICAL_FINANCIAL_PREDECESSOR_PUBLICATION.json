@@ -1,0 +1,154 @@
+{
+  "schema": "defense.financial_owner_incumbent_cas.v1",
+  "state": "CANONICAL_COMPLETE10_PUBLICATION_VERIFIED",
+  "started_at": "2026-10-16T00:07:12.308843+00:00",
+  "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "generation": "449f7f3c5b6a8c9faa181a28",
+  "manifest_sha256": "eedc2d6758902b24e98f7e0f39f24611c449c52d4fe730088f4bd5fb893e7a1d",
+  "puts": [
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000040533_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "2363f148f7a063deceba3055d91c5faa04f0a4ce7272ea956da0b564620467e5",
+      "bytes": 14781,
+      "attempted_at": "2026-10-16T00:07:15.549718+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"d9b95c4f16f7e62a0a64232cd813c666\"",
+      "finished_at": "2026-10-16T00:07:15.891994+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000794170_2026q3_results.json",
+      "marker": false,
+      "body_sha256": "7ad35167277a53a96d7ff942058f7514200cff640b3c5bfd52769c3723d518e4",
+      "bytes": 13754,
+      "attempted_at": "2026-10-16T00:07:15.618494+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"4a0640bd1997e5fdd6edde11f2e63a70\"",
+      "finished_at": "2026-10-16T00:07:15.938962+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000882184_2026q3_results.json",
+      "marker": false,
+      "body_sha256": "93f4f349f0d57c2cd2a664539c99eb7035f05ab69aed74843be8a8e1394e0c5c",
+      "bytes": 11297,
+      "attempted_at": "2026-10-16T00:07:15.621990+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"474a470ea30ae1d649386347b59dff7d\"",
+      "finished_at": "2026-10-16T00:07:15.947175+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000795266_2026q3_results.json",
+      "marker": false,
+      "body_sha256": "ce0f80b0a5fbf88a11171e2b1c8c3e91c0a7b33a9dc3d7e27cc6f0a01b4e0bf9",
+      "bytes": 11441,
+      "attempted_at": "2026-10-16T00:07:15.630444+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"b0e761fb3532f15123be64cfcefd9e3e\"",
+      "finished_at": "2026-10-16T00:07:15.981827+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000202058_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "540d26b10a62618a3c4760ba089e4b404b65b60970979b64c13e82db8019884b",
+      "bytes": 57115,
+      "attempted_at": "2026-10-16T00:07:15.635718+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"b3688fe204f74048fc0f9aaff7f5439c\"",
+      "finished_at": "2026-10-16T00:07:15.977221+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000320193_2026q3_results.json",
+      "marker": false,
+      "body_sha256": "e8a84533e3b8e922f85c995f4332722688fe890fcab5f99de08f4d820597f549",
+      "bytes": 111562,
+      "attempted_at": "2026-10-16T00:07:15.638528+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"ed26f08089ac47af0bcd5d6dac983640\"",
+      "finished_at": "2026-10-16T00:07:15.963951+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000822416_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "bd6572cffb4930c3aa267627262ff79ec6e467a4e6edbc0239d538d5f4211652",
+      "bytes": 9178,
+      "attempted_at": "2026-10-16T00:07:15.652041+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"87255c127a1b864d904d1529ac3811d8\"",
+      "finished_at": "2026-10-16T00:07:15.988404+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000101829_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "9506236bd10298a305f821482cd1956ed0c698d04145dc4a4ea4fc26ed28dbe5",
+      "bytes": 24350,
+      "attempted_at": "2026-10-16T00:07:15.664221+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"26f302ad67a9f055118d3e4b73d84758\"",
+      "finished_at": "2026-10-16T00:07:16.093066+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0000936468_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "dbfa4ef82f6d75b734b92cdb9b21bcb377f509eb0682de83824616c9bfbde0fd",
+      "bytes": 36752,
+      "attempted_at": "2026-10-16T00:07:16.022439+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"ed708bf155f7c4df102b5c1c05c1735e\"",
+      "finished_at": "2026-10-16T00:07:16.422755+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/workspaces/evt_cik0001133421_2026q2_results.json",
+      "marker": false,
+      "body_sha256": "2b121f38affccb896ddecd6650a7c38b54f097cf42d6a820b4a6f531994e6ee3",
+      "bytes": 29357,
+      "attempted_at": "2026-10-16T00:07:16.099973+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"3a9b8991135d5c9e29d4382e7f4a3f4d\"",
+      "finished_at": "2026-10-16T00:07:16.478071+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/generations/449f7f3c5b6a8c9faa181a28/manifest.json",
+      "marker": false,
+      "body_sha256": "eedc2d6758902b24e98f7e0f39f24611c449c52d4fe730088f4bd5fb893e7a1d",
+      "bytes": 4273,
+      "attempted_at": "2026-10-16T00:07:16.656531+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"03d8cc27f41239f59bb9d803c4bec22e\"",
+      "finished_at": "2026-10-16T00:07:16.982318+00:00"
+    },
+    {
+      "key": "company_intelligence/event_workspaces/manifest.json",
+      "marker": true,
+      "body_sha256": "eedc2d6758902b24e98f7e0f39f24611c449c52d4fe730088f4bd5fb893e7a1d",
+      "bytes": 4273,
+      "attempted_at": "2026-10-16T00:07:16.983358+00:00",
+      "state": "ACKNOWLEDGED",
+      "http_status": 200,
+      "etag": "\"03d8cc27f41239f59bb9d803c4bec22e\"",
+      "finished_at": "2026-10-16T00:07:17.335797+00:00"
+    }
+  ],
+  "fresh_etag": "\"b9f959c8572ea7cef573afdabc566332\"",
+  "preflight_receipt_sha256": "ac03b1a183bce896f92b2f3ea7f407c32738c9f2be9ea4ea46d72b9fefb222c6",
+  "incumbent_source_sha256": {
+    "scripts/publish_company_intelligence_r2.py": "2dfe3854dbacb6d085a35eb29fcb4b5f527853bcf970e33b0a2c529e2fdf6640",
+    "scripts/restore_event_workspace_owner.py": "1a10ceb5917a40dc9fb87db826bc984d3cad8a8fda6eb7902f089c6ca2fab9b7"
+  },
+  "publisher_rc": 0,
+  "finished_at": "2026-10-16T00:07:20.874390+00:00",
+  "readback_receipt": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/current-main-requalification/financial-successor/canonical-publication-20261016/readbacks/60c8dad15a824381bf2e49908446d4ab/READBACK_RECEIPT.json",
+  "readback_receipt_sha256": "a28e8f1051657b59b85d21a7644c621ebef748ea61994457fab315449ec1addd",
+  "incumbent5_payloads_aliases_native_clocks_preserved": true,
+  "consumer_browser_acceptance": "SEPARATE_REQUIRED_GATE"
+}

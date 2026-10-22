@@ -1,0 +1,66 @@
+{
+  "started_at": "2026-10-19T09:20:35.807784+00:00",
+  "programme": "WS:MARKET-OS",
+  "root_operation": "market-os-shared-shell-design-20260924-sol-001",
+  "attended_parent": "shared-shell-production-20261018-c1",
+  "workspace": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+  "head_before": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "incoming_main": "69dd6e774cc48223005426765e74aed193d55954",
+  "merge_base": "97261c2a319e62faec05690c04e6fae180540235",
+  "pr_before": {
+    "autoMergeRequest": null,
+    "headRefName": "sol/market-os-shared-shell-design-20260924",
+    "headRefOid": "3261331f95371b96187ccbfd3fc055067d4a6945",
+    "labels": [],
+    "state": "OPEN"
+  },
+  "resolutions": [
+    {
+      "path": "site/etfs.html",
+      "base_sha256": "2d055e789c308dc3f4a9b975a95fb56440877e7401a1ca5eff32f1de7386d5e1",
+      "ours_sha256": "360f55786bb8753266648a93a4aaf8053e2514e3c8739d957dc1f6d28a278673",
+      "incoming_sha256": "7e6445fe84febbc742cb83c23cc1995d67ca171db0d26d0ded30baac6c57bcc2",
+      "resolved_sha256": "ca009e5f7c0fb267212af1da14833b2b9df9a04c77effbbdef693d09972aa12d",
+      "adapter_count": 1,
+      "ours_exactly_reconstructed": true,
+      "incoming_bytes_restored_exactly_after_removing_owned_deltas": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "site/us_stocks.html",
+      "base_sha256": "5444380c3ca8bf6dfec1cd3c80b968383c509ef07cbe195c153a497fc2bd664d",
+      "ours_sha256": "b4e468323bad2b11a6d0d02b9a117e5bc8991bfd0cf1e641b7402b1d055a5dfe",
+      "incoming_sha256": "7d67e6575b462694bdf1700232c7489d834b6fba91423f2e6b6f1380f50a9885",
+      "resolved_sha256": "0531c7216f721f9e75301381ed860ff8b70a04f4978135b0b92d09b78931bcf8",
+      "adapter_count": 3,
+      "ours_exactly_reconstructed": true,
+      "incoming_bytes_restored_exactly_after_removing_owned_deltas": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "base_sha256": "42d7b3189cf5cd7292719fefe06d27754ac1a27e2dfead190029854779fa9334",
+      "ours_sha256": "9b0b2d659b755a4b655d7ff7ad95d5cf64fbe6d84e4803b447cd8752ca4863da",
+      "incoming_sha256": "fc03c782c4c1be90b0f8cd040cc071d9dd4142c139b5a5b3c636ddc832b3c3e8",
+      "resolved_sha256": "d102c5f39366389eea8f75d8a2ffb754398e40f5c0e19779539656cdb6716002",
+      "both_named_trigger_additions_retained": true,
+      "all_other_bytes_unchanged": true
+    }
+  ],
+  "merge_invoked": true,
+  "committed": false,
+  "pushed": false,
+  "merge_exit": 1,
+  "merge_stdout": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (HEAD vs. 69dd6e774cc48223005426765e74aed193d55954)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. 69dd6e774cc48223005426765e74aed193d55954)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/fundamental_forensics.js\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+  "merge_stderr": "",
+  "completed_at": "2026-10-19T09:21:08.767592+00:00",
+  "unmerged_after": [],
+  "resolved_paths": [
+    "app/deploy/update.sh",
+    "site/etfs.html",
+    "site/us_stocks.html"
+  ],
+  "staged_paths_count": 4852,
+  "head_after": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "merge_head": "69dd6e774cc48223005426765e74aed193d55954"
+}
