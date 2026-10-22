@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from datetime import datetime, timezone
 from types import SimpleNamespace
 import pytest
@@ -37,7 +38,10 @@ def test_stage_events_correlate_without_changing_catalog_bytes(original, monkeyp
     stages = [fields for event, fields in events if event == 'stage']
     seq = next(fields['seq'] for event, fields in events if event == 'start')
     assert [r['stage'] for r in stages] == STAGES
-    assert all(set(r) == {'tag', 'seq', 'stage', 'elapsed_ms', 'thread_cpu_ms'} for r in stages)
+    assert all(set(r) == {'tag', 'seq', 'stage', 'elapsed_ms', 'thread_cpu_ms',
+                          'native_thread_id'} for r in stages)
+    assert all(fields['native_thread_id'] == threading.get_native_id()
+               for event, fields in events if event in {'start', 'stage', 'finish'})
     assert all(r['seq'] == seq and r['tag'] == 'retained_catalog'
                and r['elapsed_ms'] >= 0 and r['thread_cpu_ms'] >= 0 for r in stages)
     assert next(fields for event, fields in events if event == 'finish')['success'] is True
