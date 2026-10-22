@@ -330,12 +330,16 @@ cannot be silently discarded; missingness reduces what can be asserted, not what
 **Input:** explicit scenario definitions and eligible observation references, existing
 market posture and independently admitted setup/readiness outputs where available.
 **Method:** each scenario specifies subject, horizon, trigger, invalidation, deadline,
-source prerequisites, evidence reference list and research status. Triggers use AND;
+source prerequisites, evidence reference list and research status. The definition itself
+needs an original availability clock and immutable source/version reference; clean
+historical inputs do not make a future-written rule knowable. A scenario must also
+bind its own subject, not inherit an unrelated current quote. Triggers use AND;
 invalidations use OR in the first pure implementation. Both are explicit nonempty
 lists. Unknown invalidation prevents a resolved trigger. Deadlines are exclusive.
 
 Point-in-time statuses are `waiting`, `conditions_met`, `invalidated`, `unresolved`,
-`expired` or `horizon_mismatch`. These are evaluation results at this cutoff, not a
+`expired`, `subject_mismatch` or `horizon_mismatch`. A future-available scenario
+definition is rejected before condition evaluation. These are evaluation results at this cutoff, not a
 new persisted scenario lifecycle or an order state. A later independent evaluation
 cannot erase an earlier saved result. Historical "held for two bars" and "crossed"
 conditions require their own completed-bar input from the incumbent time-series owner.

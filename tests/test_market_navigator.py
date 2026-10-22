@@ -26,7 +26,8 @@ def obs(**changes):
 
 
 def scenario(**changes):
-    args = dict(key="reclaim", horizon="intraday", deadline="2026-10-21T20:04:00Z",
+    args = dict(key="reclaim", subject="SPY:ARCX", horizon="intraday",
+                definition_available_at="2026-10-21T19:00:00Z", definition_ref="fixture:rule-v1", deadline="2026-10-21T20:04:00Z",
                 triggers=(Condition("price", "gte", 773, "USD"),),
                 invalidations=(Condition("price", "lt", 772, "USD"),),
                 support=("price",), counterevidence=("breadth",))
@@ -304,3 +305,51 @@ def test_calendar_settle_buffer_is_not_a_claim_that_the_session_is_unfinished():
 def test_other_market_cannot_be_labeled_us_context():
     with pytest.raises(ContractError):
         build(market_state=state(market="hk"), market_state_receipt=receipt())
+
+
+def test_future_written_rule_is_not_retroactively_known():
+    with pytest.raises(ContractError, match="definition was unavailable"):
+        build(scenarios=(scenario(definition_available_at="2026-10-21T20:02:00Z"),))
+
+
+def test_rule_available_at_cutoff_is_known_and_revision_changes_identity():
+    p=build(scenarios=(scenario(definition_available_at=ASOF),))
+    assert p["scenarios"][0]["status"] == "conditions_met"
+    assert build()["context_digest"] != build(scenarios=(scenario(definition_ref="fixture:rule-v2"),))["context_digest"]
+
+
+def test_rule_subject_is_not_inferred_from_current_price():
+    p=build(scenarios=(scenario(subject="QQQ:XNAS"),))
+    assert p["scenarios"][0]["status"] == "subject_mismatch"
+    assert p["scenarios"][0]["triggers"] == []
+
+
+@pytest.mark.parametrize("changes", [{"definition_available_at":"2026-10-21"},
+    {"definition_available_at":"2026-10-21T20:05:00Z"}, {"definition_ref":""}])
+def test_rule_definition_contract(changes):
+    with pytest.raises(ContractError): scenario(**changes)
+
+
+def test_public_explanation_retains_conditions_counterevidence_and_known_clocks():
+    p=public_projection(build())
+    assert p["observations"][0]["observed_at"] == "2026-10-21T20:00:00Z"
+    assert p["scenarios"][0]["triggers"][0]["threshold"] == 773
+    assert p["scenarios"][0]["counterevidence"][0]["key"] == "breadth"
+    assert "definition_ref" not in json.dumps(p)
+    assert "internal://" not in json.dumps(p)
+
+
+def test_future_availability_metadata_is_not_published_as_past_knowledge():
+    p=public_projection(build(as_of="2026-10-21T20:00:01Z"))
+    row=p["observations"][0]
+    assert row["value"] is None
+    assert row["observed_at"] is None and row["available_at"] is None
+
+
+def test_public_explanation_lists_do_not_alias_internal_packet():
+    raw=build(); exposed=public_projection(raw)
+    exposed["scenarios"][0]["triggers"][0]["threshold"]=999
+    exposed["scenarios"][0]["counterevidence"][0]["status"]="current"
+    assert raw["scenarios"][0]["triggers"][0]["threshold"]==773
+    assert raw["scenarios"][0]["counterevidence"][0]["status"]=="missing"
+    assert public_projection(raw)["scenarios"][0]["triggers"][0]["threshold"]==773

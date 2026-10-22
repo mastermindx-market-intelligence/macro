@@ -15,7 +15,7 @@ product acceptance. No background executor or worker was started.
 ## Verified delta
 
 Pure compositor implemented with all trade/rank/score/alert authority false.
-Current foundation suite: 80 tests passed. Browser study: all 8 viewport/language/theme
+Current foundation suite: 89 tests passed. Browser study: all 8 viewport/language/theme
 combinations passed, with modal focus, unsupported-horizon and stale/missing checks.
 The preview is NOT_APPLIED_TO_PAPER. Source adapter consumes the incumbent loader and
 calendar but has no bound production receipt verifier. Current source and research code
@@ -42,7 +42,7 @@ No paid acquisition, alert or trade was activated. No Paper design mutation occu
    current exact head, required CI and material upstream changes before delivery.
 2. Consume required CI checks and normal source release; no merge or deployment claim
    is established by this checkpoint.
-3. Preserve the completed 80-test suite, 8-case browser study, 350-job manifest
+3. Preserve the completed 89-test suite, 8-case browser study, 350-job manifest
    validation, numerical/data audits and local benchmark. Do not rerun accepted
    evidence unless the affected code, input or acceptance requirement changes.
 4. Bind the new safe Paper file after user creation; inspect exact file, design/review

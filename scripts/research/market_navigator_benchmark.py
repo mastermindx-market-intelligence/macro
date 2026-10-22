@@ -1,7 +1,6 @@
 """Bounded synthetic local compositor benchmark, not latency/production attestation."""
 from __future__ import annotations
 import argparse
-from dataclasses import replace
 import json
 import math
 from pathlib import Path
@@ -14,9 +13,10 @@ from engine.market_navigator import Condition, Observation, Receipt, Scenario, c
 def benchmark(n: int = 200) -> dict:
     r=Receipt('fixture:benchmark','v1','2026-10-21T20:00:00Z','2026-10-21T20:00:01Z','2026-10-21T20:00:02Z','2026-10-21T20:05:00Z')
     rows=tuple(Observation(f'p{i}','SPY:ARCX','price',773.09,'USD',('intraday',),r) for i in range(128))
-    scenarios=tuple(Scenario(f's{i}','intraday','2026-10-21T20:04:00Z',
-        tuple(Condition(f'p{j}','gt',770,'USD') for j in range(16)),
-        tuple(Condition(f'p{j}','lt',765,'USD') for j in range(16))) for i in range(12))
+    scenarios=tuple(Scenario(key=f's{i}',subject='SPY:ARCX',horizon='intraday',
+        definition_available_at='2026-10-21T19:00:00Z',definition_ref='fixture:benchmark-rule-v1',
+        deadline='2026-10-21T20:04:00Z',triggers=tuple(Condition(f'p{j}','gt',770,'USD') for j in range(16)),
+        invalidations=tuple(Condition(f'p{j}','lt',765,'USD') for j in range(16))) for i in range(12))
     kwargs=dict(subject='SPY:ARCX',horizon='intraday',as_of='2026-10-21T20:01:00Z',observations=rows,scenarios=scenarios)
     for _ in range(20): compose(**kwargs)
     timings=[]

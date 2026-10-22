@@ -135,7 +135,10 @@ class Condition:
 @dataclass(frozen=True)
 class Scenario:
     key: str
+    subject: str
     horizon: str
+    definition_available_at: str
+    definition_ref: str
     deadline: str
     triggers: tuple[Condition, ...]
     invalidations: tuple[Condition, ...]
@@ -144,7 +147,10 @@ class Scenario:
 
     def __post_init__(self) -> None:
         _id(self.key)
-        _clock(self.deadline)
+        _ref(self.subject)
+        _ref(self.definition_ref)
+        if _clock(self.definition_available_at) >= _clock(self.deadline):
+            raise ContractError("scenario must be defined before its deadline")
         if self.horizon not in HORIZONS:
             raise ContractError("unknown scenario horizon")
         if not isinstance(self.triggers, tuple) or not self.triggers or not isinstance(self.invalidations, tuple) or not self.invalidations:
@@ -187,6 +193,8 @@ def compose(*, subject: str, horizon: str, as_of: str,
     Triggers are AND; invalidations are OR. Unknown invalidation keeps a true
     trigger unresolved. The deadline is exclusive. No state is retained between
     calls and no historical crossing/hold is inferred from a single observation.
+    Scenario definitions must themselves be known by the cutoff and bound to the
+    subject; clean historical inputs cannot justify a future-written rule.
     Canonical market posture is separate broad-market context, never a condition.
     """
     _ref(subject)
@@ -220,9 +228,14 @@ def compose(*, subject: str, horizon: str, as_of: str,
         if scenario.key in ids:
             raise ContractError("duplicate scenario identity")
         ids.add(scenario.key)
-        trigger = [_condition(c, rows) for c in scenario.triggers]
-        invalid = [_condition(c, rows) for c in scenario.invalidations]
-        if scenario.horizon != horizon:
+        if _clock(scenario.definition_available_at) > cutoff:
+            raise ContractError("scenario definition was unavailable at the decision cutoff")
+        in_scope = scenario.subject == subject and scenario.horizon == horizon
+        trigger = [_condition(c, rows) for c in scenario.triggers] if in_scope else []
+        invalid = [_condition(c, rows) for c in scenario.invalidations] if in_scope else []
+        if scenario.subject != subject:
+            state = "subject_mismatch"
+        elif scenario.horizon != horizon:
             state = "horizon_mismatch"
         elif cutoff >= _clock(scenario.deadline):
             state = "expired"
@@ -234,6 +247,8 @@ def compose(*, subject: str, horizon: str, as_of: str,
             state = "conditions_met" if _all(trigger) else "waiting"
         evidence = lambda keys: [{"key": k, "status": rows.get(k, {}).get("status", "missing")} for k in keys]
         results.append({"key": scenario.key, "horizon": scenario.horizon,
+                        "definition_available_at": scenario.definition_available_at,
+                        "definition_ref": scenario.definition_ref,
                         "deadline": scenario.deadline, "status": state,
                         "triggers": trigger, "invalidations": invalid,
                         "support": evidence(scenario.support),
@@ -307,11 +322,30 @@ def public_projection(packet: Mapping[str, Any]) -> dict:
     actual = sha256(json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
     if actual != packet.get("context_digest"):
         raise ContractError("packet changed after composition")
+    cutoff = _clock(packet["as_of"])
+    public_rows = []
+    for row in packet["observations"]:
+        public_row = {k: row[k] for k in ("key", "family", "status", "value", "unit", "quality")}
+        known = _clock(row["available_at"]) <= cutoff
+        public_row.update({k: row[k] if known else None
+                           for k in ("observed_at", "available_at", "valid_until")})
+        public_rows.append(public_row)
+    public_scenarios = []
+    for row in packet["scenarios"]:
+        public_row = {k: row[k] for k in ("key", "horizon", "definition_available_at", "deadline", "status", "probability")}
+        for field in ("triggers", "invalidations"):
+            public_row[field] = [{k: item[k] for k in ("observation", "op", "threshold", "unit", "met", "reason")}
+                                 for item in row[field]]
+        for field in ("support", "counterevidence"):
+            public_row[field] = [{k: item[k] for k in ("key", "status")} for item in row[field]]
+        public_scenarios.append(public_row)
+    canonical = packet["canonical_market"]
+    public_market = {k: canonical[k] for k in ("status", "verdict")}
+    known = canonical.get("available_at") is not None and _clock(canonical["available_at"]) <= cutoff
+    public_market.update({k: canonical.get(k) if known else None
+                          for k in ("asof", "observed_at", "available_at", "valid_until")})
     return {"schema": SCHEMA, "horizon": packet["horizon"], "as_of": packet["as_of"],
-            "canonical_market": {k: packet["canonical_market"][k] for k in ("status", "verdict")},
-            "observations": [{k: row[k] for k in ("key", "family", "status", "value", "unit", "quality")}
-                             for row in packet["observations"]],
-            "scenarios": [{k: row[k] for k in ("key", "horizon", "deadline", "status", "probability")}
-                          for row in packet["scenarios"]],
+            "canonical_market": public_market, "observations": public_rows,
+            "scenarios": public_scenarios,
             "coincident_conditions": packet["coincident_conditions"],
             "readiness": "research_only", "authority": dict(AUTHORITY)}

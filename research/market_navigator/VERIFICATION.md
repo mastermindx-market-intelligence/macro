@@ -12,9 +12,11 @@ python3 -m pytest tests/test_market_navigator.py tests/test_market_navigator_sou
   --basetemp=research/market_navigator/.pytest-tmp -o addopts=
 ```
 
-**80 passed in 5.76 seconds.** Tests cover finite numeric and clock contracts,
+**89 passed in 8.53 seconds.** Tests cover finite numeric and clock contracts,
 future knowledge, revisions, stale nested inputs, unit/subject/horizon mismatches,
-explicit invalidation, deadlines, no implicit lifecycle, no composite score,
+explicit invalidation, deadlines, scenario-definition availability and subject binding,
+public clocks/conditions/counterevidence without source leakage or mutable aliases,
+no implicit lifecycle, no composite score,
 owner receipt binding, unsupported subjects, public projection and no authority
 escalation. Test fixtures do not prove source authenticity or forecast performance.
 
@@ -50,7 +52,7 @@ production URL was tested.
   9 October against a 21 October expected daily floor; missing availability receipt
   prevented promotion of any current verdict. This is not a live-site outage census.
 - `BENCHMARK.json`: 200 synthetic local runs, 128 observations/12 scenarios,
-  Python 3.14.7 on Darwin arm64. p95 2.7393 ms, payload 78,467 bytes. Network,
+  Python 3.14.7 on Darwin arm64. p95 5.4878 ms, payload 79,643 bytes. Network,
   source acquisition, authentication and production latency are excluded.
 
 ## Repository contracts

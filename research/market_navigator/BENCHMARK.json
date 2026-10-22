@@ -9,10 +9,10 @@
   "conditions_per_scenario": 32,
   "runs": 200,
   "warmup_runs": 20,
-  "median_ms": 1.214979449287057,
-  "p95_ms": 2.739250077866018,
-  "max_ms": 5.189875024370849,
-  "serialized_bytes": 78467,
+  "median_ms": 2.2334170062094927,
+  "p95_ms": 5.487792077474296,
+  "max_ms": 7.019208045676351,
+  "serialized_bytes": 79643,
   "includes_network_or_source_fetch": false,
   "production_latency_proven": false
 }

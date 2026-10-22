@@ -69,7 +69,8 @@ The structured consumer packet remains:
 subject / horizon / as_of
 canonical_market: existing verdict or explicit unavailable reason
 observations: qualified value, unit, family, quality and original clock/reference
-scenarios: trigger, invalidation, deadline, support, counterevidence, status
+scenarios: own subject, definition availability/version, trigger, invalidation,
+           deadline, support, counterevidence, status
 coincident_conditions: ambiguity indication, not preferred-path ranking
 readiness: research_only in this foundation
 probabilities: absent/null until independently accepted evidence exists
@@ -85,6 +86,11 @@ public endpoint is created by this foundation.
 A response declares one coherent input generation. If a newer quote arrives while an
 option book remains old, either preserve the named joint snapshot or mark the affected
 scenario unresolved; do not silently combine them as one current dealer picture.
+The public projection retains qualified observation clocks and typed trigger/
+invalidation/counterevidence detail, without exposing private source references.
+Future availability metadata is not presented as past knowledge. Lists are detached
+so a client projection cannot mutate the original context.
+
 No source condition can infer a hold/cross from a single price. Those conditions require
 completed-bar sequences from the incumbent owner and their own explicit semantics.
 

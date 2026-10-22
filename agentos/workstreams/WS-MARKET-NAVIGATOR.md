@@ -91,7 +91,7 @@ available guarded catalog does not create files. This blocks Paper writes only.
 
 ## Foundation evidence
 
-The current local suite passed 80 tests; the browser study passed 8 viewport/language/
+The current local suite passed 89 tests; the browser study passed 8 viewport/language/
 theme combinations. `VERIFICATION.md` binds the commands and scope. The CI manifest
 validated 350 jobs, not 350 executed checks. No production activation or native Paper
 write is claimed. Current exact source-release state must be read from GitHub.
