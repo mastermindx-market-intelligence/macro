@@ -515,3 +515,8 @@ Rulings (binding on the repair; each is a test):
 - **02:1xZ:** Wave B routing packet DRAFTED at `build_b/WAVE_B_ROUTING_PACKET_2026-10-22.md` (custody table observed
   02:0xZ: #9495/#9294/#8444 all OPEN draft; OQ1 ruled = carry R7 into the #9566 compact card; post ONCE on #9495 after
   Wave A merges, link from #8444 for B-5 only). U2 REPAIR orchestrator aa5a2aa37f6552bcd RUNNING (F28). Opus cap 2 FULL.
+- **02:3xZ:** records r7 PUSHED 9d6379a6. origin/main → 80854549; #9999 (U2) and #9954 (A1) now DIRTY
+  (`tests/test_ci_pack.py` ceilings 5_837/5_810 on main; A1 also `.github/ci/legacy-jobs.yml` step adjacency with
+  the B4 nightly capture step). Both orchestrators messaged: fixes must be CLEAN on
+  `git merge-tree --write-tree origin/main <fix>` and accepted on the exported merge tree. #9955/#9956 merge clean.
+  #9999 CI was GREEN on 6e6798aa (watcher bzb3z80dl consumed); #9951 UNSTABLE, watcher b63o19edc running.
