@@ -423,6 +423,23 @@ def test_every_press_suite_is_named_by_the_ci_job():
     assert named == on_disk, f"unrun press suites: {sorted(on_disk - named)}"
 
 
+def test_native_plan_suites_reach_existing_code_gate_with_import_closure():
+    from scripts.ci_scope_dependencies import suite_dependency_closure
+    from scripts.run_ci_pack import _matches_any
+
+    job = _load(_LEGACY)["jobs"]["ticker-news-qbus"]
+    assert job["gate"] == "code" and job["scope"] == "exclusive"
+    command = " ".join(str(step.get("run") or "") for step in job["steps"])
+    for suite in ("tests/test_press_native_plan_scope.py",
+                  "tests/test_press_native_plan_integration.py"):
+        assert suite in command
+        assert suite in job["paths"]
+        closure = suite_dependency_closure(suite, pytest_command=command)
+        assert "engine/press/native_plan_scope.py" in closure.files
+        missing = [path for path in closure.files if not _matches_any(job["paths"], path)]
+        assert missing == [], f"native-plan import closure is outside the code gate: {missing}"
+
+
 def test_reviewed_bundle_dispatch_uses_same_run_artifact_without_generation():
     inputs = _triggers(_load(_WF))["workflow_dispatch"]["inputs"]
     assert {"promotion_bundle", "promotion_slot", "promotion_sha256"} <= set(inputs)

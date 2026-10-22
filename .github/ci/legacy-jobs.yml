@@ -20173,6 +20173,7 @@ jobs:
       - "engine/press/external_candidate.py"
       - "engine/press/research_triage.py"
       - "engine/press/validators.py"
+      - "engine/press/native_plan_scope.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
       - "engine/qbus.py"
@@ -23193,7 +23194,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests beautifulsoup4
       - name: press validator, planner, writer, orchestrator, admin and property suites
-        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_fda_document.py tests/test_press_fda_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_fda_document.py tests/test_press_fda_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -36013,6 +36014,9 @@ jobs:
       - "engine/marketing/x_intel.py"
       - "engine/press/__init__.py"
       - "engine/press/desk_planner.py"
+      - "engine/press/native_plan_scope.py"
+      - "tests/test_press_native_plan_scope.py"
+      - "tests/test_press_native_plan_integration.py"
       - "engine/press/external_candidate.py"
       - "engine/press/properties.py"
       - "engine/press/qbus_news.py"
@@ -36117,7 +36121,8 @@ jobs:
           tests/test_ticker_news_snapshot_provenance.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
-          tests/test_press_run.py tests/test_press_writer.py -q -rs
+          tests/test_press_run.py tests/test_press_writer.py
+          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
