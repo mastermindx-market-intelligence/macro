@@ -1,3 +1,37 @@
+# Current recovery checkpoint — bounded instrument history, 22 October 2026
+
+**W4's source and existing owner contracts are qualified; the actual retained-input chain, current candidate visual proof, qualified review and release remain open.** This increment descends from published `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba` on existing Draft/HOLD #9590. That head contains the accepted 206-pass seasoning/composition repair. All earlier CI, native, browser, source and failure evidence retains its original identity.
+
+## Implemented through the existing owners
+
+The existing latest bond-panel Parquet keeps its complete population and incumbent weighted levels. Only current-registry-mapped instruments receive optional `instrument_history_json`, limited to 22 actual common-session observations and 16,384 UTF-8 bytes per cell. Missing dates are not filled. Each record preserves retained first_seen, observed currency or missing/conflicting currency, coupon/maturity consistency, actual backward-selected Treasury observation date and existing matched/seasoning/near-par behavior.
+
+Both price-convention paths build the same bounded projection. The existing validation receipt binds the whole panel and validates history identity, cutoff, latest-row correspondence, convention arithmetic, spread arithmetic and matched changes. CDI requires this separate history binding before displaying 5/21-session changes. An older latest-price receipt does not qualify history. Compact summaries keep the existing four-million-byte reader bound; the existing bilingual inspector adds one history column and a clear limitation statement.
+
+This is `retained_holdings_recomputed_current_inputs`. Historical publication timing and independent historical pricing remain unqualified. No source vintage, legal obligor, guarantor, seniority, options completeness or CDS availability is invented. Existing authority remains false. Current Synapse entries and the existing CDI validation dependency are updated; no artifact, producer, job, service or lifecycle is created.
+
+## Actual qualification
+
+The affected corporate-credit/CDI/view/momentum run produced **276 passed and one failed assertion in 64.14s**. The sole failure was pandas representing a missing Treasury date as NaN rather than None. The assertion was corrected to test pandas missingness; its focused rerun passed in 4.96s, with all production blobs unchanged. Thus all 277 affected cases have passing evidence, across the retained original run and focused correction. Real temporary Parquet, receipt, both convention paths and bilingual Jinja boundaries passed.
+
+The six existing Synapse/DAG owner checks passed in 17.07s. An earlier invocation used incomplete class-qualified DAG node IDs and ran no tests; that selector error is retained separately. No semantic guard, fixture data or production behavior was weakened. See [W4 qualification](evidence/instrument_history_qualification_20261022.json).
+
+## Actual input frontier and ordered continuation
+
+1. Consume `w4-instrument-history-*` intents/results and the containing source commit. The exact qualified runtime/config/template blobs and test correction are recorded in the evidence file. Do not reapply the proposal or repeat passed suites without a concrete changed risk.
+2. Reconcile the known upstream composition need. The cf9/main `146fbfc357efbf0bb1ec3aea4d4f8c95ffeb0b0e` preview had one conflict, generated `site/bonds.html`. Upstream includes a real October21 market-data refresh (including OAS/yield/history changes), not just a clock. Preserve upstream source/workflow/CI baselines and candidate additions; regenerate the final candidate through the existing owner using a fixed input manifest.
+3. Actual original inputs contain exactly one 2026-10-15 holdings Parquet per SPSB/SPIB/SPLB/JNK/SPHY, totaling 796,442bytes, and one same-date LQD sample (158,962bytes). There is no HYG sample; its absence is non-gating. All ten CMT pillars and both whole equity stores for all 18 registry tickers exist. The registry is a dated retained main artifact, not a new legal-entity observation.
+4. Fix one isolated input composition before executing the existing CCW→validation→CDI→native chain. Use original holdings/LQD and explicitly selected immutable-main market/registry/equity/breadth inputs to preserve the actual upstream refresh. Exclude old generated outputs. Retain input hashes and source clocks unchanged through every stage. A one-date retained history must not become a 5/21-session value; record actual mapped/unmapped/absent/invalid history counts and all withheld values.
+5. Produce the final candidate HTML/assets only through the existing builder and pure asset functions operating on the private candidate directory. Preserve the earlier native input image and proof. Consume actual build results before resolving the generated-page conflict and making the normal existing-branch push; no replacement covering-render workflow.
+6. Obtain genuine exact-candidate browser/visual proof through the supported current browser. The current loopback attempt failed with technical ERR_SOCKET_NOT_CONNECTED; its owned server and tab are closed. The historical R6/R9 denials are scoped to their original operations. Public production access and source tests do not substitute for the candidate interaction/visual matrix.
+7. Continue W5 through existing Capital Structure/FIF source contracts. The current capacity bundle reports all 3,222 financial families unavailable. This carrier's existing FIF store factory is unconfigured/unavailable, with zero pointer/manifest/role/query calls; global financial-data absence is not established. Preserve exact issuer identity, accounting and consumer-availability clocks, partial support and explicit unavailable burn/financing inputs.
+
+Forex receipt-clock provenance separately qualified 524 affected tests and is publishing through #10052. Macro #9996 immutable head, green CI, covering render 39688064251 and accepted live CRUD/product proof remain preserved. Terminal #1106 stays Draft/HOLD pending the original qualified Fabric continuation/review. Never replay 429, change provider/carrier, reapply 0038 or retry the refused Terminal deployment. Held carry/COT and all original dirty/untracked/ignored workspaces remain intact.
+
+Protected compatible pin: `05a9eb52a54e29fb7bbd0d40813ed12623b176c7`. **Tiingo licensing/intended use is COMPLETE by Chairman special-license attestation; no licensing email or support outreach.** Publication/composition/CI resolve in [the existing CDI checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) and [joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815).
+
+## Historical checkpoints below — preserve, do not replay completed actions
+
 # Current recovery checkpoint — matched-panel repair, 22 October 2026
 
 **The source defect is repaired and qualified; Bonds remains Draft/HOLD while current-candidate visual evidence, review and release proof are completed.** The containing change descends from published `f4dd0bc16543a572fcd32a8595e0df0cd4966d79` on the existing #9590 branch. The [qualification receipt](evidence/matched_panel_guards_qualification_20261022.json) binds the patch, exact source blobs, original failing regressions and passing suites.

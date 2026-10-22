@@ -1,3 +1,19 @@
+# Replacement-session entry — W4 source qualification and next fixed-input build
+
+Continue the same Forex/Bonds mission under protected compatible pin `05a9eb52a54e29fb7bbd0d40813ed12623b176c7`. Start with MASTERPLAN.md, evidence/instrument_history_qualification_20261022.json and the latest canonical #9590 comment6337092277 / joint comment6336042815. The containing commit descends from published cf9ac2b2c03f3f4f7be429f87483c1281ba784ba; later publication/composition resolves in those existing checkpoints and private effect receipts.
+
+W4 modifies nine existing paths. All 277 affected cases have passing evidence across the initial 276-pass run and the focused pandas-missingness assertion correction. Six existing registry/DAG contract checks also passed. Runtime/config/template blobs remain the exact proposal; the test-only correction blob is dfe3947c46fedc4dd2f19e787c13a73f398c8b70. Read private `.cdi-proof/integration-20261022/w4-instrument-history-*` intents/results before acting. Do not reapply, reset, clean, stash or stage unrelated paths.
+
+Next, compose the required main update and run one isolated retained CCW→validation→CDI→native chain over a fixed source/input manifest. Known main146 has a real newer market-data page, so the generated conflict cannot be resolved as a timestamp-only change. Preserve upstream workflows/CI baselines and existing R11/CDI/R33 additions. Original five holdings files and LQD sample are dated 2026-10-15; actual one-date history must keep 5/21 changes unavailable. Both equity stores exist for all 18 mapped tickers. No raw acquisition, momentum forward-ledger write or fake validation sample is needed.
+
+The current candidate loopback preview ended with ERR_SOCKET_NOT_CONNECTED. Server 50302 was closed at 18:27:54 UTC and candidate tab 1065717885 was closed. Do not poll or reuse them. Existing public Chrome access succeeds but is only a production baseline. Genuine duration/CDI visual and interaction proof remains absent; the unchanged visual guard must not be weakened. Historical R6/R9 refusals are specific operations, not a blanket browser ban.
+
+The workspace remains `/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001`; local `sol/web-ccw-cdi-source-integration-20261022-sol-001` publishes normally to `claude/ssd-ccw-dislocation-v1-cc87720e59421398`. Keep all original workspaces and prior proof images intact. #9590 remains Draft/HOLD.
+
+The current FIF store inquiry returned factoryNone before any pointer or manifest read; no configured backend/account is to be created or guessed. Useful existing-owner pure source work may continue with unavailable real financial inputs. Preserve Macro #9996/CI/render/live proof, held carry/COT, original Fabric operations, Terminal #1106 Draft/HOLD, single-applied 0038 and exact deployment refusal. Tiingo licensing is Chairman-COMPLETE; no outreach.
+
+## Historical entry records below
+
 # Replacement-session entry — matched-panel repair and current browser scope
 
 Continue the same Forex/Bonds mission in the existing owner workspaces and PRs. Start with MASTERPLAN.md, evidence/matched_panel_guards_qualification_20261022.json and the latest canonical CDI comment6337092277 / joint comment6336042815. The prior accepted results below remain evidence on their recorded identities.

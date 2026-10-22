@@ -76,14 +76,21 @@
             <div class="cdi-table-scroll" tabindex="0" role="region" aria-label="{{ row.issuer }} bond holdings">
               <table class="cdi-bond-table">
                 <caption>{{ row.issuer }} · {{ cdi.source_as_of }} · {{ t('fund-held sample, not total issuer debt', '基金持仓样本，非发行人全部债务') }}</caption>
-                <thead><tr><th scope="col">{{ t('Security / identifier', '债券 / 代码') }}</th><th scope="col">{{ t('Maturity', '到期日') }}</th><th scope="col">{{ t('Coupon', '票息') }}</th><th scope="col">{{ t('Clean price', '净价') }}</th><th scope="col">{{ t('G-spread', '国债相对利差') }}</th><th scope="col">{{ t('Review', '核验') }}</th></tr></thead>
+                <thead><tr><th scope="col">{{ t('Security / identifier', '债券 / 代码') }}</th><th scope="col">{{ t('Maturity', '到期日') }}</th><th scope="col">{{ t('Coupon', '票息') }}</th><th scope="col">{{ t('Clean price', '净价') }}</th><th scope="col">{{ t('G-spread', '国债相对利差') }}</th><th scope="col">{{ t('Instrument history', '债券历史') }}</th><th scope="col">{{ t('Review', '核验') }}</th></tr></thead>
                 <tbody>{% for bond in row.bonds %}<tr>
                   <th scope="row">{{ bond.name }}<small>{{ bond.identifier_type }} {{ bond.identifier }}</small></th>
                   <td>{{ bond.maturity }}</td><td>{{ bond.coupon }}</td><td>{{ bond.price }}</td><td>{{ bond.spread }}</td>
+                  <td class="cdi-small">
+                    <div>{{ t('5 / 21 sessions', '5 / 21个交易日') }}: {{ bond.history5 }} / {{ bond.history21 }}</div>
+                    <div>{{ t(bond.history_coverage_en, bond.history_coverage_zh) }}</div>
+                    <div>{{ bond.history_currency }} · {{ t('Treasury observation', '美国国债观察日') }} {{ bond.history_curve_as_of }}</div>
+                    {% if bond.history_reason_en %}<div>{{ t(bond.history_reason_en, bond.history_reason_zh) }}</div>{% endif %}
+                  </td>
                   <td class="cdi-small">{% if not bond.identifier_valid %}{{ t('Identifier unresolved', '代码待核验') }}{% elif bond.call_review %}{{ t('Option terms need review', '期权条款待核验') }}{% else %}{{ t('Legal terms not complete', '法律条款未齐全') }}{% endif %}</td>
                 </tr>{% endfor %}</tbody>
               </table>
             </div>
+            <p class="cdi-small">{{ t('History covers currently mapped fund-held instruments. Recalculated observations do not establish historical publication timing or independently verified historical prices.', '历史覆盖当前已映射的基金持仓债券；重算观察不证明历史发布时点或历史价格已经独立核验。') }}</p>
             {% else %}<p>{{ t('No bond-level observations match this issuer and date.', '该发行人在此日期没有匹配的债券级观察。') }}</p>{% endif %}
           </template>
           <noscript><p>{{ t('Enable JavaScript to open the bounded bond table. The issuer comparisons above remain available.', '启用JavaScript以展开债券表；上方发行人比较仍可阅读。') }}</p></noscript>

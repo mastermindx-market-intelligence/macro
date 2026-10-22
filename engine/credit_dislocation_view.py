@@ -13,6 +13,10 @@ from pathlib import Path
 from typing import Any
 
 from engine.credit_dislocation import AUTHORITY, MAX_AGE_SESSIONS, SCHEMA
+from engine.corp_credit import (
+    CMT_TOLERANCE, INSTRUMENT_HISTORY_BASIS, INSTRUMENT_HISTORY_MAX_OBSERVATIONS,
+    INSTRUMENT_HISTORY_POPULATION, INSTRUMENT_HISTORY_SCHEMA,
+)
 from lib.nyse_calendar import sessions_between
 
 MAX_SNAPSHOT_BYTES = 4_000_000
@@ -36,6 +40,16 @@ THEME_COPY = {
     "telecom_legacy": ("Telecom controls", "电信对照组"),
 }
 REASON_COPY = {
+    "history_unavailable": ("Retained instrument history unavailable", "缺少债券历史观察"),
+    "history_invalid": ("Instrument history is invalid", "债券历史记录无效"),
+    "history_binding_unqualified": ("History does not have a matching validation binding", "历史记录缺少匹配的验证绑定"),
+    "history_identifier_unresolved": ("Instrument identity unresolved", "债券身份待核验"),
+    "history_terms_conflict": ("Observed bond terms conflict", "债券条款观察存在冲突"),
+    "history_terms_changed": ("Coupon or maturity changed within the window", "窗口内票息或到期日发生变化"),
+    "history_terms_missing": ("Coupon or maturity observations missing", "缺少票息或到期日观察"),
+    "history_currency_conflict": ("Source currencies conflict", "来源币种存在冲突"),
+    "history_currency_unknown": ("Source currency unavailable", "来源币种缺失"),
+    "history_currency_unsupported": ("Currency is unsupported for this Treasury comparison", "该币种不支持此美国国债比较"),
     "pricing_unqualified": ("Pricing validation is missing, failed, or bound to different data", "\u5b9a\u4ef7\u9a8c\u8bc1\u7f3a\u5931\u3001\u672a\u901a\u8fc7\u6216\u4e0e\u6570\u636e\u4e0d\u5339\u914d"),
     "equity_unavailable": ("Equity observations unavailable", "缺少股价观察"),
     "missing_equity_sessions": ("Equity sessions missing", "股价交易日数据缺失"),
@@ -76,6 +90,67 @@ def _empty(reason: str) -> dict:
             "subtitle_zh": "缺少观察数据并不代表风险较低。",
             "source_as_of": None, "age_sessions": None, "issuers": [],
             "paired_count": 0, "bond_count": 0, "authority": dict(AUTHORITY)}
+
+
+
+def _instrument_history_view(bond: dict, pricing: dict, pricing_ok: bool, source_day: date) -> dict:
+    history = bond.get("instrument_history")
+    present = isinstance(history, dict)
+    history = history if present else {}
+    count = history.get("observations")
+    valid = bool(
+        present and history.get("schema") == INSTRUMENT_HISTORY_SCHEMA
+        and history.get("population") == INSTRUMENT_HISTORY_POPULATION
+        and history.get("valuation_basis") == INSTRUMENT_HISTORY_BASIS
+        and history.get("historical_publication_qualified") is False
+        and history.get("independent_historical_pricing_qualified") is False
+        and type(count) is int and 0 <= count <= INSTRUMENT_HISTORY_MAX_OBSERVATIONS
+        and history.get("status") in {"available", "partial", "unavailable"}
+    )
+    if valid and count:
+        try:
+            first_seen = date.fromisoformat(history["first_seen"])
+            first = date.fromisoformat(history["observed_from"])
+            last = date.fromisoformat(history["observed_through"])
+            valid = first_seen <= first <= last == source_day
+            if history.get("cmt_as_of") is not None:
+                curve_day = date.fromisoformat(history["cmt_as_of"])
+                valid = valid and 0 <= (source_day - curve_day).days <= CMT_TOLERANCE.days
+        except (KeyError, ValueError, TypeError):
+            valid = False
+    short = history.get("change_5") if isinstance(history.get("change_5"), dict) else {}
+    long = history.get("change_21") if isinstance(history.get("change_21"), dict) else {}
+    if valid:
+        for horizon, window in [(5, short), (21, long)]:
+            if _finite(window.get("value_bp")) is not None:
+                valid = bool(valid and count >= horizon + 1
+                             and history.get("currency") == "USD" and history.get("cmt_as_of"))
+    qualified = valid and pricing_ok and pricing.get("instrument_history_verified") is True
+    reason = history.get("reason") or short.get("reason") or long.get("reason")
+    if not present:
+        reason = "history_unavailable"
+    elif not valid:
+        reason = "history_invalid"
+    elif not pricing_ok and count:
+        reason = "pricing_unqualified"
+    elif not qualified and count:
+        reason = "history_binding_unqualified"
+    en, zh = REASON_COPY.get(reason, ("", "") if not reason else REASON_COPY["history_unavailable"])
+    if valid and count:
+        coverage_en = f'{count} observed dates · {history["observed_from"]}–{history["observed_through"]}'
+        coverage_zh = f'{count}个观察日 · {history["observed_from"]}–{history["observed_through"]}'
+    else:
+        coverage_en, coverage_zh = REASON_COPY["history_unavailable"]
+    currency = history.get("currency")
+    curve_day = history.get("cmt_as_of")
+    return {
+        "history5": _metric(short.get("value_bp") if qualified else None, " bp"),
+        "history21": _metric(long.get("value_bp") if qualified else None, " bp"),
+        "history_coverage_en": coverage_en, "history_coverage_zh": coverage_zh,
+        "history_reason_en": en, "history_reason_zh": zh,
+        "history_currency": currency if valid and isinstance(currency, str) and len(currency) <= 16 else "—",
+        "history_curve_as_of": curve_day if valid and isinstance(curve_day, str) and len(curve_day) == 10 else "—",
+    }
 
 
 def build_view(snapshot: dict | None, *, as_of: date) -> dict:
@@ -167,6 +242,7 @@ def build_view(snapshot: dict | None, *, as_of: date) -> dict:
                 "price": _metric(bond.get("price_clean") if pricing_ok else None, "", signed=False, decimals=2),
                 "spread": _metric(bond.get("g_spread_bp") if pricing_ok else None, " bp", signed=False),
                 "call_review": bond.get("near_par_call_flag") is not False,
+                **_instrument_history_view(bond, pricing, pricing_ok, source_day),
             })
         relative = _finite(row.get("relative_change_5_bp"))
         paired = relative is not None and _finite(equity.get("value_pct")) is not None

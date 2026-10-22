@@ -1494,3 +1494,205 @@ class TestSectorMappingAmbiguity:
         assert sectors.iloc[0] == "Technology", (
             f"Bond with unambiguous (same) sector should be mapped to 'Technology'; got {sectors.iloc[0]!r}"
         )
+
+# ---------------------------------------------------------------------------
+# Bounded history in the existing latest-panel publication
+# ---------------------------------------------------------------------------
+
+def _bounded_history_panel():
+    from lib.nyse_calendar import sessions_between
+    days = sessions_between(date(2026, 8, 3), date(2026, 10, 16))
+    rows = []
+    for i, day in enumerate(days):
+        for isin, issuer in [("037833100", "TEST0"), ("594918104", None)]:
+            spread = 100.0 + 2.0 * i
+            rows.append({
+                "as_of": day.isoformat(), "isin": isin, "issuer": issuer,
+                "theme": "synthetic" if issuer else None, "sector": "Synthetic",
+                "segment": "ig", "name": "Synthetic bond", "funds": "SPIB",
+                "coupon": 5.0, "maturity": "2031-10-16", "tenor_yrs": 5.0,
+                "par": 1000.0, "mv": 990.0, "accrued_pct": 1.0,
+                "price_clean": 99.0, "price_dirty": 100.0,
+                "ytm_pct": 4.0 + spread / 100.0, "cmt_pct": 4.0,
+                "cmt_as_of": day.isoformat(), "g_spread_bp": spread,
+                "near_par_call_flag": False, "currency": "USD",
+                "currency_status": "observed", "terms_consistent": True,
+            })
+    panel = pd.DataFrame(rows)
+    panel["first_seen"] = compute_first_seen(panel)
+    return panel, [day.isoformat() for day in days]
+
+
+class TestBoundedInstrumentHistory:
+    def test_only_mapped_history_is_bounded_and_existing_levels_are_unchanged(self):
+        from engine.corp_credit import _build_bond_panel_latest, parse_instrument_history
+        panel, dates = _bounded_history_panel()
+        latest = _build_bond_panel_latest(panel, dates, calculation_convention="clean")
+        old_columns = ["isin", "par", "mv", "price_clean", "price_dirty", "g_spread_bp"]
+        pd.testing.assert_frame_equal(
+            latest[old_columns].reset_index(drop=True),
+            panel[panel["as_of"] == dates[-1]][old_columns].reset_index(drop=True),
+        )
+        mapped = latest[latest["issuer"] == "TEST0"].iloc[0]
+        payload = parse_instrument_history(
+            mapped["instrument_history_json"], isin="037833100", as_of=dates[-1], issuer="TEST0",
+        )
+        assert payload["population"] == "current_registry_mapped_instruments"
+        assert [row["as_of"] for row in payload["observations"]] == dates[-22:]
+        assert payload["first_seen"] == dates[0]
+        assert payload["observations"][-1]["cmt_as_of"] == dates[-1]
+        assert payload["observations"][-1]["currency"] == "USD"
+        assert payload["historical_publication_qualified"] is False
+        assert payload["independent_historical_pricing_qualified"] is False
+        assert latest.loc[latest["issuer"].isna(), "instrument_history_json"].isna().all()
+
+
+    def test_non_session_latest_retains_levels_and_leaves_optional_history_absent(self):
+        from engine.corp_credit import _build_bond_panel_latest, _validate_instrument_history
+        panel, dates = _bounded_history_panel()
+        saturday = panel[panel["as_of"] == dates[-1]].copy()
+        saturday["as_of"] = "2026-10-17"
+        panel = pd.concat([panel, saturday], ignore_index=True)
+        latest = _build_bond_panel_latest(panel, dates + ["2026-10-17"], calculation_convention="clean")
+        assert latest["par"].tolist() == [1000.0, 1000.0]
+        assert latest["price_clean"].tolist() == [99.0, 99.0]
+        assert latest["instrument_history_json"].isna().all()
+        receipt = _validate_instrument_history(latest, "clean", "2026-10-17")
+        assert receipt["instrument_rows"] == 0
+        assert receipt["absent_mapped_rows"] == 1
+        assert receipt["unmapped_latest_rows"] == 1
+
+    @pytest.mark.parametrize("currencies,status,currency", [
+        (["USD", "USD"], "observed", "USD"),
+        (["USD", "EUR"], "conflict", None),
+        (["USD", ""], "missing", None),
+        (["USD", None], "missing", None),
+    ])
+    def test_currency_metadata_does_not_change_existing_aggregation(self, currencies, status, currency):
+        raw = pd.DataFrame([
+            {"as_of": "2026-10-16", "isin": "037833100", "cusip6": "037833",
+             "fund": fund, "name": name, "coupon": 5.0, "maturity": "2031-10-16",
+             "par_value": par, "market_value": mv, "currency": ccy}
+            for fund, name, par, mv, ccy in [
+                ("SPIB", "Small position", 100.0, 99.0, currencies[0]),
+                ("SPLB", "Largest position", 300.0, 303.0, currencies[1]),
+            ]
+        ])
+        row = canonicalize_bonds(raw).iloc[0]
+        assert row["par"] == 400.0
+        assert row["mv"] == 402.0
+        assert row["name"] == "Largest position"
+        assert row["price_dirty_raw"] == pytest.approx(100.5)
+        assert row["currency_status"] == status
+        assert row["currency"] == currency
+        assert bool(row["terms_consistent"])
+        raw.loc[0, "coupon"] = 6.0
+        changed = canonicalize_bonds(raw).iloc[0]
+        assert not bool(changed["terms_consistent"])
+        assert changed["coupon"] == 5.0  # incumbent largest-par metadata is retained
+        assert changed["par"] == row["par"]
+        assert changed["mv"] == row["mv"]
+
+    def test_cmt_provenance_keeps_numeric_api_and_never_uses_a_future_curve(self):
+        from engine.corp_credit import _build_cmt_lookup, _selected_cmt_dates
+        curve = pd.DataFrame({"1.0": [4.0, 5.0], "10.0": [4.0, 5.0]},
+                             index=pd.to_datetime(["2026-10-09", "2026-10-16"]))
+        observed = pd.Series(["2026-10-12", "2026-10-19", "2026-10-26"])
+        result = compute_g_spread_bp(pd.Series([6.0] * 3), pd.Series([5.0] * 3), observed, curve)
+        assert len(result) == 2
+        cmt, spread = result
+        assert cmt.iloc[:2].tolist() == [4.0, 5.0]
+        assert spread.iloc[:2].tolist() == [200.0, 100.0]
+        assert pd.isna(cmt.iloc[2]) and pd.isna(spread.iloc[2])
+        assert list(_build_cmt_lookup(curve, pd.DatetimeIndex(observed)).columns) == ["1.0", "10.0"]
+        selected = _selected_cmt_dates(curve, observed)
+        assert selected.iloc[:2].tolist() == ["2026-10-09", "2026-10-16"]
+        assert pd.isna(selected.iloc[2])
+
+    def test_codec_enforces_exact_byte_and_record_limits(self):
+        import json
+        from engine.corp_credit import (
+            INSTRUMENT_HISTORY_MAX_BYTES, _build_bond_panel_latest, parse_instrument_history,
+        )
+        panel, dates = _bounded_history_panel()
+        raw = _build_bond_panel_latest(panel, dates, calculation_convention="clean").iloc[0]["instrument_history_json"]
+        padding = " " * (INSTRUMENT_HISTORY_MAX_BYTES - len(raw.encode("utf-8")))
+        assert parse_instrument_history(raw + padding, isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError, match="byte limit"):
+            parse_instrument_history(raw + padding + " ", isin="037833100", as_of=dates[-1])
+        payload = json.loads(raw)
+        payload["observations"].append(payload["observations"][-1])
+        with pytest.raises(ValueError, match="observation limit"):
+            parse_instrument_history(json.dumps(payload, separators=(",", ":")), isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError, match="duplicate JSON key"):
+            parse_instrument_history('{"schema":"duplicate",' + raw[1:], isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError):
+            parse_instrument_history("[" * 1100 + "0" + "]" * 1100,
+                                     isin="037833100", as_of=dates[-1])
+
+    @pytest.mark.parametrize("change", ["duplicate", "future", "future_curve", "nan", "boolean", "claim"])
+    def test_codec_rejects_conflicting_dates_values_and_unsupported_claims(self, change):
+        import json
+        from engine.corp_credit import _build_bond_panel_latest, parse_instrument_history
+        panel, dates = _bounded_history_panel()
+        raw = _build_bond_panel_latest(panel, dates, calculation_convention="clean").iloc[0]["instrument_history_json"]
+        payload = json.loads(raw)
+        if change == "duplicate":
+            payload["observations"][1]["as_of"] = payload["observations"][0]["as_of"]
+        elif change == "future":
+            payload["observations"][-1]["as_of"] = "2026-10-19"
+        elif change == "future_curve":
+            payload["observations"][-1]["cmt_as_of"] = "2026-10-19"
+        elif change == "nan":
+            payload["observations"][-1]["g_spread_bp"] = float("nan")
+        elif change == "boolean":
+            payload["observations"][-1]["g_spread_bp"] = True
+        else:
+            payload["independent_historical_pricing_qualified"] = True
+        with pytest.raises(ValueError):
+            parse_instrument_history(json.dumps(payload, separators=(",", ":")),
+                                     isin="037833100", as_of=dates[-1])
+
+    def test_snapshot_rebuilds_history_after_a_price_convention_change(self, monkeypatch, tmp_path):
+        import json
+        import engine.corp_credit as cc
+        dates = ["2026-10-14", "2026-10-15", "2026-10-16"]
+        raw = pd.DataFrame([
+            {"as_of": day, "isin": "037833100", "cusip6": "037833", "fund": "SPIB",
+             "name": "Synthetic bond", "coupon": 5.0, "maturity": "2031-10-16",
+             "par_value": 1000.0, "market_value": 990.0, "currency": "USD"}
+            for day in dates
+        ])
+        registry = {"themes": {"synthetic": {"issuers": {"TEST0": {"tier": "IG"}}}}}
+        monkeypatch.setattr(cc, "_load_holdings", lambda root: raw.copy())
+        monkeypatch.setattr(cc, "_load_issuer_registry", lambda root: registry)
+        monkeypatch.setattr(cc, "_load_cmt_curve", lambda root: pd.DataFrame(
+            {"1.0": [4.0] * 3, "10.0": [4.0] * 3}, index=pd.to_datetime(dates)))
+        monkeypatch.setattr(cc, "_load_baml_oas", lambda root: None)
+        monkeypatch.setattr(cc, "_load_ticker_sectors", lambda root: {})
+        monkeypatch.setattr(cc, "_load_constituents_name_sector", lambda root: {})
+        monkeypatch.setattr(cc, "match_issuers", lambda panel, reg: (
+            pd.Series("TEST0", index=panel.index), pd.Series("synthetic", index=panel.index)))
+        monkeypatch.setattr(cc, "initial_price_convention", lambda *args: "dirty")
+        monkeypatch.setattr(cc, "run_validation", lambda *args: {
+            "as_of": dates[-1], "overall": "PASS", "price_convention": "clean",
+            "sample_metadata": {"LQD": {"as_of": dates[-1]}}, "criteria": {},
+        })
+        original = cc._build_bond_panel_latest
+        conventions = []
+        def build(panel, source_dates, *, calculation_convention):
+            conventions.append(calculation_convention)
+            return original(panel, source_dates, calculation_convention=calculation_convention)
+        monkeypatch.setattr(cc, "_build_bond_panel_latest", build)
+        cc.snapshot(root=tmp_path)
+        latest = pd.read_parquet(tmp_path / "corp_bonds/series/bond_panel_latest.parquet")
+        payload = cc.parse_instrument_history(
+            latest.iloc[0]["instrument_history_json"], isin="037833100", as_of=dates[-1])
+        receipt = json.loads((tmp_path / "corp_bonds/validation.json").read_text())
+        assert conventions == ["dirty", "clean"]
+        assert payload["calculation_convention"] == "clean"
+        assert all(row["price_clean"] == 99.0 for row in payload["observations"])
+        assert all(row["price_dirty"] == pytest.approx(99.0 + row["accrued_pct"])
+                   for row in payload["observations"])
+        assert receipt["input_binding"]["instrument_history"]["convention_verified_rows"] == 3
+        assert receipt["input_binding"]["instrument_history"]["unmapped_latest_rows"] == 0

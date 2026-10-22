@@ -416,3 +416,192 @@ def test_initial_price_probe_reuses_resolved_convention_without_acceptance(monke
     sample["as_of"] = "2026-10-14"
     assert cc.initial_price_convention(panel, tmp_path) == "dirty"
     assert len(calls) == 1
+
+def _bounded_history_inputs():
+    from engine.corp_credit import compute_first_seen
+    history, latest, registry, stocks = fixture()
+    rows = []
+    for i, bond in latest.iterrows():
+        dates = history[history["issuer"] == bond["issuer"]]["as_of"].tolist()
+        for j, day in enumerate(dates):
+            spread = 100.0 + j * (5.0 if i == 0 else 1.0)
+            rows.append({
+                **bond.to_dict(), "as_of": day, "theme": "synthetic", "segment": "ig",
+                "sector": "Synthetic", "funds": "SPIB", "tenor_yrs": 5.0,
+                "mv": 990.0, "price_clean": 99.0, "price_dirty": 100.0, "accrued_pct": 1.0,
+                "ytm_pct": 4.0 + spread / 100.0, "cmt_pct": 4.0,
+                "cmt_as_of": day, "g_spread_bp": spread,
+                "currency": "USD", "currency_status": "observed", "terms_consistent": True,
+            })
+    panel = pd.DataFrame(rows)
+    panel["first_seen"] = compute_first_seen(panel)
+    return panel, registry, stocks
+
+
+def _write_bounded_history_store(root, panel=None):
+    from engine.corp_credit import (
+        _build_bond_panel_latest, _build_issuer_daily, bind_validation_inputs, compute_first_seen,
+    )
+    default, registry, stocks = _bounded_history_inputs()
+    panel = (default if panel is None else panel).copy()
+    panel["first_seen"] = compute_first_seen(panel)
+    dates = sorted(panel["as_of"].unique().tolist())
+    history = _build_issuer_daily(panel, dates)
+    latest = _build_bond_panel_latest(panel, dates, calculation_convention="clean")
+    cc = root / "corp_bonds"
+    (cc / "series").mkdir(parents=True)
+    (root / "baskets/ohlcv").mkdir(parents=True)
+    history.to_parquet(cc / "series/issuer_daily.parquet", index=False)
+    latest.to_parquet(cc / "series/bond_panel_latest.parquet", index=False)
+    (cc / "issuer_themes.json").write_text(json.dumps(registry))
+    for ticker, series in stocks.items():
+        series.to_frame("close").to_parquet(root / "baskets/ohlcv" / f"{ticker}.parquet")
+    receipt = {
+        "as_of": END.isoformat(), "overall": "PASS", "price_convention": "clean",
+        "sample_metadata": {"LQD": {"as_of": END.isoformat()}},
+        "criteria": {"b": {"LQD": {"median_bp": 1.0}}},
+    }
+    receipt = bind_validation_inputs(
+        receipt, root, observation_as_of=END.isoformat(), calculation_convention="clean")
+    (cc / "validation.json").write_text(json.dumps(receipt))
+    return cc, receipt
+
+
+def test_bounded_history_real_producer_receipt_loader_and_view(tmp_path):
+    from engine.credit_dislocation_view import MAX_SNAPSHOT_BYTES, build_view
+    cc, receipt = _write_bounded_history_store(tmp_path)
+    before = {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()}
+    result = load_snapshot(tmp_path, as_of=END)
+    after = {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()}
+    assert before == after
+    assert result["pricing_validation"]["instrument_history_verified"] is True
+    binding = receipt["input_binding"]["instrument_history"]
+    assert binding["population"] == "current_registry_mapped_instruments"
+    assert binding["instrument_rows"] == 6
+    assert binding["observation_rows"] == 132
+    assert binding["convention_verified_rows"] == 132
+    assert binding["absent_mapped_rows"] == 0
+    history = first(result)["bonds"][0]["instrument_history"]
+    assert history["observations"] == 22
+    assert history["first_seen"] == "2026-08-03"
+    assert history["change_5"]["value_bp"] == 25.0
+    assert history["change_21"]["value_bp"] == 105.0
+    assert history["currency"] == "USD"
+    assert history["cmt_as_of"] == END.isoformat()
+    assert history["historical_publication_qualified"] is False
+    assert history["independent_historical_pricing_qualified"] is False
+    view = build_view(result, as_of=END)["issuers"][0]["bonds"][0]
+    assert view["history5"] == "+25.0 bp"
+    assert view["history21"] == "+105.0 bp"
+    assert not any(result["authority"].values())
+    assert result["cds"]["status"] == "unavailable"
+    assert len(json.dumps(result).encode("utf-8")) < MAX_SNAPSHOT_BYTES
+
+
+@pytest.mark.parametrize("change,reason", [
+    ("missing_baseline", "missing_session_or_matched_change"),
+    ("missing_inside", "missing_session_or_matched_change"),
+    ("young", "missing_session_or_matched_change"),
+    ("near_par", "missing_session_or_matched_change"),
+    ("terms_conflict", "history_terms_conflict"),
+    ("terms_changed", "history_terms_changed"),
+    ("currency_missing", "history_currency_unknown"),
+    ("currency_conflict", "history_currency_conflict"),
+    ("non_usd", "history_currency_unsupported"),
+])
+def test_instrument_windows_withhold_missing_or_incomparable_observations(tmp_path, change, reason):
+    panel, _, _ = _bounded_history_inputs()
+    dates = sorted(panel["as_of"].unique())
+    issuer = panel["issuer"] == "TEST0"
+    last = issuer & (panel["as_of"] == dates[-1])
+    if change == "missing_baseline":
+        panel = panel[~(issuer & (panel["as_of"] == dates[-6]))]
+    elif change == "missing_inside":
+        panel = panel[~(issuer & (panel["as_of"] == dates[-3]))]
+    elif change == "young":
+        panel = panel[~(issuer & (panel["as_of"] < dates[-5]))]
+    elif change == "near_par":
+        panel.loc[last, "near_par_call_flag"] = True
+    elif change == "terms_conflict":
+        panel.loc[last, "terms_consistent"] = False
+    elif change == "terms_changed":
+        panel.loc[issuer & (panel["as_of"] == dates[-3]), "coupon"] = 6.0
+    elif change == "currency_missing":
+        panel.loc[last, ["currency", "currency_status"]] = [None, "missing"]
+    elif change == "currency_conflict":
+        panel.loc[last, ["currency", "currency_status"]] = [None, "conflict"]
+    else:
+        panel.loc[last, "currency"] = "EUR"
+    _write_bounded_history_store(tmp_path, panel)
+    result = load_snapshot(tmp_path, as_of=END)
+    history = first(result)["bonds"][0]["instrument_history"]
+    assert history["change_5"]["value_bp"] is None
+    assert history["change_5"]["reason"] == reason
+    assert result["pricing_validation"]["instrument_history_verified"] is True
+    assert first(result)["bonds"][0]["fund_held_par"] == 1000.0
+    assert not any(result["authority"].values())
+
+
+def test_short_observed_history_is_not_padded_to_twenty_two_rows(tmp_path):
+    panel, _, _ = _bounded_history_inputs()
+    dates = sorted(panel["as_of"].unique())[-10:]
+    panel = panel[panel["as_of"].isin(dates)]
+    _write_bounded_history_store(tmp_path, panel)
+    history = first(load_snapshot(tmp_path, as_of=END))["bonds"][0]["instrument_history"]
+    assert history["observations"] == 10
+    assert history["first_seen"] == dates[0]
+    assert history["change_5"]["value_bp"] == 25.0
+    assert history["change_21"]["value_bp"] is None
+
+
+def test_absent_optional_history_differs_from_invalid_history(tmp_path):
+    old_root = tmp_path / "old"
+    _write_qualified_store(old_root)
+    old = first(load_snapshot(old_root, as_of=END))["bonds"][0]["instrument_history"]
+    assert old["status"] == "unavailable"
+    assert old["reason"] == "history_unavailable"
+    new_root = tmp_path / "new"
+    cc, _ = _write_bounded_history_store(new_root)
+    path = cc / "series/bond_panel_latest.parquet"
+    frame = pd.read_parquet(path)
+    frame.loc[frame["issuer"] == "TEST0", "instrument_history_json"] = "{}"
+    frame.to_parquet(path, index=False)
+    result = load_snapshot(new_root, as_of=END)
+    invalid = first(result)["bonds"][0]["instrument_history"]
+    assert invalid["status"] == "invalid"
+    assert invalid["reason"] == "history_invalid"
+    assert invalid["change_5"]["value_bp"] is None
+    assert result["instrument_history_coverage"]["invalid_instrument_rows"] == 1
+
+
+def test_history_change_invalidates_same_day_receipt_and_bad_rebinding(tmp_path):
+    from engine.corp_credit import bind_validation_inputs
+    cc, receipt = _write_bounded_history_store(tmp_path)
+    before = load_snapshot(tmp_path, as_of=END)
+    path = cc / "series/bond_panel_latest.parquet"
+    frame = pd.read_parquet(path)
+    index = frame.index[frame["issuer"] == "TEST0"][0]
+    payload = json.loads(frame.loc[index, "instrument_history_json"])
+    payload["observations"][0]["price_clean"] += 0.25
+    frame.loc[index, "instrument_history_json"] = json.dumps(payload, separators=(",", ":"))
+    frame.to_parquet(path, index=False)
+    result = load_snapshot(tmp_path, as_of=END)
+    assert result["pricing_validation"]["reason"] == "validation_artifact_hash_mismatch"
+    assert first(result)["bonds"][0]["instrument_history"]["change_5"]["value_bp"] is None
+    assert result["observation_id"] != before["observation_id"]
+    with pytest.raises(ValueError, match="price convention"):
+        bind_validation_inputs(receipt, tmp_path, observation_as_of=END.isoformat(),
+                               calculation_convention="clean")
+
+
+def test_latest_price_receipt_cannot_stand_in_for_history_validation(tmp_path):
+    cc, receipt = _write_bounded_history_store(tmp_path)
+    receipt["input_binding"].pop("instrument_history")
+    (cc / "validation.json").write_text(json.dumps(receipt))
+    result = load_snapshot(tmp_path, as_of=END)
+    assert result["pricing_validation"]["status"] == "passed"
+    assert result["pricing_validation"]["instrument_history_verified"] is False
+    history = first(result)["bonds"][0]["instrument_history"]
+    assert history["reason"] == "history_binding_unqualified"
+    assert history["change_5"]["value_bp"] is None
+    assert history["change_21"]["value_bp"] is None

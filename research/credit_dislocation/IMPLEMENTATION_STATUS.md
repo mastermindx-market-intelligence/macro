@@ -1,3 +1,15 @@
+# Current implementation status — bounded W4 history, 22 October 2026
+
+**W4 source and existing contract qualification are complete; real retained-input/native, candidate visual, review and production acceptance remain open.** Optional history uses the existing CCW panel and validation receipt, capped at 22 actual common-session records/16,384 UTF-8 bytes per mapped instrument. CDI emits compact separately qualified 5/21 summaries through its existing inspector. Population/levels and incumbent numeric/seasoning guards stay intact. No new artifact, writer, job or lifecycle.
+
+Qualification: 276 passed plus one missing-scalar assertion failure; the corrected focused assertion passed with production source unchanged. Six registry/DAG owner contracts passed. Evidence is in evidence/instrument_history_qualification_20261022.json. Historical publication and independent historical pricing remain false, with source and scenario authority unchanged.
+
+Original holdings and LQD are actually dated 2026-10-15 and contain one holdings date; real 5/21-window evidence is not established. A new isolated fixed-input CCW→validation→CDI→native execution must preserve the newer main146 market refresh and prior proof images. The current generated-page conflict is a real data change. Current browser candidate connectivity is unresolved; no candidate screenshots or independent review are claimed.
+
+Forex's original-receipt clock contract separately passed 524 tests, preserving explicit historical v1 and using strict current v2 defaults. Existing source-admission gates remain open. The FIF read stopped at an unconfigured existing factory before any object read; financial input absence remains scoped truthfully. All original Terminal/Fabric/deployment/0038 restrictions, Macro accepted evidence and Chairman-complete Tiingo licensing remain preserved.
+
+## Historical implementation records below
+
 # Current implementation status — 22 October 2026, matched-panel qualification
 
 The existing CCW matched-panel producer repair is source-qualified: original regressions **4 failed / 1 passed**, repaired corporate-credit/CDI/momentum suites **206 passed in 9.95s**. Initial five-bar seasoning and factual entered/exited-par composition are now preserved on empty/invalid delta paths. Exact identities are in evidence/matched_panel_guards_qualification_20261022.json.

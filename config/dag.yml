@@ -4377,6 +4377,7 @@ modules:
     reads:
       - data/corp_bonds/series/issuer_daily.parquet
       - data/corp_bonds/series/bond_panel_latest.parquet
+      - data/corp_bonds/validation.json
       - data/corp_bonds/issuer_themes.json
       - data/baskets/ohlcv/*.parquet
       - data/yahoo/*.parquet

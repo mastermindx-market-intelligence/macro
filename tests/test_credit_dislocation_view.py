@@ -195,3 +195,83 @@ def test_view_withholds_derived_values_without_exact_pricing_qualification(prici
     assert view["issuers"][0]["bonds"][0]["spread"] == "\u2014"
     assert compact_context(view)["pricing_qualified"] is False
     assert 'data-cdi-pricing="unqualified"' in render(view)
+
+def _sample_with_instrument_history():
+    from engine.corp_credit import (
+        INSTRUMENT_HISTORY_BASIS, INSTRUMENT_HISTORY_POPULATION, INSTRUMENT_HISTORY_SCHEMA,
+    )
+    from lib.nyse_calendar import session_n_back
+    payload = sample()
+    payload["pricing_validation"]["instrument_history_verified"] = True
+    payload["issuers"][0]["bonds"][0]["instrument_history"] = {
+        "schema": INSTRUMENT_HISTORY_SCHEMA, "population": INSTRUMENT_HISTORY_POPULATION,
+        "valuation_basis": INSTRUMENT_HISTORY_BASIS,
+        "status": "available", "reason": None, "observations": 22,
+        "first_seen": "2026-08-03",
+        "observed_from": session_n_back(TODAY, 21).isoformat(),
+        "observed_through": TODAY.isoformat(), "currency": "USD",
+        "cmt_as_of": TODAY.isoformat(), "calculation_convention": "clean",
+        "historical_publication_qualified": False,
+        "independent_historical_pricing_qualified": False,
+        "change_5": {"value_bp": 25.0, "reason": None},
+        "change_21": {"value_bp": 105.0, "reason": None},
+    }
+    return payload
+
+
+def test_instrument_history_uses_existing_bilingual_inspector():
+    view = build_view(_sample_with_instrument_history(), as_of=TODAY)
+    bond = view["issuers"][0]["bonds"][0]
+    assert bond["history5"] == "+25.0 bp"
+    assert bond["history21"] == "+105.0 bp"
+    html = render(view)
+    for text in ["Instrument history", "债券历史", "5 / 21 sessions", "5 / 21个交易日",
+                 "22 observed dates", "USD", "Treasury observation", "美国国债观察日",
+                 "historical publication timing", "历史发布时点"]:
+        assert text in html
+    assert "data-cdi-bond-template" in html
+    assert "independently verified historical prices" in html
+    assert not any(view["authority"].values())
+
+
+def test_history_binding_is_separate_from_latest_pricing_and_stays_dated():
+    payload = _sample_with_instrument_history()
+    stale = build_view(payload, as_of=date(2026, 11, 2))
+    assert stale["status"] == "stale"
+    assert stale["issuers"][0]["state"] == "historical_only"
+    assert stale["issuers"][0]["bonds"][0]["history5"] == "+25.0 bp"
+    payload["pricing_validation"].pop("instrument_history_verified")
+    view = build_view(payload, as_of=TODAY)
+    assert view["pricing_qualified"] is True
+    bond = view["issuers"][0]["bonds"][0]
+    assert bond["history5"] == "—"
+    assert bond["history21"] == "—"
+    assert "22 observed dates" in bond["history_coverage_en"]
+    assert "matching validation binding" in bond["history_reason_en"]
+
+
+@pytest.mark.parametrize("change", [
+    {"observations": 23}, {"observations": True}, {"observations": 5},
+    {"observed_through": "2026-10-19"}, {"first_seen": "2026-10-19"},
+    {"cmt_as_of": "2026-10-19"}, {"currency": "EUR"},
+    {"historical_publication_qualified": True},
+    {"independent_historical_pricing_qualified": True},
+])
+def test_view_rejects_inconsistent_or_promoted_history(change):
+    payload = _sample_with_instrument_history()
+    payload["issuers"][0]["bonds"][0]["instrument_history"].update(change)
+    bond = build_view(payload, as_of=TODAY)["issuers"][0]["bonds"][0]
+    assert bond["history5"] == "—"
+    assert bond["history21"] == "—"
+    assert bond["history_reason_en"] == "Instrument history is invalid"
+
+
+def test_unqualified_price_never_leaks_new_history_numbers():
+    payload = _sample_with_instrument_history()
+    payload["pricing_validation"]["status"] = "unqualified"
+    view = build_view(payload, as_of=TODAY)
+    bond = view["issuers"][0]["bonds"][0]
+    assert bond["history5"] == "—"
+    assert bond["history21"] == "—"
+    assert "+105.0 bp" not in render(view)
+    assert view["paired_count"] == 0

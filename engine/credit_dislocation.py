@@ -20,6 +20,10 @@ from typing import Any
 import pandas as pd
 
 from lib.nyse_calendar import is_session, session_n_back, sessions_between
+from engine.corp_credit import (
+    INSTRUMENT_HISTORY_BASIS, INSTRUMENT_HISTORY_POPULATION,
+    INSTRUMENT_HISTORY_SCHEMA, parse_instrument_history,
+)
 
 SCHEMA = "corp_credit.dislocation.v1"
 METHOD = "matched-change-coarse-peer/1.0"
@@ -189,6 +193,93 @@ def _state(change: float | None, equity: float | None, *, stale: bool,
     return "no_large_relative_change"
 
 
+
+def _instrument_window(records: list[dict], end: date, horizon: int) -> dict:
+    if not records:
+        return {"value_bp": None, "reason": "insufficient_history"}
+    frame = pd.DataFrame(records)
+    frame["as_of"] = frame["as_of"].map(date.fromisoformat)
+    result = _window(frame, end, horizon)
+    if result["value_bp"] is None:
+        return result
+    start = date.fromisoformat(result["start"])
+    selected = [row for row in records if start <= date.fromisoformat(row["as_of"]) <= end]
+    latest = selected[-1]
+    reason = None
+    if any(not row["terms_consistent"] for row in selected):
+        reason = "history_terms_conflict"
+    elif any(row["currency_status"] == "conflict" for row in selected):
+        reason = "history_currency_conflict"
+    elif any(row["currency_status"] != "observed" for row in selected):
+        reason = "history_currency_unknown"
+    elif any(row["currency"] != "USD" for row in selected):
+        reason = "history_currency_unsupported"
+    elif any(row["coupon"] is None or row["maturity"] is None for row in selected):
+        reason = "history_terms_missing"
+    elif any((row["coupon"], row["maturity"]) != (latest["coupon"], latest["maturity"])
+             for row in selected):
+        reason = "history_terms_changed"
+    return {"value_bp": None, "reason": reason} if reason else result
+
+
+def _instrument_history(bond: pd.Series, end: date) -> tuple[dict, bool]:
+    summary = {
+        "schema": INSTRUMENT_HISTORY_SCHEMA,
+        "population": INSTRUMENT_HISTORY_POPULATION,
+        "valuation_basis": INSTRUMENT_HISTORY_BASIS,
+        "status": "unavailable", "reason": "history_unavailable",
+        "observations": 0, "first_seen": None, "observed_from": None,
+        "observed_through": None, "currency": None, "cmt_as_of": None,
+        "calculation_convention": None,
+        "historical_publication_qualified": False,
+        "independent_historical_pricing_qualified": False,
+        "change_5": {"value_bp": None, "reason": "history_unavailable"},
+        "change_21": {"value_bp": None, "reason": "history_unavailable"},
+    }
+    try:
+        history = parse_instrument_history(
+            bond.get("instrument_history_json"), isin=str(bond["isin"]),
+            as_of=end.isoformat(), issuer=str(bond["issuer"]),
+        )
+    except (ValueError, TypeError, KeyError, OverflowError):
+        summary.update(status="invalid", reason="history_invalid")
+        summary["change_5"] = {"value_bp": None, "reason": "history_invalid"}
+        summary["change_21"] = {"value_bp": None, "reason": "history_invalid"}
+        return summary, False
+    if history is None:
+        return summary, False
+    records = history["observations"]
+    summary.update(
+        observations=len(records), first_seen=history["first_seen"],
+        calculation_convention=history["calculation_convention"],
+        observed_from=records[0]["as_of"] if records else None,
+        observed_through=records[-1]["as_of"] if records else None,
+        currency=records[-1]["currency"] if records else None,
+        cmt_as_of=records[-1]["cmt_as_of"] if records else None,
+    )
+    if not identifier(bond["isin"])["checksum_valid"]:
+        short = long = {"value_bp": None, "reason": "history_identifier_unresolved"}
+    else:
+        short, long = _instrument_window(records, end, 5), _instrument_window(records, end, 21)
+    summary.update(
+        change_5=short, change_21=long,
+        status="available" if short["value_bp"] is not None and long["value_bp"] is not None
+               else "partial" if records else "unavailable",
+        reason=short.get("reason") or long.get("reason"),
+    )
+    return summary, True
+
+
+def _withhold_instrument_history(summary: dict, reason: str) -> dict:
+    if summary.get("status") == "invalid" or summary.get("reason") == "history_unavailable":
+        return summary
+    result = dict(summary, reason=reason)
+    result["change_5"] = {"value_bp": None, "reason": reason}
+    result["change_21"] = {"value_bp": None, "reason": reason}
+    result["status"] = "partial" if result.get("observations") else "unavailable"
+    return result
+
+
 def compile_snapshot(issuer_daily: pd.DataFrame, bonds: pd.DataFrame, registry: dict,
                      equities: dict[str, pd.Series], *, as_of: date,
                      provenance: dict | None = None) -> dict:
@@ -207,7 +298,11 @@ def compile_snapshot(issuer_daily: pd.DataFrame, bonds: pd.DataFrame, registry: 
                              "descriptive_widening_bp": WIDENING_BP,
                              "equity_weak_pct": EQUITY_WEAK_PCT,
                              "thresholds_validated": False},
-              "coverage": {"bond_rows": len(panel), "issuers": 0}}
+              "coverage": {"bond_rows": len(panel), "issuers": 0},
+              "instrument_history_coverage": {
+                  "population": INSTRUMENT_HISTORY_POPULATION,
+                  "instrument_rows": 0, "observation_rows": 0, "invalid_instrument_rows": 0,
+              }}
     if history.empty:
         return result
     history = history[history["as_of"].map(is_session)].sort_values(["issuer", "as_of"])
@@ -239,6 +334,10 @@ def compile_snapshot(issuer_daily: pd.DataFrame, bonds: pd.DataFrame, registry: 
             issuer_panel = issuer_panel[issuer_panel["as_of"] == end]
         for _, b in issuer_panel.iterrows():
             ident = identifier(b["isin"])
+            instrument_history, parsed_history = _instrument_history(b, end)
+            result["instrument_history_coverage"]["instrument_rows"] += int(parsed_history)
+            result["instrument_history_coverage"]["observation_rows"] += instrument_history["observations"]
+            result["instrument_history_coverage"]["invalid_instrument_rows"] += int(instrument_history["status"] == "invalid")
             securities.append({"identifier": ident, "name": str(b.get("name", "")),
                 "as_of": end.isoformat(), "maturity": str(b.get("maturity", "")),
                 "coupon_pct": _number(b.get("coupon")), "price_clean": _number(b.get("price_clean")),
@@ -246,7 +345,10 @@ def compile_snapshot(issuer_daily: pd.DataFrame, bonds: pd.DataFrame, registry: 
                 "near_par_call_flag": (None if pd.isna(b.get("near_par_call_flag"))
                                       else bool(b.get("near_par_call_flag"))),
                 "terms_status": "legal_currency_seniority_options_not_resolved",
-                "spread_history": "not_available_in_latest_panel"})
+                "spread_history": ("bounded_retained_history" if parsed_history
+                                   else "invalid_history" if instrument_history["status"] == "invalid"
+                                   else "not_available_in_latest_panel"),
+                "instrument_history": instrument_history})
         securities.sort(key=lambda b: (b["maturity"], b["identifier"]["value"]))
         rows.append({"issuer": issuer, **meta, "source_as_of": end.isoformat(),
             "identity_status": "registry_economic_parent_proxy", "n_bonds": len(securities),
@@ -291,10 +393,11 @@ def _digest(path: Path, payload: bytes | None = None) -> dict:
 
 
 def _pricing_qualification(cc: Path, provenance: dict, *, source_as_of: str | None,
-                           as_of: date) -> dict:
+                           as_of: date, history_coverage: dict | None = None) -> dict:
     """Read the existing CCW verdict; never manufacture a pass from a new clock."""
     result = {"status": "unqualified", "reason": "validation_unavailable",
-              "source_binding_verified": False, "observation_as_of": source_as_of}
+              "source_binding_verified": False, "observation_as_of": source_as_of,
+              "instrument_history_verified": False}
     path = cc / "validation.json"
     try:
         payload = path.read_bytes()
@@ -322,6 +425,23 @@ def _pricing_qualification(cc: Path, provenance: dict, *, source_as_of: str | No
             result.update(status="passed", reason=None, source_binding_verified=True,
                           sample_as_of=source_as_of,
                           lqd_median_error_bp=val.get("criteria", {}).get("b", {}).get("LQD", {}).get("median_bp"))
+            history = binding.get("instrument_history")
+            coverage = history_coverage or {}
+            result["instrument_history_verified"] = bool(
+                isinstance(history, dict)
+                and history.get("schema") == INSTRUMENT_HISTORY_SCHEMA
+                and history.get("population") == INSTRUMENT_HISTORY_POPULATION
+                and history.get("valuation_basis") == INSTRUMENT_HISTORY_BASIS
+                and history.get("historical_publication_qualified") is False
+                and history.get("independent_historical_pricing_qualified") is False
+                and coverage.get("invalid_instrument_rows") == 0
+                and type(history.get("instrument_rows")) is int
+                and type(history.get("observation_rows")) is int
+                and history["instrument_rows"] == coverage.get("instrument_rows")
+                and history["observation_rows"] == coverage.get("observation_rows")
+                and type(history.get("convention_verified_rows")) is int
+                and 0 <= history["convention_verified_rows"] <= history["observation_rows"]
+            )
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         result["reason"] = "validation_unreadable_or_incomplete"
     return result
@@ -381,7 +501,10 @@ def load_snapshot(root: Path, *, as_of: date) -> dict:
             _, equities[ticker], provenance[f"equity:{issuer}"] = max(candidates, key=lambda item: item[0])
     snapshot = compile_snapshot(issuer_frame, bond_frame, registry, equities,
                                 as_of=as_of, provenance=provenance)
-    pricing = _pricing_qualification(cc, provenance, source_as_of=snapshot.get("source_as_of"), as_of=as_of)
+    pricing = _pricing_qualification(
+        cc, provenance, source_as_of=snapshot.get("source_as_of"), as_of=as_of,
+        history_coverage=snapshot.get("instrument_history_coverage"),
+    )
     snapshot["pricing_validation"] = pricing
     if pricing["status"] != "passed":
         for row in snapshot["issuers"]:
@@ -395,6 +518,11 @@ def load_snapshot(root: Path, *, as_of: date) -> dict:
                 bond["price_clean"] = None
                 bond["g_spread_bp"] = None
         snapshot["coverage"].update(issuers_with_5_sessions=0, paired_comparisons=0)
+    if not pricing["instrument_history_verified"]:
+        reason = "pricing_unqualified" if pricing["status"] != "passed" else "history_binding_unqualified"
+        for row in snapshot["issuers"]:
+            for bond in row.get("bonds", []):
+                bond["instrument_history"] = _withhold_instrument_history(bond["instrument_history"], reason)
     return _seal_snapshot(snapshot)
 
 
