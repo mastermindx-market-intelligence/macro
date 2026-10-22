@@ -10,36 +10,52 @@ client-side wire admission layer. This view is a detached render callback;
 it does not fetch, mount itself, choose identity, originate alerts, save state or
 perform any numeric/risk synthesis. The source transport must still bind exact
 subject, horizon, knowledge cutoff, permission, entitlement and upstream receipt.
-The documented transport shape is `market_navigator.response/v1`, whose
+The documented transport shape is `market_navigator.response/v2`, whose
 `data` is the closed `market_navigator.context/v1` public projection.
 Its `authority` keys are all false; status/thresholds are not trade signals.
 
-The host can compose (after loading the two JS files and view CSS, inside its
-existing authenticated scope):
+W3 tightens the response contract to v2: the Python binder emits a
+SHA-256 binding of the exact requested instrument and the JS client checks
+it against a WebCrypto SHA-256 of the current requested subject before
+admitting content. This is correlation, **not authentication** or an
+entitlement receipt. It does not disclose raw internal IDs or grant source
+use. The client fails closed without Web Crypto (HTTPS/secure origin is
+required); the browser test uses an intercepted localhost origin without
+issuing external requests. An old v1 response does not silently pass.
+
+The host can mount inside its existing authenticated page with
+`market_navigator_client.js`, `market_navigator_view.js`,
+`market_navigator_mount.js` and isolated view CSS. It **must** supply a
+current-principal/entitlement scope token and an approved read callback:
 
 ```js
-const view = window.MastermindNavigatorView.createView(
+const navigatorSurface = MastermindNavigatorMount.createSurface(
   document.getElementById('navigator-region'),
-  {language: 'en', theme: 'dark', subjectLabel: 'SPY · NYSE Arca'}
+  {getScope: () => existingAuthOwnerCurrentScopeKey()}
 );
-const client = window.MastermindNavigatorClient.createController({
-  read: (request, signal) => existingAuthorizedRead(request, signal),
-  render: view.render
+navigatorSurface.rebind({
+  scope_key: existingAuthOwnerCurrentScopeKey(),
+  subject: verifiedId, horizon: 'swing', as_of: exactCutoff,
+  subjectLabel: trustedPublicLabel, language: 'en', theme: 'dark',
+  read: (request, signal) => existingAuthorizedRead(request, signal)
 });
-// Only on an actual user selection with verified rights and source availability:
-// await client.load({subject: verifiedId, horizon: 'swing', as_of: exactCutoff});
-// On auth / entitlement / account / instrument scope changes, clear before changing scope:
-client.clear();
-// On owner-unmount:
-client.dispose();
-view.dispose();
+// Only upon deliberate signed-in user selection:
+// await navigatorSurface.activate();
+// On account/entitlement/instrument change, rebind to a NEW exact scope
+// before activation; old content is cleared/cancelled synchronously.
+// On unmount: navigatorSurface.dispose();
 ```
 
-`existingAuthorizedRead` above is intentionally **not** implemented. The actual
-application must supply the admitted existing owner read. An anonymous 401,
-unsupported subject or absent original capture must render an unavailable
-state, not trigger synthetic or nearest/current fallback. No direct
-`view.render` of unvalidated model output is a supported source path.
+The host callbacks above are **interfaces**, not implementations. This module
+never chooses a principal, fetches its own data, stores a token or creates an
+API endpoint. The new host binding checks scope again before dispatch,
+after the read resolves and just before rendering, preventing a prior
+account's response from flashing even if the host rebinds late. Rebind
+synchronously withdraws the old instrument view. An anonymous denial, unknown
+source receipt, unavailable exact capture or missing site permission remains
+unavailable; it never triggers synthetic or nearest/current fallback.
+A successful activation means the read call returned, not that the data
+were valid, the rights admitted or a prediction qualified.
 
 ## User experience
 

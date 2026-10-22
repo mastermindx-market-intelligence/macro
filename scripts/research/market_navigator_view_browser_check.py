@@ -104,23 +104,42 @@ def main() -> None:
                     failures: list[str] = []
                     requests: list[str] = []
                     page.on("pageerror", lambda error: failures.append(str(error)))
-                    page.on("request", lambda request: requests.append(request.url))
-                    page.set_content('<main id="navigator"></main>')
+                    page.on("request", lambda request: requests.append(request.url)
+                            if not request.url.startswith("http://localhost/") else None)
+                    # An intercepted localhost navigation supplies a secure origin
+                    # for Web Crypto (about:blank has no subtle digest). It makes
+                    # no real network call or backend request.
+                    page.route("http://localhost/**", lambda route: route.fulfill(
+                        status=200,content_type="text/html",
+                        body='<main id="navigator"></main>'))
+                    page.goto("http://localhost/navigator-synthetic", wait_until="domcontentloaded")
+                    assert page.evaluate("isSecureContext && !!crypto.subtle")
                     page.add_style_tag(path=str(_ROOT / "templates/market_navigator_view.css"))
                     page.add_script_tag(path=str(_ROOT / "templates/market_navigator_client.js"))
                     page.add_script_tag(path=str(_ROOT / "templates/market_navigator_view.js"))
+                    page.add_script_tag(path=str(_ROOT / "templates/market_navigator_mount.js"))
                     output = page.evaluate("""async ({wire,language,theme}) => {
                       const storage = [];
                       ['getItem','setItem','removeItem','clear'].forEach(name => {
                         Storage.prototype[name] = function(){storage.push(name);throw new Error('browser storage accessed');};
                       });
-                      const view = window.MastermindNavigatorView.createView(
-                        document.querySelector('#navigator'), {language,theme,subjectLabel:'SPY · NYSE Arca'});
-                      const client = window.MastermindNavigatorClient.createController({
-                        render:view.render,
-                        read:async request => ({...wire,request_id:request.request_id})
+                      window.__navigatorScope='fixture:principal-A';
+                      window.__navigatorReads=0;
+                      const surface=window.MastermindNavigatorMount.createSurface(
+                        document.querySelector('#navigator'), {getScope:()=>window.__navigatorScope});
+                      window.__navigatorSurface=surface;
+                      surface.rebind({
+                        scope_key:'fixture:principal-A',
+                        subject:'SPY:ARCX',horizon:'swing',as_of:wire.requested_as_of,
+                        subjectLabel:'SPY · NYSE Arca',language,theme,
+                        read:async request => {
+                          window.__navigatorReads++;
+                          return {...wire,request_id:request.request_id};
+                        }
                       });
-                      await client.load({subject:'SPY:ARCX',horizon:'swing',as_of:wire.requested_as_of});
+                      if (window.__navigatorReads!==0) throw Error('auto-read violated');
+                      await surface.activate();
+                      if (window.__navigatorReads!==1) throw Error('extra source read');
                       return {storage,html:document.body.innerText};
                     }""", {"wire":wire, "language":language,"theme":theme})
                     assert not output["storage"]
@@ -156,9 +175,17 @@ def main() -> None:
                       v.render({status:'unavailable',data:null});}""")
                     assert page.locator(".mnv-path").count() == 0
                     assert "unavailable" in page.locator(".mnv-empty-title").inner_text()
+                    page.evaluate("""async () => {
+                      window.__navigatorScope='fixture:principal-B';
+                      const result=await window.__navigatorSurface.activate();
+                      if (result!==false || window.__navigatorReads!==1)
+                        throw Error('scope-switch leaked or read');
+                    }""")
+                    assert page.locator(".mnv-path").count() == 0
                     results.append({"width":width,"language":language,"theme":theme,
                                     "no_overflow":True,"paths":3,"focus_return":True,
-                                    "withdraws_stale":True,"storage_accesses":0,"network_requests":0})
+                                    "withdraws_stale":True,"account_scope_denial":True,
+                                    "source_reads":1,"storage_accesses":0,"network_requests":0})
                     page.close()
         version = browser.version
         browser.close()

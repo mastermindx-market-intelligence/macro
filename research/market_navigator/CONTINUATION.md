@@ -130,3 +130,21 @@ source checks passed locally. Publish this fix on the same original branch,
 read back new head and consume its own hosted gate. No duplicate CI job,
 reviewer, or runtime source authority was created. W3 remains separate,
 source-only and awaits its own normal delivery.
+
+## Consumer integration continuation (2026-10-22)
+
+The attended source W3 writer is
+`/Volumes/Mastermind/agent-workspaces/macro/web/market-navigator-w3-ui-20261022-sol`
+on `sol/web-market-navigator-w3-ui-20261022-sol`, original stacked PR #10076.
+New precise support: completed-bar price confirmation and v2
+request-subject digest with principal/entitlement-scoped no-auto-read
+mount. Full 259-test Navigator suite and 8 Chromium matrices pass
+locally. No live source was bound. Any new endpoint must have an
+actual incumbent owner-approved rights/purpose grant; the legacy
+Market Memory guard admits only its named existing routes and cannot
+be copied into a Navigator route as a license shortcut.
+Original parent #10055 and current Fabric independent review
+`market-navigator-review-e05fbe3-20261022` retain their original
+identities/effect custody. Do not duplicate the review, force-merge
+or retarget W3 prematurely; qualification and signed-in proof are
+distinct.

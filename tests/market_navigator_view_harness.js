@@ -4,6 +4,7 @@
  */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const {createHash} = require('node:crypto');
 
 class Node {
   constructor(tag, doc) {
@@ -53,7 +54,8 @@ global.document = doc;
 const client = require('../templates/market_navigator_client.js');
 const viewModule = require('../templates/market_navigator_view.js');
 const wire=JSON.parse(fs.readFileSync(0,'utf8'));
-const request={request_id:'navigator-1',horizon:'swing',as_of:wire.requested_as_of};
+const request={request_id:'navigator-1',horizon:'swing',as_of:wire.requested_as_of,
+  subject_binding_sha256:createHash('sha256').update('SPY:ARCX','utf8').digest('hex')};
 const data=client.validate(wire,request);
 const mount=new Node('main',doc);
 const view=viewModule.createView(mount,{language:'en',theme:'dark',subjectLabel:'SPY · NYSE Arca'});

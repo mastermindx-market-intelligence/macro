@@ -224,3 +224,43 @@ bar/sequence receipts, operational prices, predictive performance, live
 route/mount, Paper-native design, user-account save/restore and release
 remain outstanding. Existing PR #10055 and its held independent review
 are unchanged by this separate W3 source increment.
+
+
+## W3 exact instrument/account-scope binding (2026-10-22)
+
+The W3 integration fixes a distinct wrong-instrument response-replay risk:
+the initial response/v1 bound instrument identity before publication but
+removed it from the browser wire; unrelated controllers could both use
+the same local `navigator-1` correlation, horizon and cutoff. New
+`market_navigator.response/v2` adds the SHA-256 of the exact request
+subject. The request-bound browser consumer computes this digest using
+secure-origin WebCrypto before dispatch and rejects mismatched subjects,
+extra/missing envelope keys, and old v1 wire. This digest is *correlation*,
+NOT an authenticator, entitlement record, audience disclosure permission,
+or evidence that the source is current.
+
+A separate `templates/market_navigator_mount.js` is a no-URL,
+no-automatic-read, no-storage host interface: the existing authenticated
+application must supply the exact subject, time, horizon, principal and
+entitlement scope key and its already-admitted source reader. The mounted
+component checks that scope before read, after read and before render.
+Principal or instrument rebind atomically withdraws prior content, and
+a response resolved after scope change cannot be published. Node and
+Chromium tests include wrong-subject replay, unavailable WebCrypto,
+account switch during transport, absent source, late reply, no
+auto-read and visual state withdrawal. The implementation creates no new
+authentication, source admission, endpoint, account store or alert owner.
+
+Verification at this W3 candidate before commit:
+`python3 -m pytest tests/test_market_navigator*.py -q`: **259 passed**.
+`python3 scripts/research/market_navigator_view_browser_check.py
+--output research/market_navigator/VIEW_BROWSER_REPORT.json`: **8/8**
+Chromium desktop/mobile + EN/ZH + dark/light, using a locally intercepted
+secure origin and one synthetic read per permitted activation.
+The incumbent legacy CI manifest validator recognizes **350** job
+definitions, without adding a new job or relaxing controls. The
+existing Navigator job owns both added mount scripts and its two tests.
+These checks are synthetic code/browser verification, NOT authenticated
+production, Paper-native design, operational market data or a forecast
+success record. Source-use scope remains independently gated by the
+incumbent owner.

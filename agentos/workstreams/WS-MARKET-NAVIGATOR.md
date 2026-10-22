@@ -142,3 +142,18 @@ UI PR #10076 remains draft because current CI authority rejects the
 non-main stack base (`unsupported_base_ref`). Both original carriers are
 preserved; do not bypass, force retarget or conflate this new local proof
 with a completed/approved production capability.
+
+## W3 exact-scope host binding (2026-10-22)
+
+The source-only W3 branch extends the conditional bar engine with a
+request-bound instrument digest (response/v2) and a host-provided
+auth/entitlement-scope mounting interface. New account/instrument selection
+withdraws the previous view; WebCrypto absence, mismatched subject, lost
+scope or unsupported wire remain unavailable, not a cached-looking
+market conclusion. The same original research-only source status and
+no-trade flags survive. 259 focused tests and 8 synthetic Chromium
+configurations passed; 350 CI definitions still validate. **No
+auth/rights owner, live endpoint, saved-state writer or alert plane
+was created.** W3 is not live or production-proven. Parent PR #10055
+and its review/release gate remain separate, and W3 PR #10076 remains
+draft because its stack base is unsupported by current ci-authority.
