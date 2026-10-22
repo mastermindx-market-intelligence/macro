@@ -18352,6 +18352,7 @@ jobs:
       - "scripts/propose_activity_membership.py"
       - "tests/test_gmi_activity_proposal_ledger.py"
       - "data/theme_graph/probation/activity_proposals.jsonl"
+      - "research/theme_graph/activity_curation_receipts/**"
       # Curated activity proposal -> activity-history APPEND bridge (GMI M1 step 2).
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/bridge_activity_history.py"
