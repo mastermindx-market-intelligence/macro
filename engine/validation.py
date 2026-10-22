@@ -159,6 +159,199 @@ def capacity_curve(close: pd.Series, alloc: pd.Series, adv_usd: pd.Series,
 
 
 # --------------------------------------------------------------------------- #
+# STRICT NEXT-OPEN SIMULATION (transparent share/cash accounting)
+# --------------------------------------------------------------------------- #
+# `backtest_core` above is a CLOSE-TO-CLOSE engine: `pos = alloc.shift(1)` earns
+# `open[t] -> open[t+1]`-shaped drift that INCLUDES the close[t] -> open[t+1]
+# overnight gap. A decision made from bar t's close is therefore credited with
+# the very move that happened while it was still un-invested. That is the
+# post-close-entrant look-ahead. It stays exactly as it is — every calibrator
+# depends on those bytes.
+#
+# `next_open_sim` below is the honest timing model for a CLOSED-BAR signal, and
+# it is a separate function so no legacy caller's arithmetic moves:
+#
+#   * decision for session t is made from session t's CLOSE (that is what
+#     `alloc[t]` means — it is the RAW, pre-shift strategy position);
+#   * that decision FILLS at session t+1's OPEN;
+#   * the position held between open[t+1] and open[t+2] earns
+#     open[t+2]/open[t+1] - 1, which does NOT include close[t+1] -> open[t+2]
+#     for a position that entered at open[t+1] only if it also did not hold
+#     through it — it does hold through it, because it was already invested at
+#     open[t+1]. A holder who was long BEFORE the close keeps the overnight
+#     gap; a post-close entrant does not get it for free;
+#   * session 0 opens flat, because there is no prior close to decide from.
+#
+# Accounting is explicit fractional-share + cash, so the cost is charged on
+# actual traded notional — including the INITIAL buy and the final sell — and
+# `equity` is a real marked book rather than a return product. Long/cash only:
+# alloc is required to lie in [0,1], there is no leverage and no short.
+#
+# NOTHING here repairs bad input by substituting a zero. A non-positive price,
+# a non-finite value or a missing allocation REFUSES the run, because a silent
+# zero is how a broken fill turns into a fake flat day. Same for liquidity: an
+# impact/capacity request with missing or non-positive ADV raises
+# `CapacityBlocked` — it is never read as "zero impact", which would be a claim
+# of unlimited capacity.
+class NextOpenError(ValueError):
+    """A next-open simulation cannot be performed honestly. Refuse, never repair."""
+
+
+class CapacityBlocked(NextOpenError):
+    """Impact/capacity was requested but the liquidity input cannot support it.
+
+    Missing or non-positive ADV BLOCKS the capacity conclusion. Treating it as
+    zero participation would silently assert that any size is executable.
+    """
+
+
+TERMINAL_MARK_UNLIQUIDATED = (
+    "Terminal holdings are MARKED at the final available open and are NOT "
+    "liquidated, so no exit cost is charged on the terminal mark. A round trip "
+    "that ends while still invested therefore pays exactly one fewer cost than "
+    "the same round trip fully closed; total drag is understated by at most "
+    "that final exit."
+)
+
+
+def _positive_finite(values, name: str) -> np.ndarray:
+    """Coerce to a float array and REFUSE unless every element is finite and > 0."""
+    arr = pd.to_numeric(pd.Series(values), errors="coerce").to_numpy(dtype=float)
+    if arr.size == 0:
+        raise NextOpenError(f"{name}_is_empty")
+    bad = np.flatnonzero(~np.isfinite(arr) | (arr <= 0.0))
+    if bad.size:
+        raise NextOpenError(f"{name}_not_positive_finite_at_index_{int(bad[0])}")
+    return arr
+
+
+def _next_open_run(op: np.ndarray, alloc: np.ndarray, base_rate: float,
+                   *, sigma: np.ndarray | None = None, adv: np.ndarray | None = None,
+                   aum: float | None = None, impact_eta: float = 0.0) -> dict:
+    """One pass of the share/cash book. `op` is the open series; `alloc` is the
+    RAW pre-shift decision series (alloc[t] decided from close t)."""
+    n = op.size
+    cash, shares = 1.0, 0.0
+    equity = np.empty(n)
+    pos = np.empty(n)
+    turnover = np.empty(n)
+    cost = np.empty(n)
+    for i in range(n):
+        held_value = shares * op[i]
+        equity_open = cash + held_value
+        if not np.isfinite(equity_open) or equity_open <= 0.0:
+            raise NextOpenError(f"equity_not_positive_at_open_{i}")
+        target = alloc[i - 1] if i >= 1 else 0.0   # session 0 has no prior close
+        delta = target * equity_open - held_value  # signed traded notional
+        shares += delta / op[i]
+        cash -= delta
+        traded = abs(delta)
+        rate = base_rate
+        if sigma is not None and adv is not None:
+            participation = (aum * (traded / equity_open)) / adv[i]
+            rate = base_rate + impact_eta * sigma[i] * math.sqrt(max(participation, 0.0))
+        charge = traded * rate
+        cash -= charge
+        pos[i] = target
+        turnover[i] = traded / equity_open
+        cost[i] = charge
+        equity[i] = cash + shares * op[i]
+    return {"equity": equity, "pos": pos, "turnover": turnover, "cost": cost}
+
+
+def next_open_sim(open_: pd.Series, close: pd.Series, alloc: pd.Series,
+                  cost_bps: float = 0.0, *,
+                  dollar_adv: pd.Series | None = None, aum_usd: float | None = None,
+                  impact_eta: float = 0.1, vol_window: int = 21) -> dict:
+    """Fill RAW (pre-shift) allocations at the NEXT session's OPEN and account for
+    them in explicit fractional shares and cash.
+
+    `cost_bps` is the ONE-WAY cost in basis points charged on traded notional, so
+    it is paid on the initial buy and on every sale. It must be finite and
+    non-negative; a negative or non-finite cost is refused rather than turned
+    into a rebate.
+
+    Pass BOTH `dollar_adv` and `aum_usd` to model square-root market impact and
+    therefore permit a capacity statement. Passing one without the other is a
+    misconfiguration and is refused. With ADV missing or non-positive anywhere on
+    the index, `CapacityBlocked` is raised — liquidity that cannot be measured
+    blocks the conclusion instead of becoming zero impact.
+
+    The returned series are indexed by the session whose OPEN opens the interval
+    (`ret[t]` is what a position held from open[t] to open[t+1] earned). The final
+    session carries the terminal mark and no interval return. See
+    `TERMINAL_MARK_UNLIQUIDATED` for the liquidation convention.
+    """
+    if not np.isfinite(cost_bps) or cost_bps < 0.0:
+        raise NextOpenError("cost_bps_must_be_finite_and_non_negative")
+    idx = open_.index
+    if not idx.is_monotonic_increasing or idx.has_duplicates:
+        raise NextOpenError("session_index_must_be_chronological_and_unique")
+    op = _positive_finite(open_.reindex(idx), "open")
+    _positive_finite(close.reindex(idx), "close")   # close validates; fills use open
+    al = pd.to_numeric(alloc.reindex(idx), errors="coerce").to_numpy(dtype=float)
+    if not np.isfinite(al).all():
+        raise NextOpenError("allocation_not_finite")
+    if al.min() < 0.0 or al.max() > 1.0:
+        raise NextOpenError("allocation_outside_long_cash_bounds")   # no short, no leverage
+    if op.size < 3:
+        raise NextOpenError("too_few_sessions_for_next_open_simulation")
+
+    wants_impact = dollar_adv is not None or aum_usd is not None
+    sigma = adv = None
+    capacity = {"impact_modeled": False, "status": "not_requested", "reason": None,
+                "aum_usd": None}
+    if wants_impact:
+        if dollar_adv is None or aum_usd is None:
+            raise NextOpenError("impact_config_incomplete_requires_adv_and_aum")
+        if not np.isfinite(aum_usd) or aum_usd <= 0.0:
+            raise CapacityBlocked("aum_usd_must_be_finite_and_positive")
+        if not np.isfinite(impact_eta) or impact_eta < 0.0:
+            raise CapacityBlocked("impact_eta_must_be_finite_and_non_negative")
+        adv_raw = pd.to_numeric(dollar_adv.reindex(idx), errors="coerce").to_numpy(dtype=float)
+        unusable = np.flatnonzero(~np.isfinite(adv_raw) | (adv_raw <= 0.0))
+        if unusable.size:
+            raise CapacityBlocked(f"dollar_adv_missing_or_non_positive_at_index_{int(unusable[0])}")
+        # sigma is the trailing std of the OPEN-TO-OPEN return ending at this open,
+        # so it is known at the instant of the fill it prices. No look-ahead.
+        oo = open_.reindex(idx).pct_change()
+        sigma = (oo.rolling(vol_window, min_periods=2).std()
+                 .fillna(oo.expanding(min_periods=3).std())
+                 .fillna(0.0)
+                 .to_numpy(dtype=float))
+        adv = adv_raw
+        capacity = {"impact_modeled": True, "status": "ready", "reason": None,
+                    "aum_usd": float(aum_usd)}
+
+    base = float(cost_bps) / 1e4
+    net = _next_open_run(op, al, base, sigma=sigma, adv=adv,
+                         aum=(float(aum_usd) if aum_usd is not None else None),
+                         impact_eta=float(impact_eta))
+    gross = _next_open_run(op, al, 0.0)          # identical fills, zero cost
+    span = slice(0, op.size - 1)                 # every session but the terminal mark
+    ret = pd.Series(net["equity"][1:] / net["equity"][:-1] - 1.0, index=idx[span])
+    gross_ret = pd.Series(gross["equity"][1:] / gross["equity"][:-1] - 1.0, index=idx[span])
+    years = float((idx[-1] - idx[0]).days / 365.25)
+    return {
+        "ret": ret,
+        "gross_ret": gross_ret,
+        "pos": pd.Series(net["pos"], index=idx),
+        "turnover": pd.Series(net["turnover"], index=idx),
+        "cost": pd.Series(net["cost"], index=idx),
+        "equity": pd.Series(net["equity"], index=idx),
+        "gross_equity": pd.Series(gross["equity"], index=idx),
+        "benchmark_open_to_open": pd.Series(op[1:] / op[:-1] - 1.0, index=idx[span]),
+        "years": years,
+        "sessions": int(op.size),
+        "cost_bps": float(cost_bps),
+        "total_cost_fraction": float(net["cost"].sum()),
+        "capacity": capacity,
+        "terminal_mark_unliquidated": True,
+        "terminal_convention": TERMINAL_MARK_UNLIQUIDATED,
+    }
+
+
+# --------------------------------------------------------------------------- #
 # normal CDF / inverse-CDF (Acklam) — no scipy
 # --------------------------------------------------------------------------- #
 def _norm_cdf(x: float) -> float:
