@@ -5,7 +5,7 @@
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "d6ca4f29738eee684979955761e00ee9ebbf87a879ffc8b27211a93dad21e9f8",
+  "manifest_sha256": "a7f9a82f76ea08dc4fd570473c776276889a4519b982d246ab043cbf6d8714e2",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
@@ -36,7 +36,9 @@
     "Record typed discovery HEALTHY/FAILED/UNKNOWN in the incumbent SQLite meta table without a new queue, scheduler, publication path, or credential.",
     "Use one shared per-plan and per-pull backfill admission function; clamp impossible raw demand reservations to a feasible cap share while reporting both raw and effective forecasts.",
     "Require bounded per-account trailing-24h historical-download budget and recent healthy discovery evidence before backfill; default budget 0 preserves no-backfill production behavior.",
-    "Preserve provider cap, source-driven fresh-first candidate precedence, in-progress sole browser-profile owner, and the explicit Research Vault publication hold."
+    "Preserve provider cap, source-driven fresh-first candidate precedence, in-progress sole browser-profile owner, and the explicit Research Vault publication hold.",
+    "Refuse historical quota admission when the configured discovery freshness window is invalid/non-finite or when a discovery observation is more than five minutes in the future.",
+    "Treat invalid negative or NaN fresh-reserve ratios as a full-cap reservation rather than silently zeroing fresh protection."
   ],
   "non_goals": [
     "No MarketDesk re-authentication or browser-profile mutation.",

@@ -463,7 +463,40 @@ def test_a_future_discovery_stamp_cannot_grant_indefinite_freshness():
     """Clock skew must fail closed, not hand out a free pass."""
     health = _health(db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW + timedelta(days=7)))
     ok, why = allocator.discovery_is_current(health, M1_NOW, max_age_hours=6.0)
-    assert (ok, why) == (False, "DISCOVERY_STALE")
+    assert (ok, why) == (False, "DISCOVERY_FUTURE")
+
+
+@pytest.mark.parametrize("max_age", [float("nan"), float("inf"), -1.0, 0.0, True])
+def test_invalid_discovery_age_limit_refuses_backfill(max_age):
+    ok, why = allocator.discovery_is_current(
+        _healthy(age_h=1.0), M1_NOW, max_age_hours=max_age
+    )
+    assert (ok, why) == (False, "DISCOVERY_CONFIG_INVALID")
+
+
+def test_discovery_future_timestamp_refused_beyond_clock_skew():
+    too_future = _health(
+        db.DISCOVERY_HEALTHY,
+        observed_at=_iso(M1_NOW + timedelta(hours=1)),
+    )
+    near_future = _health(
+        db.DISCOVERY_HEALTHY,
+        observed_at=_iso(M1_NOW + timedelta(minutes=3)),
+    )
+    assert allocator.discovery_is_current(
+        too_future, M1_NOW, max_age_hours=6
+    ) == (False, "DISCOVERY_FUTURE")
+    assert allocator.discovery_is_current(
+        near_future, M1_NOW, max_age_hours=6
+    ) == (True, "OK")
+
+
+@pytest.mark.parametrize("ratio", [float("nan"), -0.2])
+def test_invalid_reserve_ratio_cannot_erase_fresh_protection(ratio):
+    _, reserve = allocator.effective_reserve(
+        M1_NOW, 24, cap=M1_CAP, feasible_ratio=ratio
+    )
+    assert reserve == M1_CAP
 
 
 # --- 3. decide_backfill — three independent bounds -------------------------

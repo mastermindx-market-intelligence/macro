@@ -28,6 +28,7 @@ trickle runner (``trickle.py``) supplies the clock, the sessions, and the I/O.
 """
 from __future__ import annotations
 
+import math
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -289,7 +290,10 @@ def effective_reserve(
     """
     forecast = expected_new_next_hours(now, backfill_reserve_hours, profile)
     cap_f = max(0.0, float(cap))
-    ceiling = min(cap_f, cap_f * max(0.0, float(feasible_ratio)))
+    ratio = float(feasible_ratio)
+    # An invalid negative/NaN configuration must not silently erase the fresh
+    # reserve and admit history. Hold the entire cap instead (fail closed).
+    ceiling = cap_f if math.isnan(ratio) or ratio < 0 else min(cap_f, cap_f * ratio)
     return forecast, min(forecast, ceiling)
 
 
@@ -331,9 +335,13 @@ def discovery_is_current(
     Fail-closed at every step: absent, unparseable, FAILED, or merely OLD
     evidence all refuse. Only a HEALTHY observation inside ``max_age_hours``
     proves the fresh queue is actually empty, which is the only licence to spend
-    quota on stale backlog. The bound is applied to the ABSOLUTE age so a
-    clock-skewed future stamp cannot grant indefinite freshness.
+    quota on stale backlog. Invalid/non-finite age limits refuse admission;
+    a future stamp beyond five minutes of clock skew is not current evidence.
     """
+    if (isinstance(max_age_hours, bool)
+            or not isinstance(max_age_hours, (int, float))
+            or not math.isfinite(max_age_hours) or max_age_hours <= 0):
+        return False, "DISCOVERY_CONFIG_INVALID"
     if not health:
         return False, "DISCOVERY_UNKNOWN"
     state = str(health.get("state") or DISCOVERY_UNKNOWN)
@@ -342,8 +350,12 @@ def discovery_is_current(
     observed = _parse_ts(health.get("observed_at"))
     if observed is None:
         return False, "DISCOVERY_UNSTAMPED"
-    age_h = abs((now - observed).total_seconds()) / 3600.0
-    if age_h > max_age_hours:
+    age_seconds = (now - observed).total_seconds()
+    # Both clocks are from this producer host. Permit at most ordinary small
+    # clock skew; a future observation is not proof that discovery is current.
+    if age_seconds < -300:
+        return False, "DISCOVERY_FUTURE"
+    if age_seconds / 3600.0 > max_age_hours:
         return False, "DISCOVERY_STALE"
     return True, "OK"
 
