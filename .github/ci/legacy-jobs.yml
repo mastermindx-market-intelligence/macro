@@ -34406,7 +34406,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema -r requirements/tiingo.txt
       - name: prospective reference clocks, refusals and consumer compatibility
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
