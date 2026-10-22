@@ -305,6 +305,8 @@
   </div>
 </nav>
 
+
+
 <!-- ══ L1 §1 · page header (canvas plane, §3 of the design system) ══════════ -->
 <header class="rf-head">
   <span class="eyebrow rf-eb"><span class="l-en">Reference</span><span class="l-zh">参考</span></span>
@@ -5530,7 +5532,7 @@
 <!-- ══ L1 §3 · footer — the authority ceiling, in plain words, once ═══════════ -->
 <footer class="rf-foot">
   <span class="l-en">Reference only — definitions, not calls. No live market values appear on this page.</span><span class="l-zh">仅供参考 — 只有释义，不含判断。本页不显示任何实时行情数值。</span>
-  <span class="l-en">Updated</span><span class="l-zh">更新于</span> <span class="tnum">2026-10-21 17:07 UTC</span>.
+  <span class="l-en">Updated</span><span class="l-zh">更新于</span> <span class="tnum">2026-10-22 00:50 UTC</span>.
 </footer>
 
 <script>
@@ -5823,6 +5825,7 @@
   }
   handleHash();
   window.addEventListener("hashchange", handleHash);
+  window.addEventListener("mmx:shell-location", handleHash);
 
   // 8 · Return bar.
   var returnEl = root.querySelector(".rf-return");
