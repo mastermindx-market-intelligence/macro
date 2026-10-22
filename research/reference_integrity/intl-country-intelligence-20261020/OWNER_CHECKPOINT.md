@@ -1,3 +1,9 @@
+# Continuation checkpoint — 22 October 2026 UTC
+
+Main composition is now committed locally at `eac74360b9a423ece8b1af786aca5fd29cb48c3f`. Fresh shared-component and standalone International browser evidence passed; the exact composition, preserved parent histories, original failures and remaining Shared Shell/FX/served gates are recorded in `main_composition_20261021/CONTINUATION_CHECKPOINT.md`. The original PR9596 remains the carrier. Publication has not yet occurred at this checkpoint.
+
+---
+
 # Owner checkpoint — recovered approval bound; current-main composition next
 
 Updated 2026-10-21T22:40:04.370294+00:00. This continues operation `intl-country-cockpit-20261018`, original branch `sol/web-intl-country-cockpit-20261018` and draft Macro PR #9596 from predecessor conversation `6ad430fc-45bc-83e9-87d6-6925261eae24`. The predecessor browser turn was explicitly stopped and its stopped state verified before further mutation. Original publication status remains local `883a1e48efdf9c334c08665262efa0961b1997a0`, remote `6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7`; no unresolved push is being replayed.

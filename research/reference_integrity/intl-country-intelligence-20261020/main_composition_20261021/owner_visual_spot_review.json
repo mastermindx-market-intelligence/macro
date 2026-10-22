@@ -1,0 +1,19 @@
+{
+  "scope": "Bounded owner visual continuity inspection of three actual screenshots; not a new independent full product/taste approval.",
+  "images": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_composition20261022_repair/viewport-desktop-en-light.png",
+      "sha256": "690053b3a814007b5de828013e3c0bbdfdafab34f5e2ea8fcc1c347457e227e8"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_composition20261022_repair/reading-narrow-zh-light.png",
+      "sha256": "695cfb18034f84a09a836218a42c5752ac8da56a59d0f690d97e42a02628db87"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_composition20261022_repair/assistant-open-mobile-en-dark.png",
+      "sha256": "30ba8d99e949024422d2c456fd02bf64efd58471075350a75780614365b8f373"
+    }
+  ],
+  "finding": "No new overlap, clipped navigation, duplicate assistant controls, or missing typeface was observed in these images. The 320px reading view reserves toolbar space; the mobile assistant opens as the existing full panel.",
+  "production_acceptance": false
+}
