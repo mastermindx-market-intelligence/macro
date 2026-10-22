@@ -1077,6 +1077,9 @@ lanes:
       - id: checkpoint_core_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: checkpoint_core_commodity_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
       - id: checkpoint_core_postrebase_inject_data_base
         module: scripts.inject_data_base
       - id: checkpoint_core_postrebase_externalize_css
@@ -1086,6 +1089,9 @@ lanes:
       - id: checkpoint_core_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_commodity_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
       - id: check_builder_failstreaks
         module: scripts.check_builder_failstreaks
         note: >
@@ -1803,15 +1809,35 @@ lanes:
       - id: build_options_flow_attention
         module: scripts.build_options_flow_attention
         note: non-fatal reflex; neural-web W-D — direction-free options-flow attention trigger (nightly EOD fold)
-      - id: check_template_site_sync_fix
+      # The final publisher invokes the same helper as the core checkpoint.
+      # Declare each invocation, including both normalization passes and guards.
+      - id: publish_final_precommit_inject_data_base
+        module: scripts.inject_data_base
+      - id: publish_final_precommit_externalize_css
+        module: scripts.externalize_css
+      - id: publish_final_precommit_optimize_assets
+        module: scripts.optimize_assets
+      - id: publish_final_precommit_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
-        note: >
-          non-fatal (|| true); ui.template_site_sync self-heal inside the "commit engine
-          outputs" push retry loop (post-rebase, pre-push) — re-copies plain-copy page
-          assets from post-rebase templates/ so `git pull --rebase -X theirs` can never
-          resurrect this run's checkout-time template copies over a reword merged
-          mid-nightly (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      - id: publish_final_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+      - id: publish_final_commodity_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: publish_final_postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: publish_final_postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: publish_final_postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: publish_final_postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: publish_final_commodity_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
       - id: build_feeds
         module: scripts.build_feeds
         note: non-fatal; per-ticker JSON feeds
@@ -2905,6 +2931,31 @@ lanes:
           post-rebase templates/ so `git pull --rebase -X theirs` can never resurrect this
           run's checkout-time template copies over a reword merged mid-render
           (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      # Explicit publication re-invocations preserve order and multiplicity.
+      - id: precommit_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_postrebase_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: postrebase_build_government_revenue
+        module: scripts.build_government_revenue
+        args: [--site-only]
+      - id: postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: postrebase_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: prepush_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_committed_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
 
   # ── render.yml / render ─────────────────────────────────────────────────
   # NOTE: scope=all path.
@@ -3165,6 +3216,13 @@ lanes:
           Insider+ payload site/premiumdata/china_special_situations.json
           (docs/TIER_PREVIEW_PATTERN.md) — they must never be rebuilt apart.
           Display-only; CONST-ART2 authority: false.
+      - id: build_baskets_china_redirect_stub
+        module: scripts.build_baskets_china
+        args: [--page-only]
+        note: >
+          Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
+          Returns before collectors, market computation, session clocks or payload
+          writes; the full China basket build remains in its existing daily lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -3214,6 +3272,36 @@ lanes:
           post-rebase templates/ so `git pull --rebase -X theirs` can never resurrect this
           run's checkout-time template copies over a reword merged mid-render
           (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      # Explicit publication re-invocations preserve order and multiplicity.
+      - id: precommit_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_metadata_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$PUBLISH_COMMIT"]
+      - id: metadata_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_postrebase_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: postrebase_build_government_revenue
+        module: scripts.build_government_revenue
+        args: [--site-only]
+      - id: postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: postrebase_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: prepush_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_committed_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
 
   # ── intraday.yml / bars ─────────────────────────────────────────────────
   - workflow: .github/workflows/intraday.yml

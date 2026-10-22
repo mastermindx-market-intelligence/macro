@@ -1,0 +1,67 @@
+{
+  "schema": "mastermind.attended.macro_contract_delta_reconcile.v1",
+  "observed_at": "2026-10-20T01:51:28.197472+00:00",
+  "worktree": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "remote_head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "incoming_main": "d52827f26b062f67d594350a65becf406710d4d1",
+  "merge_base": "6397b97031640de2a0bdd850bfebc520e7458b41",
+  "tracked_clean": true,
+  "immutable_fetch_exit": 0,
+  "incoming_path_count": 1178,
+  "incoming_paths_sha256": "212d440e852734a66f8235c079d00a818c9e52480df6253910ea380cb8953cbb",
+  "preview_exit": 1,
+  "preview_tree": "8339adc5846d5e81dac67533ac4828e226f87e3a",
+  "preview_output": "8339adc5846d5e81dac67533ac4828e226f87e3a\n100644 b8d1809081df4e7006760544e77f96ceccb1bff4 1\tsite/etfs.html\n100644 ed26ef5dac1e269dc8bb60fd12763a798990ff08 2\tsite/etfs.html\n100644 8dcc165e4f4e25f6ec83ff36f4a6501703f79c46 3\tsite/etfs.html\n100644 2a7633efd420607c9db2f8f263f2f9257ac08847 1\tsite/us_stocks.html\n100644 dde7d648a1f66cec7d85ee161c5f1935f578b2d9 2\tsite/us_stocks.html\n100644 cd0a6595626e3045a7bd7433fcf2c299cc0d6a47 3\tsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nwarning: Cannot merge binary files: site/etfs.html (b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0 vs. d52827f26b062f67d594350a65becf406710d4d1)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nwarning: Cannot merge binary files: site/us_stocks.html (b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0 vs. d52827f26b062f67d594350a65becf406710d4d1)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\n",
+  "source_blobs": {
+    "AGENTS.md": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "d52827f26b062f67d594350a65becf406710d4d1": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "7aa82fbb309081c6d1297ee35405507d30e7d3c6"
+    },
+    "CLAUDE.md": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "d52827f26b062f67d594350a65becf406710d4d1": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419"
+    },
+    ".github/workflows/render.yml": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "8430d71dad2ef0a6209b9b605190551078c21819",
+      "d52827f26b062f67d594350a65becf406710d4d1": "54d1e69add408cd3532451f85b355626c78c451a",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "8430d71dad2ef0a6209b9b605190551078c21819"
+    },
+    "app/deploy/update.sh": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "0d7a5bd406cc0a014712a27e353f9c0edc71c640",
+      "d52827f26b062f67d594350a65becf406710d4d1": "d168d6c4c5906387cc58ac49ce0ed8cedfdd30a6",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "0d7a5bd406cc0a014712a27e353f9c0edc71c640"
+    },
+    "app/deploy/Caddyfile": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6",
+      "d52827f26b062f67d594350a65becf406710d4d1": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6"
+    },
+    "scripts/check_contract_delta.py": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "d52827f26b062f67d594350a65becf406710d4d1": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "deefde717818f4be641097a24c2f5b01e55cddbd"
+    },
+    "scripts/run_ci_pack.py": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "d52827f26b062f67d594350a65becf406710d4d1": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "f92be10fc37455fd427829f0f964c5ef581b3a80"
+    },
+    "tests/test_ci_pack.py": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "73a55382b37157318dd0b63b469b957b20111da8",
+      "d52827f26b062f67d594350a65becf406710d4d1": "f9b403c51c650ab0e5ab1a774a0e10dfbdb10d94",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "f9b403c51c650ab0e5ab1a774a0e10dfbdb10d94"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0": "ec96969f4c0aec5b70602e1264ce1ba7ecc2a326",
+      "d52827f26b062f67d594350a65becf406710d4d1": "3c0bea4b5cb14cdec3d17864f836562602fd076c",
+      "8a32fbdde43e10e7b78bfaa98263dc6384c393ce": "7d530535ddc5e01ddae5e9bdea996f7e506afb39"
+    }
+  },
+  "source_edited": false,
+  "ci_rerun": false,
+  "armed": false
+}

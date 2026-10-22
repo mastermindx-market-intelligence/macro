@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LFUS-BULL-20260925",
-  "asof": "2026-10-20",
+  "asof": "2026-10-21",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 27.1,
@@ -10,27 +10,27 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 0.7,
+    "validity": 0.5,
     "progress": 0.0,
-    "pace": 29.9,
+    "pace": 24.9,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.059,
+    "dist_to_stop_r": 0.053,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 40.0,
-    "p1": -0.6271,
-    "p2": -0.3135,
+    "horizon_pct_used": 42.2,
+    "p1": -0.6314,
+    "p2": -0.3157,
     "p3": null,
-    "move_r": -0.941,
+    "move_r": -0.947,
     "mfe_r": 0.0,
-    "mae_r": -0.941
+    "mae_r": -0.947
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.029998779296875,
-  "_mae": -72.3699951171875,
+  "_mae": -72.8699951171875,
   "_max_p1": 0.0002599322354811109,
   "_first_trigger_ts": "2026-10-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 18,
-  "tau": 0.4
+  "days_elapsed": 19,
+  "tau": 0.4222
 }

@@ -1,0 +1,40 @@
+{
+  "started_at": "2026-10-20T19:14:53.964725+00:00",
+  "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "base": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "state": "ADOPTED_STAGED",
+  "preview_sha256": "e7c14fd2e9b739965cd01807615c0152e821913db6290c44831308ed5723fdee",
+  "selected": [
+    "site/etfs.html",
+    "site/us_stocks.html",
+    "site/macro_labor_markets.html"
+  ],
+  "rows": [
+    {
+      "path": "site/etfs.html",
+      "before_sha256": "8de40e98593c6a9c4e167876ce914326f4c17eb3c967c0fc94d27029ac6404e7",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-html-before-adoption/site_etfs.html",
+      "candidate_bytes": 97338,
+      "candidate_sha256": "e99613aa5858befcf50c77014d19aa5b822900e84c285755a7758d4ff0d8b26b"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "before_sha256": "e6505f391f18770c4f81118115154f06bc4e2807567831778d5c79785f6bae5f",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-html-before-adoption/site_us_stocks.html",
+      "candidate_bytes": 728665,
+      "candidate_sha256": "c006e40ee9023bb79896c51b0ae525855044899ffb696021161b41f133c1b7b1"
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "before_sha256": "25995bacca399a0240f21ef0187c144d9a0c2395a55b5b8ddcb40b1ffd96d46a",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-html-before-adoption/site_macro_labor_markets.html",
+      "candidate_bytes": 255252,
+      "candidate_sha256": "7f8184b0cedcc9c91405b191a9122e714e6de82fc72e34ab6d9cd36a496fdf3d"
+    }
+  ],
+  "finished_at": "2026-10-20T19:14:56.064182+00:00",
+  "index_tree": "9c4769eadba206fe5d51e3025b7e449e86cf02c1",
+  "remaining_unmerged": [],
+  "unstaged": []
+}
