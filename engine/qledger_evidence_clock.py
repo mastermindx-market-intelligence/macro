@@ -38,6 +38,8 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -103,8 +105,11 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
     write (not persisted) so a test/caller can still see what would have been
     recorded. Explicit native owners may pass strict=True: unreadable existing
     records refuse, write failures propagate and returned new records require
-    exact bounded readback. This does not prove crash durability or exclude
-    concurrent legacy clock writers; it never provides a recovery restamp.
+    exact bounded readback. Strict callers install a fully written private
+    staging file with a non-overwriting hard link; a collision reads the
+    existing winner instead of replacing it. This does not prove crash
+    durability or exclude legacy clock writers; it never provides a recovery
+    restamp.
     """
     path = _clock_path(family, root)
 
@@ -137,6 +142,30 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
     }
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
+        if strict:
+            # Same-directory unique staging prevents shared-.tmp races. The
+            # link is the sole first-install operation: it cannot replace an
+            # existing clock, even if both callers observed absence earlier.
+            descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+            try:
+                with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                    handle.write(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                try:
+                    os.link(temporary, path)
+                except FileExistsError:
+                    winner = checked_read()
+                    if winner is None:
+                        raise ValueError("evidence clock collision winner unavailable; effect uncertain")
+                    return winner
+                if checked_read() != record:
+                    raise ValueError("evidence clock readback differs; original effect uncertain")
+                return record
+            finally:
+                # Only this call's private staging name, never the clock or
+                # another caller's partial/shared temporary, is removed.
+                os.unlink(temporary)
         tmp = path.with_name(path.name + ".tmp")
         tmp.write_text(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
                        encoding="utf-8")
@@ -148,8 +177,6 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
              f"start for {family} could not be written: {exc}", flush=True)
         if strict:
             raise
-    if strict and checked_read() != record:
-        raise ValueError("evidence clock readback differs; original effect uncertain")
     return record
 
 

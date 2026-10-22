@@ -95,12 +95,9 @@ def test_unreadable_clock_file_is_treated_as_absent_not_fatal(tmp_path):
 def test_explicit_strict_clock_failure_is_observable_without_changing_legacy(tmp_path, monkeypatch):
     from pathlib import Path
     import pytest
-    write = Path.write_text
-    def refused(path, *a, **k):
-        if path.name.endswith('.json.tmp'):
-            raise OSError('fixture clock persistence refused')
-        return write(path, *a, **k)
-    monkeypatch.setattr(Path, 'write_text', refused)
+    def refused(*a, **k):
+        raise OSError('fixture clock persistence refused')
+    monkeypatch.setattr(qclock.os, 'link', refused)
     with pytest.raises(OSError, match='persistence refused'):
         qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
     assert qclock.record_start('stock_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path)
@@ -127,12 +124,133 @@ def test_explicit_strict_clock_returns_exact_existing_without_restamping(tmp_pat
 def test_explicit_strict_clock_readback_mismatch_is_not_success(tmp_path, monkeypatch):
     from pathlib import Path
     import pytest
-    actual_replace = Path.replace
-    def different(path, target):
-        value = actual_replace(path, target)
+    actual_link = qclock.os.link
+    def different(source, target):
+        value = actual_link(source, target)
         target.write_text('{"first_prospective_registration_utc":"foreign-original"}')
         return value
-    monkeypatch.setattr(Path, "replace", different)
+    monkeypatch.setattr(qclock.os, "link", different)
     with pytest.raises(ValueError, match="readback differs"):
         qclock.record_start("thematic_desk", horizon_d=5, horizon_unit="trading_days", root=tmp_path, strict=True)
     assert qclock.read_start("thematic_desk", tmp_path)["first_prospective_registration_utc"] == "foreign-original"
+
+
+def test_strict_two_absent_callers_preserve_first_installed_clock(tmp_path, monkeypatch):
+    import os
+    import threading
+    from pathlib import Path
+    target = qclock._clock_path('thematic_desk', tmp_path)
+    both_absent = threading.Barrier(2)
+    first_returned = threading.Event()
+    real_open, real_write, real_link = Path.open, Path.write_text, os.link
+    def absent_read(path, *a, **k):
+        try:
+            return real_open(path, *a, **k)
+        except FileNotFoundError:
+            if path == target and (a[0] if a else k.get('mode')) == 'rb':
+                both_absent.wait(timeout=5)
+            raise
+    def ordered_write(path, *a, **k):
+        if threading.current_thread().name == 'clock-B' and path.name.endswith('.tmp'):
+            assert first_returned.wait(5)
+        return real_write(path, *a, **k)
+    def ordered_link(source, destination, *a, **k):
+        if threading.current_thread().name == 'clock-B' and Path(destination) == target:
+            assert first_returned.wait(5)
+        return real_link(source, destination, *a, **k)
+    monkeypatch.setattr(Path, 'open', absent_read)
+    monkeypatch.setattr(Path, 'write_text', ordered_write)
+    monkeypatch.setattr(os, 'link', ordered_link)
+    values, errors = {}, []
+    def worker(name):
+        try:
+            values[name] = qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days',
+                root=tmp_path, now=f'2026-01-0{1 if name == "A" else 2}T00:00:00+00:00', strict=True)
+        except BaseException as exc:
+            errors.append(exc)
+        finally:
+            if name == 'A':
+                first_returned.set()
+    threads = [threading.Thread(target=worker, args=(name,), name='clock-'+name) for name in ('A', 'B')]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+    assert not any(thread.is_alive() for thread in threads) and not errors
+    assert values['A']['first_prospective_registration_utc'] == '2026-01-01T00:00:00+00:00'
+    assert values['B'] == values['A'] == qclock.read_start('thematic_desk', tmp_path)
+
+
+def test_strict_link_response_loss_preserves_original_and_next_read_never_reinstalls(tmp_path, monkeypatch):
+    import pytest
+    target = qclock._clock_path('thematic_desk', tmp_path)
+    real_link = qclock.os.link
+    installs = []
+    def lost(source, destination):
+        real_link(source, destination)
+        installs.append(destination)
+        raise OSError('fixture install return lost')
+    monkeypatch.setattr(qclock.os, 'link', lost)
+    with pytest.raises(OSError, match='return lost'):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path,
+                             now='2026-01-01T00:00:00+00:00', strict=True)
+    original = target.read_bytes()
+    winner = qclock.record_start('thematic_desk', horizon_d=99, horizon_unit='changed', root=tmp_path,
+                                 now='2026-02-01T00:00:00+00:00', strict=True)
+    assert winner['first_prospective_registration_utc'] == '2026-01-01T00:00:00+00:00'
+    assert target.read_bytes() == original and installs == [target]
+    assert list(target.parent.iterdir()) == [target]
+
+
+def test_strict_collision_never_heals_invalid_winner(tmp_path, monkeypatch):
+    import pytest
+    target = qclock._clock_path('thematic_desk', tmp_path)
+    def collision(source, destination):
+        destination.write_bytes(b'original invalid winner\n')
+        raise FileExistsError('fixture another installer won')
+    monkeypatch.setattr(qclock.os, 'link', collision)
+    with pytest.raises(ValueError):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
+    assert target.read_bytes() == b'original invalid winner\n'
+    assert list(target.parent.iterdir()) == [target]
+
+
+def test_strict_collision_missing_winner_is_uncertain_without_second_install(tmp_path, monkeypatch):
+    import pytest
+    target = qclock._clock_path('thematic_desk', tmp_path)
+    attempts = []
+    def collision(source, destination):
+        attempts.append(destination)
+        raise FileExistsError('fixture collision winner removed')
+    monkeypatch.setattr(qclock.os, 'link', collision)
+    with pytest.raises(ValueError, match='winner unavailable'):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
+    assert attempts == [target] and not target.exists()
+
+
+def test_strict_partial_private_staging_never_installs_or_adopts_other_temporaries(tmp_path, monkeypatch):
+    import pytest
+    target = qclock._clock_path('thematic_desk', tmp_path)
+    target.parent.mkdir(parents=True)
+    shared, orphan = target.with_name(target.name+'.tmp'), target.with_name('.'+target.name+'.orphan.tmp')
+    shared.write_bytes(b'original shared partial')
+    orphan.write_bytes(b'original private partial')
+    real_fdopen = qclock.os.fdopen
+    class Partial:
+        def __init__(self, handle):
+            self.handle = handle
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            self.handle.close()
+        def write(self, payload):
+            self.handle.write(payload[:8])
+            self.handle.flush()
+            raise OSError('fixture private staging interrupted')
+    monkeypatch.setattr(qclock.os, 'fdopen', lambda *a, **k: Partial(real_fdopen(*a, **k)))
+    monkeypatch.setattr(qclock.os, 'link', lambda *a: pytest.fail('partial clock was installed'))
+    with pytest.raises(OSError, match='staging interrupted'):
+        qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
+    assert not target.exists()
+    assert shared.read_bytes() == b'original shared partial' and orphan.read_bytes() == b'original private partial'
+    assert set(target.parent.iterdir()) == {shared, orphan}

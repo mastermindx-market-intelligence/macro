@@ -584,12 +584,12 @@ def test_thematic_owner_real_clock_swallowed_failure_is_not_success(original, mo
     actual_record_start = clock.record_start
     td, _, _, binding, _, root, _, _, invoke = thematic_owner(original, monkeypatch)
     monkeypatch.setattr(clock, "record_start", actual_record_start)
-    actual_write = Path.write_text
-    def refused(path, *a, **k):
-        if path.name == "thematic_desk.json.tmp":
+    actual_link = clock.os.link
+    def refused(source, destination, *a, **k):
+        if Path(destination) == clock._clock_path("thematic_desk", binding.repo_root):
             raise OSError("fixture clock persistence refused")
-        return actual_write(path, *a, **k)
-    monkeypatch.setattr(Path, "write_text", refused)
+        return actual_link(source, destination, *a, **k)
+    monkeypatch.setattr(clock.os, "link", refused)
     with pytest.raises(td.NativeThematicFailure) as failure:
         invoke()
     assert failure.value.result.claims_status == "materialized"
