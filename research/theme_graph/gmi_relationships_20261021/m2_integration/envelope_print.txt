@@ -48,7 +48,7 @@ E2 role/species coverage cells (ELIGIBLE x species x from/to role)
     component_dependency/provider: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=0 counterparty=1]
     component_dependency/dependent: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=1 counterparty=0]
   cells_total=2830
-  caveat: searched = cue-candidate search of the assessed documents; recall is OWED (E4); a searched cell is not proof of absence.
+  caveat: searched = cue-candidate search of the assessed documents; extraction recall is reported in E4 and is bounded by the cue patterns and the recall lexicon; a searched cell is not proof of absence.
 
 E3 source processing (§8.2 vocabulary)
   judging ledger: PRESENT
@@ -68,8 +68,20 @@ E3 source processing (§8.2 vocabulary)
   OTHER: parse_outcomes ABSENT
 
 E4 extraction recall
-  value=None state=OWED
-  reason: requires an independent frozen annotated corpus; none exists — precision is never used as a recall proxy
+  value=0.3487 state=MEASURED
+  reference=238 hits=83 misses=155 pipeline=117
+  wilson_95=[0.291, 0.4113] jackknife_95=[0.2429, 0.4545] jackknife_issuers=31
+  D1 recall=0.4423 hit=69 ref=156 wilson_95=[0.3667, 0.5207]
+  D2 recall=0.1707 hit=14 ref=82 wilson_95=[0.1045, 0.2664]
+  component_dependency recall=0.3889 hit=7 ref=18 wilson_95=[0.2031, 0.6138]
+  contract_manufacturing recall=0.5862 hit=17 ref=29 wilson_95=[0.4074, 0.7449]
+  distribution recall=0.2778 hit=5 ref=18 wilson_95=[0.125, 0.5087]
+  licensing recall=0.2432 hit=18 ref=74 wilson_95=[0.1598, 0.3521]
+  supplier_customer recall=0.3636 hit=36 ref=99 wilson_95=[0.2756, 0.4618]
+  report: research/theme_graph/gmi_relationships_20261021/m2_recall/recall_report_v1.json sha256=915de3481ec77f4702d0dad0d842862809491b6f024a409598b6ba690a2237a8
+  corpus_sha256=96e860d45c83d7d467e0a55abff6335ee8c05973b094038e9e504ea42aa2daed lexicon_sha256=bb0add40bc10d88a6891eef2c4b7a339c321ec19bad2a536461f6e9d5157cc70
+  caveat: Misses outside both the harvester cue patterns and the recall lexicon are not measured.
+  note: precision is never used as a recall proxy
 
 E5 positive precision
   state=OWED

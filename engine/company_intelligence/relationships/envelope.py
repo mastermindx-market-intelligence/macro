@@ -23,6 +23,11 @@ from engine.company_intelligence.relationships.package_v2 import (
     SPECIES_ROLES,
     path_validity,
 )
+from engine.company_intelligence.relationships.recall import (
+    CORPUS_SHA256,
+    REPORT_SCHEMA_NAME,
+    lexicon_sha256,
+)
 
 REPORT_SCHEMA = "gmi_rel_m2.envelope_report/v1"
 PANEL_SHA256 = "108866ecea287cfda09ef536a9f0939fa0188ab41697c080f24174436119a3ca"
@@ -65,12 +70,12 @@ EVIDENCE_KINDS = (
 )
 
 SEARCHED_CAVEAT = (
-    "searched = cue-candidate search of the assessed documents; recall is "
-    "OWED (E4); a searched cell is not proof of absence."
+    "searched = cue-candidate search of the assessed documents; extraction "
+    "recall is reported in E4 and is bounded by the cue patterns and the "
+    "recall lexicon; a searched cell is not proof of absence."
 )
 RECALL_REASON = (
-    "requires an independent frozen annotated corpus; none exists — "
-    "precision is never used as a recall proxy"
+    "no recall report given; precision is never used as a recall proxy"
 )
 PACKAGE_LAG_REASON = (
     "P.computed_at is set to P.as_of by construction (deterministic package "
@@ -635,10 +640,121 @@ def e3_sources(package: dict, leaves: dict, judging_dirs: list,
 
 # --- E4 ------------------------------------------------------------------------
 
+#: keys the E4 report must carry, at the top level and inside "recall"
+_E4_REPORT_KEYS = (
+    "reference_set_size", "hits", "misses_count", "pipeline_set_size",
+    "by_domain", "by_species", "corpus_sha256", "lexicon_sha256",
+    "extraction_sha256", "caveat",
+)
+_E4_RECALL_KEYS = ("value", "wilson_95", "jackknife_95", "jackknife_issuers")
 
-def e4_recall() -> dict:
-    """Extraction recall is OWED: no frozen annotated corpus exists."""
-    return {"value": None, "state": "OWED", "reason": RECALL_REASON}
+_E4_NOTE = "precision is never used as a recall proxy"
+
+
+def _owed_schema(why: str, path) -> dict:
+    return {
+        "value": None,
+        "state": "OWED",
+        "reason": "RECALL_REPORT_SCHEMA: " + why,
+        "files_read": [path],
+    }
+
+
+def _owed_drift(reason: str, path) -> dict:
+    return {"value": None, "state": "OWED", "reason": reason,
+            "files_read": [path]}
+
+
+def e4_recall(report_path=None, extraction_dir=None, display=None) -> dict:
+    """Extraction recall from the committed recall report, fail-closed.
+
+    MEASURED only when the report parses, carries the pinned corpus and
+    lexicon and still matches the extraction bytes it measured.  A report
+    that is absent, malformed or drifted prints OWED — never a stale number.
+    Precision is never used as a recall proxy.
+    """
+    if report_path is None:
+        return {"value": None, "state": "OWED", "reason": RECALL_REASON,
+                "files_read": []}
+    path = Path(str(report_path))
+    shown = display if display is not None else str(report_path)
+    if not path.is_file():
+        return {
+            "value": None,
+            "state": "OWED",
+            "reason": f"recall report not found: {shown}",
+            "files_read": [],
+        }
+    raw = path.read_bytes()
+    try:
+        report = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _owed_schema("report bytes are not valid JSON", path)
+    if not isinstance(report, dict):
+        return _owed_schema("report is not a JSON object", path)
+    if report.get("schema") != REPORT_SCHEMA_NAME:
+        return _owed_schema(
+            f"schema {report.get('schema')!r} is not {REPORT_SCHEMA_NAME}",
+            path,
+        )
+    missing = [key for key in _E4_REPORT_KEYS if key not in report]
+    recall_block = report.get("recall")
+    if not isinstance(recall_block, dict):
+        missing.append("recall")
+    else:
+        missing.extend(
+            "recall." + key
+            for key in _E4_RECALL_KEYS
+            if key not in recall_block
+        )
+    if missing:
+        return _owed_schema("missing " + ", ".join(missing), path)
+    if not isinstance(report["extraction_sha256"], dict):
+        return _owed_schema("extraction_sha256 is not an object", path)
+    if report["corpus_sha256"] != CORPUS_SHA256:
+        return _owed_drift("RECALL_REPORT_DRIFT: corpus", path)
+    if report["lexicon_sha256"] != lexicon_sha256():
+        return _owed_drift("RECALL_REPORT_DRIFT: lexicon", path)
+    if extraction_dir is None or not Path(str(extraction_dir)).is_dir():
+        return _owed_drift("RECALL_REPORT_DRIFT: extraction dir absent", path)
+    extraction = Path(str(extraction_dir))
+    measured: dict = {}
+    for found in sorted(extraction.rglob("*.jsonl")):
+        measured[str(found.relative_to(extraction))] = sha256_hex(
+            found.read_bytes()
+        )
+    stated = report["extraction_sha256"]
+    differ = sorted(
+        key for key in set(measured) | set(stated)
+        if measured.get(key) != stated.get(key)
+    )
+    if differ:
+        return _owed_drift(
+            f"RECALL_REPORT_DRIFT: extraction {len(differ)} file(s) differ; "
+            f"first: {differ[0]}",
+            path,
+        )
+    return {
+        "state": "MEASURED",
+        "value": recall_block["value"],
+        "wilson_95": recall_block["wilson_95"],
+        "jackknife_95": recall_block["jackknife_95"],
+        "jackknife_issuers": recall_block["jackknife_issuers"],
+        "reference_set_size": report["reference_set_size"],
+        "hits": report["hits"],
+        "misses_count": report["misses_count"],
+        "pipeline_set_size": report["pipeline_set_size"],
+        "by_domain": report["by_domain"],
+        "by_species": report["by_species"],
+        "corpus_sha256": report["corpus_sha256"],
+        "lexicon_sha256": report["lexicon_sha256"],
+        "report": shown,
+        "report_sha256": sha256_hex(raw),
+        "caveat": report["caveat"],
+        "note": _E4_NOTE,
+        "reason": None,
+        "files_read": [path],
+    }
 
 
 # --- E5 ------------------------------------------------------------------------
