@@ -1,0 +1,30 @@
+{
+  "schema": "mmx.commodities.review_receipt.v1",
+  "accepted_base": "ff6ed4cced271da0b556aba4f35e82d7b939ccc5",
+  "mode": "published_payload_presentation_only",
+  "research_as_of": "2026-10-21",
+  "workspace_fingerprint": "abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4",
+  "accepted_page_sha256": "ff0d20d5b17e4377573237c824ec33047ff296f4fe7492b50898d3c30a8048ac",
+  "review_page_sha256": "a1cad961396f6bcdee03b6277cd78fba797cc24ad057fe5e55ce1dc98a2331e2",
+  "payload_sha256": "da906458497e14100dbe6fcb036028164955cafe031e3ff00b4d59d963ada008",
+  "payload_bytes_unchanged": true,
+  "legacy_content_preserved": true,
+  "assets": 17,
+  "chains": 3,
+  "economic_recomputation": false,
+  "collectors_run": false,
+  "scoring_run": false,
+  "forecasts_run": false,
+  "production_acceptance": false,
+  "asset_freezing": {
+    "owner": "lib.pages.externalize_css_text + scripts.optimize_assets.make_optimizer + lib.pages.write_page",
+    "scope": "site/commodities.html only; no site sweep or pruning",
+    "final_page_sha256": "2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf",
+    "created_css": [
+      "site/assets/css/5e34efe9.css"
+    ],
+    "source_css_sha256": "86a3a9b349089fa30df600666632cf127e6ebb88dedbc34829c7c3a3d24fdd66",
+    "restored_accepted_assets": [],
+    "whitespace_normalization": "blank-only lines within the owned workspace component only; payload bytes preserved"
+  }
+}

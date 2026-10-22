@@ -2,6 +2,7 @@
 from copy import deepcopy
 from datetime import date
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -397,6 +398,64 @@ class GoldPhysicalInterpretation(unittest.TestCase):
         self.assertEqual(saved["as_saved_evidence"]["gold_physical"]["method"], "close_proxy")
         revised = build_workspace(snapshot(), commodity_latest=gold_publication(premium_pct=-.1))
         self.assertIn("snapshot_fingerprint", validate_condition(saved, revised)[1])
+
+
+class PresentationSemantics(unittest.TestCase):
+    """Synthetic source scenarios; they are not observed market or missing-universe proof."""
+
+    @staticmethod
+    def render(raw):
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / "templates"),
+                          autoescape=True, undefined=StrictUndefined)
+        macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+        return env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(
+            commodity_workspace=build_workspace(raw))
+
+    def test_oil_question_tracks_positive_negative_flat_unknown_and_absent_evidence(self):
+        for value, expected in [(4, "Is oil strength confirmed?"), (-4, "Does the physical market explain weaker oil?"),
+                                (0, "What does oil’s physical evidence show?"), (None, "What does oil’s physical evidence show?")]:
+            with self.subTest(value=value):
+                raw = snapshot()
+                raw["members"][0]["chg_1m_pct"] = value
+                html = self.render(raw)
+                prompt = re.search(r'<aside class="panel cw-panel cw-investigation-prompt">(.*?)</aside>', html, re.S).group(1)
+                self.assertIn(expected, prompt)
+                if value != 4:
+                    self.assertNotIn("Is oil strength confirmed?", prompt)
+        raw = snapshot()
+        oil = raw["members"].pop(0)
+        raw["members"].append(dict(oil, name="natgas"))
+        rendered = self.render(raw)
+        energy = re.search(r'<article class="panel cw-panel cw-family-reading">(.*?)</article>', rendered, re.S).group(1)
+        self.assertIn("Explore available energy evidence", energy)
+        self.assertNotIn("data-cw-go-physical", energy)
+        prompt = re.search(r'<aside class="panel cw-panel cw-investigation-prompt">(.*?)</aside>', self.render(raw), re.S).group(1)
+        self.assertIn("Oil is missing from this snapshot", prompt)
+        self.assertIn("data-cw-universe-open", prompt)
+        self.assertNotIn("data-cw-go-physical", prompt)
+
+    def test_family_interpretation_names_exceptions_and_keeps_flat_and_null_distinct(self):
+        cases = [
+            ((4, 3, 2, -1), "Gasoline fell; every other tracked member rose.", "汽油下跌，其余覆盖品种全部上涨。"),
+            ((4, -3, -2, -1), "WTI crude rose; every other tracked member fell.", "WTI原油上涨，其余覆盖品种全部下跌。"),
+            ((1, 2, 3, 4), "Every tracked member rose.", "覆盖品种全部上涨。"),
+            ((-1, -2, -3, -4), "Every tracked member fell.", "覆盖品种全部下跌。"),
+            ((0, 0, 0, 0), "All recorded changes are flat.", "记录的价格变化全部持平。"),
+            ((None, None, None, None), "Price evidence is unavailable.", "价格证据暂不可用。"),
+            ((4, -3, 0, None), "Coverage is incomplete.", "覆盖不完整"),
+            ((4, -3, 0, 2), "The family is divided.", "同类品种出现分化"),
+        ]
+        for values, en, zh in cases:
+            with self.subTest(values=values):
+                raw = snapshot()
+                prototype = raw["members"].pop(0)
+                raw["members"] += [dict(deepcopy(prototype), name=name, chg_1m_pct=value)
+                                   for name, value in zip(("oil", "natgas", "heating_oil", "gasoline"), values)]
+                raw["breadth"]["n_members"] = len(raw["members"])
+                verdict = re.findall(r'<p class="cw-family-verdict">(.*?)</p>', self.render(raw), re.S)[0]
+                self.assertIn(en, verdict)
+                self.assertIn(zh, verdict)
 
 
 if __name__ == "__main__":

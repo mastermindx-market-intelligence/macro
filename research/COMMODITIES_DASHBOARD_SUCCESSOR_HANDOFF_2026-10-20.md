@@ -1,4 +1,80 @@
-# MastermindX Commodities Dashboard — successor handoff (2026-10-20 local / 2026-10-21 UTC)
+# MastermindX Commodities Dashboard — successor handoff
+
+## CURRENT REBASE — 22 October 2026 · Chairman rejection governs
+
+**MISSION_COMPLETE: false. Product: PARTIAL / REJECTED_BY_DESIGN. Chairman assessment: 3/10.**
+
+The Chairman rejected the published R4 dashboard as materially below the requirements, original Paper design and north-star goal. This is the current product disposition. Earlier merged source, green CI, local screenshots and narrow authenticated company-return checks remain useful historical evidence; none closes the Commodities product. Do not upgrade this assessment merely because another incremental PR merges.
+
+The current requirements, original Paper board mapping, gap ledger, exact **19-scenario acceptance matrix** and ten completion gates are in **`research/COMMODITIES_PAPER_REVAMP_2026-10-22.md`**, section **Current product rebaseline**. Read that section before implementing or declaring completion. It supersedes narrower historical acceptance language below. Original Paper boards, not implementation-derived R4 companions, govern design parity. The matrix transcribes original board `2NMZ-0`, text nodes `2NOZ-0` / `2NP0-0`; scenarios 01, 04 and 09 have partial data-derived presentation progress, and **all 19 scenario acceptances remain OPEN**. No test or screenshot count upgrades that status.
+
+### Current source custody and implementation
+
+- Repository: `mastermindx-market-intelligence/macro`.
+- Managed operation: `commodities-northstar-parity-20261022`.
+- Branch: `sol/web-commodities-northstar-parity-20261022`.
+- Workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/commodities-northstar-parity-20261022`.
+- Immutable acquired base: `96883381d008c3b4a0a9c8ad0485d0df227798a7`.
+- Protected procedure pin: `Mastermind@dce821e0d9d67b67b3053290e42fb2ac0bbcdcc1`, skillpack 1.0.1.
+- Macro #9878, its guard continuation and Terminal #1092 are historical completed publication work. Macro #10038 is also merged. Do not resurrect those branches or repeat their publication. PR #10038's body was corrected and read back on 22 October to record the Chairman's rejection.
+- This continuation is dirty owned work. Preserve the templates, tests, generated page, evidence and rebaseline. Reconcile actual git status before publishing; this record is not a commit or delivery receipt.
+
+The current source increment restores family participation and disagreements, all 17 commodities in Explore, intersecting search/family/trend/momentum filters, explicit sorting, the signal map, compact comparison selection, multiple horizons, and exact price/state/physical inspectors. The renderer uses `--reuse-published-workspace`; accepted R3 semantics and payload are unchanged. Current payload SHA256: `da906458497e14100dbe6fcb036028164955cafe031e3ff00b4d59d963ada008`; workspace fingerprint: `abddd18cdb9bd9572731485abf4a9bcce083c2d9196cc6d89e4d12c28bdc76a4`. Do not mix newer raw data into this presentation qualification.
+
+The final local candidate is paired with accepted main `ff6ed4cced271da0b556aba4f35e82d7b939ccc5`, preserving newer surrounding content and the identical accepted workspace payload. Final page SHA256: `2cc476cd1f6938f91941c17bd33aa4a47f15cf4a5837126ea55cb1847cc2f7cf`; new CSS asset: `site/assets/css/5e34efe9.css`. The component colour expression was corrected to the canonical token and opacity. Design-system, runtime-style-injection and publication guards pass without weakening their rules. The publication guard explicitly reports freshness unverified.
+
+The existing anonymous browser harness passes **40 checks / 24 responsive cells** on these final bytes, including 320px and 768px in both languages/themes, exact source readings, full-width phone drawer, Escape/focus, filter/detail/back and fresh-document export/import. Focused source qualification passed 31 Python tests plus 47 subtests, 42 rendered-DOM journeys and pure presentation contracts. Exact renderer and browser receipts are `mockups/commodities-northstar-parity-render-receipt.json` and `mockups/commodities-northstar-parity-browser-receipt.json`. Final visual-capture and source-publication frontier follows when concluded. These checks are not full Paper parity, persisted Research, CI, covering production render, served-byte or authenticated live acceptance.
+
+### Final local evidence and publication frontier
+
+The canonical final captures completed **40/40 states**: Overview24 including actual hover/focus, plus Explore/Compare16, with desktop1440/mobile390, EN/ZH and dark/light. Manifests: `mockups/evidence/commodities-northstar-20261022/final/manifest.json` and `.../journeys/manifest.json`. The final three-key `EVIDENCE.yml` receipt and visual-evidence guard pass. Root and an independent reviewer inspected representative final images. No visible clipping/overlap blocker was found in the inspected frames. This is bounded progress, not full design acceptance. Source inspection still lacks original Paper's distinct **What this supports / What this does not establish** sections, and expanded technical details are visually unassessed. Lab layout-shift measurements do not establish a controlled performance pass.
+
+At authoring, the source/evidence are ready for the managed commit and first publication; no commit/push/PR/CI success is asserted by this document. Reconcile actual managed status and any later PR receipt. A first-push rebase onto accepted main `ff6ed4cced271da0b556aba4f35e82d7b939ccc5` must preserve the reviewed page and source bytes. Product remains **PARTIAL / REJECTED_BY_DESIGN, 3/10**. No normal covering-render, served-byte or authenticated-live result is yet attributed to this increment.
+
+### Original Paper source-drawer delta
+
+Root polished original board `1HDD-0` in file `01M2WGNCX9475G79JRKJTCM08P`, page `p-L-0`, and personally viewed its resulting screenshot. Operations `commodities-source-drawer-polish-20261022-type`, `-clock-label`, `-independent-clocks` and `-finish` each returned `APPLIED_RESPONSE_OBSERVED`. The drawer is 560px wide with 24px padding / 20px gap, canonical heading/value/body typography, and a minimum 64px by 40px close target. **Analysis snapshot · 25 Sep 2026** preserves the original fixture; separate **Price observation time — Not recorded** and **First publication time — Not recorded** explicitly prevent the analysis date from certifying those clocks. Added clock nodes are `6Y1H-1` through `6Y1O-1`; working indicators for `1HDD-0` were finished. The detailed node/operation record is in the current product rebaseline. No page movement, deletion or reorganization occurred. This is bounded Paper progress, not implementation parity or production acceptance.
+
+### Existing Research owner — established extension point, not completed integration
+
+Terminal at `9c92767f415ef4ef69e8f80b946a1064c9b1fd74` already owns Saved Research at `/analysis?view=investigations`:
+
+- `terminal/components/workspaces/InvestigationWorkspace.tsx`: save/readback/reopen and retained-context UI.
+- `terminal/lib/investigationContracts.ts`: strict manifest and evidence schema.
+- `terminal/lib/investigations.ts`: admission and existing revision RPC adapter.
+- `terminal/lib/investigationSave.ts`: original-command retention and unknown-outcome reconciliation.
+- `terminal/app/api/investigations/route.ts`: authenticated HTTP boundary.
+
+The existing owner supports stable operation IDs, exact revision readback and reopening. Commodity subjects and commodity/EIA references are not admitted yet; unknown manifest fields are rejected. There is no observed commodity intake, retained commodity receipt renderer or structured Commodities return state. A pinned reference is not itself an archive of source bytes.
+
+The follow-up source audit established the database owners at the same Terminal pin:
+
+- `supabase/migrations/0028_investigations.sql` defines `investigations`, `investigation_revisions`, `investigation_mutation_receipts`, and `apply_investigation_revision_v2` plus read/list RPCs. It preserves owner, expected-revision and original-operation semantics in one transaction. Its inspected source stores the manifest and validates retained layout refs; it does not fetch or archive arbitrary evidence objects.
+- `supabase/migrations/0040_investigation_review.sql` replaces `valid_investigation_manifest_v2`. Its subject allow-list is still security/issuer; its evidence allow-list is still Earnings/Options. Commodity support requires explicit **TypeScript and SQL** changes. Its header says unapplied at authoring: current installed SQL and migration receipts are **NOT VERIFIED** by this audit.
+- `terminal/app/api/investigations/baseline/route.ts` calls `terminal/lib/eventWorkspace.ts::resolveRetainedEventWorkspaceFromR2`. That resolver checks exact Earnings generation, manifest, bytes/hash, CIK company identity, fingerprint and current rights. Its `company_intelligence/event_workspaces/generations/` source is Earnings-specific; it is not a generic commodity archive.
+- Macro at `96883381d008c3b4a0a9c8ad0485d0df227798a7`: `engine/commodity_workspace_adapter.py::workspace_from_publications` does not supply `source_identities` to `build_workspace`. `engine/commodity_decision_workspace.py` therefore leaves source `immutable_source` / `available_at` null and point-in-time qualification false on that path. Its existing `mmx.commodities.as_saved_evidence.v1` appendix preserves selected asset, hypothesis, physical evidence, chains, other context and source receipts, but remains `export_only` / `live: false`.
+
+**Smallest next contract:** retain the existing bounded as-saved appendix and validated Commodities return state within the existing Investigation revision owner, with explicit manifest/SQL validation and a specified canonical digest. Treat this as **saved submitted research context**, not a verified original publisher snapshot. JSONB does not preserve the lexical bytes of an original JSON document. Preserve the original qualifications and immutable AS_SAVED view; current-source comparisons must be separate. Reopening verified original publisher/EIA evidence additionally requires the existing commodity publication owner to retain and resolve that exact source, with unavailable/mismatch behavior and current rights checks where applicable. No such generic commodity retention path was established by the scoped audit.
+
+The distinction is a completion gate: a successful submitted-context save can be a useful **PARTIAL** increment, but cannot close verified-source retention or the full north star. Reconcile installed SQL before migration, then prove authenticated save → original committed receipt → exact readback → independent-session reopen → exact commodity return. Do not create a separate save store, mislabel WTI as a security, invent an already-existing namespace, or call a generic Research link a completed save journey. Exact pinned source links and the full dependency table are in the current product rebaseline.
+
+### Next required results
+
+1. Reconcile the exact final publication frontier below and qualify only the states actually evidenced. Continue original-Paper visual and interaction acceptance at 320/390/768/1440, both themes and languages, including degraded semantic cases. Passing local browser checks does not close the missing north-star workflows.
+2. Publish the increment through the normal managed owner with an honest PARTIAL scope, then establish actual builder/input/output/served evidence. CI never substitutes for production proof.
+3. Complete the first full vertical: Overview → WTI decision → qualified EIA → exact receipt → existing Research case → save → canonical readback → reopen AS_SAVED → exact return state. Reuse the established Investigation owner, reconcile deployed SQL, and distinguish retained submitted context from independently verified publisher-source retention.
+4. Qualify configured-member coverage (Paper scenario 11) through the existing `config.yml` → `commodities.complex_members` roster, builder/adapter and pure workspace projection. Keep absent families visible with expected/present/price-qualified counts, preserve the family filter, and distinguish absent members from present nulls and real zeros. Do not repurpose the separate producer/artifact coverage ledger. Then qualify cycle/risk/extension/shock/readiness, all 19 scenarios and per-series basis/date/contract qualifications.
+5. Complete independent original-Paper acceptance and authenticated live acceptance before any product-complete claim. The Chairman's 3/10 status is not changed by this checkpoint.
+
+Paper target remains file `01M2WGNCX9475G79JRKJTCM08P`, page `p-L-0`. The Chairman authorized continuation despite the historical file-size warning after deletions; explicitly scoped adapter writes are available. Another session owns adapter/page reorganization. Do not move/delete pages or lower the original target to match implementation. The connected browser could not reach the Studio localhost preview; existing isolated HTTP browser tests provide local evidence only, not authenticated acceptance.
+
+No canonical Commodities Agent OS workstream was established by the scoped search. Do not invent one or treat this document as a new lifecycle owner.
+
+---
+
+## Historical successor handoff — 20 October local / 21 October UTC
+
+Everything below is retained historical evidence. Its old pending statuses and instructions must be reconciled against the current rebase above before use.
 
 **FINALIZATION_CLASSIFICATION:** CHECKPOINTED_CONTINUATION  
 **MISSION_COMPLETE:** false  
