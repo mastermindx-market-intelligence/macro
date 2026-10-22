@@ -1,0 +1,455 @@
+diff --git a/scripts/build_intl.py b/scripts/build_intl.py
+index 272d70b03caa..a8319302b659 100644
+--- a/scripts/build_intl.py
++++ b/scripts/build_intl.py
+@@ -30,6 +30,8 @@ from lib.intl_library_mount import render_international_pages  # noqa: E402
+ from lib.intl_macro_mount import attach_macros  # noqa: E402
+ from lib.intl_risk_mount import attach_risks  # noqa: E402
+ from lib.intl_history_mount import attach_history  # noqa: E402
++from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
++from lib.intl_gs_observations import build_observation_set  # noqa: E402
+ from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
+ 
+ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+@@ -40,7 +42,8 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
+           "mtf.js", "chart_i18n.js", "charts.js",
+           "tablesort.js", "stockdata.js", "stockview.js",
+           "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
+-          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
++          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js",
++          "intl_workspace_surveillance.css")
+ 
+ 
+ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+@@ -135,11 +138,12 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
+         raise ValueError("invalid_international_chart_sink")
+     generation = "im-workspace-generation:" + str(uuid4())
+     publication_inputs = None
++    eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
+     try:
+         from lib.intl_eod_publication import build_eod_inputs
+         admitted = build_eod_inputs(
+             closes, data_root=Path(data_root), evaluated_at=evaluated_at,
+-            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
++            rights=eod_rights,
+         )
+         if admitted is not None:
+             closes, publication_inputs = admitted
+@@ -205,6 +209,23 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
+         )
+     except Exception as exc:
+         log.error("International History panel unavailable (%s)", type(exc).__name__)
++    observation_set = None
++    try:
++        # W2F-X X2/X4: the incumbent chain as Wave 1 observations, built from
++        # the SAME admitted frame and the SAME eod grant object as the page.
++        # A failure withholds observations; it never suppresses the page.
++        observation_set = build_observation_set(
++            closes, publication_inputs=publication_inputs, evaluated_at=evaluated_at,
++            data_root=Path(data_root), rights=eod_rights)
++    except Exception as exc:
++        log.error("International Surveillance observations unavailable (%s)", type(exc).__name__)
++        observation_set = None
++    try:
++        # W2F seam: surveillance views mount independently; a missing or failed
++        # builder only disables its own sub-tab and never the page.
++        workspace = attach_surveillance(workspace, observations=observation_set)
++    except Exception as exc:
++        log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
+     return workspace
+ 
+ 
+diff --git a/templates/intl.html.j2 b/templates/intl.html.j2
+index 9a093e73398e..13866dcc971c 100644
+--- a/templates/intl.html.j2
++++ b/templates/intl.html.j2
+@@ -28,6 +28,7 @@
+ <link rel="stylesheet" href="intl_workspace_macro.css">
+ <link rel="stylesheet" href="intl_workspace_risk.css">
+ <link rel="stylesheet" href="intl_workspace_history.css">
++<link rel="stylesheet" href="intl_workspace_surveillance.css">
+ <script defer src="intl_workspace_state.js"></script>
+ <script defer src="intl_library_search.js"></script>
+ <script defer src="intl_workspace_scenario.js"></script>
+diff --git a/templates/intl_workspace.js b/templates/intl_workspace.js
+index 2fefa80750e7..e0f99095d70e 100644
+--- a/templates/intl_workspace.js
++++ b/templates/intl_workspace.js
+@@ -1323,7 +1323,8 @@
+   }
+ 
+   function panelValid(panel, config, source, version) {
+-    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library'].includes(panel.getAttribute('data-view')) ||
++    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library',
++          'scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage'].includes(panel.getAttribute('data-view')) ||
+         !config.horizons.includes(panel.getAttribute('data-horizon')) ||
+         !config.bases.includes(panel.getAttribute('data-basis')) ||
+         !panel.hasAttribute('data-source') || (version === 2 ?
+@@ -1414,6 +1415,7 @@
+     paintLibrary(controller,state);
+     paintCompare(controller,compare);
+     paintInspectorFallbacks(controller,state);
++    paintGsMarket(controller, state);
+     return reported;
+   }
+ 
+@@ -1772,6 +1774,7 @@
+     var hadInspector = !!controller.inspector;
+     if (hadInspector) visuallyCloseInspector(controller, { release: true });
+     var parsed = controller.reducer.parseQuery(external.query);
++    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
+     var committed = commitResearch(controller, parsed, 'popstate');
+     if (controller.pendingScenario) {
+       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+@@ -1786,6 +1789,99 @@
+     }
+   }
+ 
++  function gsMarketSeamPresent(controller) {
++    // The X6 element-existence rule governs the surveillance market seam; a
++    // page that carries no [data-gs-market] surface at all keeps the incumbent
++    // legacy market semantics (history/macro selection never had gs elements).
++    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]');
++  }
++
++  function gsMarketPresent(controller, marketId) {
++    return marketId !== null && /^[A-Z]{2}$/.test(marketId)
++      && controller.config.markets.indexOf(marketId) !== -1
++      && !!controller.root.querySelector('[data-gs-market="' + marketId + '"]');
++  }
++
++  // W2F-X X6: a configured market without document content is not a selection.
++  // Clamp state only; the single alignment path below owns any URL correction.
++  function clampGsMarket(controller, parsed) {
++    if (!parsed.ok || !gsMarketSeamPresent(controller) || parsed.state.selected_market === null) return parsed;
++    if (gsMarketPresent(controller, parsed.state.selected_market)) return parsed;
++    var cleared = controller.reducer.reduce(parsed.state, { type: 'select_market', market_id: null });
++    return cleared.ok ? cleared : parsed;
++  }
++
++  function alignGsMarketUrl(controller, parsed, query) {
++    try {
++      if (!parsed.ok || !gsMarketSeamPresent(controller)) return parsed;
++      // This is the already-verified business query. Transport pairs, omitted
++      // defaults and alternate encodings of unchanged values are not edits.
++      var parts = query.replace(/^\?/, '').split('&');
++      for (var index = 0; index < parts.length; index += 1) {
++        var separator = parts[index].indexOf('=');
++        if (separator < 0) continue;
++        var key = parts[index].slice(0, separator);
++        if (decodeURIComponent(key.replace(/\+/g, ' ')) !== 'market') continue;
++        var value = decodeURIComponent(parts[index].slice(separator + 1).replace(/\+/g, ' '));
++        var selected = parsed.state.selected_market || '';
++        if (value !== selected) {
++          // Preserve every other raw pair and the supplied key encoding. The
++          // bridge retains ownership of transport, admission and parent ACKs.
++          parts[index] = key + '=' + encodeURIComponent(selected);
++          controller.environment.window.history.replaceState(null, '', nextUrl(controller, parts.join('&')));
++        }
++        break;
++      }
++    } catch (_) { /* cosmetic URL alignment only; the validated state stands */ }
++    return parsed;
++  }
++
++  // W2F-X X6 scope: show only the selected market's child (or the marked
++  // default when nothing is selected) and own the selected-market marking.
++  function paintGsMarket(controller, state) {
++    var root = controller.root;
++    var selected = state.selected_market;
++    owned(root, '[data-gs-market-scope]').forEach(function (node) {
++      var children = Array.from(node.children).filter(function (child) {
++        return child.hasAttribute('data-gs-market');
++      });
++      if (!children.length) return;
++      var match = children.find(function (child) { return child.getAttribute('data-gs-market') === selected; }) || null;
++      var fallback = children.find(function (child) { return child.hasAttribute('data-gs-market-default'); }) || null;
++      var shown = match || fallback || children[0];
++      children.forEach(function (child) { child.hidden = child !== shown; });
++    });
++    owned(root, '[data-gs-market-row]').forEach(function (row) {
++      if (selected !== null && row.getAttribute('data-gs-market-row') === selected) row.setAttribute('data-gs-selected', '');
++      else row.removeAttribute('data-gs-selected');
++    });
++    owned(root, '[data-gs-select-market]').forEach(function (link) {
++      if (selected !== null && link.getAttribute('data-gs-select-market') === selected) link.setAttribute('aria-current', 'true');
++      else link.removeAttribute('aria-current');
++    });
++  }
++
++  // W2F-X X6 behaviour: one delegated click handler for the market select
++  // links. A real <a href="?view=…&market=…">, so middle-click and no-JS still
++  // navigate; enhanced clicks set the market and, when the link names a
++  // registered view, switch through the existing view-switch path.
++  function gsMarketEvent(controller, event) {
++    if (event.type !== 'click') return false;
++    var link = event.target && event.target.closest ? event.target.closest('a[data-gs-select-market]') : null;
++    if (!link || link.disabled || link.closest('[data-im-workspace]') !== controller.root) return false;
++    event.preventDefault();
++    var marketId = link.getAttribute('data-gs-select-market') || null;
++    if (gsMarketPresent(controller, marketId) && marketId !== controller.state.selected_market) {
++      dispatch(controller, { type: 'select_market', market_id: marketId });
++    }
++    var openView = link.getAttribute('data-gs-open');
++    if (openView && structuralPanels(controller, controller.state.source_reference).has(openView)
++        && openView !== controller.state.view) {
++      dispatch(controller, { type: 'set_view', view: openView });
++    }
++    return true;
++  }
++
+   function actionFromEvent(controller, event) {
+     if (event.type === 'click') {
+       var button = event.target && event.target.closest ? event.target.closest('button[data-im-action]') : null;
+@@ -1817,6 +1913,7 @@
+   }
+ 
+   function clickOrChange(controller, event) {
++    if (gsMarketEvent(controller,event)) return;
+     if (scenarioEvent(controller,event)) return;
+     if (riskEvent(controller,event)) return;
+     if (compareEvent(controller,event)) return;
+@@ -1946,6 +2043,7 @@
+         throw refusal;
+       }
+       var parsed = reducer.parseQuery(external.query);
++      parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
+       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
+       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
+       controller.live = true;
+diff --git a/tests/intl_workspace_controller.test.cjs b/tests/intl_workspace_controller.test.cjs
+index 003dcf778801..99cd38f5e87a 100644
+--- a/tests/intl_workspace_controller.test.cjs
++++ b/tests/intl_workspace_controller.test.cjs
+@@ -1915,7 +1915,7 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
+ 
+ // A routed cross-origin child runs the real blocking bridge, controller and entry.
+ // The modelled parent deliberately withholds INIT until the test asks for it.
+-async function withQueryFrames(run) {
++async function withQueryFrames(run, { gs = false } = {}) {
+   const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL } : {}) });
+   const bridge = fs.readFileSync(path.join(__dirname, '../templates/shared_shell_bridge.js'), 'utf8');
+   const entry = fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_entry.js'), 'utf8');
+@@ -1923,6 +1923,7 @@ async function withQueryFrames(run) {
+   const script = source => '<script>' + source.replace(/<\/script/gi, '<\\/script') + '</script>';
+   let markup = workspaceMarkup().replace('</select>', option('TW') + '</select>');
+   markup = markup.replace('<p data-im-unavailable>', '<article data-im-panel data-view="library" data-horizon="3m" data-basis="local" data-source="fixture:v1"><input id="query-library-search" type="search"></article><article data-im-panel data-view="history" data-horizon="3m" data-basis="local" data-source="fixture:v1">Taiwan history</article><p data-im-unavailable>');
++  if (gs) markup = markup.replace('<p data-im-unavailable>', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div><div data-gs-market="KR">Korea GS content</div></div><p data-im-unavailable>');
+   markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(config) + '</script><fieldset data-im-controls disabled><h1');
+   markup = markup.replace('</section>', '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
+   async function open(query, beforeEntry = '') {
+@@ -2260,3 +2261,165 @@ test('query source: standalone search getter failure stays inside the live refus
+     assert.deepEqual(errors, []);
+   });
+ });
++
++
++const gsQueryHistoryProbe = 'window.gsQueryWrites=[];for(const method of ["pushState","replaceState"]){const original=history[method];history[method]=function(state,title,url){gsQueryWrites.push({method,url:String(url)});return original.apply(this,arguments);};}';
++
++async function gsQuerySnapshot(child) {
++  return child.frame.evaluate(() => ({
++    state: queryHandle.getState(),
++    query: MMXSharedShell.readPageSearch(),
++    raw: location.search,
++    issues: document.querySelector('[data-im-issues]').textContent,
++    writes: gsQueryWrites,
++    length: history.length,
++    initialLength: queryBoot.length,
++    active: MMXSharedShell.active,
++    visibleMarkets: Array.from(document.querySelectorAll('[data-gs-market-scope] > [data-gs-market]'))
++      .filter(node => !node.hidden).map(node => node.getAttribute('data-gs-market'))
++  }));
++}
++
++async function gsNavigationMessages(child) {
++  await child.page.waitForFunction(() => queryMessages.some(message => message.type === 'READY'));
++  await child.page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
++  return child.page.evaluate(() => queryMessages.filter(message => message.type === 'NAVIGATE'));
++}
++
++test('GS query composition: transport and unchanged business selection cause no history or navigation writes', async () => {
++  const queries = ['', 'view=overview', 'market=', 'market=JP',
++    'view=history&market=KR&pins=JP&horizon=1m&basis=usd_unhedged&return_basis=price',
++    '%6darket=%4aP&view=overview&group=&pins=JP%2cKR'];
++  await withQueryFrames(async open => {
++    for (const business of queries) {
++      const child = await open('?' + (business ? business + '&' : '') + 'mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
++      const before = await gsQuerySnapshot(child);
++      const selected = business.includes('KR&') ? 'KR' : business.includes('JP') || business.includes('%4aP') ? 'JP' : null;
++      assert.equal(before.state.selected_market, selected, business);
++      assert.equal(before.query, business ? '?' + business : '', business);
++      assert.equal(before.issues, '', business);
++      assert.equal(before.active, false);
++      assert.equal(before.length, before.initialLength);
++      assert.deepEqual(before.writes, [], business);
++      assert.deepEqual(before.visibleMarkets, [selected || 'JP']);
++      await child.init();
++      const after = await gsQuerySnapshot(child);
++      assert.deepEqual(after.state, before.state);
++      assert.equal(after.raw, before.raw);
++      assert.deepEqual(after.writes, []);
++      assert.deepEqual(await gsNavigationMessages(child), [], business);
++      assert.deepEqual(child.errors, []);
++      await child.close();
++    }
++  }, { gs: true });
++});
++
++test('GS query composition: one market-only correction preserves raw business bytes before INIT', async () => {
++  const cases = [
++    ['market=zz', 'market='],
++    ['market=XX', 'market='],
++    ['market=JPN', 'market='],
++    ['market=TW', 'market='],
++    ['group=&pins=JP%2cKR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price',
++     'group=&pins=JP%2cKR&%6darket=&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price']
++  ];
++  await withQueryFrames(async open => {
++    for (const [business, corrected] of cases) {
++      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
++      const before = await gsQuerySnapshot(child);
++      assert.equal(before.state.selected_market, null, business);
++      assert.equal(before.query, '?' + corrected, business);
++      assert.equal(before.issues, '');
++      assert.equal(before.active, false);
++      assert.equal(before.length, before.initialLength);
++      assert.deepEqual(before.writes, [{ method: 'replaceState', url: '/intl.html?' + corrected }], business);
++      assert.deepEqual(before.visibleMarkets, ['JP']);
++      assert.match(before.raw, /mmx_shell=1&mmx_generation=query-g1$/);
++      await child.init();
++      const requests = await gsNavigationMessages(child);
++      assert.equal(requests.length, 1, business);
++      assert.equal(requests[0].mode, 'replace');
++      assert.equal(requests[0].sameDocument, true);
++      assert.equal(new URL(requests[0].href).search, '?' + corrected);
++      await child.frame.evaluate(() => dispatchEvent(new PopStateEvent('popstate')));
++      const after = await gsQuerySnapshot(child);
++      assert.deepEqual(after.state, before.state);
++      assert.deepEqual(after.writes, before.writes, 'corrected query is idempotent');
++      assert.equal(after.length, before.initialLength);
++      assert.equal((await gsNavigationMessages(child)).length, 1);
++      assert.deepEqual(child.errors, []);
++      await child.close();
++    }
++  }, { gs: true });
++});
++
++test('GS query composition: rejected business queries are not sanitized by market alignment', async () => {
++  const queries = ['notmarket=JP', 'market=JP&foreign=x', 'market=JP&%6darket=KR',
++    'market=%zz', 'view=unknown&market=JP', 'market=TW&&view=overview',
++    'view=overview&market=TW&', 'market=JP&view=%zz'];
++  await withQueryFrames(async open => {
++    for (const business of queries) {
++      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
++      const before = await gsQuerySnapshot(child);
++      assert.equal(before.query, '?' + business, business);
++      assert.equal(before.issues, 'Invalid URL state restored', business);
++      assert.deepEqual(before.writes, [], business);
++      assert.equal(before.length, before.initialLength);
++      await child.init();
++      assert.deepEqual(await gsNavigationMessages(child), [], business);
++      const after = await gsQuerySnapshot(child);
++      assert.equal(after.raw, before.raw);
++      assert.equal(after.issues, before.issues);
++      assert.deepEqual(after.writes, []);
++      assert.deepEqual(child.errors, []);
++      await child.close();
++    }
++  }, { gs: true });
++});
++
++test('GS query composition: native Back and Forward preserve one intended clamp before and after INIT', async () => {
++  await withQueryFrames(async open => {
++    for (const admitted of [false, true]) {
++      const child = await open('?market=JP&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
++      if (admitted) await child.init();
++      await child.frame.evaluate(() => {
++        const original = location.href;
++        History.prototype.pushState.call(history, null, '', '?market=TW&mmx_shell=1&mmx_generation=query-g1');
++        History.prototype.pushState.call(history, null, '', original);
++        window.gsNativeLength = history.length;
++        window.gsPopDone = false;
++        addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
++        history.back();
++      });
++      await child.frame.waitForFunction(() => gsPopDone);
++      let out = await gsQuerySnapshot(child);
++      assert.equal(out.state.selected_market, null);
++      assert.equal(out.query, '?market=');
++      assert.equal(out.issues, '');
++      assert.equal(out.writes.length, 1);
++      assert.deepEqual(out.visibleMarkets, ['JP']);
++      const length = out.length;
++      for (const [method, selected, query] of [['forward', 'JP', '?market=JP'], ['back', null, '?market=']]) {
++        await child.frame.evaluate(method => {
++          window.gsPopDone = false;
++          addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
++          history[method]();
++        }, method);
++        await child.frame.waitForFunction(() => gsPopDone);
++        out = await gsQuerySnapshot(child);
++        assert.equal(out.state.selected_market, selected);
++        assert.equal(out.query, query);
++        assert.equal(out.issues, '');
++        assert.equal(out.writes.length, 1, 'no repeated correction on native history');
++        assert.equal(out.length, length);
++      }
++      if (!admitted) await child.init();
++      const requests = await gsNavigationMessages(child);
++      assert.equal(requests.length, 1);
++      assert.equal(requests[0].mode, 'replace');
++      assert.equal(requests[0].sameDocument, true);
++      assert.deepEqual(child.errors, []);
++      await child.close();
++    }
++  }, { gs: true });
++});
+diff --git a/tests/test_site_access_boundary.py b/tests/test_site_access_boundary.py
+index e7fe1d8348a0..079edb201b91 100644
+--- a/tests/test_site_access_boundary.py
++++ b/tests/test_site_access_boundary.py
+@@ -97,6 +97,7 @@ def test_intl_workspace_dependencies_are_public_presentation_assets():
+         "/intl_workspace_macro.css",
+         "/intl_workspace_risk.css",
+         "/intl_workspace_history.css",
++        "/intl_workspace_surveillance.css",
+         "/intl_workspace_state.js",
+         "/intl_library_search.js",
+         "/intl_workspace_scenario.js",
+@@ -293,11 +294,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
+     redirect_lines = [
+         line.strip()
+         for line in CADDY.splitlines()
+-        if line.strip().startswith("redir /movers.html ")
++        if line.strip().startswith("redir @movers_seo_redirect ")
+     ]
+     assert redirect_lines == [
+-        'redir /movers.html "/stocks/index.html#today-movers" 301'
++        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
+     ]
++    # Only the trusted shell tuple is exempt; the separate matcher test and
++    # real Caddy boundary cases retain every standalone/negative SEO redirect.
++    assert 'path /movers.html' in CADDY
++    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
+ 
+ 
+ def test_html_documents_are_never_registration_gated():
+@@ -698,6 +703,18 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
+     assert "redir /baskets_china.html " not in CADDY
+ 
+ 
++def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
++    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
++    assert match
++    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
++        not {
++            query mmx_shell=1
++            header Referer https://beta.mastermind-x.com/*
++        }""".split())
++    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
++    assert "redir /movers.html " not in CADDY
++
++
+ def test_fail_closed_and_browser_hardening_are_present():
+     assert 'rewrite /api/regwall/check' in CADDY
+     assert 'rewrite /api/paywall/check' in CADDY

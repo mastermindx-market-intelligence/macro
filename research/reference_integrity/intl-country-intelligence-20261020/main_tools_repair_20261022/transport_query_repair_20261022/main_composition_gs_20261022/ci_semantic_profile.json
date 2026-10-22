@@ -1,0 +1,8 @@
+{
+  "source_manifest_sha256": "6a6d47b3b0f4a54df8722a636f18438febecfa5fc626820aadc174d0a102780f",
+  "jobs": 349,
+  "normalized_jobs_sha256": "46206eb8f995dcf3da44eb46dc2c9878fb1f08959123ca897939becfec72c20e",
+  "normalization": "Copy parsed jobs, sort each paths list retaining duplicates, then JSON sort_keys=True,separators comma-colon, ensure_ascii=True.",
+  "foundation_paths": 378,
+  "browser_paths": 360
+}

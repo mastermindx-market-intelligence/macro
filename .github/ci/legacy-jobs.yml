@@ -8620,6 +8620,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Exact reviewed country-theme fixture used by the GS freeze guard.
+      - "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css"
       # International R12: measured country-source import closure and verification.
       - "collectors/intl_country_sources.py"
       - "collectors/intl_policy_sources.py"
