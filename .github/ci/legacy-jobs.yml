@@ -27321,7 +27321,7 @@ jobs:
       - name: dashboard cold-load budget + stocktable bootstrap + logo adapter + globe overlays
         run: python -m pytest tests/test_dashboard_cold_load_budget.py tests/test_stocktable_load_order.py tests/test_stock_logo_system.py tests/test_globe_tooltip_behavior.py -q
       - name: radar page boot + reports timeline + bilingual span-leak scan
-        run: python -m pytest tests/test_radar_page_boot.py tests/test_reports_timeline_ui.py tests/test_bilingual_span_leak.py -q
+        run: python -m pytest tests/test_radar_page_boot.py tests/test_reports_timeline_ui.py tests/test_reports_hub_span.py tests/test_research_pages_hub_claims.py tests/test_research_pages_record_claims.py tests/test_bilingual_span_leak.py -q
       # china_heatmap's anonymous tier preview: the server-rendered summary layer
       # (all three markets), the hover card's two empty states, and the shipped
       # shell. It lives HERE rather than in `tier-gate` because the summary is
