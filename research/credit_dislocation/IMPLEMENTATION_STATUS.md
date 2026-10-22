@@ -1,3 +1,21 @@
+# Current implementation status — 22 October 2026
+
+**Source composition qualified; browser/visual, review and production gates remain held.** This containing merge descends from414d785 + CI-tested maina37bfdcd. Publication/head and later CI are recorded in canonical#9590 comment6337092277.
+
+| Boundary | Current result |
+| --- | --- |
+| Finite CI repair | Existing ccw-w4-credit-desk gains exactly engine/liquidity_currency.py and engine/liquidity_source_availability.py. Treasury paths, source commands, suites, scopes, estimates and ceilings retained. |
+| Local qualification | 302 source/artifact tests passed21.67s on033890f79a19c1f17f75c9a2a9db7b1f9905e49b. 4 curation/closure/packing/ancestor guards passed in 177.19s; source unchanged. |
+| Retained native scope | No rebuild.24/25 recorded source hashes unchanged; only one accepted upstream liquidity DAG registration differs, with all prior DAG structure retained. All29 packaged artifact records unchanged; actual old native proof remains source-scoped. |
+| Packaged controllers | Exact duration module, unique panel/opener IDs and adapter-before-inspector order verified in existing13:01:31 readback. No browser execution. |
+| Browser/visual | HOLD. Current duration and CDI owning receipts absent; administrator denial binding. Full tablet/contrast/reduced-motion/keyboard obligations retained in CONTINUATION.md. |
+| W4/W5/W6 and prospective contracts | Concrete source-linked OWNER_CONTRACTS_20261022.md prepared as UNADOPTED REQUIREMENTS. No Bonds reference/resolver or prospective grader/cohort is admitted. |
+| Forex | Same-owner published3db8846;355 source tests passed; ordinary CI39787499393/fences39787499203. Current-slot support/adoption remains absent. Licensing complete. |
+
+See evidence/liquidity_ci_base_qualification_20261022.json and the current master plan. Earlier source/native outcomes and failures below remain accepted only for their recorded identities. No review, browser, source-admission, delivery or release acceptance is inferred.
+
+## Historical implementation checkpoints
+
 ## Current source composition checkpoint — 22 October 2026
 
 ## Current implementation status — 22 October 2026

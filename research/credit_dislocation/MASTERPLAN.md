@@ -1,3 +1,41 @@
+# Bonds completion plan — current recovery checkpoint
+
+## Qualified CI-base composition — 22 October 2026
+
+**The broader Bonds project remains Draft/HOLD.** This containing merge composes published `414d785d14e9af77c02a273f0f9829162b9cc55d` with the exact CI-tested main `a37bfdcd2b31d5184f291fdc872c1163491474eb`. The current canonical [CDI checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) and [joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) record the final publication/head and later automatic CI. Use them before an effect.
+
+The previous414d CI tested merge38bbf85cc8c9688c972eb7514bc7ef65ed409518 and reported two introduced import-closure findings, zero inherited. This merge adds only `engine/liquidity_currency.py` and `engine/liquidity_source_availability.py` to the existing `ccw-w4-credit-desk.paths` after reconciling that main. The Treasury declarations, all existing steps, scopes, dependencies, named suites, estimators, deadlines and ceilings are preserved. Main's own accepted source/data changes are inherited without dispatching their producers.
+
+### Executed qualification
+
+| Scope | Evidence |
+| --- | --- |
+| Source and committed artifact contracts | **302 passed in21.67s**, completed13:35:44UTC on source/index tree`033890f79a19c1f17f75c9a2a9db7b1f9905e49b`; source unchanged. This run includes the two actual committed-artifact checks. |
+| Existing curation/closure/packing/ancestor guards | 4 curation/closure/packing/ancestor guards passed in 177.19s; source unchanged. |
+| Native evidence compatibility | 24 of25 recorded source files are byte-identical to the earlier actual combined native proof. The only difference is `config/dag.yml`: removing the single accepted upstream `capture_stock_liquidity_currency` registration restores the entire old parsed DAG. It was not executed. |
+| Packaged artifact | All29 recorded artifact byte/hash records remain exact, including27 declared references and six fonts. HTML remains521,406bytes, SHA256`f50ac4fe92898a44b24c74442fbe2df1487948c79b2a2ef78d7885ea7c33b0d9`. No native build or asset optimization was repeated. |
+| Packaged controller readback | At13:01:31UTC, each of the four surface IDs and source opener occurred once; the exact duration module survived optimization and the source adapter preceded the inspector. This is static artifact evidence, not a browser interaction. |
+| Source-owner contracts | [OWNER_CONTRACTS_20261022.md](OWNER_CONTRACTS_20261022.md) records concrete W4/W5/W6 and prospective requirements, exact source references, unresolved bindings and next bounded deliverables. Status remains UNADOPTED REQUIREMENTS; no new service, admission, resolver or cohort is installed. |
+
+See [the compact composition receipt](evidence/liquidity_ci_base_qualification_20261022.json). The earlier [actual combined native receipt](evidence/combined_native_current_main_20261022.json),502 retained input manifest,300-pass run,four guards,two artifact checks and original failure/correction receipts retain their original scopes. The current compatibility receipt does not claim a new native execution or fresher observations.
+
+### Release and independent continuation gates
+
+1. Reconcile local HEAD/index/MERGE_HEAD and `.cdi-proof/integration-20261022/liquidity-base-*` intent/result receipts with the same remote owner. The merge and declaration repair may already be applied. Commit/publish only the qualified source and compact documentation through #9590; after publication consume the new automatic CI once. No forced push, manual workflow dispatch or replay of an uncertain effect.
+2. The genuine visual gate is open. R11 head143f8c2 CI39780032716 completed failure with11packs passing and only the missing duration owning receipt; fences passed. The CDI partial likewise lacks its current owning visual proof. Preserve both findings. Current native/static evidence does not satisfy them.
+3. The original ERR_BLOCKED_BY_ADMINISTRATOR remains binding. An actual incumbent capture operation, admission/restoration receipt and accepting operator are unresolved. Obtain them through the existing owner before browser work. No alternate browser/profile/session/host or delegated workaround. The current1440/390×EN/ZH×dark/light matrix is a minimum: retain tablet geometry, contrast, overflow, reduced motion, keyboard/Escape, input correction/fractional changes/edit/reset, close/reopen and focus return; plus CDI hover/detail and R33 protected-source scope. Record genuine owning receipts under the existing schemas and changed paths.
+4. Continue the bounded source-contract work in OWNER_CONTRACTS_20261022.md. W4 needs actual per-instrument history/terms and coverage; latest-only holdings are not that history. W5 must preserve the Capital Structure owner's funding input/scenario identities, unknowns and cutoff semantics. W6 must resolve typed immutable Bonds evidence, current access, TS/Python/persistence parity and review/replay through the incumbent #804 writer. Documentation and generic persistence cannot admit a missing Bonds adapter.
+5. Prospective issuer-CDI evaluation has no accepted protocol/cohort start or adopted grader recorded here. Preserve the existing ungraded h21/h63 forward logger and accepted historical S1 study. Bind actual eligibility, source versions, calendar, first observation and censoring through the existing owner before21/63/126-session outcome claims. Genuine CDS and future observations remain separate requirements.
+6. Original R33/Forex review returns remain terminal/unqualified. Terminal#1106 additionally remains under the original-review-only condition, with no pending qualifying continuation. A different review needs a specific amendment; none is inferred. The separate deployment refusal remains binding. No replay/provider change, migration0038 reapplication or cutover follows from this work.
+
+Terminal#804's T03j PR description is historical, not current cutover authority. Its old41d85a86/31,394-byte/b840b111 packet is superseded by the canonical current source/ledger. Preserve T03k EFFECT_UNKNOWN/Candidate CLOSED and the unknown-effect owner's custody. Source-contract preparation supplies no DDL, additional qualification case or deployment instruction.
+
+Forex continues on published `3db88469490925ff9ed23eec4a87eb19a0ff0cec`:355 source tests passed after24 discriminating failures on the prior source. Ordinary CI39787499393/fences39787499203 are its current runs. Actual retained08:00/12:00 support remains absent, no source admission or monitoring. Licensing/intended product use is COMPLETE by Chairman attestation. Preserve immutable Macro#9996, green CI/covering render39688064251, genuine inactive CRUD, held carry/COT/RiskRadar and every original dirty/untracked/ignored workspace.
+
+## Historical combined-source checkpoints
+
+The following records completed earlier operations and their source-scoped evidence. Current identities and next steps above supersede old push, composition, build and timing instructions.
+
 ## Current source composition checkpoint — 22 October 2026
 
 ## Current combined-source checkpoint — 22 October 2026, 12:52 UTC

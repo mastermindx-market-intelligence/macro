@@ -1,3 +1,36 @@
+# Replacement-session continuation — Bonds and Forex
+
+Read MASTERPLAN.md, evidence/liquidity_ci_base_qualification_20261022.json and OWNER_CONTRACTS_20261022.md, then the latest canonical #9590 comment6337092277 and joint #9996 comment6336042815. Refresh a compatible protected Mastermind pin. Continue the same PRs, branches, workspaces and original operations.
+
+## Reconcile this exact effect before doing more
+
+Existing CDI workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001`; local branch`sol/web-ccw-cdi-source-integration-20261022-sol-001`; remote owner`claude/ssd-ccw-dislocation-v1-cc87720e59421398`, PR#9590.
+
+The current merge is published414d785d14e9af77c02a273f0f9829162b9cc55d + exact CI basea37bfdcd2b31d5184f291fdc872c1163491474eb. Preview tree47b70d1910ca1e70d1a2dc7447a07953353c2cf8 was clean. Adding the two exact liquidity scope paths produced qualified source tree033890f79a19c1f17f75c9a2a9db7b1f9905e49b. **302 source/artifact checks passed21.67s. 4 curation/closure/packing/ancestor guards passed in 177.19s; source unchanged.**
+
+Read these existing proof files; do not replay their actions:
+
+- `liquidity-ci-base-preview.json`, `liquidity-base-merge-intent.json`, `liquidity-base-merge-result.json`, `liquidity-base-closure-repair.json`.
+- `liquidity-base-source-artifact-tests.json`, `liquidity-base-curation-guards.json`, `liquidity-base-native-compatibility.json`.
+- The containing source-commit/publication intent/result under the same `liquidity-base-` prefix, if present. Exact remote equality establishes an applied push; missing command output does not justify repeating it.
+
+The earlier R11 push, combined source merge, actual native build and asset packaging are complete. All29 packaged artifact records are unchanged. Of25 recorded native source files, only the accepted unrelated liquidity registration in config/dag.yml differs; existing DAG semantics are otherwise identical and no producer was executed. Preserve the original native scope without claiming a new build. The actual packaged duration-module and adapter-order readback is in `combined-packaged-controller-readback.json`.
+
+## Ordered next actions
+
+1. If the qualified merge has not yet been committed/published, finish only that existing effect with explicit file paths and a normal same-branch push after reconciliation. If APPLIED, consume its ordinary exact-head CI. Preserve original budgets, suites, all accepted source/native evidence and earlier failures.
+2. Genuine browser/visual acceptance is still owed. R11's current duration guard failure and CDI's current missing owning receipt are not documentation-only repairs. The administrator denial remains binding; actual capture-owner operation, admission/restoration and accepting operator are unresolved. No alternate browser/profile/session/host.
+3. The1440/390×EN/ZH×dark/light owning matrix is a minimum. Keep the original tablet, contrast, overflow, reduced-motion, keyboard/Escape, invalid-then-corrected/fractional/edit/reset/close/reopen/focus-return scope; CDI summary hover, expansion and dated detail; R33 protected companion access, clocks and missingness. Older synthetic/native/R33-only proof cannot be relabelled.
+4. Advance only the concrete owner-contract deliverables in OWNER_CONTRACTS_20261022.md. Actual W4 history/coverage, W5 subject/generation/scenario binding, W6 immutable resolver/current access/parity, and prospective protocol/first eligible cohort are unresolved. Generic validators, a forward logger or a historical study do not establish those integrations. No new evaluator or case store.
+5. Preserve terminal/unqualified original reviews. Terminal#1106 has no pending qualifying continuation under its original-review-only condition, and its deployment refusal remains separate. #804's old T03j body is not cutover authority; use the current canonical source/ledger and preserve T03k unknown-effect custody. No replay, additional case, DDL or migration0038 application.
+6. Forex3db8846 is published with355 source tests and automatic CI39787499393/fences39787499203. Retained source support/adoption and active revision-safe dispatch gates remain. Licensing/intended use is COMPLETE. Macro#9996, covering render39688064251 and proven inactive CRUD remain accepted.
+
+The plan defines replacement-session continuity; it creates no background execution, watch, queue, account, lifecycle, retry or publication plane.
+
+## Historical continuation records
+
+Earlier pending-step descriptions below are retained history and superseded by the exact current state above.
+
 ## Current source composition checkpoint — 22 October 2026
 
 ## Replacement-session continuation — current combined source, 22 October 2026
