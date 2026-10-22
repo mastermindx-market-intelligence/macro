@@ -9,7 +9,7 @@ OUT = Path(__file__).resolve().parent
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-sha", required=True)
-    parser.add_argument("--label", required=True, choices=("shellquery20261022",))
+    parser.add_argument("--label", required=True, choices=("shellquery20261022", "scenariopop20261022"))
     args = parser.parse_args()
     build = Path("/tmp/intl-rig-shellquery-20261022") / args.label / "source"
     if build.exists():

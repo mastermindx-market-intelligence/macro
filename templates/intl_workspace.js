@@ -1760,7 +1760,7 @@
     if (!controller.live) return;
     // The external read is obtained and its capability verified BEFORE any state,
     // history, inspector, scenario or focus mutation. A refused capability reports
-    // the refusal and stops: validated state, serializedQuery, inspector attachment
+    // the refusal and stops: committed state, serializedQuery, inspector attachment
     // and mode, the scenario draft and pending proposal, the return stack, the
     // baseline and the current focus are all left exactly as they were. The browser
     // has already moved its own location and that location stays as received - this
@@ -1774,11 +1774,15 @@
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
     var parsed = controller.reducer.parseQuery(external.query);
-    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed), external.query);
+    parsed = clampGsMarket(controller, parsed);
     var committed = commitResearch(controller, parsed, 'popstate');
-    if (controller.pendingScenario) {
+    // A valid refused Scenario traversal owns its one serialized restoration.
+    // Invalid queries stay untouched; GS alignment follows final acceptance.
+    if (parsed.ok && controller.pendingScenario) {
       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
       catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
+    } else if (parsed.ok && committed.ok) {
+      alignGsMarketUrl(controller, committed, external.query);
     }
     controller.issues = committed.issues;
     if (hadInspector) {
@@ -1832,7 +1836,7 @@
         }
         break;
       }
-    } catch (_) { /* cosmetic URL alignment only; the validated state stands */ }
+    } catch (_) { /* cosmetic URL alignment only; the accepted state stands */ }
     return parsed;
   }
 

@@ -1,0 +1,91 @@
+{
+  "recorded_at": "2026-10-22T20:05:29.990436+00:00",
+  "checks": [
+    {
+      "name": "claims_source_before",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_validated_claims.py",
+        "--scope",
+        "source"
+      ],
+      "exit_code": 1,
+      "log_sha256": "3e667b7653dd2dd73e98199040abd8434c393c60486d43c2564a1e73d0b90dae"
+    },
+    {
+      "name": "claims_selftest",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_validated_claims.py",
+        "--selftest"
+      ],
+      "exit_code": 1,
+      "log_sha256": "3e667b7653dd2dd73e98199040abd8434c393c60486d43c2564a1e73d0b90dae"
+    },
+    {
+      "name": "claims_source_after",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_validated_claims.py",
+        "--scope",
+        "source"
+      ],
+      "exit_code": 1,
+      "log_sha256": "3e667b7653dd2dd73e98199040abd8434c393c60486d43c2564a1e73d0b90dae"
+    },
+    {
+      "name": "workspace_syntax",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--check",
+        "templates/intl_workspace.js"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "verifier_syntax",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--check",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/verify_actual_parent.cjs"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "template_site_sync",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "157666146e0a94829fe95bb502986fbdd8f1f925ea16cd3737be335c5cdfab40"
+    }
+  ],
+  "paired_source": [
+    {
+      "path": "templates/intl_workspace.js",
+      "before_sha256": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+      "after_sha256": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+      "changes_only_two_comments": true
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "before_sha256": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+      "after_sha256": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+      "changes_only_two_comments": true
+    }
+  ],
+  "exact_comment_replacements": [
+    [
+      "// the refusal and stops: validated state, serializedQuery, inspector attachment",
+      "// the refusal and stops: committed state, serializedQuery, inspector attachment"
+    ],
+    [
+      "/* cosmetic URL alignment only; the validated state stands */",
+      "/* cosmetic URL alignment only; the accepted state stands */"
+    ]
+  ],
+  "pass": false
+}

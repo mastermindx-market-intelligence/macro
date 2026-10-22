@@ -1,0 +1,52 @@
+diff --git a/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/verify_actual_parent.cjs b/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/verify_actual_parent.cjs
+index 2363f9f8da6a..bd95e485dc39 100644
+--- a/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/verify_actual_parent.cjs
++++ b/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/verify_actual_parent.cjs
+@@ -10,7 +10,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+ const expected=Object.fromEntries(['intl.html','shared_shell_bridge.js','shared_shell.css','intl_workspace.js','intl_workspace_state.js'].map(name=>['/'+name,hash(fs.readFileSync(path.join(artifact,name)))]));
+ fs.mkdirSync(out,{recursive:true});
+ if(fs.existsSync(path.join(out,'observation.json')))throw new Error('Existing observation; reconcile it rather than overwrite');
+-const report={schema:'intl.actual_parent_acceptance.v12',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
++const report={schema:'intl.actual_parent_acceptance.v13',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
+ const pending=[];let responseSequence=0;
+ const runtimePath=path.resolve(arg('runtime'));
+ const buildReceiptPath=path.resolve(arg('build-receipt'));
+@@ -203,6 +203,25 @@ function cachedResponseEvidence(row, observed) {
+ }
+ // END exact cached-response custody
+ 
++// BEGIN final captured-asset custody
++function finalChildAssetCustody(responses) {
++  const actual = responses.filter(row => {
++    try { const url = new URL(row.url); return url.origin === childOrigin && !!expected[url.pathname]; }
++    catch { return false; }
++  });
++  for (const row of actual) {
++    if (row.status === 304) {
++      row.revalidation = cachedResponseEvidence(row, actual);
++      row.matches = !!row.revalidation;
++    }
++  }
++  const bad = actual.filter(row => row.body_error || row.method !== 'GET' ||
++    !(row.status === 200 && row.matches === true && row.sha256 === expected[new URL(row.url).pathname] ||
++      row.status === 304 && row.matches === true && row.revalidation));
++  return { actual, bad };
++}
++// END final captured-asset custody
++
+ async function run(browser,width,lang,theme,query='',profile=''){
+   const scope=width+'-'+lang+'-'+theme+(profile?'-'+profile:query?'-query':'');
+   const context=await browser.newContext({viewport:{width,height:width===1440?900:1024},locale:lang==='zh'?'zh-CN':'en-US',colorScheme:theme});
+@@ -518,8 +537,10 @@ async function run(browser,width,lang,theme,query='',profile=''){
+      for(const [profile,query] of [['ordinary',''],['valid-nondefault',valid],['invalid-unknown',valid+'&unexpected=1'],['invalid-empty',valid+'&&']])await run(browser,390,'zh','dark',query,profile);
+    }
+    await Promise.allSettled(pending);
+-   const actual=report.responses.filter(r=>r.matches!==undefined);
+-   check('binding','actual_child_asset_hashes',actual.length>0&&actual.every(r=>r.matches),{responses:actual.length});
++   // All contexts have closed. Reclassify the complete captured population,
++   // including responses that arrived after a per-context drain snapshot.
++   const custody=finalChildAssetCustody(report.responses);
++   check('binding','actual_child_asset_hashes',custody.actual.length>0&&custody.bad.length===0,{responses:custody.actual.length,bad:custody.bad});
+    check('runtime','no_page_or_console_errors',report.page_errors.length===0&&report.console_errors.length===0);
+    report.passed=report.cases.filter(c=>c.passed).length;report.failed=report.cases.filter(c=>!c.passed).length;
+    report.known_baseline_failures=report.cases.filter(c=>!c.passed&&c.known_baseline_failure===true).length;
