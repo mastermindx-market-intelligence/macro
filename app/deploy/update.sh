@@ -377,6 +377,52 @@ fi
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
 # config can never take the site down — reload is gated on `caddy validate`).
 if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
+	# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD
+	# Fail-closed ordering guard for the staged Movers SEO redirect. The
+	# @movers_seo_redirect matcher is a FUTURE repo-side construct (no such
+	# named matcher exists in the committed Caddyfile today), so this stays
+	# inert for every other Caddy change and they keep the exact existing
+	# validate/install/reload behavior below.
+	#
+	# The hazard this closes: `git reset --hard` can succeed and the rsync that
+	# follows it can fail, leaving site.served/movers.html stale while
+	# OLD == NEW — the next tick then takes the cheap no-op repo path, yet THIS
+	# reconciliation still runs, because it is gated on the candidate-vs-
+	# installed Caddy diff, not on git state. Without this guard that tick
+	# would validate, install and reload a trusted SEO exception over the stale
+	# body. So when the candidate carries the named matcher, require the
+	# coherent Movers page first: all three copies present, nonempty and
+	# byte-identical, with the redirect marker in the canonical source.
+	# Anything missing, mismatched or stale refuses the update BEFORE validate,
+	# install or reload — this guard only reads and refuses, with no rsync,
+	# repair, retry, publisher or permission side effect. It cannot
+	# retroactively protect a first run that still executes the predecessor
+	# inode after a self-update, and it does not make the approved two-stage
+	# rollout atomic; it only keeps a bad Caddy install from ever happening.
+	if grep -qE '@movers_seo_redirect([^[:alnum:]_-]|$)' "$APP_DIR/app/deploy/Caddyfile"; then
+		for movers_page in \
+			"$APP_DIR/templates/movers.html" \
+			"$APP_DIR/site/movers.html" \
+			"$APP_DIR/site.served/movers.html"; do
+			if [ -L "$movers_page" ] || [ ! -f "$movers_page" ] || [ ! -s "$movers_page" ]; then
+				echo "macro-update: refusing Caddyfile update — @movers_seo_redirect needs $movers_page (symlink, missing or empty)" >&2
+				exit 1
+			fi
+		done
+		if ! grep -q 'data-mmx-movers-redirect="1"' "$APP_DIR/templates/movers.html"; then
+			echo "macro-update: refusing Caddyfile update — templates/movers.html is stale (missing data-mmx-movers-redirect marker)" >&2
+			exit 1
+		fi
+		if ! cmp -s "$APP_DIR/templates/movers.html" "$APP_DIR/site/movers.html"; then
+			echo "macro-update: refusing Caddyfile update — templates/movers.html and site/movers.html disagree" >&2
+			exit 1
+		fi
+		if ! cmp -s "$APP_DIR/site/movers.html" "$APP_DIR/site.served/movers.html"; then
+			echo "macro-update: refusing Caddyfile update — site/movers.html and site.served/movers.html disagree (stale served body)" >&2
+			exit 1
+		fi
+	fi
+	# END MOVERS_SEO_REDIRECT_CADDY_GUARD
 	if caddy validate --config "$APP_DIR/app/deploy/Caddyfile" --adapter caddyfile; then
 		install -m 0644 "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile
 		systemctl reload caddy 2>/dev/null || systemctl restart caddy

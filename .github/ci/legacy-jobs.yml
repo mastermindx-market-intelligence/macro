@@ -23197,12 +23197,21 @@ jobs:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
       - tests/js/calculator_input_integrity.test.mjs
+      - templates/calculators/cagr.html.j2
+      - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install copy feedback test dependency
+        run: pip install pytest
+      - name: CAGR truthful copy feedback
+        run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: node --test tests/js/calculator_input_integrity.test.mjs
 
