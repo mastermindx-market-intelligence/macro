@@ -1,11 +1,11 @@
 ---
 key: TERMINAL-FORMING-CANDLES-NEED-OWNERSHIP-AND-HISTORY-FENCES
 claim: Complete forming candles require disjoint historical and stream ownership, correction-aware revisions, and an authoritative-history fence; price-only snapshots also require a pane-qualified observation-order boundary.
-falsifier: Run `npm test` from hub and `npx vitest run lib/__tests__/liveCandle.test.ts lib/__tests__/formingCandles.test.ts lib/__tests__/liveSplice.test.ts lib/__tests__/candleCalendar.test.ts` from terminal at Terminal #1102; a raced seed, overlapping volume, retained snapshot overwriting accepted history, old correction advancing the quote clock, or countdown outside the canonical bucket disproves the corresponding invariant. Also run the 47 liveCandleSnapshot cases at PR 1108 head 2e7cb8505cc2521d1e3f0e44768bb2ac2df1a9f3; an older response repainting a newer same-price observation, an inadmissible overnight tick consuming an older native revision, or snapshot volume treated as complete falsifies the added ordering and coverage invariants.
+falsifier: Run `npm test` from hub and `npx vitest run lib/__tests__/liveCandle.test.ts lib/__tests__/formingCandles.test.ts lib/__tests__/liveSplice.test.ts lib/__tests__/candleCalendar.test.ts` from terminal at Terminal #1102; a raced seed, overlapping volume, retained snapshot overwriting accepted history, old correction advancing the quote clock, or countdown outside the canonical bucket disproves the corresponding invariant. Also run the 47 liveCandleSnapshot cases at PR 1108 protected merge 061e7625536d781239cbf687bea64a2e1076202a; an older response repainting a newer same-price observation, an inadmissible overnight tick consuming an older native revision, or snapshot volume treated as complete falsifies the added ordering and coverage invariants.
 so_what: Preserve coverage, generation/revision identity, raced-seed invalidation, accepted-history fences, and source-qualified snapshot ordering when changing live charts; derive countdowns from the existing calendar and resamplers before introducing faster transport.
 kind: architecture
 verified_at: 2026-10-22
-verified_by: Terminal PR 1102 reviewed at ca0b9f0f84d2ebbc55506df5ee7e78ba54ad0891 and merged as ab5beab6b0c2362414a1da17745587d490e923e8 with identical git tree; all 16 jobs in CI run 39644751193 succeeded; independent executable contract review at a0ce3290eaeada2d3f57a6e651dc47a85a859b22; final focused 176-test suite and Hub 617-test suite. PR 1108 candidate 845e2b558d42f4c80d0108a93cc51ac3235a9631 passed 119 focused tests, TypeScript, and six responsive browser cases; all seven follow-up files match refreshed CI head 2e7cb8505cc2521d1e3f0e44768bb2ac2df1a9f3.
+verified_by: Terminal PR 1102 reviewed at ca0b9f0f84d2ebbc55506df5ee7e78ba54ad0891 and merged as ab5beab6b0c2362414a1da17745587d490e923e8 with identical git tree; all 16 jobs in CI run 39644751193 succeeded; independent executable contract review at a0ce3290eaeada2d3f57a6e651dc47a85a859b22; final focused 176-test suite and Hub 617-test suite. PR 1108 candidate 845e2b558d42f4c80d0108a93cc51ac3235a9631 passed 119 focused tests, TypeScript, and six responsive browser cases; all seven follow-up files match final CI head 1912800565687e420e5a24e35b526525cb28276a and protected merge 061e7625536d781239cbf687bea64a2e1076202a. All 17 jobs in final CI run 39708563796 passed; the tested and merged trees both equal 4a123ffb346c6c0e54581a3a7a7ee5d1927dde3b.
 scope:
   - terminal/hub/lib/formingCandles.js
   - terminal/hub/lib/polygon.js
@@ -169,15 +169,17 @@ capability changes, auth changes, error and thrown-auth paths, and preserved pub
 minute/ordinary behavior.
 
 
-The current TP-1 source does not provide a ready adapter input. At inspected Macro
+The inspected TP-1 revision does not provide a ready adapter input. At Macro
 PR 8660 head `6cc0858fa93fa3200268390c9588bcc67358eb23`, its
 [README](https://github.com/mastermindx-market-intelligence/macro/blob/6cc0858fa93fa3200268390c9588bcc67358eb23/engine/tick_plane/README.md)
 explicitly describes pure source components with no deployed publication. Its
 minute projection requires an already-matured minute and produces pressure-context
 counts, notional, and native-share denominators, not unfinished OHLCV. The
 [activation record](https://github.com/mastermindx-market-intelligence/macro/blob/6cc0858fa93fa3200268390c9588bcc67358eb23/ops/TP1_EQUITY_SOURCE_ACTIVATION.md)
-also records the missing admitted runtime/publication. Those dated source records
-are not a census of the current socket holder. A future candle integration must
+also records the missing admitted runtime/publication. A fresh PR-state read on
+2026-10-22 found PR 8660 still open and draft at that same immutable head.
+Those dated source records and the fresh PR-state read are not a census of the
+current socket holder. A future candle integration must
 resolve current source custody and provide an admitted forming-OHLCV publication;
 it cannot reinterpret mature pressure-context minutes as candle bars.
 
@@ -195,8 +197,15 @@ marker, and public page/chunk IDs matched its protected squash. Its subsequent
 API observation found changing measured prices and no native forming snapshots;
 its UI observation exposed the pre/post consumer defect repaired by PR 1108.
 
-The follow-up's 119 local tests, TypeScript check, and six browser cases establish
-the behavior under their tested inputs. Its protected delivery, exact production
-identity, and genuine pre/post price movement/rollover must each be recorded as
-separate observations in the associated handoff. None establishes native complete
-OHLCV publication or tick-complete coverage.
+The follow-up's 119 local tests, TypeScript check, six browser cases, and all 17
+jobs in final CI run 39708563796 establish the tested behavior. PR 1108 merged
+as `061e7625536d781239cbf687bea64a2e1076202a`; its tree exactly matches the
+CI-tested head. The release owner exited 0 at 2026-10-22T03:02:08Z, followed
+by independent installed/public identity, compiled-asset hash, API-contract, and
+fresh-browser delivery checks. The API observation contained 38 HTTP 200 responses
+from the closed overnight path, all carrying a delayed snapshot and no native
+forming payload. The 1m ETH chart rendered its completed historical bar without
+console errors. This is delivery and closed-session evidence; positive pre/post
+price movement and rollover remain unverified. None establishes native complete
+OHLCV publication or tick-complete coverage. Exact receipts and observed values
+are recorded in the associated handoff.

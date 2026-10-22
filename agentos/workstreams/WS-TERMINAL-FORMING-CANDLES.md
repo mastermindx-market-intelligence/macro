@@ -29,7 +29,7 @@ waves:
     title: Admit qualified pre/post snapshot prices as explicitly partial minute/hour candles
     status: in_progress
     pr: 1108
-    next_action: Complete protected CI and merge for the tested follow-up, deploy the contained merged source, and verify release identity and current-session health. Positive pre/post-market movement and minute rollover still require an eligible live session.
+    next_action: During an eligible pre/post session, verify the serving generation contains 061e7625536d781239cbf687bea64a2e1076202a and observe genuine partial-candle movement and minute rollover. Deployment, source/public identity, compiled-asset delivery, quote contracts, and a closed-session browser inspection passed.
 discoveries:
   - DSC:TERMINAL-FORMING-CANDLES-NEED-OWNERSHIP-AND-HISTORY-FENCES
 decisions:
@@ -44,7 +44,7 @@ landmines:
   - Hub currently uses delayed AM plus a real-time REST snapshot leg with an 8000 ms TTL; complete native forming activation requires a separately admitted shared OHLCV publication, not an environment-only change.
   - Preserve the existing authentication and seconds-band capability gates before quote cache access.
   - The production release owner requires a full protected target SHA; a constant BUILD_ID is not proof of served source.
-next_action: Carry Terminal PR 1108 through protected CI, merge, deployment, and independent identity/current-session checks; then observe genuine pre/post-market partial-candle movement and rollover. Keep native complete-feed activation separate.
+next_action: Observe genuine pre/post-market partial-candle movement and rollover during an eligible session on the verified serving generation. Preserve accepted open/volume and confirm the shared countdown. Reconcile native producer/publication custody separately before any complete-feed activation.
 ---
 
 # Scope and identity
@@ -62,9 +62,19 @@ The native renderer replacement is a separate workstream, WS:NATIVE-CHART-ENGINE
 Its held performance protocol, default-engine flip, and retirement gates are
 unchanged by this work.
 
-The snapshot follow-up is implemented and reviewed in Terminal PR 1108. The final
-local checks passed 119 focused tests and TypeScript, plus six fixture-driven
-browser cases across desktop, tablet, and mobile. Its seven changed files remain
-byte-identical after updating the branch onto the deployed news release. These
-checks establish the tested behavior; post-fix live pre/post-market movement and
-rollover remain unverified at this release checkpoint.
+The snapshot follow-up merged in Terminal PR 1108 as
+`061e7625536d781239cbf687bea64a2e1076202a` at 2026-10-22T02:43:12Z.
+All 17 jobs in the final CI run 39708563796 passed. The merged tree exactly
+matches tested head `1912800565687e420e5a24e35b526525cb28276a`, and all
+seven follow-up files match the reviewed candidate. Local checks passed 119
+focused tests, TypeScript, and six fixture-driven browser cases across desktop,
+tablet, and mobile. The git-gated production owner exited 0 at 03:02:08Z. Independent readback
+at 03:03:37Z matched all seven installed source hashes, canonical HEAD, deployment
+marker, and both public identity sets. Compiled-asset hashes matched their hosted
+bytes, and the fresh browser loaded the matching reducer asset. The 92-second API
+probe returned 38 HTTP 200 samples, preserved ordinary/mixed-seconds contracts,
+and exposed no raw Hub payload. Its overnight response was a delayed snapshot
+with no eligible pre/post print. The 1m ETH chart rendered without console errors
+at 03:09:22Z. Positive post-fix pre/post-market movement and rollover remain
+unverified; this deployment does not establish native complete or tick-complete
+coverage.
