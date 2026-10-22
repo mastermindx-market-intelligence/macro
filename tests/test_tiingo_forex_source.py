@@ -22,14 +22,14 @@ def payload():
             for stamp, close in [("2026-10-19T00:00:00Z", 149.1), ("2026-10-19T00:01:00Z", 149.2)]]
 
 
-def view_for(data=None, *, frequency="1min", observed_at="2026-10-21T13:00:00Z"):
+def view_for(data=None, *, frequency="1min", observed_at="2026-10-21T13:00:00Z", pair="USDJPY"):
     data = payload() if data is None else data
     raw = json.dumps(data).encode()
     rec = {"schema": "mastermind.tiingo.raw_receipt.v1", "source": "forex-bars",
-           "symbol": "usdjpy", "vendor": "tiingo",
+           "symbol": pair.lower(), "vendor": "tiingo",
            "raw_sha256": hashlib.sha256(raw).hexdigest(),
            "observed_at_utc": observed_at,
-           "request_path": archive_owner.request_path("forex-bars", "usdjpy", {"resampleFreq": frequency})}
+           "request_path": archive_owner.request_path("forex-bars", pair.lower(), {"resampleFreq": frequency})}
     ident = archive_owner.receipt_identity(rec)
     rows = tuple(research_rows(raw, rec))
     return TiingoView(source="forex-bars", source_sha256=rec["raw_sha256"],
@@ -503,3 +503,203 @@ def test_comma_fraction_response_clocks_refuse_instead_of_silently_losing_precis
     views[0] = (replace(view, source_observed_at_utc=clock), receipt)
     with pytest.raises(TiingoViewRefusal, match="capture context"):
         reconcile(views)
+
+
+# Executable policy checks remain a research contract, never an admitted bar.
+from lib.dataos.tiingo_forex import (
+    assess_forex_source_candidate, CANDIDATE_POLICY_VERSION, CANDIDATE_PAIRS,
+    MAX_CANDIDATE_NATIVE_VINTAGES,
+)
+
+
+def candidate_assessment(views=None, **kwargs):
+    views = views or reconciliation_views(
+        minute_clock="2026-10-19T04:01:00Z", native_clock="2026-10-19T04:02:00Z")
+    (minute, minute_id), (native, native_id) = views
+    options = dict(expected_pair="USDJPY", minute_receipt_id=minute_id,
+                   four_hour_receipt_id=native_id, policy_version=CANDIDATE_POLICY_VERSION,
+                   verified_at_utc="2026-10-19T04:03:00Z",
+                   assessed_at_utc="2026-10-19T04:04:00Z")
+    options.update(kwargs)
+    return assess_forex_source_candidate(minute, native, **options)
+
+
+def test_candidate_checks_can_pass_without_promoting_any_authority(monkeypatch):
+    views = reconciliation_views(
+        minute_clock="2026-10-19T04:01:00.000000001Z",
+        native_clock="2026-10-19T04:02:00.000000002Z")
+    before = copy.deepcopy(views)
+    monkeypatch.setattr("lib.dataos.tiingo_forex.read_research_view",
+                        lambda *a, **k: pytest.fail("pure assessment performed I/O"))
+    result = candidate_assessment(views)
+    assert views == before
+    assert result["windows"][0]["candidate_checks_satisfied"] is True
+    assert result["windows"][0]["assessment_state"] == "checks_satisfied_policy_unadopted"
+    assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    assert result["eligible_observations"] == []
+    assert result["owner_decisions_required"]
+    assert result["requested_pair_inventory"] == list(CANDIDATE_PAIRS)
+    for flag in ("monitoring_admitted", "dataos_identity_admitted",
+                 "pit_backtest_eligible", "redistribution_admitted"):
+        assert result[flag] is False
+    projection = result["windows"][0]["candidate_projection"]
+    assert projection["quote_units_per_base_unit"] == "JPY per USD"
+    assert not {"status", "feed", "revision", "observation_id", "available_at"} & projection.keys()
+    assert result["clocks"]["original_response_clocks"]["four_hour_source_observed_at_utc"].endswith("000000002Z")
+    assert result["comparison_semantics"]["raw_arbitrary_precision_equality_proven"] is False
+    assert result["product_use_approval"]["state"] == "COMPLETE"
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize("clock", ["2026-10-19T08:00:00Z", "2026-10-19T09:00:00Z"])
+def test_candidate_expiry_cannot_be_extended_by_late_readback(clock):
+    result = candidate_assessment(verified_at_utc=clock, assessed_at_utc=clock)
+    window = result["windows"][0]
+    assert not window["candidate_checks_satisfied"]
+    assert window["checks"]["verification_before_candidate_expiry"] is False
+    assert window["candidate_projection"]["candidate_expires_at_utc"] == "2026-10-19T08:00:00+00:00"
+    assert result["clocks"]["reread_extends_freshness"] is False
+
+
+@pytest.mark.parametrize("clock,passes", [
+    ("2026-10-19T07:59:59.999999999Z", True),
+    ("2026-10-19T08:00:00.000000000Z", False),
+])
+def test_candidate_freshness_is_exclusive_at_exact_nanosecond_boundary(clock, passes):
+    window = candidate_assessment(assessed_at_utc=clock)["windows"][0]
+    assert window["candidate_checks_satisfied"] is passes
+
+
+@pytest.mark.parametrize("field", ["verified_at_utc", "assessed_at_utc"])
+@pytest.mark.parametrize("value", [
+    "2026-10-19T04:04:00", "2026-10-19T04:04:00,000000001Z",
+    "2026-10-19T04:04:00.0000000001Z", None,
+])
+def test_candidate_refuses_ambiguous_or_truncated_explicit_clocks(field, value):
+    with pytest.raises(TiingoViewRefusal):
+        candidate_assessment(**{field: value})
+
+
+@pytest.mark.parametrize("options,exception", [
+    ({"assessed_at_utc": "2026-10-19T04:02:59Z"}, TiingoViewRefusal),
+    ({"verified_at_utc": "2026-10-19T04:01:59Z"}, TiingoViewRefusal),
+    ({"policy_version": "admitted"}, TiingoViewRefusal),
+    ({"expected_pair": "GBPUSD"}, archive_owner.TiingoArchiveError),
+])
+def test_candidate_refuses_clock_order_policy_and_wrong_identity(options, exception):
+    with pytest.raises(exception):
+        candidate_assessment(**options)
+
+
+def test_matching_open_window_fails_closure_even_when_ohlc_matches():
+    views = reconciliation_views(minute_fixture(170),
+        minute_clock="2026-10-19T02:49:03Z", native_clock="2026-10-19T02:49:05Z")
+    window = candidate_assessment(views)["windows"][0]
+    assert window["checks"]["normalized_ohlc_agreement"] is True
+    assert window["checks"]["dense_minute_grid"] is False
+    assert window["checks"]["both_responses_observed_after_interval_end"] is False
+    assert not window["candidate_checks_satisfied"]
+
+
+@pytest.mark.parametrize("defect", ["gap", "duplicate", "invalid", "off_grid"])
+def test_candidate_incomplete_or_ambiguous_grid_never_passes(defect):
+    minutes = minute_fixture()
+    if defect == "gap":
+        minutes.pop(50)
+    elif defect == "duplicate":
+        minutes.append(dict(minutes[50]))
+    elif defect == "invalid":
+        minutes[50]["close"] = None
+    else:
+        minutes[50]["date"] = "2026-10-19T00:50:00.000000001Z"
+    views = reconciliation_views(minutes, native_fixture(minute_fixture()),
+        minute_clock="2026-10-19T04:01:00Z", native_clock="2026-10-19T04:02:00Z")
+    assert not candidate_assessment(views)["windows"][0]["candidate_checks_satisfied"]
+
+
+def test_candidate_slot_positions_do_not_compress_absent_intervals():
+    first, third = minute_fixture(), minute_fixture(start=480)
+    native = native_fixture(first) + native_fixture(third, "2026-10-19T08:00:00Z")
+    views = reconciliation_views(first + third, native,
+        minute_clock="2026-10-19T12:01:00Z", native_clock="2026-10-19T12:02:00Z")
+    result = candidate_assessment(views, verified_at_utc="2026-10-19T12:03:00Z",
+                                 assessed_at_utc="2026-10-19T12:04:00Z")
+    a, b = result["windows"]
+    assert b["candidate_projection"]["utc_slot_index"] - a["candidate_projection"]["utc_slot_index"] == 2
+    assert not a["candidate_checks_satisfied"]
+    assert b["candidate_checks_satisfied"]
+
+
+def test_candidate_native_inventory_is_idempotent_order_independent_and_conflict_withholding():
+    views = reconciliation_views(
+        minute_clock="2026-10-19T04:01:00Z", native_clock="2026-10-19T04:02:00Z")
+    native = native_fixture(minute_fixture())
+    native[0]["high"] += 1
+    conflict = view_for(native, frequency="4hour", observed_at="2026-10-19T04:00:01Z")
+    same = views[1]
+    assert candidate_assessment(views, known_native_vintages=(same, same)) == candidate_assessment(views)
+    a = candidate_assessment(views, known_native_vintages=(same, conflict))
+    b = candidate_assessment(views, known_native_vintages=(conflict, same))
+    assert a == b
+    assert a["windows"][0]["native_vintage_check"]["conflicting_closed_receipt_ids"] == [conflict[1]]
+    assert not a["windows"][0]["candidate_checks_satisfied"]
+    assert a["eligible_observations"] == []
+
+
+def test_open_native_change_is_disclosed_without_calling_it_a_post_close_correction():
+    native = native_fixture(minute_fixture())
+    native[0]["high"] += 1
+    old_open = view_for(native, frequency="4hour", observed_at="2026-10-19T02:49:05Z")
+    result = candidate_assessment(known_native_vintages=(old_open,))
+    window = result["windows"][0]
+    assert window["candidate_checks_satisfied"]
+    assert window["native_vintage_check"]["open_receipt_ids_not_compared_as_corrections"] == [old_open[1]]
+    assert window["native_vintage_check"]["all_possible_corrections_examined"] is False
+    assert window["native_vintage_check"]["minute_vintage_inventory_examined"] is False
+    assert result["comparison_semantics"]["vendor_immutability_proven"] is False
+
+
+@pytest.mark.parametrize("defect", ["duplicate", "unplaced", "off_grid", "invalid_price"])
+def test_unusable_closed_native_vintage_cannot_disappear_from_assessment(defect):
+    native = native_fixture(minute_fixture())
+    if defect == "duplicate":
+        native.append(dict(native[0]))
+    elif defect == "off_grid":
+        native[0]["date"] = "2026-10-19T00:01:00Z"
+    elif defect == "invalid_price":
+        native[0]["close"] = None
+    extra = view_for(native, frequency="4hour", observed_at="2026-10-19T04:00:01Z")
+    if defect == "unplaced":
+        # The reader already rejects malformed raw timestamps. Exercise the
+        # pure function's defensive boundary with an explicitly corrupted view.
+        extra[0].rows[0]["bar_at_vendor"] = "unknown"
+    window = candidate_assessment(known_native_vintages=(extra,))["windows"][0]
+    assert not window["candidate_checks_satisfied"]
+    assert extra[1] in window["native_vintage_check"]["invalid_closed_receipt_ids"]
+
+
+def test_candidate_inventory_caps_context_and_future_clocks_refuse():
+    extra = view_for(native_fixture(minute_fixture()), frequency="4hour",
+                     observed_at="2026-10-19T04:05:00Z")
+    with pytest.raises(TiingoViewRefusal):
+        candidate_assessment(known_native_vintages=(extra,))
+    extra = view_for(native_fixture(minute_fixture()), frequency="4hour",
+                     observed_at="2026-10-19T04:00:01Z")
+    with pytest.raises(TiingoViewRefusal):
+        candidate_assessment(known_native_vintages=(extra,) * (MAX_CANDIDATE_NATIVE_VINTAGES + 1))
+    with pytest.raises(TiingoViewRefusal):
+        candidate_assessment(known_native_vintages=(view_for(),))
+    with pytest.raises(TiingoViewRefusal):
+        candidate_assessment(known_native_vintages=((extra[0], "wrong-receipt"),))
+
+
+@pytest.mark.parametrize("pair", CANDIDATE_PAIRS)
+def test_candidate_empty_input_remains_empty_without_global_pair_claim(pair):
+    views = (view_for([], pair=pair, observed_at="2026-10-19T04:01:00Z"),
+             view_for([], pair=pair, frequency="4hour", observed_at="2026-10-19T04:02:00Z"))
+    result = candidate_assessment(views, expected_pair=pair)
+    assert result["source_state"] == "empty_native_view"
+    assert result["windows"] == []
+    assert result["eligible_observations"] == []
+    assert {"USDBRL", "USDCNH"} <= set(result["requested_pair_inventory"])
+    assert result["comparison_semantics"]["global_inventory_completeness_proven"] is False

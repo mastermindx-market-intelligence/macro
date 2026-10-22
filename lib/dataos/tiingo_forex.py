@@ -452,3 +452,186 @@ def reconcile_forex_intervals(
             for name, rows in (("minute", minutes), ("four_hour", natives))
         },
     }
+
+
+CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-candidate/1"
+CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_candidate_assessment.v1"
+CANDIDATE_PAIRS = (
+    "EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD",
+    "USDMXN", "USDCNH", "USDBRL",
+)
+MAX_CANDIDATE_NATIVE_VINTAGES = 8
+
+
+def assess_forex_source_candidate(
+    minute_view: TiingoView, four_hour_view: TiingoView, *, expected_pair: str,
+    minute_receipt_id: str, four_hour_receipt_id: str, policy_version: str,
+    verified_at_utc: str, assessed_at_utc: str,
+    known_native_vintages: tuple[tuple[TiingoView, str], ...] = (),
+) -> dict[str, Any]:
+    """Execute the nominated research policy without admitting a source.
+
+    Both primary views and optional native vintages must come from the existing
+    verified reader. This pure boundary cannot authenticate bytes on disk or
+    attest the caller's readback clock. It examines only the explicitly supplied
+    native inventory; minute-vintage/correction coverage remains unqualified.
+    Passing checks is not finality, an eligible observation or a feed binding.
+    """
+    from urllib.parse import parse_qs, urlsplit
+
+    if policy_version != CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS:
+        raise TiingoViewRefusal("Unknown Forex candidate policy or pair scope")
+    verified, assessed = _clock(verified_at_utc), _clock(assessed_at_utc)
+    if verified is None or assessed is None or assessed < verified:
+        raise TiingoViewRefusal("Candidate assessment requires ordered explicit UTC clocks")
+    if (not isinstance(known_native_vintages, (tuple, list))
+            or len(known_native_vintages) > MAX_CANDIDATE_NATIVE_VINTAGES):
+        raise TiingoViewRefusal("Candidate native vintage cap exceeded; no truncation")
+
+    reconciliation = reconcile_forex_intervals(
+        minute_view, four_hour_view, expected_pair=expected_pair,
+        minute_receipt_id=minute_receipt_id, four_hour_receipt_id=four_hour_receipt_id,
+    )
+    primary = reconciliation["inputs"]
+    inventory = {four_hour_receipt_id: primary["four_hour"]}
+    for item in known_native_vintages:
+        if not isinstance(item, (tuple, list)) or len(item) != 2:
+            raise TiingoViewRefusal("Candidate native vintage requires an exact view/receipt pair")
+        view, receipt = item
+        if not isinstance(view, TiingoView) or len(view.rows) > MAX_RECONCILIATION_NATIVE_ROWS:
+            raise TiingoViewRefusal("Candidate native vintage row cap or view refused")
+        diagnostic = diagnose_forex_view(view, expected_pair=expected_pair, receipt_id=receipt)
+        query = parse_qs(urlsplit(view.source_request_path).query, keep_blank_values=True)
+        if (query.get("resampleFreq") != ["4hour"]
+                or any(row["requested_resample_frequency"] != "4hour"
+                       for row in diagnostic["candidate_observations"])):
+            raise TiingoViewRefusal("Candidate vintage must be an exact native 4hour request")
+        if receipt in inventory and inventory[receipt] != diagnostic:
+            raise TiingoViewRefusal("Conflicting supplied content for one native receipt identity")
+        inventory[receipt] = diagnostic
+
+    clocks = [_clock(primary["minute"]["source"]["source_observed_at_utc"])]
+    clocks.extend(_clock(d["source"]["source_observed_at_utc"]) for d in inventory.values())
+    if any(clock > verified for clock in clocks):
+        raise TiingoViewRefusal("Candidate verification precedes a supplied response observation")
+
+    # Index every supplied native row. Duplicate or unplaceable closed-vintage
+    # evidence is a failure, never an instruction to pick the newest row.
+    interval_ns = 240 * MINUTE_NS
+    groups = {}
+    unplaced = {}
+    for receipt, diagnostic in sorted(inventory.items()):
+        slots = defaultdict(list)
+        bad = []
+        for row in diagnostic["candidate_observations"]:
+            stamp = _clock(row["bar_at_vendor"])
+            if stamp is None or stamp.value % interval_ns:
+                bad.append(row["source_row_ordinal"])
+            else:
+                slots[stamp.value].append(row)
+        groups[receipt], unplaced[receipt] = slots, bad
+
+    windows = []
+    for source_window in reconciliation["hypotheses"][0]["windows"]:
+        start = _clock(source_window["interval_start_utc"])
+        end = _clock(source_window["interval_end_utc"])
+        try:
+            expires = pd.Timestamp(end.value + interval_ns, tz="UTC") if end is not None else None
+        except (ValueError, OverflowError):
+            expires = None
+        coverage = source_window["coverage"] or {}
+        comparable, open_vintages, conflicts, invalid = [], [], [], []
+        if start is not None and end is not None:
+            for receipt, diagnostic in sorted(inventory.items()):
+                observed = _clock(diagnostic["source"]["source_observed_at_utc"])
+                rows = groups[receipt].get(start.value, [])
+                if observed < end:
+                    if rows:
+                        open_vintages.append(receipt)
+                    continue
+                if unplaced[receipt]:
+                    invalid.append(receipt)
+                if not rows:
+                    continue
+                comparable.append(receipt)
+                if len(rows) != 1 or rows[0]["issues"]:
+                    invalid.append(receipt)
+                elif rows[0]["vendor_ohlc"] != source_window["native_vendor_ohlc"]:
+                    conflicts.append(receipt)
+        checks = {
+            "utc_four_hour_slot": start is not None and start.value % interval_ns == 0,
+            "valid_comparison": not source_window["blocked_reasons"],
+            "dense_minute_grid": coverage.get("dense_240_minute_grid") is True,
+            "normalized_ohlc_agreement": source_window["all_ohlc_equal"] is True,
+            "both_responses_observed_after_interval_end": (
+                bool(coverage)
+                and coverage["interval_end_after_minute_receipt_observed"] is False
+                and coverage["interval_end_after_four_hour_receipt_observed"] is False
+            ),
+            "interval_ended_before_verification": end is not None and end <= verified,
+            "verification_before_candidate_expiry": expires is not None and verified < expires,
+            "assessment_before_candidate_expiry": expires is not None and assessed < expires,
+            "supplied_closed_native_vintages_consistent": bool(comparable) and not conflicts and not invalid,
+        }
+        satisfied = all(checks.values())
+        windows.append({
+            "native_source_row_ordinal": source_window["native_source_row_ordinal"],
+            "candidate_checks_satisfied": satisfied,
+            "assessment_state": "checks_satisfied_policy_unadopted" if satisfied else "checks_failed",
+            "checks": checks,
+            "failed_checks": [name for name, passed in checks.items() if not passed],
+            "comparison_blocked_reasons": list(source_window["blocked_reasons"]),
+            "candidate_projection": {
+                "literal_pair": expected_pair,
+                "quote_units_per_base_unit": expected_pair[3:] + " per " + expected_pair[:3],
+                "interval_start_utc": source_window["interval_start_utc"],
+                "interval_end_utc": source_window["interval_end_utc"],
+                "utc_slot_index": start.value // interval_ns if start is not None else None,
+                "native_reported_close": source_window["native_vendor_ohlc"]["close"],
+                "candidate_expires_at_utc": expires.isoformat() if expires is not None else None,
+            },
+            "native_vintage_check": {
+                "compared_closed_receipt_ids": comparable,
+                "open_receipt_ids_not_compared_as_corrections": open_vintages,
+                "conflicting_closed_receipt_ids": conflicts,
+                "invalid_closed_receipt_ids": sorted(set(invalid)),
+                "all_possible_corrections_examined": False,
+                "minute_vintage_inventory_examined": False,
+            },
+        })
+
+    return {
+        "schema": CANDIDATE_POLICY_SCHEMA, "policy_version": policy_version,
+        "policy_state": "CANDIDATE_NOT_ADOPTED",
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pair_candidate": expected_pair, "requested_pair_inventory": list(CANDIDATE_PAIRS),
+        "source_state": "empty_native_view" if not windows else "candidate_assessments",
+        "selected_candidate_hypothesis": "start_label_half_open",
+        "inputs": {name: diagnostic["source"] for name, diagnostic in primary.items()},
+        "native_vintage_inventory": [inventory[key]["source"] for key in sorted(inventory)],
+        "inventory_scope": "only supplied exact native receipts; not an archive-wide or minute-vintage census",
+        "clocks": {
+            "verified_at_utc": verified_at_utc, "assessed_at_utc": assessed_at_utc,
+            "meaning": "explicit caller readback/assessment clocks; no I/O or independent time attestation",
+            "original_response_clocks": reconciliation["receipt_observation_clocks"],
+            "reread_extends_freshness": False,
+        },
+        "windows": windows,
+        "comparison_semantics": {
+            "equality": reconciliation["comparison_semantics"]["equality"],
+            "raw_arbitrary_precision_equality_proven": False,
+            "vendor_immutability_proven": False, "correction_selection": False,
+            "global_inventory_completeness_proven": False,
+        },
+        "owner_decisions_required": [
+            "adopt_exact_pair_identity_and_supported_calendar_scope",
+            "adopt_reported_close_and_normalized_numeric_comparison",
+            "adopt_durable_readback_availability_and_freshness_policy",
+            "qualify_vintage_inventory_and_observation_revision_contract",
+            "explicit_account_feed_binding_through_normal_rule_revision",
+        ],
+        "product_use_approval": dict(primary["minute"]["product_use_approval"]),
+        "eligible_observations": [], "monitoring_admitted": False,
+        "dataos_identity_admitted": False, "pit_backtest_eligible": False,
+        "redistribution_admitted": False,
+    }
