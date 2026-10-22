@@ -6,12 +6,14 @@ Feed chronology remains the store change sequence, independent of this choice.
 """
 from __future__ import annotations
 
+from collections.abc import Collection
 from datetime import datetime, timezone
 from html import unescape
 from urllib.parse import urlsplit
 
 from engine.news_common import low_value_reason, quality_score, ticker_editorial_reason, ticker_template_reason
 from engine.qkernel import publisher_category, publisher_domain, publisher_tier
+from engine.qbus_news_editorial import NewsEditorialView
 
 EDITORIAL_POLICY_VERSION = "ticker_news.curated.v1"
 
@@ -120,12 +122,45 @@ def curated_source(source: str) -> bool:
     return publisher_category(publisher_identity(key)) in {"reporting", "press_release"}
 
 
-def curated_report(source: str, title: str) -> bool:
+def curated_report(source: str, title: str, url: str = "") -> bool:
+    """Screen a report using only fields permitted to the current reader."""
     return curated_source(source) and ticker_editorial_reason(
-        display_text(title), publisher_identity(source),
+        display_text(title), publisher_identity(source), url=display_text(url),
     ) is None
 
 
-def register_curated_reader(connection) -> None:
-    """Pure SELECT predicate, evaluated before grouping and page limits."""
-    connection.create_function("qbus_news_is_curated", 2, curated_report, deterministic=True)
+def _projected_field_sql(field: str, allowed_sources: Collection[str]) -> tuple[str, tuple[str, ...]]:
+    if isinstance(allowed_sources, str):
+        raise TypeError("allowed_sources must be a collection of source ids")
+    sources = tuple(sorted(set(allowed_sources)))
+    if not sources:
+        return "''", ()
+    marks = ",".join("?" for _ in sources)
+    return f"CASE WHEN s.source IN ({marks}) THEN p.{field} ELSE '' END", sources
+
+
+def curated_sql_clause(
+    allowed_url_sources: Collection[str] = (),
+    allowed_teaser_sources: Collection[str] = (),
+    *, editorial_view: NewsEditorialView | None = None,
+) -> tuple[str, tuple[str, ...]]:
+    """One rights-projected predicate, before grouping, pagination and counts."""
+    url, url_sources = _projected_field_sql("url", allowed_url_sources)
+    clause = f"AND qbus_news_is_curated(s.source, p.title, {url})=1"
+    if editorial_view is None or editorial_view.mode == "all":
+        return clause, url_sources
+    teaser, teaser_sources = _projected_field_sql("teaser", allowed_teaser_sources)
+    clause += f" AND qbus_news_matches_view(s.source, p.title, {url}, {teaser})=1"
+    return clause, (*url_sources, *url_sources, *teaser_sources)
+
+
+def register_curated_reader(connection, editorial_view: NewsEditorialView | None = None) -> None:
+    """Pure SELECT predicates; the optional immutable view is connection-bound."""
+    connection.create_function("qbus_news_is_curated", 3, curated_report, deterministic=True)
+    if editorial_view is not None:
+        # Stored title/teaser cross the same raw-to-display boundary as returned
+        # rows. Editorial decisions must not decode already projected text again.
+        def matches_view(source, title, url, teaser):
+            return editorial_view.allows(source, display_text(title), url, display_text(teaser))
+
+        connection.create_function("qbus_news_matches_view", 4, matches_view, deterministic=True)
