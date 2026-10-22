@@ -58,33 +58,42 @@
     if (status) status.textContent =
       'We could not renew your session. Please sign in again. Your subscription has not been changed.';
   }
+  // Start the deadline at inline-script execution, BEFORE DOMContentLoaded;
+  // a stalled deferred theme.js must not strand the recovery page indefinitely.
+  var settled = false;
+  var timeout = setTimeout(function () {
+    if (settled) return;
+    settled = true;
+    showUnavailable();
+  }, 12000);
+  function failClosed() {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timeout);
+    showUnavailable();
+  }
   function refresh() {
+    if (settled) return; // Ignore a late DOMContentLoaded after the deadline.
     var mode = document.querySelector('meta[name="mm-bot-renew"]');
-    if (!mode || mode.content !== 'yes') { showUnavailable(); return; }
+    if (!mode || mode.content !== 'yes') { failClosed(); return; }
     // One automatic attempt per tab within 30 s. Every navigation back to Bot
     // still passes server-side auth + entitlement. Nothing grants access here.
     try {
       var key = 'mm.bot.session-renew.v1', now = Date.now();
       var previous = Number(sessionStorage.getItem(key) || 0);
       if (previous > 0 && previous <= now && now - previous < 30000) {
-        showUnavailable();
+        failClosed();
         return;
       }
       sessionStorage.setItem(key, String(now));
     } catch (e) {
       // No tab-scoped replay fence: do not risk an infinite refresh/reload loop.
-      showUnavailable();
+      failClosed();
       return;
     }
-    if (!window.getSupabaseClient) { showUnavailable(); return; }
-    var settled = false;
-    // An unsettled SDK/GoTrue promise must not strand the user on a spinner.
-    // This times out the page only; it never retries or mutates auth state.
-    var timeout = setTimeout(function () {
-      if (settled) return;
-      settled = true;
-      showUnavailable();
-    }, 12000);
+    if (!window.getSupabaseClient) { failClosed(); return; }
+    // The already-running deadline also covers SDK and GoTrue settlement;
+    // it controls only this page and never retries or mutates auth state.
     function finish(result, failed) {
       if (settled) return;
       settled = true;

@@ -907,6 +907,7 @@ DOCUMENT = ROOT / "app" / "paywall_pro_session_refresh.html"
         ("missing_sdk", "yes", "fresh", False, False, False, 0, 0),
         ("storage_unavailable", "yes", "fresh", False, True, True, 0, 0),
         ("auth_timeout", "yes", "pending", False, True, False, 1, 0),
+        ("script_load_stall", "yes", "dom_stall", False, True, False, 0, 0),
     ],
 )
 def test_shipping_session_renewal_behavior(
@@ -938,8 +939,12 @@ function disarmTimer(id){timers.delete(id);}
 const key = 'mm.bot.session-renew.v1';
 const memory = new Map();
 if (fixture.prior) memory.set(key, String(Date.now() - 800));
+let onDomReady = null;
 const document = {
-  readyState:'complete',
+  readyState:fixture.result==='dom_stall' ? 'loading' : 'complete',
+  addEventListener(name, callback) {
+    if(name==='DOMContentLoaded') onDomReady = callback;
+  },
   getElementById(name) { return name==='mm-bot-renew-status' ? status : {addEventListener(){}}; },
   querySelector(selector) {
     if(selector!=='meta[name="mm-bot-renew"]') throw Error('Unrecognized selector');
@@ -968,10 +973,11 @@ vm.runInNewContext(javascript, {
   Date,Number,JSON,Math,Promise,console,setTimeout:armTimer,clearTimeout:disarmTimer
 });
 setImmediate(()=>{
-  if(fixture.result==='pending'){
+  if(fixture.result==='pending' || fixture.result==='dom_stall'){
     const timeout=[...timers.values()].find(x=>x.ms===12000);
-    if(!timeout)throw Error('Missing 12s Auth timeout');
-    timeout.fn(); // deterministic fake clock: prove the page is not stuck.
+    if(!timeout)throw Error('Missing 12s deadline, including script load');
+    timeout.fn(); // deterministic fake clock, even without DOMContentLoaded.
+    if(fixture.result==='dom_stall' && onDomReady) onDomReady();
   }
   setImmediate(()=>{
     process.stdout.write(JSON.stringify({calls,reloads,prompt:status.textContent.includes('Please sign in again')}));
