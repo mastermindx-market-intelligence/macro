@@ -454,8 +454,11 @@ def reconcile_forex_intervals(
     }
 
 
+# Existing version exports preserve explicit historical v1 calls.
 CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-candidate/1"
 CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_candidate_assessment.v1"
+CURRENT_CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-candidate/2"
+CURRENT_CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_candidate_assessment.v2"
 CANDIDATE_PAIRS = (
     "EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD",
     "USDMXN", "USDCNH", "USDBRL",
@@ -463,13 +466,81 @@ CANDIDATE_PAIRS = (
 MAX_CANDIDATE_NATIVE_VINTAGES = 8
 
 
+def _forex_clock_policy(version: str, family: str) -> bool:
+    """Dispatch only explicit historical/current versions; omission defaults current."""
+    versions = {
+        "candidate": (CANDIDATE_POLICY_VERSION, CURRENT_CANDIDATE_POLICY_VERSION),
+        "batch": (BATCH_CANDIDATE_POLICY_VERSION, CURRENT_BATCH_CANDIDATE_POLICY_VERSION),
+    }
+    historical, current = versions[family]
+    if type(version) is not str or version not in (historical, current):
+        raise TiingoViewRefusal("Unknown Forex " + family + " policy version")
+    return version == current
+
+
+def _slot_clock_contract_qualification(
+    inventory: dict[str, dict[str, Any]], start: pd.Timestamp | None, end: pd.Timestamp | None,
+    required_receipts: tuple[str | None, ...],
+) -> dict[str, Any]:
+    """Keep relevant unknown-clock vintages even when their clock claims they are open."""
+    from collectors.tiingo_archive import (
+        RESPONSE_OBSERVATION_CLOCK_CONTRACT, TiingoArchiveError,
+        parse_observation_clock_contract,
+    )
+
+    required = {receipt for receipt in required_receipts if receipt is not None}
+    present = all(receipt is not None and receipt in inventory for receipt in required_receipts)
+    records = []
+    for receipt, item in sorted(inventory.items()):
+        diagnostic = item["diagnostic"]
+        relevant = receipt in required
+        if not relevant:
+            for row in diagnostic["candidate_observations"]:
+                stamp = _clock(row["bar_at_vendor"])
+                if (stamp is None or start is None or end is None
+                        or (item["frequency"] == "4hour" and stamp.value % (240 * MINUTE_NS))):
+                    relevant = True  # Unplaceable evidence cannot be excluded by its clock.
+                    break
+                if ((item["frequency"] == "1min" and start <= stamp < end)
+                        or (item["frequency"] == "4hour" and stamp == start)):
+                    relevant = True
+                    break
+        if not relevant:
+            continue
+        try:
+            contract = parse_observation_clock_contract(
+                diagnostic["source"].get("source_observation_clock_contract"))
+        except TiingoArchiveError as exc:
+            raise TiingoViewRefusal("Invalid source observation clock contract") from exc
+        qualified = contract == RESPONSE_OBSERVATION_CLOCK_CONTRACT
+        records.append({
+            "source_receipt_id": receipt, "frequency": item["frequency"],
+            "role": "selected" if receipt in required else "competing",
+            "declared_contract": contract,
+            "state": "recognized" if qualified else "unrecorded" if contract is None else "unsupported",
+            "qualified": qualified,
+        })
+    unqualified = [item["source_receipt_id"] for item in records if not item["qualified"]]
+    return {
+        "required_contract": RESPONSE_OBSERVATION_CLOCK_CONTRACT,
+        "selected_receipts_present": present, "relevant_receipts": records,
+        "unqualified_receipt_ids": unqualified,
+        "all_relevant_contracts_qualified": present and bool(records) and not unqualified,
+        "producer_declaration_only": True, "producer_execution_independently_attested": False,
+    }
+
+
 def assess_forex_source_candidate(
     minute_view: TiingoView, four_hour_view: TiingoView, *, expected_pair: str,
-    minute_receipt_id: str, four_hour_receipt_id: str, policy_version: str,
+    minute_receipt_id: str, four_hour_receipt_id: str,
+    policy_version: str = CURRENT_CANDIDATE_POLICY_VERSION,
     verified_at_utc: str, assessed_at_utc: str,
     known_native_vintages: tuple[tuple[TiingoView, str], ...] = (),
 ) -> dict[str, Any]:
     """Execute the nominated research policy without admitting a source.
+
+    Default v2 requires recognized original-receipt clock declarations; explicit
+    v1 retains historical unknown-clock semantics. Neither version admits bars.
 
     Both primary views and optional native vintages must come from the existing
     verified reader. This pure boundary cannot authenticate bytes on disk or
@@ -479,7 +550,8 @@ def assess_forex_source_candidate(
     """
     from urllib.parse import parse_qs, urlsplit
 
-    if policy_version != CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS:
+    strict_clock = _forex_clock_policy(policy_version, "candidate")
+    if expected_pair not in CANDIDATE_PAIRS:
         raise TiingoViewRefusal("Unknown Forex candidate policy or pair scope")
     verified, assessed = _clock(verified_at_utc), _clock(assessed_at_utc)
     if verified is None or assessed is None or assessed < verified:
@@ -531,6 +603,16 @@ def assess_forex_source_candidate(
                 slots[stamp.value].append(row)
         groups[receipt], unplaced[receipt] = slots, bad
 
+    clock_inventory = {}
+    if strict_clock:
+        if minute_receipt_id in inventory:
+            raise TiingoViewRefusal("Conflicting frequencies for one clock receipt identity")
+        clock_inventory = {
+            receipt: {"diagnostic": diagnostic, "frequency": "4hour"}
+            for receipt, diagnostic in inventory.items()
+        }
+        clock_inventory[minute_receipt_id] = {"diagnostic": primary["minute"], "frequency": "1min"}
+
     windows = []
     for source_window in reconciliation["hypotheses"][0]["windows"]:
         start = _clock(source_window["interval_start_utc"])
@@ -573,6 +655,12 @@ def assess_forex_source_candidate(
             "assessment_before_candidate_expiry": expires is not None and assessed < expires,
             "supplied_closed_native_vintages_consistent": bool(comparable) and not conflicts and not invalid,
         }
+        clock_evidence = None
+        if strict_clock:
+            clock_evidence = _slot_clock_contract_qualification(
+                clock_inventory, start, end, (minute_receipt_id, four_hour_receipt_id))
+            checks["response_observation_clock_contracts_qualified"] = (
+                clock_evidence["all_relevant_contracts_qualified"])
         satisfied = all(checks.values())
         windows.append({
             "native_source_row_ordinal": source_window["native_source_row_ordinal"],
@@ -598,10 +686,12 @@ def assess_forex_source_candidate(
                 "all_possible_corrections_examined": False,
                 "minute_vintage_inventory_examined": False,
             },
+            **({"clock_contract_qualification": clock_evidence} if strict_clock else {}),
         })
 
     return {
-        "schema": CANDIDATE_POLICY_SCHEMA, "policy_version": policy_version,
+        "schema": CURRENT_CANDIDATE_POLICY_SCHEMA if strict_clock else CANDIDATE_POLICY_SCHEMA,
+        "policy_version": policy_version,
         "policy_state": "CANDIDATE_NOT_ADOPTED",
         "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
         "pair_candidate": expected_pair, "requested_pair_inventory": list(CANDIDATE_PAIRS),
@@ -639,6 +729,8 @@ def assess_forex_source_candidate(
 
 BATCH_CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-batch-candidate/1"
 BATCH_CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_batch_candidate.v1"
+CURRENT_BATCH_CANDIDATE_POLICY_VERSION = "tiingo-forex-local-close-batch-candidate/2"
+CURRENT_BATCH_CANDIDATE_POLICY_SCHEMA = "mastermind.tiingo.forex_source_batch_candidate.v2"
 BATCH_INVENTORY_SCHEMA = "mastermind.tiingo.forex_batch_inventory_evidence.v1"
 MAX_BATCH_MINUTE_VINTAGES = 9
 MAX_BATCH_NATIVE_VINTAGES = MAX_CANDIDATE_NATIVE_VINTAGES + 1
@@ -657,7 +749,7 @@ BATCH_SUPPORTING_CHECKS = (
 
 
 def _batch_view_identity(view: TiingoView, budget: dict[str, int]) -> str:
-    """Fingerprint every declared view field with type-sensitive ordered rows."""
+    """Fingerprint full view content; absent additive metadata keeps historical identity."""
     import hashlib
     import json
     from dataclasses import fields
@@ -682,7 +774,11 @@ def _batch_view_identity(view: TiingoView, budget: dict[str, int]) -> str:
             return ["dict", [[key, typed(value[key], depth + 1)] for key in sorted(value)]]
         raise TiingoViewRefusal("Batch identity contains unsupported source value types")
 
-    content = typed({field.name: getattr(view, field.name) for field in fields(TiingoView)})
+    values = {field.name: getattr(view, field.name) for field in fields(TiingoView)}
+    # An absent additive contract preserves historical v1 view fingerprints.
+    if view.source_observation_clock_contract is None:
+        values.pop("source_observation_clock_contract")
+    content = typed(values)
     digest = hashlib.sha256()
     for part in json.JSONEncoder(ensure_ascii=True, separators=(",", ":")).iterencode(content):
         encoded = part.encode("utf-8")
@@ -814,11 +910,15 @@ def _batch_minute_slot(
 def assess_forex_source_batch_candidate(
     minute_vintages: tuple[tuple[TiingoView, str], ...],
     four_hour_vintages: tuple[tuple[TiingoView, str], ...], *,
-    expected_pair: str, consecutive: int, policy_version: str,
+    expected_pair: str, consecutive: int,
+    policy_version: str = CURRENT_BATCH_CANDIDATE_POLICY_VERSION,
     verified_at_utc: str, assessed_at_utc: str,
     inventory_evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assess the exact current adjacent slots as unadopted research evidence.
+
+    Default v2 also qualifies every relevant supplied receipt clock; explicit
+    v1 preserves the historical policy without that additional provenance gate.
 
     Older supporting slots retain the individual policy's expired verdict while
     using the existing evaluator's current-decision availability semantics. Only
@@ -831,7 +931,8 @@ def assess_forex_source_batch_candidate(
     """
     from urllib.parse import parse_qs, urlsplit
 
-    if (policy_version != BATCH_CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS
+    strict_clock = _forex_clock_policy(policy_version, "batch")
+    if (expected_pair not in CANDIDATE_PAIRS
             or type(consecutive) is not int or not 1 <= consecutive <= 10):
         raise TiingoViewRefusal("Unknown Forex batch policy, pair or consecutive-close bound")
     verified, assessed = _clock(verified_at_utc), _clock(assessed_at_utc)
@@ -886,6 +987,8 @@ def assess_forex_source_batch_candidate(
     except (ValueError, OverflowError):
         raise TiingoViewRefusal("Batch target sequence exceeds supported nanosecond clock bounds") from None
 
+    supporting_checks = BATCH_SUPPORTING_CHECKS + (
+        ("response_observation_clock_contracts_qualified",) if strict_clock else ())
     cache, slots = {}, []
     for index, (start, end, expiry) in enumerate(zip(starts, ends, expiries)):
         minute_check, minute_receipt = _batch_minute_slot(minutes, start, end)
@@ -908,7 +1011,8 @@ def assess_forex_source_batch_candidate(
                     minutes[minute_receipt]["view"], natives[native_receipt]["view"],
                     expected_pair=expected_pair, minute_receipt_id=minute_receipt,
                     four_hour_receipt_id=native_receipt,
-                    policy_version=CANDIDATE_POLICY_VERSION,
+                    policy_version=(CURRENT_CANDIDATE_POLICY_VERSION if strict_clock
+                                    else CANDIDATE_POLICY_VERSION),
                     verified_at_utc=verified_at_utc, assessed_at_utc=assessed_at_utc,
                     known_native_vintages=tuple((item["view"], receipt) for receipt, item in natives.items()
                                                if receipt != native_receipt),
@@ -917,8 +1021,13 @@ def assess_forex_source_batch_candidate(
                        if _clock(window["candidate_projection"]["interval_start_utc"]) == start]
             candidate = matches[0] if matches else None
         supporting = (candidate is not None
-                      and all(candidate["checks"][name] for name in BATCH_SUPPORTING_CHECKS)
+                      and all(candidate["checks"][name] for name in supporting_checks)
                       and minute_check["supplied_closed_minute_values_consistent"])
+        clock_evidence = None
+        if strict_clock:
+            clock_evidence = _slot_clock_contract_qualification(
+                inventory, start, end, (minute_receipt, native_receipt))
+            supporting = supporting and clock_evidence["all_relevant_contracts_qualified"]
         latest = index == consecutive - 1
         fresh = (candidate is not None
                  and candidate["checks"]["verification_before_candidate_expiry"]
@@ -941,15 +1050,20 @@ def assess_forex_source_batch_candidate(
             "latest_freshness_satisfied": bool(fresh) if latest else None,
             "minute_vintage_check": minute_check, "candidate_projection": projection,
             "slot_checks_satisfied": bool(supporting and (not latest or fresh)),
+            **({"clock_contract_qualification": clock_evidence} if strict_clock else {}),
         })
     checks = {
         "all_required_adjacent_slots_supported": all(slot["supporting_checks_satisfied"] for slot in slots),
         "latest_slot_within_fixed_expiry": slots[-1]["latest_freshness_satisfied"],
         "supplied_two_scan_identity_sets_equal": declaration["two_scan_identity_sets_equal"],
     }
+    if strict_clock:
+        checks["all_relevant_observation_clock_contracts_qualified"] = all(
+            slot["clock_contract_qualification"]["all_relevant_contracts_qualified"] for slot in slots)
     satisfied = all(slot["slot_checks_satisfied"] for slot in slots) and declaration["two_scan_identity_sets_equal"] is not False
     return {
-        "schema": BATCH_CANDIDATE_POLICY_SCHEMA, "policy_version": policy_version,
+        "schema": CURRENT_BATCH_CANDIDATE_POLICY_SCHEMA if strict_clock else BATCH_CANDIDATE_POLICY_SCHEMA,
+        "policy_version": policy_version,
         "policy_state": "CANDIDATE_NOT_ADOPTED", "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
         "pair_candidate": expected_pair, "requested_pair_inventory": list(CANDIDATE_PAIRS),
         "consecutive": consecutive, "required_interval_ends_utc": [end.isoformat() for end in ends],
@@ -1102,10 +1216,11 @@ def _scan_forex_receipts(context: Any, dates: tuple[str, ...], expected_pair: st
 
 
 def read_forex_source_batch_candidate(
-    *, expected_pair: str, consecutive: int, policy_version: str,
+    *, expected_pair: str, consecutive: int,
+    policy_version: str = CURRENT_BATCH_CANDIDATE_POLICY_VERSION,
     root: Path = DEFAULT_ARCHIVE, check_mount: bool = True,
 ) -> dict[str, Any]:
-    """Read a bounded observed census and feed the unchanged candidate assessor.
+    """Read a bounded observed census through the selected candidate policy version.
 
     Two scans and exact retained byte reads are observations, not a lock or an
     atomic/global inventory guarantee. No captures, materialization, correction
@@ -1115,7 +1230,8 @@ def read_forex_source_batch_candidate(
     from collectors.tiingo_archive import TiingoArchiveError
     from scripts.tiingo_materialize import BoundedTiingoRead
 
-    if (policy_version != BATCH_CANDIDATE_POLICY_VERSION or expected_pair not in CANDIDATE_PAIRS
+    strict_clock = _forex_clock_policy(policy_version, "batch")
+    if (expected_pair not in CANDIDATE_PAIRS
             or type(consecutive) is not int or not 1 <= consecutive <= 10):
         raise TiingoViewRefusal("Unknown Forex census policy, pair or consecutive-close bound")
     started_at, started = _census_clock()
@@ -1189,6 +1305,8 @@ def read_forex_source_batch_candidate(
                 evidence["selected_row_references"] += len(view.rows)
                 acquired.update(state="exact_view_verified", rows=len(view.rows),
                                 raw_sha256=view.source_sha256)
+                if strict_clock:
+                    acquired["source_observation_clock_contract"] = view.source_observation_clock_contract
                 views[item["frequency"]].append((view, item["receipt_id"]))
             second = _scan_forex_receipts(context, dates, expected_pair, evidence)
             evidence["observed_scans_equal"] = first["snapshot_sha256"] == second["snapshot_sha256"]

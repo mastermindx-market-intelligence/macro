@@ -1,3 +1,32 @@
+# Current owner checkpoint — receipt-clock provenance, 22 October 2026
+
+**The current Forex candidate path now distinguishes declared response-read clocks from unmarked legacy receipt clocks. Its 524-test qualification is complete; source adoption and the broader Forex/Bonds release gates remain open.** This increment descends from published #10052 head `01a93e59d86f3243b19185f94d87c8aea95330dc`. That predecessor's 507-pass response-sampling result, fences 39831294103 success and automatic CI 39831294081 still in progress at the 18:47 UTC read remain evidence on that exact head.
+
+The repaired collection route adds an optional original-receipt declaration, `local_utc_after_bounded_read_before_http_exit/v1`. The exact reader obtains it from the validated original receipt; a manifest-only claim is ignored. Reuse keeps the original receipt's declaration, clock and identity, including an absent declaration. No historical receipt is rewritten. This is a producer declaration with integrity binding, not independent attestation of execution, vendor publication or finality.
+
+Omitted/current single, batch and census policy selection now uses explicit version 2. Existing version 1 exports retain their historical values for intentional historical callers. Version2 separately requires recognized clock declarations on selected receipts and every relevant supplied competing vintage. An unmarked competitor cannot evade the check merely by claiming an open observation clock. A marked pre-close response still fails the independent post-close timing check. All versions remain CANDIDATE_NOT_ADOPTED with no eligible observations or admission authority.
+
+## Actual qualification and retained evidence
+
+On unchanged production source, the new regressions produced **9 failed / 8 passed / 234 deselected** in 5.59s at 18:43:56 UTC. After the three-path source change, all **524 tests passed in 33.75s** at 18:46:20UTC across archive, Forex, reader, views, ingestion-integrity and both BOATS history owners. The positive version 2 case uses actual temporary collection, materialization, bounded read, single/batch assessment and census. Historical v1, first-receipt reuse, coherent unsupported declarations, identity/lineage tampering and relevant competing-vintage controls remain covered.
+
+The actual preserved diagnostic prefix is through line 455: 23,419 bytes, SHA256`d32769fd8fe98a9aaefa59a9714cca6b0876706c5388ded3053efed629dcd0b1`. Dispatch changes occur after it; no broader line-count preservation is claimed. See [clock-contract qualification](evidence/clock_contract_qualification_20261022.json). No provider request or real archive mutation occurred during these tests.
+
+## Ordered continuation from this increment
+
+1. Consume existing `.forex-batch-proof/20261022/clock-contract-*` intent/result records, the containing commit and normal push once, then consume automatic CI for that new head. Never replay an effect whose readback already establishes application.
+2. Qualify actual current-slot evidence under version 2 through the existing capture/archive/materializer/census owners. First bind a finite literal USDJPY minute/native request plan to the two latest fully closed 4H slots and the exact qualified source. A new planned observation must resolve the changed provenance/current-slot requirement; repeating old unsupported reads merely for a newer clock does not. Preserve request outcomes and unknown effects; no automatic retry, schedule or new ingestion plane.
+3. Preserve the historical 04:41 acquisition chronology and the 12:23:40 census on their original identities. Their receipts do not acquire a version 2 declaration retrospectively. Current-slot support, source correction/finality policy, feed identity and qualified independent source review remain distinct gates.
+4. Continue Bonds in existing #9590. Published `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba` contains the 206-pass seasoning/composition repair. The bounded per-instrument increment passed 276 owner cases plus a separately corrected missing-scalar assertion, with production source unchanged by that test correction. Actual retained holdings have one 2026-10-15 snapshot per fund and a same-date LQD sample; no real 5/21 history is inferred. Complete isolated producer/validation/CDI/native qualification and preserve the actual newer upstream market-data refresh during composition.
+5. The observed current candidate-preview failure is technical browser-to-Studio loopback connectivity, not a blanket browser-policy denial. Historical R6/R9 denials remain scoped to their original operations. Real exact-candidate browser/visual evidence is still absent. The temporary preview server has been closed; no alternative publication carrier is created.
+6. The existing FIF store factory is unavailable/unconfigured on this carrier. The bounded inquiry made zero pointer/manifest/role/query calls; this is not proof that financial records are absent globally. Continue only useful existing-owner source integration and preserve explicit financial-input unavailability.
+
+Protected compatible pin remains `05a9eb52a54e29fb7bbd0d40813ed12623b176c7`. Macro #9996 immutable head, green CI, covering render 39688064251 and accepted live CRUD/product proof remain preserved. Terminal #1106 remains Draft/HOLD pending qualified continuation/review from the original Fabric operation; do not replay 429, change provider/carrier, reapply 0038, or retry the explicitly refused deployment. Held carry/COT and all original workspaces remain intact. **Tiingo licensing/intended use is COMPLETE by Chairman special-license attestation; no licensing email or support outreach.**
+
+Publication and later CI resolve in [the existing #10052 checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600) and [the joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). Native source assistance is not accepted independent Fabric review.
+
+## Historical checkpoints below — preserve, do not replay completed actions
+
 # Current owner checkpoint — response-clock qualification, 22 October 2026
 
 **The response-clock repair is qualified locally; Forex source admission and the broader Forex/Bonds completion gates remain open.** This containing change descends from `3db88469490925ff9ed23eec4a87eb19a0ff0cec` on existing #10052. The original 355-pass count repair, green CI39787499393 and fences39787499203 remain accepted on that head.

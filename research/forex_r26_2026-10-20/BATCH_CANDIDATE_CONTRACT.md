@@ -1,3 +1,25 @@
+# Current original-receipt clock contract and policy version 2 — 22 October 2026
+
+The original receipt may declare `observation_clock_contract=local_utc_after_bounded_read_before_http_exit/v1`. The repaired `collect_one` supplies it with the local clock sampled after a successful bounded body read and before response-context teardown. Generic direct `store_response` calls remain unmarked unless they explicitly supply the recognized declaration and a received-at clock. An absent or bounded unknown declaration stays readable; strict policy does not qualify it.
+
+The optional field participates in the original receipt's existing content identity. The exact reader derives `TiingoView.source_observation_clock_contract` only from the validated original receipt context, never the normalized manifest. Materialized schemas and historical archive bytes are unchanged. Reuse returns the original first receipt's marker or absence; a newly requested declaration cannot upgrade it. Unmarked metadata retains its historical shape and batch fingerprint.
+
+| Boundary | Current default | Explicit historical selection |
+| --- | --- | --- |
+| Single candidate | CURRENT_CANDIDATE_POLICY_VERSION, tiingo-forex-local-close-candidate/2 | CANDIDATE_POLICY_VERSION, /1 |
+| Batch candidate | CURRENT_BATCH_CANDIDATE_POLICY_VERSION, tiingo-forex-local-close-batch-candidate/2 | BATCH_CANDIDATE_POLICY_VERSION, /1 |
+| Observed census | Current batch /2 when omitted | Explicit batch /1 |
+
+A shared parser rejects unknown or cross-family versions. Actual selected versions are recorded. Version2 assessments use their version 2 schemas; the existing census envelope records its selected policy. Version1 preserves the earlier timestamp-only research behavior. The unchanged diagnostic/reconciliation prefix ends at line 455 and is bound by the qualification receipt; the version dispatch lies after that boundary.
+
+For each target slot, version 2 requires recognized declarations from the selected minute/native receipts and every relevant supplied competitor. Relevance follows the vendor interval position without trusting an unknown observation clock. Unplaceable evidence remains relevant; provably unrelated windows remain visible without vetoing a different slot. The single assessor's existing minute-inventory limitation remains explicit; the batch owner provides competing minute vintages. No unknown competitor is silently removed to make the result pass.
+
+Numeric post-close timing is independent: a recognized declaration does not turn a pre-close response into a closed one. The declaration is integrity-bound producer metadata, **not authenticated producer execution, vendor publication, wire arrival, finality, exhaustive corrections or historical availability**. Version2 reports producer_declaration_only=true and producer_execution_independently_attested=false.
+
+Actual qualification: 9 new failures / 8 controls before source changes; 524 affected tests passed after the change, including real temporary archive→materializer→bounded reader→single/batch/census. See [the exact qualification](evidence/clock_contract_qualification_20261022.json). Tests made no provider call or real archive mutation. All admission flags remain false, eligible observations remain empty, and the policy remains CANDIDATE_NOT_ADOPTED. Licensing/intended use stays Chairman-COMPLETE.
+
+## Historical response-sampling, count, census and version 1 contracts
+
 # Current response-observation contract — 22 October 2026
 
 The existing `collect_one` acquisition route uses the private `_fetch_json_observation` helper. A successful bounded read and size check precede a local UTC sample; that sample precedes response-context teardown and storage. A newly created receipt therefore does not use storage delay as its observation clock. Oversized bodies are rejected before sampling. Transport/HTTP/teardown failures retain safe error translation and cannot reach storage.

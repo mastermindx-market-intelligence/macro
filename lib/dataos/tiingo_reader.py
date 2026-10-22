@@ -42,9 +42,10 @@ class TiingoView:
     rows: tuple[dict[str, Any], ...]
     authority: str = "RESEARCH_ONLY_VENDOR_SOURCE"
     source_request_path: str | None = None
+    source_observation_clock_contract: str | None = None
 
     def metadata(self) -> dict[str, Any]:
-        return {
+        result = {
             "source": self.source, "source_sha256": self.source_sha256,
             "source_observed_at_utc": self.source_observed_at_utc,
             "purpose": self.purpose,
@@ -52,6 +53,9 @@ class TiingoView:
             "redistribution_admitted": self.redistribution_admitted,
             "authority": self.authority, "row_count": len(self.rows),
         }
+        if self.source_observation_clock_contract is not None:
+            result["source_observation_clock_contract"] = self.source_observation_clock_contract
+        return result
 
 
 def _hashed_file(path: Path) -> str:
@@ -331,6 +335,7 @@ def read_research_view(source: str, day: str, sha256: str, *,
         redistribution_admitted=False,
         rows=tuple(rows),
         source_request_path=context.get("request_path"),
+        source_observation_clock_contract=context.get("observation_clock_contract"),
     )
 
 

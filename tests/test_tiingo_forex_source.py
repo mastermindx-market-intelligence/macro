@@ -2075,3 +2075,320 @@ def test_response_observation_storage_delay_cannot_close_a_forex_candidate(censu
     assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
     for flag in _CENSUS_ADMISSION_FLAGS:
         assert result[flag] is False
+
+
+# Versioned clock provenance remains a research qualification, not admission.
+_CLOCK_CONTRACT = "local_utc_after_bounded_read_before_http_exit/v1"
+_CLOCK_SINGLE_V1 = "tiingo-forex-local-close-candidate/1"
+_CLOCK_SINGLE_V2 = "tiingo-forex-local-close-candidate/2"
+_CLOCK_BATCH_V1 = "tiingo-forex-local-close-batch-candidate/1"
+_CLOCK_BATCH_V2 = "tiingo-forex-local-close-batch-candidate/2"
+
+
+def _clock_contract_read(lake, retained):
+    saved, receipt_path = retained["saved"], retained["receipt_path"]
+    with BoundedTiingoRead(lake.root, check_mount=False) as context:
+        view = read_research_view(
+            "forex-bars", archive_owner.capture_day(saved["observed_at_utc"]),
+            saved["receipt_id"], root=lake.root, check_mount=False,
+            receipt_path=receipt_path, read_context=context, max_rows=240,
+        )
+        context.verify_bindings()
+    return view, saved["receipt_id"]
+
+
+@pytest.fixture
+def clock_contract_case(census_lake, monkeypatch):
+    lake, retain = census_lake
+
+    def capture(rows, *, frequency="1min", observed_at="2026-10-21T08:01:00+00:00",
+                closed_at=None, storage_at=None):
+        raw = json.dumps(rows, allow_nan=False).encode()
+        clock = {"now": observed_at}
+
+        class Response:
+            headers = {"Content-Type": "application/json"}
+
+            def __enter__(self):
+                return self
+
+            def read(self, limit):
+                assert limit == archive_owner.MAX_RESPONSE_BYTES + 1
+                clock["now"] = observed_at
+                return raw
+
+            def __exit__(self, *args):
+                clock["now"] = closed_at or observed_at
+
+        with monkeypatch.context() as patched:
+            patched.setattr(archive_owner.urllib.request, "urlopen",
+                            lambda req, timeout: Response())
+            patched.setattr(archive_owner, "utc_now", lambda: clock["now"])
+            if storage_at is not None:
+                def delayed_space(root, *, floor):
+                    clock["now"] = storage_at
+                patched.setattr(archive_owner, "require_space", delayed_space)
+            saved = archive_owner.collect_one(
+                lake, "forex-bars", "usdjpy", "synthetic-test-key",
+                {"resampleFreq": frequency},
+            )
+        day = archive_owner.capture_day(saved["observed_at_utc"])
+        stem = Path(saved["path"]).name.removesuffix(".raw.gz")
+        receipt_path = lake.root / "receipts" / "forex-bars" / day / (stem + ".json")
+        receipt = json.loads(receipt_path.read_text())
+        materialized = materialize_one(lake.root, receipt, free_floor=0)
+        assert materialized["status"] in {"WRITTEN", "EXISTS"}
+        return {"saved": saved, "receipt_path": receipt_path, "receipt": receipt,
+                "materialized": materialized}
+
+    return lake, retain, capture
+
+
+def _clock_contract_single(views, **kwargs):
+    options = dict(expected_pair="USDJPY", minute_receipt_id=views[0][1],
+                   four_hour_receipt_id=views[1][1],
+                   verified_at_utc="2026-10-21T08:03:00Z",
+                   assessed_at_utc="2026-10-21T08:04:00Z")
+    options.update(kwargs)
+    return assess_forex_source_candidate(views[0][0], views[1][0], **options)
+
+
+def _clock_contract_batch(views, *, extra_minutes=(), extra_native=(), **kwargs):
+    options = dict(expected_pair="USDJPY", consecutive=1,
+                   verified_at_utc="2026-10-21T08:03:00Z",
+                   assessed_at_utc="2026-10-21T08:04:00Z")
+    options.update(kwargs)
+    return assess_forex_source_batch_candidate(
+        (views[0],) + tuple(extra_minutes), (views[1],) + tuple(extra_native), **options)
+
+
+def _clock_contract_no_admission(result):
+    assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    assert result["eligible_observations"] == []
+    for flag in _CENSUS_ADMISSION_FLAGS:
+        assert result[flag] is False
+
+
+def test_clock_contract_legacy_receipts_keep_v1_but_fail_current_policy(clock_contract_case):
+    lake, retain, _capture = clock_contract_case
+    rows = _census_rows()
+    records = (retain(rows), retain(_census_native_rows(rows), frequency="4hour",
+                                   observed_at="2026-10-21T08:02:00Z"))
+    views = tuple(_clock_contract_read(lake, record) for record in records)
+    before = _census_file_hashes(lake.root)
+    for view, _receipt in views:
+        assert getattr(view, "source_observation_clock_contract", None) is None
+        assert "source_observation_clock_contract" not in view.metadata()
+    historical = _clock_contract_single(views, policy_version=_CLOCK_SINGLE_V1)
+    assert historical["policy_version"] == _CLOCK_SINGLE_V1
+    assert historical["windows"][0]["candidate_checks_satisfied"] is True
+    assert "clock_contract_qualification" not in historical["windows"][0]
+    historical_batch = _clock_contract_batch(views, policy_version=_CLOCK_BATCH_V1)
+    assert historical_batch["batch_checks_satisfied"] is True
+    assert "clock_contract_qualification" not in historical_batch["slots"][0]
+
+    strict = _clock_contract_single(views)
+    window = strict["windows"][0]
+    assert strict["policy_version"] == _CLOCK_SINGLE_V2
+    assert window["checks"]["both_responses_observed_after_interval_end"] is True
+    assert window["failed_checks"] == ["response_observation_clock_contracts_qualified"]
+    assert window["candidate_checks_satisfied"] is False
+    assert window["clock_contract_qualification"]["unqualified_receipt_ids"] == sorted(
+        receipt for _view, receipt in views)
+    batch = _clock_contract_batch(views)
+    assert batch["policy_version"] == _CLOCK_BATCH_V2
+    assert batch["slots"][0]["candidate_assessment"]["checks"][
+        "response_observation_clock_contracts_qualified"] is False
+    assert batch["batch_checks_satisfied"] is False
+    assert len(batch["input_inventory"]) == 2
+    for result in (historical, historical_batch, strict, batch):
+        _clock_contract_no_admission(result)
+    assert _census_file_hashes(lake.root) == before
+
+
+def test_clock_contract_marked_receipts_support_current_candidate_batch_and_census(clock_contract_case):
+    lake, _retain, capture = clock_contract_case
+    rows = _census_rows()
+    records = (capture(rows), capture(_census_native_rows(rows), frequency="4hour",
+                                     observed_at="2026-10-21T08:02:00+00:00"))
+    views = tuple(_clock_contract_read(lake, record) for record in records)
+    for record, (view, receipt_id) in zip(records, views):
+        assert record["receipt"]["observation_clock_contract"] == _CLOCK_CONTRACT
+        assert record["saved"]["observation_clock_contract"] == _CLOCK_CONTRACT
+        assert archive_owner.validate_receipt(record["receipt"]) == receipt_id
+        assert getattr(view, "source_observation_clock_contract", None) == _CLOCK_CONTRACT
+        assert "source_observation_clock_contract" not in view.rows[0]
+    strict = _clock_contract_single(views)
+    assert strict["policy_version"] == _CLOCK_SINGLE_V2
+    assert strict["schema"] == "mastermind.tiingo.forex_source_candidate_assessment.v2"
+    assert strict["windows"][0]["candidate_checks_satisfied"] is True
+    assert strict["windows"][0]["clock_contract_qualification"]["unqualified_receipt_ids"] == []
+    batch = _clock_contract_batch(views)
+    assert batch["policy_version"] == _CLOCK_BATCH_V2
+    assert batch["batch_checks_satisfied"] is True
+    for result in (strict, batch):
+        _clock_contract_no_admission(result)
+
+    before = _census_file_hashes(lake.root)
+    census = census_fx.read_forex_source_batch_candidate(
+        expected_pair="USDJPY", consecutive=1, root=lake.root, check_mount=False)
+    assert census["policy_version"] == _CLOCK_BATCH_V2
+    assert census["assessment"]["batch_checks_satisfied"] is True
+    assert all(item["source_observation_clock_contract"] == _CLOCK_CONTRACT
+               for item in census["selected_views"])
+    _assert_census_no_admission(census)
+    assert _census_file_hashes(lake.root) == before
+
+
+def test_clock_contract_marked_preclose_response_stays_open_after_storage_delay(clock_contract_case):
+    lake, _retain, capture = clock_contract_case
+    rows = _census_rows()
+    minute = capture(rows, observed_at="2026-10-21T07:59:59.900000+00:00",
+                     closed_at="2026-10-21T08:00:00.100000+00:00",
+                     storage_at="2026-10-21T08:00:01+00:00")
+    native = capture(_census_native_rows(rows), frequency="4hour",
+                     observed_at="2026-10-21T08:02:00+00:00")
+    views = tuple(_clock_contract_read(lake, record) for record in (minute, native))
+    result = _clock_contract_single(views)
+    window = result["windows"][0]
+    assert window["checks"]["response_observation_clock_contracts_qualified"] is True
+    assert window["checks"]["dense_minute_grid"] is True
+    assert window["checks"]["normalized_ohlc_agreement"] is True
+    assert window["failed_checks"] == ["both_responses_observed_after_interval_end"]
+    assert window["candidate_checks_satisfied"] is False
+    _clock_contract_no_admission(result)
+
+
+def test_clock_contract_reuse_never_upgrades_an_unmarked_first_receipt(clock_contract_case):
+    lake, retain, capture = clock_contract_case
+    rows = _census_rows()
+    original = retain(rows)
+    native = capture(_census_native_rows(rows), frequency="4hour",
+                     observed_at="2026-10-21T08:02:00+00:00")
+    before = _census_file_hashes(lake.root)
+    repeated = capture(rows, observed_at="2026-10-21T08:02:30+00:00")
+    assert repeated["saved"]["new_raw"] is False
+    assert repeated["saved"]["receipt_id"] == original["saved"]["receipt_id"]
+    assert repeated["saved"]["observed_at_utc"] == original["saved"]["observed_at_utc"]
+    assert "observation_clock_contract" not in repeated["saved"]
+    assert "observation_clock_contract" not in repeated["receipt"]
+    views = tuple(_clock_contract_read(lake, record) for record in (repeated, native))
+    result = _clock_contract_single(views)
+    assert result["windows"][0]["clock_contract_qualification"]["unqualified_receipt_ids"] == [
+        original["saved"]["receipt_id"]]
+    assert result["windows"][0]["candidate_checks_satisfied"] is False
+    assert _census_file_hashes(lake.root) == before
+    _clock_contract_no_admission(result)
+
+
+
+def test_clock_contract_unsupported_declaration_stays_readable_but_unqualified(clock_contract_case):
+    lake, retain, capture = clock_contract_case
+    rows = _census_rows()
+    minute = retain(rows, materialize=False)
+    # A syntactically valid future declaration has coherent original lineage.
+    changed = {**minute["receipt"], "observation_clock_contract": "unsupported/99"}
+    changed["receipt_id"] = archive_owner.receipt_identity(changed)
+    minute["receipt_path"].write_text(json.dumps(changed))
+    minute["receipt"] = changed
+    minute["saved"] = {**minute["saved"], "receipt_id": changed["receipt_id"]}
+    assert materialize_one(lake.root, changed, free_floor=0)["status"] == "WRITTEN"
+    native = capture(_census_native_rows(rows), frequency="4hour",
+                     observed_at="2026-10-21T08:02:00+00:00")
+    views = tuple(_clock_contract_read(lake, record) for record in (minute, native))
+    assert getattr(views[0][0], "source_observation_clock_contract", None) == "unsupported/99"
+    historical = _clock_contract_single(views, policy_version=_CLOCK_SINGLE_V1)
+    assert historical["windows"][0]["candidate_checks_satisfied"] is True
+    strict = _clock_contract_single(views)
+    qualification = strict["windows"][0]["clock_contract_qualification"]
+    assert qualification["unqualified_receipt_ids"] == [minute["saved"]["receipt_id"]]
+    evidence = next(item for item in qualification["relevant_receipts"]
+                    if item["source_receipt_id"] == minute["saved"]["receipt_id"])
+    assert evidence["state"] == "unsupported"
+    assert evidence["declared_contract"] == "unsupported/99"
+    assert strict["windows"][0]["candidate_checks_satisfied"] is False
+    _clock_contract_no_admission(historical)
+    _clock_contract_no_admission(strict)
+
+
+@pytest.mark.parametrize("reidentify", [False, True])
+def test_clock_contract_tampering_refuses_original_receipt_or_materialized_lineage(
+        clock_contract_case, reidentify):
+    lake, _retain, capture = clock_contract_case
+    record = capture(_census_rows())
+    changed = dict(record["receipt"])
+    changed["observation_clock_contract"] = "unsupported/99"
+    if reidentify:
+        changed["receipt_id"] = archive_owner.receipt_identity(changed)
+        record["saved"] = {**record["saved"], "receipt_id": changed["receipt_id"]}
+    record["receipt_path"].write_text(json.dumps(changed))
+    with pytest.raises(TiingoViewRefusal):
+        _clock_contract_read(lake, record)
+
+
+def test_clock_contract_reader_does_not_take_a_manifest_claim_as_receipt_provenance(clock_contract_case):
+    lake, retain, _capture = clock_contract_case
+    record = retain(_census_rows())
+    manifest_path = next((lake.root / "manifests").rglob("*.json"))
+    manifest = json.loads(manifest_path.read_text())
+    manifest["source_observation_clock_contract"] = _CLOCK_CONTRACT
+    manifest_path.write_text(json.dumps(manifest))
+    view, _receipt_id = _clock_contract_read(lake, record)
+    assert getattr(view, "source_observation_clock_contract", None) is None
+    assert "source_observation_clock_contract" not in view.metadata()
+
+
+@pytest.mark.parametrize("frequency", ["1min", "4hour"])
+@pytest.mark.parametrize("relevant", [True, False])
+def test_clock_contract_unknown_competing_vintage_is_not_hidden_by_an_open_clock(
+        clock_contract_case, frequency, relevant):
+    lake, retain, capture = clock_contract_case
+    rows = _census_rows()
+    records = (capture(rows), capture(_census_native_rows(rows), frequency="4hour",
+                                     observed_at="2026-10-21T08:02:00+00:00"))
+    views = tuple(_clock_contract_read(lake, record) for record in records)
+    competing_rows = [dict(rows[0])] if frequency == "1min" else _census_native_rows(rows)
+    competing_rows[0]["close"] += .001
+    if not relevant:
+        competing_rows[0]["date"] = "2026-10-21T00:00:00Z"
+    competing = retain(competing_rows, frequency=frequency,
+                       observed_at="2026-10-21T07:59:00Z")
+    extra = _clock_contract_read(lake, competing)
+    kwargs = {"extra_minutes" if frequency == "1min" else "extra_native": (extra,)}
+    historical = _clock_contract_batch(views, policy_version=_CLOCK_BATCH_V1, **kwargs)
+    assert historical["batch_checks_satisfied"] is True
+    strict = _clock_contract_batch(views, **kwargs)
+    qualification = strict["slots"][0]["clock_contract_qualification"]
+    assert len(strict["input_inventory"]) == 3
+    assert (extra[1] in qualification["unqualified_receipt_ids"]) is relevant
+    assert strict["batch_checks_satisfied"] is (not relevant)
+    if frequency == "4hour":
+        candidate = _clock_contract_single(views, known_native_vintages=(extra,))
+        assert candidate["windows"][0]["candidate_checks_satisfied"] is (not relevant)
+        _clock_contract_no_admission(candidate)
+    _clock_contract_no_admission(historical)
+    _clock_contract_no_admission(strict)
+
+
+@pytest.mark.parametrize("family,version", [
+    ("candidate", "tiingo-forex-local-close-candidate/3"),
+    ("candidate", _CLOCK_BATCH_V2),
+    ("batch", "tiingo-forex-local-close-batch-candidate/3"),
+    ("batch", _CLOCK_SINGLE_V2),
+    ("census", "tiingo-forex-local-close-batch-candidate/3"),
+])
+def test_clock_contract_versions_refuse_without_implicit_fallback(clock_contract_case, family, version):
+    lake, _retain, capture = clock_contract_case
+    rows = _census_rows()
+    records = (capture(rows), capture(_census_native_rows(rows), frequency="4hour",
+                                     observed_at="2026-10-21T08:02:00+00:00"))
+    views = tuple(_clock_contract_read(lake, record) for record in records)
+    with pytest.raises(TiingoViewRefusal, match="policy"):
+        if family == "candidate":
+            _clock_contract_single(views, policy_version=version)
+        elif family == "batch":
+            _clock_contract_batch(views, policy_version=version)
+        else:
+            census_fx.read_forex_source_batch_candidate(
+                expected_pair="USDJPY", consecutive=1, policy_version=version,
+                root=lake.root, check_mount=False)
