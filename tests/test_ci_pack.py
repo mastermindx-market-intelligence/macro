@@ -5036,8 +5036,10 @@ def test_market_navigator_fixture_only_edits_still_select_its_exclusive_job() ->
         path = f"tests/fixtures/market_navigator/{name}.synthetic.json"
         selected, _reason = PACK.select_jobs(jobs, [path])
         assert [job.job_id for job in selected] == ["market-navigator-foundation"], path
-    for path in ("templates/index.html", "site/theme.css",
-                 "engine/prophet/plan_book.py", "scripts/build_free_content.py"):
+    # Planner probes are named inputs, not files this test reads. Keep the
+    # current line-local ci-trigger-closure markers for every fixture literal.
+    for path in ("templates/index.html", "site/theme.css",  # ci-trigger-closure: data
+                 "engine/prophet/plan_book.py", "scripts/build_free_content.py"):  # ci-trigger-closure: data
         selected, _reason = PACK.select_jobs(jobs, [path])
         assert selected == [], path
 
