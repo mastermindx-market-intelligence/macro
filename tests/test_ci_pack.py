@@ -5201,9 +5201,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_868),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_840),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_612),
+    ("templates/index.html", 136, 5_870),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_842),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_614),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5211,6 +5211,11 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 merge protected D04-A2 source-clock coverage (dc3a) and
+    autosave adoption: actual compiler measures index136/5870, free135/5842,
+    Prophet128/5614, identical selected IDs and ten packs. Retain incoming
+    status suite (+2) and adoption suites (+6); fund measured bounds only.
 
     2026-10-22 autosave adoption adds three hermetic suites to the existing
     code-gated biocatalyst-deploy-integration job, preserving its inferred
@@ -6424,6 +6429,20 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Preserve the plan-book ceiling 5,600, every job-count and pack bound,
     all suites, selectors, scope/closure audits and duration overrides.
     These are deterministic planning weights, not execution timings.
+
+    2026-10-22 D04-A2 status source-clock projection (PR #10004; head = the merge of
+    main 89bc1003889a into the PR branch, 7b20287b5345): the existing
+    prelaunch-hardening pytest command gains one suite,
+    tests/test_status_live_projection_wiring.py, and three main-side jobs
+    declare app/live_status_projection.py (no new jobs, no selection change).
+    Lane-measured contract-delta on that merge against base main 89bc1003889a:
+    3 introduced, newly selected none, 10 packs; weight-seconds:
+    - index: 136 jobs, base 5,862, head 5,864; ceiling 5,862 -> 5,864.
+    - free-content: 135 jobs, base 5,834, head 5,836; ceiling 5,834 -> 5,836.
+    - plan-book: 128 jobs, base 5,606, head 5,608; ceiling 5,606 -> 5,608.
+    Only a breached ceiling moves, to its measured head weight, no padding;
+    job-count ceilings, the pack limit, selectors and every prior suite stay
+    unchanged. Planning weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
