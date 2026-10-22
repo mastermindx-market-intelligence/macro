@@ -10,8 +10,8 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const expected=Object.fromEntries(['intl.html','shared_shell_bridge.js','shared_shell.css','intl_workspace.js','intl_workspace_state.js'].map(name=>['/'+name,hash(fs.readFileSync(path.join(artifact,name)))]));
 fs.mkdirSync(out,{recursive:true});
 if(fs.existsSync(path.join(out,'observation.json')))throw new Error('Existing observation; reconcile it rather than overwrite');
-const report={schema:'intl.actual_parent_acceptance.v11',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
-const pending=[];
+const report={schema:'intl.actual_parent_acceptance.v12',phase,matrix,started_at:new Date().toISOString(),parent_source:'e45bde2cac07ac3b29285ff70c40d68900fad62c',subject:arg('source-sha'),artifact,expected,driver_sha256:hash(fs.readFileSync(__filename)),network_stubs:false,preference_setup:'Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent',contexts:[],cases:[],responses:[],screenshots:[],page_errors:[],console_errors:[],external_requests_blocked:[]};
+const pending=[];let responseSequence=0;
 const runtimePath=path.resolve(arg('runtime'));
 const buildReceiptPath=path.resolve(arg('build-receipt'));
 const runtime=JSON.parse(fs.readFileSync(runtimePath)), buildReceipt=JSON.parse(fs.readFileSync(buildReceiptPath));
@@ -25,7 +25,9 @@ report.source_binding={runtime_path:runtimePath,runtime_sha256:hash(fs.readFileS
 const workspaceAt=(sha,name)=>execFileSync('git',['-C',repository,'show',sha+':'+name]);
 const subjectWorkspace=workspaceAt(report.subject,'templates/intl_workspace.js'),pairedWorkspace=workspaceAt(report.subject,'site/intl_workspace.js');
 const subjectParser=workspaceAt(report.subject,'templates/intl_workspace_state.js'),pairedParser=workspaceAt(report.subject,'site/intl_workspace_state.js');
-report.workspace_binding={workspace_sha256:hash(subjectWorkspace),paired_workspace_sha256:hash(pairedWorkspace),parser_sha256:hash(subjectParser),paired_parser_sha256:hash(pairedParser),unchanged_parser_sha256:'54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d'};
+const reviewedParserSource='2d33475adef502ab6b00b8003356c1b0ad1673c0';
+const reviewedParser=workspaceAt(reviewedParserSource,'templates/intl_workspace_state.js');
+report.workspace_binding={workspace_sha256:hash(subjectWorkspace),paired_workspace_sha256:hash(pairedWorkspace),parser_sha256:hash(subjectParser),paired_parser_sha256:hash(pairedParser),reviewed_parser_source:reviewedParserSource,reviewed_parser_sha256:hash(reviewedParser),reviewed_parser_pin_sha256:'b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1',historical_pre_gs_parser_sha256:'54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d'};
 function businessSearch(input){
   const search=new URL(input).search;if(!search)return '';
   const kept=search.slice(1).split('&').filter(part=>{const key=part.split('=')[0];try{return !['mmx_shell','mmx_generation'].includes(decodeURIComponent(key.replace(/\+/g,' ')));}catch{return true;}});
@@ -52,7 +54,7 @@ async function settledState(page,label,expectedUrl,options={}){
 const save=()=>fs.writeFileSync(path.join(out,'observation.json'),JSON.stringify(report,null,2)+'\n');
 const check=(scope,id,passed,detail={})=>report.cases.push({scope,id,passed:!!passed,...detail});
 check('binding','runtime_and_source_custody',runtime.parent_source===report.parent_source&&runtime.parent_tracked_source_clean===true&&runtime.artifact===artifact&&runtime.html_sha256===expected['/intl.html']&&buildReceipt.html_sha256===expected['/intl.html']&&buildReceipt.exit_code===0&&buildReceipt.source_commit===report.subject&&hash(subjectController)===hash(builtController)&&hash(subjectBridge)===hash(builtBridge)&&hash(subjectBridge)===hash(pairedBridge)&&hash(subjectBridge)===expected['/shared_shell_bridge.js']&&fs.readFileSync(path.join(artifact,'intl.html'),'utf8').includes(subjectController.toString().trim()),report.source_binding);
-check('binding','workspace_and_unchanged_parser_custody',hash(subjectWorkspace)===hash(pairedWorkspace)&&hash(subjectWorkspace)===expected['/intl_workspace.js']&&hash(subjectParser)===hash(pairedParser)&&hash(subjectParser)===expected['/intl_workspace_state.js']&&hash(subjectParser)===report.workspace_binding.unchanged_parser_sha256,report.workspace_binding);
+check('binding','workspace_and_reviewed_parser_custody',hash(subjectWorkspace)===hash(pairedWorkspace)&&hash(subjectWorkspace)===expected['/intl_workspace.js']&&hash(subjectParser)===hash(pairedParser)&&hash(subjectParser)===expected['/intl_workspace_state.js']&&hash(subjectParser)===report.workspace_binding.reviewed_parser_sha256&&hash(reviewedParser)===report.workspace_binding.reviewed_parser_pin_sha256,report.workspace_binding);
 const widths=matrix==='full'?[1440,768,390,320]:[1440];
 const presentations=matrix==='full'?[['en','dark'],['en','light'],['zh','dark'],['zh','light']]:[['en','dark']];
 async function actualFrame(page){
@@ -170,6 +172,37 @@ async function queryJourney(page,scope,query,profile,snapshots){
   await screenshot(page,scope+'-final');
 }
 
+// BEGIN exact cached-response custody
+function cachedResponseEvidence(row, observed) {
+  let url;
+  try { url = new URL(row.url); } catch { return null; }
+  if (row.status !== 304 || row.method !== 'GET' || row.body_error ||
+      !Number.isSafeInteger(row.sequence) || row.sequence < 1 ||
+      url.origin !== childOrigin || !expected[url.pathname]) return null;
+  const prior = observed.find(candidate => {
+    if (candidate.scope !== row.scope || candidate.url !== row.url ||
+        !Number.isSafeInteger(candidate.sequence) || candidate.sequence < 1 ||
+        candidate.sequence >= row.sequence || candidate.status !== 200 ||
+        candidate.method !== 'GET' || candidate.matches !== true ||
+        candidate.body_error || candidate.sha256 !== expected[url.pathname]) return false;
+    // If-None-Match takes precedence when both conditional headers are present.
+    if (row.if_none_match !== null) {
+      return !!candidate.etag && row.if_none_match === candidate.etag;
+    }
+    return !!row.if_modified_since && !!candidate.last_modified &&
+      row.if_modified_since === candidate.last_modified;
+  });
+  if (!prior) return null;
+  return {
+    kind: '304 revalidation of an earlier exact-URL, hash-verified 200 response',
+    prior_sequence: prior.sequence,
+    cached_sha256: prior.sha256,
+    validator: row.if_none_match !== null ? 'If-None-Match' : 'If-Modified-Since',
+    validator_value: row.if_none_match !== null ? row.if_none_match : row.if_modified_since
+  };
+}
+// END exact cached-response custody
+
 async function run(browser,width,lang,theme,query='',profile=''){
   const scope=width+'-'+lang+'-'+theme+(profile?'-'+profile:query?'-query':'');
   const context=await browser.newContext({viewport:{width,height:width===1440?900:1024},locale:lang==='zh'?'zh-CN':'en-US',colorScheme:theme});
@@ -239,7 +272,24 @@ async function run(browser,width,lang,theme,query='',profile=''){
   page.on('response',response=>{
     const u=new URL(response.url());
     if((u.origin===childOrigin&&expected[u.pathname])||u.pathname==='/api/shared-shell/status'){
-      const task=(async()=>{try{const b=await response.body();const row={scope,url:response.url(),status:response.status(),sha256:hash(b),bytes:b.length};if(expected[u.pathname])row.matches=hash(b)===expected[u.pathname];if(u.pathname==='/api/shared-shell/status')row.body=JSON.parse(b.toString());report.responses.push(row);}catch(e){report.responses.push({scope,url:response.url(),body_error:String(e)});}})();pending.push(task);contextPending.push(task);
+      const headers=response.headers();
+      const row={scope,url:response.url(),sequence:++responseSequence,status:response.status(),
+        method:response.request().method(),last_modified:headers['last-modified']||null,etag:headers.etag||null};
+      const task=(async()=>{
+        try{
+          if(row.status===304&&u.origin===childOrigin&&expected[u.pathname]){
+            const requestHeaders=await response.request().allHeaders();
+            row.if_modified_since=requestHeaders['if-modified-since']||null;
+            row.if_none_match=requestHeaders['if-none-match']||null;
+            row.body_not_read='304 responses have no representation body; custody requires an earlier exact response and matching validator';
+          }else{
+            const b=await response.body();row.sha256=hash(b);row.bytes=b.length;
+            if(expected[u.pathname])row.matches=hash(b)===expected[u.pathname];
+            if(u.pathname==='/api/shared-shell/status')row.body=JSON.parse(b.toString());
+          }
+        }catch(e){row.body_error=String(e);}
+        report.responses.push(row);
+      })();pending.push(task);contextPending.push(task);
     }
   });
   const snapshots=[];
@@ -446,8 +496,11 @@ async function run(browser,width,lang,theme,query='',profile=''){
   finally{
     await Promise.allSettled(contextPending);
     const observed=report.responses.filter(r=>r.scope===scope);
+    for(const row of observed){
+      if(row.status===304){row.revalidation=cachedResponseEvidence(row,observed);row.matches=!!row.revalidation;}
+    }
     const missing=Object.keys(expected).filter(name=>!observed.some(r=>new URL(r.url).origin===childOrigin&&new URL(r.url).pathname===name&&r.status===200&&r.matches===true));
-    const bad=observed.filter(r=>r.body_error||r.matches===false||(r.matches!==undefined&&r.status!==200));
+    const bad=observed.filter(r=>r.body_error||r.matches===false||(r.matches!==undefined&&!(r.status===200||r.status===304&&r.revalidation)));
     check(scope,'all_child_assets_bound',missing.length===0&&bad.length===0,{missing,bad});
     const statuses=observed.filter(r=>new URL(r.url).pathname==='/api/shared-shell/status');
     const statusGood=r=>r.status===200&&r.body?.enabled===true&&r.body?.protocol==='mmx.shared-shell.v1'&&r.body?.bridgeVersion==='20261018.1'&&r.body?.documentVersion==='20261018.1'&&r.body?.buildId==='development'&&r.body?.registrySha256==='5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023';

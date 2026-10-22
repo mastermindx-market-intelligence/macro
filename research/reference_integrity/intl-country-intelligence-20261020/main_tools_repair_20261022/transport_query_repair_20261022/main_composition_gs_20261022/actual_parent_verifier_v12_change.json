@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-22T19:22:17.027268+00:00",
+  "previous_observation": "candidate_parent_query_v11/observation.json",
+  "previous_result": {
+    "pass": 103,
+    "fail": 2,
+    "exit_code": 1
+  },
+  "previous_driver_sha256": "80a6c9b80259188bfff30a8bfb5b42bc34437dbc77bd076b9f4e077c52b22525",
+  "new_driver_sha256": "6c73d0ea15a647e7ea3e26e65d24250c0e4a1e3f103fb6810fbb67dca82160ca",
+  "schema": "intl.actual_parent_acceptance.v12",
+  "production_source_changed": false,
+  "corrections": [
+    "pin exact independently accepted incoming GS parser and immutable main source",
+    "classify bodyless304 only through a prior same-context exact-URL200 with expected actual body hash and an exact matching conditional validator"
+  ],
+  "unchanged_obligations": [
+    "real parent and child build custody",
+    "all required200asset coverage",
+    "no unexpected body/status/hash errors",
+    "all product/history/focus/Inspector/Scenario assertions"
+  ]
+}

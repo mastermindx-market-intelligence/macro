@@ -1,0 +1,144 @@
+{
+  "schema": "intl.response_custody_controls.v1",
+  "recorded_at": "2026-10-22T19:23:02.498Z",
+  "synthetic_controls": true,
+  "actual_browser_execution": false,
+  "driver_sha256": "6c73d0ea15a647e7ea3e26e65d24250c0e4a1e3f103fb6810fbb67dca82160ca",
+  "control_sha256": "7d5fe198c9ef47104e4a6dbf8712c138dd8d2ae18a6e617e43d3f87d364ae0df",
+  "cases": [
+    {
+      "name": "matching_last_modified",
+      "expected_qualified": true,
+      "qualified": true,
+      "pass": true
+    },
+    {
+      "name": "matching_etag",
+      "expected_qualified": true,
+      "qualified": true,
+      "pass": true
+    },
+    {
+      "name": "etag_precedence_over_date",
+      "expected_qualified": true,
+      "qualified": true,
+      "pass": true
+    },
+    {
+      "name": "no_prior_response",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "different_scope",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "different_exact_query",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "different_origin",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "wrong_body_hash",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "unmatched_prior",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "prior_has_body_error",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "missing_validator",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "different_modified_since",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "bad_etag_cannot_use_matching_date",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "redirect_is_not_revalidation",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "non_get_revalidation",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "non_get_prior",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "future_prior",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "missing_prior_sequence",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "missing_revalidation_sequence",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "only_prior_304",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "failed_header_capture",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    },
+    {
+      "name": "prior_validator_absent",
+      "expected_qualified": false,
+      "qualified": false,
+      "pass": true
+    }
+  ],
+  "passed": 22,
+  "failed": 0
+}
