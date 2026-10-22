@@ -85,6 +85,26 @@ test('deep link binds one exact capture tuple in cold and cached catalogs',()=>{
  assert.equal(h.deepLinkMismatch({mode:'historical'},c),'');
 });
 
+test('only a complete historical/current reference can dispatch to the exact endpoint without a catalog',()=>{
+ const e=fixture.examples.retained_historical,i=intent(e,'historical'),cu=fixture.examples.retained_current;
+ assert.equal(h.completeCompareRef(i),true);
+ assert.equal(h.completeCompareRef(intent(cu,'current')),true);
+ for (const key of ['query','subject','gen','genSha','method','context','cutoff']) {
+  const partial={...i};delete partial[key];
+  assert.equal(h.completeCompareRef(partial),false,'a missing '+key+' must go back to the catalog');
+ }
+ assert.equal(h.completeCompareRef({...i,mode:'saved'}),false,'saved output still needs its catalog capture id');
+ assert.equal(h.completeCompareRef({...i,mode:'current',method:cu.body.method_spec.method_spec_id}),true);
+ for (const broken of [{genSha:'zz'},{genSha:''},{genSha:64},{cutoff:'2026-08-20T12:00:00'},{cutoff:'2026-02-30T00:00:00Z'},
+   {query:'mm query with spaces'},{method:''},{context:'mmctx_'+('x'.repeat(200))}]) {
+  assert.equal(h.completeCompareRef({...i,...broken}),false,'malformed '+Object.keys(broken)[0]);
+ }
+ assert.equal(h.completeCompareRef(null),false);
+ assert.equal(h.completeCompareRef(undefined),false);
+ assert.equal(h.completeCompareRef({}),false);
+ assert.equal(h.completeCompareRef({...i,mode:'not-a-mode'}),false);
+});
+
 function savedPair() {
  const e=fixture.examples.saved,q=e.request.query;
  const entry=h.normalizeCatalog(fixture.examples.catalog_saved.body).entries.find(v=>v.contextId===q.context_id);

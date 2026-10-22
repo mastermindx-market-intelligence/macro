@@ -67,6 +67,7 @@
      how the two themes should sit. #3a4150 lands containers at 1.56–1.85 across
      the estate's dark surfaces, the same perceptual band as light. */
   --line: #3a4150;
+  --line-quiet: #272C35;
   --q1: #2e9e4f; --q2: #d4a017; --q3: #d04545; --q4: #3f78d8;
   --warn: #e0a030; --act: #e05555; --ok: #3da564;
   /* Freshness/recency snapshot of --ok, computed HERE (unremapped). It inherits
@@ -246,6 +247,7 @@ html[data-theme="light"] {
      (1.6) and the raised dark hairline below, without turning row rules into a
      grid. */
   --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --line-quiet: #E2E6EC;
   --q1: #1f8b41; --q2: #b07d05; --q3: #c12f2f; --q4: #2f63c4;
   --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
   --fresh-ok: var(--ok);
@@ -3466,3 +3468,11 @@ html[data-theme="light"] .mrs-pop{
   .mrs-caveat{ justify-self:start; }
   .mrs-pop{ left:0; right:auto; }
 }
+/* R7 Wave A (2026-10-21), OQ8 repair — add-only. --warn is the series/alert hue,
+   not a text ink: the two earlier rules that paint risk-tier text in the raw hue
+   (the .sg-wx line and the .sx-vw-tier line above) stay byte-identical; repeating
+   their selectors here with the readable ink token wins as the later rule at
+   equal specificity, in both themes. */
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--ink-warn, var(--warn));}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--ink-warn, var(--warn));}
+.nowrap{white-space:nowrap}

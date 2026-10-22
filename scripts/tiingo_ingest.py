@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.tiingo_archive import (
     Archive, BOATS_WS, DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError,
-    collect_one, decode_boats, read_key, request_path, symbol_path, utc_now,
+    collect_one, decode_boats, read_key, recorded_request_path, request_path, symbol_path, utc_now,
 )
 
 LOG = logging.getLogger("tiingo_ingest")
@@ -231,7 +231,7 @@ def plan_page(tasks: list[Task], *, offset: int = 0, limit: int = 25,
     counts: dict[str, int] = {}
     for index, task in enumerate(tasks):
         entry = {"ordinal": index, "source": task.source, "symbol": task.symbol,
-                 "request_path": request_path(task.source, task.symbol, task.params)}
+                 "request_path": recorded_request_path(task.source, task.symbol, task.params)}
         hasher.update((json.dumps(entry, sort_keys=True, separators=(",", ":")) + "\n").encode())
         counts[task.source] = counts.get(task.source, 0) + 1
         if offset <= index < offset + limit:
