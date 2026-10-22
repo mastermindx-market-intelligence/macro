@@ -168,7 +168,7 @@ EXCHANGE_WORDS = {
 
 # Plain words for the document type behind a link's source key (Tier 1).
 SOURCE_LABELS = {
-    "sec": ("SEC filing", "SEC 申报文件"),
+    "sec": ("SEC filing", "SEC 披露文件"),
     "manual": ("Company source", "公司来源"),
 }
 DEFAULT_SOURCE_LABEL = ("Company source", "公司来源")

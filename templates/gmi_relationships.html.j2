@@ -16,13 +16,13 @@
 {% set E = model.edges | length %}
 {% if model.edges_state == 'empty' %}
 {% set sub_en = 'Links a company names in its own filings. None documented yet.' %}
-{% set sub_zh = '公司在自身申报文件中披露的关联。目前尚无记录。' %}
+{% set sub_zh = '公司在自身披露文件中写明的关联。目前尚无记录。' %}
 {% elif E == 1 %}
 {% set sub_en = 'Links a company names in its own filings. One documented so far.' %}
-{% set sub_zh = '公司在自身申报文件中写明的关联。目前已记录一条。' %}
+{% set sub_zh = '公司在自身披露文件中写明的关联。目前已记录一条。' %}
 {% else %}
 {% set sub_en = 'Links a company names in its own filings. ' ~ E ~ ' documented so far.' %}
-{% set sub_zh = '公司在自身申报文件中写明的关联。目前已记录 ' ~ E ~ ' 条。' %}
+{% set sub_zh = '公司在自身披露文件中写明的关联。目前已记录 ' ~ E ~ ' 条。' %}
 {% endif %}
 {{ head([('Research','研究'),('Relationships','关系')], 'Documented relationships', '已记录的关系', sub_en, sub_zh, side=asof(model.asof)) }}
 {#- identity helpers: issuer id -> display name, else the ticker (model rule) -#}
@@ -101,7 +101,7 @@
 {% macro cov_panel() -%}
 <section class="gmi-panel">{{ sec('How complete is this?', '覆盖程度') }}
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
-<div class="mx-empty-why">{{ t('Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前仅读取了一家公司的申报文件。其他处为零，表示尚未记录，而非不存在。') }}</div></div></section>
+<div class="mx-empty-why">{{ t('Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.', '目前仅读取了一家公司的披露文件。其他处为零，表示尚未记录，而非不存在。') }}</div></div></section>
 {%- endmacro %}
 {% if E %}
 {% set edge = model.edges[0] %}
@@ -133,19 +133,19 @@
 <div><dt>{{ t('Direction', '方向') }}</dt><dd>{% if vb %}<span class="l-en">{{ party_a ~ vb[2] ~ party_b }}</span><span class="l-zh">{{ party_a ~ vb[3] ~ party_b ~ vb[4] }}</span>{% else %}{{ unset }}{% endif %}</dd></div>
 {% set ap = edge.asserted_period %}
 <div><dt>{{ t('Period covered', '覆盖期间') }}</dt><dd>{% if ap and ap.start and ap.end %}{{ t(mth(ap.start) ~ ' – ' ~ mth(ap.end), mth_zh(ap.start) ~ ' – ' ~ mth_zh(ap.end)) }}{% else %}{{ unset }}{% endif %}</dd></div>
-<div><dt>{{ t('Conditions', '条件') }}</dt><dd>{% if conds == 0 %}{{ t('None stated in the filing', '申报文件未列明条件') }}{% else %}{{ t(conds ~ ' condition stated in the filing', '申报文件列明 ' ~ conds ~ ' 项条件') }}{% endif %}</dd></div>
+<div><dt>{{ t('Conditions', '条件') }}</dt><dd>{% if conds == 0 %}{{ t('None stated in the filing', '披露文件未列明条件') }}{% else %}{{ t(conds ~ ' condition stated in the filing', '披露文件列明 ' ~ conds ~ ' 项条件') }}{% endif %}</dd></div>
 <div><dt>{{ t('First known', '首次获知') }}</dt><dd>{{ d(edge.first_known_at) if edge.first_known_at else unset }}</dd></div>
 <div><dt>{{ t('Last stated', '最近一次陈述') }}</dt><dd>{{ d(edge.last_asserted_at) if edge.last_asserted_at else unset }}</dd></div>
 <div><dt>{{ t('Last checked', '最近核对') }}</dt><dd>{{ d(edge.last_assessed_at) if edge.last_assessed_at else unset }}</dd></div>
 <div><dt>{{ t('Source', '来源') }}</dt><dd>{% if src %}<a href="#excerpt">{{ src.form }} <span class="gmi-mono">{{ src.accession }}</span> {{ ic('ext', 14) }}</a>{% else %}{{ t('Not in the source', '来源未披露') }}{% endif %}</dd></div></dl></div></div>
 {% set src0 = edge.source_refs[0] if edge.source_refs else none %}
 {% set ex_granted = edge.get('rights', {}).get('excerpt_display') == 'GRANTED' and edge.get('excerpt_text') %}
-<details class="mx-disc" id="excerpt"><summary>{{ t('The filing’s words', '申报文件原文') }}{% if src %}<small>{{ src.form }} <span class="gmi-mono">{{ src.accession }}</span></small>{% endif %}</summary>
+<details class="mx-disc" id="excerpt"><summary>{{ t('The filing’s words', '披露文件原文') }}{% if src %}<small>{{ src.form }} <span class="gmi-mono">{{ src.accession }}</span></small>{% endif %}</summary>
 <div class="mx-disc-body">{% if ex_granted %}
 <blockquote class="gmi-quote"><span class="gmi-quote-lead">{{ t(model.deck.lead_in.en, model.deck.lead_in.zh) }}</span>“{{ edge.excerpt_text }}”</blockquote>
 {% else %}
-<p class="gmi-note gmi-note--lead">{{ t('Display rights for this figure are still being confirmed. The source filing is linked.', '该数值的展示权限仍在确认中。已附来源申报文件链接。') }}</p>
-{% if src0 and src0.url %}<div><a class="gmi-btn gmi-btn--quiet" href="{{ src0.url }}" rel="noopener" target="_blank">{{ t('Open the filing', '打开申报文件') }}{{ ic('ext', 16) }}</a></div>{% endif %}
+<p class="gmi-note gmi-note--lead">{{ t('Display rights for this figure are still being confirmed. The source filing is linked.', '该数值的展示权限仍在确认中。已附来源披露文件链接。') }}</p>
+{% if src0 and src0.url %}<div><a class="gmi-btn gmi-btn--quiet" href="{{ src0.url }}" rel="noopener" target="_blank">{{ t('Open the filing', '打开披露文件') }}{{ ic('ext', 16) }}</a></div>{% endif %}
 {% endif %}
 <p class="gmi-foot gmi-foot--gap">{{ t(model.deck.footer.en, model.deck.footer.zh) }}{% if src %} <span class="gmi-mono">{{ src.accession }} · bytes {{ src.byte_start|num }}–{{ src.byte_end|num }}</span>{% endif %}</p></div></details>
 </div></section>
@@ -183,7 +183,7 @@
 <section class="gmi-panel">{{ sec('Where this link leads', '关联路径') }}
 {% set ra = ROLES.get(edge.direction.from_role) %}
 {% set rb = ROLES.get(edge.direction.to_role) %}
-{% if vb and conds == 0 %}{% set e1 = t(vb[0] ~ ' · no condition stated', vb[1] ~ ' · 未列明条件') %}{% elif vb %}{% set e1 = t(vb[0] ~ ' · stated in the filing', vb[1] ~ ' · 申报文件列明条件') %}{% else %}{% set e1 = '' %}{% endif %}
+{% if vb and conds == 0 %}{% set e1 = t(vb[0] ~ ' · no condition stated', vb[1] ~ ' · 未列明条件') %}{% elif vb %}{% set e1 = t(vb[0] ~ ' · stated in the filing', vb[1] ~ ' · 披露文件列明条件') %}{% else %}{% set e1 = '' %}{% endif %}
 {{ chain([
     dict(pip='doc', lvl=t(ra[0], ra[1]) if ra else unset, name=t(party_a), edge=e1),
     dict(cls=('to-none',), pip='doc', lvl=t(rb[0], rb[1]) if rb else unset, name=t(party_b), edge=t('next step', '下一步')),
@@ -193,7 +193,7 @@
 {% else %}
 <section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line" id="rel-h">{{ t('No documented relationships yet', '尚无已记录的关系') }}</div>
-<p class="mx-empty-why">{{ t('The company’s themes and filings still show.', '该公司的主题与申报文件仍可查看。') }}</p>
+<p class="mx-empty-why">{{ t('The company’s themes and filings still show.', '该公司的主题与披露文件仍可查看。') }}</p>
 {% if model.theme_links %}<div><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}{{ model.theme_links[0].href }}">{{ t('Open the company', '打开公司页') }}{{ ic('arrow', 16) }}</a></div>{% endif %}
 </div>
 </div></section>

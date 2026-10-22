@@ -111,5 +111,5 @@
 <div><dt>{{ t('Theme links', '主题关联') }}</dt><dd class="gmi-muted">{{ t('Changes are not tracked yet.', '变更尚未跟踪。') }}</dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel">{{ sec('Accuracy check', '准确性抽查') }}
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
 <div class="mx-empty-why">{{ t('Needs 200 admitted links (100 US, 100 China) before a sample is drawn. Now ' ~ N ~ '.', '需要200条获准纳入的关联（美国100条、中国100条）后才会抽样。目前为' ~ N ~ '。') }}</div></div></section></div></div>
-<p class="gmi-foot">{{ t('Sources: company filings; exchange symbol directory, ' ~ (model.asof|de) ~ '; review ledger, ' ~ (model.provenance.built_at_utc[:10]|de) ~ '.', '来源：公司申报文件；交易所证券代码目录（' ~ (model.asof|dz) ~ '）；审核记录（' ~ (model.provenance.built_at_utc[:10]|dz) ~ '）。') }}</p>
+<p class="gmi-foot">{{ t('Sources: company filings; exchange symbol directory, ' ~ (model.asof|de) ~ '; review ledger, ' ~ (model.provenance.built_at_utc[:10]|de) ~ '.', '来源：公司披露文件；交易所证券代码目录（' ~ (model.asof|dz) ~ '）；审核记录（' ~ (model.provenance.built_at_utc[:10]|dz) ~ '）。') }}</p>
 {% endblock %}

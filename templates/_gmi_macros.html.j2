@@ -75,7 +75,7 @@
 {%- set none_en = " None has been admitted yet." if model.totals.admitted_micros == 0 else "" -%}
 {%- set none_zh = "目前尚无公司获准纳入。" if model.totals.admitted_micros == 0 else "" -%}
 {{ tip("A company joins a micro-theme only after a curator admits it from its own filings." ~ none_en,
-       "公司须经审核员依据其自身申报文件批准后才纳入细分主题。" ~ none_zh) }}
+       "公司须经审核员依据其自身披露文件批准后才纳入细分主题。" ~ none_zh) }}
 {%- endmacro %}
 
 {% macro tip_held() -%}

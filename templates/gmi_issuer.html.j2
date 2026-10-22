@@ -165,8 +165,8 @@
 <div><dt>text_sha256</dt><dd class="tnum">{{ L.source.text_sha256 }}</dd></div>
 </dl>
 {%- if L.excerpt_state %}
-<p class="gmi-note">{{ t("Display rights for this figure are still being confirmed. The source filing is linked.", "该数值的展示权限仍在确认中。已附来源申报文件链接。") }}</p>
-{% if L.source.url_if_public %}<a class="gmi-btn gmi-btn--quiet" href="{{ L.source.url_if_public }}" rel="noopener" target="_blank">{{ t("Open the filing", "打开申报文件") }} {{ ic("ext", 16) }}</a>{% endif %}
+<p class="gmi-note">{{ t("Display rights for this figure are still being confirmed. The source filing is linked.", "该数值的展示权限仍在确认中。已附来源披露文件链接。") }}</p>
+{% if L.source.url_if_public %}<a class="gmi-btn gmi-btn--quiet" href="{{ L.source.url_if_public }}" rel="noopener" target="_blank">{{ t("Open the filing", "打开披露文件") }} {{ ic("ext", 16) }}</a>{% endif %}
 {%- endif %}
 </div></details>
 <p class="gmi-note">{{ t("Nothing here is inferred beyond the cited text.", "以上内容均来自引文，未作推断。") }}</p>
