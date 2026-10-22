@@ -20,7 +20,6 @@ from __future__ import annotations
 import datetime
 import hashlib
 import json
-import sys
 from collections import Counter, OrderedDict
 from pathlib import Path
 
@@ -142,6 +141,35 @@ def _case_url(case: dict | None, source_key: str | None,
     return None
 
 
+# Display words for the market identifier code carried inside the resolver's
+# issuer id (ISS:<CC>-<MIC>-<TICKER>). Read-only projection of an id the
+# resolver already owns; an unlisted MIC renders the ticker alone (GAP 21).
+EXCHANGE_WORDS = {
+    "XNAS": "Nasdaq", "XNYS": "NYSE", "XASE": "NYSE American",
+    "ARCX": "NYSE Arca", "BATS": "Cboe BZX", "XHKG": "HKEX",
+    "XSHG": "SSE", "XSHE": "SZSE",
+}
+
+# Plain words for the document type behind a link's source key (Tier 1).
+SOURCE_LABELS = {
+    "sec": ("SEC filing", "SEC 申报文件"),
+    "manual": ("Company source", "公司来源"),
+}
+DEFAULT_SOURCE_LABEL = ("Company source", "公司来源")
+
+
+def _exchange_of(issuer_id: str | None) -> str | None:
+    if not issuer_id or not issuer_id.startswith("ISS:"):
+        return None
+    parts = issuer_id[4:].split("-")
+    return EXCHANGE_WORDS.get(parts[1]) if len(parts) >= 3 else None
+
+
+def _source_label(source_key: str | None) -> tuple[str, str]:
+    prefix = (source_key or "").split(":", 1)[0]
+    return SOURCE_LABELS.get(prefix, DEFAULT_SOURCE_LABEL)
+
+
 def _ticker_of(node_or_issuer_id: str) -> str:
     """co:us:MU -> MU; ISS:US-XNAS-NVDA -> NVDA (last segment after ':','-')."""
     tail = str(node_or_issuer_id).rsplit(":", 1)[-1]
@@ -217,6 +245,8 @@ def _link(row: dict, micro_names: dict, case: dict | None) -> dict:
                      "end_byte": span.get("end_byte")},
             "text_sha256": span.get("text_sha256"),
             "url_if_public": _case_url(case, source_key, published_date),
+            "label_en": _source_label(source_key)[0],
+            "label_zh": _source_label(source_key)[1],
         },
         "emission_state": emission_state,
         "graph_membership_use": use_q.get("graph_membership_use"),
@@ -255,11 +285,13 @@ def _issuers(repo_root: Path, micro_names: dict, asof: str | None) -> list[dict]
             if counterparty:
                 cp_name, _ = _display_name(repo_root, _ticker_of(counterparty), asof)
                 link["scope"]["counterparty_display_name"] = cp_name
+        identity = _identity_fields(repo_root, node_id, rows[-1], asof)
         issuers.append({
             "node_id": node_id,
             "ticker": ticker,
             "market": market,
-            **_identity_fields(repo_root, node_id, rows[-1], asof),
+            **identity,
+            "exchange": _exchange_of(identity.get("issuer_id")),
             "display_name": display_name,
             "display_name_source": name_source,
             "links": links,
@@ -312,6 +344,7 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
             "vcp": xm.get("value_chain_position"),
             "asserted_on": row["asserted_on"],
             "primary_path": primary_path,
+            "paths": [path.split(">") for path in row["parent_paths"]],
             "path_count": len(row["parent_paths"]),
             "counts": counts,
             "admitted": admitted,
@@ -323,20 +356,68 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "every micro must land in exactly one category"
 
     # -- cats (file order) --------------------------------------------------
-    theme_parent = {p["child"]: p["parent"] for p in hierarchy["parents"]}
+    # The crosswalk `parents` list is the only ordering authority. A theme can
+    # sit under several categories (multi-parent), so a theme is listed under a
+    # category by the micros whose PRIMARY path runs through that pair; a
+    # (category, theme) pair holding no primary micro is not listed there
+    # (G-UI-16). Sub-themes keep the parents order and are listed even when
+    # empty (the specimen's empty-subs summary row reads them).
+    children_of: "OrderedDict[str, list[str]]" = OrderedDict()
+    parents_of: "OrderedDict[str, list[str]]" = OrderedDict()
+    for edge in hierarchy["parents"]:
+        children_of.setdefault(edge["parent"], []).append(edge["child"])
+        parents_of.setdefault(edge["child"], []).append(edge["parent"])
+    cat_ids = set(cat_order)
+    theme_ids = set(x_themes)
+    theme_parents = {tid: [pid for pid in pids if pid in cat_ids]
+                     for tid, pids in parents_of.items() if tid in theme_ids}
+
+    def _theme_names(tid: str) -> tuple[str, str]:
+        node = x_themes.get(tid) or {}
+        return (node.get("name_en") or node.get("en") or tid,
+                node.get("name_zh") or node.get("zh") or "")
+
     cats = []
     for cat in cat_list:
         cid = cat["id"]
-        themes = [{"id": tid,
-                   "en": t.get("name_en") or t.get("en", tid),
-                   "zh": t.get("name_zh") or t.get("zh", "")}
-                  for tid, t in sorted(x_themes.items())
-                  if theme_parent.get(tid) == cid]
+        in_cat = cat_micro_ids[cid]
+        theme_order = [tid for tid in children_of.get(cid, []) if tid in theme_ids]
+        for mid in in_cat:  # a primary path through a pair the parents list lacks
+            tid = micros[mid]["primary_path"][1]
+            if tid not in theme_order:
+                theme_order.append(tid)
+        themes = []
+        for tid in theme_order:
+            in_theme = [mid for mid in in_cat if micros[mid]["primary_path"][1] == tid]
+            if not in_theme:
+                continue
+            direct = [mid for mid in in_theme if len(micros[mid]["primary_path"]) == 3]
+            sub_order = [sid for sid in children_of.get(tid, []) if sid in x_subs]
+            for mid in in_theme:
+                path = micros[mid]["primary_path"]
+                if len(path) == 4 and path[2] not in sub_order:
+                    sub_order.append(path[2])
+            subs = []
+            for sid in sub_order:
+                sub_node = x_subs.get(sid) or {}
+                subs.append({"id": sid,
+                             "en": sub_node.get("name_en") or sid,
+                             "zh": sub_node.get("name_zh") or "",
+                             "micros": [mid for mid in in_theme
+                                        if len(micros[mid]["primary_path"]) == 4
+                                        and micros[mid]["primary_path"][2] == sid]})
+            assert len(direct) + sum(len(sub["micros"]) for sub in subs) == len(in_theme)
+            en, zh = _theme_names(tid)
+            themes.append({"id": tid, "en": en, "zh": zh,
+                           "micro_count": len(in_theme),
+                           "subs": subs,
+                           "direct_micros": direct})
+        assert sum(theme["micro_count"] for theme in themes) == len(in_cat)
         cats.append({"id": cid,
                      "en": cat["name_en"],
                      "zh": cat["name_zh"],
                      "themes": themes,
-                     "micros": cat_micro_ids[cid]})
+                     "micros": in_cat})
 
     # -- totals / counts ----------------------------------------------------
     held = sum(1 for m in micros.values() if m["kind"] == "held")
@@ -356,6 +437,28 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
 
     # -- issuers (activity ledger) ------------------------------------------
     issuers = _issuers(repo_root, micro_names, asof)
+    theme_links = []
+    for issuer in issuers:
+        for link in issuer["links"]:
+            micro = micros.get(link["micro_id"]) or {}
+            admitted = (link["curation"]["decision"] == "ACCEPT"
+                        and micro.get("admitted", 0) > 0)
+            knowledge = link["clock_states"].get("knowledge") or {}
+            first_seen = ((knowledge.get("value") or "")[:10]
+                          if knowledge.get("state") == "KNOWN"
+                          else link["source"]["published_date"])
+            theme_links.append({
+                "kind": "adm" if admitted else "held",
+                "ticker": issuer["ticker"],
+                "name": issuer["display_name"],
+                "micro_id": link["micro_id"],
+                "micro_en": link["micro_en"],
+                "micro_zh": link["micro_zh"],
+                "first_seen": first_seen,
+                "href": f"gmi-issuer-{issuer['ticker'].lower()}.html",
+            })
+    extended_dates = sorted({row["asserted_on"] for row in expansion})
+    extended_on = extended_dates[-1] if extended_dates else None
 
     # -- edges / deck: other programs own these; read IF PRESENT -------------
     edges_path = repo_root / EDGES_PATH
@@ -407,7 +510,7 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
     # -- provenance ----------------------------------------------------------
     snapshot_path = next((entry["path"] for entry in report.get("inputs", [])
                           if entry.get("role") == "symbol_directory"), None)
-    proof_command = (f"TZ=UTC {_python_executable()} -m "
+    proof_command = ("TZ=UTC python3 -m "
                      f"scripts.gmi_coverage_proof --symbol-directory "
                      f"{snapshot_path} --out <tmp>")
     provenance = {
@@ -440,10 +543,13 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "edges": edges,
         "edges_state": "present" if edges_path.exists() else "empty",
         "deck": deck,
+        # relationships package manifest (counts by species); none until the
+        # relationships store lands — only the S3 "edges present" branch reads it
+        "edge_package": None,
         "card_payloads": card_payloads,
         "provenance": provenance,
+        "theme_parents": theme_parents,
+        "theme_links": theme_links,
+        "extended_on": extended_on,
+        "asof": asof or (Path(snapshot_path).stem if snapshot_path else None),
     }
-
-
-def _python_executable() -> str:
-    return sys.executable

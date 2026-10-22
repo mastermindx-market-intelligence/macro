@@ -12,6 +12,11 @@ refuses such an ``--out``: a debug artifact must never masquerade as data.
 
 Usage: python -m scripts.build_gmi_explorer
        python scripts/build_gmi_explorer.py --coverage-report DIR --site-dir DIR
+       python scripts/build_gmi_explorer.py --model-in MODEL.json --site-dir DIR
+
+``render_site(model, site_dir)`` renders every page from a model dict, so a
+saved model (``--model-in``) or a test variant (:mod:`scripts.gmi_explorer.variants`)
+renders through exactly the production path.
 """
 from __future__ import annotations
 
@@ -24,13 +29,12 @@ import sys
 import tempfile
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts.gmi_explorer.model import build_model  # noqa: E402
+from scripts.gmi_explorer.present import make_env  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_gmi_explorer")
@@ -65,7 +69,8 @@ def _run_proof() -> tuple[dict, dict, str]:
     passed — the proof does not de-duplicate and every row would count twice.
     """
     snapshot = _newest_snapshot()
-    argv = [sys.executable, "-m", "scripts.gmi_coverage_proof",
+    # display form: "python3", never the interpreter's absolute host path
+    argv = ["python3", "-m", "scripts.gmi_coverage_proof",
             "--symbol-directory", str(snapshot.relative_to(ROOT)),
             "--out", "<tmp>"]
     env = dict(os.environ, TZ="UTC")
@@ -92,59 +97,38 @@ def _model_out_guard(path: Path) -> None:
             raise SystemExit(f"--model-out {path} is under {boundary}/; refusing")
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--coverage-report", default=None,
-                        help="directory holding coverage_report.json (skips the proof run)")
-    parser.add_argument("--manifest", default=None,
-                        help="UNIVERSE_MANIFEST.json beside --coverage-report")
-    parser.add_argument("--site-dir", default=None,
-                        help="target site directory (default config storage.site_dir)")
-    parser.add_argument("--model-out", default=None,
-                        help="debug dump of the model JSON (never under data/ or site/)")
-    args = parser.parse_args(argv)
-
-    if args.coverage_report:
-        report_dir = Path(args.coverage_report)
+def build_live_model(coverage_report: str | Path | None = None,
+                     manifest: str | Path | None = None) -> dict:
+    """The production model: from a saved proof directory, or a fresh proof run."""
+    if coverage_report:
         report = json.loads(
-            (report_dir / "coverage_report.json").read_text(encoding="utf-8"))
-        manifest = None
-        if args.manifest:
-            manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
-        proof_command = None
-    else:
-        report, manifest, proof_command = _run_proof()
+            (Path(coverage_report) / "coverage_report.json").read_text(encoding="utf-8"))
+        manifest_doc = None
+        if manifest:
+            manifest_doc = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        return build_model(report, manifest_doc, repo_root=ROOT)
+    report, manifest_doc, proof_command = _run_proof()
+    model = build_model(report, manifest_doc, repo_root=ROOT)
+    model["provenance"]["proof_command"] = proof_command
+    return model
 
-    model = build_model(report, manifest, repo_root=ROOT)
-    if proof_command:
-        model["provenance"]["proof_command"] = proof_command
 
-    if args.model_out:
-        out = Path(args.model_out)
-        _model_out_guard(out)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(model, indent=1, sort_keys=True, ensure_ascii=False)
-                       + "\n", encoding="utf-8")
-        log.info("wrote model %s", out)
-
-    site = Path(args.site_dir) if args.site_dir else ROOT / config.load()["storage"]["site_dir"]
+def render_site(model: dict, site_dir: str | Path) -> list[Path]:
+    """Render every explorer page (and sync the paired assets) from ``model``."""
+    site = Path(site_dir)
     site.mkdir(parents=True, exist_ok=True)
-
-    env = Environment(
-        loader=FileSystemLoader(str(ROOT / "templates")),
-        autoescape=select_autoescape(["html", "j2"]),
-        undefined=StrictUndefined,
-    )
+    env = make_env(model, ROOT / "templates")
+    written: list[Path] = []
     for page, (template, page_key) in TEMPLATES.items():
         write_page(site / page, env.get_template(template).render(
             model=model, nav_prefix="", page_key=page_key))
-        log.info("wrote %s", site / page)
+        written.append(site / page)
     template, page_key = ISSUER_TEMPLATE
     for issuer in model["issuers"]:
         page = f"gmi-issuer-{issuer['ticker'].lower()}.html"
         write_page(site / page, env.get_template(template).render(
             model=model, nav_prefix="", page_key=page_key, issuer=issuer))
-        log.info("wrote %s", site / page)
+        written.append(site / page)
 
     for name in PAIRED_ASSETS:
         source = ROOT / "templates" / name
@@ -155,9 +139,41 @@ def main(argv: list[str] | None = None) -> int:
         if not target.exists() or target.read_bytes() != source.read_bytes():
             target.write_bytes(source.read_bytes())
             log.info("synced %s", name)
+    return written
 
-    log.info("gmi explorer: %d pages at %s",
-             len(TEMPLATES) + len(model["issuers"]), site)
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--coverage-report", default=None,
+                        help="directory holding coverage_report.json (skips the proof run)")
+    parser.add_argument("--manifest", default=None,
+                        help="UNIVERSE_MANIFEST.json beside --coverage-report")
+    parser.add_argument("--model-in", default=None,
+                        help="render from a saved model JSON (skips proof and model build)")
+    parser.add_argument("--site-dir", default=None,
+                        help="target site directory (default config storage.site_dir)")
+    parser.add_argument("--model-out", default=None,
+                        help="debug dump of the model JSON (never under data/ or site/)")
+    args = parser.parse_args(argv)
+
+    if args.model_in:
+        if args.coverage_report or args.manifest:
+            parser.error("--model-in excludes --coverage-report/--manifest")
+        model = json.loads(Path(args.model_in).read_text(encoding="utf-8"))
+    else:
+        model = build_live_model(args.coverage_report, args.manifest)
+
+    if args.model_out:
+        out = Path(args.model_out)
+        _model_out_guard(out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(model, indent=1, sort_keys=True, ensure_ascii=False)
+                       + "\n", encoding="utf-8")
+        log.info("wrote model %s", out)
+
+    site = Path(args.site_dir) if args.site_dir else ROOT / config.load()["storage"]["site_dir"]
+    written = render_site(model, site)
+    log.info("gmi explorer: %d pages at %s", len(written), site)
     return 0
 
 
