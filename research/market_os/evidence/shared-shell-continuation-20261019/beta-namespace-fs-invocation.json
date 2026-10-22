@@ -1,0 +1,17 @@
+{
+  "schema": "mastermind.attended.beta_namespace_invocation.v1",
+  "started_at": "2026-10-20T03:03:51.849884+00:00",
+  "source_sha256": "f3c6e3b9e8f8e34b43d8cba1c0779e6feeb09f885cfb354996a9c75cb605d059",
+  "source_bytes": 48345,
+  "binding_sha256": "fd9be964fdd173048acd679051e15cfef906aff6c0a32b2bbb0048a136c90148",
+  "remote_probe_path": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm/beta-namespace-fs-probe-f3c6e3b9.py",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "postread_sha256": "d18c7b0ffe2c7dbe988a5fcdf96a66385df66b27ba0307d55e38360fb92286f2",
+  "synthetic_validation_log_sha256": "a6b8cb995132634ef05ac3e06519d28216314a61372f255bcf3d928894649c7d",
+  "source_review": "Root read full R1 plus complete R2/final deltas; independent beta_recovery_counsel NONBLOCKING at exact f3c6e3b9; retained exact-source helper log has12 PASS groups, no operational proof inferred.",
+  "host_effect_scope": "One root-private diagnostic artifact and one exclusive beta cache probe file with exact cleanup. No bootstrap, restart, production write, public-data write, chmod or publication.",
+  "stage_exit": null,
+  "probe_exit": null,
+  "all_checks_pass": false
+}

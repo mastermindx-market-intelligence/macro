@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STZ-BULL-20260805",
-  "asof": "2026-10-14",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.1,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.9,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-21",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 30.0,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -30.0,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 90.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.087,
+    "dist_to_stop_r": 0.927,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 144.4,
-    "p1": -0.7245,
-    "p2": -0.3623,
+    "horizon_pct_used": 160.0,
+    "p1": -0.0489,
+    "p2": -0.0245,
     "p3": null,
-    "move_r": -1.087,
+    "move_r": -0.073,
     "mfe_r": 0.467,
     "mae_r": -2.284
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.200006103515619,
@@ -45,14 +45,6 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 65,
-  "tau": 1.4444,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 72,
+  "tau": 1.6
 }

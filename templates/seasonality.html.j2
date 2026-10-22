@@ -6,9 +6,24 @@
 {%- endmacro %}
 {% set ML = ['J','F','M','A','M','J','J','A','S','O','N','D'] %}
 {% macro mosaic(win) -%}
-<table class="mosaic"><thead><tr><th class="mosf">{{ t('Factor','因子') }}</th>{% for m in range(1,13) %}<th class="mosh" data-m="{{ m }}">{{ ML[m-1] }}</th>{% endfor %}</tr></thead><tbody>
-{% for f in seas.factors %}<tr><td class="mosf">{{ t(f.label_en, f.label_zh) }}{% if f.context_only %} <span class="ctx">{{ t('ref','参考') }}</span>{% endif %}</td>
-{% for m in range(1,13) %}{% set s=(f[win] or {}).get(m) %}{% if s %}{% set a=[(s.mean|abs)/3.0,0.82]|min %}<td class="mos" data-m="{{ m }}" style="background:{{ ('rgba(35,134,54,' ~ a|round(2) ~ ')') if s.mean>0 else ('rgba(218,54,51,' ~ a|round(2) ~ ')') }}" title="{{ ML[m-1] }} · mean {{ '%+.2f'|format(s.mean) }}% · median {{ '%+.2f'|format(s.median) }}% · up {{ s.hit|int }}% (n={{ s.n }})"><span class="mm">{{ '%+.1f'|format(s.mean) }}</span><span class="mh">{{ s.hit|int }}%</span></td>{% else %}<td class="mos muted" data-m="{{ m }}">·</td>{% endif %}{% endfor %}</tr>{% endfor %}
+{% set cm = (seas.now.month if seas.now is not none and seas.now else none) -%}
+<table class="mosaic"><thead><tr><th class="mosf">{{ t('Factor','因子') }}</th>
+{%- for m in range(1,13) %}<th class="mosh{{ ' curm' if m == cm else '' }}" data-m="{{ m }}">
+{{- ML[m-1] }}</th>{% endfor %}</tr></thead><tbody>
+{% for f in seas.factors %}<tr><td class="mosf">{{ t(f.label_en, f.label_zh) }}
+{%- if f.context_only %} <span class="ctx">{{ t('ref','参考') }}</span>{% endif -%}
+{%- if f.start %} <span class="muted sm">{{ t('since ' ~ f.start,
+  '自 ' ~ f.start ~ ' 起') }}</span>{% endif %}</td>
+{% for m in range(1,13) %}{% set s=(f[win] or {}).get(m) %}
+{%- set c=' curm' if m == cm else '' %}
+{%- if s %}{% set a=[(s.mean|abs)/3.0,0.82]|min %}{% set bg=('rgba(35,134,54,' ~ a|round(2) ~ ')')
+  if s.mean>0 else ('rgba(218,54,51,' ~ a|round(2) ~ ')') %}
+{%- set ttl=ML[m-1] ~ ' · mean ' ~ ('%+.2f'|format(s.mean)) ~ '% · median '
+  ~ ('%+.2f'|format(s.median)) ~ '% · up ' ~ (s.hit|int) ~ '% (n=' ~ s.n ~ ')' -%}
+<td class="mos{{ c }}" data-m="{{ m }}" style="background:{{ bg }}" title="{{ ttl }}"
+><span class="mm">{{ '%+.1f'|format(s.mean) }}</span><span class="mh">{{ s.hit|int }}%</span></td>
+{%- else %}<td class="mos muted{{ c }}" data-m="{{ m }}">·</td>{% endif -%}
+{% endfor %}</tr>{% endfor %}
 </tbody></table>
 {%- endmacro %}
 {% macro monthbars(stats) -%}
@@ -89,7 +104,9 @@
   <div class="panel">
     <div class="topline">
       <h1>{{ t('Factor seasonality', '因子季节性') }}</h1>
-      <span class="muted sm">{{ t('which calendar months each factor STYLE has tended to pay — Ken French, ' ~ seas.factors[0].start ~ '+', '各因子风格在哪些月份历史上更易获得回报 — Ken French，' ~ seas.factors[0].start ~ ' 起') }}</span>
+      <span class="muted sm">{{ t('which calendar months each factor style has tended to pay'
+        ~ ' — Ken French monthly data, each row from its own start',
+        '各因子风格在哪些月份历史上更易获得回报 — Ken French 月度数据，每行自各自起始年月计') }}</span>
     </div>
     <p class="muted sm" style="margin:6px 0 0">{{ t(seas.disclosure_en, seas.disclosure_zh) }}</p>
     <p class="muted sm" style="margin:6px 0 0"><a href="factors.html">← {{ t('Factors & seasonality overview', '因子与季节性概览') }}</a></p>
@@ -103,6 +120,57 @@
     {% if seas.now.chip_en %}
     <span class="now-chip">{{ t(seas.now.chip_en, seas.now.chip_zh) }}</span>
     {% endif %}
+  </div>
+{% endif %}
+{% if seas.now and seas.now.factors %}
+{% set M = seas.now.month_label_en %}{% set Mz = seas.now.month_label_zh %}
+  <div class="panel">
+    <div class="secthead">
+      <h2 style="margin:0">{{ t(M ~ ', style by style', Mz ~ ' · 逐个风格') }}
+        {{ help("Each style's lean for this month by the page's own rule: tailwind = up in"
+          ~ " at least 70% of years with a positive average; headwind = up in 40% or less"
+          ~ " with a negative average; otherwise no clear lean. Graded on the last 10 years"
+          ~ " when the month has at least 8 of them, else the last 30. Descriptive context"
+          ~ " only, never part of a score.",
+          '按本页规则给出各风格本月倾向：至少 70% 的年份上涨且平均为正记为偏强；'
+          ~ '上涨年份不超过 40% 且平均为负记为偏弱；其余为无明显倾向。近 10 年样本'
+          ~ '不少于 8 个时按近 10 年判定，否则按近 30 年。仅作描述性参考，不纳入任何评分。') }}
+      </h2>
+    </div>
+    <div class="cardgrid">
+    {% for f in seas.now.factors %}
+      {% set st = f.y10 if f.window_used == 'trailing_10y' else f.y30 %}
+      {% set sk = f.streak or {} %}{% set up = (sk.sign or 0) > 0 %}
+      <div class="fcard">
+        <h3>{{ t(f.plain_en, f.plain_zh) }} <span class="badge">
+        {%- if f.verdict == 'tailwind' %}{{ t('Seasonal tailwind', '季节性偏强') }}
+        {%- elif f.verdict == 'headwind' %}{{ t('Seasonal headwind', '季节性偏弱') }}
+        {%- else %}{{ t('No clear seasonal lean', '无明显季节性倾向') }}{% endif -%}
+        </span></h3>
+        {% if st and st.n %}{% set avg = '%+.2f'|format(st.mean) %}
+        <p class="muted sm" style="margin:0">{{ t('Graded on the last ' ~ st.n ~ ' ' ~ M
+          ~ 's: average ' ~ avg ~ '%, up in ' ~ st.hit|int ~ '% of them', '按近 ' ~ st.n
+          ~ ' 个' ~ Mz ~ '判定：平均 ' ~ avg ~ '%，其中 ' ~ st.hit|int ~ '% 上涨') }}</p>
+        {% endif %}
+        {% if sk.len and sk.sign %}
+        <p class="muted sm" style="margin:4px 0 0">
+        {%- if sk.len >= 2 %}{{ t(('Up ' if up else 'Down ') ~ sk.len ~ ' ' ~ M ~ 's in a row',
+          '连续 ' ~ sk.len ~ ' 年' ~ Mz ~ ('上涨' if up else '下跌')) }}
+        {%- else %}{{ t('Last ' ~ M ~ (': up' if up else ': down'),
+          '上一个' ~ Mz ~ ('：上涨' if up else '：下跌')) }}{% endif -%}
+        </p>
+        {% endif %}
+        {% if f.recent %}
+        <details><summary class="muted sm">{{ t('The last ' ~ f.recent|length ~ ' ' ~ M
+          ~ 's, year by year', '近 ' ~ f.recent|length ~ ' 个' ~ Mz ~ '逐年明细') }}</summary>
+          <ul class="muted sm" style="margin:4px 0 0;padding-left:16px">
+          {% for r in f.recent %}<li>{{ r.year }} {{ '%+.2f'|format(r.ret) }}%</li>{% endfor %}
+          </ul>
+        </details>
+        {% endif %}
+      </div>
+    {% endfor %}
+    </div>
   </div>
 {% endif %}
 
@@ -127,8 +195,15 @@
 
   <div class="panel">
     <p class="muted" style="font-size:12px;margin:0">{{ t(
-      'Source: ' ~ seas.source ~ ', as of ' ~ seas.as_of ~ '. Factors mapping to one of our live legs (Value→HML, Profitability→RMW, Investment→CMA) are shown first; Momentum, Size and Market are reference styles we do not rank cross-sectionally. Seasonality is descriptive context only and is deliberately kept out of every calibrated score —.',
-      '来源：' ~ seas.source ~ '，截至 ' ~ seas.as_of ~ '。映射到我们在用因子的（价值→HML、盈利→RMW、投资→CMA）排在前面；动量、规模与市场为我们未做横截面排名的参考风格。季节性仅仅作描述，刻意不纳入任何校准评分。') }}
+      'Source: ' ~ seas.source ~ ', as of ' ~ seas.as_of ~ '. Factors mapping to one of'
+      ~ ' our live legs (Value→HML, Profitability→RMW, Investment→CMA) are shown first;'
+      ~ ' Momentum, Size and Market are reference styles we do not rank cross-sectionally.'
+      ~ ' Seasonality is descriptive context only and is deliberately kept out of every'
+      ~ ' calibrated score.',
+      '来源：' ~ seas.source ~ '，截至 ' ~ seas.as_of ~ '。映射到我们在用因子的（价值→HML、'
+      ~ '盈利→RMW、投资→CMA）排在前面；动量、规模与市场为我们未做横截面排名的参考风格。'
+      ~ '季节性仅为描述，刻意不纳入任何校准评分。') }}
+      <a href="methodology.html#seasonality">{{ t('Methodology', '方法说明') }} →</a>
       {{ t('Generated', '生成于') }} {{ built }}</p>
   </div>
 
@@ -140,9 +215,6 @@
         grid.setAttribute('data-win', b.dataset.win);
         seg.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
       });
-      var cm=new Date().getMonth()+1;
-      document.querySelectorAll('.mcol[data-m="'+cm+'"]').forEach(function(e){e.setAttribute('opacity','0.09');});
-      document.querySelectorAll('.mos[data-m="'+cm+'"], .mosh[data-m="'+cm+'"]').forEach(function(e){e.classList.add('curm');});
     })();
   </script>
   <script src="theme.js"></script>

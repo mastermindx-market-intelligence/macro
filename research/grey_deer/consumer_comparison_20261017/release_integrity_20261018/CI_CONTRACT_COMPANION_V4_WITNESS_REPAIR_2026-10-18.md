@@ -1,0 +1,95 @@
+# #1610 companion v4 — portable selected-interpreter evidence
+
+**18 October 2026 UTC · One regression function changed · Cloud-only static preparation**
+
+## Actual v3 result retained
+
+Parent observed the SDK-enabled native combined **114-case** run completing at **10:08:18 UTC**, exit 1: **113 passed; only the new launcher regression failed**. All 59 preexisting deployment-owner cases and all 54 companion cases passed. The previous 53 launcher errors were resolved. The regression's argument vector matched exactly; its expected temporary interpreter-symlink spelling differed from macOS Python's reported `/opt/homebrew/opt/python@3.14/bin/python3.14`.
+
+These are parent-provided observations, not a run performed by this subtask. The source was v3 SHA256 `4f91f32c0b81d0038fdcbbe51f1d36d1b975096abd1b47c887ce0ea93f6e701a`. The native log is **14,384 bytes**, SHA256 `3e8686ef13a11d893e1c89424e81e99a3d440941a2898963599e2be40eb07263`; the JUnit XML SHA256 is `d22bcd254a3d5b80dd962171877b2aa6234a5742402b6428dfd9cb0e83595829`. Preserve this failed combined result. No v4 passing result is claimed here.
+
+## Exact successor scope
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| Preserved [v3 owner](ci_contract_candidate_v3/tests/test_deploy_provenance.py.txt) | 49,407 | `4f91f32c0b81d0038fdcbbe51f1d36d1b975096abd1b47c887ce0ea93f6e701a` |
+| New [v4 owner](ci_contract_candidate_v4/tests/test_deploy_provenance.py.txt) | 50,039 | `80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10` |
+
+Only `test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments` changes. The launcher generator, transport, helpers, 40 preexisting test functions and their decorators/parameters are unchanged. The three companion proposal copies and production helper remain untouched. The [v3 repair note](CI_CONTRACT_COMPANION_V3_LAUNCHER_REPAIR_2026-10-18.md), preserved v2 and earlier failed native evidence remain intact.
+
+## Discriminating replacement
+
+The selected executable under `Python runtime's path` is now a small `/bin/sh` wrapper. It exports `FAKE_INTERPRETER_EXECUTION_WITNESS="$0"` and then executes the quoted original parent `sys.executable` with `"$@"`. The launcher generator under test still receives the exact selected wrapper path through its existing `sys.executable` input.
+
+The subprocess environment explicitly removes the witness before launch and keeps `PATH` set to an empty directory. The eventual Python child reports the witness, argument vector, normalized underlying executable, `sys.prefix` and `sys.base_prefix`. The assertion requires:
+
+- The witness equals the exact selected spaced/apostrophe wrapper path, proving that path ran despite Python's own executable-path normalization.
+- The invoked alias and every original argument match, including empty strings, spaces, quotes and literal shell metacharacters.
+- The child uses the parent's underlying binary and runtime/virtual-environment prefixes, preserving the relevant SDK-enabled interpreter environment.
+
+Bypassing the selected wrapper leaves the cleared witness missing. A PATH-based fallback is unavailable. Broken quoting or argument forwarding fails the process or exact comparison. Executing a base interpreter in place of the parent virtual environment is distinguished by the prefix checks. The assertion no longer depends on macOS retaining an external symlink spelling in `sys.executable`.
+
+## Static verification and next gate
+
+AST and exact source-segment comparisons establish that **only this regression function** differs from v3. Every other top-level AST node and all other function bodies match. The unchanged generated transport and the revised tiny Python witness probe both parse. V2 and v3 hashes were rechecked and match their preserved identities. Counts remain **41 deployment test functions / 60 literal cases**, or **114 proposed combined cases** with the parent's 54 companions.
+
+No test, generator, shim or first-party module was executed or imported. No native or Git operation occurred. Root's planned next gate is a focused run of the changed regression in the owning SDK-enabled environment; the 113 byte-identical passing cases retain their dated v3 attribution. A focused pass must be recorded as that result, not relabeled as a fresh combined 114-case run. Hosted whole-CI acceptance remains required.
+
+## Full v3-to-v4 delta
+
+```diff
+--- ci_contract_candidate_v3/tests/test_deploy_provenance.py
++++ ci_contract_candidate_v4/tests/test_deploy_provenance.py
+@@ -100,29 +100,47 @@
+ 
+ def test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments(tmp_path, monkeypatch):
+     import json
++    import shlex
+     import sys
+ 
++    original_executable = sys.executable
++    expected_runtime = {
++        "executable": os.path.realpath(original_executable),
++        "prefix": sys.prefix,
++        "base_prefix": sys.base_prefix,
++    }
+     runtime = tmp_path / "Python runtime's path"
+     runtime.mkdir()
+     interpreter = runtime / "python3"
+-    interpreter.symlink_to(sys.executable)
++    _write_executable(
++        interpreter,
++        '#!/bin/sh\nexport FAKE_INTERPRETER_EXECUTION_WITNESS="$0"\nexec '
++        + shlex.quote(original_executable) + ' "$@"\n',
++    )
+     monkeypatch.setattr(sys, "executable", str(interpreter))
+     launcher = tmp_path / "transport launcher"
+     _write_python_executable(
+         launcher,
+-        'import json\nprint(json.dumps({"interpreter": sys.executable, "argv": sys.argv}))\n',
++        'import json, os\nprint(json.dumps({'
++        '"witness": os.environ.get("FAKE_INTERPRETER_EXECUTION_WITNESS"), '
++        '"argv": sys.argv, "executable": os.path.realpath(sys.executable), '
++        '"prefix": sys.prefix, "base_prefix": sys.base_prefix}))\n',
+     )
+     alias = tmp_path / "invoked alias"
+     alias.symlink_to(launcher)
+     arguments = ["", "two words", "quote'\"value", "$HOME; $(printf forbidden) *", "--flag=value"]
+     empty_path = tmp_path / "empty-path"
+     empty_path.mkdir()
++    env = dict(os.environ, PATH=str(empty_path))
++    env.pop("FAKE_INTERPRETER_EXECUTION_WITNESS", None)
+     result = subprocess.run(
+-        [str(alias), *arguments], env=dict(os.environ, PATH=str(empty_path)),
++        [str(alias), *arguments], env=env,
+         text=True, capture_output=True, check=False, timeout=10,
+     )
+     assert result.returncode == 0, result.stdout + result.stderr
+-    assert json.loads(result.stdout) == {"interpreter": str(interpreter), "argv": [str(alias), *arguments]}
++    assert json.loads(result.stdout) == {
++        **expected_runtime, "witness": str(interpreter), "argv": [str(alias), *arguments],
++    }
+ 
+ 
+ def _fake_transport(
+```

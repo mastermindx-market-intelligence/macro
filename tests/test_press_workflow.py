@@ -399,7 +399,7 @@ def test_press_lane_job_exists_and_obeys_the_pack_manifest_rules():
 
 
 def test_press_lane_covers_estate_and_analytical_dependencies():
-    """The fixed baseline adds the incumbent pandas/numpy engine and REST seam.
+    """The lane adds the analytical engine, REST seam and HTML receipt parser.
 
     Preserve the estate dependencies and the single-install pack contract;
     analytical tests must import in the lane's isolated environment.
@@ -412,7 +412,7 @@ def test_press_lane_covers_estate_and_analytical_dependencies():
         return set(command.split()[2:])
 
     assert _packages("press-lane") == _packages("free-content-estate") | {
-        "numpy", "pandas", "requests"}
+        "numpy", "pandas", "requests", "beautifulsoup4"}
 
 
 def test_every_press_suite_is_named_by_the_ci_job():
@@ -421,3 +421,65 @@ def test_every_press_suite_is_named_by_the_ci_job():
                            " ".join(str(s.get("run") or "") for s in job["steps"])))
     on_disk = {f"tests/{p.name}" for p in (_REPO / "tests").glob("test_press_*.py")}
     assert named == on_disk, f"unrun press suites: {sorted(on_disk - named)}"
+
+
+def test_reviewed_bundle_dispatch_uses_same_run_artifact_without_generation():
+    inputs = _triggers(_load(_WF))["workflow_dispatch"]["inputs"]
+    assert {"promotion_bundle", "promotion_slot", "promotion_sha256"} <= set(inputs)
+    stage = next(s for s in _jobs()["stage"]["steps"] if s.get("id") == "stage")
+    assert "--import-reviewed-bundle" in stage["run"]
+    assert "else" in stage["run"] and 'ARGS="--staging"' in stage["run"]
+    assert "--promotion-sha256" in stage["run"] and "--promotion-slot" in stage["run"]
+    emit = next(s for s in _jobs()["emit"]["steps"] if s.get("name", "").startswith("emit passing"))
+    assert "--promote-reviewed-bundle" in emit["run"]
+    download = next(s for s in _jobs()["emit"]["steps"] if "download-artifact" in s.get("uses", ""))
+    assert download["with"]["name"] == "press-staging-${{ github.run_id }}"
+    assert "run-id" not in download["with"]  # no unbound cross-run artifact import
+    assert "--check-reviewed-bundle" in _commit_step() and "--published" in _commit_step()
+
+
+def test_push_retry_exhaustion_is_a_failed_workflow_step(tmp_path):
+    import os
+    import subprocess
+    bins = tmp_path / "bin"
+    bins.mkdir()
+    helper = tmp_path / "scripts/ci/push_retry.sh"
+    helper.parent.mkdir(parents=True)
+    helper.write_text("push_on_main_ok() { return 0; }\npush_autostash_ok() { return 0; }\n")
+    # Run the actual workflow shell: all five pushes fail, while Git setup,
+    # rebase and unrelated render commands succeed. No real repository/network.
+    commands = {
+        "git": 'case "$1" in diff) exit 1;; push) echo push >> "$PUSH_COUNT"; exit 1;; *) exit 0;; esac',
+        "python": "exit 0", "sleep": "exit 0",
+    }
+    for name, body in commands.items():
+        path = bins / name
+        path.write_text("#!/bin/sh\n" + body + "\n")
+        path.chmod(0o755)
+    count = tmp_path / "pushes"
+    env = {**os.environ, "PATH": str(bins) + os.pathsep + os.environ["PATH"],
+           "GITHUB_WORKSPACE": str(tmp_path), "PUSH_COUNT": str(count), "PRESS_PROMOTION_BUNDLE": ""}
+    completed = subprocess.run(["bash", "-c", _commit_step()], cwd=tmp_path,
+                               env=env, capture_output=True, text=True)
+    assert count.read_text().splitlines() == ["push"] * 5
+    assert completed.returncode != 0, "exhausted publication push must not report success"
+
+
+def test_emit_without_reviewed_bundle_refuses_before_generation(tmp_path):
+    import os
+    import subprocess
+    bins = tmp_path / "bin"
+    bins.mkdir()
+    marker = tmp_path / "provider-attempt"
+    python = bins / "python"
+    python.write_text('#!/bin/sh\necho attempted >> "$ATTEMPT_MARKER"\nexit 0\n')
+    python.chmod(0o755)
+    stage = next(step for step in _jobs()["stage"]["steps"] if step.get("id") == "stage")
+    env = {**os.environ, "PATH": str(bins) + os.pathsep + os.environ["PATH"],
+           "ATTEMPT_MARKER": str(marker), "PRESS_REQUEST_EMIT": "true",
+           "PRESS_PROMOTION_BUNDLE": "", "PRESS_PROMOTION_SLOT": "", "PRESS_PROMOTION_SHA256": "",
+           "PRESS_DESKS": "", "PRESS_MAX_SLOTS": "", "PRESS_AS_OF": ""}
+    result = subprocess.run(["bash", "-c", stage["run"]], cwd=tmp_path,
+                            env=env, capture_output=True, text=True)
+    assert result.returncode != 0
+    assert not marker.exists(), "emit=true must refuse before the writer/generation command"

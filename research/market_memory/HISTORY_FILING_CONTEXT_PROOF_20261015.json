@@ -1,0 +1,63 @@
+{
+  "cases": [
+    {
+      "date": "2020-03-16",
+      "default_outcome_files_opened": false,
+      "filing_coverage_end": "2026-10-02",
+      "filing_events": 27,
+      "filing_status": "OBSERVED",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7+working-tree-changes",
+      "market_observations": 25,
+      "matches_independent_paged_source_read": true,
+      "query_receipt_sha256": "3501ebc73f92ab8a4cf25904eb2a001215d01f9903a5e90364b1118355a61bbf",
+      "response_bytes": 39892,
+      "response_sha256": "0f079520d8efb62cfd944e3380707f23c878504d89c05ca83ff29768fca9066b",
+      "seconds": 1.747,
+      "source_rows_validated": 173495
+    },
+    {
+      "date": "2026-10-14",
+      "default_outcome_files_opened": false,
+      "filing_coverage_end": "2026-10-02",
+      "filing_events": 0,
+      "filing_status": "NO_RETAINED_FILING",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7+working-tree-changes",
+      "market_observations": 25,
+      "matches_independent_paged_source_read": false,
+      "query_receipt_sha256": "194d70f5b9bfca16d107c11e8bcacaf75294282eca6051ec67172506ade4216d",
+      "response_bytes": 29511,
+      "response_sha256": "e9377e9a7b6aa754eab05392b1f3ff59b64da4580eb70974660040e26c22ceb3",
+      "seconds": 1.666,
+      "source_rows_validated": 173495
+    }
+  ],
+  "independent_old_query_receipts": [
+    "ff202cdf469e77cc2fbc2a96567cb1f5900ce9662a8401479e866697ac0613bd",
+    "6f78a90546cf3cf44a72dd0b15576daa7b036cac223c27afd7a2f7f0993ee626"
+  ],
+  "no_new_source_acquisition": true,
+  "no_source_archive_writes": true,
+  "schema": "market_memory.filing_context_real_consumer.v1",
+  "source": {
+    "decoded_bytes": 10093777,
+    "filing_date_max": "2026-10-02",
+    "filing_date_min": "2004-08-23",
+    "forms": {
+      "8-K": 171987,
+      "8-K/A": 1508
+    },
+    "keyed_filings": 173495,
+    "physical_bytes": 4182981,
+    "quality_counts": {},
+    "rows": 173495,
+    "schema": "market_memory.filing_context_source_census.v1",
+    "source_file_version": "statv1:a8eada95d71e5f35ccb5ae0068dccb9352575c123bd1af0450e89608b2747198",
+    "source_key_owner": "engine.earnings_release.filing_key",
+    "source_read_only": true,
+    "source_ref": "macro_snapshot:edgar/earnings_8k_dates.parquet",
+    "source_sha256": "5309ece0cd66b33d69abb8055afa05333d00bcfb43ace87d7997b3655946446f",
+    "strict_point_in_time_qualification": false
+  },
+  "source_code_sha256": "7d6d471e53445a225085dbf0783d308b3b41f67e59056e2a13e0f6c4ce9ddac7",
+  "source_release_state": "CANDIDATE_NOT_INSTALLED"
+}
