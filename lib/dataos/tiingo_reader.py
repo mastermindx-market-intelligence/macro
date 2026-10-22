@@ -147,7 +147,9 @@ def read_research_view(source: str, day: str, sha256: str, *,
         raise TiingoViewRefusal("invalid observation day") from exc
     if not SHA.fullmatch(sha256):
         raise TiingoViewRefusal("invalid source digest")
-    if purpose not in PURPOSES or max_rows < 1 or max_rows > 1_000_000:
+    if (purpose not in PURPOSES
+            or (read_context is not None and type(max_rows) is not int)
+            or max_rows < 1 or max_rows > 1_000_000):
         raise TiingoViewRefusal("invalid reader purpose or cap")
     base = (read_context.assert_root(root, check_mount=check_mount)
             if read_context is not None else require_external_root(root, check_mount=check_mount))
@@ -270,9 +272,38 @@ def read_research_view(source: str, day: str, sha256: str, *,
     except (TiingoArchiveError, OSError, ValueError, KeyError, TypeError, EOFError) as exc:
         raise TiingoViewRefusal("source raw byte integrity could not be verified") from exc
     pf = pq.ParquetFile(io.BytesIO(normalized_bytes) if read_context is not None else path)
-    if pf.metadata.num_rows > max_rows:
-        raise TiingoViewRefusal("row cap exceeded: partition is not bounded for reader")
-    rows = pf.read().to_pylist()
+    if read_context is not None:
+        metadata = pf.metadata
+        file_rows = metadata.num_rows
+        if type(file_rows) is not int or file_rows < 0:
+            raise TiingoViewRefusal("strict Parquet file row count is invalid")
+        if file_rows > max_rows:
+            raise TiingoViewRefusal("row cap exceeded: partition is not bounded for reader")
+        group_count = metadata.num_row_groups
+        if type(group_count) is not int or group_count < 0:
+            raise TiingoViewRefusal("strict Parquet row-group count is invalid")
+        group_rows = 0
+        for index in range(group_count):
+            count = metadata.row_group(index).num_rows
+            if type(count) is not int or count < 0:
+                raise TiingoViewRefusal("strict Parquet row-group row count is invalid")
+            group_rows += count
+            if group_rows > max_rows:
+                raise TiingoViewRefusal("row cap exceeded: Parquet row groups exceed reader allowance")
+        if group_rows != file_rows:
+            raise TiingoViewRefusal("strict Parquet file and row-group row counts disagree")
+        # Bound declared rows before decoding, then recheck the decoded table
+        # before conversion to Python rows. Neither check bounds decoded bytes/RSS.
+        table = pf.read()
+        table_rows = table.num_rows
+        if (type(table_rows) is not int or table_rows < 0
+                or table_rows > max_rows or table_rows != file_rows):
+            raise TiingoViewRefusal("strict Parquet decoded row count is inconsistent or over cap")
+        rows = table.to_pylist()
+    else:
+        if pf.metadata.num_rows > max_rows:
+            raise TiingoViewRefusal("row cap exceeded: partition is not bounded for reader")
+        rows = pf.read().to_pylist()
     observed = context.get("observed_at_utc") or context.get("first_received_at_utc")
     if (len(rows) != manifest.get("rows")
             or manifest.get("source_observed_at_utc") != observed

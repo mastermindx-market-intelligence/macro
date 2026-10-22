@@ -1182,6 +1182,10 @@ def read_forex_source_batch_candidate(
                         raise
                     acquired.update(state="materialized_view_unavailable", empty_payload_proven=False)
                     continue
+                if len(view.rows) > min(limit, remaining):
+                    raise TiingoViewRefusal(
+                        "Census exact-reader result exceeds its row-reference allowance"
+                    )
                 evidence["selected_row_references"] += len(view.rows)
                 acquired.update(state="exact_view_verified", rows=len(view.rows),
                                 raw_sha256=view.source_sha256)

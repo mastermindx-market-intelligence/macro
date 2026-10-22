@@ -1742,3 +1742,240 @@ def test_observed_census_rejects_nonregular_entries_before_metadata(census_lake,
     assert evidence["selected_views"] == []
     assert evidence["byte_reads"]["metadata"] == 0
     _assert_census_no_admission(evidence)
+
+
+# Strict Parquet count boundaries: controlled parser objects preserve the real
+# retained fixture's lineage while exposing inconsistent footer/table counts.
+def _install_strict_parquet_count_probe(
+    materialized_view, monkeypatch, *, file_rows, group_rows, table_rows,
+    group_count=None,
+):
+    from types import SimpleNamespace
+    import pyarrow.parquet as pq
+
+    root, saved, _receipt_path, _receipt = materialized_view
+    expected = read_research_view(
+        "eod-bars", "2026-10-09", saved["raw_sha256"], root=root, check_mount=False,
+    )
+    calls = []
+
+    def row_group(index):
+        calls.append(("group", index))
+        return SimpleNamespace(num_rows=group_rows[index])
+
+    def to_pylist():
+        calls.append("convert")
+        return list(expected.rows)
+
+    table = SimpleNamespace(num_rows=table_rows, to_pylist=to_pylist)
+
+    def read():
+        calls.append("decode")
+        return table
+
+    metadata = SimpleNamespace(
+        num_rows=file_rows,
+        num_row_groups=len(group_rows) if group_count is None else group_count,
+        row_group=row_group,
+    )
+
+    def parquet_file(source):
+        calls.append(("open", isinstance(source, io.BytesIO)))
+        return SimpleNamespace(metadata=metadata, read=read)
+
+    monkeypatch.setattr(pq, "ParquetFile", parquet_file)
+    return calls
+
+
+def _read_strict_count_fixture(materialized_view, *, max_rows=1):
+    root, saved, receipt_path, _receipt = materialized_view
+    with BoundedTiingoRead(root, check_mount=False) as context:
+        return read_research_view(
+            "eod-bars", "2026-10-09", saved["receipt_id"],
+            root=root, check_mount=False, receipt_path=receipt_path,
+            read_context=context, max_rows=max_rows,
+        )
+
+
+@pytest.mark.parametrize(
+    "file_rows,group_rows,visited_groups",
+    [
+        (-1, (), []),
+        (True, (1,), []),
+        (1.0, (1,), []),
+        (2, (2,), []),
+        (1, (-1,), [0]),
+        (1, (True,), [0]),
+        (1, (1.0,), [0]),
+        (1, (0,), [0]),
+        (0, (1,), [0]),
+        # Refuse the cumulative overflow before inspecting the later bad group.
+        (1, (1, 1, -1), [0, 1]),
+    ],
+    ids=[
+        "negative-file", "boolean-file", "float-file", "file-over-cap",
+        "negative-group", "boolean-group", "float-group", "sum-below-file",
+        "sum-above-file", "cumulative-overflow-before-next-group",
+    ],
+)
+def test_strict_parquet_counts_refuse_invalid_metadata_before_decode(
+    materialized_view, monkeypatch, file_rows, group_rows, visited_groups,
+):
+    calls = _install_strict_parquet_count_probe(
+        materialized_view, monkeypatch, file_rows=file_rows,
+        group_rows=group_rows, table_rows=1,
+    )
+
+    with pytest.raises(TiingoViewRefusal):
+        _read_strict_count_fixture(materialized_view)
+
+    assert calls == [("open", True)] + [("group", index) for index in visited_groups]
+
+
+@pytest.mark.parametrize("group_count", [-1, True, 1.0])
+def test_strict_parquet_counts_refuse_invalid_group_count_before_decode(
+    materialized_view, monkeypatch, group_count,
+):
+    calls = _install_strict_parquet_count_probe(
+        materialized_view, monkeypatch, file_rows=1, group_rows=(1,),
+        table_rows=1, group_count=group_count,
+    )
+
+    with pytest.raises(TiingoViewRefusal):
+        _read_strict_count_fixture(materialized_view)
+
+    assert calls == [("open", True)]
+
+
+@pytest.mark.parametrize("table_rows", [-1, 0, 2, True, 1.0])
+def test_strict_parquet_counts_refuse_decoded_mismatch_before_python_conversion(
+    materialized_view, monkeypatch, table_rows,
+):
+    calls = _install_strict_parquet_count_probe(
+        materialized_view, monkeypatch, file_rows=1,
+        group_rows=(1,), table_rows=table_rows,
+    )
+
+    with pytest.raises(TiingoViewRefusal, match="Parquet decoded"):
+        _read_strict_count_fixture(materialized_view)
+
+    assert calls == [("open", True), ("group", 0), "decode"]
+
+
+@pytest.mark.parametrize("max_rows", [True, 1.0, float("nan"), "1"])
+def test_strict_parquet_counts_require_integer_cap_before_archive_access(
+    materialized_view, monkeypatch, max_rows,
+):
+    root, saved, receipt_path, _receipt = materialized_view
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("invalid strict cap reached archive acquisition")
+
+    with BoundedTiingoRead(root, check_mount=False) as context:
+        monkeypatch.setattr(context, "assert_root", forbidden)
+        with pytest.raises(TiingoViewRefusal, match="invalid reader purpose or cap"):
+            read_research_view(
+                "eod-bars", "2026-10-09", saved["receipt_id"],
+                root=root, check_mount=False, receipt_path=receipt_path,
+                read_context=context, max_rows=max_rows,
+            )
+
+
+def test_strict_parquet_counts_accept_consistent_exact_limit(
+    materialized_view, monkeypatch,
+):
+    calls = _install_strict_parquet_count_probe(
+        materialized_view, monkeypatch, file_rows=1, group_rows=(0, 1), table_rows=1,
+    )
+
+    result = _read_strict_count_fixture(materialized_view)
+
+    assert len(result.rows) == 1
+    assert result.rows[0]["close_raw"] == 22
+    assert calls[-2:] == ["decode", "convert"]
+
+
+def test_strict_parquet_counts_leave_legacy_decode_path_unchanged(
+    materialized_view, monkeypatch,
+):
+    calls = _install_strict_parquet_count_probe(
+        materialized_view, monkeypatch, file_rows=1, group_rows=(-1,), table_rows=-1,
+    )
+    root, saved, _receipt_path, _receipt = materialized_view
+
+    result = read_research_view(
+        "eod-bars", "2026-10-09", saved["raw_sha256"],
+        root=root, check_mount=False, max_rows=1, read_context=None,
+    )
+
+    assert len(result.rows) == 1
+    assert calls == [("open", False), "decode", "convert"]
+
+
+@pytest.mark.parametrize("frequency,limit", [("1min", 20_000), ("4hour", 128)])
+def test_census_strict_row_count_refuses_oversized_result_before_accounting(
+    census_lake, monkeypatch, frequency, limit,
+):
+    lake, retain = census_lake
+    retain(_census_rows(1), frequency=frequency)
+    real_read = census_fx.read_research_view
+    caps = []
+
+    def oversized(*args, **kwargs):
+        caps.append(kwargs["max_rows"])
+        view = real_read(*args, **kwargs)
+        return replace(view, rows=view.rows * (limit + 1))
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("oversized reader result reached the pure assessor")
+
+    monkeypatch.setattr(census_fx, "read_research_view", oversized)
+    monkeypatch.setattr(census_fx, "assess_forex_source_batch_candidate", forbidden)
+
+    with pytest.raises(TiingoViewRefusal, match="exact-reader result exceeds") as caught:
+        _census_run(lake)
+
+    assert caps == [limit]
+    evidence = caught.value.census_evidence
+    assert evidence["state"] == "refused"
+    assert evidence["selected_row_references"] == 0
+    assert [item["state"] for item in evidence["selected_views"]] == ["acquiring"]
+    assert len(evidence["scans"]) == 1
+    assert evidence["assessment"] is None
+    _assert_census_no_admission(evidence)
+
+
+def test_census_strict_row_count_refuses_result_over_remaining_budget(
+    census_lake, monkeypatch,
+):
+    lake, retain = census_lake
+    retain(_census_rows(3))
+    retain(_census_rows(3, base=150))
+    monkeypatch.setattr(census_fx, "MAX_BATCH_INPUT_ROWS", 5)
+    real_read = census_fx.read_research_view
+    caps = []
+
+    def ignores_caller_cap(*args, **kwargs):
+        caps.append(kwargs["max_rows"])
+        # Simulate an upstream contract regression without a malformed file.
+        return real_read(*args, **{**kwargs, "max_rows": 3})
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("over-budget reader result reached the pure assessor")
+
+    monkeypatch.setattr(census_fx, "read_research_view", ignores_caller_cap)
+    monkeypatch.setattr(census_fx, "assess_forex_source_batch_candidate", forbidden)
+
+    with pytest.raises(TiingoViewRefusal, match="exact-reader result exceeds") as caught:
+        _census_run(lake)
+
+    assert caps == [5, 2]
+    evidence = caught.value.census_evidence
+    assert evidence["state"] == "refused"
+    assert evidence["selected_row_references"] == 3
+    assert [item["state"] for item in evidence["selected_views"]] == [
+        "exact_view_verified", "acquiring",
+    ]
+    assert len(evidence["scans"]) == 1
+    assert evidence["assessment"] is None
+    _assert_census_no_admission(evidence)

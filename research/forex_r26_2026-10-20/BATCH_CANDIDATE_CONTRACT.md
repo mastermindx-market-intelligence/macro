@@ -1,5 +1,17 @@
 # Forex R26 — bounded batch candidate contract
 
+## Strict Parquet count qualification — 22 October 2026
+
+This descendant of `2743fb06245d18edcbeb3f00be08b24164a348e3` closes a malformed-input row-limit gap in the opt-in bounded reader. With `read_context` present, `max_rows` must be an actual integer before archive access. File and row-group counts must be nonnegative integers; cumulative group rows must stay within the allowance and equal the file count before decode. The decoded table count must then equal that validated total and remain within the allowance before `to_pylist()`. Census independently checks returned rows against `min(per-type limit, remaining total)` before recording them.
+
+The legacy `read_context=None` decode branch remains unchanged. Production imports, the existing materializer source and the pure Forex assessor prefix are unchanged. No reader/census change grants source, monitoring or account admission. Encoded-byte and row-count guards do not establish a decoder-memory, CPU or process-RSS bound.
+
+The 27 new regression cases use the existing temporary retained fixtures and controlled parser counts. On unchanged production source, 24 refusal cases failed and three controls passed. After repair, the four incumbent source suites passed all 355 tests in 10.08s at 13:24:54 UTC. Refusals are checked before decode, before Python conversion and before census accounting/assessment. This is source qualification, not accepted independent review or an actual malformed-footer exploit claim. See [strict count qualification](evidence/strict_parquet_count_qualification_20261022.json).
+
+The earlier 328-pass census run, separate closure pass and 12:23:40 real retained-archive readback remain accepted for their recorded source. No archive readback was repeated to refresh its clock. Its required 08:00/12:00 support remains absent; eligibility and monitoring remain false.
+
+## Retained observed-census contract and qualification
+
 ## Observed exact-reader census — implemented and qualified on 22 October 2026
 
 Entry: read_forex_source_batch_candidate(expected_pair, consecutive, policy_version, root, check_mount). Evidence schema: mastermind.tiingo.forex_batch_observed_census.v1. It calls the unchanged pure assessor only after successful bounded acquisition. Existing reader/materializer behavior with read_context=None is preserved.
