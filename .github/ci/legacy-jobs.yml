@@ -825,6 +825,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -2233,6 +2235,8 @@ jobs:
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
       - "app/integrated_answer.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "app/forensics.py"
       - "tests/test_integrated_answer_v0.py"
       - "tests/test_company_theme_exposure.py"
@@ -3648,6 +3652,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -8899,7 +8905,7 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
-    timeout-minutes: 8
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10083,6 +10089,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -24131,6 +24139,8 @@ jobs:
       - engine/neuralweb/brain_curve.py
       - engine/neuralweb/brain_gateway.py
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - engine/neuralweb/brain_market_intel.py
       - engine/neuralweb/brain_native_inputs.py
       - engine/neuralweb/brain_user_memory.py
@@ -30519,9 +30529,10 @@ jobs:
     # Its own install: the FastAPI route tests need fastapi + starlette's TestClient
     # (httpx). Kept off the shared unrun-* line so the other twenty jobs still share
     # one venv; execute_pack sorts by install string, so this costs one extra venv.
+    # Run 39768032122 spent 417s installing Chromium; preserve the full browser gate.
     if: ${{ false }}
     gate: code
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30531,7 +30542,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -30553,7 +30564,7 @@ jobs:
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -32981,6 +32992,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -35967,6 +35980,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
