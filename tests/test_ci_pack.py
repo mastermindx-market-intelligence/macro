@@ -5176,9 +5176,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_858),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 136, 5_829),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_602),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5186,6 +5186,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 D04-A2 status source-clock projection (PR #10004; head = the merge of
+    main 11808d99a007 into the PR branch, 80f186674d4b): the existing
+    prelaunch-hardening pytest command gains one suite,
+    tests/test_status_live_projection_wiring.py, and three main-side jobs
+    declare app/live_status_projection.py (no new jobs, no selection change).
+    Lane-measured contract-delta on that merge against base main 11808d99a007:
+    2 introduced, newly selected none, 10 packs; weight-seconds:
+    - index: 136 jobs, base 5,856, head 5,858; ceiling 5,856 -> 5,858.
+    - free-content: 135 jobs, base 5,824, head 5,826; ceiling 5,829 kept.
+    - plan-book: 128 jobs, base 5,600, head 5,602; ceiling 5,600 -> 5,602.
+    Only a breached ceiling moves, to its measured head weight, no padding;
+    job-count ceilings, the pack limit, selectors and every prior suite stay
+    unchanged. Planning weights are not measured execution times.
 
     Current-main d54f24d4 plus the two Treasury suites composes to
     5,856/5,829 weight with 136 jobs in both probes. Preserve the new
