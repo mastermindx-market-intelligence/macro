@@ -900,6 +900,7 @@ DOCUMENT = ROOT / "app" / "paywall_pro_session_refresh.html"
     [
         ("renewed", "yes", "fresh", False, True, False, 1, 1),
         ("refresh_error", "yes", "none", False, True, False, 1, 0),
+        ("null_auth_envelope", "yes", "null_envelope", False, True, False, 1, 0),
         ("stale_session", "yes", "stale", False, True, False, 1, 0),
         ("invalid_credentials", "no", "fresh", False, True, False, 0, 0),
         ("bounded_repeat", "yes", "fresh", True, True, False, 0, 0),
@@ -953,7 +954,8 @@ if(fixture.hasBroker) window.getSupabaseClient = () => {
     expires_at:Date.now()/1000 + (fixture.result==='fresh' ? 3600 : -300)
   };
   return Promise.resolve({auth:{getSession:()=>fixture.result==='pending'
-    ? new Promise(()=>{}) : Promise.resolve({
+    ? new Promise(()=>{}) : fixture.result==='null_envelope'
+      ? Promise.resolve(null) : Promise.resolve({
       data:{session},error:fixture.result==='none'?{message:'no session'}:null
     })}});
 };

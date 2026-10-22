@@ -91,7 +91,7 @@
       clearTimeout(timeout);
       var session = !failed && result && result.data && result.data.session;
       var expires = Number(session && session.expires_at || 0);
-      if (!failed && !result.error && session && session.access_token &&
+      if (!failed && result && !result.error && session && session.access_token &&
           Number.isFinite(expires) && expires > Date.now() / 1000 + 15) {
         // Original path and query are kept; no caller-controlled return URL.
         // Caddy revalidates the new token and Pro entitlement on the next GET.
