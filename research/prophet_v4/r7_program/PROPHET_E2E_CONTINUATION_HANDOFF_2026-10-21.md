@@ -473,3 +473,45 @@ law (B21 release limit). U10 gated on B07/B20 (Wave A/B product units).
   the next lane attempt rather than assuming.
 - **Harness note (10-21→10-22):** a claude-opus-5-5 "session limit" 429 kills native children mid-flight; their work on
   disk survives and SendMessage resumes them once the limit clears — record the resume time, never re-spawn.
+
+### Seat ruling F28 — B21 U2 review FAIL (6e6798aa / #9999) consumed; repair rulings (10-22 01:5xZ)
+Review `reviews/B21_U2_NOTIFICATIONS_REVIEW_2026-10-21.md` (Opus, READ_ONLY): VERDICT FAIL — 1 blocker (B1 dedupe-key
+drift → duplicate emails), 4 majors (E1 stale replay window, E2 `pe:` glance false positive on *PE tickers, E3 eligibility
+gate untested, C1 producer-suppressed original re-read as user opt-out → withdrawal of a never-sent notice, C2 emergence
+originals never correctable), minors N1–N4/C3. #9999 is NOT mergeable; watcher bzb3z80dl result is informational only.
+Rulings (binding on the repair; each is a test):
+- **R1 (B1):** `from_state` for `retracted`/`superseded` = the B1 replay state immediately BEFORE the causing event, in B1's
+  canonical order `(known_at, source_system, source_event_id)` — never `projection_prev`. Two-consecutive-run test with an
+  evolving prev projection must mint the second run NOTHING.
+- **R2 (E1):** the CONTRACT governs over the packet freeze: `not_after` = end of the session following the TRANSITION's
+  `market_session` (resolved from the calendar; unresolvable ⇒ fail closed, typed `not_after_unresolvable`, no row). Mint-time
+  recency gate = the same instant: if that `not_after` is already ≤ the run's `now`, suppress with typed `stale_transition_at_mint`
+  and mint nothing. A six-month-old event never mints.
+- **R3 (E2):** machine-token guard for the `pe:`/`pee:` id shapes is a regex anchored on the id form (`\bpee?:[0-9a-f]`), never a
+  lowercase substring over the composed glance. Test: ticker `HPE` mints its row.
+- **R4 (E3/N3):** non-terminal STATE_TRANSITIONED mints nothing (pinned); emergence kinds require the CURRENT lifecycle to be
+  ACTIVE.
+- **R5 (C1):** contract §4 governs: unsent original ⇒ PATCH it `suppressed/superseded_by_prophet_correction` AND insert the
+  correction row in the SAME run (stable key per R1, so later runs dedupe). On later runs a readback row whose `last_error ==
+  "superseded_by_prophet_correction"` is PRODUCER-suppressed: a distinct branch that mints nothing (typed count
+  `original_producer_suppressed`), never the user-opt-out "mint anyway" branch. The correction minted for an unsent original uses
+  the non-presuming copy variant (no "the earlier notice is withdrawn" / "you were shown").
+- **R6 (C2):** the `corrects` target is resolved from the outbox READBACK (parse this producer's own `fire_event_id`s for
+  `(episode_id, user_id)`), not only from the current run's derivation; original = the latest prior notice of that episode for
+  that user (any kind, incl. `emergence_triggered`); none ⇒ typed `no_original`, mint nothing (a correction without an original is
+  noise).
+- **R7 (C3):** relation-level retraction (episode still tracked) uses copy "an earlier observation was withdrawn; the name remains
+  tracked"; episode-level retraction keeps "no longer tracked".
+- **R8 (N1) RATIFIED as a contract deviation:** prev emergence absent or UNESTIMABLE counts as "not triggered" for the
+  `emergence_triggered` diff (B3's default emergence is UNESTIMABLE; the contract's "either side never eligible" would make the
+  kind dead). Recorded here; contract text amended in the repair commit (one sentence, §eligibility).
+- **R9 (N2):** `projection_prev` READ_UNAVAILABLE ⇒ fail closed: derive nothing for that run, typed `prev_projection_unavailable`.
+- **R10 (N4):** `_episode_identity` applies CORRECTED patches (ticker/company) in replay order.
+- **Tests owed:** the six missing tests the review lists + one per ruling above; mutations M2/M3 must now be CAUGHT.
+- **Route:** fabric still disk-reserve blocked (F26) → native Opus orchestrator `U2 REPAIR` executes under the continuation law
+  (cap 2 with WAVE A LANDING); fix commit `refs/pro/b21u2-fix` with parent `6e6798aa` (PR head); seat verifies (suite, probes
+  `tests/test_ci_pack.py`, organ closure unaffected, merge-tree clean), pushes to `claude/prophet-r7-b21-u2-notifications`,
+  re-arms the watcher, and messages reviewer ab615aa011f1c80d1 for the re-review. Merge only on PASS/PASS_WITH_NOTES + green.
+- **02:1xZ:** Wave B routing packet DRAFTED at `build_b/WAVE_B_ROUTING_PACKET_2026-10-22.md` (custody table observed
+  02:0xZ: #9495/#9294/#8444 all OPEN draft; OQ1 ruled = carry R7 into the #9566 compact card; post ONCE on #9495 after
+  Wave A merges, link from #8444 for B-5 only). U2 REPAIR orchestrator aa5a2aa37f6552bcd RUNNING (F28). Opus cap 2 FULL.
