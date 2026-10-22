@@ -28086,6 +28086,7 @@ jobs:
       - "tests/test_prophet_plan_clock.py"
       - "tests/test_prophet_plan_relation.py"
       - "tests/test_prophet_postmortem.py"
+      - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
@@ -28213,6 +28214,8 @@ jobs:
         run: python -m pytest tests/test_prophet_r7_wave_a_guards.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+      - name: Prophet R7 Wave A plan-card record states (A1)
+        run: python -m pytest tests/test_prophet_r7_wave_a_plan_cards.py -q
       - name: Prophet B05 same-read contract (candidate state and runtime entry availability read the same B4 snapshot)
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       # B4 same-read's first production-shaped caller: the capture-only nightly
