@@ -1,9 +1,7 @@
 # Wave B — routing packet to incumbent custody (Stage 6 change packet)
 
 Seat: Fable Meta-CEO 69eb9a1c · Program: Prophet end-to-end r7 (masterplan 2026-10-20 §15)
-Status: DRAFTED 2026-10-22 02:1xZ — NOT POSTED. Posting waits for the Wave A merges (the packet cites tokens and
-partials those PRs add) and for the carrier fence. The seat never edits a custody file; this packet is the whole of
-Wave B's "build" until the custodians land or absorb it.
+Status: POSTED 2026-10-22 08:2xZ on #9495 (and linked from #8444 for B-5 only). Wave A is on main — B4 #9959, cards/plans #9954 → 2ebafe80, receipts #9955 → a81ef7ae, watchlist A2 #9956 → 790990a2 — so every token and partial this packet cites exists on main ≥ 790990a2. The seat never edits a custody file; this packet is the whole of Wave B's "build" until the custodians land or absorb it. One post, no label, no arm, no re-post.
 
 ## 1. Why a packet and not a build
 
@@ -59,11 +57,7 @@ or card in EN and ZH; (2) no `border-left` / `box-shadow inset` accent on Prophe
 the slot count; (4) `Entry not assessed` / `Unavailable` never with a Buy glyph; (5) stale quote ⇒ no Buy;
 (6) sample-data footnote present when fixture data renders. OQ7 is a pytest guard, not lint.
 
-**B-7 carried from the Wave A A2 review (watchlist save states)** — the account-store disclaimer line, the
-"Check again" / "Choose another list" recovery actions (Appendix A R7-21 rows) and the `saveChecked` read-back wiring
-are Wave A #9956 scope (landing orchestrator P1 repair). They appear here only so the custodian knows the Today card's
-"Save to list" affordance must call the A2 surface as merged, not a local copy. Confirm closed against
-`reviews/WAVE_A_LANDING_RETURN_2026-10-21.md` before posting.
+**B-7 carried from the Wave A A2 review (watchlist save states)** — merged in A2 #9956 (main 790990a2): `saveChecked(listId, tickers, opts)` in `templates/watchstore.js` (one save that reports what the ACCOUNT stored, deadline-tagged) and the `ws-save-outcome` painter in `templates/watchlist.js` that renders the R7-21 outcome copy (saved / read-back / "Choose another list" recovery). At 31a61ba8 that flow is DORMANT: the re-review found no caller of `saveChecked` on the watchlist page, the "Saving doesn't create a plan or a position." disclaimer line and the "Check again" action are not yet rendered, and the ≤720px footnote defect (A2-N3) is being fixed in the U5 lane. The Today card's "Save to list" affordance must call `saveChecked` and dispatch to the merged painter, never a local copy; the R7-19/R7-21 strings come from the spec's Appendix A verbatim. Source: `reviews/A2_9956_REREVIEW_r2r3_31a61ba8_2026-10-22.md` and `reviews/WAVE_A_A2_FIX_REVIEW_2026-10-22.md` item 6.
 
 ## 4. Out of Prophet custody (routed elsewhere, not blocking)
 
