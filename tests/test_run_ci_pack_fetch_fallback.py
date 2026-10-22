@@ -30,6 +30,9 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     "design-governance",
     "p0b-receipt-closure",
     "self-mod-fence",
+    # W2F #9949 (2026-10-22): the frozen-file guard in tests/test_intl_gs_foundation.py
+    # compares against origin/<base_ref>, which this job fetches in its own fail-closed step.
+    "international-workspace-browser",
 }
 
 
