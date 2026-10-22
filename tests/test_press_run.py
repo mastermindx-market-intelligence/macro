@@ -1080,6 +1080,61 @@ def test_emit_helpers_it_borrows_from_the_estate_builder_still_exist():
         assert callable(getattr(B, name, None)), f"build_free_content.{name} is gone"
 
 
+
+@pytest.mark.parametrize("case", [
+    "missing_committed", "missing_rendered", "article_change", "link_change",
+    "content_inside_block", "incomplete_marker", "duplicate_marker",
+    "outside_marker", "non_html",
+])
+def test_press_comparison_respects_common_shell_owner(tmp_path, monkeypatch, case):
+    """A common-owner sweep cannot turn a press replay into unrelated writes."""
+    from lib import shared_shell as shell
+
+    plain = (
+        '<!doctype html><html><head><title>Article</title></head>'
+        '<body><article>Original article <a href="/original">source</a>'
+        '</article></body></html>'
+    )
+    marked = shell.inject_shared_shell_text(
+        plain, "../", version="12345678", css_version="87654321",
+    )
+    rendered_text, committed_text = marked, plain
+    expected = case in {"missing_committed", "missing_rendered"}
+    if case == "missing_rendered":
+        rendered_text, committed_text = plain, marked
+    elif case == "article_change":
+        rendered_text = marked.replace("Original article", "Changed article")
+    elif case == "link_change":
+        rendered_text = marked.replace('href="/original"', 'href="/changed"')
+    elif case == "content_inside_block":
+        # Regenerating an existing block would erase this real content change.
+        rendered_text = marked.replace(
+            shell.START, shell.START + "<p>Substantive extra article text</p>",
+        )
+    elif case == "incomplete_marker":
+        rendered_text = marked.replace(shell.END, "")
+    elif case == "duplicate_marker":
+        rendered_text = marked.replace(shell.START, shell.START + shell.END + shell.START)
+    elif case == "outside_marker":
+        rendered_text = plain.replace(
+            "</head>", '<meta name="mmx-shell-document" content="20261018.1"></head>',
+        )
+    suffix = ".xml" if case == "non_html" else ".html"
+    rendered = tmp_path / "rendered" / "site" / "blog" / ("probe" + suffix)
+    committed = tmp_path / "committed" / "site" / "blog" / ("probe" + suffix)
+    for path, text in [(rendered, rendered_text), (committed, committed_text)]:
+        path.parent.mkdir(parents=True)
+        path.write_text(text, encoding="utf-8")
+    before = {path: path.read_bytes() for path in [rendered, committed]}
+
+    def forbidden_provision(*args, **kwargs):
+        raise AssertionError("comparison must not provision shared assets")
+
+    monkeypatch.setattr(shell, "ensure_shared_shell_asset", forbidden_provision)
+    assert R._same_page(rendered, committed) is expected
+    assert {path: path.read_bytes() for path in before} == before
+
+
 def test_render_replay_is_idempotent_against_the_committed_estate():
     """A press emit with no new article must write NOTHING under site/blog/.
 
@@ -1334,6 +1389,245 @@ def test_cli_single_attempt_rejects_emit_before_any_effect(monkeypatch, capsys):
 def test_cli_reports_a_missing_config_rather_than_running_blind(tmp_path, capsys):
     assert R.main(["--root", str(tmp_path)]) == 1
     assert "::error title=press_config::" in capsys.readouterr().out
+
+# Reviewed promotion consumes exact protected source bytes, never a new writer run.
+def _reviewed_fixture(tmp_path):
+    import subprocess
+    root = F.fixture_root(tmp_path)
+    slot = F.slot()
+    (root / "engine/press").mkdir(parents=True)
+    (root / "engine/press/validators.py").write_text("# original validator\n")
+    (root / "data/risk_radar").mkdir()
+    (root / "data/risk_radar/forward_log.jsonl").write_text('{}\n')
+    item = {"id": slot["id"], "desk": "brief", "status": "passed",
+            "sources": slot["sources"], "seed_refs": slot["seed_refs"],
+            "slot": slot, "draft": F.draft_from_slot(slot, extra_filler=-3),
+            "validator_report": {"ok": True}}
+    stage = root / "data/press/staging" / (slot["id"] + ".json")
+    stage.write_text(json.dumps(item) + "\n")
+    for args in (("init", "-q"), ("config", "user.email", "test@example.invalid"),
+                 ("config", "user.name", "Fixture"), ("add", "config", "templates", "engine", "data/chronicle",
+                  "data/research_vault", "data/market_state", "data/gex", "data/risk_radar", "data/press/published.jsonl"),
+                 ("commit", "-qm", "source")):
+        subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True)
+    bundle = root / "research/agentic_media/press_reviewed/fixture.json"
+    return root, stage, bundle
+
+
+def _commit_reviewed_bundle(root, stage, bundle):
+    import hashlib
+    import subprocess
+    result = R.prepare_reviewed_bundle(root, stage, bundle, confirm_reviewed=True)
+    subprocess.run(["git", "-C", str(root), "add", str(bundle)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "reviewed bundle"],
+                   check=True, capture_output=True)
+    assert result["bundle_sha256"] == hashlib.sha256(bundle.read_bytes()).hexdigest()
+    return result
+
+
+def _press_workflow_env(monkeypatch, root):
+    import subprocess
+    head = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+    for key, value in {"GITHUB_ACTIONS": "true", "GITHUB_REPOSITORY": "mastermindx-market-intelligence/macro",
+                       "GITHUB_REF": "refs/heads/main", "GITHUB_SHA": head,
+                       "GITHUB_WORKFLOW_REF": "mastermindx-market-intelligence/macro/.github/workflows/press-publish.yml@refs/heads/main",
+                       "GITHUB_RUN_ID": "1234", "GITHUB_RUN_ATTEMPT": "1"}.items():
+        monkeypatch.setenv(key, value)
+
+
+def test_reviewed_bundle_retains_exact_bytes_and_promotes_without_writer(tmp_path, monkeypatch):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    original = stage.read_bytes()
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    monkeypatch.setattr(R.writer, "write", lambda *a, **k: pytest.fail("promotion called writer"))
+    monkeypatch.setattr(R, "_render_blog_subtree", lambda root: (["blog/fixture.html"], []))
+    stage.unlink()
+    cfg = P.load_config(root)
+    out = R.import_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"])
+    assert out["passed"] == 1 and stage.read_bytes() == original
+    retained = root / "data/press/staging/_reviewed_bundle.json"
+    assert retained.read_bytes() == bundle.read_bytes()
+    out = R.promote_reviewed_bundle(root, cfg, retained, info["bundle_sha256"], info["slot_id"])
+    assert out["emitted"] == 1
+    rows = [json.loads(line) for line in (root / "data/press/published.jsonl").read_text().splitlines()]
+    assert len(rows) == 1 and rows[0]["id"] == info["slot_id"]
+    assert rows[0]["reviewed_promotion"]["bundle_sha256"] == info["bundle_sha256"]
+    assert (root / "content/seo/blog" / (json.loads(original)["draft"]["slug"] + ".md")).is_file()
+    R.check_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"], published=True)
+    with pytest.raises(ValueError, match="published"):
+        R.import_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"])
+
+
+@pytest.mark.parametrize("fault", ["hash", "slot", "uncommitted_bundle", "dependency", "extra_passed",
+                                   "published_source", "ledger_corrupt", "wrong_workflow", "wrong_repository"])
+def test_reviewed_promotion_refuses_before_any_publication(tmp_path, monkeypatch, fault):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    digest, slot_id = info["bundle_sha256"], info["slot_id"]
+    if fault == "hash":
+        digest = "0" * 64
+    elif fault == "slot":
+        slot_id = "press-other"
+    elif fault == "uncommitted_bundle":
+        bundle.write_bytes(bundle.read_bytes() + b" ")
+        import hashlib
+        digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
+    elif fault == "dependency":
+        (root / "data/market_state/latest.json").write_text('{}')
+    elif fault == "extra_passed":
+        (stage.parent / "other.json").write_text(json.dumps({"id": "other", "status": "passed", "draft": {"title": "Other"}}))
+    elif fault == "published_source":
+        (root / "data/press/published.jsonl").write_text(json.dumps({"id": "another", "sources": F.slot()["sources"]}) + "\n")
+    elif fault == "ledger_corrupt":
+        (root / "data/press/published.jsonl").write_text('broken\n')
+    elif fault == "wrong_workflow":
+        monkeypatch.setenv("GITHUB_WORKFLOW_REF", "mastermindx-market-intelligence/macro/.github/workflows/other.yml@refs/heads/main")
+    else:
+        monkeypatch.setenv("GITHUB_REPOSITORY", "attacker/fork")
+    before = {str(p): p.read_bytes() for folder in ("content", "site", "data/press")
+              for p in (root / folder).rglob("*") if p.is_file()}
+    with pytest.raises(ValueError):
+        R.import_reviewed_bundle(root, P.load_config(root), bundle, digest, slot_id)
+    after = {str(p): p.read_bytes() for folder in ("content", "site", "data/press")
+             for p in (root / folder).rglob("*") if p.is_file()}
+    assert after == before
+
+
+@pytest.mark.parametrize("rail", ["official", "earnings", "quarantined"])
+def test_reviewed_bundle_cannot_approve_a_refused_rail(tmp_path, rail):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    item = json.loads(stage.read_bytes())
+    if rail == "official":
+        item["sources"] = ["official_feed:qualified-release"]
+    elif rail == "earnings":
+        item["id"] = "press-earnings-reviewed"
+    else:
+        item["status"] = "quarantined"
+    stage.write_text(json.dumps(item))
+    with pytest.raises(ValueError):
+        R.prepare_reviewed_bundle(root, stage, bundle, confirm_reviewed=True)
+    assert not bundle.exists()
+
+
+def test_promotion_refuses_changed_retained_stage_and_different_run(tmp_path, monkeypatch):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    cfg = P.load_config(root)
+    R.import_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"])
+    retained = stage.parent / "_reviewed_bundle.json"
+    original = stage.read_bytes()
+    stage.write_bytes(original + b" ")
+    with pytest.raises(ValueError, match="stage"):
+        R.promote_reviewed_bundle(root, cfg, retained, info["bundle_sha256"], info["slot_id"])
+    stage.write_bytes(original)
+    monkeypatch.setenv("GITHUB_RUN_ID", "9999")
+    with pytest.raises(ValueError, match="workflow"):
+        R.promote_reviewed_bundle(root, cfg, retained, info["bundle_sha256"], info["slot_id"])
+
+
+def test_prepare_reviewed_bundle_cli_resolves_paths_against_root(tmp_path, capsys):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    assert R.main(["--root", str(root), "--prepare-reviewed-bundle", str(stage),
+                   "--bundle-output", bundle.relative_to(root).as_posix(), "--confirm-reviewed"]) == 0
+    assert bundle.is_file()
+    assert 'bundle_sha256' in capsys.readouterr().out
+
+
+def test_promotion_rechecks_committed_dependency_changes_after_rebase(tmp_path, monkeypatch):
+    import subprocess
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    cfg = P.load_config(root)
+    R.import_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"])
+    monkeypatch.setattr(R, "_render_blog_subtree", lambda root: ([], []))
+    R.promote_reviewed_bundle(root, cfg, stage.parent / "_reviewed_bundle.json",
+                             info["bundle_sha256"], info["slot_id"])
+    # Simulate a clean rebase that changes the actual validator.
+    added = root / "engine/press/validators.py"
+    added.parent.mkdir(parents=True, exist_ok=True)
+    added.write_text('new_behavior = True\n')
+    subprocess.run(["git", "-C", str(root), "add", str(added)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "upstream dependency"],
+                   check=True, capture_output=True)
+    with pytest.raises(ValueError, match="changed"):
+        R.check_reviewed_bundle(root, cfg, bundle, info["bundle_sha256"], info["slot_id"], published=True)
+
+
+@pytest.mark.parametrize("change", ["unrelated_report", "template"])
+def test_reviewed_promotion_allows_unrelated_catalog_and_current_ui(tmp_path, monkeypatch, change):
+    import subprocess
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    item = json.loads(stage.read_bytes())
+    ref = "research_vault:marketdesk-demo1-aaa111"
+    item["sources"] = item["slot"]["sources"] = [ref]
+    stage.write_text(json.dumps(item))
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    if change == "unrelated_report":
+        path = root / "data/research_vault/catalog.json"
+        catalog = json.loads(path.read_bytes())
+        catalog["items"].append({"id": "new-unrelated-report", "summary_points": ["New unrelated content"]})
+        path.write_text(json.dumps(catalog))
+    else:
+        path = root / "templates/press/press_news.css"
+        path.write_text(path.read_text() + '\n/* Current UI theme */\n')
+    subprocess.run(["git", "-C", str(root), "add", str(path)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "unrelated upstream update"],
+                   check=True, capture_output=True)
+    R.check_reviewed_bundle(root, P.load_config(root), bundle, info["bundle_sha256"], info["slot_id"])
+
+
+def test_reviewed_promotion_refuses_changed_referenced_report(tmp_path, monkeypatch):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    item = json.loads(stage.read_bytes())
+    item["sources"] = item["slot"]["sources"] = ["research_vault:marketdesk-demo1-aaa111"]
+    stage.write_text(json.dumps(item))
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(path.read_bytes())
+    catalog["items"][0]["summary_points"] = ["Corrected source evidence"]
+    path.write_text(json.dumps(catalog))
+    with pytest.raises(ValueError, match="changed"):
+        R.check_reviewed_bundle(root, P.load_config(root), bundle, info["bundle_sha256"], info["slot_id"])
+
+
+def test_reviewed_bundle_survives_squash_source_history(tmp_path, monkeypatch):
+    import subprocess
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    tree = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD^{tree}"], text=True).strip()
+    squash = subprocess.check_output(["git", "-C", str(root), "commit-tree", tree, "-m", "protected squash"], text=True).strip()
+    subprocess.run(["git", "-C", str(root), "update-ref", "HEAD", squash], check=True, capture_output=True)
+    _press_workflow_env(monkeypatch, root)
+    # The protected squash has identical reviewed bytes but different ancestry.
+    R.check_reviewed_bundle(root, P.load_config(root), bundle, info["bundle_sha256"], info["slot_id"])
+
+
+@pytest.mark.parametrize("changed", [False, True])
+def test_reviewed_mover_fragment_binds_the_underlying_artifact(tmp_path, monkeypatch, changed):
+    root, stage, bundle = _reviewed_fixture(tmp_path)
+    item = json.loads(stage.read_bytes())
+    ref = "artifact:data/gex/latest.json#SPY"
+    item["sources"] = item["slot"]["sources"] = [ref]
+    stage.write_text(json.dumps(item))
+    info = _commit_reviewed_bundle(root, stage, bundle)
+    _press_workflow_env(monkeypatch, root)
+    if changed:
+        path = root / "data/gex/latest.json"
+        path.write_text(path.read_text() + "\n ")
+        with pytest.raises(ValueError, match="changed"):
+            R.check_reviewed_bundle(root, P.load_config(root), bundle,
+                                    info["bundle_sha256"], info["slot_id"])
+    else:
+        checked = R.check_reviewed_bundle(root, P.load_config(root), bundle,
+                                          info["bundle_sha256"], info["slot_id"])
+        assert ref in checked["bundle"]["dependencies"]
+
 
 
 # Private shared-news consumer: real qbus storage, real prompt assembly and

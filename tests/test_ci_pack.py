@@ -4907,6 +4907,11 @@ CURATED_EXCLUSIVE = {
     # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
     # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
     "china-altdata-catalysts",
+    # 2026-10-21 W33-LA: the Macro Signals reader-repair render suites. As a step
+    # in unrun-builders-render they moved the index-template (5,828 > 5,822) and
+    # build_free_content (5,801 > 5,795) packing probes; its own exclusive job keeps
+    # the page template, its includes and the suites; ceilings stay fixed.
+    "macro-signals-conditions",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -5188,9 +5193,10 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     code-gated prophet-lab job and declares the new module and the suite in
     that job's paths. The job was already selected on all three probes, so
     no job joins any probe; the step costs exactly 3 estimator units (one
-    command plus one tests/test_ path). Composed with main 1f536032d44 (the
+    command plus one tests/test_ path). Composed with main a92ee6e9720 (the
     fixed-redirect +2, HK lookup +2, Research API +5 and Shared Shell +7
-    below), packing_probe_measurements on the exported merge tree measured:
+    below, and the W33-LA macro-signals registration), packing_probe_measurements
+    on the exported merge tree measured:
 
         templates/index.html          135 jobs, 5,841 -> 5,844 weight
         scripts/build_free_content.py 135 jobs, 5,814 -> 5,817 weight

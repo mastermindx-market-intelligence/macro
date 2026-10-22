@@ -83,10 +83,12 @@
     if (!requested || !selectTab(requested, { updateUrl: false })) {
       selectTab(tabs[0].getAttribute('data-mq-tab'), { updateUrl: false });
     }
-    window.addEventListener('hashchange', function () {
+    function mqApplyHash() {
       var name = (window.location.hash || '').replace('#', '');
       if (name) selectTab(name, { updateUrl: false });
-    });
+    }
+    window.addEventListener('hashchange', mqApplyHash);
+    window.addEventListener('mmx:shell-location', mqApplyHash);
   }
 
   // --- evidence drawer -----------------------------------------------------

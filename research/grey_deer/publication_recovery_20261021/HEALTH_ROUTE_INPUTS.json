@@ -1,0 +1,76 @@
+{
+  "schema": "grey_deer.isolated_health_route_inputs.v1",
+  "context": {
+    "at": "2026-10-21T12:05:30.323096+00:00",
+    "pid": "3972732",
+    "nonsecret_settings": {
+      "CODEX_PROVIDER_ENABLED": "1",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "BOT_LLM_BACKEND": "waterfall",
+      "METAB_KEYS_ENABLED": "2,3,4,5,6,7",
+      "MASTERMIND_SHARED_LLM_POOL": "1",
+      "CODEX_HOME": "/var/lib/macro-codex",
+      "MASTERMIND_RESP_CACHE_TTL": "30",
+      "MASTERMIND_VPS_AUTHORITATIVE": "1",
+      "MASTERMIND_SERVE_ONLY": "0",
+      "MASTERMIND_JOBSTORE": "memory",
+      "MASTERMIND_MACRO_MANAGED_EXTERNALLY": "1"
+    },
+    "oauth_presence_only": {
+      "DEEPSEEK_API_KEY": true,
+      "CODEX_ACCESS_TOKEN": false,
+      "CODEX_API_KEY": false,
+      "CLAUDE_CODE_OAUTH_TOKEN": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_1": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_2": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_3": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_4": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_5": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_6": true,
+      "CLAUDE_CODE_OAUTH_TOKEN_7": true
+    },
+    "local_env_files": [
+      {
+        "path": "/opt/mastermind/.env",
+        "exists": true
+      },
+      {
+        "path": "/opt/mastermind/.env.local",
+        "exists": false
+      }
+    ],
+    "service_home_is_root": true,
+    "codex_executable": "/usr/bin/codex",
+    "codex_auth_file_present": false
+  },
+  "source_manifest": {
+    "candidate": {
+      "commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+      "files": {
+        "app/main.py": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+        "app/auth.py": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768",
+        "app/response_cache.py": "78cc489be9d1abfef04d41a17dcdcc45ea2f3ce3f6ec60c31ad57399cc7cebb4",
+        "brain/client.py": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f",
+        "brain/cli_bridge.py": "454f6c2f3685d01b5323d0e5529e50cf101d085ebab15366d5518a8533ea7cd8",
+        "brain/codex_bridge.py": "bd1af0b78a40506f1c1b439301cdddd5d5cbc7a3759fb3e835e5842941acdcc4",
+        "brain/provider_waterfall.py": "71c34d863219dbf85acb23a368096a000297b9aa2e098c6dc18b75e5d311c5bb",
+        "brain/key_rotor.py": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50",
+        "bot/__init__.py": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+      }
+    },
+    "baseline": {
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+      "files": {
+        "app/main.py": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+        "app/auth.py": "b9f78476bab0ec04068403e5caea73c9e50bf0aadfd05ef4156375f154810768",
+        "app/response_cache.py": "ee8ca98c904f255552700560d8804f877577276e181f55e1002c1be4c937d1e6",
+        "brain/client.py": "d8e09a42faa2e5a4536d20b2472074be45c2895f89c53217f50bd108181a5c6f",
+        "brain/cli_bridge.py": "a5471b67834ff7894f4e7302c7c42bceb7f0569feadd2b5758dc3fda0919af30",
+        "brain/codex_bridge.py": "eb18a1fecca9d6ec86a97b72af7b3e07da1ddae0ee09b362fab312c29ab405ff",
+        "brain/provider_waterfall.py": "cbebfa0575435c4bf0e50f245d7f2fbec76b5f643d81db7227a1ed7958df919f",
+        "brain/key_rotor.py": "c1b6c5cb2eeb6c64bf03bafe25d3725db03dfd723aac7ad478915a24073c1d50",
+        "bot/__init__.py": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+      }
+    }
+  }
+}
