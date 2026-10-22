@@ -1,0 +1,198 @@
+{
+  "started_at": "2026-10-20T18:40:06.670801+00:00",
+  "before": {
+    "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+    "merge_head": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+    "index_tree": "b0f7a0741674509745401aded2c112434e9b4130",
+    "unstaged": [],
+    "unmerged": ""
+  },
+  "scope": "Actual composed candidate checks; local Python is separate from hosted admission. Original fixture/browser proof already executed; no Terminal or public acceptance.",
+  "python": "Python 3.14.7",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "be6bdd8bb0aa2ed0b640556b74f243a60b5552bac2b7e1787d6cbf1af9b3102c",
+    "tests/test_ci_pack.py": "6da1b24ba6906ca4eb7f75ba2f81de77a77de195f418d1afb840edad788f53d7",
+    "lib/macro_suite_labels.py": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2",
+    "site/macro_labor_markets.html": "95a25e8bd42750c261552e8abb67ea7b4a13004d721f57d018187e95e93146e0",
+    "tests/test_macro_command_copy_law.py": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a",
+    "site/theme.js": "0dc42187afb63e594a33de9017e0607c32b120ef4d60a364384686994bbbad19",
+    "site/mm_brain.js": "8bdbdf84b00512dbefb662beae61351a787a12dab530d16f9269483371057d43",
+    "templates/chat.html": "fff5636b40c45cbd56d55b8848bbbe5a45b99ff9e067b5ddd7de829dbbdb3386",
+    "site/chat.html": "fff5636b40c45cbd56d55b8848bbbe5a45b99ff9e067b5ddd7de829dbbdb3386",
+    "templates/sector_central.html.j2": "2c1728c368f99ad5dd75bd2638f1ffeb54006ef5c85671912eb599e5df09779b",
+    "site/sector_central.html": "a49d8ec8699efc665f3b91c18e630288b04544507ced4deaad1dc008b5630f05"
+  },
+  "commands": [
+    {
+      "name": "packing",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+      ],
+      "started_at": "2026-10-20T18:40:06.688040+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-packing.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:43:01.402582+00:00",
+      "log_bytes": 4691,
+      "log_sha256": "7f2533bc5ba6b75ba944c0a73cffde50ce48c564236dd530a2170e6cb07b7243"
+    },
+    {
+      "name": "labor-suite",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_macro_rates_curves_route.py",
+        "tests/test_macro_monetary_hub.py",
+        "tests/test_macro_suite_pages.py",
+        "tests/test_macro_workspace_prior_publication.py",
+        "tests/test_macro_command_shell.py",
+        "tests/test_macro_command_copy_law.py",
+        "tests/test_macro_command_read_strip.py",
+        "tests/test_macro_command_panels.py",
+        "tests/test_macro_command_empty_states.py",
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_capture_guards.py"
+      ],
+      "started_at": "2026-10-20T18:43:01.404015+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-labor-suite.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:44:44.638545+00:00",
+      "log_bytes": 5333,
+      "log_sha256": "6f9fe99052509f1af119fe3e79328ae63b800c74ddab0803f6a09923d152d7a2"
+    },
+    {
+      "name": "shell-access",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_export_shared_shell_routes.py",
+        "tests/test_shared_shell_injection.py",
+        "tests/test_sector_central_gate.py",
+        "tests/test_site_access_boundary.py",
+        "tests/test_regwall.py",
+        "tests/test_regwall_json_gate.py"
+      ],
+      "started_at": "2026-10-20T18:44:44.639872+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-shell-access.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:27.859342+00:00",
+      "log_bytes": 6851,
+      "log_sha256": "ae666ecdf3f85ac743f9d5bb3ae4c59d6830ce54fb1f9f6df2338d843d02c57c"
+    },
+    {
+      "name": "shell-js",
+      "args": [
+        "node",
+        "--test",
+        "tests/js/shared_shell_bridge.test.cjs",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs",
+        "tests/js/shared_shell_terminal_handoff.test.cjs"
+      ],
+      "started_at": "2026-10-20T18:45:27.860164+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-shell-js.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:29.216047+00:00",
+      "log_bytes": 18098,
+      "log_sha256": "8164c9997d85bfdff910d64d209791ebfc2366b413d9d76ae0705ced7d8be716"
+    },
+    {
+      "name": "p0b-binding",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_stock_dashboard_first_frame.py::test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic",
+        "tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof",
+        "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair"
+      ],
+      "started_at": "2026-10-20T18:45:29.216696+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-p0b-binding.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:39.449379+00:00",
+      "log_bytes": 4679,
+      "log_sha256": "feb910603d58fab160014d31e431648b740165cd1a736341887d5dccc3e77f92"
+    },
+    {
+      "name": "p0b-closure",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-source-changed-paths.txt",
+        "--event",
+        "pull_request"
+      ],
+      "started_at": "2026-10-20T18:45:39.450167+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-p0b-closure.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:39.520832+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "template-sync",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T18:45:39.521683+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-template-sync.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:40.537704+00:00",
+      "log_bytes": 44,
+      "log_sha256": "8978f102ef1207f759ad00b587d8a10ed40d27480ee9a7d3dc0cf1ea10fe9fd2"
+    },
+    {
+      "name": "owned-whitespace",
+      "args": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "diff",
+        "--cached",
+        "--check",
+        "9875169102cc6f36a64d465fe7c06f6bb8fb0220"
+      ],
+      "started_at": "2026-10-20T18:45:40.538209+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-composed-owned-whitespace.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:45:41.542911+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after": {
+    "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+    "merge_head": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+    "index_tree": "b0f7a0741674509745401aded2c112434e9b4130",
+    "unstaged": [],
+    "unmerged": ""
+  },
+  "index_unchanged": true,
+  "source_unchanged": true,
+  "pass": true,
+  "finished_at": "2026-10-20T18:45:42.628660+00:00"
+}
