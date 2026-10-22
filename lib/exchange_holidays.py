@@ -6,7 +6,7 @@ and retain those calendars' historical fallback. Dates list weekday closures onl
 Early closes remain sessions. Times are local and include HKEX's latest CAS end
 (12:10); store-completion settle buffers belong to the existing calendar modules.
 
-CN: SSE/SZSE 2026 notices. HK: SEHK 2026/2027 circulars. US: NYSE 2026/2027
+CN: SSE/SZSE 2026 notices. HK: SEHK 2026/2027 circulars. US: NYSE 2014-2023 and 2026/2027
 with Nasdaq independently corroborating 2026 only. CA: TSX/TSXV 2026; only
 2027 New Year's Day is independently verified, so 2027 is NOT a verified year.
 JP: JPX 2026/2027 cash-equity notices, verified 2026-10-08.
@@ -24,7 +24,15 @@ _SSE = "https://www.sse.com.cn/disclosure/announcement/general/c/c_20251222_1080
 _SZSE = "https://www.szse.cn/disclosure/notice/t20251222_618087.html"
 _HK_2026 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_075_2025.pdf"
 _HK_2027 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2026/ce_SEHK_CT_077_2026.pdf"
+_US_HISTORICAL_VERIFIED_ON = date(2026, 10, 14)
 _NYSE = "https://www.nyse.com/trade/hours-calendars"
+_NYSE_2014_2015 = 'https://ir.theice.com/press/news-details/2013/NYSE-Euronext-Announces-2015-Holiday-Calendar-and-Early-Closings/default.aspx'
+_NYSE_2016 = 'https://ir.theice.com/press/news-details/2014/NYSE-Group-2016-Holiday-Calendar-and-Early-Closings/default.aspx'
+_NYSE_2017 = 'https://ir.theice.com/press/news-details/2016/NYSE-Group-Announces-2017-Holiday-and-Early-Closings-Calendar/default.aspx'
+_NYSE_2018_2020 = 'https://ir.theice.com/press/news-details/2017/NYSE-Group-Announces-2018-2019-and-2020-Holiday-and-Early-Closings-Calendar/default.aspx'
+_NYSE_2021 = 'https://ir.theice.com/press/news-details/2020/NYSE-Group-Announces-2021-2022-and-2023-Holiday-and-Early-Closings-Calendar/default.aspx'
+_NYSE_2022_2023 = 'https://ir.theice.com/press/news-details/2021/NYSE-Group-Announces-2022-2023-and-2024-Holiday-and-Early-Closings-Calendar/default.aspx'
+_NYSE_BUSH = 'https://ir.theice.com/press/news-details/2018/New-York-Stock-Exchange-to-Honor-President-George-H-W-Bush/default.aspx'
 _NASDAQ = "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule"
 _JPX = "https://www.jpx.co.jp/english/corporate/about-jpx/calendar/"
 _TSX = "https://www.tsx.com/en/trading/calendars-and-trading-hours/calendar"
@@ -115,6 +123,117 @@ _ANNOUNCED = MappingProxyType({
         ("Chung Yeung Festival", "10-08"),
         ("Christmas holiday", "12-27"),
     )),
+    ("US", 2014): _slate(2014, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-20"),
+        ("Washington's Birthday", "02-17"),
+        ('Good Friday', "04-18"),
+        ('Memorial Day', "05-26"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-01"),
+        ('Thanksgiving', "11-27"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2015): _slate(2015, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-19"),
+        ("Washington's Birthday", "02-16"),
+        ('Good Friday', "04-03"),
+        ('Memorial Day', "05-25"),
+        ('Independence Day', "07-03"),
+        ('Labor Day', "09-07"),
+        ('Thanksgiving', "11-26"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2016): _slate(2016, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-18"),
+        ("Washington's Birthday", "02-15"),
+        ('Good Friday', "03-25"),
+        ('Memorial Day', "05-30"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-05"),
+        ('Thanksgiving', "11-24"),
+        ('Christmas Day', "12-26"),
+    )),
+    ("US", 2017): _slate(2017, (
+        ("New Year's Day", "01-02"),
+        ('Martin Luther King Jr. Day', "01-16"),
+        ("Washington's Birthday", "02-20"),
+        ('Good Friday', "04-14"),
+        ('Memorial Day', "05-29"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-04"),
+        ('Thanksgiving', "11-23"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2018): _slate(2018, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-15"),
+        ("Washington's Birthday", "02-19"),
+        ('Good Friday', "03-30"),
+        ('Memorial Day', "05-28"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-03"),
+        ('Thanksgiving', "11-22"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2019): _slate(2019, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-21"),
+        ("Washington's Birthday", "02-18"),
+        ('Good Friday', "04-19"),
+        ('Memorial Day', "05-27"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-02"),
+        ('Thanksgiving', "11-28"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2020): _slate(2020, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-20"),
+        ("Washington's Birthday", "02-17"),
+        ('Good Friday', "04-10"),
+        ('Memorial Day', "05-25"),
+        ('Independence Day', "07-03"),
+        ('Labor Day', "09-07"),
+        ('Thanksgiving', "11-26"),
+        ('Christmas Day', "12-25"),
+    )),
+    ("US", 2021): _slate(2021, (
+        ("New Year's Day", "01-01"),
+        ('Martin Luther King Jr. Day', "01-18"),
+        ("Washington's Birthday", "02-15"),
+        ('Good Friday', "04-02"),
+        ('Memorial Day', "05-31"),
+        ('Independence Day', "07-05"),
+        ('Labor Day', "09-06"),
+        ('Thanksgiving', "11-25"),
+        ('Christmas Day', "12-24"),
+    )),
+    ("US", 2022): _slate(2022, (
+        ('Martin Luther King Jr. Day', "01-17"),
+        ("Washington's Birthday", "02-21"),
+        ('Good Friday', "04-15"),
+        ('Memorial Day', "05-30"),
+        ('Juneteenth', "06-20"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-05"),
+        ('Thanksgiving', "11-24"),
+        ('Christmas Day', "12-26"),
+    )),
+    ("US", 2023): _slate(2023, (
+        ("New Year's Day", "01-02"),
+        ('Martin Luther King Jr. Day', "01-16"),
+        ("Washington's Birthday", "02-20"),
+        ('Good Friday', "04-07"),
+        ('Memorial Day', "05-29"),
+        ('Juneteenth', "06-19"),
+        ('Independence Day', "07-04"),
+        ('Labor Day', "09-04"),
+        ('Thanksgiving', "11-23"),
+        ('Christmas Day', "12-25"),
+    )),
     ("US", 2026): _slate(2026, (
         ("New Year's Day", "01-01"),
         ("Martin Luther King Jr. Day", "01-19"),
@@ -168,6 +287,46 @@ _HALF_NAMES = MappingProxyType({
         ("Christmas Eve (early close)", "12-24"),
         ("New Year's Eve (early close)", "12-31"),
     )),
+    ("US", 2014): _slate(2014, (
+        ('Independence Day eve (early close)', "07-03"),
+        ('Day after Thanksgiving (early close)', "11-28"),
+        ('Christmas Eve (early close)', "12-24"),
+    )),
+    ("US", 2015): _slate(2015, (
+        ('Day after Thanksgiving (early close)', "11-27"),
+        ('Christmas Eve (early close)', "12-24"),
+    )),
+    ("US", 2016): _slate(2016, (
+        ('Day after Thanksgiving (early close)', "11-25"),
+    )),
+    ("US", 2017): _slate(2017, (
+        ('Independence Day eve (early close)', "07-03"),
+        ('Day after Thanksgiving (early close)', "11-24"),
+    )),
+    ("US", 2018): _slate(2018, (
+        ('Independence Day eve (early close)', "07-03"),
+        ('Day after Thanksgiving (early close)', "11-23"),
+        ('Christmas Eve (early close)', "12-24"),
+    )),
+    ("US", 2019): _slate(2019, (
+        ('Independence Day eve (early close)', "07-03"),
+        ('Day after Thanksgiving (early close)', "11-29"),
+        ('Christmas Eve (early close)', "12-24"),
+    )),
+    ("US", 2020): _slate(2020, (
+        ('Day after Thanksgiving (early close)', "11-27"),
+        ('Christmas Eve (early close)', "12-24"),
+    )),
+    ("US", 2021): _slate(2021, (
+        ('Day after Thanksgiving (early close)', "11-26"),
+    )),
+    ("US", 2022): _slate(2022, (
+        ('Day after Thanksgiving (early close)', "11-25"),
+    )),
+    ("US", 2023): _slate(2023, (
+        ('Independence Day eve (early close)', "07-03"),
+        ('Day after Thanksgiving (early close)', "11-24"),
+    )),
     ("US", 2026): _slate(2026, (
         ("Day after Thanksgiving (early close)", "11-27"),
         ("Christmas Eve (early close)", "12-24"),
@@ -188,7 +347,19 @@ _YEAR_SOURCES = MappingProxyType({
     "JP": MappingProxyType({2026: (_JPX,), 2027: (_JPX,)}),
     "CN": MappingProxyType({2026: (_SSE, _SZSE)}),
     "HK": MappingProxyType({2026: (_HK_2026,), 2027: (_HK_2027,)}),
-    "US": MappingProxyType({2026: (_NYSE, _NASDAQ), 2027: (_NYSE,)}),
+    "US": MappingProxyType({
+        2014: (_NYSE_2014_2015,),
+        2015: (_NYSE_2014_2015,),
+        2016: (_NYSE_2016,),
+        2017: (_NYSE_2017,),
+        2018: (_NYSE_2018_2020, _NYSE_BUSH,),
+        2019: (_NYSE_2018_2020,),
+        2020: (_NYSE_2018_2020,),
+        2021: (_NYSE_2021,),
+        2022: (_NYSE_2022_2023,),
+        2023: (_NYSE_2022_2023,),
+        2026: (_NYSE, _NASDAQ), 2027: (_NYSE,),
+    }),
     "CA": MappingProxyType({2026: (_TSX,)}),
 })
 _COVERAGE = MappingProxyType({
@@ -199,6 +370,11 @@ _COVERAGE = MappingProxyType({
         "partial_years": frozenset(year for m, year in _PARTIAL if m == market),
         "partial_source_urls": MappingProxyType({2027: (_TSX,)} if market == "CA" else {}),
         "verified_on": date(2026, 10, 8) if market == "JP" else _VERIFIED_ON,
+        "year_verified_on": MappingProxyType({
+            year: (_US_HISTORICAL_VERIFIED_ON if market == "US" and 2014 <= year <= 2023
+                   else date(2026, 10, 8) if market == "JP" else _VERIFIED_ON)
+            for year in year_sources
+        }),
     })
     for market, year_sources in _YEAR_SOURCES.items()
 })
@@ -256,6 +432,7 @@ _NAMES_ZH = MappingProxyType({
     "Lunar New Year's Eve (early close)": "农历除夕（半日市）",
     "Christmas Eve (early close)": "圣诞前夕（半日市）",
     "New Year's Eve (early close)": "除夕（半日市）",
+    "Independence Day eve (early close)": "独立日前夕（半日市）",
     "Day after Thanksgiving (early close)": "感恩节翌日（半日市）",
 })
 

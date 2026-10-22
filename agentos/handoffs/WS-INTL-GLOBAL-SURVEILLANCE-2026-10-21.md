@@ -1,6 +1,6 @@
 ---
 workstream: WS:INTL-GLOBAL-SURVEILLANCE
-session: claude/ssd-intl-gs-seat-r2-8e4e57e69f466313 (Fable Meta-CEO seat d7c4f490, SSD worktree
+session: claude/ssd-intl-gs-seat-r5-8e4e57e69f466313 (Fable Meta-CEO seat d7c4f490, SSD worktree
   intl-gs-seat-r2; earlier tree intl-markets-surveillance-masterplan-a50d55 left mid-rebase, cleanup = git rebase --abort there)
 model: fable
 ended_because: ci_handoff
@@ -40,11 +40,34 @@ changed:
     config/intl_global_universe_v1.json, config/intl_source_rights_matrix_v1.json, engine/intl_global_universe.py,
     tests (14), CI job international-global-universe (pack 9). MERGED by seat at exact head → main 5d454fbeb43e
     (GitHub mergeCommit read).
-- path: 'PR #9937 (seat branch claude/ssd-intl-gs-seat-r2-8e4e57e69f466313 @7b75f4c6, draft)'
+- path: 'PR #9937 (seat branch claude/ssd-intl-gs-seat-r2-8e4e57e69f466313, head 1b45b1d0)'
   what: >
     R14 design freeze: research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md (789 lines),
     mockups/refs/intl-gs-r14/ (14 PNG boards + CONTRAST_TABLE.md), agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md,
-    this handoff + workstream updates. Rung CI; merge is seat-only after the rollup completes.
+    this handoff + workstream updates. MERGED by seat at exact head 1b45b1d0 → main
+    556d3333210b5b27eb1456c3e1a6d99a9bc034e4 (GitHub mergeCommit read, 05:52:24Z); ORCH-2/ORCH-3 told SPEC ON MAIN.
+- path: 'PR #9943 (IM15 qualified cross-market dislocation, fabric lane INTL-GS-W3A + review + fix + CONFIRM PASS)'
+  what: >
+    engine/intl_global_dislocation.py (627) + tests/test_intl_global_dislocation.py (917) registered in the international
+    pack. MERGED by seat at exact head a7340535 → main 63f3bc835ab23928899ff173994a1d1db48b161c (GitHub mergeCommit read,
+    08:31:59Z). Frozen owners (contagion_links, contagion, risk_radar_intl, IM11/IM12 modules) untouched.
+- path: 'PR #9944 (IM16 dollar/EM credit transmission + acceptance matrix, fabric lane INTL-GS-W3B + review + fix + REREVIEW PASS)'
+  what: >
+    IM16 engine side: engine/intl_global_dollar_credit.py, engine/intl_global_acceptance_matrix.py (counts-only), two suites,
+    CI job international-global-universe extended (pandas/numpy/pyarrow in its single install step). MERGED by seat at exact
+    head 37c10fc6 → main 2d50943eb154430efda02ffc117bb37b5addc242 (GitHub mergeCommit read, 08:42:08Z). Gaps by fact: cds_5y ×63 no source; FRED/ICE series no rights row; im16_complete=False.
+- path: 'PR #9960 (IM17 typed transmission evidence engine, fabric lane INTL-GS-W4A + independent review r4 PASS)'
+  what: >
+    engine/intl_transmission_evidence.py (1544) + config/intl_transmission_channels_v1.json (366) +
+    tests/test_intl_transmission_evidence.py (1034, 21 tests) + NEW exclusive CI job international-transmission-evidence
+    (one legacy-jobs.yml hunk, paths cover all 16 first-party imports) + its curated pin. MERGED by seat at exact head
+    8aa58025 → main 5c6fdb2ed1f013ffc008fde904e3be72b4524873 (GitHub mergeCommit read, 11:26:07Z). Frozen contagion_links / contagion untouched;
+    six builder mutants each killed by a named test; reviewer killed two more. Documented-exposure values all null by
+    rights fact (withheld, never 0); only the two frozen house models display. W4B UI not produced yet (gated on W2).
+- path: agentos/decisions/DEC-INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS.md
+  what: >
+    PROPOSED (not decided) rights rows for FRED-hosted US-government series DTWEXBGS/DFII10; ICE BofA series stay without a
+    row. One Chairman confirmation unlocks a follow-up fabric lane; nothing in config/ changes until then.
 verified:
 - claim: Baseline 401 on all nine assets, 200 on intl.html (curl, 2026-10-21 ~02:5xZ).
   command: 'for p in /intl.html /intl_workspace.css /intl_workspace_entry.js; do curl -s -o /dev/null
@@ -62,20 +85,27 @@ verified:
   command: 'python3 -m pytest tests/test_intl_global_universe.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py -q -p no:cacheprovider  # 38 passed'
 - claim: Fabric lane verdicts for Wave 1 consumed by the seat (W1A review PASS; W1B review FAIL -> FIX -> REREVIEW PASS).
   command: 'grep -E ''^INTL-GS-W1'' "$K/orch/fabric/out/INTL-GS-W1A-REVIEW.out" "$K/orch/fabric/out/INTL-GS-W1B-REREVIEW.out"; cat "$K/orch/fabric/reviews/INTL-GS-W1A.md" "$K/orch/fabric/reviews/INTL-GS-W1B.md"'
+- claim: R14 freeze PR merged at its exact reviewed head after a complete rollup (only standing non-gating merge-queue-pilot X).
+  command: 'gh pr view 9937 --json state,mergeCommit,mergedAt --jq ".state+\" \"+.mergeCommit.oid+\" \"+.mergedAt"  # MERGED 556d3333… 2026-10-21T05:52:24Z'
+- claim: IM15 merged at its exact reviewed head after a complete rollup (27 checks, only the standing merge-queue-pilot X).
+  command: 'gh pr view 9943 --json state,mergeCommit,mergedAt --jq ".state+\" \"+.mergeCommit.oid+\" \"+.mergedAt"  # MERGED 63f3bc83… 2026-10-21T08:31:59Z'
+- claim: Main baselines for the Wave 1 and R14 landings are green by ancestry (no ci.yml run is scheduled for a merge sha itself).
+  command: 'git merge-base --is-ancestor 5d454fbe… b6fd3e8d && git merge-base --is-ancestor 556d3333… b6fd3e8d  # both yes; run 39559296162 on b6fd3e8d SUCCESS 07:02Z'
+- claim: Wave 3 suites on the seat tree — 90 passed, 2 failed, both FileNotFoundError data/fred/DTWEXBGS.parquet (sparse checkout; file tracked on main).
+  command: 'python3 -m pytest tests/test_intl_global_dislocation.py tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q -p no:cacheprovider  # on overlaid lane files, then removed'
+- claim: IM17 engine merged at its exact reviewed head after a complete rollup (26 checks, only the standing merge-queue-pilot X); clean merge-tree against main 1c99ae69.
+  command: 'gh pr view 9960 --json state,mergeCommit,mergedAt --jq ".state+\" \"+.mergeCommit.oid+\" \"+.mergedAt"  # MERGED 5c6fdb2e… 2026-10-21T11:26:07Z'
 - claim: R14 freeze record validates under Agent OS; frozen rulings carry confidence/reversibility/review_by.
   command: 'python3 scripts/agentos.py validate --paths agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md  # 0 errors'
 unverified:
-- 'PR #9937 CI rollup on head 7b75f4c6 (watcher scratchpad/watch_pr.sh 9937 7b75f4c6; standing non-gating X = ci-authority/codex/merge-queue-pilot).
-
-  '
-- 'Main baseline ci.yml for 5d454fbe (combined Wave 1 landing proof; watcher scratchpad/watch_main.sh 5d454fbe…).
+- 'Main baselines for 63f3bc83 (IM15), 2d50943e (IM16), 6a2a9244 (records) and 5c6fdb2e (IM17 engine): prove by ancestry of the newest green main run, never by a per-sha watcher.
 
   '
 - 'Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
 
   '
-- 'ORCH-2 (Wave 2: foundation + IM13 scanner + IM14 dossier, fabric lanes) and ORCH-3 (Wave 3: IM15 dislocation
-  + IM16 EM credit/dollar engines, fabric lanes) RUNNING as Opus orchestrators; no PR from either consumed yet.
+- 'ORCH-2 (Wave 2: foundation PR #9949 @b2eae89c open, review r4 running on ubuntu3 as of 11:0xZ, then IM13/IM14) RUNNING;
+  ORCH-4 returned W4A (merged) and holds W4B NOT STARTED until the seat says "W2 ON MAIN <sha>" (sha must contain #9949 and 5c6fdb2e).
 
   '
 unresolved:
@@ -89,8 +119,8 @@ unresolved:
 
   '
 next_actions:
-- 'When watch_pr.sh reports #9937 complete: gh pr ready 9937; gh pr merge 9937 --squash --match-head-commit <full head>;
-  read mergeCommit; SendMessage ORCH-2 and ORCH-3 "SPEC ON MAIN <sha>".
+- 'ORCH-4 messaged "W4A ON MAIN 5c6fdb2e" (11:2xZ); prove the 63f3bc83/2d50943e/6a2a9244/5c6fdb2e main baselines by
+  ancestry of the newest green main run at the next boundary.
 
   '
 - 'Consume ORCH-2 FOUNDATION_READY → seat verifies the foundation PR (open the evidence crops under
@@ -98,16 +128,22 @@ next_actions:
   served-journey proof on mastermind-x.com/intl.html.
 
   '
-- 'Consume ORCH-3 return → verify W3A/W3B PRs → merge → WS IM15/IM16 done; record IM16 data gaps honestly
-  (market-by-capability matrix is mandatory, no invented coverage).
+- 'After "W2 ON MAIN": consume ORCH-4 W4B return → verify 8 crops under mockups/evidence/intl-gs-w4b/ → merge → WS IM17 done.
 
   '
-- 'Waves 3-UI/4/5 per masterplan §15 (free Opus slot only after ORCH-2/ORCH-3 finish); §14 hard acceptance
-  tests before any production claim.
+- 'Wave 3 UI (boards 11/12 on the W2 foundation) and Wave 5 IM18 (scratchpad orch5_commission_draft.txt) when an Opus
+  slot frees; §14 hard acceptance tests (scratchpad s14_acceptance_matrix.md) before any production claim.
+
+  '
+- 'Chairman confirmation of DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS (asked once in the seat report) → follow-up
+  fabric lane adds the two FRED rows + rights_ref wiring; on no, mark the record declined.
 
   '
 do_not_redo:
 - 'Wave 0 asset extraction and its review (PR #9920) — accepted; do not re-extract from #9596.
+
+  '
+- 'W4A IM17 engine (#9960 → 5c6fdb2e) — merged and seat-verified; NIT-3/NIT-4 are optional later tightening, not a revision lane.
 
   '
 - 'Wave 1 IM11 (#9924 → 5d454fbe) and IM12 (#9923 → 0062e28f) — merged and seat-verified.
@@ -116,7 +152,10 @@ do_not_redo:
 - 'R14 design freeze (DEC:INTL-GS-R14-DESIGN-FREEZE, spec, 14 boards) — frozen; re-open only on a material invalidator.
 
   '
-- 'Do not re-spawn ORCH-1, ORCH-D, ORCH-2 or ORCH-3; message them by id. Never relaunch a used fabric lane run-id.
+- 'Wave 3 IM15 (#9943 → 63f3bc83) — merged and seat-verified; IM16 (#9944 → 2d50943e) — merged and seat-verified.
+
+  '
+- 'Do not re-spawn ORCH-1, ORCH-D, ORCH-2, ORCH-3 or ORCH-4; message them by id. Never relaunch a used fabric lane run-id.
 
   '
 danger_areas:
@@ -130,16 +169,22 @@ danger_areas:
   receipts. Economic policy refuses glm-5.3 for leaf labor; use glm-5.3-flash or the escalation env.
 
   '
+- 'A push to main schedules NO ci.yml run for the merge sha itself: `watch_main.sh <sha>` loops forever. Prove a
+  baseline by ancestry of the newest green main run.
+
+  '
 - 'git checkout --detach / a conflicted rebase inside the SSD session tree quarantines every tool; remedy
   = mint a NEW tree, EnterWorktree, cherry-pick.
 
   '
 ---
 
-# INTL-GLOBAL-SURVEILLANCE — seat handoff 2026-10-21 (Wave 1 → Wave 2 boundary)
+# INTL-GLOBAL-SURVEILLANCE — seat handoff 2026-10-21 (Wave 3 engines landing)
 
 Program state lives in research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md;
 read its newest checkpoint first. This record is the Agent OS pointer, not a second ledger.
 
-Proven rungs at this write: #9920 PRODUCTION_PROOF; #9923 and #9924 MERGED (GitHub mergeCommit reads),
-their combined main baseline at CI; #9937 (R14 freeze) at CI; ORCH-2 and ORCH-3 RUNNING on fabric.
+Proven rungs at this write (11:3xZ): #9920 PRODUCTION_PROOF; #9923, #9924, #9937, #9939, #9943, #9944, #9952 and #9960
+MERGED (GitHub mergeCommit reads: 0062e28f, 5d454fbe, 556d3333, 5f82b33a, 63f3bc83, 2d50943e, 6a2a9244, 5c6fdb2e);
+Wave 1 + R14 main baselines green by ancestry (run 39559296162); ORCH-2 RUNNING, ORCH-4 holding W4B, ORCH-3 COMPLETED.
+Seat branch rotated to claude/ssd-intl-gs-seat-r5-8e4e57e69f466313 from main 1c99ae69 in the same SSD tree.

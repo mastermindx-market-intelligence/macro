@@ -65,7 +65,11 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
 
     A-MOR-2b lane B inserted the @am_edition_live overlay handle inside
     handle @open_html's route block — that pushed the last reverse_proxy at
-    line 772 down to line 793. The proxy COUNT (7) and the OTHER six lines
+    line 772 down to line 793. Shared Shell document headers and the beta
+    virtual host then move that final proxy to line 849 (including the
+    three-line EdgeOne origin TLS clarification). The exact opt-in HTML
+    cache selector adds eleven lines, moving it to line 860. Its fixed rewrite,
+    the proxy COUNT (7), and the OTHER six lines
     (121, 146, 350, 359, 392, 430) are unchanged; the topology guard itself
     is unchanged. If you find yourself changing a count or classification
     here, you almost certainly widened the static-access boundary — read
@@ -79,7 +83,7 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
         359: SAFE_FIXED_REWRITE,
         392: SAFE_FIXED_REWRITE,
         430: SAFE_FIXED_REWRITE,
-        793: SAFE_FIXED_REWRITE,
+        860: SAFE_FIXED_REWRITE,
     }
 
 
