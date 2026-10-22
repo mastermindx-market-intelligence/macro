@@ -265,3 +265,135 @@ Each GAP names what the UI does today in its absence.
 2. Match every matrix cell (dark/light × EN/ZH × 1440/390) against `png/` and post the crops in the PR.
 3. Keep the 371-leaf index at 390px with no horizontal scroll.
 4. Bind each GAP above to a real contract, or keep its honest unknown state. Never a hidden zero.
+
+## 9. Round 2 (2026-10-22): repair after REQUEST_REPAIR on #10054 @ `9559450d`
+
+The coordinator reviewed round 1 and returned six defects (D1–D6). Round 2 repairs them on the same branch and PR.
+It keeps the following unchanged: the copy deck, every §0 gate in SPECS, the tracked uppercase eyebrows (ZH stays
+untracked per doctrine §13), and S3/S4/S5 apart from where the shared node idiom reaches them.
+
+### D1. S1 composition: one signature ladder, two elevation levels
+
+- **Before.** The S1 fold had six bordered panels at similar weight: answer, lineage ladder, facet, field table,
+  unknowns and relationships. The ladder was four equal rungs, so "where Micron sits" read as a category walk
+  rather than an answer.
+- **After: one hero.** `.gmi-band.gmi-hero1` is the only raised surface. Its contents, in order:
+  - the taxonomy ladder (`.gmi-chain--ladder`);
+  - the held status ("Held for review");
+  - the plain answer, below a hairline.
+- **The ladder is anchored on the micro-theme.** "HBM & advanced packaging" leads with a 22px ring+dot pip at
+  h1 scale. Each ancestor recedes in pip size, name size, weight and ink:
+  - sub-theme: a hollow pip on a dashed connector ("None — sits directly under its theme");
+  - theme: "AI Semiconductors";
+  - category: "Semiconductors & hardware".
+
+  Connector ink steps down 48% → 34% → 22%. The secondary parents stay one line under their step ("Also listed
+  under Memory, HBM & Storage"), so the cross-listing is shown without a second ladder.
+- **Below the hero: flat sections, plus one quiet side sheet.**
+  - The flat sections are the value-chain facet and the proposal field table (`.gmi-flat`). They have no fill,
+    no edge and no shadow, and are separated only by a rule.
+  - "What we don't know yet" and "Documented relationships" share one side sheet (`.gmi-sheet`), with an
+    internal divider.
+- **Elevation budget.** Two levels: the hero and the sheet.
+
+### D2. S1 light is a research workspace you can see
+
+TP-0 law requires light to be a separate art direction, and a token swap is not one. In S1 light, five mechanisms
+differ from dark and are visible without a toggle:
+
+| Mechanism | Dark (command center) | Light (research workspace) |
+|---|---|---|
+| Hero | luminance wash + inset elevation | white card, hairline, two-layer shadow |
+| Section heads | 1px `--gmi-hair` luminance hairline | 1.5px `--text` ink rule |
+| Proposal field table | rows on hairlines | ruled ledger sheet: `--panel2` label column + vertical rule (`.gmi-dl--ledger`) |
+| Side sheet | one luminance step (`--gmi-step`) + hair edge, no shadow | recessed tray: `--panel2` + `--gmi-tray` inset shadow |
+| Held pip | ring + dot + bloom | ring + dot, no bloom |
+
+The new token is `--gmi-tray`, a composition with no new hue: `none` in dark, `inset 0 1px 2px rgba(20,30,50,.05)`
+in light. SPECS §4 carries the full table. Evidence:
+- `png/s1_issuer_light_en_1440.png`;
+- `png/r2/s1_dark_vs_light_en_1440.png`.
+
+### D3. S2 at 390 keeps a compact jump
+
+- **Before.** At ≤640 the category jump was hidden and only the group headers stuck.
+- **After: a sticky jump strip** (`.gmi-jump`).
+  - It is pinned at top 0, sits full-bleed, holds one line and scrolls sideways.
+  - Mechanics: scroll-snap, a hidden scrollbar and a 32px edge fade that signals more chips. Chips are 40px tall.
+- **Category headers** stick at 57px under the strip. Groups carry `scroll-margin-top:57px`, so a jump lands
+  below both bars.
+- **Behaviour.**
+  - Clicking a chip opens the group and scrolls to it. The URL hash, which holds the lens state, is not touched.
+  - An `IntersectionObserver` marks the current group's chip `aria-current` and scrolls it into the strip.
+- **The DOM gate is unchanged.** Re-run after round 2, each of the four theme×lang cells at 390 shows 371 visible
+  `.gmi-irow-name` elements, with the jump `position: sticky` and the header at top 57px.
+- Evidence:
+  - `png/r2/s2_index_{dark,light}_en_390_top1200.png`;
+  - `png/r2/s2_index_{dark_en,dark_zh,light_en}_390_midlist.png`, a scrolled viewport with the strip and a
+    header both stuck.
+
+### D4. One node idiom
+
+`.gmi-chain` (SPECS §11, CSS section O) replaces two different idioms:
+- round 1's S1 rungs;
+- round 1's S3/S5 path, which used bordered boxes joined by arrowheads (`.gmi-pnode` / `.gmi-pedge`).
+
+The round-1 classes are removed from the CSS. The grammar:
+- **Steps.** A step is a pip plus words. Pip shape is the state: **solid** = on file, **ring + dot** = held for
+  review, **hollow** = nothing on file.
+- **Connectors.** A connector into a hollow pip is dashed.
+- **Shape split.** Circles are chain nodes and squares stay census cells, so the two survey idioms never collide.
+- **Edge labels.** On S3/S5 they ride above their connector ("supplies · no condition stated").
+- **Layout.** Above 760px the chain is horizontal. At ≤760px every chain becomes a vertical rail with labels
+  under the node.
+
+Where it applies:
+- **S3's "Where this link leads":** Skyworks (solid) → Apple (solid) → a dashed hop to a hollow "No documented
+  links from Apple yet".
+- **S5's conditioned-path template:** the same chain.
+
+Evidence:
+- `png/r2/s1_vs_s3_node_pair_{dark,light}_1440.png`, the S1 ladder stacked over the S3 path at 1440;
+- `png/r2/ba/s3_path_*` and `png/r2/ba/s5_path_*`.
+
+### D5. Before/after boards (the capture record format is accepted)
+
+The Paper file is **"GMI Explorer 2026-10-22 — Round 2"**. It is a new file because the round-1 file reached the
+tool's size limit. It holds one board per changed surface, each with before and after on the same board:
+- **S1 Issuer:** 1440, dark and light, plus the D2 mechanisms table.
+- **S2 Theme index at 390:** the top of the page and mid-list.
+- **S3 Relationships:** the path at 1440 and at 390.
+- **S5 Degraded states:** the template path at 1440 and 390, plus the full states sheet, dark and light.
+
+Each board was reviewed by screenshot. The before halves are in `png/r2/ba/*_before.png`. The after halves are the
+regenerated matrix PNGs, or crops of them in `png/r2/ba/*_after.png`.
+
+### D6. Regenerated matrix and checks
+
+The generator re-rendered all 60 matrix PNGs: 7 stems × 1440/390 × dark/light × EN/ZH, plus 4 cells of
+371-leaf proof. Checks run on the round-2 tree:
+
+| Check | Result |
+|---|---|
+| 390 overflow, 6 pages × dark/light × EN/ZH | 24 of 24 cells `scrollWidth == 390` |
+| S2 371-row DOM gate at 390, dark/light × EN/ZH | 371 visible `.gmi-irow-name` in all 4 cells; jump sticky, header top 57px |
+| `scripts/check_design_system.py --mode enforce-added` (diff vs merge base `9b48e798`) | blocking = 0 |
+| `scripts/check_ui_visual_evidence.py` (same diff) | rc 0 |
+| `git diff --stat 9b48e798 -- templates site scripts engine config` | empty |
+
+### Round-2 deviations
+
+- **Regeneration and crops ran principal-direct, not on a fabric lane.** Each crop was a judgment call
+  (which viewport, which scroll position shows the sticky strip working), interleaved with CSS repairs. Framing a
+  packet for each would have cost more than producing the crop. No fabric worker started for this work.
+- **A new Paper file** was created for round 2. The round-1 file is untouched.
+- **`scripts/check_runtime_style_injection.py`** refuses to run in this sparse worktree, so it was not run. The
+  round-2 specimens inject no runtime stylesheet: the only scripts are theme/lang/lens state, the index jump and
+  its observer. The implementation PR runs the check in a full checkout.
+
+### What changes for the implementation PR (in addition to §8)
+
+5. Implement `.gmi-chain` once and use it for the S1 ladder, the S3 path and the S5 template. Never reintroduce
+   path boxes or rungs.
+6. Keep S1 at two elevation levels. Keep the five light mechanisms of D2 as written CSS, not as a token swap.
+7. Keep the S2 phone jump strip, the 57px sticky headers and the hash-preserving chip click. Keep the 371-row gate.

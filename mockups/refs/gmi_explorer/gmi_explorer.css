@@ -50,6 +50,7 @@ html[data-lang="zh"] :is(h1,h2,h3,.eyebrow){ letter-spacing:0; text-transform:no
   --gmi-select:     0 0 0 1px var(--link), 0 0 22px -8px color-mix(in srgb, var(--link) 70%, transparent);
   --gmi-hero-wash:  radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--info) 9%, transparent), transparent 62%);
   --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--info) 16%, transparent), 0 0 14px 0 color-mix(in srgb, var(--info) 55%, transparent);
+  --gmi-tray:       none;                                              /* side sheet: dark = luminance only */
   --gmi-cell:14px; --gmi-cell-gap:5px;
 }
 html[data-theme="light"]{
@@ -63,6 +64,7 @@ html[data-theme="light"]{
   --gmi-select:     0 0 0 2px var(--link);
   --gmi-hero-wash:  none;
   --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--ink-info) 14%, transparent);
+  --gmi-tray:       inset 0 1px 2px rgba(20,30,50,.05);                 /* light: a recessed tray */
 }
 @media (max-width:640px){ :root{ --gmi-cell:10px; --gmi-cell-gap:3px; } }
 
@@ -273,25 +275,7 @@ html[data-lang="zh"] .gmi-index-t{ letter-spacing:0; text-transform:none; font-s
 .gmi-ticker{ font:600 var(--fs-sm)/1 var(--font-mono); padding:5px 8px; border-radius:6px; border:1px solid var(--gmi-hair); color:var(--muted); }
 .gmi-answer{ font-size:var(--fs-md); line-height:1.45; margin:0; max-width:64ch; }
 .gmi-answer b{ font-weight:700; }
-.gmi-lineage{ display:flex; align-items:stretch; gap:0; }
-.gmi-rung{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:6px; padding:14px 16px; border-radius:var(--r-card);
-  border:1px solid var(--gmi-hair); background:color-mix(in srgb, var(--panel2) 60%, transparent); }
-html[data-theme="light"] .gmi-rung{ background:var(--panel); border-color:var(--line); }
-.gmi-rung-lvl{ font-size:var(--fs-label); color:var(--muted); font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
-html[data-lang="zh"] .gmi-rung-lvl{ letter-spacing:0; text-transform:none; }
-.gmi-rung-name{ font-size:var(--fs-md); font-weight:700; line-height:1.25; }
-.gmi-rung-note{ font-size:var(--fs-sm); color:var(--muted); }
-.gmi-rung--held{ box-shadow:var(--gmi-select); border-color:transparent; }
-html:not([data-theme="light"]) .gmi-rung--held{ background:var(--gmi-hero-wash), var(--panel2); }
-.gmi-rung--void{ background:transparent; border-style:dashed; }
-html[data-theme="light"] .gmi-rung--void{ background:transparent; }
-.gmi-rung--void .gmi-rung-name{ color:var(--muted); font-weight:500; font-size:var(--fs-sm); }
-.gmi-link{ flex:0 0 28px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
-.gmi-link svg{ width:16px; height:16px; }
-@media (max-width:760px){
-  .gmi-lineage{ flex-direction:column; }
-  .gmi-link{ flex:0 0 22px; } .gmi-link svg{ transform:rotate(90deg); }
-}
+/* round 2: the lineage ladder moved to section O (.gmi-chain) */
 .gmi-status{ display:flex; align-items:flex-start; gap:12px; }
 .gmi-status-t{ font-size:var(--fs-md); font-weight:700; color:var(--ink-info); }
 .gmi-status-s{ font-size:var(--fs-sm); color:var(--muted); }
@@ -328,28 +312,7 @@ html[data-theme="light"] .gmi-thread li::before{ background:var(--line); }
 .gmi-node--re{ background:transparent; box-shadow:inset 0 0 0 1.5px var(--gmi-mark); }
 .gmi-node--am{ background:transparent; box-shadow:inset 0 0 0 1.5px var(--ink-info); }
 .gmi-thread time{ display:block; font-size:var(--fs-label); color:var(--muted); font-variant-numeric:tabular-nums; }
-.gmi-path{ display:flex; align-items:stretch; gap:0; flex-wrap:nowrap; }
-.gmi-pnode{ flex:0 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; justify-content:center; padding:12px 14px;
-  border-radius:var(--r-card); border:1px solid var(--gmi-hair); background:var(--panel2); }
-html[data-theme="light"] .gmi-pnode{ background:var(--panel); border-color:var(--line); }
-.gmi-pnode b{ font-size:var(--fs-body); }
-.gmi-pnode small{ font-size:var(--fs-label); color:var(--muted); }
-.gmi-pnode--void{ background:transparent; border-style:dashed; color:var(--muted); }
-html[data-theme="light"] .gmi-pnode--void{ background:transparent; }
-.gmi-pedge{ flex:1 1 140px; min-width:96px; display:flex; flex-direction:column; justify-content:center; gap:4px; padding:0 10px; }
-.gmi-pedge-line{ height:0; border-top:1.5px solid var(--gmi-mark-faint); position:relative; }
-.gmi-pedge-line::after{ content:""; position:absolute; right:-1px; top:-5px; border:4.5px solid transparent; border-left:7px solid var(--gmi-mark-faint); border-right:0; }
-.gmi-pedge--void .gmi-pedge-line{ border-top-style:dashed; }
-.gmi-pedge-lab{ font-size:var(--fs-label); color:var(--muted); text-align:center; line-height:1.35; }
-@media (max-width:760px){
-  .gmi-path{ flex-direction:column; }
-  .gmi-pedge{ flex:none; min-height:56px; padding:6px 0 6px 18px; }
-  .gmi-pedge-line{ position:absolute; }
-  .gmi-pedge{ position:relative; border-left:1.5px solid var(--gmi-mark-faint); margin-left:14px; }
-  .gmi-pedge--void{ border-left-style:dashed; }
-  .gmi-pedge-line{ display:none; }
-  .gmi-pedge-lab{ text-align:left; }
-}
+/* round 2: documented paths moved to section O (.gmi-chain) */
 .gmi-species{ display:flex; flex-wrap:wrap; gap:8px; }
 .gmi-spec{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--r-pill);
   border:1px solid var(--gmi-hair); font-size:var(--fs-sm); color:var(--muted); background:transparent; }
@@ -428,7 +391,8 @@ html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
 .gmi-list li{ display:flex; gap:10px; align-items:baseline; padding:8px 0; border-top:1px solid var(--gmi-hair); font-size:var(--fs-sm); }
 .gmi-list li:first-child{ border-top:0; }
 .gmi-list li > span:last-child{ margin-left:auto; color:var(--muted); white-space:nowrap; font-size:var(--fs-label); }
-.gmi-jump{ display:flex; flex-wrap:wrap; gap:8px; }
+.gmi-jump{ position:relative; }
+.gmi-jump-track{ display:flex; flex-wrap:wrap; gap:8px; }
 .gmi-jump a{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--r-pill);
   border:1px solid var(--gmi-hair); font-size:var(--fs-sm); color:var(--text); }
 .gmi-jump a small{ color:var(--muted); font-variant-numeric:tabular-nums; font-size:var(--fs-label); }
@@ -438,8 +402,9 @@ html[data-theme="light"] .gmi-jump a{ background:var(--panel); border-color:var(
   border-radius:var(--r-card); box-shadow:var(--gmi-elev); overflow:clip; }
 .gmi-index-group > .gmi-index-h{ margin:0; }
 .gmi-index-group .gmi-irow:first-of-type{ border-top:0; }
-@media (max-width:640px){ .gmi-index{ gap:10px; } .gmi-jump{ display:none; }
-  .gmi-index-hc{ display:none; } }
+.gmi-jump a[aria-current="true"]{ box-shadow:var(--gmi-select); border-color:transparent; }
+.gmi-indexwrap{ display:flex; flex-direction:column; gap:var(--sp-4); }
+@media (max-width:640px){ .gmi-index{ gap:10px; } .gmi-index-hc{ display:none; } }
 
 /* prose list variant: the last span is a sentence, not a trailing value */
 .gmi-list--prose li > span:last-child{ margin-left:0; white-space:normal; color:var(--text); font-size:var(--fs-sm); }
@@ -461,3 +426,110 @@ html[data-lang="zh"] .gmi-facet-h{ letter-spacing:0; text-transform:none; font-s
 .gmi-relgrid-b .gmi-dl{ margin-top:-6px; }
 .gmi-scope{ margin:0; font-size:var(--fs-sm); line-height:1.55; color:var(--muted); max-width:60ch; }
 @media (max-width:900px){ .gmi-relgrid{ grid-template-columns:minmax(0,1fr); } .gmi-relgrid-b .gmi-dl{ margin-top:0; } }
+
+/* ---------- O. round 2: one node grammar, S1 composition, phone jump strip ------- */
+/* .gmi-chain is the ONE node idiom of the explorer: S1's taxonomy ladder and S3/S5's
+   documented paths. A step = pip + words; a connector joins pip to pip with a 5px air gap.
+   Pip shape carries the state: solid = on file, ring+dot = held for review, hollow = nothing on
+   file. Circles on purpose: squares are census cells (section D), circles are chain nodes.
+   Horizontal >760px; a vertical rail at <=760px. No arrowheads: order is reading order. */
+.gmi-chain{ --slot-h:24px; --edge-h:0px; --rail:22px; --conn:var(--gmi-mark-faint);
+  list-style:none; margin:0; padding:0; display:flex; align-items:flex-start; min-width:0; }
+.gmi-chain-step{ --pip:12px; flex:1 1 0; min-width:0; position:relative; display:flex; flex-direction:column;
+  gap:10px; padding:var(--edge-h) var(--sp-5) 0 0; }
+.gmi-chain-step:last-child{ padding-right:0; }
+.gmi-chain-step:not(:last-child)::after{ content:""; position:absolute; left:calc(var(--pip) + 5px); right:5px;
+  top:calc(var(--edge-h) + var(--slot-h) / 2 - .75px); border-top:1.5px solid var(--conn-step, var(--conn)); }
+.gmi-chain-step--to-none:not(:last-child)::after{ border-top-style:dashed; }
+.gmi-chain-slot{ display:flex; align-items:center; height:var(--slot-h); }
+.gmi-pip{ flex:none; width:var(--pip, 12px); height:var(--pip, 12px); border-radius:50%; position:relative; }
+.gmi-pip--doc{ background:var(--gmi-mark); }
+.gmi-pip--none{ border:1.5px solid var(--gmi-mark-faint); }
+.gmi-pip--held{ border:2px solid var(--gmi-held); box-shadow:var(--gmi-glow-held); }
+.gmi-pip--held::after{ content:""; position:absolute; inset:0; margin:auto; width:34%; height:34%; border-radius:50%;
+  background:var(--gmi-held); }
+.gmi-chain-body{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.gmi-chain-lvl{ font-size:var(--fs-label); font-weight:600; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+html[data-lang="zh"] .gmi-chain-lvl{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+.gmi-chain-name{ font-size:var(--fs-md); font-weight:700; line-height:1.25; overflow-wrap:anywhere; }
+.gmi-chain-note{ font-size:var(--fs-sm); color:var(--muted); line-height:1.4; }
+.gmi-chain-step--none .gmi-chain-name{ color:var(--muted); font-weight:500; font-size:var(--fs-sm); }
+/* edge labels ride above the connector they name (S3/S5) */
+.gmi-chain--edges{ --edge-h:40px; }
+.gmi-chain-step--wide{ flex-grow:2.2; }
+.gmi-chain-edge{ position:absolute; top:0; height:var(--edge-h); left:calc(var(--pip) + 12px); right:12px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; text-align:center;
+  font-size:var(--fs-label); color:var(--muted); line-height:1.3; }
+
+/* S1 ladder: the micro-theme is the anchor; every ancestor recedes in scale, weight and ink. */
+.gmi-chain--ladder .gmi-chain-step--anchor{ --pip:22px; flex-grow:1.5; }
+.gmi-chain--ladder .gmi-chain-step--void{ --pip:10px; flex-grow:.8; }
+.gmi-chain--ladder .gmi-chain-step--theme{ flex-grow:1.2; }
+.gmi-chain--ladder .gmi-chain-step--cat{ --pip:9px; flex-grow:1.1; }
+.gmi-chain--ladder .gmi-chain-step:nth-child(1){ --conn-step:color-mix(in srgb, var(--text) 48%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(2){ --conn-step:color-mix(in srgb, var(--text) 34%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(3){ --conn-step:color-mix(in srgb, var(--text) 22%, transparent); }
+.gmi-chain-step--anchor .gmi-chain-name{ font-size:var(--fs-h1); line-height:1.12; letter-spacing:-.015em; }
+.gmi-chain-step--anchor .gmi-chain-note{ color:var(--ink-info); font-weight:600; }
+.gmi-chain-step--theme .gmi-chain-name{ font-size:var(--fs-h2); font-weight:650; color:color-mix(in srgb, var(--text) 82%, transparent); }
+.gmi-chain-step--cat .gmi-chain-name{ font-size:var(--fs-md); font-weight:600; color:color-mix(in srgb, var(--text) 62%, transparent); }
+.gmi-chain-step--cat .gmi-chain-note, .gmi-chain-step--theme .gmi-chain-note{ font-size:var(--fs-label); }
+
+@media (max-width:760px){
+  .gmi-chain{ flex-direction:column; align-items:stretch; --edge-h:0px; }
+  .gmi-chain-step{ flex:none; display:grid; grid-template-columns:var(--rail) minmax(0,1fr); column-gap:12px; row-gap:6px;
+    padding:0 0 var(--sp-5); }
+  .gmi-chain-step:last-child{ padding-bottom:0; }
+  .gmi-chain-step:not(:last-child)::after{ left:calc(var(--rail) / 2 - .75px); right:auto;
+    top:calc(var(--slot-h) / 2 + var(--pip) / 2 + 5px); bottom:-1px; border-top:0;
+    border-left:1.5px solid var(--conn-step, var(--conn)); }
+  .gmi-chain-step--to-none:not(:last-child)::after{ border-left-style:dashed; }
+  .gmi-chain-slot{ grid-column:1; grid-row:1 / span 2; align-self:start; justify-content:center; }
+  .gmi-chain-body{ grid-column:2; grid-row:1; }
+  .gmi-chain-edge{ position:static; grid-column:2; grid-row:2; height:auto; display:block; padding:0; text-align:left; }
+  .gmi-chain--edges .gmi-chain-step:not(:last-child){ padding-bottom:var(--sp-4); }
+}
+@media (max-width:640px){ .gmi-chain-step--anchor .gmi-chain-name{ font-size:22px; } }
+
+/* S1 hero: the only raised surface besides the head; holds the ladder, its status and the answer. */
+.gmi-hero1{ display:flex; flex-direction:column; gap:var(--sp-6); padding:var(--sp-6) var(--sp-7) var(--sp-6); }
+.gmi-hero1-top{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3) var(--sp-5); flex-wrap:wrap; }
+.gmi-hero1-top h2{ margin:0; font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; }
+.gmi-hero1-st{ display:inline-flex; align-items:center; gap:8px; font-size:var(--fs-md); font-weight:700; color:var(--ink-info); }
+.gmi-hero1-ans{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-5); max-width:none; }
+@media (max-width:640px){ .gmi-hero1{ padding:var(--sp-5) var(--sp-4); gap:var(--sp-5); } }
+
+/* S1 below the hero: flat sections (no fill, no edge, no shadow) under a rule.
+   dark = luminance hairline; light = a heavy ink rule, the research-workspace section head. */
+.gmi-flat{ display:flex; flex-direction:column; gap:var(--sp-3); padding-top:var(--sp-4); border-top:1px solid var(--gmi-hair); min-width:0; }
+html[data-theme="light"] .gmi-flat{ border-top:1.5px solid var(--text); }
+.gmi-flat > .mx-sec{ margin:0; }
+.gmi-col-main--flat{ gap:var(--sp-7); }
+.gmi-cols--wide{ gap:var(--sp-7); }
+/* light: the field table becomes a ruled ledger sheet (tinted label column, vertical rule) */
+html[data-theme="light"] .gmi-dl--ledger{ border:1px solid var(--line); border-radius:var(--r-ctl); background:var(--panel); overflow:hidden; }
+html[data-theme="light"] .gmi-dl--ledger > div{ padding:0; gap:0; align-items:stretch; border-top:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger > div:first-child{ border-top:0; }
+html[data-theme="light"] .gmi-dl--ledger dt{ padding:9px 12px; background:var(--panel2); border-right:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger dd{ padding:9px 12px; }
+/* the one quiet side sheet: dark = a luminance step, light = a recessed tray */
+.gmi-sheet{ display:flex; flex-direction:column; gap:var(--sp-3); padding:var(--sp-5); border-radius:var(--r-card);
+  background:var(--gmi-step); border:1px solid var(--gmi-hair); box-shadow:var(--gmi-tray); min-width:0; }
+html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
+.gmi-sheet .mx-sec{ margin:0; }
+.gmi-sheet .mx-sec h2, .gmi-sheet .mx-sec h3{ font-size:var(--fs-h3); }
+.gmi-sheet-div{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-4); margin-top:var(--sp-2); display:flex; flex-direction:column; gap:var(--sp-2); align-items:flex-start; }
+
+/* S2 phone: the category jump stays, as a sticky strip that scrolls sideways; group headers stick under it */
+@media (max-width:640px){
+  .gmi-indexwrap{ gap:10px; }
+  .gmi-jump{ position:sticky; top:0; z-index:4; margin:0 -16px; padding:8px 0; background:var(--bg);
+    border-bottom:1px solid var(--gmi-hair); }
+  .gmi-jump-track{ flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; scrollbar-width:none; padding:0 16px; scroll-padding:0 16px; }
+  .gmi-jump-track::-webkit-scrollbar{ display:none; }
+  .gmi-jump a{ flex:none; scroll-snap-align:start; }
+  .gmi-jump::after{ content:""; position:absolute; top:0; right:0; bottom:0; width:32px; pointer-events:none;
+    background:linear-gradient(to right, transparent, var(--bg)); }
+  .gmi-index-h{ top:57px; }
+  .gmi-index-group{ scroll-margin-top:57px; }
+}

@@ -156,6 +156,15 @@ bs.forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribut
 var h=new URLSearchParams(location.hash.slice(1));h.set('lens',v);history.replaceState(null,'','#'+h.toString());});});sync();})();"""
 
 
+JUMP_JS = """(function(){var nav=document.querySelector('.gmi-jump');if(!nav)return;
+var tr=nav.querySelector('.gmi-jump-track'),links=[].slice.call(nav.querySelectorAll('a'));
+links.forEach(function(a){a.addEventListener('click',function(e){var g=document.getElementById(a.getAttribute('href').slice(1));
+if(!g)return;e.preventDefault();g.setAttribute('open','');g.scrollIntoView({block:'start'});});});
+if(!('IntersectionObserver' in window))return;var cur=null;
+var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting)return;var id=en.target.id;
+links.forEach(function(a){var on=a.getAttribute('href')==='#'+id;if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
+if(on&&cur!==a){cur=a;if(tr.scrollWidth>tr.clientWidth)tr.scrollLeft=a.offsetLeft-16;}});});},{rootMargin:'-60px 0px -70% 0px'});
+[].forEach.call(document.querySelectorAll('[data-gmi-index] > details'),function(g){io.observe(g);});})();"""
 INDEX_JS = """(function(){var gs=[].slice.call(document.querySelectorAll('[data-gmi-index] > details'));
 var all=new URLSearchParams(location.hash.slice(1)).get('open')==='all';
 if(!all&&window.matchMedia('(max-width:640px)').matches){gs.forEach(function(g,i){if(i>0)g.removeAttribute('open');});}})();"""
@@ -402,8 +411,9 @@ def s2_theme_map() -> str:
 def s2_index() -> str:
     hd = head([("Research", "研究"), ("Theme map", "主题地图"), ("Index", "索引")], t("All micro-themes", "全部细分主题"),
               t(f"Every one of the {TOTAL}, grouped by category.", f"全部 {TOTAL} 个，按类别分组。"), asof("2026-10-22"))
-    jump = '<nav class="gmi-jump" aria-label="Categories">' + "".join(
-        f'<a href="#{c["id"].split(":")[1]}">{t(E(c["en"]), E(c["zh"]))}<small>{len(c["micros"])}</small></a>' for c in CATS) + "</nav>"
+    jump = (f'<nav class="gmi-jump" aria-label="{E("Categories")}"><div class="gmi-jump-track">' + "".join(
+        f'<a href="#{c["id"].split(":")[1]}">{t(E(c["en"]), E(c["zh"]))}<small>{len(c["micros"])}</small></a>' for c in CATS)
+        + "</div></nav>")
     groups = []
     rows_total = 0
     for c in CATS:
@@ -440,15 +450,31 @@ def s2_index() -> str:
 <section class="gmi-panel">
 {search_box(f"Search {TOTAL} micro-themes", f"搜索 {TOTAL} 个细分主题")}
 {key()}
-{jump}
 </section>
-<div class="gmi-index" data-gmi-index>{"".join(groups)}</div>
+<div class="gmi-indexwrap">{jump}
+<div class="gmi-index" data-gmi-index>{"".join(groups)}</div></div>
 <script>{INDEX_JS}</script>
+<script>{JUMP_JS}</script>
 <p class="gmi-foot">{t(f"{TOTAL} rows: {CORE} core, {EXT} extended. Held and admitted links are marked on their row.", f"共 {TOTAL} 行：核心 {CORE} 个，扩展 {EXT} 个。待审核与已纳入的关联在所在行标注。")}</p>"""
     return page("GMI Explorer — All micro-themes (reference)", body)
 
 
 # ------------------------------------------------------------------ S1 issuer explainer (Micron)
+def chain(steps, kind="ladder") -> str:
+    """One node grammar for the explorer (round 2, D4). Each step: pip + words; a connector joins
+    pip to pip. pip in {doc, held, none}; cls adds gmi-chain-step--<cls> modifiers; edge labels
+    the connector to the NEXT step."""
+    out = []
+    for st in steps:
+        cls = "gmi-chain-step" + "".join(f" gmi-chain-step--{c}" for c in st.get("cls", ()))
+        lvl = f'<span class="gmi-chain-lvl">{st["lvl"]}</span>' if st.get("lvl") else ""
+        note = f'<span class="gmi-chain-note">{st["note"]}</span>' if st.get("note") else ""
+        edge = f'<span class="gmi-chain-edge">{st["edge"]}</span>' if st.get("edge") else ""
+        out.append(f'<li class="{cls}"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--{st["pip"]}"></span></span>'
+                   f'<div class="gmi-chain-body">{lvl}<span class="gmi-chain-name">{st["name"]}</span>{note}</div>{edge}</li>')
+    return f'<ol class="gmi-chain gmi-chain--{kind}">' + "".join(out) + "</ol>"
+
+
 def s1_issuer() -> str:
     P = F["micron_proposal"]
     ev = P["evidence"]
@@ -457,26 +483,22 @@ def s1_issuer() -> str:
     side = asof("2026-10-21") + f'<span class="gmi-chip gmi-chip--ghost">{t("Update history not tracked yet", "尚未跟踪更新记录")}</span>'
     hd = head([("Research", "研究"), ("Companies", "公司")], t("Micron Technology", "美光科技"),
               t("One proposed theme link, not yet a member.", "一个拟议主题关联，尚未成为成员。"), side, extra=ident)
-    link = f'<div class="gmi-link">{ic("arrow", 16)}</div>'
-    rungs = [
-        ("held", "Micro-theme", "细分主题", (E(hbm["en"]), E(hbm["zh"])), ("Proposed link · held", "拟议关联 · 待审核")),
-        ("void", "Sub-theme", "子主题", ("None — sits directly under its theme", "无 —— 直接隶属于主题"), None),
-        ("", "Theme", "主题", THEME_NAMES["theme:ai_semiconductors"], ("Also listed under Memory, HBM &amp; Storage", "亦列于：存储与HBM")),
-        ("", "Category", "类别", CAT_NAMES["theme:semiconductors_hardware"], ("Its theme also sits in Technology &amp; software", "所属主题亦归入：科技与软件")),
-    ]
-    rs = []
-    for cls, l_en, l_zh, (n_en, n_zh), note in rungs:
-        nt = f'<span class="gmi-rung-note">{t(*note)}</span>' if note else ""
-        rs.append(f'<div class="gmi-rung{" gmi-rung--" + cls if cls else ""}"><span class="gmi-rung-lvl">{t(l_en, l_zh)}</span>'
-                  f'<span class="gmi-rung-name">{t(n_en, n_zh)}</span>{nt}</div>')
-    lineage = '<div class="gmi-lineage">' + link.join(rs) + "</div>"
-    hero = f"""<section class="gmi-band" aria-labelledby="st-h"><div class="gmi-band-card">
-<div class="gmi-status">{mark("held", xl=True)}<div>
-<div class="gmi-status-t" id="st-h">{t("Held for review", "待审核")} {tip(*TIP_HELD)}</div>
-<p class="gmi-answer">{t("Proposed, not a member. Not used on the map or in any count until a curator reviews it.", "拟议关联，尚非成员。审核员审核前，不会用于主题地图或任何统计。")}</p>
-</div></div>
-<div>{sec("Where it would sit", "拟归属位置", 2)}{lineage}</div>
-</div></section>"""
+    ladder = chain([
+        dict(cls=("anchor",), pip="held", lvl=t("Micro-theme", "细分主题"), name=t(E(hbm["en"]), E(hbm["zh"])),
+             note=t("Proposed place for Micron", "美光科技的拟议位置")),
+        dict(cls=("void", "none"), pip="none", lvl=t("Sub-theme", "子主题"),
+             name=t("None — sits directly under its theme", "无 —— 直接隶属于主题")),
+        dict(cls=("theme",), pip="doc", lvl=t("Theme", "主题"), name=t(*THEME_NAMES["theme:ai_semiconductors"]),
+             note=t("Also listed under Memory, HBM &amp; Storage", "亦列于：存储与HBM")),
+        dict(cls=("cat",), pip="doc", lvl=t("Category", "类别"), name=t(*CAT_NAMES["theme:semiconductors_hardware"]),
+             note=t("Its theme also sits in Technology &amp; software", "所属主题亦归入：科技与软件")),
+    ], kind="ladder")
+    hero = f"""<section class="gmi-band gmi-hero1" aria-labelledby="where-h">
+<div class="gmi-hero1-top"><h2 id="where-h">{t("Where it would sit", "拟归属位置")}</h2>
+<span class="gmi-hero1-st"><span class="gmi-pip gmi-pip--held" aria-hidden="true"></span>{t("Held for review", "待审核")} {tip(*TIP_HELD)}</span></div>
+{ladder}
+<p class="gmi-answer gmi-hero1-ans">{t("<b>Proposed, not a member.</b> Not used on the map or in any count until a curator reviews it.", "<b>拟议关联，尚非成员。</b>审核员审核前，不会用于主题地图或任何统计。")}</p>
+</section>"""
     nd = t("Not disclosed", "未披露")
     sc = ev.get("scope", {})
     dl_rows = [
@@ -487,38 +509,38 @@ def s1_issuer() -> str:
         (("Stage", "阶段"), t("Planned", "计划中")),
         (("On file since", "收录日期"), d("2026-10-11")),
     ]
-    dl = '<dl class="gmi-dl">' + "".join(f"<div><dt>{t(*a)}</dt><dd>{b}</dd></div>" for a, b in dl_rows) + "</dl>"
+    dl = '<dl class="gmi-dl gmi-dl--ledger">' + "".join(f"<div><dt>{t(*a)}</dt><dd>{b}</dd></div>" for a, b in dl_rows) + "</dl>"
     rail = '<div class="gmi-rail">' + "".join(
         f'<div class="gmi-rail-seg"><span class="gmi-rail-bar"></span><span class="gmi-rail-lab">{t(en, zh)}</span></div>' for _, en, zh in LANES) + \
         f'<div class="gmi-rail-seg gmi-rail-seg--unset gmi-rail-seg--on"><span class="gmi-rail-bar"></span><span class="gmi-rail-lab">{t("Not set yet", "尚未设定")}</span></div></div>'
-    does = f"""<section class="gmi-panel">{sec("What Micron does", "美光科技的业务")}
+    does = f"""<section class="gmi-flat">{sec("What Micron does", "美光科技的业务")}
 <div class="gmi-facet"><div class="gmi-facet-h">{t("Principal activity", "主营业务")}</div>
 <div class="gmi-facet-v gmi-facet-v--unset">{t("Not set yet", "尚未设定")}</div>
 <p class="gmi-note">{t("No reviewed description of Micron’s main business is on file. It will appear here, with its source, once reviewed.", "目前没有经审核的美光科技主营业务描述。审核后将连同来源显示于此。")}</p></div>
 <div class="gmi-facet"><div class="gmi-facet-h">{t("Value-chain position", "价值链位置")}</div>{rail}
 <p class="gmi-note">{t("Not recorded for HBM &amp; advanced packaging yet.", "HBM与先进封装的价值链位置尚未记录。")}</p></div>
 </section>"""
-    main = f"""{does}
-<section class="gmi-panel">{sec("Why it was proposed", "提议依据")}{dl}
+    main = f"""<section class="gmi-flat">{sec("Why it was proposed", "提议依据")}{dl}
 <details class="mx-disc" id="receipt"><summary>{t("Receipt", "凭证")}<small>{t("proposal record, dates, permissions", "提议记录、日期、权限")}</small></summary>
 <div class="mx-disc-body gmi-mono">proposal_status: PROPOSED · authority_caps: all false · graph_membership_use: NOT_GRANTED<br>
 role: component_supplier · lifecycle: planned · relation: planned_product_integration<br>
 clocks — publication 2024-02-26 · observation 2026-10-09 · knowledge 2026-10-11 · effective UNDISCLOSED<br>
 magnitudes — amount UNDISCLOSED · economic_share UNDISCLOSED · rights: RIGHTS_FAMILY_UNRESOLVED</div></details>
 <p class="gmi-note">{t("Nothing here is inferred beyond the cited text.", "以上内容均来自引文，未作推断。")}</p>
-</section>"""
+</section>
+{does}"""
     unknowns = [("Whether Micron belongs here", "美光科技是否属于该主题", "Awaiting review", "待审核"),
                 ("Deal size", "规模", "Not in the source", "来源未披露"),
                 ("Start date", "开始日期", "Not in the source", "来源未披露"),
                 ("Business segment", "业务分部", "Not in the source", "来源未披露")]
     ul = '<ul class="gmi-list">' + "".join(f"<li><span>{t(a, b)}</span><span>{t(c, e)}</span></li>" for a, b, c, e in unknowns) + "</ul>"
-    sidecol = f"""<section class="gmi-panel">{sec("What we don’t know yet", "尚不清楚的信息")}{ul}</section>
-<section class="gmi-panel">{sec("Documented relationships", "已记录的关系")}
+    sidecol = f"""<aside class="gmi-sheet">{sec("What we don’t know yet", "尚不清楚的信息")}{ul}
+<div class="gmi-sheet-div">{sec("Documented relationships", "已记录的关系", 3)}
 <p class="gmi-note">{t("None documented for Micron yet.", "美光科技暂无已记录的关系。")}</p>
-<div><a class="gmi-btn gmi-btn--quiet" href="s3_relationships.html">{t("See documented relationships", "查看已记录的关系")}{ic("arrow", 16)}</a></div></section>"""
+<a class="gmi-btn gmi-btn--quiet" href="s3_relationships.html">{t("See documented relationships", "查看已记录的关系")}{ic("arrow", 16)}</a></div></aside>"""
     body = f"""{hd}
 {hero}
-<div class="gmi-cols"><div class="gmi-col-main">{main}</div><div class="gmi-col-side">{sidecol}</div></div>"""
+<div class="gmi-cols gmi-cols--wide"><div class="gmi-col-main gmi-col-main--flat">{main}</div><div class="gmi-col-side">{sidecol}</div></div>"""
     return page("GMI Explorer — Micron Technology (reference)", body)
 
 
@@ -637,11 +659,11 @@ def s3_relationships() -> str:
 {excerpt}
 </div></section>"""
     paths = f"""<section class="gmi-panel">{sec("Where this link leads", "关联路径")}
-<div class="gmi-path"><div class="gmi-pnode"><b>{t("Skyworks", "思佳讯")}</b><small>{t("Supplier", "供应商")}</small></div>
-<div class="gmi-pedge"><span class="gmi-pedge-line"></span><span class="gmi-pedge-lab">{t("supplies · no condition stated", "供货 · 未列明条件")}</span></div>
-<div class="gmi-pnode"><b>{t("Apple", "苹果")}</b><small>{t("Customer", "客户")}</small></div>
-<div class="gmi-pedge gmi-pedge--void"><span class="gmi-pedge-line"></span><span class="gmi-pedge-lab">{t("next step", "下一步")}</span></div>
-<div class="gmi-pnode gmi-pnode--void"><b>{t("No documented links from Apple yet", "尚无苹果的已记录关联")}</b></div></div>
+{chain([
+    dict(pip="doc", lvl=t("Supplier", "供应商"), name=t("Skyworks", "思佳讯"), edge=t("supplies · no condition stated", "供货 · 未列明条件")),
+    dict(cls=("to-none",), pip="doc", lvl=t("Customer", "客户"), name=t("Apple", "苹果"), edge=t("next step", "下一步")),
+    dict(cls=("none",), pip="none", name=t("No documented links from Apple yet", "尚无苹果的已记录关联")),
+], kind="edges")}
 <p class="gmi-note">{t("Paths list documented links only. They do not estimate how far an effect spreads.", "路径仅列出已记录的关联，不估算影响的传导范围。")}</p></section>"""
     main = f"""<section class="gmi-panel">{sec("How this figure was read over time", "该数值的历次读取")}{thread()}</section>
 {paths}"""
@@ -776,9 +798,12 @@ def s5_states() -> str:
               f'<a class="gmi-btn gmi-btn--quiet" href="s3_relationships.html">{t("See what changed", "查看变更")}{ic("arrow", 16)}</a>'),
         state("list", "gmi-muted", "path_template", "Conditioned path · layout only", "附条件路径 · 仅版式",
               f'<p class="gmi-muted">{t("No documented conditioned path exists yet. This shows where a stated condition would sit.", "目前尚无已记录的附条件路径。此处仅示意所述条件的位置。")}</p>'
-              f'<div class="gmi-path"><div class="gmi-pnode"><b>{t("Skyworks", "思佳讯")}</b></div>'
-              f'<div class="gmi-pedge"><span class="gmi-pedge-line"></span><span class="gmi-pedge-lab">{t(E(fill(DECK["premises"]["concentration_risk"]["en"], counterparty="Apple")), E(fill(DECK["premises"]["concentration_risk"]["zh"], counterparty="苹果")))}</span></div>'
-              f'<div class="gmi-pnode gmi-pnode--void"><b>{t("Effect stated in the filing", "申报文件所述影响")}</b><small>{t("quoted text appears here", "此处显示引文")}</small></div></div>'
+              + chain([
+                  dict(cls=("wide", "to-none"), pip="doc", name=t("Skyworks", "思佳讯"),
+                       edge=t(E(fill(DECK["premises"]["concentration_risk"]["en"], counterparty="Apple")), E(fill(DECK["premises"]["concentration_risk"]["zh"], counterparty="苹果")))),
+                  dict(cls=("none",), pip="none", name=t("Effect stated in the filing", "申报文件所述影响"),
+                       note=t("quoted text appears here", "此处显示引文")),
+              ], kind="edges") +
               f'<p class="gmi-foot">{t(E(DECK["lead_in"]["en"]), E(DECK["lead_in"]["zh"]))} …</p>'),
     ]
     body = f"""{hd}

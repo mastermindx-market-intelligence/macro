@@ -6,8 +6,10 @@ under the existing `_site_nav.html.j2` family and promotes the CSS into governed
 critique rounds and data GAPs are in `research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md`.
 
 Every page, PNG and proof line in this folder is regenerated from the committed data fixture by one command (§14).
-The HTML specimens and `gmi_explorer.css` are the **implementation source**. The PNGs and the Paper file
-"GMI Explorer 2026-10-21" are the **visual reference** for each matrix cell.
+The HTML specimens and `gmi_explorer.css` are the **implementation source**. The PNGs and the Paper files
+"GMI Explorer 2026-10-21" (round 1) and "GMI Explorer 2026-10-22 — Round 2" (before/after boards for every surface
+round 2 changed) are the **visual reference** for each matrix cell. Where they disagree, the PNGs win: they are
+regenerated from the specimens, the boards are captures of them.
 
 ---
 
@@ -33,8 +35,8 @@ The HTML specimens and `gmi_explorer.css` are the **implementation source**. The
 
 | File | Role |
 |---|---|
-| `build_specimens.py` | Data-driven generator. It asserts 371 / 68 / 303 / 1 PROPOSED_ONLY / 0 admitted, US 1,931 and CN 1,019, emits the six pages and renders the 60 PNGs. sha256 `b8d562c03f89118c4aea11c2f71b632619d6fc15d5c9fc4dc35bd44e1bedbbbb` |
-| `gmi_explorer.css` | Reference stylesheet, sections A–N. It extends `templates/theme.css` and declares **no shipped token**. sha256 `21889913bba7bba0228acc3b88c7a4237f506cc9a54c05e06ff1fc43fe72a0a1` |
+| `build_specimens.py` | Data-driven generator. It asserts 371 / 68 / 303 / 1 PROPOSED_ONLY / 0 admitted, US 1,931 and CN 1,019, emits the six pages and renders the 60 PNGs. sha256 `a84fe3a983bf738effc82b76176e610360349d5d43e9b0e0f9711872894c6cbe` |
+| `gmi_explorer.css` | Reference stylesheet, sections A–O (O = round 2: the shared node grammar, the S1 composition, the phone jump strip). It extends `templates/theme.css` and declares **no shipped token**. sha256 `de4c3f79aceb5311bc94ec39298e57a39e0d128135356b4404f0b0cfbdbdb7b4` |
 | `inputs/fixture.json` | Frozen data fixture. Its `provenance` block names the commit and path behind every number (§13) |
 | `inputs/nav.html` | Static capture of the `_site_nav` markup, so the specimens wear the real header |
 | `s1_issuer.html` | S1 Issuer explainer (Micron Technology) |
@@ -43,7 +45,9 @@ The HTML specimens and `gmi_explorer.css` are the **implementation source**. The
 | `s3_relationships.html` | S3 Relationship explorer |
 | `s4_coverage.html` | S4 Coverage & receipts |
 | `s5_states.html` | S5 Degraded-state sheet (10 states) |
-| `png/` | 60 PNG references (§13) |
+| `png/` | 60 PNG references, the full matrix (§13) |
+| `png/r2/` | Round-2 review crops: S1 dark-vs-light at 1440, the S1-vs-S3 node pair (dark, light), S2 at 390 top and mid-list |
+| `png/r2/ba/` | Round-2 before/after crops (14): S1 1440 before (dark, light), S2 390 top/mid, S3 path 1440/390, S5 path 1440/390. "After" for S1 is the matrix PNG itself |
 
 ## 2. Reference and baseline
 
@@ -61,7 +65,7 @@ The HTML specimens and `gmi_explorer.css` are the **implementation source**. The
 
 | Surface | Page | Archetype (MPDS V1) | Fold = chrome + answer + ≤2 modules |
 |---|---|---|---|
-| S1 Issuer explainer | `s1_issuer.html` | **C instrument_analyzer** | head → answer (principal activity + one held theme link) → lineage ladder (micro → sub-theme → theme → category) + fact list (value-chain position, source, as-of, status) |
+| S1 Issuer explainer | `s1_issuer.html` | **C instrument_analyzer** | head → **hero** (the taxonomy ladder anchored on the micro-theme, its held status, then the plain answer) → flat sections (value-chain facet, the proposal field table) beside **one quiet side sheet** (what we don’t know yet + documented relationships). Round 2: exactly two elevation levels, the hero and the sheet; everything else is flat under a rule |
 | S2 Theme map | `s2_theme_map.html` | **B discovery_board** | head → census tally line → census survey sheet (371 cells, lens-switchable) |
 | S2 Index | `s2_index.html` | **B discovery_board**, list mode | head → search → 10 collapsible category groups holding all 371 rows |
 | S3 Relationships | `s3_relationships.html` | **C instrument_analyzer**, evidence task | head → relationship hero (claim + direction figure, facts grid, filing excerpt one tap below) → magnitude history |
@@ -98,7 +102,11 @@ produce the light design. Each mechanism in the table below is written separatel
 - Mark ink is denser (`--gmi-mark` 86% vs 78% in dark; hatch 30% vs 40%), because a white sheet reads lighter.
 - The histogram's "now" column is a solid text-colour bar instead of a glow.
 - Degraded content prints in muted ink under a 6px hatched top band. This is a print idiom and survives grayscale.
-- Chips, buttons, search, ladder rungs and path nodes become white objects (panel + line + small shadow).
+- Chips, buttons and search become white objects (panel + line + small shadow). Round 2 replaced the ladder
+  rungs and path nodes with chain pips (§4 table below), which are ink marks, not objects, in both themes.
+- Round 2 (S1): section heads are a **1.5px ink rule** (`--text`), the proposal field table is a **ruled ledger
+  sheet** (tinted `--panel2` label column + vertical rule), and the side sheet is a **recessed tray**
+  (`--panel2` + `--gmi-tray` inset shadow). These are the light mechanisms a reader sees on S1 without a toggle.
 
 ### Mechanisms that intentionally differ
 
@@ -111,8 +119,26 @@ produce the light design. Each mechanism in the table below is written separatel
 | Selection | 1px ring + glow | 2px ring | `--gmi-select` |
 | "Now" column | glow | solid text-colour bar | `.gmi-hist-col--now` |
 | Degraded | veil (opacity .45, saturate .4) | muted ink + 6px hatched band | `.gmi-degraded` |
-| Controls | panel2 fill | white + line + shadow | chips, `.gmi-btn`, search, rungs, path nodes |
+| Controls | panel2 fill | white + line + shadow | chips, `.gmi-btn`, search, jump strip |
 | Mark density | mark 78%, hatch 40% | mark 86%, hatch 30% | `--gmi-mark`, `--gmi-hatch` |
+| S1 hero (round 2) | wash + inset elevation | white card + hairline + two-layer shadow | `.gmi-band.gmi-hero1` |
+| Section heads (round 2) | 1px `--gmi-hair` luminance hairline | 1.5px `--text` ink rule | `.gmi-flat` |
+| Field table (round 2) | rows on hairlines | ruled ledger sheet: `--panel2` label column + vertical rule | `.gmi-dl--ledger` |
+| Side sheet (round 2) | one luminance step (`--gmi-step`) + hair edge, no shadow | recessed tray: `--panel2` + `--gmi-tray` inset | `.gmi-sheet` |
+| Held chain pip (round 2) | ring + dot + bloom | ring + dot, no bloom | `.gmi-pip--held` (`--gmi-glow-held`) |
+
+**Elevation budget (round 2, S1).** Two levels only: the hero is raised (dark wash + inset; light shadow card), the
+side sheet is the one secondary surface (dark luminance step; light recessed tray). Every other S1 section is flat,
+with no fill, no edge and no shadow, and is separated by its rule.
+
+**One node idiom (round 2).** `.gmi-chain` is the only way the explorer draws a sequence of nodes: S1’s taxonomy
+ladder (`.gmi-chain--ladder`), S3’s "Where this link leads" (`.gmi-chain--edges`) and the S5 conditioned-path
+template (`.gmi-chain--edges`). A step is a pip plus words; a 1.5px connector joins pip to pip. Pip shape is the
+state: **solid** = on file, **ring + dot** = held for review, **hollow** = nothing on file, and a connector into a
+hollow pip is **dashed**. Circles are chain nodes; squares stay census cells (§6). Edge labels ride above their
+connector. Above 760px the chain is horizontal; at ≤760px it is a vertical rail and edge labels drop under their node.
+On the S1 ladder the anchored micro-theme leads (22px pip, h1 scale) and each ancestor recedes in pip, size, weight
+and ink (connectors 48% → 34% → 22% text).
 
 ### Theme-specific degraded states
 
@@ -142,6 +168,7 @@ This is section B of `gmi_explorer.css`, verbatim:
   --gmi-select:     0 0 0 1px var(--link), 0 0 22px -8px color-mix(in srgb, var(--link) 70%, transparent);
   --gmi-hero-wash:  radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--info) 9%, transparent), transparent 62%);
   --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--info) 16%, transparent), 0 0 14px 0 color-mix(in srgb, var(--info) 55%, transparent);
+  --gmi-tray:       none;                                              /* side sheet: dark = luminance only */
   --gmi-cell:14px; --gmi-cell-gap:5px;
 }
 html[data-theme="light"]{
@@ -155,6 +182,7 @@ html[data-theme="light"]{
   --gmi-select:     0 0 0 2px var(--link);
   --gmi-hero-wash:  none;
   --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--ink-info) 14%, transparent);
+  --gmi-tray:       inset 0 1px 2px rgba(20,30,50,.05);                 /* light: a recessed tray */
 }
 @media (max-width:640px){ :root{ --gmi-cell:10px; --gmi-cell-gap:3px; } }
 ```
@@ -234,11 +262,11 @@ Each page has exactly one `<h1>`. The ZH h1 strings are in the copy deck (§12).
 | Width | Change |
 |---|---|
 | ≤ 900 | `.gmi-cols` / `.gmi-row` stack into one column; `.gmi-relgrid` becomes a single column; the tally line wraps |
-| ≤ 760 | `.gmi-head` stacks (title over side meta); the S1 lineage ladder and S3 paths stack vertically |
-| ≤ 640 | `--gmi-cell` 10px / gap 3px; wrap padding 16px; h1 24px; panels padded `--sp-4`; tree names clamp to 2 lines; the index jump-nav hides; magnitude numbers drop one size |
+| ≤ 760 | `.gmi-head` stacks (title over side meta); every `.gmi-chain` (S1 ladder, S3 path, S5 template) becomes a vertical rail: 22px pip column, connector drawn down the rail, edge labels move under their node |
+| ≤ 640 | `--gmi-cell` 10px / gap 3px; wrap padding 16px; h1 24px; panels padded `--sp-4`; tree names clamp to 2 lines; magnitude numbers drop one size; S1 anchor name 22px, hero padded `--sp-5`/`--sp-4`. **S2 index (round 2):** the category jump stays as a sticky strip at top 0 that scrolls sideways (nowrap, scroll-snap x, hidden scrollbar, 32px edge fade, 40px chips); category headers stick at 57px under it and groups carry `scroll-margin-top:57px`; the current group is marked `aria-current` and scrolled into the strip |
 | 390 | floor: every page has scrollWidth 390 in EN and ZH (§14 audit) |
 
-Section M of `gmi_explorer.css`, verbatim:
+Section M of `gmi_explorer.css`, verbatim (round-2 responsive rules live in section O, §11):
 
 ```css
 /* ---------- M. responsive floor ------------------------------------------------ */
@@ -261,12 +289,12 @@ Section M of `gmi_explorer.css`, verbatim:
 ```
 
 **Lens state.** `html[data-gmi-lens]` is read from the URL hash `#theme=&lang=&lens=` (`coverage` | `chain`), and
-`.gmi-census--coverage` / `.gmi-census--chain` toggle on it. The lens buttons use `aria-selected`. The jump-nav
-`#id` links in the index would clobber this hash state. That is a GAP: the implementation should use
-`scrollIntoView` and keep the hash.
+`.gmi-census--coverage` / `.gmi-census--chain` toggle on it. The lens buttons use `aria-selected`. The index jump-nav
+`#id` links would clobber this hash state; the specimen intercepts the click and uses `scrollIntoView` instead (§11),
+and the implementation must keep that.
 
-**ZH typography (doctrine §13).** ZH has no uppercase and no tracking on crumbs, tally caps, index titles, rung
-levels or facet headers (`html[data-lang="zh"] … { letter-spacing:0; text-transform:none }`). ZH steps up to
+**ZH typography (doctrine §13).** ZH has no uppercase and no tracking on crumbs, tally caps, index titles, chain
+levels (`.gmi-chain-lvl`) or facet headers (`html[data-lang="zh"] … { letter-spacing:0; text-transform:none }`). ZH steps up to
 `--fs-sm` where EN uses `--fs-label` caps.
 
 ## 10. State matrix (S5)
@@ -285,7 +313,7 @@ ones in §4. Specimen keys (`gmi-state-k`) are reference-only: no contract emits
 | `loading` | Loading | 加载中 | — | `.skel` luminance shimmer | `.skel` panel2 grey |
 | `empty` | No documented relationships yet | 尚无已记录的关系 | Open the company | `.mx-empty` | `.mx-empty` |
 | `read_updated` | Read updated | 读取已更新 | See what changed | chip, link ring | chip, white + line |
-| `path_template` | Conditioned path · layout only | 附条件路径 · 仅版式 | — | dashed path nodes | white path nodes + hairline |
+| `path_template` | Conditioned path · layout only | 附条件路径 · 仅版式 | — | `.gmi-chain--edges`: hollow end pip on a dashed connector, glow-free ink | same chain, denser ink (`--gmi-mark` 86%) |
 
 `read_updated` is the front-facing form of correction lineage. A correction never shows as "refuted" or
 "falsified". The chip opens the corrections log on S4. `unknown` prints "Not disclosed" for a magnitude that is
@@ -295,6 +323,123 @@ null at the source and "Not set yet" for a field the contract does not carry yet
 
 The full markup is in the six specimen pages, one per surface; the implementation ports their class structure
 verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` from the specimens and trimmed only where marked.
+
+### Round-2 CSS — section O of `gmi_explorer.css`, verbatim
+
+```css
+/* ---------- O. round 2: one node grammar, S1 composition, phone jump strip ------- */
+/* .gmi-chain is the ONE node idiom of the explorer: S1's taxonomy ladder and S3/S5's
+   documented paths. A step = pip + words; a connector joins pip to pip with a 5px air gap.
+   Pip shape carries the state: solid = on file, ring+dot = held for review, hollow = nothing on
+   file. Circles on purpose: squares are census cells (section D), circles are chain nodes.
+   Horizontal >760px; a vertical rail at <=760px. No arrowheads: order is reading order. */
+.gmi-chain{ --slot-h:24px; --edge-h:0px; --rail:22px; --conn:var(--gmi-mark-faint);
+  list-style:none; margin:0; padding:0; display:flex; align-items:flex-start; min-width:0; }
+.gmi-chain-step{ --pip:12px; flex:1 1 0; min-width:0; position:relative; display:flex; flex-direction:column;
+  gap:10px; padding:var(--edge-h) var(--sp-5) 0 0; }
+.gmi-chain-step:last-child{ padding-right:0; }
+.gmi-chain-step:not(:last-child)::after{ content:""; position:absolute; left:calc(var(--pip) + 5px); right:5px;
+  top:calc(var(--edge-h) + var(--slot-h) / 2 - .75px); border-top:1.5px solid var(--conn-step, var(--conn)); }
+.gmi-chain-step--to-none:not(:last-child)::after{ border-top-style:dashed; }
+.gmi-chain-slot{ display:flex; align-items:center; height:var(--slot-h); }
+.gmi-pip{ flex:none; width:var(--pip, 12px); height:var(--pip, 12px); border-radius:50%; position:relative; }
+.gmi-pip--doc{ background:var(--gmi-mark); }
+.gmi-pip--none{ border:1.5px solid var(--gmi-mark-faint); }
+.gmi-pip--held{ border:2px solid var(--gmi-held); box-shadow:var(--gmi-glow-held); }
+.gmi-pip--held::after{ content:""; position:absolute; inset:0; margin:auto; width:34%; height:34%; border-radius:50%;
+  background:var(--gmi-held); }
+.gmi-chain-body{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.gmi-chain-lvl{ font-size:var(--fs-label); font-weight:600; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+html[data-lang="zh"] .gmi-chain-lvl{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+.gmi-chain-name{ font-size:var(--fs-md); font-weight:700; line-height:1.25; overflow-wrap:anywhere; }
+.gmi-chain-note{ font-size:var(--fs-sm); color:var(--muted); line-height:1.4; }
+.gmi-chain-step--none .gmi-chain-name{ color:var(--muted); font-weight:500; font-size:var(--fs-sm); }
+/* edge labels ride above the connector they name (S3/S5) */
+.gmi-chain--edges{ --edge-h:40px; }
+.gmi-chain-step--wide{ flex-grow:2.2; }
+.gmi-chain-edge{ position:absolute; top:0; height:var(--edge-h); left:calc(var(--pip) + 12px); right:12px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; text-align:center;
+  font-size:var(--fs-label); color:var(--muted); line-height:1.3; }
+
+/* S1 ladder: the micro-theme is the anchor; every ancestor recedes in scale, weight and ink. */
+.gmi-chain--ladder .gmi-chain-step--anchor{ --pip:22px; flex-grow:1.5; }
+.gmi-chain--ladder .gmi-chain-step--void{ --pip:10px; flex-grow:.8; }
+.gmi-chain--ladder .gmi-chain-step--theme{ flex-grow:1.2; }
+.gmi-chain--ladder .gmi-chain-step--cat{ --pip:9px; flex-grow:1.1; }
+.gmi-chain--ladder .gmi-chain-step:nth-child(1){ --conn-step:color-mix(in srgb, var(--text) 48%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(2){ --conn-step:color-mix(in srgb, var(--text) 34%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(3){ --conn-step:color-mix(in srgb, var(--text) 22%, transparent); }
+.gmi-chain-step--anchor .gmi-chain-name{ font-size:var(--fs-h1); line-height:1.12; letter-spacing:-.015em; }
+.gmi-chain-step--anchor .gmi-chain-note{ color:var(--ink-info); font-weight:600; }
+.gmi-chain-step--theme .gmi-chain-name{ font-size:var(--fs-h2); font-weight:650; color:color-mix(in srgb, var(--text) 82%, transparent); }
+.gmi-chain-step--cat .gmi-chain-name{ font-size:var(--fs-md); font-weight:600; color:color-mix(in srgb, var(--text) 62%, transparent); }
+.gmi-chain-step--cat .gmi-chain-note, .gmi-chain-step--theme .gmi-chain-note{ font-size:var(--fs-label); }
+
+@media (max-width:760px){
+  .gmi-chain{ flex-direction:column; align-items:stretch; --edge-h:0px; }
+  .gmi-chain-step{ flex:none; display:grid; grid-template-columns:var(--rail) minmax(0,1fr); column-gap:12px; row-gap:6px;
+    padding:0 0 var(--sp-5); }
+  .gmi-chain-step:last-child{ padding-bottom:0; }
+  .gmi-chain-step:not(:last-child)::after{ left:calc(var(--rail) / 2 - .75px); right:auto;
+    top:calc(var(--slot-h) / 2 + var(--pip) / 2 + 5px); bottom:-1px; border-top:0;
+    border-left:1.5px solid var(--conn-step, var(--conn)); }
+  .gmi-chain-step--to-none:not(:last-child)::after{ border-left-style:dashed; }
+  .gmi-chain-slot{ grid-column:1; grid-row:1 / span 2; align-self:start; justify-content:center; }
+  .gmi-chain-body{ grid-column:2; grid-row:1; }
+  .gmi-chain-edge{ position:static; grid-column:2; grid-row:2; height:auto; display:block; padding:0; text-align:left; }
+  .gmi-chain--edges .gmi-chain-step:not(:last-child){ padding-bottom:var(--sp-4); }
+}
+@media (max-width:640px){ .gmi-chain-step--anchor .gmi-chain-name{ font-size:22px; } }
+
+/* S1 hero: the only raised surface besides the head; holds the ladder, its status and the answer. */
+.gmi-hero1{ display:flex; flex-direction:column; gap:var(--sp-6); padding:var(--sp-6) var(--sp-7) var(--sp-6); }
+.gmi-hero1-top{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3) var(--sp-5); flex-wrap:wrap; }
+.gmi-hero1-top h2{ margin:0; font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; }
+.gmi-hero1-st{ display:inline-flex; align-items:center; gap:8px; font-size:var(--fs-md); font-weight:700; color:var(--ink-info); }
+.gmi-hero1-ans{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-5); max-width:none; }
+@media (max-width:640px){ .gmi-hero1{ padding:var(--sp-5) var(--sp-4); gap:var(--sp-5); } }
+
+/* S1 below the hero: flat sections (no fill, no edge, no shadow) under a rule.
+   dark = luminance hairline; light = a heavy ink rule, the research-workspace section head. */
+.gmi-flat{ display:flex; flex-direction:column; gap:var(--sp-3); padding-top:var(--sp-4); border-top:1px solid var(--gmi-hair); min-width:0; }
+html[data-theme="light"] .gmi-flat{ border-top:1.5px solid var(--text); }
+.gmi-flat > .mx-sec{ margin:0; }
+.gmi-col-main--flat{ gap:var(--sp-7); }
+.gmi-cols--wide{ gap:var(--sp-7); }
+/* light: the field table becomes a ruled ledger sheet (tinted label column, vertical rule) */
+html[data-theme="light"] .gmi-dl--ledger{ border:1px solid var(--line); border-radius:var(--r-ctl); background:var(--panel); overflow:hidden; }
+html[data-theme="light"] .gmi-dl--ledger > div{ padding:0; gap:0; align-items:stretch; border-top:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger > div:first-child{ border-top:0; }
+html[data-theme="light"] .gmi-dl--ledger dt{ padding:9px 12px; background:var(--panel2); border-right:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger dd{ padding:9px 12px; }
+/* the one quiet side sheet: dark = a luminance step, light = a recessed tray */
+.gmi-sheet{ display:flex; flex-direction:column; gap:var(--sp-3); padding:var(--sp-5); border-radius:var(--r-card);
+  background:var(--gmi-step); border:1px solid var(--gmi-hair); box-shadow:var(--gmi-tray); min-width:0; }
+html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
+.gmi-sheet .mx-sec{ margin:0; }
+.gmi-sheet .mx-sec h2, .gmi-sheet .mx-sec h3{ font-size:var(--fs-h3); }
+.gmi-sheet-div{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-4); margin-top:var(--sp-2); display:flex; flex-direction:column; gap:var(--sp-2); align-items:flex-start; }
+
+/* S2 phone: the category jump stays, as a sticky strip that scrolls sideways; group headers stick under it */
+@media (max-width:640px){
+  .gmi-indexwrap{ gap:10px; }
+  .gmi-jump{ position:sticky; top:0; z-index:4; margin:0 -16px; padding:8px 0; background:var(--bg);
+    border-bottom:1px solid var(--gmi-hair); }
+  .gmi-jump-track{ flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; scrollbar-width:none; padding:0 16px; scroll-padding:0 16px; }
+  .gmi-jump-track::-webkit-scrollbar{ display:none; }
+  .gmi-jump a{ flex:none; scroll-snap-align:start; }
+  .gmi-jump::after{ content:""; position:absolute; top:0; right:0; bottom:0; width:32px; pointer-events:none;
+    background:linear-gradient(to right, transparent, var(--bg)); }
+  .gmi-index-h{ top:57px; }
+  .gmi-index-group{ scroll-margin-top:57px; }
+}
+```
+
+**Jump-strip behaviour (S2 index).** A chip click is intercepted (`preventDefault`): it opens the target group
+and calls `scrollIntoView({block:"start"})`, so the URL hash (lens state) is never clobbered. An
+`IntersectionObserver` on the category `<details>` groups (rootMargin `-60px 0px -70% 0px`) sets
+`aria-current="true"` on the matching chip and, when the strip overflows, scrolls it to the chip’s left edge
+(`scrollLeft = chip.offsetLeft - 16`). The 371-row DOM gate (§0.3) is unchanged: the strip adds no rows and hides none.
 
 
 ##### Tier-1 head (all pages) — `s1_issuer.html`, first `.gmi-head`
@@ -313,7 +458,7 @@ verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` fro
 ##### S1 principal-activity answer — `s1_issuer.html`, first `.gmi-answer`
 
 ```html
-<p class="gmi-answer"><span class="l-en">Proposed, not a member. Not used on the map or in any count until a curator reviews it.</span><span class="l-zh">拟议关联，尚非成员。审核员审核前，不会用于主题地图或任何统计。</span></p>
+<p class="gmi-answer gmi-hero1-ans"><span class="l-en"><b>Proposed, not a member.</b> Not used on the map or in any count until a curator reviews it.</span><span class="l-zh"><b>拟议关联，尚非成员。</b>审核员审核前，不会用于主题地图或任何统计。</span></p>
 ```
 
 ##### S1 facet (labelled fact; unset = ink) — `s1_issuer.html`, first `.gmi-facet`
@@ -324,10 +469,19 @@ verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` fro
 <p class="gmi-note"><span class="l-en">No reviewed description of Micron’s main business is on file. It will appear here, with its source, once reviewed.</span><span class="l-zh">目前没有经审核的美光科技主营业务描述。审核后将连同来源显示于此。</span></p></div>
 ```
 
-##### S1 lineage ladder (micro → sub-theme → theme → category) — `s1_issuer.html`, first `.gmi-lineage`
+##### S1 taxonomy ladder — the shared `.gmi-chain` node idiom, anchored on the micro-theme (round 2) — `s1_issuer.html`, first `.gmi-chain--ladder`
 
 ```html
-<div class="gmi-lineage"><div class="gmi-rung gmi-rung--held"><span class="gmi-rung-lvl"><span class="l-en">Micro-theme</span><span class="l-zh">细分主题</span></span><span class="gmi-rung-name"><span class="l-en">HBM &amp; advanced packaging</span><span class="l-zh">HBM 与先进封装</span></span><span class="gmi-rung-note"><span class="l-en">Proposed link · held</span><span class="l-zh">拟议关联 · 待审核</span></span></div><div class="gmi-link"><svg …icon…/></div><div class="gmi-rung gmi-rung--void"><span class="gmi-rung-lvl"><span class="l-en">Sub-theme</span><span class="l-zh">子主题</span></span><span class="gmi-rung-name"><span class="l-en">None — sits directly under its theme</span><span class="l-zh">无 —— 直接隶属于主题</span></span></div><div class="gmi-link"><svg …icon…/></div><div class="gmi-rung"><span class="gmi-rung-lvl"><span class="l-en">Theme</span><span class="l-zh">主题</span></span><span class="gmi-rung-name"><span class="l-en">AI Semiconductors</span><span class="l-zh">AI半导体</span></span><span class="gmi-rung-note"><span class="l-en">Also listed under Memory, HBM &amp; Storage</span><span class="l-zh">亦列于：存储与HBM</span></span></div><div class="gmi-link"><svg …icon…/></div><div class="gmi-rung"><span class="gmi-rung-lvl"><span class="l-en">Category</span><span class="l-zh">类别</span></span><span class="gmi-rung-name"><span class="l-en">Semiconductors & hardware</span><span class="l-zh">半导体与硬件</span></span><span class="gmi-rung-note"><span class="l-en">Its theme also sits in Technology &amp; software</span><span class="l-zh">所属主题亦归入：科技与软件</span></span></div></div>
+<ol class="gmi-chain gmi-chain--ladder"><li class="gmi-chain-step gmi-chain-step--anchor"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--held"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Micro-theme</span><span class="l-zh">细分主题</span></span><span class="gmi-chain-name"><span class="l-en">HBM &amp; advanced packaging</span><span class="l-zh">HBM 与先进封装</span></span><span class="gmi-chain-note"><span class="l-en">Proposed place for Micron</span><span class="l-zh">美光科技的拟议位置</span></span></div></li><li class="gmi-chain-step gmi-chain-step--void gmi-chain-step--none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--none"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Sub-theme</span><span class="l-zh">子主题</span></span><span class="gmi-chain-name"><span class="l-en">None — sits directly under its theme</span><span class="l-zh">无 —— 直接隶属于主题</span></span></div></li><li class="gmi-chain-step gmi-chain-step--theme"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Theme</span><span class="l-zh">主题</span></span><span class="gmi-chain-name"><span class="l-en">AI Semiconductors</span><span class="l-zh">AI半导体</span></span><span class="gmi-chain-note"><span class="l-en">Also listed under Memory, HBM &amp; Storage</span><span class="l-zh">亦列于：存储与HBM</span></span></div></li><li class="gmi-chain-step gmi-chain-step--cat"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Category</span><span class="l-zh">类别</span></span><span class="gmi-chain-name"><span class="l-en">Semiconductors & hardware</span><span class="l-zh">半导体与硬件</span></span><span class="gmi-chain-note"><span class="l-en">Its theme also sits in Technology &amp; software</span><span class="l-zh">所属主题亦归入：科技与软件</span></span></div></li></ol>
+```
+
+##### S1 side sheet — what we don't know yet + documented relationships (round 2) — `s1_issuer.html`, first `.gmi-sheet`
+
+```html
+<aside class="gmi-sheet"><div class="mx-sec"><h2><span class="l-en">What we don’t know yet</span><span class="l-zh">尚不清楚的信息</span></h2></div><ul class="gmi-list"><li><span><span class="l-en">Whether Micron belongs here</span><span class="l-zh">美光科技是否属于该主题</span></span><span><span class="l-en">Awaiting review</span><span class="l-zh">待审核</span></span></li><li><span><span class="l-en">Deal size</span><span class="l-zh">规模</span></span><span><span class="l-en">Not in the source</span><span class="l-zh">来源未披露</span></span></li><li><span><span class="l-en">Start date</span><span class="l-zh">开始日期</span></span><span><span class="l-en">Not in the source</span><span class="l-zh">来源未披露</span></span></li><li><span><span class="l-en">Business segment</span><span class="l-zh">业务分部</span></span><span><span class="l-en">Not in the source</span><span class="l-zh">来源未披露</span></span></li></ul>
+<div class="gmi-sheet-div"><div class="mx-sec"><h3><span class="l-en">Documented relationships</span><span class="l-zh">已记录的关系</span></h3></div>
+<p class="gmi-note"><span class="l-en">None documented for Micron yet.</span><span class="l-zh">美光科技暂无已记录的关系。</span></p>
+<a class="gmi-btn gmi-btn--quiet" href="s3_relationships.html"><span class="l-en">See documented relationships</span><span class="l-zh">查看已记录的关系</span><svg …icon…/></a></div></aside>
 ```
 
 ##### S2 census band (one category) — `s2_theme_map.html`, first `.gmi-cband`
@@ -342,6 +496,12 @@ verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` fro
 ```html
 <div class="gmi-trow" role="treeitem" aria-level="1" aria-expanded="false" tabindex="0"><svg …icon…/><span class="gmi-trow-name"><span class="l-en">Technology &amp; software</span><span class="l-zh">科技与软件</span></span><span class="gmi-trow-strip" aria-hidden="true"><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></spa
 <!-- … truncated; full markup in s2_theme_map.html -->
+```
+
+##### S2 phone jump strip — sticky, scrolls sideways at ≤640 (round 2) — `s2_index.html`, first `.gmi-jump`
+
+```html
+<nav class="gmi-jump" aria-label="Categories"><div class="gmi-jump-track"><a href="#technology_software"><span class="l-en">Technology &amp; software</span><span class="l-zh">科技与软件</span><small>61</small></a><a href="#semiconductors_hardware"><span class="l-en">Semiconductors &amp; hardware</span><span class="l-zh">半导体与硬件</span><small>43</small></a><a href="#energy_power"><span class="l-en">Energy &amp; power</span><span class="l-zh">能源与电力</span><small>64</small></a><a href="#materials_mining"><span class="l-en">Materials &amp; mining</span><span class="l-zh">材料与矿业</span><small>50</small></a><a href="#industrials_defense"><span class="l-en">Industrials &amp; defense</span><span class="l-zh">工业与国防</span><small>78</small></a><a href="#healthcare_lifesciences"><span class="l-en">Healthcare &amp; life sciences</span><span class="l-zh">医疗与生命科学</span><small>56</small></a><a href="#financial_services"><span class="l-en">Financial services</span><span class="l-zh">金融服务</span><small>19</small></a><a href="#consumer_cyclical"><span class="l-en">Consumer cyclical</span><span class="l-zh">可选消费</span><small>0</small></a><a href="#consumer_defensive"><span class="l-en">Consumer defensive</span><span class="l-zh">必需消费</span><small>0</small></a><a href="#crypto_digital_assets"><span class="l-en">Crypto &amp; digital assets</span><span class="l-zh">加密与数字资产</span><small>0</small></a></div></nav>
 ```
 
 ##### S2 index row — `s2_index.html`, first `.gmi-irow`
@@ -366,14 +526,10 @@ verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` fro
 <div class="gmi-hist" aria-hidden="true"><div class="gmi-hist-col"><span class="gmi-hist-v">58%</span><span class="gmi-hist-bar" style="height:52px"></span><span class="gmi-hist-p"><span class="l-en">FY22</span><span class="l-zh">2022财年</span></span></div><div class="gmi-hist-col"><span class="gmi-hist-v">66%</span><span class="gmi-hist-bar" style="height:59px"></span><span class="gmi-hist-p"><span class="l-en">FY23</span><span class="l-zh">2023财年</span></span></div><div class="gmi-hist-col"><span class="gmi-hist-v">69%</span><span class="gmi-hist-bar" style="height:62px"></span><span class="gmi-hist-p"><span class="l-en">FY24</span><span class="l-zh">2024财年</span></span></div><div class="gmi-hist-col gmi-hist-col--now"><span class="gmi-hist-v">67%</span><span class="gmi-hist-bar" style="height:60px"></span><span class="gmi-hist-p"><span class="l-en">FY25</span><span class="l-zh">2025财年</span></span></div></div></div>
 ```
 
-##### S3 conditional path (layout only) — `s3_relationships.html`, first `.gmi-path`
+##### S3 "Where this link leads" — the same `.gmi-chain`, edge labels above (round 2) — `s3_relationships.html`, first `.gmi-chain--edges`
 
 ```html
-<div class="gmi-path"><div class="gmi-pnode"><b><span class="l-en">Skyworks</span><span class="l-zh">思佳讯</span></b><small><span class="l-en">Supplier</span><span class="l-zh">供应商</span></small></div>
-<div class="gmi-pedge"><span class="gmi-pedge-line"></span><span class="gmi-pedge-lab"><span class="l-en">supplies · no condition stated</span><span class="l-zh">供货 · 未列明条件</span></span></div>
-<div class="gmi-pnode"><b><span class="l-en">Apple</span><span class="l-zh">苹果</span></b><small><span class="l-en">Customer</span><span class="l-zh">客户</span></small></div>
-<div class="gmi-pedge gmi-pedge--void"><span class="gmi-pedge-line"></span><span class="gmi-pedge-lab"><span class="l-en">next step</span><span class="l-zh">下一步</span></span></div>
-<div class="gmi-pnode gmi-pnode--void"><b><span class="l-en">No documented links from Apple yet</span><span class="l-zh">尚无苹果的已记录关联</span></b></div></div>
+<ol class="gmi-chain gmi-chain--edges"><li class="gmi-chain-step"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Supplier</span><span class="l-zh">供应商</span></span><span class="gmi-chain-name"><span class="l-en">Skyworks</span><span class="l-zh">思佳讯</span></span></div><span class="gmi-chain-edge"><span class="l-en">supplies · no condition stated</span><span class="l-zh">供货 · 未列明条件</span></span></li><li class="gmi-chain-step gmi-chain-step--to-none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Customer</span><span class="l-zh">客户</span></span><span class="gmi-chain-name"><span class="l-en">Apple</span><span class="l-zh">苹果</span></span></div><span class="gmi-chain-edge"><span class="l-en">next step</span><span class="l-zh">下一步</span></span></li><li class="gmi-chain-step gmi-chain-step--none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--none"></span></span><div class="gmi-chain-body"><span class="gmi-chain-name"><span class="l-en">No documented links from Apple yet</span><span class="l-zh">尚无苹果的已记录关联</span></span></div></li></ol>
 ```
 
 ##### S4 coverage row (numerator / frozen denominator) — `s4_coverage.html`, first `.gmi-cov-row`
@@ -389,6 +545,12 @@ verbatim. Below are the canonical blocks, extracted by `outer-HTML-by-class` fro
 
 ```html
 <article class="gmi-state"><div class="gmi-state-h"><span class="gmi-ink-warn" style="display:flex"><svg …icon…/></span><span class="gmi-state-t"><span class="l-en">Couldn’t load the theme map</span><span class="l-zh">主题地图加载失败</span></span><span class="gmi-state-k">fetch_failed</span></div><p><span class="l-en">The latest read did not arrive.</span><span class="l-zh">最新一次读取未能送达。</span></p><p class="gmi-state-ok"><span class="l-en">Search and the full index still work from the last read (22 Oct 2026).</span><span class="l-zh">搜索与完整索引仍可使用上次读取结果（2026年10月22日）。</span></p><div class="gmi-state-a"><button class="gmi-btn" type="button"><svg …icon…/><span class="l-en">Retry</span><span class="l-zh">重试</span></button><a class="gmi-btn gmi-btn--quiet" href="s2_index.html"><span class="l-en">Open index</span><span class="l-zh">打开索引</span></a></div></article>
+```
+
+##### S5 conditioned-path template — the same `.gmi-chain` (round 2) — `s5_states.html`, first `.gmi-chain--edges`
+
+```html
+<ol class="gmi-chain gmi-chain--edges"><li class="gmi-chain-step gmi-chain-step--wide gmi-chain-step--to-none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-name"><span class="l-en">Skyworks</span><span class="l-zh">思佳讯</span></span></div><span class="gmi-chain-edge"><span class="l-en">If Apple reduces or stops its purchases</span><span class="l-zh">如果苹果减少或停止采购</span></span></li><li class="gmi-chain-step gmi-chain-step--none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--none"></span></span><div class="gmi-chain-body"><span class="gmi-chain-name"><span class="l-en">Effect stated in the filing</span><span class="l-zh">申报文件所述影响</span></span><span class="gmi-chain-note"><span class="l-en">quoted text appears here</span><span class="l-zh">此处显示引文</span></span></div></li></ol>
 ```
 
 ## 12. EN / ZH copy deck
@@ -754,6 +916,21 @@ the index with every group open, captured only after a DOM assertion that 371 `.
 
 Each S-board places four cells side by side: DARK·EN, DARK·ZH, LIGHT·EN and LIGHT·ZH. The boards hold the rendered
 captures. The HTML specimens remain the exact implementation source (see DEVIATIONS in DESIGN_RECORD).
+
+**Round 2 — Paper file "GMI Explorer 2026-10-22 — Round 2"** (a new file: the round-1 file had reached the tool's
+size limit). Four before/after boards, each reviewed by screenshot:
+
+- **S1 Issuer** — round-1 dark and light at 1440 against the round-2 composition, with the table of light
+  mechanisms that differ (§4).
+- **S2 Theme index at 390** — top of page and mid-list, before (jump hidden) and after (sticky sideways strip
+  plus sticky category headers).
+- **S3 Relationships** — "Where this link leads" at 1440 and 390, before (bordered path boxes) and after (`.gmi-chain`).
+- **S5 Degraded states** — the conditioned-path template at 1440 and 390, before and after, plus the full
+  round-2 states sheet at 1440 in dark and light (the other nine states are unchanged).
+
+The round-2 crops live in `png/r2/` (review crops, including scrolled 390 viewports that show the sticky strip
+mid-list) and `png/r2/ba/` (before and after crops; S1’s "after" is the regenerated matrix PNG itself). The matrix above is the full regenerated set: every surface was re-rendered
+in all eight cells, including the surfaces round 2 did not change.
 
 **Data provenance** (`inputs/fixture.json` → `provenance`):
 
