@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-20T04:50:58.707136+00:00",
+  "final_index": "12f10c410682befb243f26add961b975137bea75",
+  "files": 280,
+  "manifest_bytes": 103449,
+  "manifest_sha256": "881594398411b8ae9259adfedca947ab2e95049c3564efb5de5b5beb5dc8c37c",
+  "source_gate_index": "252deb9ff390ad3677a2c29ce9fd05a54e609e04",
+  "only_proof_handoff_delta": true,
+  "proof_paths": 73,
+  "owned_inventory_paths": 568,
+  "raw_compressed_and_coverage_verified": true,
+  "owned_whitespace_exit": 0
+}

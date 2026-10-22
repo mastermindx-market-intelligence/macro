@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T11:58:04.266458+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_forex_r26_decision_contract.py",
+    "tests/test_forex_r4_contract.py",
+    "tests/test_forex_hero_spark_window.py",
+    "tests/test_forex_r26_consumer.py",
+    "tests/test_forex_r26_consumer_freshness.py",
+    "tests/test_forex_r26_event_display.py",
+    "tests/test_forex_r26_workspace.py",
+    "tests/test_forex_watch_client_js.py",
+    "tests/test_forex_watch_workspace_browser.py",
+    "-q",
+    "--basetemp=/tmp/forex-r26-resume-20261021/account-final-tests"
+  ],
+  "head_before_commit": "700b7df3c01999aea8d99139808c82643f14cb97",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "6e1ac0cb1505787ce9065bc70fd240e772a11ff31f148acc221cd830e8cb2b2e",
+    "scripts/build_forex.py": "2f617a1d367e1ed7857c81336a9cd796ba735661016e0df92c718b0eeec41401",
+    "templates/forex.html.j2": "c553c4489b379873137e9f09264ebf92ba53961dae4e5e27715d835afcdce103",
+    "templates/forex_r26_workspace.html.j2": "eb8e3fa7e88009bb43674b50d2f3e10e21b99b60162d0b8c798dad716fe537cc",
+    "templates/forex_r26.js": "e7c9986b94a9d61c0c47326900321ebb426ba5def10498ece8c43eba638a06c0",
+    "templates/forex_watch_client.js": "4a2eb5052433e6b8340ec48f04ed3c8fdac2eaf5b27399d9fad6d89028fba140",
+    "site/forex_r26.js": "e7c9986b94a9d61c0c47326900321ebb426ba5def10498ece8c43eba638a06c0",
+    "site/forex_watch_client.js": "4a2eb5052433e6b8340ec48f04ed3c8fdac2eaf5b27399d9fad6d89028fba140",
+    "tests/js/forex_watch_client.test.cjs": "4952d679c3d3f7d251561f47fad3c86ba26a93a344d6053e2b9fc8ff2822d26f",
+    "tests/fixtures/forex_account_owner.js": "fe6dc03ac9d23c8bd6fce8366d5fbf6b70d4ecdc5f0cd432eb3b62f65ab3ee2a",
+    "tests/test_forex_watch_client_js.py": "2677b4e0a66b8cbfecacf952a4f895f72e30707d2b68f7aabeec765802ee5ef3",
+    "tests/test_forex_watch_workspace_browser.py": "975b270e5c22c74feba063a2ef3639fef92ac887dec5c0842b2e550fcbd70ce4"
+  },
+  "source_unchanged": true,
+  "returncode": 0,
+  "seconds": 31.77,
+  "log": "/tmp/forex-r26-resume-20261021/account-final-tests.log",
+  "output": "........................................................................ [ 26%]\n..................................................................s..... [ 52%]\n........................................................................ [ 79%]\n.........................................................                [100%]\n272 passed, 1 skipped in 29.97s\n",
+  "scope": "Actual builder/Jinja and browser controller with synthetic market and controlled account-owner fixture. No live account, database, feed or delivery effects.",
+  "passed": 272,
+  "skipped": 1,
+  "skip_reason": "Canonical latest.json omitted by sparse checkout; unchanged smoke independently proven on db1e.",
+  "node_subtests_passed": 18,
+  "browser_cases_passed": 10,
+  "production_acceptance": false,
+  "database_proof": false,
+  "screenshots": {
+    "saved-1440-en-light.png": "74e00d2ac1d323fcf95a2d17c1934288717b1d71c8f8c3931ced914eadea66de",
+    "saved-1440-zh-dark.png": "b5a2a88c0206d10beb0d42396f902520701cc8becc425145daca732f34e2db36",
+    "saved-390-en-dark.png": "1f2df0addea86f4dbaa0de09da5ec2706d52cb46347c9434dc1e9ee1291b9760",
+    "saved-390-zh-light.png": "edff75f47a84a9081595d3f205df6cba33e44f22a328d33f0155d95452eac79b"
+  },
+  "visually_inspected_by_parent": [
+    "saved-1440-en-light.png",
+    "saved-390-zh-light.png"
+  ],
+  "ci_followup": {
+    "initial_post_account_scope_result": "3 failed before execution: setup-node22 disagreed with existing Node20 runner contract",
+    "repair": "Changed only this job setup-node input to20; shared runner, guards and ceilings unchanged",
+    "manifest_sha256_after_repair": "ccb59a6cc8ba9d62ced44b8bc14d090e31df7de5a4bff0cc9130b1c1c517b924",
+    "final_gates": {
+      "tests": [
+        "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+      ],
+      "returncode": 0,
+      "seconds": 240.06,
+      "output": "...                                                                      [100%]\n3 passed in 235.77s (0:03:55)\n"
+    }
+  }
+}

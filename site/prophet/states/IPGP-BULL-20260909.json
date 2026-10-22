@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IPGP-BULL-20260909",
-  "asof": "2026-10-18",
+  "asof": "2026-10-21",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 27.8,
@@ -10,23 +10,23 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 33.4,
+    "validity": 23.3,
     "progress": 0.0,
-    "pace": 0.5,
+    "pace": 0.0,
     "retention": 50.0,
-    "overlay": 32.9
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.444,
+    "dist_to_stop_r": 0.34,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 82.2,
-    "p1": -0.3706,
-    "p2": -0.1853,
+    "horizon_pct_used": 88.9,
+    "p1": -0.4398,
+    "p2": -0.2199,
     "p3": null,
-    "move_r": -0.556,
+    "move_r": -0.66,
     "mfe_r": 0.357,
-    "mae_r": -0.556
+    "mae_r": -0.661
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.060003051757818,
-  "_mae": -6.320001831054682,
+  "_mae": -7.509996643066401,
   "_max_p1": 0.23805353572312027,
   "_first_trigger_ts": "2026-10-02",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 37,
-  "tau": 0.8222
+  "days_elapsed": 40,
+  "tau": 0.8889
 }

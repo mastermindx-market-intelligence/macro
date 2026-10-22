@@ -1,0 +1,17 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "d9dd66255444a70ba2160d30a2b62e540bcbc6620736030152cbef50c7ab7f59",
+  "helper_sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_excluded_descendants_survive_rollback",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.852
+    }
+  ],
+  "passed": 1,
+  "failed": 0
+}

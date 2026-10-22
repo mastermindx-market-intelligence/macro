@@ -1,0 +1,22 @@
+{
+  "schema": "risk_radar.helper_native_pytest.v1",
+  "started_at": "2026-10-18T07:41:55.563844+00:00",
+  "completed_at": "2026-10-18T07:42:25.501257+00:00",
+  "elapsed_seconds": 29.937,
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310",
+  "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_deploy_provenance.py"
+  ],
+  "exit_code": 1,
+  "log_path": "/tmp/rr-helper-native-pytest-20261018.log",
+  "log_bytes": 91721,
+  "log_sha256": "fcf4e967a0890eba39bddf6114b987de3d28a0a112425049deb5b7ce4dd96396",
+  "helper_sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+  "test_sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+}

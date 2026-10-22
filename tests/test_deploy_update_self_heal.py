@@ -364,6 +364,9 @@ MUST_RESTART = [
     'contracts/opportunity_evidence/vector.v1.schema.json',
     'contracts/opportunity_evidence/slot_registry.v1.json',
     'contracts/evidence_foundation/reference.v1.schema.json',
+
+    # Today contract validator caches the source schema across requests.
+    "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
@@ -548,6 +551,8 @@ MUST_NOT_RESTART = [
     'contracts/opportunity_evidence/vector.v1.schema.json.bak',
     'contracts/opportunity_evidence/slot_registry.v1.json.bak',
     'contracts/evidence_foundation/vocabulary.v1.json',
+
+    "site/macrodata/workspaces/manifest.json",
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
     # rendered site + data artifacts are read from disk per request
