@@ -5538,6 +5538,13 @@ jobs:
         env:
           COLLECT_LANE: nightly
         run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
+      - name: GMI activity membership state (M2 fold — off-render, non-fatal)
+        # GMI M2: activity-history fold in the sole producer; writes data/theme_graph/activity_membership_state.v1.json only.
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode ACTIVITY_MEMBERSHIP_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5551,6 +5558,7 @@ jobs:
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
           git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
+          git add data/theme_graph/activity_membership_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)
