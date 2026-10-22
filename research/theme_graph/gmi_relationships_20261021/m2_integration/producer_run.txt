@@ -1,20 +1,36 @@
-# producer_run.txt — F1 regeneration, gmi-rel-m2-integ-build-20261022-r2
+# producer_run.txt — F1 regeneration, gmi-rel-m2-dirfix-20261022-r1
 # command (run A): TZ=UTC python3 scripts/build_relationship_observations.py --as-of 2026-10-21T00:00:00Z
 # (ALL defaults: extraction DIRECTORY, default sources, default manifest, default out-dir)
 
 ## RUN A stdout:
-relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1115 revisions=111 warnings=0 package=pkg:698aec7868bbedb6c761
+::warning title=relationship-provider-unnamed::obs:1d62d1f80bf7faa5e724: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:2373c9717cb4a46ad398: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:5e13b722018618234cd3: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:7cf0ea4c454941de6bc6: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:860e7787242871c8a8ee: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:beb2f8495553665130a5: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:d39b0793686541649f9b: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:e9f48707c6c8e0a660fa: component_dependency has no named provider
+relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1107 revisions=111 warnings=8 package=pkg:4aba1d2a658bdff832c5
 ## RUN A artifact sha256:
-e55c5c3637b16196962311c8dd57f7c4ce4e8d77af585db5ffe8e0129f6d77eb  data/company_intelligence/relationships/observation_package.v2.json
-1b4b249ca5c69871d687c65e54ab88d819e20224757a419c19db4143b7bad684  data/company_intelligence/relationships/relationship_edges.json
+455c0b95392e4523bee1aaa483f77fb35ff537bc93080f2c271c2cfc4b64a136  data/company_intelligence/relationships/observation_package.v2.json
+d80f23fff40e6e653ed4c0a985e39daf9a3e1a533623d8096609166a5fc0992f  data/company_intelligence/relationships/relationship_edges.json
 
 # command (run B): TZ=UTC python3 scripts/build_relationship_observations.py --as-of 2026-10-21T00:00:00Z
 
 ## RUN B stdout:
-relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1115 revisions=111 warnings=0 package=pkg:698aec7868bbedb6c761
+::warning title=relationship-provider-unnamed::obs:1d62d1f80bf7faa5e724: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:2373c9717cb4a46ad398: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:5e13b722018618234cd3: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:7cf0ea4c454941de6bc6: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:860e7787242871c8a8ee: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:beb2f8495553665130a5: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:d39b0793686541649f9b: component_dependency has no named provider
+::warning title=relationship-provider-unnamed::obs:e9f48707c6c8e0a660fa: component_dependency has no named provider
+relationship_observations: as_of=2026-10-21T00:00:00Z edges=248 non_edges=1107 revisions=111 warnings=8 package=pkg:4aba1d2a658bdff832c5
 ## RUN B artifact sha256:
-e55c5c3637b16196962311c8dd57f7c4ce4e8d77af585db5ffe8e0129f6d77eb  data/company_intelligence/relationships/observation_package.v2.json
-1b4b249ca5c69871d687c65e54ab88d819e20224757a419c19db4143b7bad684  data/company_intelligence/relationships/relationship_edges.json
+455c0b95392e4523bee1aaa483f77fb35ff537bc93080f2c271c2cfc4b64a136  data/company_intelligence/relationships/observation_package.v2.json
+d80f23fff40e6e653ed4c0a985e39daf9a3e1a533623d8096609166a5fc0992f  data/company_intelligence/relationships/relationship_edges.json
 
 ## byte-identity checks:
 run A stdout == run B stdout: IDENTICAL
@@ -65,14 +81,14 @@ print(json.dumps(out, indent=1, sort_keys=True))
    "supplier_customer": 117
   },
   "non_edges": {
-   "component_dependency": 8,
+   "component_dependency": 0,
    "contract_manufacturing": 108,
    "distribution": 121,
    "licensing": 182,
    "supplier_customer": 696
   },
   "observations": {
-   "component_dependency": 21,
+   "component_dependency": 13,
    "contract_manufacturing": 234,
    "distribution": 159,
    "licensing": 272,
@@ -86,25 +102,25 @@ print(json.dumps(out, indent=1, sort_keys=True))
    "not_assessed": 1
   },
   "edges": {
-   "component_dependency": 8,
+   "component_dependency": 4,
    "contract_manufacturing": 51,
-   "distribution": 20,
-   "licensing": 44,
-   "supplier_customer": 68
+   "distribution": 19,
+   "licensing": 41,
+   "supplier_customer": 66
   },
   "non_edges": {
-   "component_dependency": 2,
+   "component_dependency": 0,
    "contract_manufacturing": 107,
    "distribution": 118,
    "licensing": 166,
    "supplier_customer": 398
   },
   "observations": {
-   "component_dependency": 12,
+   "component_dependency": 6,
    "contract_manufacturing": 233,
-   "distribution": 156,
-   "licensing": 243,
-   "supplier_customer": 530
+   "distribution": 155,
+   "licensing": 241,
+   "supplier_customer": 527
   }
  },
  "D2": {
@@ -114,25 +130,25 @@ print(json.dumps(out, indent=1, sort_keys=True))
    "not_assessed": 1
   },
   "edges": {
-   "component_dependency": 2,
+   "component_dependency": 1,
    "contract_manufacturing": 0,
    "distribution": 0,
-   "licensing": 6,
-   "supplier_customer": 49
+   "licensing": 7,
+   "supplier_customer": 45
   },
   "non_edges": {
-   "component_dependency": 6,
+   "component_dependency": 0,
    "contract_manufacturing": 1,
    "distribution": 3,
    "licensing": 16,
    "supplier_customer": 298
   },
   "observations": {
-   "component_dependency": 9,
+   "component_dependency": 1,
    "contract_manufacturing": 1,
    "distribution": 3,
    "licensing": 29,
-   "supplier_customer": 381
+   "supplier_customer": 376
   }
  }
 }

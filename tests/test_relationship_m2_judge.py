@@ -1180,6 +1180,70 @@ def test_status_quote_missing_and_role_not_in_species():
     assert row["relation_status"] == "denied"
 
 
+def _observation_row_validator():
+    contract = json.loads(
+        (
+            REPO_ROOT
+            / "contracts/company_intelligence/relationship_extraction.v1.schema.json"
+        ).read_text("utf-8")
+    )
+    schema = {"$defs": contract["$defs"], "$ref": "#/$defs/observation_row"}
+    return jsonschema.validators.validator_for(schema)(schema)
+
+
+def test_subject_role_to_side_is_recorded_and_reverses_direction():
+    cand = _make_candidate()
+    out = _mapper().map(
+        cand, _judgment(cand, [_rel_entry(subject_role="customer")])
+    )
+    assert out["codes"] == [], out["codes"]
+    assert len(out["rows"]) == 1
+    row = out["rows"][0]
+    assert row["subject_role"] == "customer"
+    _observation_row_validator().validate(row)
+    # the filer is the to-side: the edge flips so from/to keep their roles
+    assert pv2._resolve_direction(row)[:2] == (
+        row["object"]["issuer_id"], row["subject"]["issuer_id"],
+    )
+
+
+def test_subject_role_absent_writes_no_key():
+    cand = _make_candidate()
+    out = _mapper().map(cand, _judgment(cand, [_rel_entry()]))
+    assert out["codes"] == [], out["codes"]
+    assert len(out["rows"]) == 1
+    row = out["rows"][0]
+    assert "subject_role" not in row
+    assert pv2._resolve_direction(row)[:2] == (
+        row["subject"]["issuer_id"], row["object"]["issuer_id"],
+    )
+
+
+def test_subject_role_default_side_is_recorded_and_keeps_direction():
+    cand = _make_candidate()
+    out = _mapper().map(
+        cand, _judgment(cand, [_rel_entry(subject_role="supplier")])
+    )
+    assert out["codes"] == [], out["codes"]
+    row = out["rows"][0]
+    assert row["subject_role"] == "supplier"
+    assert pv2._resolve_direction(row)[:2] == (
+        row["subject"]["issuer_id"], row["object"]["issuer_id"],
+    )
+
+
+def test_subject_role_is_the_only_row_difference():
+    cand = _make_candidate()
+    none_out = _mapper().map(cand, _judgment(cand, [_rel_entry()]))
+    cust_out = _mapper().map(
+        cand, _judgment(cand, [_rel_entry(subject_role="customer")])
+    )
+    assert none_out["codes"] == [] and cust_out["codes"] == []
+    base_row, role_row = none_out["rows"][0], cust_out["rows"][0]
+    assert role_row.pop("subject_role") == "customer"
+    assert role_row == base_row
+
+
 def test_entry_refusal_keeps_other_entries(tmp_path):
     cand = _make_candidate()
     entries = [

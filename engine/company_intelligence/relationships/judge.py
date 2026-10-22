@@ -1352,6 +1352,8 @@ class CandidateMapper:
             },
         }
 
+        if subject_role is not None:
+            row["subject_role"] = subject_role
         object_label = (
             object_party.get("anonymous_alias")
             if object_party.get("anonymous_alias") is not None

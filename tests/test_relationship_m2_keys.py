@@ -47,8 +47,8 @@ EXCERPT_PATH_TEMPLATE = (
 # producer's default run.  A sources root outside the repo records absolute
 # input paths, so these pins bind only to runs over the committed inputs; the
 # package identity (hashed from input sha256s only) binds everywhere.
-PKG_PIN = "e55c5c3637b16196962311c8dd57f7c4ce4e8d77af585db5ffe8e0129f6d77eb"
-EDGES_PIN = "1b4b249ca5c69871d687c65e54ab88d819e20224757a419c19db4143b7bad684"
+PKG_PIN = "455c0b95392e4523bee1aaa483f77fb35ff537bc93080f2c271c2cfc4b64a136"
+EDGES_PIN = "d80f23fff40e6e653ed4c0a985e39daf9a3e1a533623d8096609166a5fc0992f"
 PACKAGE_ID_PIN = "pkg:56502f8b52805a61749a"
 
 # The accepted M1 byte outputs: the byte-identity oracle for the re-key run

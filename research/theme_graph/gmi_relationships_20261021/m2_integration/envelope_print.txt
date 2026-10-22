@@ -4,16 +4,16 @@ panel_sha256: 108866ecea287cfda09ef536a9f0939fa0188ab41697c080f24174436119a3ca
 
 M0 record counts by species (the M2 NOT-DONE line)
   join: index_rows=1597 extraction_rows=1597 joined=1597 extraction_only=0
-  observations D1: supplier_customer=530 contract_manufacturing=233 licensing=243 distribution=156 component_dependency=12
-  observations D2: supplier_customer=381 contract_manufacturing=1 licensing=29 distribution=3 component_dependency=9
-  observations ALL: supplier_customer=911 contract_manufacturing=234 licensing=272 distribution=159 component_dependency=21
-  edges D1: supplier_customer=70 contract_manufacturing=51 licensing=44 distribution=20 component_dependency=8
-  edges D2: supplier_customer=49 contract_manufacturing=0 licensing=6 distribution=0 component_dependency=2
+  observations D1: supplier_customer=530 contract_manufacturing=233 licensing=243 distribution=156 component_dependency=10
+  observations D2: supplier_customer=381 contract_manufacturing=1 licensing=29 distribution=3 component_dependency=3
+  observations ALL: supplier_customer=911 contract_manufacturing=234 licensing=272 distribution=159 component_dependency=13
+  edges D1: supplier_customer=70 contract_manufacturing=51 licensing=43 distribution=20 component_dependency=8
+  edges D2: supplier_customer=49 contract_manufacturing=0 licensing=7 distribution=0 component_dependency=2
   edges ALL: supplier_customer=117 contract_manufacturing=51 licensing=50 distribution=20 component_dependency=10
-  non_edges D1: supplier_customer=398 contract_manufacturing=107 licensing=166 distribution=118 component_dependency=2
-  non_edges D2: supplier_customer=298 contract_manufacturing=1 licensing=16 distribution=3 component_dependency=6
-  non_edges ALL: supplier_customer=696 contract_manufacturing=108 licensing=182 distribution=121 component_dependency=8
-  excluded dispositions: none
+  non_edges D1: supplier_customer=398 contract_manufacturing=107 licensing=166 distribution=118 component_dependency=0
+  non_edges D2: supplier_customer=298 contract_manufacturing=1 licensing=16 distribution=3 component_dependency=0
+  non_edges ALL: supplier_customer=696 contract_manufacturing=108 licensing=182 distribution=121 component_dependency=0
+  excluded dispositions: refused=8
   coverage D1: assessed=114, no_supported_result=31, not_assessed=1
   coverage D2: assessed=72, no_supported_result=64, not_assessed=1
   coverage ALL: assessed=186, no_supported_result=95, not_assessed=2
@@ -26,27 +26,27 @@ E1 issuer relation coverage (every eligible issuer accounted)
 
 E2 role/species coverage cells (ELIGIBLE x species x from/to role)
   D1:
-    supplier_customer/supplier: known_fresh=40, known_anonymous=27, searched_no_supported_result=78, not_assessed=1 [own=40 counterparty=0]
-    supplier_customer/customer: known_fresh=16, searched_no_supported_result=129, not_assessed=1 [own=0 counterparty=16]
-    contract_manufacturing/manufacturer: known_fresh=25, known_anonymous=2, searched_no_supported_result=118, not_assessed=1 [own=25 counterparty=0]
-    contract_manufacturing/client: known_fresh=7, searched_no_supported_result=138, not_assessed=1 [own=0 counterparty=7]
-    licensing/licensor: known_fresh=19, searched_no_supported_result=126, not_assessed=1 [own=19 counterparty=0]
-    licensing/licensee: known_fresh=16, searched_no_supported_result=129, not_assessed=1 [own=0 counterparty=16]
-    distribution/manufacturer: known_fresh=11, known_anonymous=7, searched_no_supported_result=127, not_assessed=1 [own=11 counterparty=0]
-    distribution/distributor: searched_no_supported_result=145, not_assessed=1
-    component_dependency/provider: known_fresh=6, searched_no_supported_result=139, not_assessed=1 [own=6 counterparty=0]
-    component_dependency/dependent: known_fresh=3, searched_no_supported_result=142, not_assessed=1 [own=0 counterparty=3]
+    supplier_customer/supplier: known_fresh=43, known_anonymous=26, searched_no_supported_result=76, not_assessed=1 [own=36 counterparty=7]
+    supplier_customer/customer: known_fresh=16, known_anonymous=1, searched_no_supported_result=128, not_assessed=1 [own=5 counterparty=11]
+    contract_manufacturing/manufacturer: known_fresh=8, known_anonymous=1, searched_no_supported_result=136, not_assessed=1 [own=1 counterparty=7]
+    contract_manufacturing/client: known_fresh=25, known_anonymous=1, searched_no_supported_result=119, not_assessed=1 [own=24 counterparty=1]
+    licensing/licensor: known_fresh=18, searched_no_supported_result=127, not_assessed=1 [own=17 counterparty=1]
+    licensing/licensee: known_fresh=18, searched_no_supported_result=127, not_assessed=1 [own=3 counterparty=15]
+    distribution/manufacturer: known_fresh=10, known_anonymous=7, searched_no_supported_result=128, not_assessed=1 [own=10 counterparty=0]
+    distribution/distributor: known_fresh=1, searched_no_supported_result=144, not_assessed=1 [own=1 counterparty=0]
+    component_dependency/provider: known_fresh=3, searched_no_supported_result=142, not_assessed=1 [own=0 counterparty=3]
+    component_dependency/dependent: known_fresh=6, searched_no_supported_result=139, not_assessed=1 [own=6 counterparty=0]
   D2:
-    supplier_customer/supplier: known_fresh=30, known_anonymous=10, searched_no_supported_result=96, not_assessed=1 [own=30 counterparty=0]
-    supplier_customer/customer: known_fresh=12, searched_no_supported_result=125 [own=0 counterparty=12]
+    supplier_customer/supplier: known_fresh=26, known_anonymous=9, searched_no_supported_result=101, not_assessed=1 [own=24 counterparty=2]
+    supplier_customer/customer: known_fresh=13, searched_no_supported_result=124 [own=7 counterparty=6]
     contract_manufacturing/manufacturer: searched_no_supported_result=136, not_assessed=1
     contract_manufacturing/client: searched_no_supported_result=136, not_assessed=1
-    licensing/licensor: known_fresh=6, known_anonymous=1, searched_no_supported_result=129, not_assessed=1 [own=6 counterparty=0]
-    licensing/licensee: known_fresh=5, searched_no_supported_result=131, not_assessed=1 [own=0 counterparty=5]
+    licensing/licensor: known_fresh=7, searched_no_supported_result=129, not_assessed=1 [own=6 counterparty=1]
+    licensing/licensee: known_fresh=6, known_anonymous=1, searched_no_supported_result=129, not_assessed=1 [own=1 counterparty=5]
     distribution/manufacturer: searched_no_supported_result=136, not_assessed=1
     distribution/distributor: searched_no_supported_result=136, not_assessed=1
-    component_dependency/provider: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=1 counterparty=0]
-    component_dependency/dependent: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=0 counterparty=1]
+    component_dependency/provider: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=0 counterparty=1]
+    component_dependency/dependent: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=1 counterparty=0]
   cells_total=2830
   caveat: searched = cue-candidate search of the assessed documents; recall is OWED (E4); a searched cell is not proof of absence.
 
@@ -76,9 +76,9 @@ E5 positive precision
   reason: no precision sample directory given (--precision-dir)
 
 E6 natural operations latency (hours, ingested - published, UTC)
-  D1: n=1174 p50=5722.39 p90=6248.68 max=16909.17 clock_violations=0
-  D2: n=423 p50=5697.3 p90=6083.1 max=8536.52 clock_violations=0
-  ALL: n=1597 p50=5700.78 p90=6178.63 max=16909.17 clock_violations=0
+  D1: n=1172 p50=5722.39 p90=6248.68 max=16909.17 clock_violations=0
+  D2: n=417 p50=5697.3 p90=6085.4 max=8536.52 clock_violations=0
+  ALL: n=1589 p50=5707.39 p90=6178.63 max=16909.17 clock_violations=0
   package_lag: state=NOT_MEASURABLE reason: P.computed_at is set to P.as_of by construction (deterministic package clock)
 
 E7 investor usefulness — machine answerability of the predeclared panel
@@ -127,9 +127,10 @@ E7 investor usefulness — machine answerability of the predeclared panel
   D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q2 ANSWERED_NONE_FOUND
     en: The filings we read disclose none
     zh: 我们阅读的申报文件中未披露
-  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q3 ANSWERED_NONE_FOUND
-    en: The filings we read disclose none
-    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q3 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: rel:7fee1b37883fb2429ab3
   D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q4 ANSWERED_NONE_FOUND
     en: The filings we read disclose none
     zh: 我们阅读的申报文件中未披露
@@ -198,10 +199,9 @@ E7 investor usefulness — machine answerability of the predeclared panel
   D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q6 ANSWERED_NONE_FOUND
     en: The filings we read disclose none
     zh: 我们阅读的申报文件中未披露
-  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q1 ANSWERED_FACT
-    en: Answered from a cited filing
-    zh: 已根据所引申报文件作答
-    cite: rel:1dbe46208bbba1c4687e
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
   D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q2 ANSWERED_NONE_FOUND
     en: The filings we read disclose none
     zh: 我们阅读的申报文件中未披露
@@ -280,14 +280,14 @@ E7 investor usefulness — machine answerability of the predeclared panel
   usefulness to an investor is judged by people; this is answerability only — rating OWED.
 
 E8 release evidence (preregistered hash-min selection; ABSENT is a result)
-  D1 outgoing_query: candidates=191 selected=rel:796e10dfa83db5d66c2d@ISS:US-XNAS-TER
-    contract_manufacturing TERADYNE, INC -> PLEXUS CORP; accessions 0001193125-26-059002; party TERADYNE, INC (own filing)
-  D1 incoming_query: candidates=127 selected=rel:a832d882cac77a1258a8@ISS:US-XNAS-AMKR
-    contract_manufacturing Credo Technology Group Holding Ltd -> AMKOR TECHNOLOGY, INC.; accessions 0001628280-26-043303; party AMKOR TECHNOLOGY, INC. (counterparty filing)
+  D1 outgoing_query: candidates=191 selected=rel:919c528fcb8584c1c77b@ISS:US-XNAS-SITM
+    contract_manufacturing UNITED MICROELECTRONICS CORP -> SITIME Corp; accessions 0001451809-26-000012; party SITIME Corp (own filing)
+  D1 incoming_query: candidates=125 selected=rel:042d5524f078357e6613@ISS:US-XNAS-AMKR
+    contract_manufacturing AMKOR TECHNOLOGY, INC. -> QUALCOMM INC/DE; accessions 0000804328-25-000085; party AMKOR TECHNOLOGY, INC. (counterparty filing)
   D1 quantitative_fact: candidates=29 selected=rel:51dd8a5a261cd14cac1d
     supplier_customer Turtle Beach Corp -> AMAZON COM INC; magnitude seller_revenue_share=0.14 ratio (range); accessions 0001193125-26-104436
-  D1 unknown_magnitude: candidates=164 selected=rel:63e573115c89e875ce89
-    contract_manufacturing Navitas Semiconductor Corp -> TAIWAN SEMICONDUCTOR MANUFACTURING CO LTD; accessions 0001821769-26-000007
+  D1 unknown_magnitude: candidates=163 selected=rel:ab921db7bfc7a6b8412b
+    licensing NCR Atleos Corp -> NCR Voyix Corp; accessions 0001628280-26-012576
   D1 anonymous_counterparty: candidates=125 selected=nonedge:641a816557fa1ac9ed86
     supplier_customer Lumentum Holdings Inc. -> anonymous (ANONYMOUS_ALIAS); accession 0001628280-26-057358
   D1 contradiction: ABSENT (candidates=0)
@@ -296,18 +296,18 @@ E8 release evidence (preregistered hash-min selection; ABSENT is a result)
     restatement rev:265ad9e1bd1ead799875 on rel:3d083ed058f46f028ce9 (supplier_customer MERCURY SYSTEMS INC -> RTX Corp); accession 0001049521-26-000045
   D1 next_publication_reassertion: candidates=14 selected=rev:2b637ac04563e8cdb1bc
     reassertion rev:2b637ac04563e8cdb1bc on rel:90cc1ba94a05cd8e01cc (distribution MICROCHIP TECHNOLOGY INC -> ARROW ELECTRONICS, INC.); accession 0000827054-26-000016
-  D1 valid_multi_hop: candidates=32 selected=rel:6a209ed4d285e1b7a643|rel:658b3c8d502dbd011c8f
-    licensing IMPINJ INC -> NXP Semiconductors N.V. | supplier_customer NXP Semiconductors N.V. -> Aptiv PLC
-  D1 invalid_multi_hop: candidates=155 selected=rel:5c4893ab904f03e77971|rel:d291cefc9419cd4be3dc
-    contract_manufacturing HARMONIC INC. -> PLEXUS CORP | supplier_customer PLEXUS CORP -> GE HealthCare Technologies Inc.; reason period_disjoint
-  D2 outgoing_query: candidates=57 selected=rel:beedbfe0eeac9599ae07@ISS:US-XNAS-CLMT
-    supplier_customer Calumet, Inc. /DE -> Phillips 66; accessions 0002013745-26-000007; party Calumet, Inc. /DE (own filing)
-  D2 incoming_query: candidates=34 selected=rel:daffae5b1794b5e26b6e@ISS:US-XNYS-CVX
-    supplier_customer MURPHY OIL CORP -> CHEVRON CORP; magnitude seller_revenue_share=0.19 ratio (exact); accessions 0001628280-26-011709; party CHEVRON CORP (counterparty filing)
+  D1 valid_multi_hop: candidates=71 selected=rel:5be7af967fd9108a9088|rel:78040c2dd81fa22a385a
+    supplier_customer Broadcom Inc. -> Fortinet, Inc. | distribution Fortinet, Inc. -> TD SYNNEX CORP
+  D1 invalid_multi_hop: candidates=249 selected=rel:e3cac3becd5f46ad1e32|rel:342c5fe6364347ec0095
+    contract_manufacturing AMKOR TECHNOLOGY, INC. -> Broadcom Inc. | licensing Broadcom Inc. -> SYNAPTICS Inc; reason product_key_mismatch
+  D2 outgoing_query: candidates=58 selected=rel:aea6422e37ada843e8b6@ISS:US-XNYS-SHEL
+    supplier_customer KINDER MORGAN, INC. -> Shell plc; accessions 0001628280-26-017024; party Shell plc (own filing)
+  D2 incoming_query: candidates=35 selected=rel:e03b1127015c74812e0b@ISS:US-XNYS-PSX
+    supplier_customer Phillips 66 -> Calumet, Inc. /DE; accessions 0002013745-26-000007; party Phillips 66 (counterparty filing)
   D2 quantitative_fact: candidates=17 selected=rel:49ecbef55daa895befc7
     supplier_customer Noble Corp plc -> Shell plc; magnitude seller_revenue_share=0.123 ratio (exact); accessions 0001895262-26-000076
-  D2 unknown_magnitude: candidates=40 selected=rel:c4273758dd422915baf5
-    supplier_customer WORTHINGTON ENTERPRISES, INC. -> Worthington Steel, Inc.; accessions 0001193125-26-325872
+  D2 unknown_magnitude: candidates=41 selected=rel:a41cca715060b99b7e03
+    supplier_customer Chemours Co -> ENERGY FUELS INC; accessions 0001385849-26-000009
   D2 anonymous_counterparty: candidates=35 selected=nonedge:82b789960b650e75cf04
     supplier_customer MP Materials Corp. / DE -> anonymous (ANONYMOUS_ALIAS); accession 0001801368-26-000008
   D2 contradiction: ABSENT (candidates=0)
@@ -317,7 +317,7 @@ E8 release evidence (preregistered hash-min selection; ABSENT is a result)
   D2 next_publication_reassertion: ABSENT (candidates=0)
   D2 valid_multi_hop: candidates=10 selected=rel:e4bd61b9f0091208a3dd|rel:1ab12373e3e0fca0fde2
     supplier_customer Crescent Energy Co -> CONOCOPHILLIPS | licensing CONOCOPHILLIPS -> Phillips 66
-  D2 invalid_multi_hop: candidates=22 selected=rel:f7b35d2d3a17a89ff285|rel:1b2c6ebac3c318e0492c
-    supplier_customer Coeur Mining, Inc. -> FRANCO NEVADA Corp | supplier_customer FRANCO NEVADA Corp -> TECK RESOURCES LTD; reason product_key_mismatch
+  D2 invalid_multi_hop: candidates=12 selected=rel:51fdb318b31c9001e886|rel:e03b1127015c74812e0b
+    supplier_customer MURPHY OIL CORP -> Phillips 66 | supplier_customer Phillips 66 -> Calumet, Inc. /DE; reason product_key_mismatch
   selection: sha256('gmi-rel-envelope-evidence-v1:'+kind+':'+item_id), minimum hex
 
