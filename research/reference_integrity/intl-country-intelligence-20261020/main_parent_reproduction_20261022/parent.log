@@ -1,0 +1,13 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+✓ Ready in 410ms
+
+ GET /api/shared-shell/status 200 in 240ms (next.js: 225ms, application-code: 14ms)
+○ Compiling /[...legacyPath] ...
+ GET /intl.html 200 in 3.6s (next.js: 3.3s, proxy.ts: 41ms, application-code: 213ms)
+ GET /intl.html 200 in 63ms (next.js: 15ms, proxy.ts: 3ms, application-code: 45ms)
+ GET /api/shared-shell/status 200 in 5ms (next.js: 2ms, application-code: 3ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1496µs, application-code: 2ms)
+ GET /api/shared-shell/status 200 in 4ms (next.js: 1530µs, application-code: 2ms)
+[?25h
