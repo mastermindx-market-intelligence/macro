@@ -1,0 +1,27 @@
+{
+  "status": "DISCOVERY_PUBLICATION_OPPORTUNITY_DIAGNOSTIC_NO_FILL_CLAIM",
+  "plan_publication_git_at": "2026-09-26T17:51:05Z",
+  "plan_accumulate_low": 220.5,
+  "plan_accumulate_high": 225.1,
+  "plan_no_chase": 226.9,
+  "source_repository": "mastermindx-market-intelligence/macro",
+  "source_ref": "731a23fb64b9f6f1a321c77618f927f1a58d2d41",
+  "source_path": "data/baskets/ohlcv/NVDA.parquet",
+  "source_blob": "0e95a8c062c22f663fe7a80c9a76188bb444709e",
+  "source_sha256": "e28878d447358938ef4280a807dd6ea9c23e176943f2e70eedf00e9fc82def58",
+  "source_price_basis": "Back-adjusted daily OHLC; nominal execution or reader receipt not established",
+  "observed_source_last_date": "2026-10-05",
+  "first_regular_session_open_after_git_publication": {"date": "2026-09-28", "open": 229.75, "low": 228.0399932861328},
+  "regular_session_rows": [
+    {"date": "2026-09-28", "open": 229.75, "high": 233.2100067138672, "low": 228.0399932861328, "close": 228.86000061035156},
+    {"date": "2026-09-29", "open": 230.97000122070312, "high": 232.82000732421875, "low": 227.02999877929688, "close": 227.2100067138672},
+    {"date": "2026-09-30", "open": 229.27000427246094, "high": 232.3699951171875, "low": 228.1699981689453, "close": 228.3800048828125},
+    {"date": "2026-10-01", "open": 229.97999572753906, "high": 232.2899932861328, "low": 228.16000366210938, "close": 230.86000061035156},
+    {"date": "2026-10-02", "open": 236.05999755859375, "high": 237.8800048828125, "low": 233.60000610351562, "close": 233.9499969482422},
+    {"date": "2026-10-05", "open": 236.08999633789062, "high": 240.10000610351562, "low": 235.14999389648438, "close": 238.89999389648438}
+  ],
+  "minimum_regular_session_low": 227.02999877929688,
+  "regular_sessions_low_at_or_below_no_chase": 0,
+  "regular_sessions_low_at_or_below_accumulate_high": 0,
+  "interpretation": "In these six preserved regular sessions the source price never revisited the fixed final-plan no-chase ceiling or accumulation zone after Git publication. This is not a claim about extended-hours liquidity, plan delivery, actual order admission, costs, fills or a revised plan."
+}

@@ -1,0 +1,261 @@
+{
+  "anchor_checks": [
+    {
+      "lines": [
+        10,
+        19
+      ],
+      "matches_pin_hash": true,
+      "path": "collectors/edgar_eps.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        63,
+        94
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/sue.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        431,
+        465
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/us_prophet_fusion.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        45
+      ],
+      "matches_pin_hash": true,
+      "path": "collectors/edgar_earnings_8k.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        877,
+        922
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/financial_news.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        75,
+        88
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/news_event_ledger.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        108,
+        135
+      ],
+      "matches_pin_hash": true,
+      "path": "collectors/polygon_news.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        374,
+        430
+      ],
+      "matches_pin_hash": true,
+      "path": "collectors/edgar_13f.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        398,
+        430
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/smart_money.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        51,
+        68
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/manager_quality.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        12
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/prophet_lab/intelligence_vector.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        12,
+        38
+      ],
+      "matches_pin_hash": true,
+      "path": "research/prophet_v4/r6_program/rulings/R6-D07-01_EVIDENCE_CLASS_REGISTER_ADOPTION_2026-09-27.md",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        58,
+        132
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/earnings_release/binding.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        160,
+        202
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/earnings_release/receipts.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        24
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/prophet_lab/earnings_dossier.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        324,
+        369
+      ],
+      "matches_pin_hash": true,
+      "path": "collectors/equity_revisions.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        113,
+        143
+      ],
+      "matches_pin_hash": true,
+      "path": "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        79
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/group_linked_outsiders.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        18
+      ],
+      "matches_pin_hash": true,
+      "path": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/RESULT.md",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        59
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/gex_confirm.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        76
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/options_flow.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        79
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/theme_options_witness.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        1,
+        25
+      ],
+      "matches_pin_hash": true,
+      "path": "research/prophet_v4/r6_program/rulings/R6-B04-01_DOSSIER_CONTRACT_2026-09-24.md",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        193,
+        211
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/qkernel.py",
+      "range_in_file": true
+    },
+    {
+      "lines": [
+        176,
+        267
+      ],
+      "matches_pin_hash": true,
+      "path": "engine/qbus.py",
+      "range_in_file": true
+    }
+  ],
+  "checks": {
+    "13f_date_file_denominator": true,
+    "13f_row_partition": true,
+    "csv_json_consistent": true,
+    "eps_clock_partition": true,
+    "inspected_anchor_ranges_and_hashes": true,
+    "matrix_source_labels_present": true,
+    "matrix_source_paths_in_manifest": true,
+    "only_expected_source_absence": true,
+    "pinned_macro_identity": true,
+    "qbus_hash_completeness_consistent": true,
+    "report_source_anchors_in_manifest": true,
+    "script_syntax_valid": true,
+    "selected_case_not_promoted": true,
+    "selected_filings_three_origins": true,
+    "selected_ownership_capture_precedes_case_day": true,
+    "theme_options_unavailable_kept": true
+  },
+  "full_census_execution": {
+    "exit_code": 0,
+    "runtime_seconds": 100.9,
+    "source_identity_count": 764
+  },
+  "notes": [
+    "Two initially overlong documentation anchors were corrected to the actual file ends before final validation.",
+    "25 report anchors have local exact-source copies and passed line-range/hash checks; every report source path is present in the immutable census manifest."
+  ],
+  "schema": "research.evidence_census_validation.v1",
+  "scope": "Artifact integrity and bounded census consistency, not historical exposure qualification or producer validation",
+  "script_sha256": "0b949c8a1d252022f5cd80f02a8fa9efc071f62f687bc609f1b400fcdab60741",
+  "source_census_sha256": "005aed6029bb17b14449834fee1ada5ac766ceb54e93db9b9b9891d9b422e6af",
+  "verdict": "PASS"
+}

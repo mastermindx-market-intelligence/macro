@@ -1,0 +1,1735 @@
+{
+  "status": "DISCOVERY_ONLY_NO_EXECUTION_OR_PROMOTION_AUTHORITY",
+  "source_ref": "770918cb266b5d884978e31d61670b4efd789eaf",
+  "board_extraction_digests": {
+    "first": {
+      "sha256": "060d56804c96601ac8f86f4f5c826105a2509c7e584673b5b0b4dbddc3240289",
+      "input_path": "/tmp/prophet-ei-20261006-emergence/full/boards_first.json"
+    },
+    "latest": {
+      "sha256": "599a96d4ba23e2aabe81caa9fb434fabd2652d700d0c48093ffee12c3478d889",
+      "input_path": "/tmp/prophet-ei-20261006-emergence/full/boards_latest.json"
+    }
+  },
+  "raw_dates": {
+    "first": 36,
+    "latest": 36
+  },
+  "coverage": {
+    "first": {
+      "h5_buy_ledger_rows": 1098,
+      "joined_raw_rows": 1092,
+      "tier_mismatch": 0,
+      "flag_mismatch": {
+        "news_burst": 8,
+        "sue_fresh": 3,
+        "smartmoney_add": 0
+      },
+      "convergence_mismatch": 3
+    },
+    "latest": {
+      "h5_buy_ledger_rows": 1098,
+      "joined_raw_rows": 1024,
+      "tier_mismatch": 14,
+      "flag_mismatch": {
+        "news_burst": 2,
+        "sue_fresh": 3,
+        "smartmoney_add": 0
+      },
+      "convergence_mismatch": 1
+    }
+  },
+  "first_issuer_cases": [
+    {
+      "variant": "first",
+      "as_of": "2026-08-21",
+      "ticker": "TSLA",
+      "source_blob": "ee42ff9bf88407f7d08dca78ef373787de69ce73",
+      "source_commit": "f1e356f684ec988925718ceb3970a4fafaae3eb9",
+      "source_commit_at": "2026-08-21T22:50:41-07:00",
+      "source_sha256": "19a88744580416b85d76a475918d0e9b847873b939462b8c4638c234c8c3df85",
+      "emit_at": "2026-08-22T02:47:42+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-08-17",
+      "tier_observed_date": "2026-08-21",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": true,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": 6.0,
+      "news_n_pos": 0.0,
+      "news_n_neg": 0.0,
+      "news_sentiment_lean": "neutral",
+      "sue_z": null,
+      "sue_fresh_days": null,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "D1 Capital Partners",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "bounce_wait",
+      "board_spot": 362.9,
+      "board_price": 362.86,
+      "buy_zone_low": 328.1,
+      "buy_zone_high": 340.9,
+      "chase_above": 362.9,
+      "c1_score": 63.7,
+      "c1_score_rank": 23,
+      "raw_alpha": -1.11,
+      "raw_off_high": -25.9,
+      "ext_z": -1.06,
+      "sector": "Consumer Discretionary",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-08-24",
+      "ledger_H5_ret": 0.05444905956537793,
+      "ledger_H5_excess_spy": 0.04975992020532338,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-08-24",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 361.4100036621094,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.01809581494328616,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-08-31",
+      "asof_close_final_vintage_adjusted": 362.8599853515625,
+      "board_price_vs_final_vintage_close_ratio": 1.0000000403693934,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "latest",
+      "as_of": "2026-08-21",
+      "ticker": "TSLA",
+      "source_blob": "ba31469cc943686f6a2a734bb18274bfb81223d9",
+      "source_commit": "a95a8880587f967efd89ab686df6bb5ffa646aab",
+      "source_commit_at": "2026-08-24T14:53:27-07:00",
+      "source_sha256": "6e49bf1c9ec11c14cfabb254fc3a819a414e326b50eff5b4f8749acef8bd273d",
+      "emit_at": "2026-08-24T20:49:46+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-08-17",
+      "tier_observed_date": "2026-08-21",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": true,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": 6.0,
+      "news_n_pos": 0.0,
+      "news_n_neg": 0.0,
+      "news_sentiment_lean": "neutral",
+      "sue_z": null,
+      "sue_fresh_days": null,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "D1 Capital Partners",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "bounce_wait",
+      "board_spot": 362.9,
+      "board_price": 362.86,
+      "buy_zone_low": 328.1,
+      "buy_zone_high": 340.9,
+      "chase_above": 362.9,
+      "c1_score": 63.7,
+      "c1_score_rank": 23,
+      "raw_alpha": -1.11,
+      "raw_off_high": -25.9,
+      "ext_z": -1.06,
+      "sector": "Consumer Discretionary",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-08-24",
+      "ledger_H5_ret": 0.05444905956537793,
+      "ledger_H5_excess_spy": 0.04975992020532338,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-08-25",
+      "receipt_later_than_ledger_entry_open": true,
+      "conditional_open_after_receipt_adjusted": 349.5799865722656,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.018622375466792462,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-01",
+      "asof_close_final_vintage_adjusted": 362.8599853515625,
+      "board_price_vs_final_vintage_close_ratio": 1.0000000403693934,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "first",
+      "as_of": "2026-09-03",
+      "ticker": "ADM",
+      "source_blob": "8148a3798c69149f26e6a2065e402e10f78c0cdb",
+      "source_commit": "39d85b7ffbb9ea264538d122e8aa8f8f57f80fdd",
+      "source_commit_at": "2026-09-03T19:12:52-07:00",
+      "source_sha256": "c4e803ebe6b7bb871e2e0c82033c1999d3fadf799f2506a5ec64e14b14d1ac17",
+      "emit_at": "2026-09-04T00:52:23+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-02",
+      "tier_observed_date": "2026-09-03",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": false,
+      "raw_sue_fresh": true,
+      "raw_smartmoney_add": true,
+      "news_n_recent": null,
+      "news_n_pos": null,
+      "news_n_neg": null,
+      "news_sentiment_lean": null,
+      "sue_z": 1.28,
+      "sue_fresh_days": 30.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Soros Fund Management",
+      "ownership_grade": "B",
+      "ownership_action": "new",
+      "raw_entry_status": "buy_now",
+      "board_spot": 84.38,
+      "board_price": 84.38,
+      "buy_zone_low": 82.33,
+      "buy_zone_high": 84.38,
+      "chase_above": 85.2,
+      "c1_score": 82.4,
+      "c1_score_rank": 1,
+      "raw_alpha": 1.01,
+      "raw_off_high": -2.8,
+      "ext_z": 0.18,
+      "sector": "Consumer Staples",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-04",
+      "ledger_H5_ret": 0.021628670580942977,
+      "ledger_H5_excess_spy": 0.03371659372858471,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-04",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 83.66999816894531,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.03310630253472446,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-14",
+      "asof_close_final_vintage_adjusted": 84.37999725341797,
+      "board_price_vs_final_vintage_close_ratio": 1.0000000325501555,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "latest",
+      "as_of": "2026-09-03",
+      "ticker": "ADM",
+      "source_blob": "60fa368a32d327bde5f3d93f10bbc84ade19ee98",
+      "source_commit": "297b3e6f16a20fb9ec090847de4ba53bbeda80be",
+      "source_commit_at": "2026-09-04T06:00:49-07:00",
+      "source_sha256": "723c5941cd150a043a7c67bda7915fa02f215f605ee33ee1832dbe48cfebcf6e",
+      "emit_at": "2026-09-04T09:54:45+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-02",
+      "tier_observed_date": "2026-09-03",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": false,
+      "raw_sue_fresh": true,
+      "raw_smartmoney_add": true,
+      "news_n_recent": null,
+      "news_n_pos": null,
+      "news_n_neg": null,
+      "news_sentiment_lean": null,
+      "sue_z": 1.28,
+      "sue_fresh_days": 30.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Soros Fund Management",
+      "ownership_grade": "B",
+      "ownership_action": "new",
+      "raw_entry_status": "buy_now",
+      "board_spot": 84.38,
+      "board_price": 84.38,
+      "buy_zone_low": 82.33,
+      "buy_zone_high": 84.38,
+      "chase_above": 85.2,
+      "c1_score": 75.6,
+      "c1_score_rank": 1,
+      "raw_alpha": 1.01,
+      "raw_off_high": -2.8,
+      "ext_z": 0.18,
+      "sector": "Consumer Staples",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-04",
+      "ledger_H5_ret": 0.021628670580942977,
+      "ledger_H5_excess_spy": 0.03371659372858471,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-04",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 83.66999816894531,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.03310630253472446,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-14",
+      "asof_close_final_vintage_adjusted": 84.37999725341797,
+      "board_price_vs_final_vintage_close_ratio": 1.0000000325501555,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "first",
+      "as_of": "2026-09-03",
+      "ticker": "PRIM",
+      "source_blob": "8148a3798c69149f26e6a2065e402e10f78c0cdb",
+      "source_commit": "39d85b7ffbb9ea264538d122e8aa8f8f57f80fdd",
+      "source_commit_at": "2026-09-03T19:12:52-07:00",
+      "source_sha256": "c4e803ebe6b7bb871e2e0c82033c1999d3fadf799f2506a5ec64e14b14d1ac17",
+      "emit_at": "2026-09-04T00:52:23+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-02",
+      "tier_observed_date": "2026-09-03",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": false,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": null,
+      "news_n_pos": null,
+      "news_n_neg": null,
+      "news_sentiment_lean": null,
+      "sue_z": null,
+      "sue_fresh_days": 5.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Soros Fund Management",
+      "ownership_grade": "B",
+      "ownership_action": "new",
+      "raw_entry_status": "blocked",
+      "board_spot": 73.59,
+      "board_price": 73.59,
+      "buy_zone_low": null,
+      "buy_zone_high": null,
+      "chase_above": null,
+      "c1_score": 52.8,
+      "c1_score_rank": 59,
+      "raw_alpha": -0.16,
+      "raw_off_high": -63.7,
+      "ext_z": -1.6,
+      "sector": "Industrials",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 1,
+      "ledger_entry_date": "2026-09-04",
+      "ledger_H5_ret": -0.0034932437883167244,
+      "ledger_H5_excess_spy": 0.008594679359325008,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-04",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 74.16004045045361,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": -0.0009428533456261601,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-14",
+      "asof_close_final_vintage_adjusted": 73.5107421875,
+      "board_price_vs_final_vintage_close_ratio": 1.0010781800066424,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "latest",
+      "as_of": "2026-09-03",
+      "ticker": "PRIM",
+      "source_blob": "60fa368a32d327bde5f3d93f10bbc84ade19ee98",
+      "source_commit": "297b3e6f16a20fb9ec090847de4ba53bbeda80be",
+      "source_commit_at": "2026-09-04T06:00:49-07:00",
+      "source_sha256": "723c5941cd150a043a7c67bda7915fa02f215f605ee33ee1832dbe48cfebcf6e",
+      "emit_at": "2026-09-04T09:54:45+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-02",
+      "tier_observed_date": "2026-09-03",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": true,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": 3.0,
+      "news_n_pos": 0.0,
+      "news_n_neg": 3.0,
+      "news_sentiment_lean": "neg",
+      "sue_z": null,
+      "sue_fresh_days": 5.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Soros Fund Management",
+      "ownership_grade": "B",
+      "ownership_action": "new",
+      "raw_entry_status": "blocked",
+      "board_spot": 73.59,
+      "board_price": 73.59,
+      "buy_zone_low": null,
+      "buy_zone_high": null,
+      "chase_above": null,
+      "c1_score": 62.0,
+      "c1_score_rank": 59,
+      "raw_alpha": -0.16,
+      "raw_off_high": -63.7,
+      "ext_z": -1.6,
+      "sector": "Industrials",
+      "mixed_vintage": false,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-04",
+      "ledger_H5_ret": -0.0034932437883167244,
+      "ledger_H5_excess_spy": 0.008594679359325008,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-04",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 74.16004045045361,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": -0.0009428533456261601,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-14",
+      "asof_close_final_vintage_adjusted": 73.5107421875,
+      "board_price_vs_final_vintage_close_ratio": 1.0010781800066424,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "first",
+      "as_of": "2026-09-10",
+      "ticker": "INTC",
+      "source_blob": "7245a6de7e342742609d57c8e53e78126c354ec9",
+      "source_commit": "5d675b38c3cf0418065c300b76d0377615a06fce",
+      "source_commit_at": "2026-09-11T13:19:31+08:00",
+      "source_sha256": "998a8fbf84e51da1cd519ae121ce2bf860a396a327e0ffac19b5ee205ddc29db",
+      "emit_at": "2026-09-11T04:04:21+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-04",
+      "tier_observed_date": "2026-09-09",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": true,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": 3.0,
+      "news_n_pos": 1.0,
+      "news_n_neg": 0.0,
+      "news_sentiment_lean": "neutral",
+      "sue_z": null,
+      "sue_fresh_days": 14.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Coatue Management",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "bounce_wait",
+      "board_spot": 106.2,
+      "board_price": 106.24,
+      "buy_zone_low": 94.72,
+      "buy_zone_high": 94.72,
+      "chase_above": 106.2,
+      "c1_score": 70.9,
+      "c1_score_rank": 12,
+      "raw_alpha": 2.02,
+      "raw_off_high": -24.6,
+      "ext_z": -0.72,
+      "sector": "Information Technology",
+      "mixed_vintage": true,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-11",
+      "ledger_H5_ret": 0.05444915090933122,
+      "ledger_H5_excess_spy": 0.05666035672125125,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-11",
+      "receipt_later_than_ledger_entry_open": false,
+      "conditional_open_after_receipt_adjusted": 102.47000122070312,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.05982235952369108,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-18",
+      "asof_close_final_vintage_adjusted": 100.31999969482422,
+      "board_price_vs_final_vintage_close_ratio": 1.0590111674958589,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "latest",
+      "as_of": "2026-09-10",
+      "ticker": "INTC",
+      "source_blob": "2b035cae3b58312c99baf5a7a74ce08a8a209f42",
+      "source_commit": "feec2878d59942d7e347ff5b260b577274cacc10",
+      "source_commit_at": "2026-09-12T11:23:49+08:00",
+      "source_sha256": "d4bb47688a4c8902dee8c9cfe0d54725a5b5307de0f2923ad47e51e3f7457e3c",
+      "emit_at": "2026-09-12T02:00:53+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-04",
+      "tier_observed_date": "2026-09-09",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": true,
+      "raw_sue_fresh": false,
+      "raw_smartmoney_add": true,
+      "news_n_recent": 5.0,
+      "news_n_pos": 3.0,
+      "news_n_neg": 0.0,
+      "news_sentiment_lean": "pos",
+      "sue_z": null,
+      "sue_fresh_days": 15.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "Coatue Management",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "bounce_wait",
+      "board_spot": 106.2,
+      "board_price": 106.24,
+      "buy_zone_low": 94.72,
+      "buy_zone_high": 94.72,
+      "chase_above": 106.2,
+      "c1_score": 70.7,
+      "c1_score_rank": 12,
+      "raw_alpha": 2.02,
+      "raw_off_high": -24.6,
+      "ext_z": -0.72,
+      "sector": "Information Technology",
+      "mixed_vintage": true,
+      "source_delayed": true,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-11",
+      "ledger_H5_ret": 0.05444915090933122,
+      "ledger_H5_excess_spy": 0.05666035672125125,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-14",
+      "receipt_later_than_ledger_entry_open": true,
+      "conditional_open_after_receipt_adjusted": 95.81999969482422,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.2709246416943467,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-21",
+      "asof_close_final_vintage_adjusted": 100.31999969482422,
+      "board_price_vs_final_vintage_close_ratio": 1.0590111674958589,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "first",
+      "as_of": "2026-09-14",
+      "ticker": "ISRG",
+      "source_blob": "f977d7619c3f1670fa0afb58b9deed9ce86680ed",
+      "source_commit": "4347812e120f5c2dc84190a740eb395651d351e1",
+      "source_commit_at": "2026-09-16T02:45:46-07:00",
+      "source_sha256": "35b2922db3ab12b1e6bf87cff43059f23fbc23f95c3d960de0ac2663e8efac7b",
+      "emit_at": "2026-09-16T05:44:28+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-14",
+      "tier_observed_date": "2026-09-14",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": false,
+      "raw_sue_fresh": true,
+      "raw_smartmoney_add": true,
+      "news_n_recent": null,
+      "news_n_pos": null,
+      "news_n_neg": null,
+      "news_sentiment_lean": null,
+      "sue_z": 1.77,
+      "sue_fresh_days": 17.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "D1 Capital Partners",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "buy_now",
+      "board_spot": 377.9,
+      "board_price": 377.94,
+      "buy_zone_low": 369.5,
+      "buy_zone_high": 377.9,
+      "chase_above": 381.3,
+      "c1_score": 68.7,
+      "c1_score_rank": 1,
+      "raw_alpha": -1.13,
+      "raw_off_high": -36.3,
+      "ext_z": -0.8,
+      "sector": "Health Care",
+      "mixed_vintage": true,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-15",
+      "ledger_H5_ret": 0.05821133301275161,
+      "ledger_H5_excess_spy": 0.034404909857465915,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-16",
+      "receipt_later_than_ledger_entry_open": true,
+      "conditional_open_after_receipt_adjusted": 378.0,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.053703671409970344,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-23",
+      "asof_close_final_vintage_adjusted": 377.94000244140625,
+      "board_price_vs_final_vintage_close_ratio": 0.999999993540228,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    },
+    {
+      "variant": "latest",
+      "as_of": "2026-09-14",
+      "ticker": "ISRG",
+      "source_blob": "f977d7619c3f1670fa0afb58b9deed9ce86680ed",
+      "source_commit": "4347812e120f5c2dc84190a740eb395651d351e1",
+      "source_commit_at": "2026-09-16T02:45:46-07:00",
+      "source_sha256": "35b2922db3ab12b1e6bf87cff43059f23fbc23f95c3d960de0ac2663e8efac7b",
+      "emit_at": "2026-09-16T05:44:28+00:00",
+      "raw_tier": "T2",
+      "tier_event_date": "2026-09-14",
+      "tier_observed_date": "2026-09-14",
+      "anchor_era": "abs-session-2026-08-06",
+      "tier_observation_provisional": false,
+      "board_definition": "us_prophet_v3",
+      "selection_era": "anticipation-v1-2026-08-08",
+      "raw_news_burst": false,
+      "raw_sue_fresh": true,
+      "raw_smartmoney_add": true,
+      "news_n_recent": null,
+      "news_n_pos": null,
+      "news_n_neg": null,
+      "news_sentiment_lean": null,
+      "sue_z": 1.77,
+      "sue_fresh_days": 17.0,
+      "ownership_period_end": "2026-06-30",
+      "ownership_staleness_label": "Q1-2026 13F",
+      "ownership_fund": "D1 Capital Partners",
+      "ownership_grade": "A",
+      "ownership_action": "new",
+      "raw_entry_status": "buy_now",
+      "board_spot": 377.9,
+      "board_price": 377.94,
+      "buy_zone_low": 369.5,
+      "buy_zone_high": 377.9,
+      "chase_above": 381.3,
+      "c1_score": 68.7,
+      "c1_score_rank": 1,
+      "raw_alpha": -1.13,
+      "raw_off_high": -36.3,
+      "ext_z": -0.8,
+      "sector": "Health Care",
+      "mixed_vintage": true,
+      "source_delayed": false,
+      "raw_evidence_n": 2,
+      "ledger_entry_date": "2026-09-15",
+      "ledger_H5_ret": 0.05821133301275161,
+      "ledger_H5_excess_spy": 0.034404909857465915,
+      "ledger_evidence_n": 2,
+      "publication_status": "First Git receipt bounds preserved visibility, not actual user-facing publication or fill",
+      "first_regular_open_after_receipt_date": "2026-09-16",
+      "receipt_later_than_ledger_entry_open": true,
+      "conditional_open_after_receipt_adjusted": 378.0,
+      "post_receipt_H5_status": "OBSERVED",
+      "post_receipt_H5_hypothetical_open_return": 0.053703671409970344,
+      "post_receipt_H5_hypothetical_open_excess_spy": null,
+      "post_receipt_H5_end_date": "2026-09-23",
+      "asof_close_final_vintage_adjusted": 377.94000244140625,
+      "board_price_vs_final_vintage_close_ratio": 0.999999993540228,
+      "geometry_executability_status": "UNPROVEN: board nominal geometry vs adjusted opening prices; receipt is not public delivery; availability gate retained"
+    }
+  ],
+  "actual_C1_negative_controls": {
+    "first": {
+      "n": 26,
+      "tickers": 26,
+      "dates": 14,
+      "sectors": 10,
+      "entry_states": {
+        "bounce_wait": 6,
+        "partial": 5,
+        "buy_now": 4,
+        "extended": 3,
+        "hold": 3,
+        "await_confluence": 2,
+        "buy_soon": 1,
+        "topping": 1,
+        "wait_pullback": 1
+      },
+      "ret": {
+        "observed": 26,
+        "positive": 8,
+        "positive_rate": 0.3076923076923077,
+        "wilson95": [
+          0.16501315595463767,
+          0.4998825832219837
+        ],
+        "mean": -0.01774230200097361,
+        "median": -0.012850498328846105,
+        "min": -0.23420479563113294,
+        "max": 0.07088206142429088
+      },
+      "excess_spy": {
+        "observed": 26,
+        "positive": 8,
+        "positive_rate": 0.3076923076923077,
+        "wilson95": [
+          0.16501315595463767,
+          0.4998825832219837
+        ],
+        "mean": -0.020201800368634504,
+        "median": -0.02199683483579462,
+        "min": -0.22881259029047096,
+        "max": 0.05973598186473006
+      },
+      "excess_sector": {
+        "observed": 26,
+        "positive": 7,
+        "positive_rate": 0.2692307692307692,
+        "wilson95": [
+          0.13704448322018375,
+          0.4608304037917617
+        ],
+        "mean": -0.014101748887216995,
+        "median": -0.013803140011203197,
+        "min": -0.21688777932499814,
+        "max": 0.07558069569229697
+      },
+      "mae_close_excess_spy": {
+        "observed": 26,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.1287289218592153
+        ],
+        "mean": -0.03721621590569463,
+        "median": -0.025979367797121344,
+        "min": -0.2787215592738339,
+        "max": 0.0
+      },
+      "mae_close_excess_sector": {
+        "observed": 26,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.1287289218592153
+        ],
+        "mean": -0.03315155198454247,
+        "median": -0.024149822951606448,
+        "min": -0.25229656880437823,
+        "max": 0.0
+      },
+      "large_loss_descriptive": {
+        "observed": 26,
+        "le_minus_5pct": 3,
+        "le_minus_10pct": 1
+      }
+    },
+    "latest": {
+      "n": 25,
+      "tickers": 25,
+      "dates": 14,
+      "sectors": 10,
+      "entry_states": {
+        "bounce_wait": 5,
+        "partial": 5,
+        "buy_now": 4,
+        "extended": 3,
+        "hold": 3,
+        "await_confluence": 2,
+        "topping": 1,
+        "wait_pullback": 1,
+        "watch": 1
+      },
+      "ret": {
+        "observed": 25,
+        "positive": 8,
+        "positive_rate": 0.32,
+        "wilson95": [
+          0.17205190306907978,
+          0.5158973072689775
+        ],
+        "mean": -0.01644432345831456,
+        "median": -0.013426930688720584,
+        "min": -0.23420479563113294,
+        "max": 0.07088206142429088
+      },
+      "excess_spy": {
+        "observed": 25,
+        "positive": 8,
+        "positive_rate": 0.32,
+        "wilson95": [
+          0.17205190306907978,
+          0.5158973072689775
+        ],
+        "mean": -0.01908246961073097,
+        "median": -0.0211657548832217,
+        "min": -0.22881259029047096,
+        "max": 0.05973598186473006
+      },
+      "excess_sector": {
+        "observed": 25,
+        "positive": 7,
+        "positive_rate": 0.28,
+        "wilson95": [
+          0.14283853850956563,
+          0.47576605190361576
+        ],
+        "mean": -0.013675735483902902,
+        "median": -0.013664457971386268,
+        "min": -0.21688777932499814,
+        "max": 0.07558069569229697
+      },
+      "mae_close_excess_spy": {
+        "observed": 25,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          1.3877787807814457e-17,
+          0.13319225093904846
+        ],
+        "mean": -0.03643643298984138,
+        "median": -0.025772781886256868,
+        "min": -0.2787215592738339,
+        "max": 0.0
+      },
+      "mae_close_excess_sector": {
+        "observed": 25,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          1.3877787807814457e-17,
+          0.13319225093904846
+        ],
+        "mean": -0.032486865442402826,
+        "median": -0.024091997513079666,
+        "min": -0.25229656880437823,
+        "max": 0.0
+      },
+      "large_loss_descriptive": {
+        "observed": 25,
+        "le_minus_5pct": 2,
+        "le_minus_10pct": 1
+      }
+    }
+  },
+  "event_key_sensitivity": {
+    "first": {
+      "status": "Coarser key omits tier_observed_date; analysis key only, not canonical B1 identity or strict exposure; incomplete raw-date coverage disclosed; provisional and unknown status retained and counted",
+      "key": [
+        "ticker",
+        "tier_event_date",
+        "anchor_era",
+        "board_definition",
+        "selection_era"
+      ],
+      "source_T2_rows": 326,
+      "missing_components": {
+        "ticker": 0,
+        "tier_event_date": 0,
+        "anchor_era": 0,
+        "board_definition": 0,
+        "selection_era": 0
+      },
+      "rows_with_any_missing_component": 0,
+      "key_complete_T2_rows": 326,
+      "source_T2_provisional_status": {
+        "true": 0,
+        "false": 326,
+        "unknown": 0
+      },
+      "key_complete_T2_provisional_status": {
+        "true": 0,
+        "false": 326,
+        "unknown": 0
+      },
+      "n": 170,
+      "tickers": 142,
+      "event_provisional_status": {
+        "true": 0,
+        "false": 170,
+        "unknown": 0
+      },
+      "event_evidence_flag_counts": {
+        "news_burst": 3,
+        "sue_fresh": 6,
+        "smartmoney_add": 25
+      },
+      "event_evidence_count_distribution": {
+        "0": 140,
+        "1": 26,
+        "2": 4,
+        "3": 0
+      },
+      "ge2": {
+        "n": 4,
+        "tickers": 4,
+        "dates": 4,
+        "sectors": 4,
+        "entry_states": {
+          "bounce_wait": 2,
+          "buy_now": 2
+        },
+        "ret": {
+          "observed": 4,
+          "positive": 4,
+          "positive_rate": 1.0,
+          "wilson95": [
+            0.5101091635454027,
+            1.0
+          ],
+          "mean": 0.047184553517100936,
+          "median": 0.05444910523735458,
+          "min": 0.021628670580942977,
+          "max": 0.05821133301275161
+        },
+        "excess_spy": {
+          "observed": 4,
+          "positive": 4,
+          "positive_rate": 1.0,
+          "wilson95": [
+            0.5101091635454027,
+            1.0
+          ],
+          "mean": 0.043635445128156314,
+          "median": 0.04208241503139465,
+          "min": 0.03371659372858471,
+          "max": 0.05666035672125125
+        },
+        "excess_sector": {
+          "observed": 4,
+          "positive": 4,
+          "positive_rate": 1.0,
+          "wilson95": [
+            0.5101091635454027,
+            1.0
+          ],
+          "mean": 0.047774200632411695,
+          "median": 0.049336248293966656,
+          "min": 0.02352041400309346,
+          "max": 0.06890389193862001
+        },
+        "mae_close_excess_spy": {
+          "observed": 4,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.4898908364545973
+          ],
+          "mean": -0.015946150153026806,
+          "median": -0.006194221459954519,
+          "min": -0.051396157692198186,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 4,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.4898908364545973
+          ],
+          "mean": -0.009448540166817038,
+          "median": 0.0,
+          "min": -0.03779416066726815,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 4,
+          "le_minus_5pct": 0,
+          "le_minus_10pct": 0
+        }
+      },
+      "lt2": {
+        "n": 166,
+        "tickers": 138,
+        "dates": 19,
+        "sectors": 11,
+        "entry_states": {
+          "partial": 45,
+          "bounce_wait": 43,
+          "buy_now": 32,
+          "extended": 16,
+          "hold": 16,
+          "buy_soon": 11,
+          "topping": 1,
+          "blocked": 1,
+          "wait_pullback": 1
+        },
+        "ret": {
+          "observed": 166,
+          "positive": 64,
+          "positive_rate": 0.3855421686746988,
+          "wilson95": [
+            0.31488568401025574,
+            0.46137624718218906
+          ],
+          "mean": -0.00775950022393269,
+          "median": -0.010664557484896142,
+          "min": -0.2683863651994912,
+          "max": 0.3924230653781604
+        },
+        "excess_spy": {
+          "observed": 166,
+          "positive": 61,
+          "positive_rate": 0.3674698795180723,
+          "wilson95": [
+            0.2978988691530832,
+            0.44303599854343184
+          ],
+          "mean": -0.007426921981527023,
+          "median": -0.0130219664390262,
+          "min": -0.2671853888983373,
+          "max": 0.3944297616293875
+        },
+        "excess_sector": {
+          "observed": 166,
+          "positive": 77,
+          "positive_rate": 0.463855421686747,
+          "wilson95": [
+            0.3896689560188625,
+            0.5396769169892779
+          ],
+          "mean": -0.0003837657651274364,
+          "median": -0.004834720972409279,
+          "min": -0.2490804542596562,
+          "max": 0.35966516931647075
+        },
+        "mae_close_excess_spy": {
+          "observed": 166,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            1.734723475976807e-18,
+            0.02261790994594346
+          ],
+          "mean": -0.0323182314650025,
+          "median": -0.025159309818488573,
+          "min": -0.2787215592738339,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 166,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            1.734723475976807e-18,
+            0.02261790994594346
+          ],
+          "mean": -0.02653010865324243,
+          "median": -0.01711856492840136,
+          "min": -0.25229656880437823,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 166,
+          "le_minus_5pct": 28,
+          "le_minus_10pct": 7
+        }
+      }
+    },
+    "latest": {
+      "status": "Coarser key omits tier_observed_date; analysis key only, not canonical B1 identity or strict exposure; incomplete raw-date coverage disclosed; provisional and unknown status retained and counted",
+      "key": [
+        "ticker",
+        "tier_event_date",
+        "anchor_era",
+        "board_definition",
+        "selection_era"
+      ],
+      "source_T2_rows": 315,
+      "missing_components": {
+        "ticker": 0,
+        "tier_event_date": 0,
+        "anchor_era": 0,
+        "board_definition": 0,
+        "selection_era": 0
+      },
+      "rows_with_any_missing_component": 0,
+      "key_complete_T2_rows": 315,
+      "source_T2_provisional_status": {
+        "true": 0,
+        "false": 315,
+        "unknown": 0
+      },
+      "key_complete_T2_provisional_status": {
+        "true": 0,
+        "false": 315,
+        "unknown": 0
+      },
+      "n": 171,
+      "tickers": 144,
+      "event_provisional_status": {
+        "true": 0,
+        "false": 171,
+        "unknown": 0
+      },
+      "event_evidence_flag_counts": {
+        "news_burst": 5,
+        "sue_fresh": 6,
+        "smartmoney_add": 23
+      },
+      "event_evidence_count_distribution": {
+        "0": 142,
+        "1": 24,
+        "2": 5,
+        "3": 0
+      },
+      "ge2": {
+        "n": 5,
+        "tickers": 5,
+        "dates": 4,
+        "sectors": 5,
+        "entry_states": {
+          "bounce_wait": 2,
+          "buy_now": 2,
+          "blocked": 1
+        },
+        "ret": {
+          "observed": 5,
+          "positive": 4,
+          "positive_rate": 0.8,
+          "wilson95": [
+            0.37553462976252533,
+            0.9637758913675698
+          ],
+          "mean": 0.0370489940560174,
+          "median": 0.05444905956537793,
+          "min": -0.0034932437883167244,
+          "max": 0.05821133301275161
+        },
+        "excess_spy": {
+          "observed": 5,
+          "positive": 5,
+          "positive_rate": 1.0,
+          "wilson95": [
+            0.5655175352168251,
+            1.0
+          ],
+          "mean": 0.036627291974390054,
+          "median": 0.034404909857465915,
+          "min": 0.008594679359325008,
+          "max": 0.05666035672125125
+        },
+        "excess_sector": {
+          "observed": 5,
+          "positive": 5,
+          "positive_rate": 1.0,
+          "wilson95": [
+            0.5655175352168251,
+            1.0
+          ],
+          "mean": 0.043614180643694954,
+          "median": 0.04630145828825505,
+          "min": 0.02352041400309346,
+          "max": 0.06890389193862001
+        },
+        "mae_close_excess_spy": {
+          "observed": 5,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.43448246478317476
+          ],
+          "mean": -0.013470473096272362,
+          "median": -0.003567764869254586,
+          "min": -0.051396157692198186,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 5,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.43448246478317476
+          ],
+          "mean": -0.00755883213345363,
+          "median": 0.0,
+          "min": -0.03779416066726815,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 5,
+          "le_minus_5pct": 0,
+          "le_minus_10pct": 0
+        }
+      },
+      "lt2": {
+        "n": 166,
+        "tickers": 139,
+        "dates": 20,
+        "sectors": 11,
+        "entry_states": {
+          "bounce_wait": 45,
+          "partial": 42,
+          "buy_now": 31,
+          "extended": 18,
+          "hold": 15,
+          "buy_soon": 11,
+          "topping": 1,
+          "await_confluence": 1,
+          "wait_pullback": 1,
+          "exit": 1
+        },
+        "ret": {
+          "observed": 166,
+          "positive": 68,
+          "positive_rate": 0.40963855421686746,
+          "wilson95": [
+            0.33769602495872625,
+            0.48566865756162486
+          ],
+          "mean": -0.005676125605400296,
+          "median": -0.00838052430717312,
+          "min": -0.2683863651994912,
+          "max": 0.3924230653781604
+        },
+        "excess_spy": {
+          "observed": 166,
+          "positive": 63,
+          "positive_rate": 0.3795180722891566,
+          "wilson95": [
+            0.30921172995773305,
+            0.45527451340273517
+          ],
+          "mean": -0.005624751598983328,
+          "median": -0.010830193585653014,
+          "min": -0.2671853888983373,
+          "max": 0.3944297616293875
+        },
+        "excess_sector": {
+          "observed": 166,
+          "positive": 77,
+          "positive_rate": 0.463855421686747,
+          "wilson95": [
+            0.3896689560188625,
+            0.5396769169892779
+          ],
+          "mean": 0.0006870334526261362,
+          "median": -0.004834720972409279,
+          "min": -0.2490804542596562,
+          "max": 0.35966516931647075
+        },
+        "mae_close_excess_spy": {
+          "observed": 166,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            1.734723475976807e-18,
+            0.02261790994594346
+          ],
+          "mean": -0.0315092199922802,
+          "median": -0.02430829584880012,
+          "min": -0.2787215592738339,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 166,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            1.734723475976807e-18,
+            0.02261790994594346
+          ],
+          "mean": -0.02594929684368061,
+          "median": -0.01711856492840136,
+          "min": -0.25229656880437823,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 166,
+          "le_minus_5pct": 27,
+          "le_minus_10pct": 6
+        }
+      }
+    }
+  },
+  "prereg_shaped_event_key_sensitivity": {
+    "first": {
+      "status": "Full prereg-shaped key includes tier_observed_date; analysis key only, not canonical B1 identity or strict exposure; incomplete raw-date coverage disclosed; provisional and unknown status retained and counted",
+      "key": [
+        "ticker",
+        "tier_event_date",
+        "tier_observed_date",
+        "anchor_era",
+        "board_definition",
+        "selection_era"
+      ],
+      "source_T2_rows": 326,
+      "missing_components": {
+        "ticker": 0,
+        "tier_event_date": 0,
+        "tier_observed_date": 0,
+        "anchor_era": 0,
+        "board_definition": 0,
+        "selection_era": 0
+      },
+      "rows_with_any_missing_component": 0,
+      "key_complete_T2_rows": 326,
+      "source_T2_provisional_status": {
+        "true": 0,
+        "false": 326,
+        "unknown": 0
+      },
+      "key_complete_T2_provisional_status": {
+        "true": 0,
+        "false": 326,
+        "unknown": 0
+      },
+      "n": 289,
+      "tickers": 142,
+      "event_provisional_status": {
+        "true": 0,
+        "false": 289,
+        "unknown": 0
+      },
+      "event_evidence_flag_counts": {
+        "news_burst": 7,
+        "sue_fresh": 11,
+        "smartmoney_add": 45
+      },
+      "event_evidence_count_distribution": {
+        "0": 236,
+        "1": 43,
+        "2": 10,
+        "3": 0
+      },
+      "ge2": {
+        "n": 10,
+        "tickers": 5,
+        "dates": 6,
+        "sectors": 5,
+        "entry_states": {
+          "buy_now": 5,
+          "bounce_wait": 3,
+          "blocked": 2
+        },
+        "ret": {
+          "observed": 10,
+          "positive": 9,
+          "positive_rate": 0.9,
+          "wilson95": [
+            0.5958499732047615,
+            0.9821237869049271
+          ],
+          "mean": 0.029583980876480964,
+          "median": 0.02329954600261086,
+          "min": -0.007518455005400049,
+          "max": 0.05821133301275161
+        },
+        "excess_spy": {
+          "observed": 10,
+          "positive": 9,
+          "positive_rate": 0.9,
+          "wilson95": [
+            0.5958499732047615,
+            0.9821237869049271
+          ],
+          "mean": 0.029585448749026345,
+          "median": 0.03406075179302531,
+          "min": -0.005307249193480024,
+          "max": 0.05666035672125125
+        },
+        "excess_sector": {
+          "observed": 10,
+          "positive": 9,
+          "positive_rate": 0.9,
+          "wilson95": [
+            0.5958499732047615,
+            0.9821237869049271
+          ],
+          "mean": 0.03559735137721319,
+          "median": 0.037712552743138006,
+          "min": -0.008837723582697188,
+          "max": 0.06890389193862001
+        },
+        "mae_close_excess_spy": {
+          "observed": 10,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.2775327998628892
+          ],
+          "mean": -0.011974794923078203,
+          "median": -0.008359628563795796,
+          "min": -0.051396157692198186,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 10,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.2775327998628892
+          ],
+          "mean": -0.009316476311291167,
+          "median": -0.0002946752196864577,
+          "min": -0.03779416066726815,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 10,
+          "le_minus_5pct": 0,
+          "le_minus_10pct": 0
+        }
+      },
+      "lt2": {
+        "n": 279,
+        "tickers": 138,
+        "dates": 20,
+        "sectors": 11,
+        "entry_states": {
+          "bounce_wait": 75,
+          "partial": 74,
+          "buy_now": 53,
+          "extended": 28,
+          "hold": 26,
+          "buy_soon": 15,
+          "topping": 3,
+          "wait_pullback": 3,
+          "blocked": 2
+        },
+        "ret": {
+          "observed": 279,
+          "positive": 104,
+          "positive_rate": 0.3727598566308244,
+          "wilson95": [
+            0.31810966502048027,
+            0.4308663150355055
+          ],
+          "mean": -0.0067596409299491515,
+          "median": -0.013809567406063983,
+          "min": -0.2683863651994912,
+          "max": 0.3924230653781604
+        },
+        "excess_spy": {
+          "observed": 279,
+          "positive": 102,
+          "positive_rate": 0.3655913978494624,
+          "wilson95": [
+            0.31126186005934886,
+            0.42357192168993185
+          ],
+          "mean": -0.007272284229043039,
+          "median": -0.015508921456450775,
+          "min": -0.2671853888983373,
+          "max": 0.3944297616293875
+        },
+        "excess_sector": {
+          "observed": 279,
+          "positive": 133,
+          "positive_rate": 0.4767025089605735,
+          "wilson95": [
+            0.4188111500605288,
+            0.5352267054426798
+          ],
+          "mean": 0.0014053585230279191,
+          "median": -0.0029784039703607545,
+          "min": -0.2490804542596562,
+          "max": 0.35966516931647075
+        },
+        "mae_close_excess_spy": {
+          "observed": 279,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            -8.673617379884035e-19,
+            0.013581668107324387
+          ],
+          "mean": -0.03141860141966248,
+          "median": -0.02531152145441229,
+          "min": -0.2787215592738339,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 279,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            -8.673617379884035e-19,
+            0.013581668107324387
+          ],
+          "mean": -0.024472883123085192,
+          "median": -0.015910868883320384,
+          "min": -0.25229656880437823,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 279,
+          "le_minus_5pct": 39,
+          "le_minus_10pct": 9
+        }
+      }
+    },
+    "latest": {
+      "status": "Full prereg-shaped key includes tier_observed_date; analysis key only, not canonical B1 identity or strict exposure; incomplete raw-date coverage disclosed; provisional and unknown status retained and counted",
+      "key": [
+        "ticker",
+        "tier_event_date",
+        "tier_observed_date",
+        "anchor_era",
+        "board_definition",
+        "selection_era"
+      ],
+      "source_T2_rows": 315,
+      "missing_components": {
+        "ticker": 0,
+        "tier_event_date": 0,
+        "tier_observed_date": 0,
+        "anchor_era": 0,
+        "board_definition": 0,
+        "selection_era": 0
+      },
+      "rows_with_any_missing_component": 0,
+      "key_complete_T2_rows": 315,
+      "source_T2_provisional_status": {
+        "true": 0,
+        "false": 315,
+        "unknown": 0
+      },
+      "key_complete_T2_provisional_status": {
+        "true": 0,
+        "false": 315,
+        "unknown": 0
+      },
+      "n": 292,
+      "tickers": 144,
+      "event_provisional_status": {
+        "true": 0,
+        "false": 292,
+        "unknown": 0
+      },
+      "event_evidence_flag_counts": {
+        "news_burst": 9,
+        "sue_fresh": 11,
+        "smartmoney_add": 43
+      },
+      "event_evidence_count_distribution": {
+        "0": 240,
+        "1": 42,
+        "2": 9,
+        "3": 1
+      },
+      "ge2": {
+        "n": 10,
+        "tickers": 5,
+        "dates": 6,
+        "sectors": 5,
+        "entry_states": {
+          "buy_now": 5,
+          "bounce_wait": 3,
+          "blocked": 2
+        },
+        "ret": {
+          "observed": 10,
+          "positive": 8,
+          "positive_rate": 0.8,
+          "wilson95": [
+            0.49016247153664183,
+            0.9433178485456247
+          ],
+          "mean": 0.027551416837173038,
+          "median": 0.02329954600261086,
+          "min": -0.007518455005400049,
+          "max": 0.05821133301275161
+        },
+        "excess_spy": {
+          "observed": 10,
+          "positive": 9,
+          "positive_rate": 0.9,
+          "wilson95": [
+            0.5958499732047615,
+            0.9821237869049271
+          ],
+          "mean": 0.027642818718777874,
+          "median": 0.03406075179302531,
+          "min": -0.005307249193480024,
+          "max": 0.05666035672125125
+        },
+        "excess_sector": {
+          "observed": 10,
+          "positive": 9,
+          "positive_rate": 0.9,
+          "wilson95": [
+            0.5958499732047615,
+            0.9821237869049271
+          ],
+          "mean": 0.033418085182074696,
+          "median": 0.028772774002409074,
+          "min": -0.008837723582697188,
+          "max": 0.06890389193862001
+        },
+        "mae_close_excess_spy": {
+          "observed": 10,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.2775327998628892
+          ],
+          "mean": -0.010106045678658549,
+          "median": -0.0050018418431420075,
+          "min": -0.051396157692198186,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 10,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.2775327998628892
+          ],
+          "mean": -0.008248316317873039,
+          "median": 0.0,
+          "min": -0.03779416066726815,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 10,
+          "le_minus_5pct": 0,
+          "le_minus_10pct": 0
+        }
+      },
+      "lt2": {
+        "n": 282,
+        "tickers": 140,
+        "dates": 20,
+        "sectors": 11,
+        "entry_states": {
+          "bounce_wait": 78,
+          "partial": 71,
+          "buy_now": 53,
+          "extended": 29,
+          "hold": 26,
+          "buy_soon": 15,
+          "topping": 3,
+          "wait_pullback": 3,
+          "blocked": 2,
+          "await_confluence": 1,
+          "exit": 1
+        },
+        "ret": {
+          "observed": 282,
+          "positive": 109,
+          "positive_rate": 0.38652482269503546,
+          "wilson95": [
+            0.33157810030556645,
+            0.44452155905089286
+          ],
+          "mean": -0.005952807935884406,
+          "median": -0.011781008950380978,
+          "min": -0.2683863651994912,
+          "max": 0.3924230653781604
+        },
+        "excess_spy": {
+          "observed": 282,
+          "positive": 105,
+          "positive_rate": 0.3723404255319149,
+          "wilson95": [
+            0.3179872841407115,
+            0.43012483263530527
+          ],
+          "mean": -0.006537605704425717,
+          "median": -0.013514164503714732,
+          "min": -0.2671853888983373,
+          "max": 0.3944297616293875
+        },
+        "excess_sector": {
+          "observed": 282,
+          "positive": 135,
+          "positive_rate": 0.4787234042553192,
+          "wilson95": [
+            0.42109752245437937,
+            0.5369211636749567
+          ],
+          "mean": 0.0018907573114076252,
+          "median": -0.0027136729850394947,
+          "min": -0.2490804542596562,
+          "max": 0.35966516931647075
+        },
+        "mae_close_excess_spy": {
+          "observed": 282,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.013439124039399194
+          ],
+          "mean": -0.03094355254132344,
+          "median": -0.025159309818488573,
+          "min": -0.2787215592738339,
+          "max": 0.0
+        },
+        "mae_close_excess_sector": {
+          "observed": 282,
+          "positive": 0,
+          "positive_rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.013439124039399194
+          ],
+          "mean": -0.024178421199527178,
+          "median": -0.015956120492266523,
+          "min": -0.25229656880437823,
+          "max": 0.0
+        },
+        "large_loss_descriptive": {
+          "observed": 282,
+          "le_minus_5pct": 39,
+          "le_minus_10pct": 8
+        }
+      }
+    }
+  },
+  "verified_raw_blobs": {
+    "ee42ff9bf88407f7d08dca78ef373787de69ce73": {
+      "sha256": "19a88744580416b85d76a475918d0e9b847873b939462b8c4638c234c8c3df85",
+      "bytes": 2014727
+    },
+    "ba31469cc943686f6a2a734bb18274bfb81223d9": {
+      "sha256": "6e49bf1c9ec11c14cfabb254fc3a819a414e326b50eff5b4f8749acef8bd273d",
+      "bytes": 1988826
+    },
+    "8148a3798c69149f26e6a2065e402e10f78c0cdb": {
+      "sha256": "c4e803ebe6b7bb871e2e0c82033c1999d3fadf799f2506a5ec64e14b14d1ac17",
+      "bytes": 2083940
+    },
+    "60fa368a32d327bde5f3d93f10bbc84ade19ee98": {
+      "sha256": "723c5941cd150a043a7c67bda7915fa02f215f605ee33ee1832dbe48cfebcf6e",
+      "bytes": 2091050
+    },
+    "7245a6de7e342742609d57c8e53e78126c354ec9": {
+      "sha256": "998a8fbf84e51da1cd519ae121ce2bf860a396a327e0ffac19b5ee205ddc29db",
+      "bytes": 1829291
+    },
+    "2b035cae3b58312c99baf5a7a74ce08a8a209f42": {
+      "sha256": "d4bb47688a4c8902dee8c9cfe0d54725a5b5307de0f2923ad47e51e3f7457e3c",
+      "bytes": 1832500
+    },
+    "f977d7619c3f1670fa0afb58b9deed9ce86680ed": {
+      "sha256": "35b2922db3ab12b1e6bf87cff43059f23fbc23f95c3d960de0ac2663e8efac7b",
+      "bytes": 1843151
+    }
+  },
+  "strict_primary_disposition": "NOT_ESTIMABLE. Raw T2 event clocks improve observability but do not supply decision-cut independent evidence lineage or prove serving-time publication."
+}
