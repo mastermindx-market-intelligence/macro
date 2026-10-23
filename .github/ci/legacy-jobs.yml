@@ -1240,6 +1240,9 @@ jobs:
       - name: Install hermetic GMI source/read-gate tests
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
       - name: Install Chromium for the actual browser contract
+        phase: browser_setup
+        acquisition: native_parallel
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: GMI source and client contract parity
         run: PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bea_gvc_current_descriptive.py tests/test_bea_gvc_view_contract.py -q

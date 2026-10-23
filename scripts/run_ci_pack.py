@@ -605,6 +605,8 @@ NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
 NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
 NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 
 
 def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
@@ -699,9 +701,10 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         admitted_totals = {
             NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
             NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
         }
         if job.job_id not in admitted_totals:
-            raise ManifestError("native browser acquisition is restricted to ontology-explorer and unrun-brain-gateway")
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
         contract = tuple(
             {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
              "activation_job_id": job.job_id}
