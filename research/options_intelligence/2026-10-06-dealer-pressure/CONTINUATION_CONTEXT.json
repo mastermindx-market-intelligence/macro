@@ -1,0 +1,43 @@
+{
+  "schema": "mastermind.dealer_pressure.research_continuation/v1",
+  "research_status": "COMPLETE",
+  "research_date": "2026-10-06",
+  "mission": "Intraday dealer pressure, extrema and closing intelligence research",
+  "canonical_directory": "research/options_intelligence/2026-10-06-dealer-pressure",
+  "publication_branch": "claude/dealer-pressure-research-2026-10-06",
+  "publication_base": "aafb9e25b0c12390ef99a9b9c4937fa1198b4bf0",
+  "read_first": [
+    "01_EXECUTIVE_RESEARCH_VERDICT.md",
+    "20_CEO_FABLE_HANDOFF.md",
+    "02_CURRENT_STATE_NO_REDO.md",
+    "16_EMPIRICAL_VALIDATION_MASTERPLAN.md"
+  ],
+  "next_authorized_research_action": "Review delivered research. This commission is complete; a later implementation requires its own authorization.",
+  "later_first_slice": "New SPX/SPXW-to-ES registered inventory-information comparison with F1/F2/F3 endpoint verdicts.",
+  "incumbent_reconciliation": [
+    "Preserve P5 SPY/QQQ/IWM ten-minute variance",
+    "Preserve MAS-260 reported GEX promotion closure",
+    "Reconcile #7328/local Macro and Terminal/calibration custody before edits"
+  ],
+  "do_not_repeat": [
+    "The completed domain/source/competitor census absent new contradiction",
+    "The 45-session prior source-quality panel as if it were this study",
+    "Existing GEX fixes/scenario surface",
+    "Creation of source stores, quote services, evaluation or forecast owners"
+  ],
+  "unverified": [
+    "Current entitlement and original retained data",
+    "Underlying MAS-260 negative-test dossier",
+    "Any market forecasting uplift from this commission"
+  ],
+  "authority": {
+    "production_changes": false,
+    "data_purchase": false,
+    "trading": false,
+    "portfolio": false,
+    "prophet": false,
+    "ranking": false,
+    "entry_policy": false,
+    "deployment": false
+  }
+}
