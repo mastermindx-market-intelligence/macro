@@ -5204,7 +5204,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_628),
+    ("engine/prophet/plan_book.py", 130, 5_634),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5212,6 +5212,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-23 Catalyst PR #9552 current-main integration: separate exact-tree
+    canonical planner runs on main9732eb9f and merge9c1262d6 preserve
+    index136/5884 and free-content135/5856. Plan-book128/5628 becomes
+    129/5634 solely through the original catalyst-opportunity job, weight6.
+    Every existing selected job and weight remains unchanged; all probes
+    retain ten packs. Fund only this measured six-unit excess, preserving
+    current-main job limits, other weight limits, timeouts and selectors.
 
     2026-10-22 recovered final composition joins featurece4664f6 and
     protected main7a8f690d. Canonical measurements on this actual merged
