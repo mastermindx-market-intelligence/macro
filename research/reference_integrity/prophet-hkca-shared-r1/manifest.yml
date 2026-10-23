@@ -1,0 +1,43 @@
+schema: mastermind.rig_manifest.v1
+reference_id: prophet-hkca-shared-r1
+scope: full
+status: in_review
+
+surface:
+  route: "hk_stocks.html + canada_stocks.html"
+  registry_row: "hk_stocks + canada_stocks"
+  archetype: discovery_board
+
+author:
+  identity: "prophet-hkca-shared-design-contract-r1-20260920-sol-001"
+  role: designer
+
+lineage:
+  predecessors: []
+
+reference_files:
+  - path: research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/manifest.json
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/SHA256SUMS
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-dark.png
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-light.png
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-dark.png
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-light.png
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml
+
+# Approval and verdict receipts do not exist yet. The reference remains provisional
+# until two independent quarantined reviews and the design-authority verdict complete.

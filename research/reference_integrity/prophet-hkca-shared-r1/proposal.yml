@@ -1,0 +1,219 @@
+schema: mastermind.rig_proposal.v1
+reference_id: prophet-hkca-shared-r1
+
+proposed_artifact:
+  frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
+  paths:
+    - research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md
+    - mockups/evidence/prophet-hkca-shared-design-20260920/README.md
+    - mockups/evidence/prophet-hkca-shared-design-20260920/manifest.json
+    - mockups/evidence/prophet-hkca-shared-design-20260920/SHA256SUMS
+    - mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-dark.png
+    - mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-light.png
+    - mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-dark.png
+    - mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-light.png
+  screenshots:
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/20-hong-kong-daily-workspace-dark-en-1440.png, viewport: desktop1440, theme: dark, locale: en, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/24-hong-kong-daily-workspace-light-en-1440.png, viewport: desktop1440, theme: light, locale: en, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/30-hong-kong-daily-workspace-dark-en-390.png, viewport: mobile390, theme: dark, locale: en, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/32-hong-kong-daily-workspace-light-en-390.png, viewport: mobile390, theme: light, locale: en, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/40-hong-kong-daily-workspace-dark-zh-1440.png, viewport: desktop1440, theme: dark, locale: zh, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/41-hong-kong-daily-workspace-light-zh-1440.png, viewport: desktop1440, theme: light, locale: zh, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/44-hong-kong-daily-workspace-dark-zh-390.png, viewport: mobile390, theme: dark, locale: zh, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/45-hong-kong-daily-workspace-light-zh-390.png, viewport: mobile390, theme: light, locale: zh, market: hk}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/22-canada-daily-workspace-dark-en-1440.png, viewport: desktop1440, theme: dark, locale: en, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/23-canada-daily-workspace-light-en-1440.png, viewport: desktop1440, theme: light, locale: en, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/31-canada-daily-workspace-dark-en-390.png, viewport: mobile390, theme: dark, locale: en, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/33-canada-daily-workspace-light-en-390.png, viewport: mobile390, theme: light, locale: en, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/42-canada-daily-workspace-dark-zh-1440.png, viewport: desktop1440, theme: dark, locale: zh, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/43-canada-daily-workspace-light-zh-1440.png, viewport: desktop1440, theme: light, locale: zh, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/46-canada-daily-workspace-dark-zh-390.png, viewport: mobile390, theme: dark, locale: zh, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/47-canada-daily-workspace-light-zh-390.png, viewport: mobile390, theme: light, locale: zh, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/50-targeted-states-interaction-dark-en-1440.png, viewport: desktop1440, theme: dark, locale: en, market: shared}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/51-targeted-states-interaction-light-en-1440.png, viewport: desktop1440, theme: light, locale: en, market: shared}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/52-320-stress-canada-light-zh-expanded.png, viewport: mobile320, theme: light, locale: zh, market: ca}
+    - {path: mockups/evidence/prophet-hkca-shared-design-20260920/screenshots/53-320-stress-hong-kong-light-zh-expanded.png, viewport: mobile320, theme: light, locale: zh, market: hk}
+
+dispositions:
+  - id: authority.market_native_current
+    disposition: RETAIN
+    target: "Each market keeps its current owner as the sole source of state, timing, rank, quote, and reason."
+  - id: authority.canada_screen
+    disposition: IMPROVE
+    target: "Persistent Branch-B screen language in Canada header, cards, and evidence disclosures."
+    rationale: "The reference makes the existing limit visible instead of allowing card styling to imply official-pick authority."
+  - id: roster.actionable_current
+    disposition: IMPROVE
+    target: "Top is an explicit owner-selected subset while All is the complete entitled current roster."
+    rationale: "Production projections can make a small positional/live subset masquerade as the product."
+  - id: roster.stage_shelves
+    disposition: IMPROVE
+    target: "One card grammar across live, setting-up/watch, ran, and blocked states."
+    rationale: "Stage changes stance and content, not identity or discoverability."
+  - id: card.identity_state_timing
+    disposition: IMPROVE
+    target: "Shared card anatomy: identity, owner state, why shown, timing/next trigger, current price or honest unavailable state."
+    rationale: "A stable anatomy makes cross-stage and cross-market scanning possible without flattening authority."
+  - id: card.reason_evidence
+    disposition: IMPROVE
+    target: "Compact evidence region plus accessible disclosure, separate from the stance line."
+    rationale: "Evidence becomes reachable without crowding the glance tier or granting itself action authority."
+  - id: controls.identity_preserving_views
+    disposition: IMPROVE
+    target: "Grid/Table, stage, search, and page controls project one canonical identity set and order."
+    rationale: "Round trips must not silently drop names or turn a view choice into a different board."
+  - id: continuity.record_separation
+    disposition: IMPROVE
+    target: "Recently Changed and Evidence & Record are read-only surfaces distinct from current action cards."
+    rationale: "Prior identity stays findable while stale BUY, rank, quote, plan, and inferred exit claims stay absent."
+  - id: access.entitlement_boundary
+    disposition: RETAIN
+    target: "Existing entitlement owner determines roster/detail visibility; the design supplies honest denied/expired states."
+  - id: resilience.first_frame
+    disposition: IMPROVE
+    target: "Server-owned roster and controls remain useful; optional enhancement failure names what failed and what still works."
+    rationale: "A source outage or composer failure must not resemble a zero-candidate session."
+  - id: parity.theme_locale_responsive
+    disposition: IMPROVE
+    target: "Sixteen primary cells plus targeted 320px expanded-detail stress and interaction boards."
+    rationale: "Theme, locale, and width are designed states rather than token-swap assumptions."
+  - id: freshness.session_asof
+    disposition: IMPROVE
+    target: "One scan-session/state line and one applicable as-of per panel."
+    rationale: "Freshness remains visible without timestamp repetition or false live language."
+  - id: research.optional_context
+    disposition: IMPROVE
+    target: "Separately labelled Research Attention fed only by approved owners and never included in All or entry authority."
+    rationale: "Optional research can add attention without erasing or reprioritising the current board."
+  - id: plans.real_only
+    disposition: RETAIN
+    target: "Plans remain unavailable unless a verified market plan owner and real plan identity exist."
+
+additions:
+  - id: add.explicit_top_subset
+    note: "Top is visibly a subset of All and may be zero while All remains useful."
+  - id: add.recently_changed
+    note: "Positive prior evidence, last comparable membership, and owner-supplied reason where available; never inferred exit."
+  - id: add.shared_cross_stage_card
+    note: "One stable identity/anatomy contract across owner-native stages and both markets."
+  - id: add.failure_permission_states
+    note: "Stale, failed, unauthenticated, entitlement-expired, filter-empty, and incomplete-history treatments."
+  - id: add.interaction_matrix
+    note: "Mouse, keyboard, touch, expanded/open, locked/disabled, Escape/dismissal, and reduced-motion intent."
+
+user_tasks:
+  - id: task.scan_complete_current_roster
+    task: Find every entitled current owner-visible name without treating Top as the whole board.
+    critical: true
+    production: "Actionable cards and stage shelves are split across different projections; subset presentation can masquerade as total."
+    proposal: "All is the reconciled complete current roster; Top is a labelled subset with explicit counts."
+    verdict: BETTER
+    notes: "Implementation still owes producer→entitled→stage→Top→rendered reconciliation."
+  - id: task.read_timing_and_reason
+    task: Understand why a name is present, what timing is permitted, and what must happen next.
+    critical: true
+    production: "Information exists but varies by market, shelf, and card treatment."
+    proposal: "Stable shared anatomy with owner-native state, why shown, timing, next trigger, and evidence disclosure."
+    verdict: BETTER
+    notes: "No client-side reconstruction of missing financial geometry."
+  - id: task.find_watch_blocked_names
+    task: Find watch, setting-up, ran, and blocked names without losing them behind a live-only card renderer.
+    critical: true
+    production: "HK and Canada preserve these populations in separate shelves or watch projections."
+    proposal: "All stages remain searchable through one identity/card grammar and stage filter."
+    verdict: BETTER
+    notes: "Stage does not grant entry permission."
+  - id: task.understand_change_without_fake_exit
+    task: Determine where a prior name went without receiving stale action fields or an invented exit reason.
+    critical: true
+    production: "Current pages and ledgers provide incomplete continuity coverage; names may disappear without an integrated transition surface."
+    proposal: "Recently Changed is non-actionable and prints unknown completeness, reason, and exit time when unsupported."
+    verdict: BETTER
+    notes: "Natural-publication proof remains owed."
+  - id: task.preserve_identity_across_controls
+    task: Search, filter, and switch Grid/Table without changing the underlying roster or order.
+    critical: true
+    production: "Anonymous deployed HK proof observed 40 current identities in board/watch shelves, but source=all Table exposed only 3 stocktable rows; returning to Grid restored the prior grid state."
+    proposal: "Every control projects the same canonical identity set and deterministic order."
+    verdict: BETTER
+    notes: "Implementation must prove Grid→Table→Grid, search, stage, and filter round trips against the same dynamic producer roster; the reference epoch count 39 is not a quota or hardcoded total."
+  - id: task.distinguish_current_research_record
+    task: Distinguish current action authority from optional research and historical record.
+    critical: true
+    production: "The information exists in separate modules but the user journey is fragmented."
+    proposal: "Current, Research Attention, Recently Changed, and Evidence & Record are distinct named surfaces."
+    verdict: BETTER
+    notes: "Research and history remain unable to rank or grant entry."
+  - id: task.use_across_theme_locale_width
+    task: Use the board with equal meaning in both themes, both languages, and desktop/mobile widths.
+    critical: true
+    production: "P0B fixture matrix renders all sixteen cells, but route-specific visual systems remain fragmented."
+    proposal: "Paired Paper reference designs all sixteen primary cells and targeted 320px stress states."
+    verdict: BETTER
+    notes: "Implementation must use inherited DOM and real controls, not export Paper markup."
+  - id: task.recover_from_failure_or_denial
+    task: Understand whether data failed, access is denied, filters are empty, or the current board truly has zero names.
+    critical: true
+    production: "Degraded states exist but are not one coherent cross-market language."
+    proposal: "Distinct failed, stale, unauthenticated, entitlement-expired, filter-empty, valid-zero, and incomplete-history treatments."
+    verdict: BETTER
+    notes: "Clearing filters is not refreshing a failed source."
+  - id: task.reach_real_plan_only
+    task: Enter a plan workflow only when a real plan owner and plan identity exist.
+    critical: true
+    production: "No general HK/CA Plans backend is assumed."
+    proposal: "No synthetic Plan control; honest unavailable state where unsupported."
+    verdict: EQUIVALENT
+    notes: "The reference preserves rather than expands plan authority."
+
+authority_delta:
+  - id: auth.complete_entitled_roster
+    production_claim: "Visible cards and shelves are separate projections and can make a subset appear complete."
+    proposal_claim: "All Candidates is the complete entitled current owner-visible roster."
+    direction: stronger
+    warranted: true
+    evidence: "September 5 amendment requires producer→entitled→stage→Top→rendered reconciliation before implementation acceptance."
+  - id: auth.top_subset
+    production_claim: "Featured/positional cards can visually masquerade as the board."
+    proposal_claim: "Top is only an owner-selected subset of All and may be empty."
+    direction: weaker
+    warranted: true
+    evidence: "Shared contract and explicit Top ⊂ All invariant."
+  - id: auth.canada_screen
+    production_claim: "Canada Branch-B rows are screen output, not validated official picks."
+    proposal_claim: "Canada remains explicitly labelled a screen even when timing is open."
+    direction: equal
+    warranted: true
+    evidence: "WS:PROPHET-HK-CA-REVAMP and paired design contract."
+  - id: auth.history_exit
+    production_claim: "Incomplete visible-shelf coverage cannot establish exact exit, reason, or continuous tenure."
+    proposal_claim: "Recently Changed prints only positive prior evidence and owner-supplied reasons; unsupported fields remain unknown."
+    direction: weaker
+    warranted: true
+    evidence: "DSC-PROPHET-BOARD-TENURE-COVERAGE-FLOOR."
+  - id: auth.research_attention
+    production_claim: "Research context may exist beside current cards."
+    proposal_claim: "Research Attention cannot define All, live rank, or entry permission."
+    direction: weaker
+    warranted: true
+    evidence: "Handoff D and shared product contract."
+  - id: auth.plan_identity
+    production_claim: "No general verified HK/CA Plans owner is assumed."
+    proposal_claim: "No plan workflow appears without a verified owner and real identity."
+    direction: equal
+    warranted: true
+    evidence: "Candidates are not Plans contract."
+
+information_economics:
+  words_per_card:
+    production: "P0B full-page fixtures measured 980 visible words for HK and 533 for Canada; card-level count was not separately measured."
+    proposal: "First viewport keeps identity, state, reason, timing, count, and actions; technical receipts move to disclosure."
+  findings:
+    - "The proposal replaces fragmented shelves with one scan grammar but preserves stage semantics."
+    - "Diagnostic producer/entitled/current/visible counters remain off the default glance tier."
+    - "Recently Changed and Evidence & Record prevent history from becoming a second action board."
+    - "The full state matrix adds proof surface, not default-page verbosity."
+  preserved:
+    - "Owner-native terminology and authority remain market-specific."
+    - "One as-of and concise stance lines preserve scan speed."
+    - "Existing repository tokens and canonical components remain the implementation vocabulary."
