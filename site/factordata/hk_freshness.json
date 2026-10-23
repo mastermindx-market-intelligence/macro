@@ -1,13 +1,13 @@
 {
-  "checked_at": "2026-10-23T12:35:24+00:00",
+  "checked_at": "2026-10-23T12:59:38+00:00",
   "expected_session": "2026-10-23",
   "stores": {
     "cache": {
-      "asof": "2026-10-23",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "asof": "2026-10-16",
+      "lag_days": 7,
+      "lag_sessions": 4,
+      "state": "stale",
+      "data_state": "late",
       "calendar_verified": true
     },
     "bellwether": {

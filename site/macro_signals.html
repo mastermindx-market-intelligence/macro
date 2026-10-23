@@ -440,7 +440,7 @@
               <stop offset="100%" stop-color="var(--down)"/>
             </linearGradient>
           </defs>
-          <g id="gneedle-fg" style="transform:rotate(0.0deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
+          <g id="gneedle-fg" style="transform:rotate(-3.5999999999999943deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
             <line x1="60" y1="68" x2="60" y2="26"
               stroke="var(--warn)"
               stroke-width="2.5" stroke-linecap="round"
@@ -766,7 +766,7 @@
   
   <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
     <div>
-      <div style="font-size:32px;font-weight:800;font-family:var(--num)">50</div>
+      <div style="font-size:32px;font-weight:800;font-family:var(--num)">48</div>
       <div class="muted sm">/ 100</div>
     </div>
     <div>
@@ -774,7 +774,7 @@
       <div class="muted sm" style="margin-top:4px">11 <span class="l-en">legs driving it</span><span class="l-zh">项指标合成</span></div>
     </div>
     <div style="flex:1;min-width:100px">
-      <div class="pgauge"><i style="left:50%"></i></div>
+      <div class="pgauge"><i style="left:48%"></i></div>
       <div class="pends"><span><span class="l-en">Fear</span><span class="l-zh">恐惧</span></span><span><span class="l-en">Greed</span><span class="l-zh">贪婪</span></span></div>
     </div>
   </div>
@@ -792,7 +792,7 @@
   
   <div class="leg">
     <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">Junk demand (HY OAS)</span><span class="l-zh">高收益需求（HY 利差）</span></span>
-    <div class="leg-bar"><i style="width:23.966666666666665%;background:var(--up)"></i></div>
+    <div class="leg-bar"><i style="width:24.766666666666666%;background:var(--up)"></i></div>
     <span class="muted sm" style="flex:0 0 60px;text-align:right">+0.7</span>
   </div>
   
@@ -841,9 +841,9 @@
         
         <tr>
           <td class="l"><b><span class="l-en">Junk demand (HY OAS)</span><span class="l-zh">高收益需求（HY 利差）</span></b></td>
-          <td>3.33 <span class="muted sm">OAS bps</span></td>
-          <td class="pos sm">+0.72</td>
-          <td class="sm muted">7783</td>
+          <td>3.27 <span class="muted sm">OAS bps</span></td>
+          <td class="pos sm">+0.74</td>
+          <td class="sm muted">7784</td>
         </tr>
         
         <tr>
@@ -855,23 +855,23 @@
         
         <tr>
           <td class="l"><b><span class="l-en">VIX level</span><span class="l-zh">VIX 水平</span></b></td>
-          <td>18.20 <span class="muted sm">VIX points</span></td>
-          <td class=" sm">+0.16</td>
+          <td>19.00 <span class="muted sm">VIX points</span></td>
+          <td class=" sm">+0.05</td>
           <td class="sm muted">9273</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX trend (20d change)</span><span class="l-zh">VIX 趋势（20日变动）</span></b></td>
-          <td>2.52 <span class="muted sm">VIX 20d delta</span></td>
-          <td class=" sm">-0.48</td>
+          <td>3.36 <span class="muted sm">VIX 20d delta</span></td>
+          <td class="neg sm">-0.65</td>
           <td class="sm muted">9253</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX term structure (VIX/VIX3M)</span><span class="l-zh">VIX 期限结构（VIX/VIX3M）</span></b></td>
-          <td>0.89 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
-          <td class=" sm">+0.20</td>
-          <td class="sm muted">5099</td>
+          <td>0.95 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
+          <td class=" sm">-0.47</td>
+          <td class="sm muted">5100</td>
         </tr>
         
         <tr>
@@ -902,7 +902,7 @@
       
       <div class="muted sm" style="margin:8px 0 4px"><span class="l-en">Context tiles (short history):</span><span class="l-zh">背景小块（历史较短）:</span></div>
       
-      <span class="chip"><span class="l-en">CBOE put/call ratio</span><span class="l-zh">CBOE 看跌/看涨比率</span>: 1.051</span>
+      <span class="chip"><span class="l-en">CBOE put/call ratio</span><span class="l-zh">CBOE 看跌/看涨比率</span>: 1.146</span>
       
       <span class="chip"><span class="l-en">AAII sentiment (bullish %)</span><span class="l-zh">AAII 情绪（看多占比）</span>: 36.9</span>
       
@@ -1536,7 +1536,7 @@
     setNeedle('gneedle-inflation', 50.4);
     
     
-    setNeedle('gneedle-fg', 0.0);
+    setNeedle('gneedle-fg', -3.6);
     
     
     setNeedle('gneedle-vix', -10.0);
