@@ -1,0 +1,999 @@
+{
+  "meta": {
+    "protocol_freeze_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+    "coding_frozen_at_utc": "2026-10-07T03:05:11Z"
+  },
+  "episodes": [
+    {
+      "episode_id": "FED_20181219_FOMC",
+      "event_date": "2018-12-19",
+      "decision_cut_utc": "2018-12-19T19:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2018_2019_NORMALIZATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "UP",
+        "decided_target_upper_pct": 2.5
+      },
+      "feature_source_ids": [
+        "implementation_2018-12-19",
+        "statement_2018-12-19"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "implementation_2018-12-19",
+          "public_time_upper_bound_utc": "2018-12-19T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2018-12-19",
+          "public_time_upper_bound_utc": "2018-12-19T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 2.25,
+        "upper_pct": 2.5,
+        "decision_utc": "2018-12-19T19:00:00Z",
+        "effective_date": "2018-12-20",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_20190130_FOMC",
+      "event_date": "2019-01-30",
+      "decision_cut_utc": "2019-01-30T19:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2018_2019_NORMALIZATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "HOLD",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "HOLD",
+        "decided_target_upper_pct": 2.5
+      },
+      "feature_source_ids": [
+        "implementation_2019-01-30",
+        "normalization_2019-01-30",
+        "statement_2019-01-30"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "implementation_2019-01-30",
+          "public_time_upper_bound_utc": "2019-01-30T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "normalization_2019-01-30",
+          "public_time_upper_bound_utc": "2019-01-30T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2019-01-30",
+          "public_time_upper_bound_utc": "2019-01-30T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 2.25,
+        "upper_pct": 2.5,
+        "decision_utc": "2019-01-30T19:00:00Z",
+        "effective_date": "2019-01-31",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_20190731_FOMC",
+      "event_date": "2019-07-31",
+      "decision_cut_utc": "2019-07-31T18:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2018_2019_NORMALIZATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "DOWN",
+        "decided_target_upper_pct": 2.25
+      },
+      "feature_source_ids": [
+        "implementation_2019-07-31",
+        "statement_2019-07-31"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "implementation_2019-07-31",
+          "public_time_upper_bound_utc": "2019-07-31T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2019-07-31",
+          "public_time_upper_bound_utc": "2019-07-31T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 2.0,
+        "upper_pct": 2.25,
+        "decision_utc": "2019-07-31T18:00:00Z",
+        "effective_date": "2019-08-01",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_20191011_RESERVE_MANAGEMENT",
+      "event_date": "2019-10-11",
+      "decision_cut_utc": "2019-10-11T15:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2018_2019_NORMALIZATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "reserve_2019-10-11",
+        "reserve_pdf_2019-10-11"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "reserve_2019-10-11",
+          "public_time_upper_bound_utc": "2019-10-11T15:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "reserve_pdf_2019-10-11",
+          "public_time_upper_bound_utc": "2019-10-11T15:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_20200303_EMERGENCY_CUT",
+      "event_date": "2020-03-03",
+      "decision_cut_utc": "2020-03-03T15:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "DOWN",
+        "decided_target_upper_pct": 1.25
+      },
+      "feature_source_ids": [
+        "statement_2020-03-03"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "statement_2020-03-03",
+          "public_time_upper_bound_utc": "2020-03-03T15:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 1.0,
+        "upper_pct": 1.25,
+        "decision_utc": "2020-03-03T15:00:00Z",
+        "effective_date": null,
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_20200315_EMERGENCY_EASING",
+      "event_date": "2020-03-15",
+      "decision_cut_utc": "2020-03-15T21:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "HOLD",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "DOWN",
+        "decided_target_upper_pct": 0.25
+      },
+      "feature_source_ids": [
+        "credit_2020-03-15",
+        "implementation_2020-03-15",
+        "statement_2020-03-15",
+        "swaps_2020-03-15"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "credit_2020-03-15",
+          "public_time_upper_bound_utc": "2020-03-15T21:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "implementation_2020-03-15",
+          "public_time_upper_bound_utc": "2020-03-15T21:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2020-03-15",
+          "public_time_upper_bound_utc": "2020-03-15T21:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "swaps_2020-03-15",
+          "public_time_upper_bound_utc": "2020-03-15T21:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 0.0,
+        "upper_pct": 0.25,
+        "decision_utc": "2020-03-15T21:00:00Z",
+        "effective_date": "2020-03-16",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_20200323_FACILITIES_AND_PURCHASES",
+      "event_date": "2020-03-23",
+      "decision_cut_utc": "2020-03-23T12:05:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "facilities_2020-03-23",
+        "statement_2020-03-15",
+        "statement_2020-03-23"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "facilities_2020-03-23",
+          "public_time_upper_bound_utc": "2020-03-23T12:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2020-03-15",
+          "public_time_upper_bound_utc": "2020-03-15T21:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "statement_2020-03-23",
+          "public_time_upper_bound_utc": "2020-03-23T12:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "US_FED_TREASURY_20200409_FACILITIES",
+      "event_date": "2020-04-09",
+      "decision_cut_utc": "2020-04-10T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "FED_MONETARY_20200409A",
+        "TREASURY_SM968"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "FED_MONETARY_20200409A",
+          "public_time_upper_bound_utc": "2020-04-09T12:31:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_SM968",
+          "public_time_upper_bound_utc": "2020-04-10T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_20200827_AIT_STRATEGY",
+      "event_date": "2020-08-27",
+      "decision_cut_utc": "2020-08-27T13:15:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "statement_2020-07-29",
+        "strategy_2020-08-27"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "statement_2020-07-29",
+          "public_time_upper_bound_utc": "2020-07-29T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "strategy_2020-08-27",
+          "public_time_upper_bound_utc": "2020-08-27T13:11:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "US_TREASURY_20201119_FACILITY_EXPIRY_LETTER",
+      "event_date": "2020-11-19",
+      "decision_cut_utc": "2020-11-20T05:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2020_PANDEMIC",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_LETTER11192020",
+        "TREASURY_SM1190"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_LETTER11192020",
+          "public_time_upper_bound_utc": "2020-11-20T05:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_SM1190",
+          "public_time_upper_bound_utc": "2020-11-20T05:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_2021_11_03_TAPER",
+      "event_date": "2021-11-03",
+      "decision_cut_utc": "2021-11-03T18:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2021_2022_INFLATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "HOLD",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "HOLD",
+        "decided_target_upper_pct": 0.25
+      },
+      "feature_source_ids": [
+        "i20211103",
+        "s20211103"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20211103",
+          "public_time_upper_bound_utc": "2021-11-03T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20211103",
+          "public_time_upper_bound_utc": "2021-11-03T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 0,
+        "upper_pct": 0.25,
+        "decision_utc": "2021-11-03T18:00:00Z",
+        "effective_date": "2021-11-04",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_2021_12_15_ACCELERATED_TAPER",
+      "event_date": "2021-12-15",
+      "decision_cut_utc": "2021-12-15T19:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2021_2022_INFLATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "HOLD",
+        "decided_target_upper_pct": 0.25
+      },
+      "feature_source_ids": [
+        "i20211215",
+        "s20211103",
+        "s20211215",
+        "sep20211215"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20211215",
+          "public_time_upper_bound_utc": "2021-12-15T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20211103",
+          "public_time_upper_bound_utc": "2021-11-03T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20211215",
+          "public_time_upper_bound_utc": "2021-12-15T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "sep20211215",
+          "public_time_upper_bound_utc": "2021-12-15T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 0,
+        "upper_pct": 0.25,
+        "decision_utc": "2021-12-15T19:00:00Z",
+        "effective_date": "2021-12-16",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_2022_03_16_LIFTOFF",
+      "event_date": "2022-03-16",
+      "decision_cut_utc": "2022-03-16T18:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2021_2022_INFLATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "UP",
+        "decided_target_upper_pct": 0.5
+      },
+      "feature_source_ids": [
+        "i20220316",
+        "s20220316"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20220316",
+          "public_time_upper_bound_utc": "2022-03-16T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20220316",
+          "public_time_upper_bound_utc": "2022-03-16T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 0.25,
+        "upper_pct": 0.5,
+        "decision_utc": "2022-03-16T18:00:00Z",
+        "effective_date": "2022-03-17",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_2022_06_15_75BP",
+      "event_date": "2022-06-15",
+      "decision_cut_utc": "2022-06-15T18:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2021_2022_INFLATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "UP",
+        "decided_target_upper_pct": 1.75
+      },
+      "feature_source_ids": [
+        "i20220615",
+        "may20220504presser",
+        "pre20220504",
+        "qtplan20220504",
+        "s20220615"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20220615",
+          "public_time_upper_bound_utc": "2022-06-15T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "may20220504presser",
+          "public_time_upper_bound_utc": "2022-05-05T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "pre20220504",
+          "public_time_upper_bound_utc": "2022-05-04T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "qtplan20220504",
+          "public_time_upper_bound_utc": "2022-05-04T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20220615",
+          "public_time_upper_bound_utc": "2022-06-15T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 1.5,
+        "upper_pct": 1.75,
+        "decision_utc": "2022-06-15T18:00:00Z",
+        "effective_date": "2022-06-16",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "FED_2022_08_26_JACKSON_HOLE",
+      "event_date": "2022-08-26",
+      "decision_cut_utc": "2022-08-26T14:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2021_2022_INFLATION",
+      "split": "DEVELOPMENT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "jh20220826",
+        "jhclock20220826",
+        "pre20220727",
+        "qtplan20220504"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "jh20220826",
+          "public_time_upper_bound_utc": "2022-08-26T14:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "jhclock20220826",
+          "public_time_upper_bound_utc": "2022-08-26T14:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "pre20220727",
+          "public_time_upper_bound_utc": "2022-07-27T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "qtplan20220504",
+          "public_time_upper_bound_utc": "2022-05-04T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_TREASURY_2023_03_12_BTFP",
+      "event_date": "2023-03-12",
+      "decision_cut_utc": "2023-03-13T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "btfp20230312",
+        "joint20230312",
+        "pre20230201",
+        "qtplan20220504"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "btfp20230312",
+          "public_time_upper_bound_utc": "2023-03-12T22:16:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "joint20230312",
+          "public_time_upper_bound_utc": "2023-03-12T22:16:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "pre20230201",
+          "public_time_upper_bound_utc": "2023-02-01T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "qtplan20220504",
+          "public_time_upper_bound_utc": "2022-05-04T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_2023_03_22_BANK_STRESS_HIKE",
+      "event_date": "2023-03-22",
+      "decision_cut_utc": "2023-03-22T18:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "UP",
+        "decided_target_upper_pct": 5
+      },
+      "feature_source_ids": [
+        "btfp20230312",
+        "i20230322",
+        "joint20230312",
+        "pre20230201",
+        "s20230322"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "btfp20230312",
+          "public_time_upper_bound_utc": "2023-03-12T22:16:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "i20230322",
+          "public_time_upper_bound_utc": "2023-03-22T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "joint20230312",
+          "public_time_upper_bound_utc": "2023-03-12T22:16:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "pre20230201",
+          "public_time_upper_bound_utc": "2023-02-01T19:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20230322",
+          "public_time_upper_bound_utc": "2023-03-22T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 4.75,
+        "upper_pct": 5,
+        "decision_utc": "2023-03-22T18:00:00Z",
+        "effective_date": "2023-03-23",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20230503_BUYBACK_PLAN",
+      "event_date": "2023-05-03",
+      "decision_cut_utc": "2023-05-04T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_JY1453",
+        "TREASURY_JY1460"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_JY1453",
+          "public_time_upper_bound_utc": "2023-05-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY1460",
+          "public_time_upper_bound_utc": "2023-05-04T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "CHALLENGE_FED_2023_06_14_PAUSE",
+      "event_date": "2023-06-14",
+      "decision_cut_utc": "2023-06-14T18:01:00Z",
+      "cohort": "ADVERSARIAL_CHALLENGE",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "UP",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "HOLD",
+        "decided_target_upper_pct": 5.25
+      },
+      "feature_source_ids": [
+        "i20230614",
+        "s20230614",
+        "sep20230614"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20230614",
+          "public_time_upper_bound_utc": "2023-06-14T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20230614",
+          "public_time_upper_bound_utc": "2023-06-14T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "sep20230614",
+          "public_time_upper_bound_utc": "2023-06-14T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 5,
+        "upper_pct": 5.25,
+        "decision_utc": "2023-06-14T18:00:00Z",
+        "effective_date": "2023-06-15",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20230802_COUPON_INCREASES",
+      "event_date": "2023-08-02",
+      "decision_cut_utc": "2023-08-03T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_JY1460",
+        "TREASURY_JY1662",
+        "TREASURY_JY1671"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_JY1460",
+          "public_time_upper_bound_utc": "2023-05-04T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY1662",
+          "public_time_upper_bound_utc": "2023-08-01T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY1671",
+          "public_time_upper_bound_utc": "2023-08-03T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "US_TREASURY_20231101_SLOWER_LONG_COUPON_INCREASES",
+      "event_date": "2023-11-01",
+      "decision_cut_utc": "2023-11-02T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_JY1671",
+        "TREASURY_JY1851",
+        "TREASURY_JY1864"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_JY1671",
+          "public_time_upper_bound_utc": "2023-08-03T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY1851",
+          "public_time_upper_bound_utc": "2023-10-31T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY1864",
+          "public_time_upper_bound_utc": "2023-11-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "US_TREASURY_20240131_COUPON_PLATEAU_GUIDANCE",
+      "event_date": "2024-01-31",
+      "decision_cut_utc": "2024-02-01T05:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_JY1864",
+        "TREASURY_JY2054",
+        "TREASURY_JY2062"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_JY1864",
+          "public_time_upper_bound_utc": "2023-11-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2054",
+          "public_time_upper_bound_utc": "2024-01-30T05:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2062",
+          "public_time_upper_bound_utc": "2024-02-01T05:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "FED_2024_05_01_QT_TAPER",
+      "event_date": "2024-05-01",
+      "decision_cut_utc": "2024-05-01T18:01:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "HOLD",
+        "has_new_rate_decision": true,
+        "rate_decision_direction": "HOLD",
+        "decided_target_upper_pct": 5.5
+      },
+      "feature_source_ids": [
+        "i20240501",
+        "qtplan20220504",
+        "s20240501"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "i20240501",
+          "public_time_upper_bound_utc": "2024-05-01T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "qtplan20220504",
+          "public_time_upper_bound_utc": "2022-05-04T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "s20240501",
+          "public_time_upper_bound_utc": "2024-05-01T18:01:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": {
+        "lower_pct": 5.25,
+        "upper_pct": 5.5,
+        "decision_utc": "2024-05-01T18:00:00Z",
+        "effective_date": "2024-05-02",
+        "status": "KNOWN_DECIDED"
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20240501_BUYBACK_LAUNCH_PLAN",
+      "event_date": "2024-05-01",
+      "decision_cut_utc": "2024-05-02T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_JY2062",
+        "TREASURY_JY2304",
+        "TREASURY_JY2315",
+        "TREASURY_TENTATIVE_BUYBACK_Q22024"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_JY2062",
+          "public_time_upper_bound_utc": "2024-02-01T05:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2304",
+          "public_time_upper_bound_utc": "2024-04-30T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2315",
+          "public_time_upper_bound_utc": "2024-05-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+          "public_time_upper_bound_utc": "2024-05-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    },
+    {
+      "episode_id": "US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS",
+      "event_date": "2024-05-29",
+      "decision_cut_utc": "2024-05-30T04:00:00Z",
+      "cohort": "PRIMARY",
+      "regime": "2023_2024_RESTRICTIVE_LIQUIDITY",
+      "split": "CHRONOLOGICAL_REPORT",
+      "features": {
+        "rhetoric_forward_direction": "ABSTAIN",
+        "has_new_rate_decision": false,
+        "rate_decision_direction": "NOT_RATE",
+        "decided_target_upper_pct": null
+      },
+      "feature_source_ids": [
+        "TREASURY_BBR_20240529174000",
+        "TREASURY_JY2304",
+        "TREASURY_JY2315",
+        "TREASURY_TENTATIVE_BUYBACK_Q22024"
+      ],
+      "source_time_bounds": [
+        {
+          "source_id": "TREASURY_BBR_20240529174000",
+          "public_time_upper_bound_utc": "2024-05-30T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2304",
+          "public_time_upper_bound_utc": "2024-04-30T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_JY2315",
+          "public_time_upper_bound_utc": "2024-05-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        },
+        {
+          "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+          "public_time_upper_bound_utc": "2024-05-02T04:00:00Z",
+          "role": "DECISION_TIME_FACT"
+        }
+      ],
+      "known_rate_decision": null
+    }
+  ]
+}

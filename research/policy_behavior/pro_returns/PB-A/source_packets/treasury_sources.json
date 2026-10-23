@@ -1,0 +1,2590 @@
+{
+  "helper": "PB-A Treasury primary-source reconstruction",
+  "state": "RESEARCH_ONLY_NO_AUTHORITY",
+  "created_utc_date": "2026-10-07",
+  "scope": "Exactly 8 fixed U.S. Treasury/Fed-Treasury episodes; no outcome labels, probabilities, or production changes.",
+  "source_family_rules": [
+    "home.treasury.gov and treasurydirect.gov are one US_TREASURY issuer lineage.",
+    "Fed Board releases and Fed Chair signed reply share FEDERAL_RESERVE_BOARD lineage.",
+    "HTML/PDF versions of one letter are the same underlying document.",
+    "Joint facility releases support one joint episode; do not count duplicated capacity facts as independent observations.",
+    "Current buyback index is archaeology-only and cannot become historical decision-time evidence."
+  ],
+  "cut_rules": [
+    "Date-only publication becomes America/New_York day interval; cut is conservative following local midnight.",
+    "Observed Fed Apr9 08:30EDT retained as exact first-public clock; next-day cut admits Treasury date-only co-release.",
+    "Scheduled refunding 08:30 notices are retained as schedule only; timezone convention is explicitly inferred, not stated exact release clock.",
+    "Nov19 primary cut excludes Nov20 formal Fed reply; optional sensitivity cut never adds an independent episode.",
+    "May29 result native filename encodes operation start, not publication time; next-day cut with allocation executed but settlement scheduled."
+  ],
+  "certification_limitations": [
+    "Historical original bearing contemporary date/time; current-host retrieval does not prove byte identity or absence of unmarked edits.",
+    "Date-only certification supports overnight point-in-time analysis, not intraday release-window claims.",
+    "Prices, futures/OIS probabilities, DXY and causal event returns not reconstructed. Root must abstain or supply controlled data rather than manufacture certainty.",
+    "Private motive is unresolved; selective incidence alone is not motive proof."
+  ],
+  "sources": [
+    {
+      "source_id": "FED_MONETARY_20200409A",
+      "publisher": "FEDERAL_RESERVE_BOARD",
+      "originator": "FEDERAL_RESERVE_BOARD",
+      "native_document_identity": "FED_MONETARY_20200409A",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200409a.htm",
+      "title": "Federal Reserve takes additional actions to provide up to $2.3 trillion in loans to support the economy",
+      "source_class": "PRIMARY",
+      "source_family": "FEDERAL_RESERVE_BOARD",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view0",
+        "turn14view3"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-04-09",
+        "precision": "MINUTE",
+        "timezone": "EDT",
+        "publication_local": "2020-04-09T08:30:00-04:00",
+        "publication_utc": "2020-04-09T12:30:00Z",
+        "release_time_observed": true,
+        "clock_evidence": "Original press release says For release at 8:30 a.m. EDT."
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_SM968",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_SM968",
+      "url": "https://home.treasury.gov/news/press-releases/sm968",
+      "title": "Treasury and Federal Reserve Board Announce New and Expanded Lending Programs to Provide up to $2.3 Trillion in Financing",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn14view8"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-04-09",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-04-09T04:00:00Z",
+          "latest_exclusive": "2020-04-10T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established.",
+      "underlying_fact_lineage": "JOINT_FED_TREASURY_20200409_FACILITIES"
+    },
+    {
+      "source_id": "TREASURY_SM1190",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_SM1190",
+      "url": "https://home.treasury.gov/news/press-releases/sm1190",
+      "title": "Letter from Secretary Steven T. Mnuchin on the Status of Facilities Authorized Under Section 13(3) of the Federal Reserve Act",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view1"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-11-19",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-11-19T05:00:00Z",
+          "latest_exclusive": "2020-11-20T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_LETTER11192020",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_LETTER11192020",
+      "url": "https://home.treasury.gov/system/files/136/letter11192020.pdf",
+      "title": "Letter from Secretary Steven T. Mnuchin to Federal Reserve Chair Jerome H. Powell",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn22view2",
+        "turn24view2",
+        "turn24view3",
+        "turn24view4"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-11-19",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-11-19T05:00:00Z",
+          "latest_exclusive": "2020-11-20T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established.",
+      "visual_original_checked": true,
+      "same_document_lineage_as": "TREASURY_SM1190"
+    },
+    {
+      "source_id": "FED_MNUCHIN_LETTER_20201120",
+      "publisher": "FEDERAL_RESERVE_BOARD",
+      "originator": "FEDERAL_RESERVE_BOARD",
+      "native_document_identity": "FED_MNUCHIN_LETTER_20201120",
+      "url": "https://www.federalreserve.gov/foia/letter-from-chair-powell-to-secretary-mnuchin-20201120.htm",
+      "title": "Letter from Chair Powell to Secretary Mnuchin regarding emergency lending facilities",
+      "source_class": "PRIMARY",
+      "source_family": "FEDERAL_RESERVE_BOARD",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view5",
+        "turn14view7"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-11-20",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-11-20T05:00:00Z",
+          "latest_exclusive": "2020-11-21T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "FED_MNUCHIN_LETTER_PDF_20201120",
+      "publisher": "FEDERAL_RESERVE_BOARD",
+      "originator": "FEDERAL_RESERVE_BOARD",
+      "native_document_identity": "FED_MNUCHIN_LETTER_PDF_20201120",
+      "url": "https://www.federalreserve.gov/foia/files/mnuchin-letter-20201120.pdf",
+      "title": "Letter from Chair Powell to Secretary Mnuchin regarding emergency lending facilities (November 20, 2020)",
+      "source_class": "PRIMARY",
+      "source_family": "FEDERAL_RESERVE_BOARD",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn22view1"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2020-11-20",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-11-20T05:00:00Z",
+          "latest_exclusive": "2020-11-21T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established.",
+      "same_document_lineage_as": "FED_MNUCHIN_LETTER_20201120"
+    },
+    {
+      "source_id": "TREASURY_JY1460",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1460",
+      "url": "https://home.treasury.gov/news/press-releases/jy1460",
+      "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view2"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-05-03",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-05-03T04:00:00Z",
+          "latest_exclusive": "2023-05-04T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY1671",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1671",
+      "url": "https://home.treasury.gov/news/press-releases/jy1671",
+      "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view3"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-08-02",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-08-02T04:00:00Z",
+          "latest_exclusive": "2023-08-03T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY1864",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1864",
+      "url": "https://home.treasury.gov/news/press-releases/jy1864",
+      "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn9view4"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-11-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-11-01T04:00:00Z",
+          "latest_exclusive": "2023-11-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY2062",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY2062",
+      "url": "https://home.treasury.gov/news/press-releases/jy2062",
+      "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn14view1"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-01-31",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-01-31T05:00:00Z",
+          "latest_exclusive": "2024-02-01T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY2315",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY2315",
+      "url": "https://home.treasury.gov/news/press-releases/jy2315",
+      "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn14view0"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-05-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-05-01T04:00:00Z",
+          "latest_exclusive": "2024-05-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY1453",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1453",
+      "url": "https://home.treasury.gov/news/press-releases/jy1453",
+      "title": "Treasury Announces Marketable Borrowing Estimates",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn32view0"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-05-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-05-01T04:00:00Z",
+          "latest_exclusive": "2023-05-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY1662",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1662",
+      "url": "https://home.treasury.gov/news/press-releases/jy1662",
+      "title": "Treasury Announces Marketable Borrowing Estimates",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn32view1"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-07-31",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-07-31T04:00:00Z",
+          "latest_exclusive": "2023-08-01T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY1851",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY1851",
+      "url": "https://home.treasury.gov/news/press-releases/jy1851",
+      "title": "Treasury Announces Marketable Borrowing Estimates",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn32view2"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2023-10-30",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-10-30T04:00:00Z",
+          "latest_exclusive": "2023-10-31T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY2054",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY2054",
+      "url": "https://home.treasury.gov/news/press-releases/jy2054",
+      "title": "Treasury Announces Marketable Borrowing Estimates",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn32view3"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-01-29",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-01-29T05:00:00Z",
+          "latest_exclusive": "2024-01-30T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_JY2304",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_JY2304",
+      "url": "https://home.treasury.gov/news/press-releases/jy2304",
+      "title": "Treasury Announces Marketable Borrowing Estimates",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn32view4"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-04-29",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-04-29T04:00:00Z",
+          "latest_exclusive": "2024-04-30T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+      "url": "https://home.treasury.gov/system/files/221/Tentative-Buyback-ScheduleQ22024.pdf",
+      "title": "Tentative Schedule of Treasury Buyback Operations — May 2024 Quarterly Refunding",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn22view0"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-05-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-05-01T04:00:00Z",
+          "latest_exclusive": "2024-05-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established."
+    },
+    {
+      "source_id": "TREASURY_BBR_20240529174000",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_BBR_20240529174000",
+      "url": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2024/BBR_20240529174000.pdf",
+      "title": "Treasury Debt Buyback Operation Results",
+      "source_class": "PRIMARY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn20view0",
+        "turn22view3"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "publication_date": "2024-05-29",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-05-29T04:00:00Z",
+          "latest_exclusive": "2024-05-30T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "correction_supersession_state": "No correction banner observed; historical content retrieved from current official host; archival byte identity not established.",
+      "visual_original_checked": true,
+      "native_filename_timestamp_semantics": "20240529174000 encodes operation date/start time, not release time; 17:40 GMT corresponds to 13:40 EDT. Release time remains unknown.",
+      "underlying_fact_lineage": "TREASURY_BUYBACK_20240529_RESULTS"
+    },
+    {
+      "source_id": "TREASURY_BUYBACK_INDEX_CURRENT",
+      "publisher": "US_TREASURY",
+      "originator": "US_TREASURY",
+      "native_document_identity": "TREASURY_BUYBACK_INDEX_CURRENT",
+      "url": "https://www.treasurydirect.gov/auctions/announcements-data-results/buy-backs/",
+      "title": "Buyback Announcements & Results Press Releases",
+      "source_class": "PRIMARY_CURRENT_ARCHAEOLOGY_ONLY",
+      "source_family": "US_TREASURY",
+      "opened_original": true,
+      "web_reference_ids": [
+        "turn20view2"
+      ],
+      "retrieval_date": "2026-10-07",
+      "clock": {
+        "precision": "CURRENT_DYNAMIC_PAGE",
+        "publication_utc": null,
+        "timezone": null
+      },
+      "correction_supersession_state": "Current page includes March 2026 rules and May 2025 XML changes; excluded from all historical decision-time inputs.",
+      "usage": "URL naming interpretation and original-document discovery only; not pre-cut evidence."
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "US_FED_TREASURY_20200409_FACILITIES",
+      "episode_date": "2020-04-09",
+      "episode_family": "FED_TREASURY_EMERGENCY_CREDIT",
+      "actor_ids": [
+        "JEROME_POWELL",
+        "STEVEN_MNUCHIN"
+      ],
+      "institution_ids": [
+        "US_TREASURY",
+        "FEDERAL_RESERVE_BOARD"
+      ],
+      "decision_cut_utc": "2020-04-10T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "MINUTE",
+      "first_public_evidence_utc": "2020-04-09T12:30:00Z",
+      "first_public_evidence_clock": {
+        "publication_date": "2020-04-09",
+        "precision": "MINUTE",
+        "timezone": "EDT",
+        "publication_local": "2020-04-09T08:30:00-04:00",
+        "publication_utc": "2020-04-09T12:30:00Z",
+        "release_time_observed": true,
+        "clock_evidence": "Original press release says For release at 8:30 a.m. EDT."
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Historical original document bearing contemporary release date/time, with conservative cut after all admitted date intervals; excludes current dynamic-page content and later reply. This is not archive-byte identity certification.",
+      "source_ids": [
+        "FED_MONETARY_20200409A",
+        "TREASURY_SM968"
+      ],
+      "source_admission": [
+        {
+          "source_id": "FED_MONETARY_20200409A",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original historical document clock interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_SM968",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original historical document clock interval ends no later than cut."
+        }
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "paraphrase": "Fed framed the facilities as relief and financial stability support through the pandemic; Treasury emphasized preserving employment while limiting taxpayer risk.",
+            "source_id": "FED_MONETARY_20200409A",
+            "actor": "JEROME_POWELL",
+            "timestamp_clock_source": "FED_MONETARY_20200409A",
+            "statement_type": "PREFERENCE",
+            "explicit_horizon": "Pandemic/recovery",
+            "directional_implication": "No clean policy-rate/2y/10y/DXY implication",
+            "ambiguity": "Implementation/financing guidance; not an unconditional asset-price forecast."
+          },
+          {
+            "paraphrase": "Treasury approved CARES-backed credit facilities and framed them as support for workers and firms.",
+            "source_id": "TREASURY_SM968",
+            "actor": "US_TREASURY",
+            "timestamp_clock_source": "TREASURY_SM968",
+            "statement_type": "JUSTIFICATION",
+            "explicit_horizon": "Pandemic",
+            "directional_implication": "No clean policy-rate/2y/10y/DXY implication",
+            "ambiguity": "Implementation/financing guidance; not an unconditional asset-price forecast."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Fed announced new/expanded emergency-credit capacity, headline up to $2.3 trillion; this is capacity, not cash disbursed.",
+            "source_ids": [
+              "FED_MONETARY_20200409A"
+            ],
+            "action_type": "POLICY_OR_DEBT_MANAGEMENT",
+            "instrument": "SECTION_13_3_FACILITIES",
+            "status": "ANNOUNCED_AND_AUTHORIZED",
+            "amount": {
+              "headline_capacity_usd": 2300000000000,
+              "main_street_capacity_usd": 600000000000,
+              "corporate_facilities_and_talf_capacity_usd": 850000000000,
+              "municipal_capacity_usd": 500000000000
+            },
+            "legal_institutional_owner": "FEDERAL_RESERVE_BOARD_WITH_TREASURY_APPROVAL",
+            "reversibility": "Future settings reversible; executed allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes instrument availability or supply; aggregate yields also depend on demand and monetary expectations."
+          },
+          {
+            "description": "Treasury approvals provided prospective loss protection/equity; no at-cut funding/loan execution receipt reconstructed.",
+            "source_ids": [
+              "TREASURY_SM968"
+            ],
+            "action_type": "POLICY_OR_DEBT_MANAGEMENT",
+            "instrument": "CARES_EQUITY",
+            "status": "AUTHORIZED",
+            "amount": {
+              "main_street_usd": 75000000000,
+              "municipal_usd": 35000000000,
+              "corporate_usd": 75000000000,
+              "talf_usd": 10000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Commitments/term sheets adjustable; actual lending not proved by this announcement.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes instrument availability or supply; aggregate yields also depend on demand and monetary expectations."
+          }
+        ],
+        "constraints": {
+          "source_ids": [
+            "FED_MONETARY_20200409A",
+            "TREASURY_SM968"
+          ],
+          "domestic": "Pandemic closures and credit-market impairment; employment and stability mandates.",
+          "institutional_legal": "13(3) authorization and Treasury approval; CARES loss protection and borrower restrictions. Main Street targeted firms previously in sound condition.",
+          "market_functioning": "Collateral/eligibility requirements; Main Street lenders retain 5% exposure; borrower pay/repurchase/dividend restrictions.",
+          "foreign": "No foreign constraint evidenced by this packet.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Maintain only already announced credit backstops, or expand fewer facilities",
+            "feasibility": "Existing programs and expansion decision publicly visible; marginal mix is implementation choice.",
+            "considered": "No full deliberation record."
+          },
+          {
+            "option": "Rely more on PPP/direct congressional fiscal support",
+            "feasibility": "PPP is explicitly complementary; larger appropriations require Congress.",
+            "considered": "Complementarity described, not proof of mutually exclusive choice."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Eligible firms, municipal borrowers, PPP-originating institutions, and covered credit-market participants.",
+          "indirect_beneficiaries": "Workers and service users through continued financing (inference).",
+          "burden_bearers": "Taxpayer loss protection; participating borrowers face eligibility and conduct restrictions; lenders retain risk.",
+          "selective_relief": "YES — eligibility/collateral screens mean support is not universal.",
+          "economic_effect": "Credit access/downside-risk backstop; exact take-up and aggregate financing-cost effects unproved."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Emergency intermediation and public-health disruption justify broad lending backstops under statutory mandates.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Direct fit with stated institutional purpose and chosen instrument.",
+            "evidence_against": "Public purpose cannot establish exclusive private motivation.",
+            "assumptions": [
+              "Implementation broadly follows documented design.",
+              "Unobserved deliberations are not inferred as facts."
+            ],
+            "falsifiers": [
+              "Persistently choosing materially different instruments after the documented constraint changes would weaken this explanation.",
+              "Contemporaneous documents demonstrating an inconsistent binding objective would re-rank it."
+            ]
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Policymakers deliberately prioritize market financing and particular eligible borrowers to contain broader asset-market stress.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Instrument choice has a selective distribution of funding access, supply, or liquidity support; strategic interpretation is an inference.",
+            "evidence_against": "The same choice is also explained by mandates, fiscal flows, settlement limits, and regular debt management. No direct evidence of hidden coordination.",
+            "assumptions": [
+              "Actors can choose among at least some feasible implementation alternatives.",
+              "Beneficiary incidence does not by itself prove intent."
+            ],
+            "falsifiers": [
+              "Implementation that follows the neutral operational rule even when it favors the opposite constituency would weaken selective-motive interpretation.",
+              "A documented binding operational/legal constraint that fully explains the observed choice would reduce this hypothesis."
+            ]
+          }
+        ],
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Credit backstops do not dictate a change in the FOMC policy-rate target. No policy-rate forecast is stated."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut yield expectations/demand data reconstructed; instrument availability or supply does not uniquely identify total yield direction."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No clean absolute yield sign. A conditional term-premium/supply channel is not a forecast of total yield."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Competing risk, growth, and cross-country rate channels; no clean dollar sign from the evidence."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous curve and DXY levels",
+            "Matched high-frequency event windows"
+          ],
+          "allowed_non_market_prediction": "Instrument/action implementation can be forecast separately from market targets; root owns scorer.",
+          "exact_inputs_used": [
+            "FED_MONETARY_20200409A",
+            "TREASURY_SM968"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric_action_relation": "ALIGNED_FOR_ANNOUNCED_CREDIT_SUPPORT; EXECUTED_LENDING_UNPROVED",
+        "uncertainties": [
+          "Headline capacity is not an executed $2.3T injection.",
+          "Treasury equity is prospective/approved in release, not proven paid.",
+          "Facilities are jointly designed; Fed/Treasury releases are not independent evidence of separate underlying flows."
+        ],
+        "source_fact_digest": "Apr9 Fed release 08:30 EDT; up to $2.3T financing capacity; Main Street $600B/$75B Treasury; corporate plus TALF $850B/$85B; municipal $500B/$35B. Treasury approved facilities."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "DISCRETIONARY_PUBLIC_FACILITY_ACTION",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20201119_FACILITY_EXPIRY_LETTER",
+      "episode_date": "2020-11-19",
+      "episode_family": "FED_TREASURY_EMERGENCY_CREDIT_WITHDRAWAL",
+      "actor_ids": [
+        "STEVEN_MNUCHIN",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "US_TREASURY",
+        "FEDERAL_RESERVE_BOARD"
+      ],
+      "decision_cut_utc": "2020-11-20T05:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2020-11-19",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2020-11-19T05:00:00Z",
+          "latest_exclusive": "2020-11-20T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Historical original document bearing contemporary release date/time, with conservative cut after all admitted date intervals; excludes current dynamic-page content and later reply. This is not archive-byte identity certification.",
+      "source_ids": [
+        "TREASURY_SM1190",
+        "TREASURY_LETTER11192020"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_SM1190",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original historical document clock interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_LETTER11192020",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original historical document clock interval ends no later than cut."
+        }
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "paraphrase": "Mnuchin interpreted CARES authority as ending new credit/asset purchases after December 31 and said returning unused capital could permit congressional reappropriation.",
+            "source_id": "TREASURY_SM1190",
+            "actor": "US_TREASURY",
+            "timestamp_clock_source": "TREASURY_SM1190",
+            "statement_type": "JUSTIFICATION",
+            "explicit_horizon": "December 31, 2020",
+            "directional_implication": "No clean policy-rate/2y/10y/DXY implication",
+            "ambiguity": "Implementation/financing guidance; not an unconditional asset-price forecast."
+          },
+          {
+            "paraphrase": "Treasury argued improved financing conditions and limited facility use favored ending CARES-backed programs while acknowledging sectors still needed fiscal aid.",
+            "source_id": "TREASURY_LETTER11192020",
+            "actor": "US_TREASURY",
+            "timestamp_clock_source": "TREASURY_LETTER11192020",
+            "statement_type": "JUSTIFICATION",
+            "explicit_horizon": "Year end",
+            "directional_implication": "No clean policy-rate/2y/10y/DXY implication",
+            "ambiguity": "Implementation/financing guidance; not an unconditional asset-price forecast."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Mnuchin sent a letter requesting unused CARES funds back and non-extension of the CARES-backed PMCCF, SMCCF, MLF, MSLP and TALF.",
+            "source_ids": [
+              "TREASURY_SM1190"
+            ],
+            "action_type": "POLICY_OR_DEBT_MANAGEMENT",
+            "instrument": "SECRETARY_LETTER",
+            "status": "EXECUTED_COMMUNICATION_FUTURE_EXPIRY_PLANNED",
+            "amount": {
+              "proposed_available_for_reappropriation_usd": 455000000000,
+              "fed_facility_excess_usd": 429000000000,
+              "treasury_direct_loan_unused_usd": 26000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; executed allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes instrument availability or supply; aggregate yields also depend on demand and monetary expectations."
+          },
+          {
+            "description": "Secretary requested 90-day extension of CPFF, PDCF, MMLF and PPPLF; this is a request, not Fed approval.",
+            "source_ids": [
+              "TREASURY_SM1190"
+            ],
+            "action_type": "POLICY_OR_DEBT_MANAGEMENT",
+            "instrument": "NON_CARES_FACILITY_EXTENSION",
+            "status": "REQUESTED",
+            "amount": null,
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; executed allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes instrument availability or supply; aggregate yields also depend on demand and monetary expectations."
+          }
+        ],
+        "constraints": {
+          "source_ids": [
+            "TREASURY_SM1190",
+            "TREASURY_LETTER11192020"
+          ],
+          "domestic": "Treasury said conditions improved but fiscal aid still needed in affected sectors.",
+          "institutional_legal": "Treasury's asserted interpretation of CARES Section 4029. Label this legal position, not an independently established legal requirement; extensions/13(3) structures require institutional approval.",
+          "market_functioning": "Treasury cited low usage and private-market availability; facility option value is not measured.",
+          "foreign": "No foreign constraint evidenced.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Extend non-CARES facilities",
+            "feasibility": "Specifically requested in letter; distinct from terminated group.",
+            "considered": "Observed request."
+          },
+          {
+            "option": "Reestablish facilities using core ESF or future congressional funding",
+            "feasibility": "Explicitly stated conditional option subject to law and Secretary approval.",
+            "considered": "Expressly acknowledged."
+          },
+          {
+            "option": "Extend CARES-backed facilities after year-end",
+            "feasibility": "Politically/institutionally contested; not assumed legally available solely because it is imaginable.",
+            "considered": "Not an admitted pre-cut Fed position; original immediate Fed response not located."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Future congressionally selected aid recipients if funds reappropriated; existing non-CARES backstop users receive requested continuity.",
+          "indirect_beneficiaries": "Taxpayers through return/reallocation of unused risk capital (inference).",
+          "burden_bearers": "Potential future corporate, municipal and Main Street borrowers lose proposed credit option; no at-cut termination yet.",
+          "selective_relief": "YES — different facility groups receive different continuation treatment.",
+          "economic_effect": "Prospective downside-backstop withdrawal; does not itself change target policy rate."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Secretary's statute interpretation plus normalization of credit markets and fiscal reallocation explain the differentiated expiry decision.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Direct fit with stated institutional purpose and chosen instrument.",
+            "evidence_against": "Public purpose cannot establish exclusive private motivation.",
+            "assumptions": [
+              "Implementation broadly follows documented design.",
+              "Unobserved deliberations are not inferred as facts."
+            ],
+            "falsifiers": [
+              "Persistently choosing materially different instruments after the documented constraint changes would weaken this explanation.",
+              "Contemporaneous documents demonstrating an inconsistent binding objective would re-rank it."
+            ]
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury strategically reduces the incoming administration's ready financing backstops or shifts support toward congressional fiscal channels; private political motive is unproved.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Instrument choice has a selective distribution of funding access, supply, or liquidity support; strategic interpretation is an inference.",
+            "evidence_against": "The same choice is also explained by mandates, fiscal flows, settlement limits, and regular debt management. No direct evidence of hidden coordination.",
+            "assumptions": [
+              "Actors can choose among at least some feasible implementation alternatives.",
+              "Beneficiary incidence does not by itself prove intent."
+            ],
+            "falsifiers": [
+              "Implementation that follows the neutral operational rule even when it favors the opposite constituency would weaken selective-motive interpretation.",
+              "A documented binding operational/legal constraint that fully explains the observed choice would reduce this hypothesis."
+            ]
+          }
+        ],
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Prospective expiry of selected emergency-credit facilities is not a policy-rate increase; non-CARES extension request cuts against universal tightening."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut yield expectations/demand data reconstructed; instrument availability or supply does not uniquely identify total yield direction."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No clean absolute yield sign. A conditional term-premium/supply channel is not a forecast of total yield."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Competing risk, growth, and cross-country rate channels; no clean dollar sign from the evidence."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous curve and DXY levels",
+            "Matched high-frequency event windows"
+          ],
+          "allowed_non_market_prediction": "Instrument/action implementation can be forecast separately from market targets; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_SM1190",
+            "TREASURY_LETTER11192020"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric_action_relation": "ALIGNED_WITH_TREASURY_STATED_EXPIRY_POSITION; FED_COMPARISON_UNRESOLVED_AT_PRIMARY_CUT",
+        "uncertainties": [
+          "Immediate November19 Fed press statement reported elsewhere not admitted because its primary original was not located.",
+          "$455B is not entirely Fed facility capital: $429B excess Fed-facility funds plus $26B unused direct loans.",
+          "No at-cut return receipt or completed facility termination."
+        ],
+        "source_fact_digest": "Nov19 letter requests return/non-extension for CARES group; extension request for four non-CARES facilities; future core-ESF/reappropriation option."
+      },
+      "outcomes": {
+        "status": "NO_MARKET_OR_POLICY_TARGET_OUTCOME_LABELED",
+        "post_cut_evidence": [
+          {
+            "source_id": "FED_MNUCHIN_LETTER_20201120",
+            "source_date": "2020-11-20",
+            "reason_excluded": "Source interval after primary decision cut.",
+            "evidence": "Powell's formal reply agrees to arrange return of unused capital and acknowledges core-ESF alternatives; it attributes legal interpretation to Treasury."
+          },
+          {
+            "source_id": "FED_MNUCHIN_LETTER_PDF_20201120",
+            "source_date": "2020-11-20",
+            "same_document": true
+          }
+        ],
+        "sensitivity_cut": {
+          "decision_cut_utc": "2020-11-21T05:00:00Z",
+          "may_admit": [
+            "FED_MNUCHIN_LETTER_20201120",
+            "FED_MNUCHIN_LETTER_PDF_20201120"
+          ],
+          "count_as_separate_episode": false
+        }
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "DISCRETIONARY_PUBLIC_FACILITY_ACTION",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20230503_BUYBACK_PLAN",
+      "episode_date": "2023-05-03",
+      "episode_family": "TREASURY_FINANCING_AND_MARKET_FUNCTION",
+      "actor_ids": [
+        "JOSH_FROST"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2023-05-04T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2023-05-03",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-05-03T04:00:00Z",
+          "latest_exclusive": "2023-05-04T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_JY1460",
+        "TREASURY_JY1453"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_JY1460",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        },
+        {
+          "source_id": "TREASURY_JY1453",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_JY1460",
+            "TREASURY_JY1453"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "Treasury kept near-term coupons/FRNs steady, warned of possible increases as soon as August, and proposed conservative predictable cash-management/liquidity buybacks without meaningful maturity-profile change.",
+            "source_id": "TREASURY_JY1460",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY1460",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "explicit_horizon": "May–July 2023 and 2024 buyback launch",
+            "directional_implication": "Instrument-level issuance/buyback guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional on fiscal projections, demand or implementation; horizons must not be conflated."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Announced unchanged coupon/FRN sizes for May–July and a $96B refunding offering; future auctions are not executed at this cut.",
+            "source_ids": [
+              "TREASURY_JY1460"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "REFUNDING_SCHEDULE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "refunding_total_usd": 96000000000,
+              "note_3y_usd": 40000000000,
+              "note_10y_usd": 35000000000,
+              "bond_30y_usd": 21000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future schedules reversible; eventual auction/accepted allocations have settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Gross instrument supply and market liquidity change; net borrowing and total yields need separate evidence."
+          },
+          {
+            "description": "Proposed regular buybacks beginning in 2024, still under design; no buyback execution from this plan.",
+            "source_ids": [
+              "TREASURY_JY1460"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "BUYBACK_PROGRAM_DESIGN",
+            "status": "ANNOUNCED_PLAN",
+            "amount": null,
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future schedules reversible; eventual auction/accepted allocations have settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Gross instrument supply and market liquidity change; net borrowing and total yields need separate evidence."
+          }
+        ],
+        "constraints": {
+          "institutional_legal": "Treasury finances the government's obligations; bills/CMBs are explicit adjustment tools. Treasury references fiscal outlook and SOMA redemptions, which it does not control.",
+          "foreign": "Foreign demand may matter mechanically, but no foreign bargaining constraint is proved in this evidence.",
+          "market_functioning": "Infrastructure/design constraints delay buybacks to 2024; conservative initial sizing avoids material maturity-profile shift.",
+          "source_ids": [
+            "TREASURY_JY1460",
+            "TREASURY_JY1453"
+          ],
+          "domestic": "Debt-limit extraordinary measures ongoing; Treasury warned obligations might become unsatisfiable as early as June1. May1 projected Q2 net borrowing $726B and Q3 $733B; cash assumptions require debt-limit action.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Use bills/CMBs for seasonal/unexpected financing changes",
+            "feasibility": "Explicitly retained in official refunding guidance.",
+            "considered": "Observed public option; private optimization unobserved."
+          },
+          {
+            "option": "Use a different tenor mix or faster/slower coupon increases",
+            "feasibility": "Stated tenor adjustments and supply/demand assessments show mix choice; counterfactual market capacity is not quantified.",
+            "considered": "No claim that every imaginable mix was internally considered."
+          },
+          {
+            "option": "Continue without regular buybacks or delay design/launch",
+            "feasibility": "No regular 2024 program yet operational; current issuance remains possible within debt-limit constraints.",
+            "considered": "No internal no-buyback deliberation record."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Proposed buybacks would offer liquidity to holders/intermediaries in selected securities; government cash management also intended.",
+          "indirect_beneficiaries": "Market participants through planning certainty (inference).",
+          "burden_bearers": "Taxpayers bear financing cost; investors/intermediaries absorb net supply; degree of incidence requires pricing data.",
+          "selective_relief": "PROSPECTIVE — selected eligible securities would benefit; no actual relief flow at cut.",
+          "economic_effect": "Changes gross duration supply and financing mix; net financing cost and price direction not identified."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Regular liquidity/cash management explains a delayed conservative buyback program.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Explicit objectives, conservative size and stated maturity-profile neutrality.",
+            "evidence_against": "Public explanation cannot prove exclusivity of motive.",
+            "assumptions": [
+              "Announced operating constraints are material.",
+              "Debt management can explain choices without private coordination."
+            ],
+            "falsifiers": [
+              "A material deliberate maturity shift or implementation unrelated to cash/liquidity conditions would weaken this account."
+            ],
+            "re_rank_observation": "Contemporaneous records showing different binding objective."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury seeks to relieve intermediation pressure while financing deficits without explicitly easing Fed policy.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Selected secondary-market holders would receive purchase access, an inferred distributional channel.",
+            "evidence_against": "No at-cut direct evidence of a private market-support goal; institutional explanation remains strong.",
+            "assumptions": [
+              "Some instrument mix discretion is feasible.",
+              "Incidence of benefit is not proof of intent."
+            ],
+            "falsifiers": [
+              "Neutral operations sized/priced by preannounced rules despite adverse aggregate yield moves would weaken private price-support interpretation."
+            ],
+            "re_rank_observation": "Contemporaneous minutes or neutral-rule implementation when it opposes presumed beneficiary."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_AS_PLAN; EXECUTION_NOT_YET_ESTABLISHED",
+        "uncertainties": [
+          "Original statement shows date only. Prior May1 notice schedules release at 08:30 (timezone not stated there); schedule is not observed publication clock, so use next-day cut.",
+          "Potential debt-limit timing is a forecast, not later realized date.",
+          "No clean buyback=QE or buyback=rate-cut mapping."
+        ],
+        "source_fact_digest": "JY1460: unchanged May–July coupon/FRN sizes; $96B refunding; possible August increases; regular conservative 2024 buybacks; debt-limit warning. JY1453: Q2 $726B/Q3 $733B net borrowing and scheduled May3 08:30 release."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "scheduled_release_clock": {
+        "local_time": "08:30",
+        "date": "2023-05-03",
+        "timezone_text_in_source": null,
+        "convention_timezone": "America/New_York",
+        "convention_utc": "2023-05-03T12:30:00Z",
+        "source_id": "TREASURY_JY1453",
+        "status": "SCHEDULE_NOT_OBSERVED_ACTUAL_RELEASE"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "SCHEDULED_QUARTERLY_REFUNDING",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20230802_COUPON_INCREASES",
+      "episode_date": "2023-08-02",
+      "episode_family": "TREASURY_FINANCING_AND_MARKET_FUNCTION",
+      "actor_ids": [
+        "JOSH_FROST"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2023-08-03T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2023-08-02",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-08-02T04:00:00Z",
+          "latest_exclusive": "2023-08-03T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_JY1671",
+        "TREASURY_JY1662",
+        "TREASURY_JY1460"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_JY1671",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        },
+        {
+          "source_id": "TREASURY_JY1662",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        },
+        {
+          "source_id": "TREASURY_JY1460",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_JY1671",
+            "TREASURY_JY1662",
+            "TREASURY_JY1460"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "Treasury said intermediate/long-term financing needs require gradual coupon expansion, likely continuing in later quarters, with tenor mix reflecting supply/demand.",
+            "source_id": "TREASURY_JY1671",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY1671",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "explicit_horizon": "August–October 2023 and future quarters",
+            "directional_implication": "Instrument-level issuance/buyback guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional on fiscal projections, demand or implementation; horizons must not be conflated."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Announced benchmark coupon/FRN increases and $103B refunding offering; no newly scheduled auction receipt at cut.",
+            "source_ids": [
+              "TREASURY_JY1671"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "COUPON_AND_FRN_ISSUANCE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "refunding_total_usd": 103000000000,
+              "per_month_2y_and_5y_increase_usd": 3000000000,
+              "per_month_3y_increase_usd": 2000000000,
+              "per_month_7y_increase_usd": 1000000000,
+              "each_10y_increase_usd": 3000000000,
+              "each_30y_increase_usd": 2000000000,
+              "each_20y_increase_usd": 1000000000,
+              "frn_increase_usd": 2000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future schedules reversible; eventual auction/accepted allocations have settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Gross instrument supply and market liquidity change; net borrowing and total yields need separate evidence."
+          }
+        ],
+        "constraints": {
+          "institutional_legal": "Treasury finances the government's obligations; bills/CMBs are explicit adjustment tools. Treasury references fiscal outlook and SOMA redemptions, which it does not control.",
+          "foreign": "Foreign demand may matter mechanically, but no foreign bargaining constraint is proved in this evidence.",
+          "market_functioning": "Structural supply/demand across tenors; financing depends on fiscal outlook and SOMA runoff.",
+          "source_ids": [
+            "TREASURY_JY1671",
+            "TREASURY_JY1662"
+          ],
+          "domestic": "Debt limit suspended in early June; rebuilding cash balance. July31 borrowing estimate Q3 $1.007T/Q4 $852B; Q3 $274B above May estimate, including cash/fiscal-flow changes.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Use bills/CMBs for seasonal/unexpected financing changes",
+            "feasibility": "Explicitly retained in official refunding guidance.",
+            "considered": "Observed public option; private optimization unobserved."
+          },
+          {
+            "option": "Use a different tenor mix or faster/slower coupon increases",
+            "feasibility": "Stated tenor adjustments and supply/demand assessments show mix choice; counterfactual market capacity is not quantified.",
+            "considered": "No claim that every imaginable mix was internally considered."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Government financing recipients through reliable funding; purchasers gain predictable supply.",
+          "indirect_beneficiaries": "Market participants through planning certainty (inference).",
+          "burden_bearers": "Taxpayers bear financing cost; investors/intermediaries absorb net supply; degree of incidence requires pricing data.",
+          "selective_relief": "UNKNOWN for subsidy: tenor allocation is differentiated, but lower aggregate yields or explicit targeted subsidy are not established.",
+          "economic_effect": "Changes gross duration supply and financing mix; net financing cost and price direction not identified."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Gradual financing expansion and tenor demand explain coupon increases.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Borrowing estimate and cash-balance rebuilding were public before release; May guidance anticipated increases.",
+            "evidence_against": "Public explanation cannot prove exclusivity of motive.",
+            "assumptions": [
+              "Announced operating constraints are material.",
+              "Debt management can explain choices without private coordination."
+            ],
+            "falsifiers": [
+              "Large arbitrary changes unrelated to financing needs or demand would weaken the institutional account."
+            ],
+            "re_rank_observation": "Contemporaneous records showing different binding objective."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury allocates duration strategically to reduce disruption from deficit financing without changing the funding total.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Differentiated increments distribute duration burden across maturities, but motive remains inference.",
+            "evidence_against": "No at-cut direct evidence of a private market-support goal; institutional explanation remains strong.",
+            "assumptions": [
+              "Some instrument mix discretion is feasible.",
+              "Incidence of benefit is not proof of intent."
+            ],
+            "falsifiers": [
+              "Stable preannounced tenor changes responding to financing needs regardless of yield moves would weaken active price-management interpretation."
+            ],
+            "re_rank_observation": "Contemporaneous minutes or neutral-rule implementation when it opposes presumed beneficiary."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_WITH_MAY_CONDITIONAL_INCREASE_GUIDANCE",
+        "uncertainties": [
+          "All increase amounts are plans, not completed auction flows.",
+          "Issuance supply pressure conditionally raises term-premium risk; total 10y direction is not identified.",
+          "No pre-event consensus surprise measurement."
+        ],
+        "source_fact_digest": "JY1671: gradual coupons, $103B refunding; 2/5y +$3B monthly, 3y+$2B,7y+$1B;10y+$3B,30y+$2B,20y+$1B;FRN+$2B. JY1662:Q3$1.007T/Q4$852B projections, cash rebuild and scheduled Aug2 08:30."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "scheduled_release_clock": {
+        "date": "2023-08-02",
+        "local_time": "08:30",
+        "timezone_text_in_source": null,
+        "convention_timezone": "America/New_York",
+        "convention_utc": "2023-08-02T12:30:00Z",
+        "source_id": "TREASURY_JY1662",
+        "status": "SCHEDULE_NOT_OBSERVED_ACTUAL_RELEASE"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "SCHEDULED_QUARTERLY_REFUNDING",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20231101_SLOWER_LONG_COUPON_INCREASES",
+      "episode_date": "2023-11-01",
+      "episode_family": "TREASURY_FINANCING_AND_MARKET_FUNCTION",
+      "actor_ids": [
+        "JOSH_FROST"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2023-11-02T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2023-11-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2023-11-01T04:00:00Z",
+          "latest_exclusive": "2023-11-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_JY1864",
+        "TREASURY_JY1851",
+        "TREASURY_JY1671"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_JY1864",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        },
+        {
+          "source_id": "TREASURY_JY1851",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        },
+        {
+          "source_id": "TREASURY_JY1671",
+          "public_before_decision_cut": true,
+          "admission_basis": "Contemporary original document clock interval ends before/equal cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_JY1864",
+            "TREASURY_JY1851",
+            "TREASURY_JY1671"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "Treasury continued gradual coupon increases but expected only one more quarter beyond this round; dependence on fiscal outlook and SOMA runoff remained.",
+            "source_id": "TREASURY_JY1864",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY1864",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "explicit_horizon": "November2023–January2024 and one further quarter",
+            "directional_implication": "Instrument-level issuance/buyback guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional on fiscal projections, demand or implementation; horizons must not be conflated."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Announced $112B refunding. Shorter coupons retain prior monthly increments; 10y and 30y increases slow and 20y stays flat. Planned supply still grows overall.",
+            "source_ids": [
+              "TREASURY_JY1864"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "COUPON_AND_FRN_ISSUANCE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "refunding_total_usd": 112000000000,
+              "per_month_2y_and_5y_increase_usd": 3000000000,
+              "per_month_3y_increase_usd": 2000000000,
+              "per_month_7y_increase_usd": 1000000000,
+              "each_10y_increase_usd": 2000000000,
+              "each_30y_increase_usd": 1000000000,
+              "each_20y_increase_usd": 0,
+              "frn_increase_usd": 2000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future schedules reversible; eventual auction/accepted allocations have settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Gross instrument supply and market liquidity change; net borrowing and total yields need separate evidence."
+          }
+        ],
+        "constraints": {
+          "institutional_legal": "Treasury finances the government's obligations; bills/CMBs are explicit adjustment tools. Treasury references fiscal outlook and SOMA redemptions, which it does not control.",
+          "foreign": "Foreign demand may matter mechanically, but no foreign bargaining constraint is proved in this evidence.",
+          "market_functioning": "Financing remains contingent on fiscal needs and SOMA redemptions; differentiated long-tenor supply.",
+          "source_ids": [
+            "TREASURY_JY1864",
+            "TREASURY_JY1851"
+          ],
+          "domestic": "October30 Q4 borrowing estimate $776B, $76B below July forecast; Q1 2024 $816B. Elevated near-term cash needs precede anticipated short-bill reductions.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Use bills/CMBs for seasonal/unexpected financing changes",
+            "feasibility": "Explicitly retained in official refunding guidance.",
+            "considered": "Observed public option; private optimization unobserved."
+          },
+          {
+            "option": "Use a different tenor mix or faster/slower coupon increases",
+            "feasibility": "Stated tenor adjustments and supply/demand assessments show mix choice; counterfactual market capacity is not quantified.",
+            "considered": "No claim that every imaginable mix was internally considered."
+          },
+          {
+            "option": "Maintain August's larger long-end increments",
+            "feasibility": "Prior quarter demonstrates this schedule as a public operating option; absorption cost/counterfactual demand unknown.",
+            "considered": "No private deliberation admitted."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Relative to repeating August increments, long-duration absorbers face less additional supply, especially 20y; inference from schedule.",
+          "indirect_beneficiaries": "Market participants through planning certainty (inference).",
+          "burden_bearers": "Taxpayers bear financing cost; investors/intermediaries absorb net supply; degree of incidence requires pricing data.",
+          "selective_relief": "RELATIVE_SUPPLY_RELIEF — less incremental long-end supply, not actual debt reduction or guarantee.",
+          "economic_effect": "Changes gross duration supply and financing mix; net financing cost and price direction not identified."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Lower financing estimate and progress aligning issuance sizes explain slower long-end increases.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Financing estimate fell; one-quarter-more guidance connects increases to projected needs.",
+            "evidence_against": "Public explanation cannot prove exclusivity of motive.",
+            "assumptions": [
+              "Announced operating constraints are material.",
+              "Debt management can explain choices without private coordination."
+            ],
+            "falsifiers": [
+              "Large continuing long-end suppression despite persistently rising funding needs with no demand rationale would weaken simple convergence explanation."
+            ],
+            "re_rank_observation": "Contemporaneous records showing different binding objective."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury selectively moderates long-duration pressure in response to market/intermediation costs.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Long-end increment reduction is observed relative to August's plan.",
+            "evidence_against": "No at-cut direct evidence of a private market-support goal; institutional explanation remains strong.",
+            "assumptions": [
+              "Some instrument mix discretion is feasible.",
+              "Incidence of benefit is not proof of intent."
+            ],
+            "falsifiers": [
+              "Uniform neutral financing/demand rules that reproduce mix without market-yield objective would weaken strategic yield-support interpretation."
+            ],
+            "re_rank_observation": "Contemporaneous minutes or neutral-rule implementation when it opposes presumed beneficiary."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_FOR_FINANCING; SLOWING_INCREMENT_IS_NOT_NET_SUPPLY_CUT",
+        "uncertainties": [
+          "Do not label all coupon increases as slower: 2/3/5/7y monthly increments unchanged.",
+          "No at-cut auction execution proof for new schedule.",
+          "No basis to transform slower issuance growth into FOMC rate cut."
+        ],
+        "source_fact_digest": "JY1864: $112B refunding; 10y+$2B/30y+$1B/20y flat versus Aug+$3B/+$2B/+$1B; short increments unchanged; one more quarter likely. JY1851: Q4 $776B, Q1 $816B borrowing and Nov1 08:30 release schedule."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "scheduled_release_clock": {
+        "date": "2023-11-01",
+        "local_time": "08:30",
+        "timezone_text_in_source": null,
+        "convention_timezone": "America/New_York",
+        "convention_utc": "2023-11-01T12:30:00Z",
+        "source_id": "TREASURY_JY1851",
+        "status": "SCHEDULE_NOT_OBSERVED_ACTUAL_RELEASE"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "SCHEDULED_QUARTERLY_REFUNDING",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20240131_COUPON_PLATEAU_GUIDANCE",
+      "episode_date": "2024-01-31",
+      "episode_family": "TREASURY_FINANCING_AND_MARKET_FUNCTION",
+      "actor_ids": [
+        "JOSH_FROST"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2024-02-01T05:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2024-01-31",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-01-31T05:00:00Z",
+          "latest_exclusive": "2024-02-01T05:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_JY2062",
+        "TREASURY_JY2054",
+        "TREASURY_JY1864"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_JY2062",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY2054",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY1864",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_JY2062",
+            "TREASURY_JY2054",
+            "TREASURY_JY1864"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "Treasury plans another quarter of increases but anticipates no further nominal-coupon/FRN increases beyond those announced for several quarters, conditional on projected needs.",
+            "source_id": "TREASURY_JY2062",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY2062",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "explicit_horizon": "February–April 2024; plateau after announced increases",
+            "directional_implication": "Instrument guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional financing/implementation guidance; do not conflate current quarter with future plateau."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Announced $121B refunding and final planned coupon/FRN increase round; 20y remains unchanged. Plateau is future guidance, not a current-quarter supply freeze.",
+            "source_ids": [
+              "TREASURY_JY2062"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "COUPON_AND_FRN_ISSUANCE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "refunding_total_usd": 121000000000,
+              "per_month_2y_and_5y_increase_usd": 3000000000,
+              "per_month_3y_increase_usd": 2000000000,
+              "per_month_7y_increase_usd": 1000000000,
+              "each_10y_increase_usd": 2000000000,
+              "each_30y_increase_usd": 1000000000,
+              "each_20y_increase_usd": 0,
+              "frn_increase_usd": 2000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          },
+          {
+            "description": "Projected April small-value buyback tests and date of first regular operation to be announced at May refunding; not actual regular purchases.",
+            "source_ids": [
+              "TREASURY_JY2062"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "BUYBACK_TEST_AND_LAUNCH_PLAN",
+            "status": "ANNOUNCED_PLAN",
+            "amount": null,
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          }
+        ],
+        "constraints": {
+          "institutional_legal": "Treasury finances the government's obligations; bills/CMBs are explicit adjustment tools. Treasury references fiscal outlook and SOMA redemptions, which it does not control.",
+          "foreign": "Foreign demand may matter mechanically, but no foreign bargaining constraint is proved in this evidence.",
+          "market_functioning": "Cumulative coupon increases framed as enough flexibility; seasonal bill issuance and pre-launch infrastructure tests.",
+          "source_ids": [
+            "TREASURY_JY2062",
+            "TREASURY_JY2054"
+          ],
+          "domestic": "January29 projected Q1 borrowing $760B/Q2 $202B; Q1 $55B below October projection. Cash balances assumed; SOMA runoff and fiscal changes remain relevant.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Use bills/CMBs for seasonal/unexpected financing changes",
+            "feasibility": "Explicitly retained in official refunding guidance.",
+            "considered": "Observed public option; private optimization unobserved."
+          },
+          {
+            "option": "Use a different tenor mix or faster/slower coupon increases",
+            "feasibility": "Stated tenor adjustments and supply/demand assessments show mix choice; counterfactual market capacity is not quantified.",
+            "considered": "No claim that every imaginable mix was internally considered."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Government financing recipients and investors seeking predictable benchmark supply; prospective plateau eases additional duration growth relative to continued increases (inference).",
+          "indirect_beneficiaries": "Intermediaries through future supply planning (inference).",
+          "burden_bearers": "Taxpayers bear financing cost; investors absorb the currently announced increase round.",
+          "selective_relief": "RELATIVE_PROSPECTIVE_SUPPLY_RELIEF — nominal/FRN future plateau differs from continued TIPS increases; no promised yield cap.",
+          "economic_effect": "Future gross-supply increment capped conditionally; current-quarter coupon supply still increases."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Cumulative supply adjustment has reached projected financing needs, permitting a future plateau.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Prior November one-quarter-more guidance and new borrowing projections align with this round.",
+            "evidence_against": "Same behavior can serve additional objectives; stated rationale not private-motive proof.",
+            "assumptions": [
+              "Public operating constraints materially affect choice."
+            ],
+            "falsifiers": [
+              "Repeated further increases without changed borrowing/SOMA constraints would falsify literal plateau expectation, not prove deceit."
+            ],
+            "re_rank_observation": "At-cut deliberation or later implementation inconsistent with this operational explanation."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury limits further duration growth to protect intermediation capacity while retaining bill flexibility.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Duration increment cap has selective supply incidence; inferred strategic interpretation.",
+            "evidence_against": "No direct evidence of concealed price target/coordination; financing and operational reasons remain strong.",
+            "assumptions": [
+              "Some implementation discretion is available.",
+              "Selected benefit is not proof of intended motive."
+            ],
+            "falsifiers": [
+              "Demand/fiscal-rule implementation that explains plateau independently of market moves would weaken price-support hypothesis."
+            ],
+            "re_rank_observation": "Evidence of discretionary deviations specifically tied to a contemporaneous market-price objective."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_WITH_NOVEMBER_ONE_ADDITIONAL_QUARTER_GUIDANCE; HORIZON_SPECIFIC",
+        "uncertainties": [
+          "Plateau applies beyond this announced increase round and excludes TIPS incremental increase guidance.",
+          "No at-cut execution receipt for February–April scheduled auctions.",
+          "No rate-path direction inferred."
+        ],
+        "source_fact_digest": "JY2062:$121B refunding; one more coupon/FRN increase round; no further increases anticipated several quarters; April tests/May first-date guidance. JY2054:Q1$760B/Q2$202B, Q1-$55B; Jan31 08:30 scheduled release."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "scheduled_release_clock": {
+        "date": "2024-01-31",
+        "local_time": "08:30",
+        "timezone_text_in_source": null,
+        "convention_timezone": "America/New_York",
+        "convention_utc": "2024-01-31T13:30:00Z",
+        "source_id": "TREASURY_JY2054",
+        "status": "SCHEDULE_NOT_OBSERVED_ACTUAL_RELEASE"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "SCHEDULED_QUARTERLY_REFUNDING",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20240501_BUYBACK_LAUNCH_PLAN",
+      "episode_date": "2024-05-01",
+      "episode_family": "TREASURY_FINANCING_AND_MARKET_FUNCTION",
+      "actor_ids": [
+        "JOSH_FROST"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2024-05-02T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2024-05-01",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-05-01T04:00:00Z",
+          "latest_exclusive": "2024-05-02T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_JY2315",
+        "TREASURY_JY2304",
+        "TREASURY_TENTATIVE_BUYBACK_Q22024",
+        "TREASURY_JY2062"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_JY2315",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY2304",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY2062",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_JY2315",
+            "TREASURY_JY2304",
+            "TREASURY_TENTATIVE_BUYBACK_Q22024",
+            "TREASURY_JY2062"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "Treasury retains coupon/FRN sizes and announces regular liquidity buybacks intended to start May29; later cash-management buybacks remain conditional.",
+            "source_id": "TREASURY_JY2315",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY2315",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "explicit_horizon": "May–July 2024; first operation intended May29",
+            "directional_implication": "Instrument guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional financing/implementation guidance; do not conflate current quarter with future plateau."
+          }
+        ],
+        "actions": [
+          {
+            "description": "Announced weekly liquidity-support purchases with caps, initially up to20 CUSIPs; this is a scheduled launch, not May29 execution.",
+            "source_ids": [
+              "TREASURY_JY2315"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "TREASURY_LIQUIDITY_BUYBACK",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "max_nominal_per_operation_usd": 2000000000,
+              "max_tips_per_operation_usd": 500000000,
+              "max_cusips_per_operation": 20
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          },
+          {
+            "description": "Tentative first operation scheduled May29 13:40–14:00 ET, settlement May30; minimum $0/maximum $2B.",
+            "source_ids": [
+              "TREASURY_TENTATIVE_BUYBACK_Q22024"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "TENTATIVE_BUYBACK_SCHEDULE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "first_operation_minimum_usd": 0,
+              "first_operation_maximum_usd": 2000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          },
+          {
+            "description": "Scheduled $125B refunding; coupon/FRN increases not anticipated for several quarters.",
+            "source_ids": [
+              "TREASURY_JY2315"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "REFUNDING_SCHEDULE",
+            "status": "ANNOUNCED_PLAN",
+            "amount": {
+              "refunding_total_usd": 125000000000
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": false,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          }
+        ],
+        "constraints": {
+          "source_ids": [
+            "TREASURY_JY2315",
+            "TREASURY_JY2304",
+            "TREASURY_TENTATIVE_BUYBACK_Q22024"
+          ],
+          "domestic": "April29 net borrowing projections Q2$243B/Q3$847B, Q2+$41B versus January; future funding continues through new issuance.",
+          "institutional_legal": "Treasury own debt-management program, not FOMC asset purchases. Buybacks generally replace securities with new issuance, per April29 footnote.",
+          "market_functioning": "Temporary settlement limits cap offers to20 CUSIPs; no cash-management buybacks planned this quarter. Larger previously guided quarterly sizes await infrastructure readiness.",
+          "foreign": "No foreign constraint evidenced.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Continue without regular buybacks/delay operations",
+            "feasibility": "Regular launch only scheduled; alternative still operationally possible.",
+            "considered": "No internal full record."
+          },
+          {
+            "option": "Buy below stated maximum or zero",
+            "feasibility": "Tentative schedule explicitly sets $0 minimum.",
+            "considered": "Explicit permitted operation range."
+          },
+          {
+            "option": "Larger/broader operations later",
+            "feasibility": "Settlement cap limits immediate scope; removal and transition after constraints addressed.",
+            "considered": "Public transition guidance."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Holders/intermediaries of selected eligible nominal/TIPS securities gain optional selling outlet.",
+          "indirect_beneficiaries": "Market users via possible liquidity improvement and government via possible financing efficiency (inference).",
+          "burden_bearers": "Taxpayers bear repurchase/issuance costs; excluded securities receive no direct outlet; new buyers absorb replacement supply.",
+          "selective_relief": "PROSPECTIVE YES — selected buckets/CUSIPs, not broad debt cancellation.",
+          "economic_effect": "Liquidity and instrument exchange; not proof of net debt monetization, reserve injection or policy-rate easing."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Operational readiness permits cautious program launch for regular liquidity support.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Temporary settlement cap, $0 minimum, regular schedule and no cash-management operation this quarter.",
+            "evidence_against": "Same behavior can serve additional objectives; stated rationale not private-motive proof.",
+            "assumptions": [
+              "Public operating constraints materially affect choice."
+            ],
+            "falsifiers": [
+              "Operations divorced from liquidity criteria or repeatedly concentrated outside defined buckets would weaken neutral design explanation."
+            ],
+            "re_rank_observation": "At-cut deliberation or later implementation inconsistent with this operational explanation."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury uses selective purchases to reduce dealer inventory strain while Fed restriction continues.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Selected securities receive a Treasury bid; distribution can relieve intermediation strain.",
+            "evidence_against": "No direct evidence of concealed price target/coordination; financing and operational reasons remain strong.",
+            "assumptions": [
+              "Some implementation discretion is available.",
+              "Selected benefit is not proof of intended motive."
+            ],
+            "falsifiers": [
+              "Regular neutral allocations and continued replacement financing with no directional price objective would weaken covert easing interpretation."
+            ],
+            "re_rank_observation": "Evidence of discretionary deviations specifically tied to a contemporaneous market-price objective."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_WITH_PRIOR_LAUNCH_GUIDANCE_AS_PLAN; FLOW_NOT_YET_EXECUTED",
+        "uncertainties": [
+          "Do not mark May29 buyback executed at May1 cut.",
+          "$2B is maximum nominal per-operation amount; no guarantee of full purchase.",
+          "No pre-event consensus or price response reconstructed."
+        ],
+        "source_fact_digest": "JY2315:$125B refunding; coupon/FRN plateau; weekly buybacks cap$2B nominal/$500M TIPS;20CUSIPs temporary; no cash management. Schedule:May29 13:40–14ET,$0–$2B,May30 settlement. JY2304:Q2$243B/Q3$847B; replacement issuance means net borrowing little changed."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "scheduled_release_clock": {
+        "date": "2024-05-01",
+        "local_time": "08:30",
+        "timezone_text_in_source": null,
+        "convention_timezone": "America/New_York",
+        "convention_utc": "2024-05-01T12:30:00Z",
+        "source_id": "TREASURY_JY2304",
+        "status": "SCHEDULE_NOT_OBSERVED_ACTUAL_RELEASE"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "SCHEDULED_QUARTERLY_REFUNDING",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    },
+    {
+      "episode_id": "US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS",
+      "episode_date": "2024-05-29",
+      "episode_family": "TREASURY_BUYBACK_EXECUTED_ALLOCATION",
+      "actor_ids": [
+        "US_TREASURY_AUCTIONS"
+      ],
+      "institution_ids": [
+        "US_TREASURY"
+      ],
+      "decision_cut_utc": "2024-05-30T04:00:00Z",
+      "decision_cut_timezone": "America/New_York",
+      "event_time_precision": "DATE_ONLY",
+      "first_public_evidence_utc": null,
+      "first_public_evidence_clock": {
+        "publication_date": "2024-05-29",
+        "precision": "DATE_ONLY",
+        "timezone": "America/New_York",
+        "publication_utc": null,
+        "public_time_interval_utc": {
+          "earliest": "2024-05-29T04:00:00Z",
+          "latest_exclusive": "2024-05-30T04:00:00Z"
+        },
+        "release_time_observed": false
+      },
+      "pit_certified": true,
+      "pit_certification_basis": "Original historical official document with stated contemporary date, conservative cut after date interval; archive-byte identity not established.",
+      "source_ids": [
+        "TREASURY_BBR_20240529174000",
+        "TREASURY_JY2315",
+        "TREASURY_JY2304",
+        "TREASURY_TENTATIVE_BUYBACK_Q22024"
+      ],
+      "source_admission": [
+        {
+          "source_id": "TREASURY_BBR_20240529174000",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY2315",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_JY2304",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        },
+        {
+          "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+          "public_before_decision_cut": true,
+          "admission_basis": "Original contemporary document date interval ends no later than cut."
+        }
+      ],
+      "decision_time": {
+        "directional_assessment": {
+          "model_outputs_owner": "ROOT_FROZEN_BASELINE_SCORER",
+          "no_helper_probabilities": true,
+          "clean_directional_implication_by_target": [
+            {
+              "target": "FED_POLICY_RATE_DIRECTION",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Treasury financing/liquidity operations do not establish FOMC target-rate direction."
+            },
+            {
+              "target": "US_2Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "No pre-cut expectations/demand decomposition; supply and liquidity channels cannot fix total yield sign."
+            },
+            {
+              "target": "US_10Y_YIELD",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "A conditional duration/term-premium channel is not a forecast of total yield direction."
+            },
+            {
+              "target": "DXY",
+              "horizons": [
+                "1m",
+                "3m",
+                "6m"
+              ],
+              "clean_direction": false,
+              "recommendation": "ABSTAIN",
+              "reason": "Relative rate, risk and growth effects compete; no clean dollar sign."
+            }
+          ],
+          "missing_market_controls": [
+            "Pre-event pricing/consensus",
+            "Contemporaneous 2y/10y/DXY data",
+            "Calendar-matched event window"
+          ],
+          "allowed_non_market_prediction": "Announced financing/buyback implementation is separately observable; root owns scorer.",
+          "exact_inputs_used": [
+            "TREASURY_BBR_20240529174000",
+            "TREASURY_JY2315",
+            "TREASURY_JY2304",
+            "TREASURY_TENTATIVE_BUYBACK_Q22024"
+          ],
+          "confidence_or_probability": null,
+          "probability_reason": "No helper probability invented; root freezes baseline scorer."
+        },
+        "rhetoric": [
+          {
+            "paraphrase": "May1 operational guidance promised scheduled liquidity-support buybacks with temporary security cap; May29 release reports allocations, not a new macroeconomic forecast.",
+            "source_id": "TREASURY_JY2315",
+            "actor": "JOSH_FROST",
+            "timestamp_clock_source": "TREASURY_JY2315",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "explicit_horizon": "May–July 2024",
+            "directional_implication": "Instrument guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional financing/implementation guidance; do not conflate current quarter with future plateau."
+          },
+          {
+            "paraphrase": "Treasury publishes accepted offers and security-specific prices in the operation results.",
+            "source_id": "TREASURY_BBR_20240529174000",
+            "actor": "US_TREASURY_AUCTIONS",
+            "timestamp_clock_source": "TREASURY_BBR_20240529174000",
+            "statement_type": "OTHER",
+            "explicit_horizon": "Operation May29; settlement scheduled May30",
+            "directional_implication": "Instrument guidance only; no clean absolute Fed-rate/2y/10y/DXY sign.",
+            "ambiguity": "Conditional financing/implementation guidance; do not conflate current quarter with future plateau."
+          }
+        ],
+        "actions": [
+          {
+            "description": "RESULTS proves an operation and accepted allocations, distinct from announcement: $2B PAR across9 of20 eligible issues from $16.524B par offers; settlement remains next-day scheduled.",
+            "source_ids": [
+              "TREASURY_BBR_20240529174000"
+            ],
+            "action_type": "DEBT_MANAGEMENT",
+            "instrument": "TREASURY_LIQUIDITY_BUYBACK",
+            "status": "EXECUTED_ALLOCATION",
+            "amount": {
+              "total_par_offered_usd": 16524000000,
+              "total_par_accepted_usd": 2000000000,
+              "issues_eligible": 20,
+              "issues_accepted": 9,
+              "maturity_date_range": [
+                "2024-05-31",
+                "2026-05-15"
+              ],
+              "operation_date": "2024-05-29",
+              "settlement_date_scheduled": "2024-05-30",
+              "largest_accepted_cusip": "91282CAB7",
+              "largest_accepted_par_usd": 1965000000,
+              "largest_accepted_weighted_price_per100": 94.461
+            },
+            "legal_institutional_owner": "US_TREASURY",
+            "reversibility": "Future settings reversible; accepted allocations carry settlement obligations.",
+            "executed_flow_receipt": true,
+            "mechanical_transmission": "Changes financing mix or selected-security liquidity. Net borrowing, reserve creation, and total yields are distinct."
+          }
+        ],
+        "constraints": {
+          "source_ids": [
+            "TREASURY_BBR_20240529174000",
+            "TREASURY_JY2315",
+            "TREASURY_JY2304",
+            "TREASURY_TENTATIVE_BUYBACK_Q22024"
+          ],
+          "domestic": "Financing continues with new issuance; gross buybacks do not by themselves shrink net debt.",
+          "institutional_legal": "Treasury issuer repurchase, not a FOMC policy action; settlement is May30 and no completed settlement receipt at pre-May30 cut.",
+          "market_functioning": "20 eligible issues and$2B max; 1mo–2y scheduled bucket. Offers exceed accepted par. Prices below100 mean par accepted is not identical to cash purchase value.",
+          "foreign": "No foreign constraint evidenced.",
+          "private_deliberations": "UNOBSERVED unless explicitly identified as public guidance/request; hypotheses do not establish motive."
+        },
+        "alternatives": [
+          {
+            "option": "Accept less than cap or nothing",
+            "feasibility": "May1 schedule minimum$0/max$2B; full cap used in results.",
+            "considered": "Permitted publicly; no internal alternatives record."
+          },
+          {
+            "option": "Accept a different subset of eligible securities",
+            "feasibility": "20 eligible/9 accepted; allocation rules and counterfactual relative value require further at-cut originals.",
+            "considered": "Unknown; do not infer discriminatory intent from allocation alone."
+          },
+          {
+            "option": "Increase size or eligible set",
+            "feasibility": "Current announced cap/settlement constraints limit immediately feasible expansion.",
+            "considered": "Future expansion guidance only."
+          }
+        ],
+        "strategic_distribution": {
+          "direct_beneficiaries": "Sellers of9 accepted issues receive purchase commitments; 91282CAB7 accounts for98.25% of accepted par (arithmetic inference). No seller identities proved.",
+          "indirect_beneficiaries": "Potential liquidity/financing efficiency beneficiaries (inference; actual effect unmeasured).",
+          "burden_bearers": "Taxpayers fund purchase and replacement issuance; holders of11 unaccepted eligible issues receive no accepted sale in this operation.",
+          "selective_relief": "YES_AT_SECURITY_LEVEL — accepted versus unaccepted issues; identities/motives unavailable.",
+          "economic_effect": "Executed allocation supplies a selling outlet. $2B par does not establish $2B cash injection or reserve creation; net issuance replacement and funding matter."
+        },
+        "competing_hypotheses": [
+          {
+            "hypothesis_id": "H_INSTITUTIONAL",
+            "claim": "Competitive allocation under cautious liquidity-support design explains first full-cap operation and issue concentration.",
+            "claim_status": "COMPETING_UNRESOLVED",
+            "evidence_for": "Executed results match announced cap/eligible count; operation proceeds under documented settlement limitation.",
+            "evidence_against": "Same behavior can serve additional objectives; stated rationale not private-motive proof.",
+            "assumptions": [
+              "Public operating constraints materially affect choice."
+            ],
+            "falsifiers": [
+              "Contemporaneous allocation documents showing purchases unrelated to stated liquidity/relative-value criteria would weaken institutional account."
+            ],
+            "re_rank_observation": "At-cut deliberation or later implementation inconsistent with this operational explanation."
+          },
+          {
+            "hypothesis_id": "H_STRATEGIC",
+            "claim": "Treasury's operation deliberately relieves inventory strain in particular issues; broader market easing intent remains unproved.",
+            "claim_status": "COMPETING_UNRESOLVED_INFERENCE",
+            "evidence_for": "Highly concentrated accepted par creates a selective security-level benefit; concentration alone does not identify why.",
+            "evidence_against": "No direct evidence of concealed price target/coordination; financing and operational reasons remain strong.",
+            "assumptions": [
+              "Some implementation discretion is available.",
+              "Selected benefit is not proof of intended motive."
+            ],
+            "falsifiers": [
+              "Demonstrating that neutral offer quality fully explains concentration and non-targeted subsequent rule application would weaken selective-motive inference."
+            ],
+            "re_rank_observation": "Evidence of discretionary deviations specifically tied to a contemporaneous market-price objective."
+          }
+        ],
+        "rhetoric_action_relation": "ALIGNED_FOR_SCHEDULED_OPERATION; SETTLEMENT_COMPLETION_NOT_PROVED",
+        "uncertainties": [
+          "Publication clock is date-only. Operation17:40GMT from filename is not release time.",
+          "Results accepted allocations are execution evidence; do not label May30 settlement complete at midnight cut.",
+          "May1 tentative maturity endpoints differ from final results; use final result range as actual eligible record.",
+          "No counterparty identities, quote-by-quote offers, or contemporaneous allocation algorithm original reconstructed; private motive unresolved."
+        ],
+        "source_fact_digest": "May29 original results:$16.524B par offered/$2B accepted;20eligible/9accepted;May30 settlement;rangeMay31 2024–May15 2026;CUSIP91282CAB7 $1.965B at94.461. Screenshot verifies table alignment. Prior schedule allowed$0–$2B and20eligible."
+      },
+      "outcomes": {
+        "status": "NOT_LABELED_BY_HELPER"
+      },
+      "operation_clock": {
+        "start_local": "2024-05-29T13:40:00-04:00",
+        "end_local": "2024-05-29T14:00:00-04:00",
+        "start_utc": "2024-05-29T17:40:00Z",
+        "end_utc": "2024-05-29T18:00:00Z",
+        "precision": "MINUTE",
+        "source_id": "TREASURY_TENTATIVE_BUYBACK_Q22024",
+        "status": "PUBLIC_SCHEDULE; RESULT_FILENAME_MATCHES_START; NOT_PUBLICATION_CLOCK"
+      },
+      "calendar_controls": {
+        "scheduled_vs_discretionary": "PREANNOUNCED_BUYBACK_OPERATION",
+        "common_day_market_attribution": "Not evaluated. Overnight conservative cuts require controls for other same-day releases before market attribution.",
+        "pre_event_expectations": "Not reconstructed by bounded helper."
+      }
+    }
+  ],
+  "outcome_labels_created": 0,
+  "probabilities_created": 0
+}
