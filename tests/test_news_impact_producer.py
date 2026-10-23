@@ -437,3 +437,166 @@ def test_run_case_filter_and_cli(corpus, tmp_path, capsys):
 def test_output_directory_is_required():
     with pytest.raises(SystemExit):
         pr.main(["--bundles", "b", "--labels", "l"])
+
+
+# ---------------------------------------------------------------------------
+# Stage-one I/O integrity, containment and fail-closed publication
+# ---------------------------------------------------------------------------
+
+
+def test_malformed_bundle_is_counted_as_rejected_with_bound_report(tmp_path):
+    bundles, labels, out = tmp_path / "bundles", tmp_path / "labels", tmp_path / "out"
+    case = bundles / "case_corrupt"
+    case.mkdir(parents=True)
+    labels.mkdir()
+    (case / "bundle.json").write_text('{"invalid"')
+    (case / "source.txt").write_bytes(SOURCE)
+    report = pr.run(bundles, labels, out)
+    assert report["n_cases"] == 1
+    assert report["rejected"] == {"bundle_json_malformed": 1}
+    verified, rows = pr.read_verified_output(out)
+    assert verified == report and rows == ()
+
+
+def test_malformed_label_is_counted_without_truncating_prior_report(tmp_path):
+    bundles, labels, out = tmp_path / "bundles", tmp_path / "labels", tmp_path / "out"
+    write_case(bundles, make_bundle())
+    write_labels(labels, "case_synth_1", pr.FAMILIES)
+    good = pr.run(bundles, labels, out)
+    (labels / "case_synth_1.fam_a.json").write_text('{"bad"')
+    report = pr.run(bundles, labels, out)
+    assert good["n_emitted"] == 1 and report["n_emitted"] == 0
+    assert report["rejected"] == {"label_json_malformed": 1}
+    assert pr.read_verified_output(out)[0] == report
+
+
+def test_unexpected_build_failure_retains_last_published_pair(corpus, tmp_path, monkeypatch):
+    bundles, labels = corpus
+    out = tmp_path / "out"
+    good = pr.run(bundles, labels, out)
+    before = ((out / "events.jsonl").read_bytes(), (out / "events_report.json").read_bytes())
+    def fail(*args, **kwargs):
+        raise RuntimeError("synthetic unexpected failure")
+    monkeypatch.setattr(pr, "produce_case", fail)
+    with pytest.raises(RuntimeError, match="synthetic unexpected failure"):
+        pr.run(bundles, labels, out)
+    assert before == ((out / "events.jsonl").read_bytes(), (out / "events_report.json").read_bytes())
+    assert pr.read_verified_output(out)[0] == good
+    assert not list(out.glob(".events.staging.*"))
+
+
+def test_missing_explicit_case_ids_fail_without_altering_prior_output(corpus, tmp_path):
+    bundles, labels = corpus
+    out = tmp_path / "out"
+    pr.run(bundles, labels, out)
+    before = ((out / "events.jsonl").read_bytes(), (out / "events_report.json").read_bytes())
+    with pytest.raises(pr.ProducerInputError, match="requested_cases_missing"):
+        pr.run(bundles, labels, out, cases=["case_synth_1", "case_missing"])
+    with pytest.raises(pr.ProducerInputError, match="requested_cases_empty"):
+        pr.run(bundles, labels, out, cases=[])
+    with pytest.raises(pr.ProducerInputError, match="requested_cases_duplicate"):
+        pr.run(bundles, labels, out, cases=["case_synth_1", "case_synth_1"])
+    assert before == ((out / "events.jsonl").read_bytes(), (out / "events_report.json").read_bytes())
+
+
+def test_label_path_traversal_refused_before_file_read(tmp_path):
+    labels = tmp_path / "labels"
+    labels.mkdir()
+    (tmp_path / "outside.fam_a.json").write_text('{"synthetic_canary":true}')
+    with pytest.raises(pr.ProducerInputError, match="case_id_invalid"):
+        pr._load_family(labels, "../outside", "fam_a")
+
+
+def test_label_symlink_escape_and_bundle_mismatch_fail_closed(tmp_path):
+    bundles, labels, out = tmp_path / "bundles", tmp_path / "labels", tmp_path / "out"
+    write_case(bundles, make_bundle("case_one"))
+    labels.mkdir()
+    outside = tmp_path / "outside.fam_a.json"
+    outside.write_text(json.dumps(make_return("fam_a", t1_fields(), "case_one")))
+    (labels / "case_one.fam_a.json").symlink_to(outside)
+    report = pr.run(bundles, labels, out)
+    assert report["rejected"] == {"label_path_outside_root": 1}
+    assert pr.read_verified_output(out)[0] == report
+    (labels / "case_one.fam_a.json").unlink()
+    (bundles / "case_one" / "bundle.json").write_text(json.dumps(make_bundle("../outside")))
+    report = pr.run(bundles, labels, out)
+    assert report["rejected"] == {"case_id_invalid": 1}
+
+
+def test_stale_digest_and_mismatched_report_are_never_verified(corpus, tmp_path):
+    bundles, labels = corpus
+    out = tmp_path / "out"
+    pr.run(bundles, labels, out)
+    report_file = out / "events_report.json"
+    report = json.loads(report_file.read_text())
+    report["n_cases"] += 1
+    report_file.write_text(json.dumps(report))
+    with pytest.raises(pr.ProducerInputError, match="output_generation_unverified"):
+        pr.read_verified_output(out)
+    pr.run(bundles, labels, out)
+    with (out / "events.jsonl").open("a") as fh:
+        fh.write("{}\n")
+    with pytest.raises(pr.ProducerInputError, match="output_generation_unverified"):
+        pr.read_verified_output(out)
+
+
+def test_shadow_diagnostics_cannot_be_loaded_as_adjudicated(corpus, tmp_path):
+    bundles, labels = corpus
+    out = tmp_path / "out"
+    pr.run(bundles, labels, out, shadow_family="fam_a")
+    report, rows = pr.read_verified_output(out, shadow_family="fam_a")
+    assert report["mode"] == "shadow:fam_a" and all(row["shadow"] for row in rows)
+    with pytest.raises(pr.ProducerInputError, match="output_generation_unverified"):
+        pr.read_verified_output(out)
+
+
+def test_crash_between_pair_publications_cannot_appear_verified(corpus, tmp_path, monkeypatch):
+    bundles, labels = corpus
+    out = tmp_path / "out"
+    prior = pr.run(bundles, labels, out)
+    original = pr.os.replace
+    calls = []
+    def interrupt_second_replace(src, dst):
+        calls.append(str(dst))
+        if len(calls) == 2:
+            raise OSError("synthetic publication interruption")
+        return original(src, dst)
+    monkeypatch.setattr(pr.os, "replace", interrupt_second_replace)
+    with pytest.raises(OSError, match="synthetic publication interruption"):
+        pr.run(bundles, labels, out, cases=["case_synth_2"])
+    assert len(calls) == 2 and prior["n_cases"] == 3
+    with pytest.raises(pr.ProducerInputError, match="output_generation_unverified"):
+        pr.read_verified_output(out)
+    assert not list(out.glob(".events.staging.*"))
+
+
+def test_bundle_symlink_and_directory_symlink_are_counted_not_followed(tmp_path):
+    bundles, labels, out = tmp_path / "bundles", tmp_path / "labels", tmp_path / "out"
+    write_case(bundles, make_bundle("case_one"))
+    labels.mkdir()
+    outside = tmp_path / "outside.json"
+    outside.write_text(json.dumps(make_bundle("case_one")))
+    (bundles / "case_one" / "bundle.json").unlink()
+    (bundles / "case_one" / "bundle.json").symlink_to(outside)
+    report = pr.run(bundles, labels, out)
+    assert report["rejected"] == {"bundle_read_failed": 1}
+    assert pr.read_verified_output(out)[0] == report
+    external = tmp_path / "external_dir"
+    external.mkdir()
+    (bundles / "case_two").symlink_to(external, target_is_directory=True)
+    report = pr.run(bundles, labels, out)
+    assert report["rejected"] == {"bundle_read_failed": 1, "case_path_outside_root": 1}
+    assert pr.read_verified_output(out)[0] == report
+
+
+def test_missing_bundle_keys_are_counted_as_rejected(tmp_path):
+    bundles, labels, out = tmp_path / "bundles", tmp_path / "labels", tmp_path / "out"
+    case = bundles / "case_incomplete"
+    case.mkdir(parents=True)
+    labels.mkdir()
+    (case / "bundle.json").write_text(json.dumps({"case_id": "case_incomplete"}))
+    (case / "source.txt").write_bytes(SOURCE)
+    report = pr.run(bundles, labels, out)
+    assert report["n_cases"] == 1
+    assert report["rejected"] == {"bundle_fields_missing": 1}
+    assert pr.read_verified_output(out)[0] == report
