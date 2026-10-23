@@ -481,6 +481,29 @@ class Decision:
     lang: str = "en"
 
 
+def _parse_not_after(value) -> datetime | None:
+    """One RFC3339 UTC instant (``YYYY-MM-DDTHH:MM:SS[.ffffff]Z`` or the
+    ``+00:00`` spelling) -> a tz-aware UTC datetime; anything else -> None.
+
+    This is the B21 stale-mandatory-fact bound (contract §5 item 2, F34 N-B);
+    the producer writes it verbatim from the calendar row. A naive stamp, a
+    non-UTC offset, an empty or non-string value is no instant this drain can
+    bind a row to, so it fails closed here and decide_row can type the row
+    unparsable instead of guessing a bound."""
+    if not isinstance(value, str):
+        return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    if not text.endswith("+00:00"):
+        return None  # naive stamps and non-UTC offsets are no UTC instant
+    _, t_sep, clock = text[:-6].partition("T")
+    if not t_sep or len(clock) < 8:  # date must carry a full HH:MM:SS clock
+        return None
+    try:
+        return datetime.fromisoformat(text)
+    except ValueError:
+        return None
+
+
 def decide_row(row: dict, *, user_state: str, record: dict | None,
               ent: TypedRead, suppression: TypedRead, now_utc: datetime) -> Decision:
     if user_state != READ_OK or record is None:
@@ -518,6 +541,14 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     if ent_decision == "suppress":
         return Decision(action="suppress", reason="entitlement_lapsed", to_email=to_email, lang=prefs.lang)
+    not_after_raw = payload.get("not_after") if isinstance(payload, dict) else None
+    if not_after_raw is not None:
+        bound = _parse_not_after(not_after_raw)
+        if bound is None:
+            return Decision(action="unevaluable", reason="not_after_unparsable")
+        if now_utc >= bound:
+            return Decision(action="suppress", reason="mandatory_fact_stale",
+                            to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
         # surface it as unevaluable (typed, counted, visible in the run receipt).

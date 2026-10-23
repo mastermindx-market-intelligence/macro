@@ -1175,3 +1175,113 @@ def test_docstring_declares_trigger_cadence_and_latency_budget():
     assert "5 minutes" in doc
     assert "15 minutes" in doc
     assert "off the render path" in doc.lower() or "off-render" in doc.lower()
+
+
+# --------------------------------------------------------------------------- #
+# B21 stale-mandatory-fact guard (contract §5 item 2, F34 N-B): a row minted
+# fresh and deferred past its session end must never be SENT with an older
+# value. not_after is the session END instant, so equality is already stale --
+# the same boundary the producer's `<=` enforces at mint.
+# --------------------------------------------------------------------------- #
+def _b21_row(not_after):
+    """The existing B21-shaped payload plus the stale bound, or minus it."""
+    payload = dict(_row()["payload"])
+    if not_after is not None:
+        payload["not_after"] = not_after
+    return _row(payload=payload)
+
+
+def _decide(row, *, now=None, ent=None):
+    return drain.decide_row(
+        row, user_state=drain.READ_OK,
+        record={"email": "u@example.com", "user_metadata": dict(OPTED_IN_USER["user_metadata"])},
+        ent=ent if ent is not None else drain.TypedRead(drain.READ_OK_ZERO, []),
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []),
+        now_utc=now if now is not None else _now())
+
+
+def test_decide_row_suppresses_stale_mandatory_fact():
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"),
+                       now=_now("2026-09-05T14:30:01+00:00"))
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+    assert decision.to_email == "u@example.com"
+    assert decision.lang == "en"
+
+
+def test_decide_row_not_after_equal_to_now_is_stale():
+    """Equality is stale: not_after is the session END instant (F34 N-B), the
+    same boundary the producer's `<=` enforces at mint."""
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"),
+                       now=_now("2026-09-05T14:30:00+00:00"))
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+
+
+def test_decide_row_future_not_after_falls_through():
+    decision = _decide(_b21_row("2026-09-05T15:00:01Z"),
+                       now=_now("2026-09-05T15:00:00+00:00"))
+    assert decision.action == "send"
+    assert decision.reason == "ok"
+
+
+def test_decide_row_without_not_after_is_unchanged():
+    """Absent key => no change in behaviour for that row (fif rows carry none)."""
+    with_bound = _decide(_b21_row("2026-10-22T20:00:00Z"))
+    without_key = _decide(_b21_row(None))
+    assert without_key == with_bound
+    assert (without_key.action, without_key.reason) == ("send", "ok")
+
+
+@pytest.mark.parametrize(
+    "bad",
+    ["2026-09-05T14:30:00",            # naive: no offset, no Z
+     "2026-09-05T14:30:00+08:00",      # non-UTC offset
+     1757097600,                       # non-string
+     ""],                              # empty
+)
+def test_decide_row_unparsable_not_after_is_unevaluable(bad):
+    decision = _decide(_b21_row(bad))
+    assert decision.action == "unevaluable"
+    assert decision.reason == "not_after_unparsable"
+
+
+def test_stale_check_precedes_quiet_hours_defer():
+    """A stale row inside quiet hours is suppressed, never deferred: the bound
+    check runs after entitlement and before the quiet-hours branch."""
+    meta = dict(OPTED_IN_USER["user_metadata"], tz="UTC", quiet_hours="14:00-16:00")
+    decision = drain.decide_row(
+        _b21_row("2026-09-05T14:30:00Z"), user_state=drain.READ_OK,
+        record={"email": "u@example.com", "user_metadata": meta},
+        ent=drain.TypedRead(drain.READ_OK_ZERO, []),
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []), now_utc=_now())
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+    assert decision.deliver_after is None
+
+
+def test_stale_check_runs_after_entitlement():
+    ent = drain.TypedRead(drain.READ_OK, [{"tier": "pro", "status": "canceled",
+                                           "current_period_end": None}])
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"), ent=ent)
+    assert decision.action == "suppress"
+    assert decision.reason == "entitlement_lapsed"
+
+
+def test_run_marks_stale_row_suppressed_with_typed_last_error(monkeypatch):
+    """Through the run loop: the incumbent typed-suppress path, verbatim -- no
+    SMTP call, counted in suppressed_n, out of the selection predicate."""
+    row = _b21_row("2026-09-05T14:30:00Z")
+    fake = FakeTables(outbox=[row])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.suppressed_n == 1
+    assert result.fired_n == 0
+    assert fake.patches == [(row["id"], {"status": "suppressed",
+                                         "last_error": "mandatory_fact_stale"})]
+    assert fake.outbox[0]["status"] == "suppressed"
