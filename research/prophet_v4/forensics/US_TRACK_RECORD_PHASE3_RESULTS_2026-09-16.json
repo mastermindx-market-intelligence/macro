@@ -1,0 +1,98 @@
+{
+  "kind": "research_result_not_production_authority",
+  "source_commit": "cf28b6bcb8e77b7143ab618e5780f90221b25001",
+  "protocol_sha256": "9da112e1879f9db58662c405246ed608d2048d45aa681f00b659db71690657be",
+  "coverage": {
+    "screenshot_mature_episodes": 843,
+    "frozen_boards": 38,
+    "checked_admission_field_disagreements": 0,
+    "unique_tickers": 642,
+    "selected_ohlc_tickers": 503,
+    "selected_ohlc_episode_coverage": 659,
+    "primary_reconciled_episodes": 413,
+    "basis_or_return_mismatch_episodes": 246,
+    "missing_selected_ohlc_episodes": 184,
+    "primary_admission_dates": 29,
+    "primary_tickers": 324,
+    "representative_of_full_cohort": "not_established",
+    "certified_forward": false
+  },
+  "primary": {
+    "reference": {
+      "win_pct": 45.036319612590795,
+      "mean_gross_pct": -0.511903483550926,
+      "median_gross_pct": -0.6713924235785318,
+      "profit_factor": 0.8412460087324138,
+      "losses_le_minus10": 44,
+      "winners_ge10": 25,
+      "worst_pct": -27.72331145630842,
+      "net_mean_pct_5bps_per_side": -0.6113418608787,
+      "net_mean_pct_10bps_per_side": -0.7106808991681959
+    },
+    "recorded_stop": {
+      "win_pct": 41.64648910411623,
+      "mean_gross_pct": -0.30995595543854865,
+      "median_gross_pct": -1.013940023312443,
+      "profit_factor": 0.8932513402134042,
+      "losses_le_minus10": 30,
+      "winners_ge10": 25,
+      "worst_pct": -24.142160631162003,
+      "net_mean_pct_5bps_per_side": -0.4095961793711322,
+      "net_mean_pct_10bps_per_side": -0.5091368626204789
+    },
+    "mean_paired_change_pp": 0.20194752811237726,
+    "triggered": 110,
+    "gap_open_fills": 16,
+    "invalid_or_missing_stops_left_unchanged": 6,
+    "stopped_reference_winners": 14,
+    "same_large_winner_identities_preserved": true
+  },
+  "time_slices": {
+    "through_aug7": {"n":206,"reference_mean_pct":2.09579987984535,"stop_mean_pct":2.1718160696331292,"big_losses_before":15,"big_losses_after":7},
+    "aug12_onward": {"n":207,"reference_mean_pct":-3.1070092461578485,"stop_mean_pct":-2.779738743674132,"big_losses_before":29,"big_losses_after":23},
+    "v3": {"n":137,"reference_mean_pct":-2.5065630962519374,"stop_mean_pct":-2.0409621418746546,"big_losses_before":13,"big_losses_after":8}
+  },
+  "issuer_sensitivity": {
+    "pcg_share_net_improvement": 0.7525188090094316,
+    "without_pcg": {"n":409,"mean_change_pp":0.050466999271427976},
+    "without_pcg_eix": {"n":408,"mean_change_pp":0.044817007146136754,"reference_mean_pct":-0.2619086913978452,"stop_mean_pct":-0.21709168425170797,"big_losses_before":40,"big_losses_after":29},
+    "without_mrna_pcg_eix": {"n":406,"mean_change_pp":0.04503778058035416}
+  },
+  "entry_reach_not_fill_proof": {
+    "known_bands":402,
+    "close_above_band":288,
+    "close_above_but_limit_reachable":95,
+    "large_reference_winners_in_that_group":6,
+    "same_bar_limit_stop_ambiguity":10,
+    "within_chase_close_subset": {"n":224,"reference_mean_pct":-0.8142055789467099,"stop_mean_pct":-0.693727947636745},
+    "mrna_aug10": {"original_zone_low":56.01,"original_zone_high":58.8,"chase_ceiling":59.17,"recorded_stop":53.86,"open":59.75,"low":58.40999984741211,"close":59.810001373291016,"limit_reachable":true,"same_bar_low_below_stop":false}
+  },
+  "verification": {
+    "synthetic_stop_cost_checks_passed":7,
+    "actual_replay_invariants_passed":7,
+    "production_suite_run":false,
+    "independent_review_complete":false,
+    "capital_tests_run":false,
+    "capital_replay_run":false,
+    "capital_status":"PLATFORM_BLOCKED before tests or replay returned results"
+  },
+  "production_changed":false,
+  "strategy_accepted":false,
+  "worker_dispatched":false,
+  "own_research_process": {"pid":89745,"terminal_exit_code":0},
+  "local_full_archive": {
+    "path":"/Volumes/Mastermind/Mastermind/research/us-prophet-track-audit-20260916/US_Prophet_Phase3_Research_20260916.zip",
+    "bytes":1399999,
+    "sha256":"287a923df1d0bcc875b4c01cb074acc31afa4ab26626dbe37ce86062b9d147ce"
+  },
+  "limitations":[
+    "Only413 of843 episodes passed the strict primary source/basis gate; no representativeness claim",
+    "No automatic price or risk-geometry rescaling",
+    "Known reconstruction and publication uncertainty remain",
+    "Incumbent exit conventions retained rather than independently certified executable",
+    "Daily-bar stop fills and fixed costs are modeling assumptions",
+    "Repeated issuers and overlapping dates are not independent samples",
+    "No full funded portfolio, alternate-entry performance, causal superiority or statistical-significance claim",
+    "Denied commands must not be rerouted through another actor or tool"
+  ]
+}
