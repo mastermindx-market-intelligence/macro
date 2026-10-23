@@ -222,3 +222,34 @@ def test_mixed_source_sessions_are_refused_before_any_producer_or_protected_io()
     with pytest.raises(capture.ProducerCaptureRefused, match="capture_intent_invalid"):
         run(h)
     assert not h.reads and not h.s3.log
+
+
+def test_lightweight_fixed_file_entry_refuses_before_io(tmp_path, monkeypatch):
+    import builtins
+    original_import = builtins.__import__
+    def no_nightly_import(name, *args, **kwargs):
+        if name == "scripts.build_options_hub_nightly":
+            raise AssertionError("private ingress must not import the nightly builder")
+        return original_import(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, "__import__", no_nightly_import)
+    h = world()
+    with pytest.raises(capture.ProducerCaptureRefused, match="capture_binding_unavailable"):
+        capture.capture_built_scenario_sources(h.descriptor_owner, h.viewer,
+            operation_id=OP, out_dir=tmp_path / "absent")
+    assert not h.reads and not h.s3.log
+
+
+def test_nightly_capture_entry_delegates_to_lightweight_fixed_file_seam(tmp_path, monkeypatch):
+    from scripts import build_options_hub_nightly as builder
+    h = world()
+    calls = []
+    sentinel = object()
+    def shared(descriptor, viewer, **kwargs):
+        calls.append((descriptor, viewer, kwargs))
+        return sentinel
+    monkeypatch.setattr(capture, "capture_built_scenario_sources", shared, raising=False)
+    assert builder.capture_built_scenario_sources(h.descriptor_owner, h.viewer,
+        operation_id=OP, out_dir=tmp_path) is sentinel
+    assert calls == [(h.descriptor_owner, h.viewer, dict(operation_id=OP,
+        out_dir=tmp_path, s3=None, bucket=None, destination=None,
+        source_save_decision=None, retention_decision=None, current_viewer=None, clock=None))]

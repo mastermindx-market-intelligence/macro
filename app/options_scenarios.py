@@ -1077,9 +1077,8 @@ def _capture_mode(bindings, access_token, principal, investigation_id, revision,
     descriptor = _descriptor(capture, investigation_id, revision, None)
     viewer = _native.ViewerIdentity(principal.principal_id,
                                     principal.principal_issuer, principal.auth_epoch)
-    from scripts.build_options_hub_nightly import capture_built_scenario_sources
     try:
-        capture_built_scenario_sources(descriptor, viewer, operation_id=operation_id,
+        _producer.capture_built_scenario_sources(descriptor, viewer, operation_id=operation_id,
             out_dir=bindings.producer_out_dir, s3=bindings.s3, bucket=bindings.bucket,
             destination=bindings.destination, source_save_decision=bindings.source_save_decision,
             retention_decision=bindings.retention_decision,

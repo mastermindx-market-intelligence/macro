@@ -322,36 +322,9 @@ def capture_built_scenario_sources(descriptor, viewer, *, operation_id: str,
     checks exact expected identities before retention and emits metadata only;
     it does not verify native TS scenario math or apply a canonical save.
     """
-    import os
-    import stat
-    from engine.options_scenario_capture import capture_producer_sources
-
-    def producer_read(kind):
-        ref = descriptor.gex if kind == "gex" else descriptor.moves if kind == "moves" else None
-        if ref is None:
-            raise ValueError("source kind unavailable")
-        # Hold directory descriptors and refuse symlink/FIFO source leaves. The
-        # root and expected length have already passed native descriptor checks.
-        with_fd = os.open(out_dir, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-        kind_fd = file_fd = None
-        try:
-            kind_fd = os.open(kind, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=with_fd)
-            file_fd = os.open(f"{descriptor.root}.json", os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=kind_fd)
-            info = os.fstat(file_fd)
-            if not stat.S_ISREG(info.st_mode) or info.st_size != ref.byte_length:
-                raise ValueError("producer source changed")
-            with os.fdopen(file_fd, "rb") as handle:
-                file_fd = None
-                return handle.read(ref.byte_length + 1)
-        finally:
-            if file_fd is not None:
-                os.close(file_fd)
-            if kind_fd is not None:
-                os.close(kind_fd)
-            os.close(with_fd)
-
-    return capture_producer_sources(descriptor, viewer, operation_id=operation_id,
-        producer_read=producer_read, s3=s3, bucket=bucket, destination=destination,
+    from engine.options_scenario_capture import capture_built_scenario_sources as capture
+    return capture(descriptor, viewer, operation_id=operation_id, out_dir=out_dir,
+        s3=s3, bucket=bucket, destination=destination,
         source_save_decision=source_save_decision, retention_decision=retention_decision,
         current_viewer=current_viewer, clock=clock)
 

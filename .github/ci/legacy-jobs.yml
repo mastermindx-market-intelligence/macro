@@ -262,6 +262,14 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -2192,6 +2200,14 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -3176,6 +3192,14 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -6899,6 +6923,10 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "tests/test_options_hub_retention.py"
+      - "tests/test_scenario_source_resolution.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -7036,7 +7064,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -7055,6 +7083,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -9494,6 +9524,14 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -13265,6 +13303,14 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
       - "app/treasury_history.py"
@@ -22083,6 +22129,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
@@ -22845,6 +22894,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -24647,6 +24699,9 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_auth.py
+          tests/test_options_scenarios.py
+          tests/test_scenario_initial_capture.py
+          tests/test_options_scenario_capture.py
           tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
@@ -24984,6 +25039,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -27534,6 +27597,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -33074,6 +33140,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -33572,6 +33641,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -36693,6 +36770,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
