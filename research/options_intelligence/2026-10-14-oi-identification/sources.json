@@ -1,0 +1,34 @@
+{
+  "schema": "options.oi.identification.sources.v1",
+  "observed_date_utc": "2026-10-14",
+  "original_commission_information_cutoff": "2026-10-03",
+  "interpretation": "These are explicitly dated continuation observations; public current documentation does not attest its historical publication state, the installed provider build, entitlement or data delivery.",
+  "public_sources": [
+    {"id": "S1", "publisher": "OCC / Options Industry Council", "title": "Open Interest: Why It Matters", "source_date": "2025-10", "url": "https://www.optionseducation.org/news/open-interest-why-it-matters", "relevant_section": "opening/closing combinations and exercise/assignment in OI accounting", "evidence_class": "official educational mechanics", "not_supported": "our sharp feasible-set derivation or predictive performance"},
+    {"id": "S2", "publisher": "ThetaData", "title": "V3 option history open interest", "url": "https://thetadata.net/docs/operations/option_history_open_interest.html", "relevant_section": "endpoint description of report time and effective previous close", "evidence_class": "current vendor documentation", "not_supported": "the actual installed endpoint behaviour or original data receipt"},
+    {"id": "S3", "publisher": "ThetaData", "title": "V3 option snapshot open interest", "url": "https://www.thetadata.net/docs/operations/option_snapshot_open_interest.html", "relevant_section": "per-contract latest-message lookback and current_day_only", "evidence_class": "current vendor documentation", "not_supported": "uniform economic vintage for every row in a response"},
+    {"id": "S4", "publisher": "Cboe DataShop", "title": "Cboe Open-Close Volume Summary", "url": "https://datashop.cboe.com/cboe-options-open-close-volume-summary", "relevant_section": "Important Data Conventions, Subscription Details, Licensing & Redistribution Rights", "evidence_class": "current vendor documentation", "future_notice_effective_date": "2026-11-08", "future_notice_treated_as_active": false, "not_supported": "a universal counting/date normalization or Mastermind redistribution entitlement"},
+    {"id": "S5", "publisher": "Cboe DataShop", "title": "Enhanced US Options Trade-by-Trade Execution Detail", "url": "https://datashop.cboe.com/enhanced-us-options-trade-by-trade-execution-detail", "relevant_section": "C1 execution fields, T+1 delivery and licensing", "evidence_class": "current vendor documentation", "not_supported": "live nationwide buyer-opening observations or commercial rights for private samples"}
+  ],
+  "repository_sources": [
+    {"id": "R1", "repository": "mastermindx-market-intelligence/macro", "commit": "a3f3afa1e1268908a54263043f21048c1b5bc1b4", "path": "research/options_intelligence/2026-10-03/options-signal-catalog.md", "blob": "93a3838ca124790eb867ddcdc3da5f782f7d03e9", "scope": "OIF09, OIF18 and observation/inference separation"},
+    {"id": "R2", "repository": "mastermindx-market-intelligence/macro", "commit": "a3f3afa1e1268908a54263043f21048c1b5bc1b4", "path": "engine/positioning_persistence.py", "blob": "917bbd225ab2ed3ad5668b38dcbb4f4c4d0c988f", "ranges": [[310,342],[347,385],[1208,1216]], "scope": "actual source functions used by the synthetic witness; no live store invocation"},
+    {"id": "R3a", "repository": "mastermindx-market-intelligence/macro", "pr": 8658, "commit": "1609b14088e53a754835f471e521ab138ae91572", "path": "collectors/options_free_samples.py", "blob": "1559fcbd9153d0aa3a43725df7fe02409b54ccf0", "scope": "existing classified sample parser and account-side versus unique-contract distinction"},
+    {"id": "R3b", "repository": "mastermindx-market-intelligence/macro", "pr": 8658, "commit": "1609b14088e53a754835f471e521ab138ae91572", "path": "collectors/options_free_tbt.py", "blob": "822495dcaacfd7586e0d821b4437c7c1526ad577", "scope": "existing separate TBT parser, not a new collector"},
+    {"id": "R3c", "repository": "mastermindx-market-intelligence/macro", "pr": 8658, "commit": "1609b14088e53a754835f471e521ab138ae91572", "path": "docs/runbooks/OPTIONS_FREE_SOURCE_EVALUATION.md", "blob": "2233d9114f65b0cd86831186b9e04500a85875f7", "scope": "partial EOD and TBT samples are different populations; private sample bytes not read"},
+    {"id": "R4", "repository": "mastermindx-market-intelligence/macro", "pr": 9178, "commit": "1ed8e59ebf62945bc1493ad1d1833391ed7ff2cd", "comment_id": 6158419299, "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9178#issuecomment-6158419299", "scope": "workflow-level success now observed; independent review still absent and draft retained"},
+    {"id": "R5", "repository": "mastermindx-market-intelligence/macro", "commit": "d21b44eba5f676df5ea3748e0257b6622efe6b27", "path": "research/OPTIONS_INTELLIGENCE_CONTINUATION_HANDOFF_2026-10-11.md", "scope": "latest available Fable source checkpoint read to avoid duplicate work; dated October13 D72 is not a fresh runtime liveness claim"}
+  ],
+  "own_evidence": {
+    "mathematical_derivation": "OI_IDENTIFICATION_STUDY.md sections2-5",
+    "kernel": "oi_identification.py",
+    "exhaustive_oracles": "test_oi_identification.py",
+    "verification": "verification-results.json",
+    "producer_witness": "source_vintage_witness.py",
+    "producer_witness_output": "source-vintage-results.json",
+    "all_synthetic": true,
+    "market_data_fit": false,
+    "probability_calibration": false,
+    "production_changes": false
+  }
+}
