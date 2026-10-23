@@ -72,6 +72,62 @@ SOURCES = {
                 "operator-relayed text, quoted verbatim in `proposal_says` so the claim we "
                 "tested is on the record next to what we measured."),
     },
+    "sce_sep_current_whitepaper": {
+        "title": "Systematic Core Portfolio — current whitepaper excerpt",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-09-10",
+        "url": "https://x.com/TailThatWagsDog/status/2098105790175363512",
+        "why": "Current whitepaper page naming the ETF/Treasury universe and two-engine architecture.",
+    },
+    "sce_sep_product_index": {
+        "title": "Systematic Core — current product index",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-09-11",
+        "url": "https://x.com/TailThatWagsDog/status/2098398253284753541",
+        "why": "Current product disclosure naming Trend Base with Dislocation Overlay and shared engine/data run.",
+    },
+    "sce_sep_position_book": {
+        "title": "Systematic Core — current position book",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-09-12",
+        "url": "https://x.com/TailThatWagsDog/status/2098901921817895284",
+        "why": "Current model-position disclosure separating ETF/cash state from options labels.",
+    },
+    "sce_sep_options_context": {
+        "title": "Systematic Core — options context disclosure",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-09-08",
+        "url": "https://x.com/TailThatWagsDog/status/2097428696067965372",
+        "why": "Current statement that Signal Sigma options positioning is scored beside the base model.",
+    },
+    "sce_june_generation": {
+        "title": "Systematic Core — June generation disclosure",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-06-25",
+        "url": "https://x.com/TailThatWagsDog/status/2070128419036156055",
+        "why": "Historical lineage source for the four-sleeve dislocation generation and Jones exit disclosure.",
+    },
+    "sce_july_method": {
+        "title": "Systematic Core — July white-box method disclosure",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-07-06",
+        "url": "https://x.com/TailThatWagsDog/status/2074093446659236138",
+        "why": "Historical lineage source for the dual-KAMA/ATR/HYG-IEI/GEX generation.",
+    },
+    "sce_july_state": {
+        "title": "Systematic Core — July live-state disclosure",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-07-10",
+        "url": "https://x.com/TailThatWagsDog/status/2075568429264785462",
+        "why": "Historical lineage source showing the July generation's SPY/BIL live state.",
+    },
+    "sce_august_generation": {
+        "title": "Systematic Core — August generation disclosure",
+        "publisher": "nextSignals / TailThatWagsDog",
+        "date": "2026-08-12",
+        "url": "https://x.com/TailThatWagsDog/status/2087483692516085964",
+        "why": "Historical lineage source for the index-base plus defined-risk dislocation-trade generation.",
+    },
     "fintel_quant_models": {
         "title": "Beat the Market With Advanced Quantitative Models",
         "publisher": "Fintel", "date": "accessed 2026-08-05",
@@ -629,6 +685,86 @@ METHODS: dict[str, dict] = {
             "engine.regime_conditioning_coverage.assess() returns 'estimable' for the axis to "
             "be conditioned on, plus a fresh pre-registration naming the interaction (not the "
             "raw cell means) as the primary quantity."
+        ),
+    },
+
+    "systematic_core_engine": {
+        "name": "Systematic Core Engine (SCE) — versioned dossier",
+        "name_zh": "系统化核心引擎（SCE）－版本化档案",
+        "source_kind": "published external method / versioned product disclosure",
+        "proposer": "nextSignals / Signal Sigma",
+        "one_line": (
+            "Keep each disclosed SCE generation separate, preserve negative reconstruction "
+            "results at their lawful scope, and show exactly where the current rules stop."
+        ),
+        "one_line_zh": (
+            "逐版本区分 SCE 的公开披露，将负面复刻结果限制在其合法范围内，并明确标出当前规则披露到哪里为止。"
+        ),
+        "shape": "versioned external-method dossier",
+        "display_kind": "versioned_dossier",
+        "proposal_says": (
+            "The current Systematic Core product is disclosed as a long-only ETF/Treasury "
+            "method over SPY, XLE, GLD and SHY, with two independent engines named Trend Base "
+            "and Dislocation Overlay. Current product pages describe model output, while "
+            "options positioning is displayed and interpreted beside the ETF state."
+        ),
+        "proposal_says_zh": (
+            "当前 Systematic Core 产品披露为以 SPY、XLE、GLD 与 SHY 为标的的多头 ETF／短期国债方法，"
+            "由 Trend Base 与 Dislocation Overlay 两个独立引擎控制。当前产品页面明确属于模型输出，"
+            "期权仓位信息则在 ETF 状态旁单独展示与解读。"
+        ),
+        "not_a_ranker_because": (
+            "It is a portfolio-timing method with versioned allocation rules, not a cross-sectional "
+            "stock score. There is no per-name percentile, no name-ranking target and no lawful path "
+            "from this dossier into rank, size or gate authority."
+        ),
+        "not_a_ranker_because_zh": (
+            "这是带版本化配置规则的组合择时方法，而不是横截面个股评分。它没有逐股百分位、没有个股排序目标，"
+            "本档案也不存在通向排序、仓位或准入权限的合法路径。"
+        ),
+        "our_test": (
+            "Reconciled each disclosed generation against version-matched primary sources, kept "
+            "publisher claims separate from reproduced/tested evidence, and tested the August "
+            "auction-profile exit family independently. No current Section 3 or equivalent exact "
+            "Trend Base / Dislocation Overlay rule packet was recovered."
+        ),
+        "our_test_zh": (
+            "将每个已披露版本与版本匹配的一手来源逐一核对，把发布者主张与复现／测试证据分开，"
+            "并独立测试八月拍卖轮廓退出家族。当前 Section 3 或等价的 Trend Base／Dislocation Overlay 精确规则包仍未获得。"
+        ),
+        "result_artifact": "systematic_core_engine.json",
+        "harness": "research/nextsignals/SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md",
+        "gate_module": "agentos/decisions/DEC-SCE-CURRENT-REPLICA-LIMITED-IDENTIFICATION.md",
+        "provenance": [
+            "sce_sep_current_whitepaper", "sce_sep_product_index", "sce_sep_position_book",
+            "sce_sep_options_context", "sce_june_generation", "sce_july_method",
+            "sce_july_state", "sce_august_generation",
+        ],
+        "house_rulings": [
+            {"row": "SCE-V11-CURRENT", "verdict": "LIMITED_IDENTIFICATION_CURRENT_VERSION",
+             "what": "current September external replica",
+             "why": ("the disclosed architecture is identifiable, but the exact current Trend Base "
+                     "and Dislocation Overlay transitions, sizing and exit/invalidation rules are not")},
+            {"row": "SCE-V11-AUGUST-EXIT", "verdict": "NO_EXIT_RULE_VALIDATED",
+             "what": "tested August auction-profile exit family",
+             "why": ("the tested family did not validate a deterministic exit; this null does not "
+                     "generalize to the current September method")},
+        ],
+        "still_live": (
+            "The version-safe dossier remains useful as research context: current disclosed facts, "
+            "scoped negative evidence and unknowns stay visible without becoming strategy authority."
+        ),
+        "still_live_zh": (
+            "版本安全档案仍具有研究价值：当前已披露事实、限定范围的负证据与未知项保持可见，但不获得策略权限。"
+        ),
+        "reopen_when": (
+            "A genuinely new current-version Section 3 or equivalent deterministic disclosure "
+            "identifies the Trend Base and Dislocation Overlay rules. Reopen identification from that "
+            "new evidence; do not resume old-version proxy tuning."
+        ),
+        "reopen_when_zh": (
+            "只有新的当前版本 Section 3 或等价确定性披露识别出 Trend Base 与 Dislocation Overlay 规则时才重启；"
+            "应从该新证据重新识别，不得恢复旧版本代理调参。"
         ),
     },
 }
