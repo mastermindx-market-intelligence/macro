@@ -952,6 +952,25 @@ def _prophet_plan_fact(root, row: dict, projection, revisions: dict,
         'Parameters are not executed prices or achieved returns, not independent market '
         'observations, and not an instruction to trade. No recorded confirmation is '
         'invented; use the linked closure scope and its original signal clocks.')
+    # This is a typed disclosure contract, not another source or receipt.
+    # Keep the plan's recorded/price clocks separate from its simulated close.
+    fact['native_plan_scope'] = {
+        'source_ref': 'chronicle:' + ref,
+        'asset': plan['asset'],
+        'recorded_at': plan['recorded_at'],
+        'price_basis_date': plan['price_basis_date'],
+        'close_date': row['close_date'],
+        'authority_tier': authority,
+        'entry_status': status,
+        'confirmed_date': plan.get('confirmed_date'),
+        'quantities': {
+            **{'entry_reference': entry, 'invalidation_threshold': invalidation},
+            **{f'target_{i + 1}': value for i, value in enumerate(targets)},
+            **({'activation_trigger': trigger} if trigger is not None else {}),
+            **{key: row[key] for key in ('stock_result_pct', 'days_held')
+               if type(row.get(key)) in (int, float) and math.isfinite(row[key])},
+        },
+    }
     fact['input_revisions'] = {f'artifact:{path}': 'sha256:' + digest
         for path, digest in revisions.items() if digest is not None and (
             path == rel or path.startswith('data/prophet/'))}
@@ -1184,6 +1203,8 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
             "source_revisions": source_revisions,
             "seed_refs": sorted({f["ref"] for f in facts}),
             "facts": facts,
+            **({'native_plan_scope': plan_facts[0]['native_plan_scope']}
+               if plan_facts else {}),
             "raw_documents": _raw_documents_for_event(ev),
             "chronicle_context": ctx,
             "slug_hint": slugify(event_title or "market brief"),

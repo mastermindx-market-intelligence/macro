@@ -60,13 +60,13 @@ def _write_manifest(path: Path, jobs: list[object]) -> Path:
     return path
 
 
-def _plan(jobs: list[object], *, changed: list[str] | None = None) -> object:
+def _plan(jobs: list[object], *, changed: list[str] | None = None, pack_count: int | None = None) -> object:
     return PACK.build_plan(
         jobs,
         changed,
         changed_from=SHA_BASE if changed is not None else None,
         scope_mode="active",
-        pack_count=max(1, len(jobs)),
+        pack_count=pack_count or max(1, len(jobs)),
         workflow_run_id="987654321",
         workflow="ci",
         event="pull_request",
@@ -1786,7 +1786,7 @@ def test_passed_step_that_breaks_packed_refs_leaves_probes_working(
     _assert_pack_git_boundary(source, tested_sha)
 
 
-def test_timeout_after_broken_git_stays_timeout_and_leaves_probes_working(
+def test_timeout_after_broken_git_retains_original_without_unsafe_healing(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1821,10 +1821,11 @@ def test_timeout_after_broken_git_stays_timeout_and_leaves_probes_working(
         command_env=os.environ.copy(),
         tested_tree_sha=tested_sha,
     )
-    assert result.infrastructure["outcome"] == "passed"
+    assert result.infrastructure["outcome"] == "unknown"
+    assert result.timeout_settlement == "unknown"
     assert result.failure == "timeout-smash: timed out after 1 minutes"
     assert [step["outcome"] for step in result.steps] == ["timed_out"]
-    _assert_pack_git_boundary(source, tested_sha)
+    assert (source / ".git/packed-refs").read_text() == "not-valid\n"
 
 
 def test_base_replay_uses_base_runner_and_is_serial_without_matrix_fanout(
@@ -2087,14 +2088,11 @@ def test_replay_process_never_invents_time_after_the_shared_deadline(
     monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
     monkeypatch.setattr(PACK.subprocess, "Popen", lambda *_args, **_kwargs: Process())
     monkeypatch.setattr(PACK.os, "killpg", lambda *_args: None)
-    returncode, timed_out = PACK._stream_process_with_deadline(
-        ["base-runner"],
-        cwd=tmp_path,
-        env={},
-        deadline=10.0,
-    )
-    assert timed_out is True
-    assert returncode == -9
+    with pytest.raises(PACK._ProcessSettlementUnknown) as caught:
+        PACK._stream_process_with_deadline(
+            ["base-runner"], cwd=tmp_path, env={}, deadline=10.0
+        )
+    assert caught.value.original_outcome == "timed_out"
     assert waits == [8.0, 0.0]
 
 
@@ -2234,3 +2232,756 @@ def test_wrong_checkout_emits_runner_startup_blocked_fragment(
     assert payload["jobs"][0]["steps"][0]["outcome"] == (
         "infrastructure_blocked"
     )
+
+
+# Shared browser acquisition and timeout-custody contracts. No hosted package
+# acquisition or CI run is performed by these integration boundary tests.
+def _browser_setup_step(command="python -m playwright install --with-deps chromium", minutes=10):
+    return {"name": "browser setup", "phase": "browser_setup", "timeout-minutes": minutes, "run": command}
+
+
+def test_browser_setup_is_infrastructure_but_remains_digest_bound(tmp_path):
+    setup = _browser_setup_step()
+    job = _job("browser", [setup, {"name": "actual assertion", "run": "false"}], timeout=10)
+    assert [spec.display_name for spec in PACK.semantic_step_specs(job)] == ["actual assertion"]
+    assert len(PACK.load_legacy_jobs(_write_manifest(tmp_path / "manifest.yml", [job]))) == 1
+    smaller = _job("browser", [_browser_setup_step(minutes=9), {"name": "actual assertion", "run": "false"}], timeout=10)
+    assert PACK.semantic_job_digest(job) != PACK.semantic_job_digest(smaller)
+
+
+@pytest.mark.parametrize("command", [
+    "python -m playwright install --with-deps chromium && python -m pytest tests/test_subject.py",
+    "python -m playwright install --with-deps chromium; false",
+    "python -m playwright install chromium",
+])
+def test_browser_setup_refuses_mixed_or_different_commands(tmp_path, command):
+    job = _job("browser", [_browser_setup_step(command), {"name": "proof", "run": "true"}])
+    with pytest.raises(PACK.ManifestError, match="browser setup"):
+        PACK.load_legacy_jobs(_write_manifest(tmp_path / "manifest.yml", [job]))
+
+
+def test_timed_out_command_preserves_timeout_and_blocks_git_heal(monkeypatch):
+    job = _job("unknown-child", [{"name": "original", "run": "true"}, {"name": "later", "run": "true"}])
+    heals = []
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_ensure_pack_git_usable", lambda *_a: heals.append(True) or True)
+    monkeypatch.setattr(PACK, "_stream_command", lambda *_a, **_k: PACK.CommandObservation(outcome="timed_out", returncode=None, detail="original timeout"))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={}, tested_tree_sha=SHA_TREE)
+    assert result.infrastructure["outcome"] == "unknown"
+    assert [s["outcome"] for s in result.steps] == ["timed_out", "infrastructure_blocked"]
+    assert getattr(result, "timeout_settlement", None) == "unknown"
+    assert heals == [], "workspace healing is a write before descendant settlement"
+
+
+def test_unknown_timeout_stops_environment_reuse_restore_and_base_replay(tmp_path, monkeypatch):
+    jobs = [
+        _job("alpha", [{"name": "install", "run": "pip install pytest"}, {"name": "original", "run": "true"}]),
+        _job("beta", [{"name": "install", "run": "pip install pytest pyyaml"}, {"name": "later", "run": "true"}], ordinal=1),
+    ]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"], pack_count=1)
+    fragment = tmp_path / "fragment.json"
+    calls = {"jobs": [], "deps": [], "restores": [], "replays": []}
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: calls["deps"].append(dep) or {})
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: calls["restores"].append(True))
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: calls["replays"].append(True))
+
+    def run(job, **kwargs):
+        calls["jobs"].append(job.job_id)
+        result = PACK.JobExecution(job.job_id, PACK.semantic_job_digest(job), {"outcome": "unknown", "detail": "timeout settlement unknown"}, tuple({**s.plan_dict(), "outcome": "timed_out", "failure_signature": None} for s in PACK.semantic_step_specs(job)), "original timeout")
+        object.__setattr__(result, "timeout_settlement", "unknown")
+        return result
+
+    monkeypatch.setattr(PACK, "_run_job", run)
+    assert PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=fragment) == 1
+    assert calls == {"jobs": ["alpha"], "deps": ["pip install pytest"], "restores": [], "replays": []}
+    doc = json.loads(fragment.read_text())
+    assert doc["jobs"][0]["steps"][0]["outcome"] == "timed_out"
+    assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
+    assert any(row["outcome"] == "unknown" for row in doc["infrastructure"])
+
+    evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
+    assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
+    assert evidence["status"] != "clear"
+
+def test_unsettled_base_boundary_preserves_original_checkout(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    exact, _ = _small_repository(source)
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    fault = type("TestSettlementUnknown", (RuntimeError,), {})
+    monkeypatch.setattr(PACK, "_ProcessSettlementUnknown", fault, raising=False)
+    holder = None
+    with pytest.raises(fault):
+        with PACK._exact_base_worktree(source, exact, deadline=PACK.time.monotonic()+30) as base:
+            holder = base.parent
+            raise fault("original base child settlement unknown")
+    assert holder is not None and holder.exists(), "cleanup cannot race unknown descendants"
+
+
+def test_outer_base_timeout_stops_replays_and_preserves_first_outcome(tmp_path, monkeypatch):
+    jobs = [_job("first", [{"name": "proof", "run": "false"}]), _job("second", [{"name": "proof", "run": "false"}], ordinal=1)]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    base = tmp_path / "base"
+    (base / "scripts").mkdir(parents=True)
+    (base / "scripts/run_ci_pack.py").write_text("# never executed\n")
+    (base / ".github/ci").mkdir(parents=True)
+    (base / ".github/ci/legacy-jobs.yml").write_text("jobs: {}\n")
+    calls = []
+
+    @contextlib.contextmanager
+    def isolated(*args, **kwargs):
+        yield base
+
+    monkeypatch.setattr(PACK, "_exact_base_worktree", isolated)
+    monkeypatch.setattr(PACK, "_selected_python_loader_environment", lambda: {})
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", lambda *args, **kwargs: calls.append(args) or (None, True))
+    records = [{"logical_job_id": j.job_id, "job_exec_sha256": PACK.semantic_job_digest(j), "infrastructure": {"outcome": "passed"}, "steps": [{**s.plan_dict(), "outcome": "failed", "failure_signature": None} for s in PACK.semantic_step_specs(j)]} for j in jobs]
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=records, budget_seconds=30)
+    assert len(calls) == 1
+    assert records[0]["steps"][0]["base_replay"]["outcome"] == "timed_out"
+    assert records[1]["steps"][0]["base_replay"]["outcome"] == "unavailable"
+
+
+def test_browser_setup_consumes_original_total_deadline(monkeypatch):
+    job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 400.0])
+    calls = []
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs: calls.append((command, kwargs["timeout_seconds"])) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == [("python -m playwright install --with-deps chromium", 600.0), ("true", 200.0)]
+    assert [s["outcome"] for s in result.steps] == ["passed"]
+
+
+def test_browser_setup_failure_is_blocking_infrastructure_not_product_pass(monkeypatch):
+    job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
+    calls = []
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs: calls.append(command) or PACK.CommandObservation(outcome="failed", returncode=17, detail="original acquisition failure"))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["python -m playwright install --with-deps chromium"]
+    assert result.infrastructure["outcome"] == "dependency_failed"
+    assert "17" in result.infrastructure["detail"] and "failed" in result.infrastructure["detail"]
+    assert [s["outcome"] for s in result.steps] == ["infrastructure_blocked"]
+
+
+def test_old_base_runner_timeout_cannot_hide_unsettled_children(tmp_path, monkeypatch):
+    jobs = [_job("first", [{"name": "proof", "run": "false"}]), _job("second", [{"name": "proof", "run": "false"}], ordinal=1)]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    base = tmp_path / "base"
+    (base / "scripts").mkdir(parents=True)
+    (base / "scripts/run_ci_pack.py").write_text("# old runner\n")
+    (base / ".github/ci").mkdir(parents=True)
+    (base / ".github/ci/legacy-jobs.yml").write_text("jobs: {}\n")
+    observed = {"calls": 0, "retained": False, "cleaned": False}
+
+    @contextlib.contextmanager
+    def isolated(*args, **kwargs):
+        try:
+            yield base
+        except PACK._ProcessSettlementUnknown:
+            observed["retained"] = True
+            raise
+        else:
+            observed["cleaned"] = True
+
+    def stream(command, **kwargs):
+        observed["calls"] += 1
+        output = Path(command[command.index("--emit-semantic-fragment") + 1])
+        jobid = command[command.index("--semantic-replay-job") + 1]
+        job = next(j for j in jobs if j.job_id == jobid)
+        doc = {"schema": PACK.FRAGMENT_SCHEMA, "tested_tree_sha": SHA_BASE, "subject_head_sha": SHA_BASE, "base_sha": SHA_BASE, "role": "main", "infrastructure": [], "jobs": [{"logical_job_id": jobid, "job_exec_sha256": PACK.semantic_job_digest(job), "infrastructure": {"outcome": "passed"}, "steps": [{**s.plan_dict(), "outcome": "timed_out", "failure_signature": None} for s in PACK.semantic_step_specs(job)]}]}
+        output.write_text(json.dumps(doc))
+        return 1, False
+
+    monkeypatch.setattr(PACK, "_exact_base_worktree", isolated)
+    monkeypatch.setattr(PACK, "_selected_python_loader_environment", lambda: {})
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    records = [{"logical_job_id": j.job_id, "job_exec_sha256": PACK.semantic_job_digest(j), "infrastructure": {"outcome": "passed"}, "steps": [{**s.plan_dict(), "outcome": "failed", "failure_signature": None} for s in PACK.semantic_step_specs(j)]} for j in jobs]
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=records, budget_seconds=30)
+    assert observed == {"calls": 1, "retained": True, "cleaned": False}
+    assert (base.parent / "runner-temp/base-replay.json").is_file()
+    assert records[0]["steps"][0]["outcome"] == "failed"
+    assert all(r["steps"][0]["base_replay"]["outcome"] == "unavailable" for r in records)
+
+
+def test_normal_exact_base_boundary_still_cleans_up(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    exact, _ = _small_repository(source)
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    with PACK._exact_base_worktree(source, exact, deadline=PACK.time.monotonic()+30) as base:
+        holder = base.parent
+        assert holder.is_dir()
+    assert not holder.exists()
+
+
+def test_command_observation_loss_blocks_later_steps(monkeypatch):
+    job = _job("lost", [{"name": "original", "run": "true"}, {"name": "later", "run": "true"}])
+    calls = []
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+
+    def lost(command, **kwargs):
+        calls.append(command)
+        raise RuntimeError("original command observation lost")
+
+    monkeypatch.setattr(PACK, "_stream_command", lost)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.timeout_settlement == "unknown"
+    assert result.infrastructure["outcome"] == "unknown"
+    assert [s["outcome"] for s in result.steps] == ["infrastructure_blocked", "infrastructure_blocked"]
+    assert calls == ["true"]
+
+
+def test_exhausted_prelaunch_clock_does_not_invent_a_child(monkeypatch):
+    job = _job("not-started", [{"name": "proof", "run": "true"}])
+    ticks = iter([0.0, 60.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_stream_command", lambda *_a, **_k: pytest.fail("no command may start"))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.timeout_settlement is None
+    assert result.steps[0]["outcome"] == "timed_out"
+    assert result.infrastructure["outcome"] == "passed"
+
+
+@pytest.mark.parametrize("minutes", [0, 11, True, "10"])
+def test_browser_setup_refuses_unbounded_or_invalid_step_limit(tmp_path, minutes):
+    job = _job("browser", [_browser_setup_step(minutes=minutes), {"run": "true"}], timeout=10)
+    with pytest.raises(PACK.ManifestError, match="browser setup"):
+        PACK.load_legacy_jobs(_write_manifest(tmp_path / "manifest.yml", [job]))
+
+
+def test_browser_setup_refuses_no_original_deadline_or_proof_identity(tmp_path):
+    no_deadline = _job("browser", [_browser_setup_step(), {"run": "true"}], timeout=None)
+    with pytest.raises(PACK.ManifestError, match="original logical-job deadline"):
+        PACK.load_legacy_jobs(_write_manifest(tmp_path / "no-deadline.yml", [no_deadline]))
+    setup = {**_browser_setup_step(), "proof_id": "cannot-be-both"}
+    job = _job("browser", [setup, {"run": "true"}], timeout=10)
+    with pytest.raises(PACK.ManifestError, match="browser setup"):
+        PACK.load_legacy_jobs(_write_manifest(tmp_path / "with-proof.yml", [job]))
+
+
+# Fabric ci-timeout-settlement-01a15d64-tests: retained artifact adfd7216.
+# Parent integrates these two owned-process fault tests in the existing suite.
+"""Fault tests: timeout settlement reporting for ``scripts.run_ci_pack._stream_command``.
+
+Source contract under test (POSIX)
+----------------------------------
+``_stream_command(command, env=..., timeout_seconds=...)`` launches
+``Popen(['bash', '-eo', 'pipefail', '-c', command], env=dict(env),
+stdout=PIPE, stderr=STDOUT, bufsize=0, start_new_session=True)``, pumps stdout
+from a daemon reader thread and, on ``TimeoutExpired``, ``SIGKILL``s the launch
+process group via ``os.killpg(process.pid, SIGKILL)``.  It then reports
+``CommandObservation(outcome='timed_out', ...)`` without being able to prove
+that every descendant of the launch is gone.  The required contract is:
+
+* the observation keeps ``outcome == 'timed_out'``;
+* the observation reports ``timeout_settlement == 'unknown'`` -- it must never
+  claim that the whole descendant tree was settled.
+
+Both tests drive the *real* ``_stream_command`` with one explicitly owned
+synthetic descendant:
+
+1. ``test_timeout_descendant_inherited_group_kill_reports_unknown_settlement``
+   -- the descendant inherits the launch process group.
+2. ``test_timeout_descendant_separate_session_survivor_reports_unknown_settlement``
+   -- the descendant calls ``os.setsid()`` and redirects its stdout/stderr to
+   ``DEVNULL``, so an escaped descendant cannot hold the launch pipe open and
+   stall the harness.
+
+Neither test asserts that the ordinary process-group kill settled the
+descendant tree; a surviving (or zombied) descendant is exactly what
+``timeout_settlement == 'unknown'`` is hiding.  Cleanup in ``finally``
+terminates only processes this test itself launched, identified by PID files
+the synthetic launcher writes inside the test's own temporary directory.
+
+Platform caveats
+----------------
+* POSIX only: skipped when ``os.killpg`` is unavailable.
+* Liveness prefers ``/proc/<pid>/stat`` so a zombie (state ``Z``) counts as
+  terminated.  Where ``/proc`` is missing the ``kill(pid, 0)`` fallback is used
+  only to steer best-effort cleanup, never as an asserted proof of death,
+  because zombies keep ``kill(pid, 0)`` succeeding.
+"""
+
+
+import importlib
+import os
+import pathlib
+import signal
+import subprocess
+import sys
+import time
+import uuid
+
+import pytest
+
+#: Job timeout handed to ``_stream_command``; the synthetic step outlives it.
+_TIMEOUT_DESCENDANT_STEP_TIMEOUT_SECONDS = 1.0
+
+#: Bounds for the launch readiness handshake and for best-effort cleanup.
+_TIMEOUT_DESCENDANT_HANDSHAKE_TIMEOUT_SECONDS = 2.0
+_TIMEOUT_DESCENDANT_CLEANUP_TIMEOUT_SECONDS = 1.0
+
+#: How long the synthetic launcher and its descendant would live un-killed.
+_TIMEOUT_DESCENDANT_LIFETIME_SECONDS = 60
+
+_TIMEOUT_DESCENDANT_CHILD_PID = "child.pid"
+_TIMEOUT_DESCENDANT_SHELL_PID = "shell_child.pid"
+_TIMEOUT_DESCENDANT_CHILD_READY = "child.ready"
+
+_TIMEOUT_DESCENDANT_CHILD_SOURCE = """\
+import os
+import pathlib
+import sys
+import time
+
+mode, workdir, lifetime = sys.argv[1], sys.argv[2], float(sys.argv[3])
+if mode == "own-session":
+    # Escape the launch group the way a daemonised grandchild would.
+    os.setsid()
+pid = os.getpid()
+workdir = pathlib.Path(workdir)
+workdir.joinpath("child.pid").write_text(str(pid))
+workdir.joinpath("child.ready").write_text(str(pid))
+time.sleep(lifetime)
+"""
+
+
+def _timeout_descendant_import_target():
+    """Import ``scripts.run_ci_pack``, locating the repo root if needed."""
+    try:
+        return importlib.import_module("scripts.run_ci_pack")
+    except ModuleNotFoundError:
+        here = pathlib.Path(__file__).resolve().parent
+        for candidate in (here, *here.parents):
+            if (candidate / "scripts" / "run_ci_pack.py").is_file():
+                if str(candidate) not in sys.path:
+                    sys.path.insert(0, str(candidate))
+                return importlib.import_module("scripts.run_ci_pack")
+        raise
+
+
+def _timeout_descendant_proc_state(pid):
+    """Return the process state char, or ``None`` when ``pid`` is gone.
+
+    Uses ``/proc`` when available so a zombie is reported as terminated; the
+    ``kill(pid, 0)`` fallback is ambiguous for zombies, so callers treat it as
+    "maybe alive" and only use it to steer cleanup.
+    """
+    try:
+        stat = pathlib.Path("/proc/%d/stat" % pid).read_text()
+    except (OSError, ValueError):
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return None
+        except PermissionError:
+            return "unknown"
+        except OSError:
+            return None
+        return "R"
+    tail = stat.rpartition(")")[2].split()
+    return tail[0] if tail else "unknown"
+
+
+def _timeout_descendant_is_gone(pid):
+    """True when the process exited; a zombie counts as gone (never death-proof)."""
+    state = _timeout_descendant_proc_state(pid)
+    if state is None:
+        return True
+    return state in ("Z", "X", "x")
+
+
+def _timeout_descendant_write_child_script(directory):
+    path = directory / "timeout_descendant_child.py"
+    path.write_text(_TIMEOUT_DESCENDANT_CHILD_SOURCE)
+    return path
+
+
+def _timeout_descendant_build_command(child_script, workdir, ready_path, token, mode):
+    """Bash step: start one descendant, handshake, then outlive the job timeout."""
+    redirect = "< /dev/null > /dev/null 2>&1" if mode == "own-session" else ""
+    child_ready = workdir / _TIMEOUT_DESCENDANT_CHILD_READY
+    shell_pid = workdir / _TIMEOUT_DESCENDANT_SHELL_PID
+    lines = [
+        "child_pid=0",
+        "python3 '{script}' '{mode}' '{workdir}' {lifetime} {redirect} &".format(
+            script=child_script,
+            mode=mode,
+            workdir=workdir,
+            lifetime=_TIMEOUT_DESCENDANT_LIFETIME_SECONDS,
+            redirect=redirect,
+        ),
+        "child_pid=$!",
+        "spin=0",
+        "while [ \"$spin\" -lt 300 ] && [ ! -f '{ready}' ]; do".format(ready=child_ready),
+        "  sleep 0.01",
+        "  spin=$((spin + 1))",
+        "done",
+        "echo \"$child_pid\" > '{shell_pid}'".format(shell_pid=shell_pid),
+        "echo '{token}' > '{ready}'".format(token=token, ready=ready_path),
+        "sleep {lifetime}".format(lifetime=_TIMEOUT_DESCENDANT_LIFETIME_SECONDS),
+    ]
+    return "\n".join(lines)
+
+
+def _timeout_descendant_intercept_popen(monkeypatch, token, ready_path, recorded):
+    """Patch ``Popen`` to keep the exact launch handle and gate on the handshake.
+
+    The wrapper lets the real ``Popen`` run, records the handle for our token
+    and blocks until the synthetic launcher announces readiness, so by the time
+    ``_stream_command`` starts waiting there is no startup race left.
+    """
+    real_popen = subprocess.Popen
+
+    def wrapper(*args, **kwargs):
+        process = real_popen(*args, **kwargs)
+        argv = args[0] if args else ()
+        joined = " ".join(str(part) for part in argv)
+        if token in joined:
+            recorded.append(process)
+            deadline = time.monotonic() + _TIMEOUT_DESCENDANT_HANDSHAKE_TIMEOUT_SECONDS
+            while not ready_path.exists():
+                if process.poll() is not None:
+                    raise AssertionError(
+                        "synthetic launcher exited before the readiness handshake"
+                    )
+                if time.monotonic() >= deadline:
+                    raise AssertionError(
+                        "readiness handshake with the synthetic launcher timed out"
+                    )
+                time.sleep(0.02)
+        return process
+
+    monkeypatch.setattr(subprocess, "Popen", wrapper)
+    module = _timeout_descendant_import_target()
+    if getattr(module, "Popen", None) is real_popen:
+        monkeypatch.setattr(module, "Popen", wrapper)
+    return module
+
+
+def _timeout_descendant_terminate_owned(workdir, recorded_handles):
+    """Kill exactly the processes this test launched; never touch anything else."""
+    tracked = set()
+    for name in (_TIMEOUT_DESCENDANT_CHILD_PID, _TIMEOUT_DESCENDANT_SHELL_PID):
+        try:
+            pid = int((workdir / name).read_text().strip())
+        except (OSError, ValueError):
+            continue
+        if pid > 0:
+            tracked.add(pid)
+    for process in recorded_handles:
+        try:
+            still_running = process.poll() is None
+        except OSError:
+            still_running = True
+        if still_running:
+            tracked.add(process.pid)
+
+    forced = []
+    already_gone = []
+    for pid in sorted(tracked):
+        if _timeout_descendant_is_gone(pid):
+            already_gone.append(pid)
+            continue
+        # Signal a process group only when the recorded descendant itself is
+        # the leader of a group that is not ours: that can only be the
+        # separate session this test created.
+        try:
+            pgid = os.getpgid(pid)
+        except OSError:
+            pgid = None
+        if pgid == pid and pgid != os.getpgrp():
+            try:
+                os.killpg(pgid, signal.SIGKILL)
+            except OSError:
+                pass
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except OSError:
+            pass
+        forced.append(pid)
+
+    deadline = time.monotonic() + _TIMEOUT_DESCENDANT_CLEANUP_TIMEOUT_SECONDS
+    while time.monotonic() < deadline:
+        if all(_timeout_descendant_is_gone(pid) for pid in tracked):
+            break
+        time.sleep(0.05)
+    return {
+        "tracked": sorted(tracked),
+        "forced": forced,
+        "already_gone": already_gone,
+    }
+
+
+def _timeout_descendant_run_timed_step(monkeypatch, tmp_path, mode):
+    """Run the real ``_stream_command`` against one synthetic descendant."""
+    handshake_dir = tmp_path / "timeout_descendant_handshake"
+    handshake_dir.mkdir()
+    ready_path = handshake_dir / "launch.ready"
+    token = "timeout-descendant-" + uuid.uuid4().hex
+    child_script = _timeout_descendant_write_child_script(tmp_path)
+    command = _timeout_descendant_build_command(
+        child_script, handshake_dir, ready_path, token, mode
+    )
+    recorded = []
+    module = _timeout_descendant_intercept_popen(monkeypatch, token, ready_path, recorded)
+    env = dict(os.environ)
+    env["TIMEOUT_DESCENDANT_TOKEN"] = token
+    try:
+        observation = module._stream_command(
+            command, env=env, timeout_seconds=_TIMEOUT_DESCENDANT_STEP_TIMEOUT_SECONDS
+        )
+    finally:
+        cleanup = _timeout_descendant_terminate_owned(handshake_dir, recorded)
+    return observation, cleanup
+
+
+def _timeout_descendant_field(observation, name):
+    if isinstance(observation, dict):
+        return observation.get(name)
+    return getattr(observation, name, None)
+
+
+def test_timeout_descendant_inherited_group_kill_reports_unknown_settlement(
+    monkeypatch, tmp_path
+):
+    """A launch-group descendant keeps ``timeout_settlement`` unknown.
+
+    The descendant inherits the launch process group, so an ordinary
+    ``os.killpg`` on the launch group is expected to reach it -- but the timed
+    out observation must not claim that as proof: it still reports
+    ``timeout_settlement == 'unknown'`` while preserving ``timed_out``.
+    """
+    if not hasattr(os, "killpg"):
+        pytest.skip("POSIX process groups (os.killpg) are unavailable")
+    observation, cleanup = _timeout_descendant_run_timed_step(
+        monkeypatch, tmp_path, mode="inherited"
+    )
+    assert cleanup["tracked"], (
+        "the synthetic descendant never registered; the launcher or handshake broke"
+    )
+    assert _timeout_descendant_field(observation, "outcome") == "timed_out", (
+        "the job timeout must preserve outcome='timed_out'; got %r" % (observation,)
+    )
+    assert _timeout_descendant_field(observation, "timeout_settlement") == "unknown", (
+        "a timed_out observation must report timeout_settlement='unknown': the "
+        "ordinary launch-group kill does not prove every descendant was settled; "
+        "got %r" % (observation,)
+    )
+    # Deliberately no assertion that the group kill settled the tree.  Any
+    # descendant this test owned has already been re-terminated by
+    # _timeout_descendant_terminate_owned in the run's finally block.
+
+
+def test_timeout_descendant_separate_session_survivor_reports_unknown_settlement(
+    monkeypatch, tmp_path
+):
+    """A ``setsid`` descendant is outside the launch group; settlement stays unknown.
+
+    The descendant starts its own session and redirects stdout/stderr to
+    ``DEVNULL`` (so escaping cannot hang the launch pipe).  The launch-group
+    ``killpg`` cannot reach it, and the observation must still preserve
+    ``outcome == 'timed_out'`` while reporting ``timeout_settlement ==
+    'unknown'`` -- never claiming the descendant tree was settled.
+    """
+    if not hasattr(os, "killpg"):
+        pytest.skip("POSIX process groups (os.killpg) are unavailable")
+    observation, cleanup = _timeout_descendant_run_timed_step(
+        monkeypatch, tmp_path, mode="own-session"
+    )
+    assert cleanup["tracked"], (
+        "the synthetic descendant never registered; the launcher or handshake broke"
+    )
+    assert _timeout_descendant_field(observation, "outcome") == "timed_out", (
+        "the job timeout must preserve outcome='timed_out'; got %r" % (observation,)
+    )
+    assert _timeout_descendant_field(observation, "timeout_settlement") == "unknown", (
+        "a timed_out observation must report timeout_settlement='unknown': a "
+        "separate-session descendant escapes the launch-group kill, so the "
+        "descendant tree is provably not settled; got %r" % (observation,)
+    )
+    # Cleanup already re-terminated the escaped session this test owned via
+    # _timeout_descendant_terminate_owned in the run's finally block.
+
+
+@pytest.mark.parametrize("response_loss", [False, True])
+def test_uncertain_dependency_retains_environment_without_transport_retry(tmp_path, monkeypatch, response_loss):
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    calls = []
+    environment = tmp_path / "ci-pack-job-env"
+
+    def create(command, **kwargs):
+        environment.mkdir()
+        (environment / "original-partial").write_text("retain")
+        calls.append("create")
+
+    def stream(*args, **kwargs):
+        calls.append("install")
+        if response_loss:
+            raise RuntimeError("original observation unavailable")
+        return PACK.CommandObservation(
+            outcome="failed", returncode=17, timeout_settlement="unknown",
+            retryable_dependency_transport=True,
+        )
+
+    monkeypatch.setattr(PACK.subprocess, "run", create)
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    with pytest.raises(PACK._ProcessSettlementUnknown) as caught:
+        PACK._dependency_environment("python -m pip install plotly")
+    assert caught.value.original_outcome == ("unavailable" if response_loss else "failed")
+    assert calls == ["create", "install"]
+    assert (environment / "original-partial").read_text() == "retain"
+
+
+def _review_replay_boundary(tmp_path, monkeypatch):
+    from dataclasses import replace
+
+    source = tmp_path / "source"
+    exact, _ = _small_repository(source)
+    jobs = [_job("first", [{"name": "proof", "run": "false"}]),
+            _job("second", [{"name": "proof", "run": "false"}], ordinal=1)]
+    plan = replace(_plan(jobs, changed=[".github/ci/legacy-jobs.yml"]), base_sha=exact)
+    holders = []
+    real_boundary = PACK._exact_base_worktree
+
+    @contextlib.contextmanager
+    def boundary(*args, **kwargs):
+        with real_boundary(*args, **kwargs) as base:
+            holders.append(base.parent)
+            yield base
+
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    monkeypatch.setattr(PACK, "_exact_base_worktree", boundary)
+    monkeypatch.setattr(PACK, "_selected_python_loader_environment", lambda: {})
+    records = [{"logical_job_id": j.job_id, "job_exec_sha256": PACK.semantic_job_digest(j),
+                "infrastructure": {"outcome": "passed"},
+                "steps": [{**s.plan_dict(), "outcome": "failed", "failure_signature": None}
+                          for s in PACK.semantic_step_specs(j)]} for j in jobs]
+    return source, plan, jobs, records, holders
+
+
+@pytest.mark.parametrize("fault", [OSError, RuntimeError])
+def test_review_timeout_second_wait_error_preserves_checkout_and_stops_replay(tmp_path, monkeypatch, fault):
+    source, plan, jobs, records, holders = _review_replay_boundary(tmp_path, monkeypatch)
+    real_stream = PACK._stream_process_with_deadline
+    calls = []
+    waits = []
+
+    class Process:
+        pid = 123
+        returncode = None
+
+        def wait(self, **kwargs):
+            waits.append(kwargs)
+            if len(waits) == 1:
+                raise subprocess.TimeoutExpired(["base-runner"], 1)
+            raise fault("original timeout cleanup observation lost")
+
+    def stream(*args, **kwargs):
+        calls.append(True)
+        with monkeypatch.context() as patch:
+            patch.setattr(PACK.subprocess, "Popen", lambda *_a, **_k: Process())
+            patch.setattr(PACK.os, "killpg", lambda *_a: None)
+            return real_stream(*args, **kwargs)
+
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    PACK._run_exact_base_replays(root=source, plan=plan, records=records, budget_seconds=30)
+    assert len(calls) == 1 and len(waits) == 2
+    assert len(holders) == 1 and holders[0].is_dir()
+    assert records[0]["steps"][0]["base_replay"]["outcome"] == "timed_out"
+    assert records[1]["steps"][0]["base_replay"]["outcome"] == "unavailable"
+
+
+@pytest.mark.parametrize("missing", ["null_row", "job_exec_sha256", "infrastructure", "steps"])
+def test_review_malformed_base_job_retains_result_and_stops_replay(tmp_path, monkeypatch, missing):
+    source, plan, jobs, records, holders = _review_replay_boundary(tmp_path, monkeypatch)
+    calls = []
+    emitted = []
+
+    def stream(command, **kwargs):
+        calls.append(True)
+        output = Path(command[command.index("--emit-semantic-fragment") + 1])
+        row = {"logical_job_id": "first", "job_exec_sha256": PACK.semantic_job_digest(jobs[0]),
+               "infrastructure": {"outcome": "passed"}, "steps": []}
+        if missing == "null_row":
+            row = None
+        else:
+            del row[missing]
+        doc = {"schema": PACK.FRAGMENT_SCHEMA, "tested_tree_sha": plan.base_sha,
+               "subject_head_sha": plan.base_sha, "base_sha": plan.base_sha,
+               "role": "main", "infrastructure": [], "jobs": [row]}
+        raw = json.dumps(doc)
+        output.write_text(raw)
+        emitted.append((output, raw))
+        return 0, False
+
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    PACK._run_exact_base_replays(root=source, plan=plan, records=records, budget_seconds=30)
+    assert calls == [True]
+    assert len(holders) == 1 and holders[0].is_dir()
+    assert emitted[0][0].read_text() == emitted[0][1]
+    assert all(r["steps"][0]["base_replay"]["outcome"] == "unavailable" for r in records)
+    assert all(r["steps"][0]["outcome"] == "failed" for r in records)
+
+
+@pytest.mark.parametrize("fault", ["read", "display", "collector"])
+def test_review_pump_error_after_root_wait_blocks_all_dependent_effects(tmp_path, monkeypatch, fault):
+    import builtins
+
+    jobs = [_job("alpha", [{"name": "install", "run": "pip install pytest"}, {"name": "original", "run": "true"}]),
+            _job("beta", [{"name": "install", "run": "pip install pytest pyyaml"}, {"name": "later", "run": "true"}], ordinal=1)]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"], pack_count=1)
+    calls = {"wait": [], "deps": [], "restore": [], "heal": [], "replay": []}
+    chunks = iter([b"original output\n", b""])
+
+    def read(*args):
+        if fault == "read":
+            raise OSError("original read failed")
+        return next(chunks)
+
+    class Process:
+        pid = 123
+        returncode = 0
+        stdout = SimpleNamespace(read=read, close=lambda: None)
+
+        def wait(self, **kwargs):
+            calls["wait"].append(True)
+            return self.returncode
+
+    if fault == "display":
+        def display(*args, **kwargs):
+            if kwargs.get("end") == "":
+                raise OSError("original display failed")
+            return builtins.print(*args, **kwargs)
+        monkeypatch.setattr(PACK, "print", display, raising=False)
+    elif fault == "collector":
+        def collect(*args, **kwargs):
+            raise RuntimeError("original collector failed")
+        monkeypatch.setattr(PACK.FailureAtomCollector, "feed", collect)
+    monkeypatch.setattr(PACK.subprocess, "Popen", lambda *_a, **_k: Process())
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: calls["deps"].append(dep) or {})
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: calls["restore"].append(True))
+    monkeypatch.setattr(PACK, "_ensure_pack_git_usable", lambda *_a: calls["heal"].append(True) or True)
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: calls["replay"].append(True))
+    fragment = tmp_path / "fragment.json"
+    assert PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=fragment) == 1
+    assert calls == {"wait": [True], "deps": ["pip install pytest"], "restore": [True], "heal": [], "replay": []}
+    doc = json.loads(fragment.read_text())
+    assert doc["jobs"][0]["steps"][0]["outcome"] == "failed"
+    assert "original " + fault + " failed" in doc["jobs"][0]["steps"][0]["detail"]
+    assert doc["jobs"][0]["infrastructure"]["outcome"] == "unknown"
+    assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
+    evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
+    assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
