@@ -1082,3 +1082,217 @@ def test_nothing_in_the_harness_writes_to_site():
         src = (ROOT / rel).read_text(encoding="utf-8")
         assert '"site"' not in src and "'site'" not in src, rel
         assert "site/" not in src.replace("site/ or", "").replace("to site/", ""), rel
+
+
+# ---------------------------------------------------------------------------
+# Analytical reasoning pair — natural customer phrasing vs coached positive control
+# ---------------------------------------------------------------------------
+
+def test_analytical_pair_fixture_is_frozen_and_has_exact_two_case_roles():
+    case = ev.load_benchmark(ev.ANALYTICAL_PAIR_BENCHMARK)
+    assert case["benchmark_id"] == "natural-vs-coached-causal-reasoning-2026-09-19"
+    assert case["frozen"] is True
+    assert case["lane"] == "fast" and case["lang"] == "en"
+    roles = [row["case_id"] for row in case["cases"]]
+    assert roles == ["natural", "coached"]
+    assert "synthetic" in case["source"].lower()
+    assert "no material NVDA-specific company catalyst" in case["packet_digest_fixture"]
+    for row in case["cases"]:
+        assert row["stance_required"] is False
+        tags = {prop["tag"] for prop in row["expected_properties"]}
+        assert {"competing_mechanisms", "support_and_contradiction", "causal_strength",
+                "discriminator", "unresolved_is_valid", "no_forced_action"} <= tags
+
+
+def test_gateway_hierarchy_benchmark_prompt_is_the_real_chat_fast_hierarchy():
+    from engine.neuralweb import brain_gateway as bg
+
+    question = "Why did NVDA move today?"
+    expected = (
+        bg._build_system_prompt("chat", "", internals_allowed=False, lane="fast")
+        + bg._analyst_block_for(question, "fast")
+        + bg._language_directive("en")
+    )
+    got = ev.gateway_benchmark_system_prompt(question, lane="fast", lang="en")
+    assert got == expected
+    # This is the conflicting hierarchy the pair is meant to measure — not the
+    # older doctrine-only benchmark.
+    assert "No hedging" in got
+    assert "ALWAYS end with a STANCE" in got
+    assert "SHAPE FOR THIS TURN (Fast)" in got
+    assert "MARKET ANALYST DOCTRINE" in got
+
+
+def test_pair_case_context_explicitly_does_not_reward_a_forced_trade_stance():
+    pair = ev.load_benchmark(ev.ANALYTICAL_PAIR_BENCHMARK)
+    natural = pair["cases"][0]
+    text = ev._benchmark_extra_context(natural)
+    assert "trade stance is NOT required" in text
+    assert "must not reduce voice_compliance" in text
+    assert "do not reward a forced action call" in text
+
+
+def test_run_benchmark_pair_classifies_natural_failure_coached_pass_as_analytical_regression():
+    calls = []
+
+    def answer(system, user):
+        calls.append((system, user))
+        if "two strongest competing explanations" in user:
+            return (
+                "NVDA rose with semis and the broader risk-on tape. The packet does not "
+                "separate those mechanisms; timestamped intraday/relative flow would. "
+                "The 16:20 item is too late to explain the session."
+            )
+        return "AI leadership caused NVDA to rise today."
+
+    answer.model_id = "fake-answerer"
+
+    def judge_reply(prompt):
+        if "two strongest competing explanations" in prompt:
+            return _judge_reply("max", note="coached clears the analytical contract")
+        return _judge_reply(
+            0, tags=["single_cause_forcing"],
+            note="natural phrasing collapsed two live candidates into one cause",
+        )
+
+    judge = _fake_judge(judge_reply)
+    out = ev.run_benchmark_pair(ROOT, judge, answer)
+
+    assert out["ok"] is True
+    assert out["pair_passed"] is False
+    assert out["classification"] == "analytical_regression"
+    assert out["natural"]["analytical_pass"] is False
+    assert out["coached"]["analytical_pass"] is True
+    assert "single_cause_forcing" in out["natural"]["tags"]
+    assert out["score_gap"] == 100
+    assert len(calls) == 2
+    packet = ev.load_benchmark(ev.ANALYTICAL_PAIR_BENCHMARK)["packet_digest_fixture"]
+    assert all(user.startswith(packet) for _, user in calls)
+    assert all("ALWAYS end with a STANCE" in system for system, _ in calls)
+
+
+def test_run_benchmark_pair_pass_requires_natural_case_to_clear_single_cause_forcing():
+    answer = lambda _s, _u: (  # noqa: E731
+        "Two live mechanisms remain: semis leadership and broad risk-on. "
+        "The after-close item is too late. Intraday relative flow is the discriminator."
+    )
+    answer.model_id = "fake-answerer"
+    judge = _fake_judge(_judge_reply("max"))
+    out = ev.run_benchmark_pair(ROOT, judge, answer)
+    assert out["classification"] == "pass"
+    assert out["pair_passed"] is True
+    assert out["natural"]["analytical_pass"] is True
+    assert out["coached"]["analytical_pass"] is True
+    assert out["score_gap"] == 0
+
+
+def test_run_benchmark_pair_is_fail_soft_when_one_answer_or_judge_is_missing():
+    calls = {"n": 0}
+
+    def partial_answer(_system, _user):
+        calls["n"] += 1
+        return None if calls["n"] == 1 else "Two candidates remain."
+
+    out = ev.run_benchmark_pair(
+        ROOT, _fake_judge(_judge_reply("max")), partial_answer
+    )
+    assert out["ok"] is False
+    assert out["classification"] == "unjudged"
+    assert out["natural"]["error"] == "no_answer"
+    assert out["coached"]["analytical_pass"] is True
+
+    dead_judge = ev.run_benchmark_pair(
+        ROOT, _fake_judge(None), lambda _s, _u: "Two candidates remain."
+    )
+    assert dead_judge["ok"] is False
+    assert dead_judge["classification"] == "unjudged"
+
+
+def test_pair_fixture_absence_is_soft():
+    out = ev.run_benchmark_pair(
+        ROOT, _fake_judge(_judge_reply("max")), lambda _s, _u: "x",
+        name="no_such_pair.json",
+    )
+    assert out["ok"] is False
+    assert out["error"] == "benchmark_absent"
+    assert out["classification"] == "unjudged"
+
+
+def test_weekly_dry_run_reports_both_benchmark_fixtures(runner, tmp_path):
+    assert runner.main(["--dry-run", "--root", str(tmp_path)]) == 0
+    summary = json.loads((tmp_path / "data" / "mastermind"
+                          / runner.SUMMARY_NAME).read_text(encoding="utf-8"))
+    assert summary["benchmark"]["fixture_loaded"] is True
+    assert summary["analytical_pair"]["fixture_loaded"] is True
+    assert summary["analytical_pair"]["benchmark_id"] == (
+        "natural-vs-coached-causal-reasoning-2026-09-19"
+    )
+    assert summary["analytical_pair"]["classification"] == "dry_run"
+
+
+def test_weekly_pair_compaction_never_archives_answer_prose(runner):
+    raw = {
+        "ok": True, "benchmark_id": "pair", "classification": "pass",
+        "pair_passed": True, "score_gap": 0,
+        "natural": {"total": 90, "passed": True, "analytical_pass": True,
+                    "tags": [], "answer": "private generated answer", "mech": {"x": 1}},
+        "coached": {"total": 95, "passed": True, "analytical_pass": True,
+                    "tags": [], "answer": "another generated answer", "mech": {"x": 2}},
+    }
+    compact = runner._compact_analytical_pair(raw)
+    assert "answer" not in compact["natural"] and "mech" not in compact["natural"]
+    assert "answer" not in compact["coached"] and "mech" not in compact["coached"]
+    assert compact["classification"] == "pass" and compact["pair_passed"] is True
+
+
+def test_analytical_pair_answerer_uses_configured_fast_model_not_judge_model(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(ev, "_brain_fast_lane", lambda _root: {
+        "deepseek_model": "configured-fast-model",
+        "fallback_model": "configured-fast-fallback",
+        "max_tokens": 4321,
+        "client_timeout_s": 123,
+        "client_max_retries": 0,
+    })
+
+    def fake_one_shot(cfg, system, user, *, max_tokens, context):
+        seen.update({"cfg": cfg, "max_tokens": max_tokens, "context": context,
+                     "system": system, "user": user})
+        return "ok", "deepseek", "configured-fast-model"
+
+    monkeypatch.setattr(ev, "_one_shot_with_identity", fake_one_shot)
+    answer = ev.fast_answer_via_llm_auth(ROOT)
+    assert answer.model_id == "configured-fast-model"
+    assert answer("system", "user") == "ok"
+    assert seen["max_tokens"] == 4321
+    assert seen["context"] == "response_eval_analytical_pair"
+    assert seen["cfg"]["deepseek_model"] == "configured-fast-model"
+    assert seen["cfg"]["opus_model"] == "configured-fast-fallback"
+    assert seen["cfg"]["client_timeout_s"] == 123
+    assert seen["cfg"]["client_max_retries"] == 0
+    assert seen["cfg"]["codex_provider"] is False
+    assert seen["cfg"]["deepseek_model"] != ev.JUDGE_DEEPSEEK_MODEL
+
+
+def test_analytical_pair_answerer_records_actual_served_provider_and_model(monkeypatch):
+    monkeypatch.setattr(ev, "_brain_fast_lane", lambda _root: {
+        "deepseek_model": "deepseek-primary",
+        "fallback_model": "haiku-fallback",
+        "max_tokens": 4000,
+    })
+    monkeypatch.setattr(
+        ev, "_one_shot_with_identity",
+        lambda *a, **k: ("fallback answer", "anthropic", "haiku-fallback"),
+        raising=False,
+    )
+    answer = ev.fast_answer_via_llm_auth(ROOT)
+    assert answer("system", "user") == "fallback answer"
+    assert answer.model_id == "deepseek-primary"
+    assert answer.last_provider == "anthropic"
+    assert answer.last_model_id == "haiku-fallback"
+
+    judge = _fake_judge(_judge_reply("max"))
+    out = ev.run_benchmark_pair(ROOT, judge, answer)
+    assert out["natural"]["answered_by_model"] == "haiku-fallback"
+    assert out["natural"]["answered_by_provider"] == "anthropic"
+    assert out["coached"]["answered_by_model"] == "haiku-fallback"
