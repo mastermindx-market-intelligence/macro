@@ -905,7 +905,7 @@ def _prophet_plan_fact(root, row: dict, projection, revisions: dict,
         raise ValueError('unqualified native plan')
     for key in ('id', 'asset', 'direction', 'signal_date', 'signal_date_basis',
                 'source_marker_date', 'entry_date', 'price_basis_date',
-                'recorded_at', 'confirmed_date', 'signal_provisional'):
+                'recorded_at', 'confirmed_date', 'signal_provisional', 'signal_tier'):
         if plan.get(key) != row.get(key):
             raise ValueError('native plan/ledger mismatch')
     for key in ('asof', 'recorded_at', 'price_basis_date', 'entry_date', 'signal_date'):
@@ -950,8 +950,8 @@ def _prophet_plan_fact(root, row: dict, projection, revisions: dict,
     fact['context_relevance'] = (
         f'Historical simulated plan; entry_status={status}; authority_tier={authority}. '
         'Parameters are not executed prices or achieved returns, not independent market '
-        'observations, and not an instruction to trade. No recorded confirmation is '
-        'invented; use the linked closure scope and its original signal clocks.')
+        'observations, and not an instruction to trade. The T1 marker confirmation '
+        'date is separate from signal-tier admission and does not prove an executed entry.')
     # This is a typed disclosure contract, not another source or receipt.
     # Keep the plan's recorded/price clocks separate from its simulated close.
     fact['native_plan_scope'] = {
@@ -963,6 +963,8 @@ def _prophet_plan_fact(root, row: dict, projection, revisions: dict,
         'authority_tier': authority,
         'entry_status': status,
         'confirmed_date': plan.get('confirmed_date'),
+        'signal_tier': plan.get('signal_tier'),
+        'signal_provisional': plan.get('signal_provisional'),
         'quantities': {
             **{'entry_reference': entry, 'invalidation_threshold': invalidation},
             **{f'target_{i + 1}': value for i, value in enumerate(targets)},
@@ -1053,6 +1055,10 @@ def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, 
             detail = _prophet_plan_fact(root, row, plans, before, as_of)
         except (ValueError, TypeError, KeyError):
             continue
+        if detail:
+            # Only native-plan packets gain the more precise field label;
+            # ordinary compact legacy closure context remains unchanged.
+            scope = scope.replace('confirmation=', 'T1_marker_confirmation=', 1)
         result[ref] = (event, scope, [detail] if detail else [])
     try:
         if before != snapshot():
