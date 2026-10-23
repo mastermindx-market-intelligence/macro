@@ -298,7 +298,10 @@ def test_get_prefs_readback(auth, store):
     assert out["ok"] is True
     assert out["prefs"]["tz"] == "Asia/Hong_Kong"
     assert "alert_email_optin" in out["unset"]
-    assert out["categories_available"] == ["holdings_material_change", "thesis_window", "fif_saved_issuer"]
+    # DR3 adds the defensive-rotation observation category to the legal-value list. It
+    # is offered here and chosen by nobody: the account panel draws its own rows.
+    assert out["categories_available"] == ["holdings_material_change", "thesis_window",
+                                           "fif_saved_issuer", "sector_rotation_relative"]
 
 
 def test_get_prefs_route_is_registered():
@@ -524,3 +527,226 @@ def test_route_is_registered_on_the_router():
     assert "/api/account/prefs" in paths
     route = next(r for r in account_prefs.router.routes if r.path == "/api/account/prefs")
     assert "POST" in route.methods
+
+
+# --------------------------------------------------------------------------- #
+# Defensive-rotation observations (DR3): the opt-in surface
+# --------------------------------------------------------------------------- #
+def test_the_new_category_is_a_legal_member_and_is_not_opted_in_by_default(auth, store):
+    from lib import user_prefs
+    assert "sector_rotation_relative" in user_prefs.ALERT_CATEGORIES
+    # Membership in the closed list is what makes a VALUE legal. It is not consent:
+    # an account with no stored alert_categories still has none.
+    clean, rejected = user_prefs.validate_prefs(
+        {"alert_categories": ["sector_rotation_relative"]})
+    assert clean["alert_categories"] == ["sector_rotation_relative"] and rejected == []
+    assert user_prefs.read_user_prefs(USER) == {"lang": "en"}
+
+
+def test_saving_the_new_category_alone_writes_exactly_that_value(auth, store):
+    out = account_prefs.save_prefs(
+        account_prefs.PrefsRequest(alert_categories=["sector_rotation_relative"]),
+        user=USER)
+    assert out["prefs"]["alert_categories"] == ["sector_rotation_relative"]
+    _, _, body = auth.put()
+    assert body["user_metadata"]["alert_categories"] == ["sector_rotation_relative"]
+
+
+def test_the_new_category_mixes_with_the_legacy_ones_and_dedupes_and_sorts(auth, store):
+    out = account_prefs.save_prefs(
+        account_prefs.PrefsRequest(alert_categories=[
+            "thesis_window", "sector_rotation_relative", "Sector_Rotation_Relative",
+            "holdings_material_change"]), user=USER)
+    assert out["prefs"]["alert_categories"] == [
+        "holdings_material_change", "sector_rotation_relative", "thesis_window"]
+
+
+def test_the_new_category_still_refuses_to_broaden_a_bad_neighbour(auth, store):
+    with pytest.raises(HTTPException) as ei:
+        account_prefs.save_prefs(
+            account_prefs.PrefsRequest(
+                alert_categories=["sector_rotation_relative", "wat"]), user=USER)
+    assert ei.value.status_code == 400
+    assert ei.value.detail["field"] == "alert_categories"
+    assert auth.calls == [] and store.rows == []
+
+
+def test_clearing_the_new_category_still_clears_everything(auth, store):
+    out = account_prefs.save_prefs(
+        account_prefs.PrefsRequest(alert_categories=[]), user=USER)
+    assert out["prefs"]["alert_categories"] == []
+
+
+def test_the_readback_offers_the_new_category_but_does_not_choose_it(auth, store):
+    """``categories_available`` is the legal-value list the UI may draw from. The account
+    panel is HARDCODED and does not auto-render it, so offering the value here must not
+    produce a stored preference -- these are two separate surfaces and stay separate."""
+    ticked = dict(USER, user_metadata=dict(
+        USER["user_metadata"], alert_categories=["sector_rotation_relative"]))
+    out = account_prefs.read_prefs(user=ticked)
+    assert "sector_rotation_relative" in out["categories_available"]
+    assert out["prefs"]["alert_categories"] == ["sector_rotation_relative"]
+    assert "alert_categories" not in out["unset"]
+    # A reader who never ticks it has not consented to it: the value is OFFERED and
+    # unset, which is what the account panel's own row reads to draw an unchecked switch.
+    fresh = account_prefs.read_prefs(user=USER)
+    assert "sector_rotation_relative" in fresh["categories_available"]
+    assert "alert_categories" in fresh["unset"] and "alert_categories" not in fresh["prefs"]
+    assert "alert_email_optin" not in fresh["prefs"]
+
+
+def test_an_unreadable_fresh_read_still_refuses_a_save_of_the_new_category(auth, monkeypatch):
+    auth.fail = True
+    with pytest.raises(HTTPException) as ei:
+        account_prefs.save_prefs(
+            account_prefs.PrefsRequest(alert_categories=["sector_rotation_relative"]),
+            user=USER)
+    assert ei.value.status_code == 502
+    assert [c for c in auth.calls if c[0] == "PUT"] == []
+
+
+# --------------------------------------------------------------------------- #
+# Executable account-panel checkbox contract (node executes the real builder)
+# --------------------------------------------------------------------------- #
+# A source-substring assertion cannot tell a checkbox that RENDERS from one that is
+# merely mentioned. These tests extract the real alertPrefsGroupHTML from the shipped
+# account.js and RUN it under node against a minimal DOM, so the EN and ZH labels, the
+# data-cat identity and the initial on/off state are observed rather than grepped.
+
+def _account_js_harness():
+    """Build and execute the account panel's alert-prefs group under node.
+
+    Returns a callable ``render(prefs, unset, lang) -> html``. The slice runs from
+    ``function lang(`` (which owns the language switch) through the end of
+    ``alertPrefsGroupHTML``; the few document/window members those helpers touch are
+    stubbed. Anything else in the file -- mounting, network, theme -- is deliberately
+    outside the slice.
+    """
+    import json
+    import shutil
+    import subprocess
+    import tempfile
+    from pathlib import Path
+
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the executable account preference contract"
+
+    src = (Path(__file__).resolve().parent.parent / "templates" / "account.js").read_text()
+    start = src.index("function lang(")
+    m_start = src.index("function alertPrefsGroupHTML(")
+    m_end = src.index("\n  }\n", m_start)
+    slice_js = src[start:m_end + len("\n  }\n")]
+
+    driver = """
+const fs = require('fs');
+const vm = require('vm');
+const SLICE = %s;
+const current = { lang: 'en' };
+const doc = {
+  documentElement: { getAttribute: (k) => (k === 'data-lang' ? current.lang : null) },
+  getElementById: () => null,
+  querySelector: () => null,
+  querySelectorAll: () => [],
+  addEventListener: () => {},
+};
+const ctx = vm.createContext({ document: doc, window: {}, Intl });
+vm.runInContext(SLICE + '\\nglobalThis.__group = alertPrefsGroupHTML;', ctx);
+const req = JSON.parse(fs.readFileSync(0, 'utf8'));
+current.lang = req.lang;
+process.stdout.write(String(ctx.__group(req.prefs, req.unset)));
+""" % json.dumps(slice_js)
+
+    tmp = Path(tempfile.mkdtemp(prefix="account-harness-"))
+    script = tmp / "harness.js"
+    script.write_text(driver)
+
+    def render(prefs, unset=(), lang="en"):
+        proc = subprocess.run([node, str(script)], capture_output=True, text=True,
+                              input=json.dumps({"prefs": prefs, "unset": list(unset),
+                                                "lang": lang}), timeout=60)
+        assert proc.returncode == 0, proc.stderr
+        return proc.stdout
+
+    return render
+
+
+@pytest.fixture(scope="module")
+def account_group():
+    return _account_js_harness()
+
+
+def _switch_row(html, category):
+    """The rendered ``[data-act=alert-cat]`` element for one category."""
+    import re
+    match = re.search(r'<button[^>]*data-cat="%s"[^>]*>' % re.escape(category), html)
+    return match.group(0) if match else None
+
+
+def test_the_new_category_renders_as_a_real_switch_row(account_group):
+    html = account_group({"alert_email_optin": True, "alert_categories": [],
+                          "tz": "UTC"})
+    row = _switch_row(html, "sector_rotation_relative")
+    assert row is not None and 'data-act="alert-cat"' in row
+    assert html.count('data-act="alert-cat"') == 3      # the two legacy rows + this one
+
+
+def test_the_new_row_is_unchecked_when_the_reader_has_not_ticked_it(account_group):
+    html = account_group({"alert_email_optin": True, "alert_categories": ["thesis_window"],
+                          "tz": "UTC"})
+    row = _switch_row(html, "sector_rotation_relative")
+    assert row is not None and 'aria-checked="false"' in row
+
+
+def test_the_new_row_is_checked_when_it_is_stored(account_group):
+    html = account_group({"alert_email_optin": True,
+                          "alert_categories": ["sector_rotation_relative"], "tz": "UTC"})
+    row = _switch_row(html, "sector_rotation_relative")
+    assert row is not None and 'aria-checked="true"' in row
+
+
+def test_the_new_row_appears_alongside_both_legacy_rows(account_group):
+    html = account_group({"alert_email_optin": True, "alert_categories": [], "tz": "UTC"})
+    for cat in ("holdings_material_change", "thesis_window", "sector_rotation_relative"):
+        assert _switch_row(html, cat) is not None, cat
+
+
+def test_the_new_label_is_executably_bilingual(account_group):
+    import re
+    for lang, want in (("en", "Defensive leadership changes"),
+                       ("zh", "防御板块领导力变化")):
+        html = account_group({"alert_email_optin": True, "alert_categories": [],
+                              "tz": "UTC"}, lang=lang)
+        assert want in html, (lang, want)
+        # The label is the switch's accessible name, not only loose body text.
+        m = re.search(r'<span class="mmacc-k">(.*?)</span>\s*<button[^>]*'
+                      r'data-cat="sector_rotation_relative"', html, re.S)
+        assert m is not None and want in m.group(1), (lang, "aria label")
+
+
+def test_the_two_legacy_labels_are_unchanged_by_the_new_row(account_group):
+    en = account_group({"alert_email_optin": True, "alert_categories": [], "tz": "UTC"},
+                       lang="en")
+    assert "A position I hold moves on real news" in en
+    assert "A market view I’m watching starts or ends" in en
+
+
+def test_the_no_categories_hint_still_appears_only_when_none_are_ticked(account_group):
+    empty = account_group({"alert_email_optin": True, "alert_categories": [], "tz": "UTC"})
+    ticked = account_group({"alert_email_optin": True,
+                            "alert_categories": ["sector_rotation_relative"], "tz": "UTC"})
+    assert "mmacc-hint-none" in empty
+    assert "mmacc-hint-none" not in ticked
+
+
+def test_the_template_and_the_rendered_site_copy_are_byte_identical():
+    """House law: the account panel ships as a paired textual artifact. The new row
+    must reach both, or one of the two properties silently loses the opt-in."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    tmpl = (root / "templates" / "account.js").read_text()
+    site = (root / "site" / "account.js").read_text()
+    assert tmpl == site
+    # Twice per file: the row identity and the membership test that sets its
+    # initial state. Any other count means a stray or duplicated occurrence.
+    assert tmpl.count("sector_rotation_relative") == 2
+    assert site.count("sector_rotation_relative") == 2
