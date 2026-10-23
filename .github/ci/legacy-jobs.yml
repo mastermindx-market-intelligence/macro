@@ -16161,6 +16161,10 @@ jobs:
       - "tests/test_rotation_early_context.py"
       - "tests/test_rotation_observation_state.py"
       - "tests/test_rotation_observation_builder.py"
+      - "lib/us_cash_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "engine/subsector_rotation_alerts.py"
+      - "engine/sector_fragmentation.py"
       - "scripts/build_rotation_events.py"
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_events_v2.py"
@@ -19080,6 +19084,8 @@ jobs:
         run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
         run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
+      - name: defensive observation contract and actual source-to-mail composition
+        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 

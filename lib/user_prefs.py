@@ -65,10 +65,16 @@ PREF_VALUES: dict[str, tuple[str, ...]] = {
 #: The closed set of alert categories a user may opt into (B-F08-1a).
 #: "fif_saved_issuer" — FIF saved-research issuer-watch notifications (X2-n):
 #: enqueue-only producer rows the alert drain filters on by payload category.
+#: "sector_rotation_relative" — defensive-rotation OBSERVATIONS (DR3): end-of-day
+#: notification_only notes about relative leadership between two sectors, carrying no
+#: trade advice. Opt-in only: adding it here grants no one the category (the account
+#: page writes a subset the reader already ticked), it only makes the value LEGAL for
+#: a user who has ticked it.
 ALERT_CATEGORIES: tuple[str, ...] = (
     "holdings_material_change",
     "thesis_window",
     "fif_saved_issuer",
+    "sector_rotation_relative",
 )
 
 #: Every stored preference and its KIND. PREF_VALUES stays the enum sub-table.
