@@ -155,6 +155,7 @@ test('Chinese means early observation, not early morning',()=>{
   const h=render(C(),'zh'); has(h,'早期防御性轮动证据'); not(h,'早盘'); has(h,'防御端上涨；风险端下跌');
 });
 test('real consumer is mounted and fed by existing fetch, including missing data',()=>{
+  has(src,'border-radius:var(--r-card,12px)'); has(src,'border-radius:var(--r-ctl,8px)');
   has(src,'id="rc-early-context"'); has(src,"earlyContextHtml(res[0],isZh()?'zh':'en',Date.now())");
   assert.ok(src.indexOf('earlyContextHtml(res[0]')<src.indexOf('if(!res[0]&&!res[1])'));
   not(src,'No money-flow events right now'); not(src,'Nothing to do.'); not(src,'Money leaving ');

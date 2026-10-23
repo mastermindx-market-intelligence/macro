@@ -68,6 +68,13 @@ def run(output: Path) -> dict:
                 page.goto("http://defensive-rotation.test/", wait_until="networkidle")
                 page.locator(".rc-ec-pair").first.wait_for()
                 assert page.locator(".rc-ec-pair").count() == 4
+                # Exercise both current theme fallbacks and future canonical tokens.
+                assert page.locator(".rc-early-context").evaluate("e => getComputedStyle(e).borderTopLeftRadius") == "12px"
+                assert page.locator(".rc-ec-pair").first.evaluate("e => getComputedStyle(e).borderTopLeftRadius") == "8px"
+                page.evaluate("document.documentElement.style.setProperty('--r-card', '16px'); document.documentElement.style.setProperty('--r-ctl', '6px')")
+                assert page.locator(".rc-early-context").evaluate("e => getComputedStyle(e).borderTopLeftRadius") == "16px"
+                assert page.locator(".rc-ec-pair").first.evaluate("e => getComputedStyle(e).borderTopLeftRadius") == "6px"
+                page.evaluate("document.documentElement.style.removeProperty('--r-card'); document.documentElement.style.removeProperty('--r-ctl')")
                 assert not errors, errors
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), "horizontal overflow"
                 assert page.locator(".rc-ec-conflict").count() == 3
@@ -79,7 +86,7 @@ def run(output: Path) -> dict:
                 name = f"{width}-{theme}-{lang}.png"
                 page.locator("#rc-early-context").screenshot(path=str(output / name))
                 report["cases"].append({"width":width,"theme":theme,"language":lang,"pairs":4,"conflicts":3,
-                    "page_errors":errors,"horizontal_overflow":False,"keyboard_details":True,
+                    "page_errors":errors,"horizontal_overflow":False,"keyboard_details":True,"radius_fallback_and_token_override":True,
                     "intercepted_requests":intercepted,"blocked_requests":blocked,"screenshot":name})
                 page.close()
         finally:
