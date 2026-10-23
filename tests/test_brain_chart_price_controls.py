@@ -107,6 +107,10 @@ def test_weekly_and_monthly_contract_aggregate_real_daily_bars(page):
     expect(first.locator(".mmb-cx-tf")).to_have_text("weekly")
     expect(first.locator("svg")).to_have_attribute("data-bars", "8")
     expect(first.locator(".mmb-cx-src")).to_contain_text("Aggregated from daily data")
+    # The initial ResizeObserver schedules a 120ms SVG redraw. Hover the
+    # settled SVG; otherwise the redraw can reset the OHLC header while the
+    # pointer remains motionless (a real browser race on slower CI runners).
+    page.wait_for_timeout(250)
     bounds = first.locator("svg").bounding_box()
     first.locator("svg").hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
     # Oct 19-21: first open 103.4, max high 105.6, min low 102.4, last close 104.6.
