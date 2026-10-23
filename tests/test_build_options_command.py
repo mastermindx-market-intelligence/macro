@@ -758,6 +758,60 @@ def test_lazy_payloads_use_plain_fetch_not_injected_script_loaders(page):
         assert url in page, f"lazy payload source missing: {url}"
 
 
+
+def test_mobile_options_controls_keep_scrollable_tabs_and_floor_standalone_actions(page):
+    """MM-11: preserve the intentional scrollable mode rail while making the
+    genuinely standalone Options controls usable on a coarse pointer."""
+    assert ".oew-tabs{display:flex;gap:2px;overflow-x:auto;" in page
+    assert re.search(r"\.oew-tkchip\{[^}]*min-height:40px", page, re.S)
+    assert re.search(r"\.oew-help\{[^}]*position:relative", page, re.S)
+    assert re.search(
+        r"@media \(hover:none\),\(pointer:coarse\)\{\.oew-help::before\{[^}]*width:40px;[^}]*height:40px",
+        page,
+        re.S,
+    )
+    for selector in (
+        r"\.oew-preset\{",
+        r"\.oew-seg button\{",
+        r"\.oew-sc-more summary\{",
+        r"\.oew-sc-clear\{",
+        r"\.oew-sc-csv\{",
+    ):
+        m = re.search(selector + r"([^}]*)\}", page, re.S)
+        assert m and "min-height:40px" in m.group(1), selector
+
+
+def test_lazy_failure_states_are_typed_retryable_and_do_not_reload_page(page):
+    """MM-12: denied, missing and transport/error states stay distinct from a
+    valid empty payload and expose one user-driven retry without a page reload."""
+    script = _extract_workspace_script(page)
+    assert "err.status = r.status" in script
+    assert "function modeFailurePanel(mode, err)" in script
+    assert "data-mode-retry" in script
+    assert "location.reload" not in script
+    assert "loadMode(retryMode)" in script
+
+    driver = _DOM_STUB + script + """
+    var denied = modeFailurePanel('scanner', { status: 403 });
+    var missing = modeFailurePanel('scanner', { status: 404 });
+    var failed = modeFailurePanel('scanner', { status: 500 });
+    process.stdout.write(JSON.stringify({denied:denied, missing:missing, failed:failed}));
+    })();
+    """
+    res = _run_node_driver(driver)
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}\nSTDOUT:\n{res.stdout}"
+    out = _json.loads(res.stdout.strip().splitlines()[-1])
+    assert 'data-load-state="denied"' in out["denied"]
+    assert "not available to this session" in out["denied"]
+    assert 'data-load-state="unavailable"' in out["missing"]
+    assert "published payload" in out["missing"]
+    assert 'data-load-state="error"' in out["failed"]
+    for html in out.values():
+        assert 'data-mode-retry="scanner"' in html
+        assert "Retry this mode" in html
+        assert "重试此模式" in html
+
+
 def test_no_prefers_color_scheme_rule(page):
     """The house has zero such rules; theme comes from the no-flash boot script.
     Match the RULE, not the word — the CSS comment explains why it is absent."""
