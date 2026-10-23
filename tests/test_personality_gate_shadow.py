@@ -204,30 +204,42 @@ def test_dual_ruler_grade_defers_then_advances(tmp_path, monkeypatch):
     s = _trunc_to_fire(full, "3D", min_fwd=70)   # fire with ≥70 daily bars ahead in `full`
     assert s is not None
     _write_close(tmp_path, "TAIL3D", s)
-    _write_codex(tmp_path, [{"sym": "TAIL3D", "rung_derived": "3D"}])
+    first = str(s.index[-1].date())
+    _write_codex(tmp_path, [{"sym": "TAIL3D", "rung_derived": "3D"}], as_of=first)
 
-    st1 = pgs.update(root=tmp_path, as_of="2026-07-25")
-    assert st1["ledger"]["graded"] == 0          # deferred — frozen until matured
+    st1 = pgs.update(root=tmp_path, as_of=first)
+    assert st1["ledger"]["graded"] == 0
     r1 = _ledger_rows(tmp_path)[0]
     assert r1["tailored_grade"] is None and r1["graded"] is False
 
-    # forward tape accrues (store grows to the full series)
+    # A separate nightly captures the first post-publication daily close.
+    next_session = full.iloc[:len(s) + 1]
+    _write_close(tmp_path, "TAIL3D", next_session)
+    sampled = pgs.update(root=tmp_path, as_of=str(next_session.index[-1].date()))
+    assert sampled["ledger"]["graded_prospective"] == 0
+    execution = _ledger_rows(tmp_path)[0]["tailored_execution"]
+    assert execution["entry_date"] == str(next_session.index[-1].date())
+    assert execution["entry_px"] == round(float(next_session.iloc[-1]), 4)
+
+    # Only later can 63 FULL sessions of outcome mature.
     _write_close(tmp_path, "TAIL3D", full)
-    st2 = pgs.update(root=tmp_path, as_of="2026-08-01")
+    st2 = pgs.update(root=tmp_path, as_of=str(full.index[-1].date()))
     assert st2["ledger"]["grades_advanced_today"] == 1
     assert st2["ledger"]["graded"] == 1
     r2 = _ledger_rows(tmp_path)[0]
     g = r2["tailored_grade"]
     assert g is not None
-    assert set(g) == {"fwd63", "mae63", "prox", "td_to_trough", "timing_label"}
+    assert {"fwd63", "mae63", "prox", "td_to_trough", "timing_label"}.issubset(g)
+    assert g["grade_basis"] == pgs.FORWARD_BASIS
+    assert g["execution_date"] > first
     assert isinstance(g["fwd63"], float)         # legacy ruler
     assert g["mae63"] <= 0                        # timing ruler: adverse excursion ≤0
     assert g["prox"] >= 0                         # entry premium over the ±31td low
     assert g["timing_label"] in ("confirmed_reset", "called_low", "early")
-    assert r2["graded"] is True and r2["graded_asof"] == "2026-08-01"
+    assert r2["graded"] is True and r2["graded_asof"] == str(full.index[-1].date())
 
     # idempotent: a later nightly does not re-advance an already-graded fire
-    st3 = pgs.update(root=tmp_path, as_of="2026-08-02")
+    st3 = pgs.update(root=tmp_path, as_of=str(full.index[-1].date()))
     assert st3["ledger"]["grades_advanced_today"] == 0
 
 
@@ -303,3 +315,111 @@ def test_fail_open_without_codex(tmp_path, monkeypatch):
     assert st["coverage_census"]["codex_names"] == 0
     assert st["ledger"]["fire_rows"] == 0
     assert st["display_only"] is True and st["is_context_only"] is True
+
+
+# ── W3 new source identity + prospective observation contract, issue #8718 ──
+def test_second_publication_day_same_bar_does_not_append(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    s = _trunc_to_fire(_wobbly(), "3D")
+    assert s is not None
+    _write_close(tmp_path, "REPEAT", s)
+    first = str(s.index[-1].date())
+    _write_codex(tmp_path, [{"sym": "REPEAT", "rung_derived": "3D"}], as_of=first)
+    assert pgs.update(root=tmp_path, as_of=first)["ledger"]["appended_today"] == 1
+    second = str((pd.Timestamp(first) + pd.Timedelta(days=1)).date())
+    assert pgs.update(root=tmp_path, as_of=second)["ledger"]["appended_today"] == 0
+    assert len(_ledger_rows(tmp_path)) == 1
+    assert _ledger_rows(tmp_path)[0]["grade_basis"] == pgs.FORWARD_BASIS
+
+
+def test_genuine_second_completed_cross_is_new_source_identity(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    full = _wobbly(900)
+    dates = tool_dates(bars_for(full, "3D"), "S")
+    assert len(dates) >= 2
+    s1 = full[full.index <= dates[-2]]
+    s2 = full[full.index <= dates[-1]]
+    _write_close(tmp_path, "TWOCROSSES", s1)
+    first = str(s1.index[-1].date())
+    _write_codex(tmp_path, [{"sym": "TWOCROSSES", "rung_derived": "3D"}], as_of=first)
+    assert pgs.update(root=tmp_path, as_of=first)["ledger"]["appended_today"] == 1
+    _write_close(tmp_path, "TWOCROSSES", s2)
+    assert pgs.update(root=tmp_path, as_of=str(s2.index[-1].date()))[
+        "ledger"]["appended_today"] == 1
+    keys = [pgs._source_event_key(r, "tailored") for r in _ledger_rows(tmp_path)]
+    assert len(keys) == 2 and len(set(keys)) == 2
+
+
+def test_missed_first_close_capture_abstains_instead_of_backfill(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    full = _wobbly(700)
+    s = _trunc_to_fire(full, "3D", min_fwd=75)
+    assert s is not None
+    first = str(s.index[-1].date())
+    _write_codex(tmp_path, [{"sym": "LATE", "rung_derived": "3D"}], as_of=first)
+    _write_close(tmp_path, "LATE", s)
+    pgs.update(root=tmp_path, as_of=first)
+    _write_close(tmp_path, "LATE", full)
+    state = pgs.update(root=tmp_path, as_of=str(full.index[-1].date()))
+    row = _ledger_rows(tmp_path)[0]
+    assert row["tailored_execution_skip"] == "missed_first_close_observation"
+    assert row.get("tailored_execution") is None
+    assert row["tailored_grade"] is None and not row["graded"]
+    assert state["ledger"]["graded_prospective"] == 0
+
+
+def test_codex_stamp_in_future_abstains(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    s = _trunc_to_fire(_wobbly(), "3D")
+    _write_close(tmp_path, "FUTURE", s)
+    now = str(s.index[-1].date())
+    future = str((pd.Timestamp(now) + pd.Timedelta(days=5)).date())
+    _write_codex(tmp_path, [{"sym": "FUTURE", "rung_derived": "3D"}], as_of=future)
+    result = pgs.update(root=tmp_path, as_of=now)
+    assert result["coverage_census"]["future_codex"] == 1
+    assert result["ledger"]["appended_today"] == 0
+    assert _ledger_rows(tmp_path) == []
+
+
+def test_existing_v1_row_stays_byte_unchanged_and_excluded(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    folder = tmp_path / "personality_timing"
+    folder.mkdir(parents=True)
+    old = {"schema": LEDGER_SCHEMA, "as_of": "2026-07-26",
+           "sym": "OLD", "codex_asof": "2026-07-25",
+           "uniform_rung": "2W", "tailored_rung": "3D",
+           "fired_uniform": False, "fired_tailored": True,
+           "uniform_entry": None,
+           "tailored_entry": {"entry_date": "2019-03-01", "entry_idx": 42, "entry_px": 90.0},
+           "graded": False, "tailored_grade": None, "uniform_grade": None}
+    path = folder / "gate_shadow.jsonl"
+    path.write_text(json.dumps(old) + "\n")
+    before = path.read_text()
+    state = pgs.update(root=tmp_path, as_of="2026-10-09")
+    assert path.read_text() == before
+    assert state["ledger"]["legacy_rows"] == 1
+    assert state["ledger"]["graded_prospective"] == 0
+    assert state["timing"]["tailored"]["n_graded"] == 0
+
+
+def test_recorded_next_close_price_is_not_rebased_at_grade(tmp_path, monkeypatch):
+    _nightly(monkeypatch)
+    full = _wobbly(700)
+    s = _trunc_to_fire(full, "3D", min_fwd=75)
+    assert s is not None
+    first = str(s.index[-1].date())
+    _write_codex(tmp_path, [{"sym": "FREEZE", "rung_derived": "3D"}], as_of=first)
+    _write_close(tmp_path, "FREEZE", s)
+    pgs.update(root=tmp_path, as_of=first)
+    next_day = full.iloc[:len(s) + 1]
+    _write_close(tmp_path, "FREEZE", next_day)
+    pgs.update(root=tmp_path, as_of=str(next_day.index[-1].date()))
+    frozen = _ledger_rows(tmp_path)[0]["tailored_execution"]
+    revised = full.copy()
+    revised.iloc[len(s)] *= 1.10
+    _write_close(tmp_path, "FREEZE", revised)
+    state = pgs.update(root=tmp_path, as_of=str(full.index[-1].date()))
+    row = _ledger_rows(tmp_path)[0]
+    assert row["tailored_execution"] == frozen
+    assert row["tailored_grade"]["execution_price"] == frozen["entry_px"]
+    assert state["ledger"]["graded_prospective"] == 1
