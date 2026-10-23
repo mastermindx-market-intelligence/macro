@@ -1,0 +1,12 @@
+{
+  "name": "macro-news-desk-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Isolated DOM harness for the news workspace; no application runtime dependency.",
+  "scripts": {
+    "test": "NODE_PATH=./node_modules node --test ../test_news_desk_mounted.cjs ../test_news_company_mounted.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  }
+}

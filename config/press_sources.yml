@@ -794,7 +794,8 @@ wire:
     retention_h: 72
     active_h: 48
     max_stories: 1500
-    snapshot_max_items: 80
+    snapshot_max_items: 600
+    snapshot_research_max: 360
     # Bounded confirmed group (2026-08-03, same recalibration as the 4.5
     # floors): at the new admission volume the 48 h window carries 80+
     # confirmed stories — Truth-mirror direct-quotes alone can fill the whole
@@ -809,6 +810,9 @@ wire:
     snapshot_paths:
       - "/var/lib/macro-live/public/live/intelligence.json"
       - "data/marketing/press/intelligence.json"
+    # Private, bounded display projection from the same retained story owner.
+    # The protected history API reads this file, never the writer's live DB.
+    history_snapshot_path: "/var/lib/macro-live/state/intelligence/intelligence-history.json"
     # ── V2 (INTELLIGENCE_DESK_V2_BY_FABLE.md) ────────────────────────────────
     # Claim-registry aliasing: the deterministic clustering floor when the story
     # spine's optional backends (datasketch / local encoder) are absent. Same
@@ -964,3 +968,171 @@ wire:
 # ─────────────────────────────────────────────────────────────────────────────
 llm:
   canonical_config: "config/marketing.yml#breaking.llm"
+
+
+# Research collection is independent of social publishing. All configured
+# excerpts are attributed and link to the original, freely available source.
+# Feed-specific commercial terms were checked 2026-10-18. No article scraping.
+research_rss:
+  enabled: true
+  feeds:
+    - id: fed_press
+      enabled: true
+      publisher: Federal Reserve
+      url: https://www.federalreserve.gov/feeds/press_all.xml
+      allowed_hosts: [www.federalreserve.gov, federalreserve.gov]
+      category: central_banks
+      coverage_regions: [americas, global]
+      language: en
+      poll_seconds: 120
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: Federal Reserve Board — original information is freely available at the source.
+      terms_url: https://www.federalreserve.gov/feeds/feeds.htm
+    - id: fed_speeches
+      enabled: true
+      publisher: Federal Reserve
+      url: https://www.federalreserve.gov/feeds/speeches.xml
+      allowed_hosts: [www.federalreserve.gov, federalreserve.gov]
+      category: central_banks
+      coverage_regions: [americas, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: Federal Reserve Board — original information is freely available at the source.
+      terms_url: https://www.federalreserve.gov/feeds/feeds.htm
+    - id: ecb_press
+      enabled: true
+      publisher: European Central Bank
+      url: https://www.ecb.europa.eu/rss/press.html
+      allowed_hosts: [www.ecb.europa.eu, www.ezb.europa.eu]
+      category: central_banks
+      coverage_regions: [europe, global]
+      language: en
+      poll_seconds: 120
+      source_type: official
+      content_use: attributed_feed_excerpt
+      allowed_path_prefixes: [/press/pr/, /press/govcdec/, /press/accounts/]
+      exclude_url_parts: [/pub/pdf/scp, /pub/research/, /wpub/]
+      attribution: European Central Bank — this information is freely available on the ECB website.
+      terms_url: https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html
+    - id: uk_world
+      enabled: true
+      publisher: UK Foreign, Commonwealth & Development Office
+      url: https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=foreign-commonwealth-development-office&order=updated-newest
+      allowed_hosts: [www.gov.uk]
+      category: geopolitics
+      coverage_regions: [global]
+      language: en
+      poll_seconds: 120
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: UK Foreign, Commonwealth & Development Office — Crown copyright, Open Government Licence v3.0.
+      terms_url: https://www.gov.uk/help/terms-conditions
+    - id: uk_defence
+      enabled: true
+      publisher: UK Ministry of Defence
+      url: https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=ministry-of-defence&order=updated-newest
+      allowed_hosts: [www.gov.uk]
+      category: geopolitics
+      coverage_regions: [global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: UK Ministry of Defence — Crown copyright, Open Government Licence v3.0.
+      terms_url: https://www.gov.uk/help/terms-conditions
+    - id: uk_treasury
+      enabled: true
+      publisher: HM Treasury
+      url: https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=hm-treasury&order=updated-newest
+      allowed_hosts: [www.gov.uk]
+      category: economy
+      coverage_regions: [europe, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: HM Treasury — Crown copyright, Open Government Licence v3.0.
+      terms_url: https://www.gov.uk/help/terms-conditions
+    - id: uk_trade
+      enabled: true
+      publisher: UK Department for Business and Trade
+      url: https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=department-for-business-and-trade&order=updated-newest
+      allowed_hosts: [www.gov.uk]
+      category: economy
+      coverage_regions: [global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: UK Department for Business and Trade — Crown copyright, Open Government Licence v3.0.
+      terms_url: https://www.gov.uk/help/terms-conditions
+    - id: bbc_world
+      enabled: false
+      publisher: BBC News
+      url: https://feeds.bbci.co.uk/news/world/rss.xml
+      allowed_hosts: [feeds.bbci.co.uk]
+      category: geopolitics
+      coverage_regions: [global]
+      language: en
+      poll_seconds: 120
+      source_type: reporting
+      content_use: permission_required
+      terms_url: https://www.bbc.co.uk/usingthebbc/terms/can-i-use-bbc-content-for-my-business/
+      hold_reason: Business RSS display permission has not been established for this product.
+    # Institutional text only. Official terms and bounded live feed responses
+    # were independently checked 2026-10-19; no article-page scraping.
+    - id: rba_media
+      enabled: true
+      publisher: Reserve Bank of Australia
+      url: https://www.rba.gov.au/rss/rss-cb-media-releases.xml
+      allowed_hosts: [www.rba.gov.au, rba.gov.au]
+      allowed_path_prefixes: [/media-releases/]
+      category: central_banks
+      coverage_regions: [asia, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: "Source: Reserve Bank of Australia 2026. Original information is available free from the RBA. Feed excerpt; shortened for display."
+      terms_url: https://www.rba.gov.au/copyright/
+    - id: eu_council
+      enabled: true
+      publisher: Council of the European Union / European Council
+      url: https://www.consilium.europa.eu/en/rss/pressreleases.ashx
+      allowed_hosts: [www.consilium.europa.eu, consilium.europa.eu]
+      allowed_path_prefixes: [/en/press/press-releases/]
+      category: geopolitics
+      coverage_regions: [europe, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: "Council of the European Union / European Council — © European Union, 2026. Feed excerpt; shortened for display."
+      terms_url: https://www.consilium.europa.eu/en/about-site/copyright/
+    - id: gdelt_world
+      enabled: true
+      publisher: GDELT worldwide reporting
+      transport: gdelt
+      query: '(war OR ceasefire OR sanctions OR diplomacy OR humanitarian)'
+      category: geopolitics
+      coverage_regions: [global]
+      language: multilingual
+      poll_seconds: 300
+      source_type: reporting
+      content_use: attributed_headline_link
+      terms_url: https://www.gdeltproject.org/about.html
+    - id: gdelt_economy
+      enabled: true
+      publisher: GDELT global economy
+      transport: gdelt
+      query: '(inflation OR economy OR exports OR tariffs OR energy)'
+      category: economy
+      coverage_regions: [global]
+      language: multilingual
+      poll_seconds: 300
+      source_type: reporting
+      content_use: attributed_headline_link
+      terms_url: https://www.gdeltproject.org/about.html

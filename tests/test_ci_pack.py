@@ -5201,9 +5201,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_628),
+    ("templates/index.html", 136, 5_894),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_866),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_638),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5211,6 +5211,33 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 News #9612 integration with protected b472f77c: exact
+    current merged 349-job registry, the existing seven overlapping edited
+    job registrations and all prior selected suites retained. The full
+    targeted packing test measured index 136 jobs / 5,894 weight,
+    free-content 135 / 5,866, and Prophet 128 / 5,638 versus protected
+    ceilings 5,884 / 5,856 / 5,628. All three weigh +10 from the News
+    collector-registry suite; no selected job or ten-pack count changes.
+    Fund only this observed +10 per weight ceiling. Preserve all job-count
+    ceilings 136 / 136 / 130, full dependency/import closure, selectors,
+    original commands, timeouts, and ten-pack limit. These weights are
+    deterministic estimator units, not measured run durations.
+
+    News #9612 vs protected 59b37b8 (2026-10-22) integration RED:
+    349 registered jobs, with all protected live-status path registrations
+    and the News collector-registry suite. Compared with protected main,
+    News adds one collector-registry step set (News API/intake and mounted
+    Company contracts), with no new job and ten packs per probe. The
+    exact composed planner measured index 136 jobs / 5,880 weight,
+    free-content 135 / 5,852, and Prophet 128 / 5,624.
+    Main's accepted ceilings were 5,870 / 5,842 / 5,614; fund only the
+    three observed +10 estimator units. Preserve all job-count ceilings,
+    selectors, pack ceiling, test steps and execution-time limits.
+    Estimator weights are not execution timings. The separate local
+    import-closure failure is caused by preserved ignored
+    site/stockdata/AAPL.json; no new tracked source trigger is authorized
+    by that cache. Clean hosted checking remains required.
 
     2026-10-22 recovered final composition joins featurece4664f6 and
     protected main7a8f690d. Canonical measurements on this actual merged
@@ -5599,6 +5626,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
 
+    News Intelligence recovered source composition (2026-10-20,
+    PR #9612, head b87b2c97abcf6): hosted contract-delta workflow
+    39384789732 job 118501942835 measured scripts/build_free_content.py
+    134 selected jobs / 5,674 weight-seconds against the accepted-main
+    134 / 5,664. No newly selected job; the source/CI composition adds
+    ten estimator units. Fund only this exact observed increase:
+    5,664 -> 5,674. The 79 imported Marketing closure-file omissions
+    in seven scope:exclusive jobs are separately widened in
+    .github/ci/legacy-jobs.yml; no test, contract, job-count,
+    other probe ceiling, or 10-pack budget is removed.
+
     Shared Shell/current-main composition (2026-10-20, PR7949):
     the four existing scope/packing checks on 0f058428 plus this branch
     measure index.html 135 jobs / 5,793, build_free_content 134 / 5,668,
@@ -5639,6 +5677,36 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     new entrant. index.html (5,793) and plan_book (5,542) stay under
     their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
     Every other bound stays unchanged.
+
+    The recovered News Intelligence PR #9612 also adds ten independent
+    estimator units through the preserved News source and CI suite expansion
+    (hosted job 118501942835 measured 5,664 -> 5,674 with no new selected job).
+    Composing these two disjoint job run-text deltas on main 13e098071ab2
+    yields the current combined bound 5,664 + 4 + 10 = 5,678 for the same
+    134 selected jobs. The local composed packing-probe test must confirm this
+    ceiling; do not relax the other two probes, selectors, or pack count.
+
+    News recovery on accepted main 902c10722700 (2026-10-20, PR #9612)
+    preserves the existing News suite expansion plus every newer main job.
+    The unchanged packing_probe_measurements implementation measured:
+    index.html 135 jobs / 5,832 / 10 packs (ceiling 5,822);
+    build_free_content.py 134 jobs / 5,707 / 10 packs (ceiling 5,697);
+    plan_book.py 128 jobs / 5,581 / 10 packs (ceiling 5,600).
+    The independent News run-text delta remains ten estimator units. Fund
+    only the two measured ten-unit excesses. Every job-count ceiling, the
+    plan_book weight ceiling, all selectors, suites, and ten-pack bound stay
+    unchanged. Retained measurements are recorded with the News integration
+    evidence; this does not waive fresh hosted contract-delta qualification.
+
+    News recovery composition on main 8128e4085d8a (2026-10-20,
+    PR #9612) retains all 341 main jobs and the News import-closure entries.
+    The unchanged packing measurements report index 135 jobs / 5,832 / 10 packs,
+    free-content 135 / 5,805 / 10, and plan-book 128 / 5,581 / 10.
+    Compared with this main's weight ceilings 5,822 / 5,795 / 5,600,
+    only the same ten-unit News suite expansion exceeds the first two bounds.
+    Fund 5,832 and 5,805 exactly; retain main's new free-content job ceiling
+    of 135, the other job ceilings, plan-book weight and ten-pack ceiling.
+    No suite, selector or import-closure requirement is weakened.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

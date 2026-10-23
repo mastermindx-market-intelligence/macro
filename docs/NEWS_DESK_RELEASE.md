@@ -1,0 +1,681 @@
+# News desk release record
+
+Mission: `news-cockpit-rebuild-20261018-astra-01`
+Protected law pin: `ebe2de8f0d94310241362874ec9262ba572a63d2`
+Original Macro base: `a1fe765f08975c786ae74119dce1f04859502105`
+
+## Status
+
+This record captures completed implementation and local design acceptance before publication. The release pull request for this mission carries the final exact-head CI, merge, render and production receipt. No live deployment is claimed by the specimens below.
+
+## Verification
+
+- Relevant pytest suite: **185 passed**, 2 environment warnings, 14.04 seconds. Receipt in `evidence/news-cockpit-20261018/verification.json`.
+- Pure JavaScript: 15 query/normalization assertions and 4 company protocol assertions, also called by the two pytest wrapper cases.
+- Mounted JavaScript: 14 aggregate and 12 company lifecycle cases; 26 passed against the canonical generated `site/news.html`.
+- Canonical full build: **completed, exit 0** (5,002.41 seconds). The first local attempt lacked pinned minifier dependencies; rjsmin 1.2.5 and rcssmin 1.2.2 were installed into an isolated build-only directory before the successful run. The existing public-page builder then completed, exit 0, including the ECB news notice.
+- Official-source intake: **36 accepted revisions**, 8 due sources, 5.602 seconds. All seven enabled official feeds were successfully checked; ECB and UK trade had no eligible new item. GDELT worldwide failed within its boundary and remains degraded; the second query was not selected for that turn. The receipt excludes article text and is an isolated collector test, not production proof.
+- Loopback HTTP wire: **401 without authentication**, private/no-store responses, initial frame 2.31 ms, atomic amendment 1,003.11 ms, removal 1,002.97 ms, full snapshot on reconnect. The local server was stopped. These are artifact-to-wire observations, not publisher-to-screen production latency.
+- Browser: 1440×900 and 390×844, dark/light, English/Chinese controls; no horizontal overflow in measured desktop/mobile states. Story and company modal behavior checked separately from automated DOM tests.
+
+## Paper handoff
+
+[News Intelligence page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-3-1)
+
+Current task-owned boards:
+
+| Board | ID | Purpose |
+| --- | --- | --- |
+| 30 · NEWS DESK · Dark · Current build | `6FXR-0` | Desktop feed and story workspace |
+| 31 · NEWS DESK · Light · Current build | `6GMY-0` | Light desktop |
+| 32 · MOBILE · Dark feed · Current build | `6GUZ-0` | Compact mobile feed |
+| 33 · MOBILE · Light feed · Current build | `6H8F-0` | Light mobile feed |
+| 35 · COMPANY NEWS · Dark · Current build | `6ITC-0` | Company reporting and activity workspace |
+
+Working indicators for these five boards were released with an observed applied response. Earlier boards and other pages were preserved. Paper uses its existing shared theme tokens; the implementation uses the site's corresponding shared tokens. The browser is the acceptance reference for runtime geometry, localization, focus, state transitions and actual availability.
+
+## Evidence interpretation
+
+Browser and Paper images contain illustrative reporting and must not be cited as live news, licensed feed availability, source health or production latency evidence. The UI truthfully fell back to 10-second refresh through the temporary preview tunnel. Protocol tests and the loopback wire receipt are distinct from production transport proof.
+
+Two Fabric commissions remain unresolved and were not retried: `news-desk-read-delivery-01` and `news-cockpit-protocol-audit-20261018-01`. Their NOT_FOUND observations did not prove execution absence and conveyed no retry authority. They supply no acceptance evidence. A lost Paper create response for the separate mobile-story board was checked against the News page; the target was absent and the mutation was not replayed. The five observed current boards above are the design handoff.
+
+## Publication and production fields
+
+The release pull request records its final head, successful required exact-head checks, merge SHA, covering render run, deployed checkout, API process commit, API/collector process starts, served artifact identity, authenticated route outcome and real source-health clocks. This prepublication record remains the reproducible local acceptance baseline; failures and unproven production outcomes must remain explicit in that release receipt.
+
+## Final acceptance corrections — 19 October 2026
+
+The release remains unmerged at this checkpoint. These corrections are part of the News implementation, not a production deployment receipt.
+
+- The shared design-system scan found and corrected 31 findings in the new News stylesheet. Page-local aliases now cover both the main desk and native News dialogs, use approved shared colors/radii/shadows, and use the existing positive-status token for a connected company stream. The corrected stylesheet has zero findings in the exact repository scanner.
+- Full-shell browser testing found CSS-hidden shared dialogs suppressing News keyboard shortcuts and the mobile focus trap. The dialog-visibility predicate now respects hidden and ARIA-hidden state, display, and visibility while retaining visible dialogs during opacity transitions.
+- Language changes now immediately repaint the current connection message in both desktop/mobile headers and the open Coverage view. The fix retains the active channel, specific failure wording, and the original polling deadline.
+- The canonical generated page was updated by replacing each uniquely matched Jinja-emitted CSS or JavaScript include. Each replacement preserved all surrounding bytes; the CSS replacement also preserved all scripts. This narrow artifact update did not require repeating the previously successful full build.
+- Mounted verification after the final corrections: **29 passed, 0 failed**, 1,993.517 ms (17 News desk and 12 company cases). New assertions cover hidden shared dialogs, mobile focus ownership, immediate language changes, an unchanged active stream, and the original polling deadline.
+- The new committed visual evidence package is `mockups/evidence/news-cockpit-20261019/`. It contains the full eight-cell desktop/mobile × English/Chinese × dark/light matrix, four real desktop hover/focus captures, and two additional mobile states: a connected company feed with a buffered new group and an expanded two-source group, plus a streamed story amendment with its visible warning. All fourteen accepted captures have observed state, file hashes and PNG dimensions; they are labelled illustrative previews.
+
+### Artifact identities
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `templates/news_desk.css` | `a1bf8c533e154ed4b2baf19005022e2572c12247cc6c7d5b5aa6017e60481f68` |
+| `templates/news_desk.js` | `fc345ae6fc8a6cfd1b06da26ff5fa953ec7aa1c1ff1e3abd4e961c7f98b5849c` |
+| `site/news.html` | `def133b1e649631b414fe21da8d4e0d573bc6592e8cf6aaf46fd3d1be13a22d5` |
+| Mounted News test | `98934744183db0689e60ae54f2982d08baee6c30f1b3f28311c487b95a121e13` |
+
+### Preview transport and evidence limits
+
+Cloudflare's temporary Quick Tunnel buffers SSE and [does not support that transport](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/). The accepted final capture set uses a separate temporary localtunnel connection, which delivered the actual preview streams. The company snapshot and grouped-source requests occasionally took 8–10 seconds through that connection and crossed the client's existing ten-second timeout. Those failed desktop company capture attempts are not accepted evidence. The UI cleared the unavailable reporting as designed; the client deadline was not relaxed for the preview.
+
+The accepted mobile company capture proves the real stream-triggered snapshot and buffered-arrival behavior using controlled source fixtures. It precedes only the final aggregate-label translation correction; company JavaScript and CSS are unchanged. The other thirteen accepted captures use the final aggregate JavaScript. Browser screenshots were returned as JPEG bytes despite the tool MIME label; they were decoded and re-encoded as PNG with identical decoded pixels. Native-byte hashes and the conversion disclosure are retained. Neither capture fixture nor tunnel measurements establish publisher-to-screen production latency, production company entitlements, complete global coverage, or MarketOntology parity.
+
+### CI and shared release dependency
+
+The earlier PR run [39179400064](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39179400064) completed. Its News/API/intake tests passed (68 tests), as did the then-current 26 mounted cases. The owned failures were the design findings above and seven curated CI import-closure omissions for `app/news_desk.py`; those seven paths are corrected. The new head requires its own complete CI receipt.
+
+The inherited reference-integrity failure concerns these existing Sector Central packets:
+
+- `research/migration_packets/MP-20261018-sector-central.md`
+- `research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md`
+- `research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md`
+
+At the latest independent GitHub check (19 October, 01:54 UTC), the three packet blobs and reference-integrity inventory remained unchanged on main `3d20939a6a5aa0a2e8fb5c4a11c33f1186476a48`. They lack a matching approved October reference receipt. The August approval does not cover the new October design. Recovery remains with the existing [Sector Central owner lane, issue 7646](https://github.com/mastermindx-market-intelligence/macro/issues/7646#issuecomment-6249516830). This News task does not manufacture that approval, bypass the gate, or claim a production release while it is unresolved.
+
+## Recovered source expansion — 20 October 2026 (not a release receipt)
+
+The original `news-cockpit-rebuild-20261018-astra-01` workspace was recovered without replacing its branch or discarding its pending source. The incremental candidate adds the incumbent history-backed search path, bounded source/region/latency coverage diagnostics, report comparison, named investigations and quiet in-app monitoring. Historical results retain their own bounded retention and availability semantics; this is not universal publisher history, account-synchronized memory, or real-time alert delivery. The historical search and availability displays must not imply completeness when retained artifacts or source rights are missing.
+
+Focused repair of the recovered candidate makes the publication-clock fallback select the first *parseable* source publication alias without rewriting raw clocks; confines mobile story Tab and reverse-Tab traversal to eligible sequential controls; and retains the Company News automatic HTTP 429 wait across visibility and BFCache suspension without overriding explicit Retry. The same exact corrections were propagated into the generated `site/news.html`. Discriminating pure-client and mounted regressions were added.
+
+Verified in the recovered original workspace: **194 passed** Python API/intake/intelligence/JS-wrapper tests (3 environment warnings), **86 passed** Node pure-client and mounted tests, JavaScript syntax checks and `git diff --check`. The isolated mounted harness used the existing `tests/news-desk/node_modules` jsdom dependency and the current generated `site/news.html`. These are source/fixture observations, not a new hosted CI, independent review or authenticated production proof.
+
+The inherited Sector proposal was subsequently de-admitted from the main migration-packet inventory through the existing Sector carrier (#7100 and #9637). This supersedes the older *News must await Sector design approval* assumption only. It does not approve the Sector design, clear any current News CI checks, prove merge compatibility with later `main`, or authorize production deployment. Retain exact-head/current-base hosted qualification, source review, controlled merge, installation, served-artifact identification and authenticated production/browser proof as separate gates.
+
+Outstanding north-star scope remains cross-publisher entity/event reconciliation, exposure and portfolio consequences, automated durable alert delivery, worldwide push/newswire entitlements, complete translation rights and production publisher-to-paint latency distributions. Existing source-rights, entitlement, no-retry and effect-uncertainty holds remain in force.
+
+## Resumed review repair — 20 October 2026
+
+This is a verified source milestone in the original mission, not a release or final
+acceptance. The continuing assigned session retains the next recovery action on the
+same M2 workspace and PR #9612; no replacement branch or workstream was created.
+
+The completed hosted run `39387694502` on `e4503c4242e908fc446ebf43dd9dac423b3f79bc`
+passed contract-delta and eleven packs. Its only failed logical job was
+`biocatalyst-deploy-integration`: `test_api_load_time_import_closure_is_covered_by_restart_regex`
+found the newly imported `engine/marketing/intelligence_history.py` missing from the
+API restart trigger. The exact existing trigger now includes that module; it does not
+restart unrelated nightly modules or alter deployment authority.
+
+The original independent Fabric review returned and was accepted as a diagnostic report,
+not source approval. Its cached coverage-payload/revision race is repaired with the
+existing re-entrant owner lock; a deterministic lock-observation regression discriminates
+against the old behavior. Its no-op reporting issue is repaired by separating successful
+acknowledgements from actual changed identities. Validator loss, duplicate replay,
+superseded revision and failed-publication recovery retain their original source clocks.
+Four guards now bind the committed News page to its exact canonical JS/CSS includes. A
+stale publication-alias mutation failed that guard; the original generated bytes were
+restored and their SHA-256 reverified.
+
+Access-policy adjudication preserves the existing owner, rather than quietly repricing
+or widening a surface: all four aggregate desk APIs require canonical identity and use
+`enforce_site_full` under the incumbent `PAYWALL_ENABLED` launch switch. Registered
+access while the switch is off is intentional; when armed, a non-entitled account is
+refused before artifact access. Sixteen tests exercise the real policy across all four
+routes and switch/entitlement states. Licensed Company News retains its distinct
+always-on entitlement and source-rights policy. Public source inputs are not a general
+free-access grant. Actual production switch state still needs deployment-path proof.
+
+Source verification: **555 Python tests passed** (three environment warnings) across
+API, intake, owner receipts, canonical page, deployment and JS wrappers; **86 Node tests
+passed** with zero failures. Initial broad deployment checks exposed omitted sparse
+checkout fixtures; the existing `contracts` and `collectors` paths were materialized,
+then the full suites passed without weakening tests. See
+`docs/evidence/news-cockpit-20261020-recovery/verification.json` for commands, source
+hashes, mutation/repair evidence and child identities, and
+`DSC:NEWS-COCKPIT-ACKNOWLEDGEMENT-IS-NOT-CHANGE` for the durable data-quality lesson.
+
+A separate read-only repair-proposal request, `news-9612-diagnostic-repair-20261020-01`,
+was refused before launch (controller exit 75). It returned no worker result and was
+not replayed. Source repair continued directly in the already-authorized original
+workspace. This does not establish an outage of every Fabric route or permission to
+retry that operation.
+
+### Ordered continuation and protected boundaries
+
+Mission incomplete. Publish the source/evidence together, inspect actual current-main
+composition, resolve only real source conflicts, and obtain required exact-head hosted
+checks plus a review of changed semantics. Reuse unchanged frontend/browser evidence
+only at its original fixture scope. Keep merge held until the existing protected release
+controller admits the exact candidate; then verify merge-tree inclusion, natural
+render/update, API/collector restart, served page identity, authenticated desk/history,
+rights revocation and actual source freshness. Neither a controller-created receipt,
+green local tests, source publication, merge nor fixture Chrome behavior is production
+acceptance. Preserve original NOT_FOUND/no-retry and Paper effect restrictions; do not
+retry them or reassign the separate NewsImpact/Terminal projects.
+
+## Current-main recovery composition — 20 October 2026
+
+The repaired source was committed as `23ef4907d1b380460ab3431db13a5409851f7f60`
+in the original workspace. Its first typed commit attempt returned NOT_APPLIED:
+the saved Agent OS discovery was outside the sparse checkout. An index-preserving
+`git add --dry-run` identified that exact input error; normal inclusion of
+`agentos/discoveries` made the dry run succeed, and the same typed publisher then
+committed successfully. No permission bypass, alternate source carrier, replacement
+workspace, or replay of uncertain effects occurred.
+
+The candidate now composes with accepted Macro main
+`902c107227006802bde8312ffd78b4685d0f7949`. Four actual conflicts were resolved:
+keep all main API restart dependencies plus the exact News history module; retain
+the News cockpit with main's current event rows; retain main's versioned/deferred
+shared theme script on both News and Plans; preserve both sides' CI explanations
+and fund only measured packing differences. All other News source/test blobs were
+unchanged by this integration.
+
+Fresh integration verification: **555 Python tests passed** (three environment
+warnings), **86 Node tests passed**, and the actual packing-probe test passed.
+The unchanged measurement implementation observed 135 jobs / 5,832 weight / 10 packs
+for index, 134 / 5,707 / 10 for free-content, and 128 / 5,581 / 10 for plan-book.
+Only the first two weight ceilings increased by the measured ten-unit excess;
+job counts, selectors, suites, the plan-book ceiling and ten-pack bound remain.
+
+Real Chrome loaded the exact generated `site/news.html` bytes with controlled
+loopback API fixtures, rather than a separately rendered template. Desktop 1440x900
+and mobile 390x844 had no horizontal overflow or page errors, unique workspace
+roots, working retained-report search including the archive-only example, and
+forward/reverse mobile Tab wrapping. The temporary server was stopped. Public
+edition rows coexist intentionally with live fixture rows; this is not a production
+news or authentication receipt.
+
+See `docs/evidence/news-cockpit-20261020-recovery/integration-main-902c.json` for
+exact source hashes, test evidence, packing measurements and browser observations.
+Original earlier evidence retains its original source scope. The parent mission
+remains incomplete: this composed head still needs hosted checks, independent
+review of repaired semantics, the protected release process, actual installed
+reader/collector identity, signed-in desk/history and rights/freshness proof.
+
+## Pro recovery: canonical assets and transport margin — 20 October 2026
+
+The original three dirty Labor files were preserved in separate commit
+`f3f079c203eec49e65c40342990d6cb734704082`, with their hashes and the Shared Shell
+comparison recorded. Main `8128e4085d8aa346c969de186f05694afbbe6274` already contains
+an accepted equivalent repair; the final Labor files are exactly that main version.
+No original bytes were lost, no broad stash/reset occurred, and no unrelated Shell
+navigation was imported. The News branch stays on its original operation and PR.
+
+Actual conflicts were resolved in the API restart trigger, generated News page,
+Labor page and packing tests. All 341 main CI jobs and the seven explicit News
+history registrations remain. Canonical measurements require only the existing
+News ten-unit weight addition: index 135 jobs / 5,832 / 10 packs; free-content
+135 / 5,805 / 10; plan-book 128 / 5,581 / 10. Main's job limits and all selectors,
+suites, plan-book weight and pack ceiling are preserved.
+
+Both P1 findings from the independent 8d76 review are addressed. The canonical
+externalizer and asset optimizer processed News and Plans; their actual linked
+CSS/JS files are present, version-stamped and follow the owner's defer rules.
+No hand-authored-page exemption was introduced. The old inline-only CSS guard
+failed on real externalization before repair. Its replacement verifies the exact
+canonical CSS once inline or in stylesheets actually linked by the page, with
+HTML parsing, same-site path containment, query handling and strict duplicate,
+stale, missing, unlinked, pseudo-attribute/comment and unsafe-reference cases.
+The three JavaScript source checks are unchanged. The paid leaf repair proposal
+was accepted as an implementation input, not as independent approval of this head.
+
+Aggregate heartbeat timing now matches the accepted company-stream margin in
+Macro #9893: five seconds, preserving one-second reads and 60-second renewal.
+The old default failed the new real-generator regression with only four heartbeats.
+A real loopback HTTP stream subsequently delivered twelve heartbeat frames with
+maximum observed gap 5.014 seconds and explicit reconnect at 60.109 seconds.
+Those measurements use a fixture identity and do not establish production latency,
+capacity, entitlement, authentication or CDN behavior.
+
+Verification on this composition: **582 Python tests**, **87 Node tests**, clean
+inline JavaScript parsing, and canonical contract-delta **0 introduced / 0 inherited**.
+The local audit initially encountered omitted sparse code and a pre-existing ignored
+AAPL render cache absent from its base checkout. Code was materialized normally;
+that one cache was temporarily held for a source-equivalent audit and restored with
+its exact original SHA-256. No checker was weakened and no fictitious AAPL source
+trigger was retained. All original rights/access boundaries remain unchanged.
+
+The generated News page passed eight real Chrome states (desktop/mobile touch,
+dark/light, English/Chinese); Plans passed four viewport/language states with its
+source notices and loaded, stamped assets. History search and mobile forward/reverse
+Tab wrapping were exercised. The preview used the ordinary synthetic sign-in event
+and fixture backend identity; this is not a real account login. Temporary servers
+stopped, and both selected screenshots were inspected. Evidence, exact source
+hashes and executable probes are in `docs/evidence/news-cockpit-20261020-recovery/`
+(`integration-main-8128.json`, `browser-assets-8128.json`, `heartbeat-wire-8128.json`).
+
+Release is still held for fresh exact-head hosted CI, an accepted independent
+review of this repaired candidate, protected merge and actual deployed News
+verification. The independent direct SSH-origin inspection refusal is not bypassed.
+Shared Company News and its normal deploy remain separate owners; the rendered
+News consumer, live source-health clocks and signed-in retained-history behavior
+must be verified after the normal release path, not inferred from these fixtures.
+
+
+## 2026-10-21 current-main integration
+
+The original News source `3a663ae70ecbd8a4130de9c95dbb6d940d181e04` was
+composed with Macro main `2ebe9b7d52665ce4b37dbdb5845f4ce5cea879b1` on the
+original managed branch. The measured conflicts were `tests/test_ci_pack.py`
+and a routine old-template render of `site/news.html`.
+
+The merged manifest preserves the exact union of 344 jobs, including all seven
+`engine/marketing/intelligence_history.py` registrations. Canonical packing
+measurements are 5,835 / 5,808 / 5,584 estimator units for index / build-free /
+plan-book. Every probe remains at ten packs. Only the first two weight ceilings
+are updated to their measured composition; selectors, job ceilings and the
+plan-book ceiling remain unchanged. These are planning weights, not runtime.
+
+Main did not change the five canonical News template/controller/style sources.
+The generated News conflict therefore retains the previously qualified cockpit
+artifact (SHA-256 `0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`)
+rather than adopting the old page's render. This is not a fresh source/provider
+snapshot or production proof; the normal canonical render and installed API/press
+worker verification remain release obligations. Prior browser evidence is retained
+for its unchanged source scope only. New-head CI and applicable independent review
+are required; the original failed reviewer packet remains immutable.
+
+
+### Current-main integration validation
+
+The affected packing, contract-delta, News page-render and News JavaScript
+modules completed with 363 passing tests and three failures. Two failures
+required the committed P0B receipt tree omitted by this sparse checkout; after
+the existing sparse-checkout helper materialized mockups, both exact tests
+passed. No assertions or source evidence were weakened.
+
+The remaining closure audit finds the pre-existing ignored
+`site/stockdata/AAPL.json` cache. That file is absent from both the prior News
+commit and the imported main commit, and its presence is the same filesystem
+sensitivity already documented above for the original News qualification.
+The existing ticker test names this optional data path, so the physical cache
+widens the local scanner's inferred closure. It was preserved; no fictitious
+AAPL trigger was added and no local cache was staged. A clean hosted exact-head
+run remains required. The complete local run is not represented as green.
+
+The combined native repair now continues as the single composed release on
+Mastermind PR #1674, incorporating the implementation carried by #1665 and the
+protected physical-root and canonical slot changes. The original #1661 head
+merged separately. Neither that landing nor this News integration reconciles
+original failed reviewer
+`news-9612-exact-3a663-release-review-20261021`. Its retained packet continues to
+refer to original News source `3a663ae70ecb` and must not be rewritten as this
+new integration candidate. Independent applicable review and actual signed-in
+production News acceptance remain outstanding.
+
+
+### 2026-10-21 integration through c694 and publication-boundary census
+
+The original workspace composed protected main
+`c694272be0f9b8690c18835897603d57affbdada` with News head
+`81df0f97de259457a6a93f90e726240a98d20b82`. The sole textual conflict
+was generated `site/news.html`; its resolution preserves the already qualified
+News artifact, SHA-256
+`0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`.
+The five canonical News template/controller/style sources remain unchanged.
+The 345 CI job IDs are the exact three-way union, with no job payload changed
+on both sides and every one-sided payload preserved. All seven canonical
+`engine/marketing/intelligence_history.py` registrations remain present.
+
+A fresh canonical `check_contract_delta.run(c694)` diagnostic, using the
+existing tracked-path inventory and canonical base-tree helper, measured:
+
+| Probe | Composed jobs / weight / packs | Base jobs / weight / packs | Existing jobs / weight ceilings |
+| --- | --- | --- | --- |
+| `templates/index.html` | 135 / 5,835 / 10 | 135 / 5,825 / 10 | 136 / 5,835 |
+| `scripts/build_free_content.py` | 135 / 5,808 / 10 | 135 / 5,798 / 10 | 135 / 5,808 |
+| `engine/prophet/plan_book.py` | 128 / 5,584 / 10 | 128 / 5,574 / 10 | 130 / 5,600 |
+
+The job sets are identical between the two canonical measurements. Their
+ten-unit weight difference is exactly the existing News
+`collector-registry` payload, 17 to 27: two additional command blocks and
+four explicit test paths. These are deterministic estimator units, not
+measured runtime. No packing ceiling, ten-pack limit, selector, job coverage,
+or command timeout was changed.
+
+A preceding direct measurement without the tracked-path inventory selected
+141/142/135 jobs and had 11 unscoped jobs, compared with two in the canonical
+measurement. Its extra selected IDs were `board-contradictions`,
+`calculator-input-integrity`, `crypto-shelves`, `nav-gap`, `nav-mega`,
+and `site20-s4-chart-brief-js`, plus `title-i18n` for the latter two probes.
+That materialization-sensitive diagnostic is not represented as a canonical
+packing regression.
+
+The canonical differential completed in 835.471 seconds with return 1:
+zero packing breaches, one introduced closure finding for
+`unrun-picks-boards -> site/stockdata/AAPL.json`. The preserved physical
+cache is a regular 140,579-byte file, SHA-256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`,
+ignored by `.gitignore`'s `site/stockdata` rule and absent from the index,
+News HEAD and protected c694 Git trees. The tracked-path oracle supplements
+physical existence and does not exclude this cache. This matches the prior
+disclosed local finding; it is not a green whole-gate result or proof of a
+new committed News dependency. The file was not deleted, staged or rewritten.
+
+This was explicitly an uncommitted-composition diagnostic: HEAD remained
+81df, MERGE_HEAD c694, and the unchanged staged tree was
+`2780a4f203c7b84bf52d90ad80bad11dbe92ea03`. The oracle still anchored
+its inventory at HEAD. A fresh canonical measurement and required CI on the
+frozen integrated head remain the qualification boundary.
+
+The separate News render/artifact guard passed all 77 tests
+(`tests/test_news_page_render.py`, 40.091 seconds command wall time).
+Six pytest cleanup warnings concerned pre-existing temporary browser trees;
+the test result was 77 passed, with no assertion or cleanup rule changed.
+
+At the publication boundary, protected main advanced five commits to
+`566bf7b89cb0ac0e5e8dc081c7bc1598c9b1a30f`: 19 paths, with only
+`.github/ci/legacy-jobs.yml` overlapping News-owned paths. The registry
+retains 345 jobs; only the protected `flow-surface` payload changes, adding
+ThetaData paths and its test to an existing command. It remains exclusive,
+matches none of these probes, and retains its fixed weight of 267. The
+integration must preserve that exact payload alongside the News
+`collector-registry` additions. This bounded source census does not replace
+the frozen-head measurement, required independent News review, protected
+release, or actual signed-in production acceptance.
+
+
+## Current protected-main composition and Company News compatibility — 2026-10-21
+
+The next protected base is `c26f3bde79d2a84fe79df80c14af07679326d1d8`.
+The completed c694 composition was first captured by the managed publisher as
+`8b279b4bffb39f35cf1091f703118d49a88cefd8`, tree
+`e214305ecbac778ace8f2c9098826fbfd96ba859`. Its published tree was preserved
+exactly in ancestry commit `e8e96cc4ca6b1c0792b7f2b78f3c6737be2bf2ff`,
+with parents 8b279 and c694. This uses the existing same-published-tree ancestry
+procedure. The original workspace and branch remain the sole source carrier.
+
+An initial c26 merge before that ancestry completion produced 3,687 conflicts
+against an artificially old merge base. Only that owned, uncommitted merge was
+aborted; the clean authored 8b279 checkpoint was verified and preserved.
+The actual merge from e8e96 uses c694 as its merge base and has one textual
+conflict, `site/news.html`. Its resolution retains the verified redesigned
+artifact (Git blob `3d4a4663d7d2ef50fbc8f62aff8f89c00bd05db5`,
+SHA256 `0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17`).
+The ordinary covering render still establishes the eventual production artifact.
+
+The independent immutable 566-to-c26 census found 4,130 changed files:
+4,074 generated site outputs, 41 research-package files, two marketing data
+files, and 13 source/test/documentation/CI files. The material source change
+is #9990's optional versioned ticker editorial views. All upstream changes are
+retained. Its CI registry change adds the editorial module to 12 existing
+job scopes; commands, dependencies, timeouts and budgets are unchanged in
+that interval. The earlier 566 flow-surface payload must also remain intact.
+
+Two independent C3 compatibility readings agree that News Company requests
+must retain their incumbent no-view contract. The visible Company news label
+does not opt the API into `view=company`. Snapshot pagination, unscoped story
+detail and nonzero-sequence stream resume remain valid without `view` or
+`view_revision`. Explicit editorial selection would require a separate
+revision/reset client protocol and remains outside this integration.
+
+Focused composition qualification:
+
+- Added a real-store API regression covering the News no-view snapshot,
+  integer cursor, story detail and bounded nonzero-sequence SSE resume.
+- Added mounted-request assertions preserving the no-view contract.
+- Added quiet live-stream renewal controls at 45 seconds, maintained by
+  heartbeats, for renewed access 200, 401 and 403. The old channel aborts;
+  successful renewal reconnects, and access denial purges reporting/activity
+  without an automatic revival.
+- The four current ticker API/store/shared-projection suites pass:
+  **204 passed** (6.88 seconds pytest; 9.7 seconds process).
+- The existing mounted Company News suite with those additions passes:
+  **17 passed**, zero failures/skips (1.564 seconds process).
+- Twenty backend-run warnings concern duplicate OpenAPI operation IDs and
+  pre-existing pytest temporary-browser cleanup. No related cleanup,
+  authentication guard or timeout was changed.
+
+Evidence remains in
+`/tmp/news-9612-c26-ticker-compatibility-20261021.{json,log}`,
+`/tmp/news-9612-c26-company-mounted-20261021.{json,log}`,
+`/tmp/news-9612-c694-ancestry-proof-20261021.json`, and
+`/tmp/news-9612-c26-source-integration-20261021.json`.
+These are composition tests; exact committed-head CI, ordinary independent
+source review, protected release and signed-in production acceptance remain
+separate gates. No production rights or entitlements were changed.
+
+The earlier managed-commit refusal was `NOT_APPLIED`. The old-checkout
+read-tree diagnostic did not identify its cause: the active installed
+publisher already matched protected blob
+`898f682a67b638bd57dac1b30d971f97fe796515` and preserves the real sparse index.
+Its correct copied-index preparation passed under the unchanged 15-second
+per-command limit. Ordinary staging/cache preparation followed by one
+exact-head managed attempt succeeded. No publisher source, runtime,
+permissions, timeout or alternate new-tree publication path was changed.
+
+## Shared Shell composition and current-base release frontier — 2026-10-21
+
+The original News workspace and branch remain the sole source carrier. The
+Shared Shell composition is preserved in managed content commit
+`bad40ad250cba481a83198d57d30f07b129fc654`, tree
+`f99e8da56f10ca91b22ade185da5d715890157d7`, and its source-identical
+ancestry commit `bed14796a39ce66f575210092e1a39ebc6fc351c`, whose second
+parent is protected main `96444fd8a3291e98c7f35a20bfbdf4b6d9cfa23e`.
+The ancestry step changes no content and uses the ordinary fast-forward
+owner. No branch is replaced or force-published.
+
+### News and Shared Shell behavior
+
+The redesigned News template, desk controls, Company behavior and public
+News data remain intact. Both News sign-in anchors keep the canonical
+`/?signin=1&ret=news.html` destination. An available qualified
+`MMXSharedShell.openAuth` owns an ordinary primary click, including before
+INIT. The controller requests only the fixed `signin` mode. Modified,
+non-primary, download and non-self-target clicks retain browser navigation;
+an already handled event remains handled. A shell refusal or exception
+does not cause a second standalone auth request.
+
+The deployment updater preserves both owners: all incoming cached-reader
+and Today schema triggers, plus the existing News intelligence-history
+trigger. No service was restarted by source integration.
+
+The generated News page preserves the previously qualified public News,
+calendar and consequence context. Its controller was updated and its
+canonical writer, Shared Shell injection and asset optimizer were applied.
+The inherited navigation was compared with the unchanged canonical
+report-base navigation through the same optimizer; only whitespace on
+blank lines was normalized for that comparison. The finalizer is a fixed
+point. No empty or fixture data replaced the saved public context.
+
+The resulting artifact is 322,469 bytes, SHA-256
+`7ff343e0eb54ae042ca08ac36db615dba90029e7b5eecbd693a1b891c699aec0`.
+This is a source composition, not a fresh data snapshot or a covering
+production render. The normal render, installed services, served bytes and
+actual signed-in browser remain separate release evidence.
+
+### Focused evidence and exact packing attribution
+
+- The News mounted suites and Shared Shell bridge/owner-adapter suites
+  completed with 155 passes, zero failures and zero skips.
+- The News render, Shared Shell injection and deployment-updater group
+  produced 401 passes and one fixture failure. The externalizer fixture
+  now binds the canonical writer's `_site_root` to its own temporary site,
+  so injected asset references belong to that fixture. The exact repaired
+  case then passed. All missing-asset, CSS and idempotence assertions
+  remain intact; this is not represented as a single 402-pass run.
+- News desk and ticker API compatibility suites completed with 99 passes.
+  Previously disclosed cleanup and duplicate-operation warnings remain
+  recorded; no warning-suppression or production-rights change was made.
+- Bash/controller syntax and conflict-marker/scoped-diff checks passed.
+
+Fresh canonical measurement at immutable bed147 used the inventory from
+that same HEAD and measured:
+
+| Probe | Jobs | Weight | Packs |
+| --- | ---: | ---: | ---: |
+| `templates/index.html` | 135 | 5,847 | 10 |
+| `scripts/build_free_content.py` | 135 | 5,820 | 10 |
+| `engine/prophet/plan_book.py` | 128 | 5,596 | 10 |
+
+The initial provisional ceilings failed only the first two weight rows.
+Evaluation of the same selected job IDs with each parent's manifest
+accounts for every unit: News `collector-registry` grows 17 to 27;
+accepted `data-base-shim` and `research-vault-api` each grow 7 to 12;
+`unrun-nav-chrome` grows 30 to 32. Thus retained News adds ten units over
+the incoming manifest and accepted Shared Shell/Research adds twelve over
+prior News 44e33a6. This parent comparison is same-ID weighting, not a
+fresh selection replay of either parent's tree. Only ceilings 5,837 to
+5,847 and 5,810 to 5,820 change. Job bounds, plan-book 5,600, ten packs,
+suites, selectors and exclusive declarations remain intact.
+
+The 345-job composition through bed147 preserved every unilateral payload
+and the exact additive path multisets for all seven jointly changed jobs.
+Inherited duplicate path declarations were preserved. All seven
+intelligence-history and twelve ticker-editorial registrations remain.
+
+### Protected main through 6df9eb23
+
+During the interrupted session, protected main advanced to
+`6df9eb23ee439f5b21a6c6dd780bfc5d03e10855`. A bounded census from 96444
+found 68 commits, 8,794 changed paths and three overlaps with News:
+the CI manifest, generated News and the packing test. Entire templates,
+libraries, collectors, config, contracts, docs and AGENTS are unchanged.
+The canonical shared bridge, CSS, navigation and theme artifacts are
+also unchanged. The ordinary merge has one textual conflict, generated
+News; it retains the composed artifact above.
+
+All accepted upstream changes remain, including the Shared Shell
+`mmx_shell=1` private/no-store cache fix and boundary guards, both new
+Options exclusive CI jobs and their producer closures, the render push
+filter, and the symmetric All-tools navigation regression check. The
+frozen integrated head must pass a fresh canonical packing measurement
+and its applicable hosted CI before release. A prior-head result does
+not qualify this new subject.
+
+The preserved ignored AAPL cache remains SHA-256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`.
+It was not deleted, staged or used to invent a trigger. The previously
+disclosed filesystem-sensitive whole-contract diagnostic remains distinct
+from clean hosted qualification.
+
+### Review and release custody
+
+The interrupted `news-9612-44e-ci-observer-20261021.py` completed with all
+expected runs terminal. GitHub independently reports
+[CI run 39639878277](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39639878277)
+successful for exact head `44e33a6cc42b24ab0e99f8b03ef2ae984b75ac92`.
+This remains historical CI evidence for that head.
+
+Mastermind repairs #1661 and #1674 are merged. The protected native
+generation was separately installed, selected and ingress-qualified.
+The original 3a663 failed News request was reconciled once as terminal
+failure with proven prelaunch absence and no replay. The later 44e33
+paid request actually attempted execution, returned rc 1 without an
+eligible accepted review, and remains immutable with retry false.
+Neither result approves this new source or authorizes a failed-ID replay.
+
+The materially changed final head requires its own full applicable
+independent source review through normal admission, preserving the
+original mission/root and budget. No old source verdict is inherited.
+Mission-owned holds remain until actual premerge gates are satisfied;
+source rights #8697/#7982/#8057 remain. The incumbent merge-on-green path
+is armed last. Protected merge, covering render, normal deployment and
+actual signed-in News workspace acceptance are still outstanding.
+
+
+## Protected c6bb integration and independent-review subject — 2026-10-22
+
+The continuation recovered the original 44e CI observer and the aa38 CI observer: both finished successfully for their exact historical heads. The aa38 branch CI is run 39682432190 (success at 2026-10-21T22:55:58Z). Neither result qualifies a later head.
+
+The original workspace and branch consume protected Macro `c6bbf9bf7a046ef911202c9025f0d0f1879505aa` to resolve a real generated-page collision. Relative to protected 6df, this interval contains 30 commits and 14,906 changed paths. The only textual conflict is `site/news.html`; the CI manifest, packing test and Plans artifact merge without textual conflicts. Accepted Forex R26 registration, retained market-memory scopes, recorded-at clock tests, Press changes and all unrelated incoming content remain included. The incoming packing-test change adds the Forex curated-exclusive owner; it does not change the existing News weight ceilings.
+
+News is composed from the qualified aa38 artifact through `lib.pages.write_page`, `lib.shared_shell.inject_shared_shell_text` and `scripts.optimize_assets.make_optimizer`. Every inline script and all visible text remain exact. The single asset-reference change is `theme.js?v=0dc42187` to `theme.js?v=a46f6677`, consuming the accepted non-self-target navigation fix and current emitted asset. Final News HTML is 322,469 bytes, SHA256 `d68b35719b9b94f7fe8c86332ff31d72d0d06bec85dcd268fd9f7da238c4f798`, and is a canonical-finalization fixed point. This is a source/artifact composition, not a fresh data snapshot or a covering production render.
+
+The incoming tracked `site/product-nav-icons.css` was materialized in the existing sparse include set and verified byte-identical to the incoming index (SHA256 `093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93`). The preserved ignored AAPL cache remains untouched.
+
+A new, ordinary-admission Subagent Fabric source review is required for the complete immutable integrated candidate. The reserved aa38 review identity was never submitted; the historical failed 3a and 44e requests remain under their recorded no-replay dispositions. No historical approval is inherited. Integrated-head packing, focused checks and exact hosted CI must be attributed to their actual later receipts. The News mission-owned premerge barrier remains until applicable source review, current green checks and compatible integration are established. Native repair rollout already completed separately; production acceptance remains owed after protected merge and the normal covering render/deploy.
+
+Two older GitHub checkpoint writes still have uncertain outcomes and must not be replayed. A new independent verdict is a distinct action and cannot imply either old write failed. Existing source-rights holds and other carrier reservations remain scoped to their original work.
+
+## Protected 7bb packing composition — 2026-10-22
+
+A bounded read-only check at 03:10 UTC measured the actual new protected-main
+interval from `c6bbf9bf7a046ef911202c9025f0d0f1879505aa` to
+`7bb2f72e45d48b526efba8c5311e862efe1ff95b`: five commits and 19 changed paths.
+The immutable predecessor remained
+`f07ba3c2e5a4143b850fdb210f3f88af7af58169`, tree
+`30428a1abf358d46404dd40a217691f42761d1c3`, with a clean workspace.
+The measured merge had exactly one conflict, in `tests/test_ci_pack.py`.
+This is a genuine source-integration repair.
+
+The composition retains protected PR9997's two additional Shared Shell
+regression suites, the missing-dependency fixes in ten legacy CI jobs,
+render/heartbeat/DAG fixes, HK lookup template and redirect-producer changes,
+and unrelated research/workstream records. It preserves all existing News
+source and artifacts. Only the two packing weight ceilings are composed:
+index 5,847 to 5,851 and free-content 5,820 to 5,824, accounting for the two
+new data-base-shim suites' four estimator units. Job-count ceilings, plan-book
+5,600, ten-pack ceiling, selectors, exclusive ownership, tests and execution
+budgets remain unchanged. This candidate requires a fresh canonical
+tracked-tree measurement on its frozen head before publication; the
+accounting derivation alone is not a measured pass.
+
+The predecessor's independent Fabric commission was actually submitted once:
+`news-9612-f07ba3-source-review-20261022`, with the original News mission as
+root and direct parent. It returned terminal rc1, verified terminal lineage,
+`QWEN_FINAL_RESPONSE_UNCONFIRMED`, unknown usage and
+`continuation_evidence_unqualified`. Acceptance is
+`UNVERIFIED / EXECUTION_NOT_ELIGIBLE`; execution absence is not proven and
+`retry_allowed=false`. The 690-byte response SHA256 is
+`f1e25c8b8ff2d1098488bb403c8be468bcfb4b067860eb0154e8499b99a9911f`.
+Its wrapper `kind=429` is not a retained provider HTTP receipt or proof of
+pre-task rejection. No source verdict was returned, and no retry, alternate
+commission, provider probe, acceptance or release followed.
+The distinct execution return was posted once and exact-body verified at
+[comment 6331698472](https://github.com/mastermindx-market-intelligence/macro/pull/9612#issuecomment-6331698472).
+
+The source revision change does not itself reset that failed review's retry
+owner or budget. Applicable independent review remains outstanding and
+requires supported disposition of the existing logical operation. The
+mission-owned premerge hold remains in force; green CI cannot replace it.
+The earlier uncertain checkpoint writes, frozen review identities and source
+rights reservations retain their existing dispositions. No production
+acceptance is claimed.
+
+
+## Protected 59b37b integration and exact packing RED — 2026-10-22
+
+The original News root and managed branch continued from clean local
+`946720c0a8e75a84985933c163d34be58e1ef5c8`. The protected-main
+interval to `59b37b8f78bdf851bfefdc9b84efec12d1bf08e6` is 154
+commits since 7bb2 and includes automatic rendered/data changes plus
+accepted deployment and live-status source work. A read-only merge-tree
+check found five conflicting paths. The same original workspace
+performed the two-parent merge, preserving the current protected
+Plans artifact and retaining the redesigned News artifact exactly
+(SHA256 `d68b35719b9b94f7fe8c86332ff31d72d0d06bec85dcd268fd9f7da238c4f798`).
+The seven CI registry conflicts retain News history paths and the
+protected live-status path entries. The API restart regex retains
+both `intelligence_history` and `treasury_daily_history`; protected
+Caddy/deployment changes remain in the merge. The registry has 349
+uniquely keyed jobs. No duplicated job or removed test was introduced.
+
+Local verification on the uncommitted integrated index: News API/page
+152 Python tests passed; mounted and model News JS 47 passed, and
+deployment/live-status/marketing integration 418 Python passed.
+Shell syntax, generated News local asset references, YAML unique keys
+and candidate-owned diff check passed. A full-tree staged diff check
+flags unrelated inherited protected-main commodity/marketing generated
+whitespace, not changes made by News. Do not change those other owners
+to make a News-only receipt green.
+
+The exact canonical packing probe before ceiling correction returned
+index 136 / 5,880, free-content 135 / 5,852 and Prophet 128 / 5,624;
+the protected ceilings were 5,870 / 5,842 / 5,614. All three exceed
+by ten estimator units attributable to News collector-registry suites.
+The test ceilings now fund precisely those observed increments, without
+padding job counts, ten-pack bounds, command scopes or execution budgets.
+A separate full import-closure test fails locally on the preserved
+ignored `site/stockdata/AAPL.json` (SHA256
+`bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00`);
+the cache remains untouched/untracked. Clean hosted CI and a lawful
+independent source review are still mandatory. The earlier f07 paid
+review retains terminal rc1/no verdict/no retry; this material source
+integration does not itself authorize review replay or replacement.
+
+At this checkpoint, no protected merge, deployed News render, real
+signed-in production acceptance, rights mutation, or reviewer approval
+has occurred. Source-rights holds #8697/#7982/#8057 remain.

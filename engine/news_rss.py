@@ -26,7 +26,7 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from urllib.parse import quote_plus, urlparse
 
@@ -344,3 +344,384 @@ def stop_reject_log(token: object) -> None:
         _reject_collector.reset(token)  # type: ignore[arg-type]
     except Exception:  # noqa: BLE001
         pass
+
+
+# Research intake shares this collector, the incumbent press scheduler/state and
+# IntelligenceStore. It never enters the marketing candidate or seen ledgers.
+_RESEARCH_MAX_BYTES = 1024 * 1024
+_RESEARCH_MAX_ITEMS = 150
+_RESEARCH_FETCH_SECONDS = 5.0
+
+
+def _research_iso(value: str) -> str:
+    """RSS and Atom dates; missing/invalid remains unknown, never ingestion-now."""
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            return ""
+        return dt.astimezone(timezone.utc).isoformat()
+    except ValueError:
+        return _to_iso(value)
+
+
+def _research_fetch(spec: dict, applied: dict) -> dict:
+    """Conditional, bounded fetch. Returned validators are proposals, not ACKs."""
+    if spec.get("transport") == "gdelt":
+        from engine.gdelt_client import get_articles
+        articles, reason = get_articles(
+            {"query": spec["query"], "mode": "artlist", "format": "json", "maxrecords": 100,
+             "sort": "datedesc", "timespan": "6h"},
+            timeout=5, max_attempts=1, max_response_bytes=_RESEARCH_MAX_BYTES,
+            total_timeout_s=_RESEARCH_FETCH_SECONDS,
+        )
+        if articles is None:
+            raise OSError(reason or "GDELT unavailable")
+        return {"status": 200, "articles": articles}
+
+    import email
+    import os
+    import selectors
+    import shutil
+    import subprocess
+    import tempfile
+    import time
+    from urllib.parse import urljoin
+
+    if not shutil.which("curl"):
+        raise OSError("curl unavailable")
+    allowed = set(spec.get("allowed_hosts") or [])
+
+    def checked(url):
+        parsed = urlparse(url)
+        if (parsed.scheme != "https" or parsed.hostname not in allowed
+                or parsed.username or parsed.password or parsed.port not in (None, 443)):
+            raise ValueError("unapproved feed destination")
+        return url
+
+    url = checked(spec["url"])
+    deadline = time.monotonic() + _RESEARCH_FETCH_SECONDS
+    headers = ["Accept: application/rss+xml, application/atom+xml, application/xml", "Accept-Encoding: identity"]
+    for state_key, header in (("applied_etag", "If-None-Match"), ("applied_last_modified", "If-Modified-Since")):
+        if applied.get(state_key):
+            value = str(applied[state_key])[:1024]
+            if "\r" in value or "\n" in value:
+                raise ValueError("invalid conditional validator")
+            headers.append(header + ": " + value)
+    for _hop in range(4):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("feed total deadline")
+        # curl's hard total deadline includes DNS, TLS, headers and body. The
+        # reader independently caps bytes; killing this owned child terminates
+        # a trickling response instead of leaving a blocked executor thread.
+        with tempfile.TemporaryFile() as header_file:
+            command = ["curl", "-q", "--silent", "--show-error", "--proto", "=https",
+                       "--max-time", str(remaining), "--max-filesize", str(_RESEARCH_MAX_BYTES),
+                       "--dump-header", f"/dev/fd/{header_file.fileno()}", "--user-agent", _UA]
+            for header in headers:
+                command.extend(["--header", header])
+            command.append(url)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                       pass_fds=(header_file.fileno(),))
+            body = bytearray()
+            try:
+                with selectors.DefaultSelector() as selector:
+                    selector.register(process.stdout, selectors.EVENT_READ)
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise TimeoutError("feed total deadline")
+                        if not selector.select(remaining):
+                            raise TimeoutError("feed total deadline")
+                        chunk = os.read(process.stdout.fileno(), 16384)
+                        if not chunk:
+                            break
+                        body.extend(chunk)
+                        if len(body) > _RESEARCH_MAX_BYTES:
+                            raise ValueError("feed exceeds size limit")
+                exit_code = process.wait(timeout=max(0.01, deadline - time.monotonic()))
+                if exit_code == 28:
+                    raise TimeoutError("feed total deadline")
+                if exit_code == 63:
+                    raise ValueError("feed exceeds size limit")
+                if exit_code:
+                    # Stable diagnostic categories only; never publish curl's
+                    # raw stderr, destination URLs or environment details.
+                    reason = {6: "dns_failed", 7: "connection_failed", 35: "tls_failed", 60: "tls_failed"}.get(exit_code, "fetch_error")
+                    raise OSError(reason)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=1)
+                process.stdout.close()
+            header_file.seek(0)
+            raw_headers = header_file.read(65537)
+            if len(raw_headers) > 65536:
+                raise ValueError("feed headers too large")
+        blocks = [b for b in raw_headers.split(b"\r\n\r\n") if b.startswith(b"HTTP/")]
+        if not blocks:
+            raise ValueError("missing feed HTTP response")
+        first, _, rest = blocks[-1].partition(b"\r\n")
+        status = int(first.split()[1])
+        response_headers = email.message_from_bytes(rest)
+        if status in (301, 302, 303, 307, 308):
+            url = checked(urljoin(url, response_headers.get("Location", "")))
+            continue
+        return {"status": status, "body": bytes(body),
+                "etag": response_headers.get("ETag", "")[:1024],
+                "last_modified": response_headers.get("Last-Modified", "")[:1024]}
+    raise ValueError("feed redirect limit")
+
+def _research_parse(raw: bytes, spec: dict, *, now: datetime,
+                    diagnostics: dict | None = None) -> list[dict]:
+    """Source identity and revision are separate; absence is never retraction."""
+    import hashlib
+    import html
+    import json
+    from engine.marketing.story_spine import content_key, normalize_url
+
+    if len(raw) > _RESEARCH_MAX_BYTES or b"<!DOCTYPE" in raw.upper() or b"<!ENTITY" in raw.upper():
+        raise ValueError("unsupported feed document")
+    root = ET.fromstring(raw)
+    local = root.tag.split("}")[-1].lower()
+    if local not in ("rss", "rdf", "feed"):
+        raise ValueError("not an RSS or Atom feed")
+    # RSS 1.0 uses namespaced RDF items. Treat its published entries exactly
+    # like RSS 2.0 items rather than reporting a successfully fetched empty feed.
+    entry_tag = "entry" if local == "feed" else "item"
+    entries = [entry for entry in root.iter() if entry.tag.split("}")[-1] == entry_tag]
+    stats = diagnostics if diagnostics is not None else {}
+    stats.update(observed_item_count=len(entries), eligible_item_count=0,
+                 filtered_item_count=0, duplicate_item_count=0)
+    rows = {}
+    cutoff = now - timedelta(days=7)
+
+    def field(item, names):
+        for name in names:
+            child = _child(item, name)
+            if child is not None:
+                return "".join(child.itertext()).strip()
+        return ""
+
+    for entry in entries:
+        headline = html.unescape(_clean(field(entry, ["title"])))[:500]
+        article = ""
+        for child in entry:
+            if child.tag.split("}")[-1] == "link" and child.get("rel", "alternate") == "alternate":
+                article = (child.get("href") or child.text or "").strip()
+                break
+        parsed = urlparse(article)
+        if (not headline or parsed.scheme not in ("https", "http") or not parsed.hostname
+                or parsed.username or parsed.password):
+            stats["filtered_item_count"] += 1
+            continue
+        # Some feeds mix institutional releases with authored work. An explicit
+        # source path boundary excludes the latter and cannot be satisfied by a
+        # query string or by a different publisher's similarly named path.
+        prefixes = spec.get("allowed_path_prefixes", [])
+        if prefixes and (parsed.hostname.lower() not in spec.get("allowed_hosts", [])
+                         or not any(("/" + parsed.path.lstrip("/")).startswith(part)
+                                    for part in prefixes)):
+            stats["filtered_item_count"] += 1
+            continue
+        if any(part in article for part in spec.get("exclude_url_parts", [])):
+            stats["filtered_item_count"] += 1
+            continue
+        published = _research_iso(field(entry, ["pubDate", "published", "date"]))
+        updated = _research_iso(field(entry, ["updated", "modified"]))
+        pub_dt = datetime.fromisoformat(published) if published else None
+        update_dt = datetime.fromisoformat(updated) if updated else None
+        if update_dt and update_dt > now + timedelta(minutes=5):
+            updated, update_dt = "", None
+        known_dates = [d for d in (pub_dt, update_dt) if d and d <= now + timedelta(minutes=5)]
+        if known_dates and max(known_dates) < cutoff:
+            stats["filtered_item_count"] += 1
+            continue
+        timestamp_quality = "published" if published else "unknown"
+        if pub_dt and pub_dt > now + timedelta(minutes=5):
+            published = ""
+            timestamp_quality = "future_source_stamp"
+        upstream = field(entry, ["guid", "id"])[:1000]
+        # Incumbent exact URL normalization; a feed's stable upstream ID takes
+        # precedence so amended article URLs do not create a fresh source item.
+        key = "upstream:" + upstream if upstream else content_key({"url": article, "headline": headline})
+        sid = "research:" + spec["id"] + ":" + hashlib.sha256(key.encode()).hexdigest()[:24]
+        summary = html.unescape(_clean(field(entry, ["description", "summary"])))[:800] if spec.get("content_use") == "attributed_feed_excerpt" else ""
+        item = {"id": sid, "feed_id": spec["id"], "source_item_id": upstream or normalize_url(article),
+                "headline": headline, "summary": summary, "url": article,
+                "canonical_url": normalize_url(article), "published_at": published,
+                "source_updated_at": updated, "timestamp_quality": timestamp_quality, "source_name": spec["publisher"],
+                "source_type": spec.get("source_type", "official"),
+                "category": spec.get("category", "economy"), "language": spec.get("language", "en"),
+                "coverage_regions": spec.get("coverage_regions", []),
+                "attribution": spec.get("attribution", spec["publisher"]),
+                "source_use_url": spec["terms_url"], "content_use": spec["content_use"]}
+        meaningful = [item[k] for k in ("headline", "summary", "url", "published_at", "source_updated_at")]
+        item["source_revision"] = hashlib.sha256(json.dumps(meaningful, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+        previous = rows.get(sid)
+        if previous:
+            stats["duplicate_item_count"] += 1
+        if previous and previous["source_revision"] != item["source_revision"]:
+            old_date, new_date = previous["source_updated_at"], item["source_updated_at"]
+            if not old_date or not new_date or old_date == new_date:
+                raise ValueError("ambiguous source revisions")
+            if old_date > new_date:
+                continue
+        rows[sid] = item
+        stats["eligible_item_count"] = len(rows)
+        if len(rows) > _RESEARCH_MAX_ITEMS:
+            raise ValueError("eligible feed batch exceeds acceptance bound")
+    return list(rows.values())
+
+
+def _research_gdelt(articles: list[dict], spec: dict, *, now: datetime,
+                    diagnostics: dict | None = None) -> list[dict]:
+    """GDELT metadata only. seendate is indexing time, never publication time."""
+    import hashlib
+    import json
+    from engine.marketing.story_spine import content_key, normalize_url
+    items = []
+    stats = diagnostics if diagnostics is not None else {}
+    stats.update(observed_item_count=len(articles), eligible_item_count=0,
+                 filtered_item_count=0, duplicate_item_count=0)
+    if len(articles) > 100:
+        raise ValueError("eligible feed batch exceeds acceptance bound")
+    revisions = {}
+    languages = {"english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko", "russian": "ru",
+                 "spanish": "es", "french": "fr", "german": "de", "arabic": "ar", "portuguese": "pt",
+                 "italian": "it", "turkish": "tr", "ukrainian": "uk", "hindi": "hi", "indonesian": "id",
+                 "vietnamese": "vi", "thai": "th", "hebrew": "he", "polish": "pl", "dutch": "nl"}
+    for row in articles:
+        if not isinstance(row, dict):
+            stats["filtered_item_count"] += 1
+            continue
+        url = str(row.get("url") or "")
+        domain = _domain_of(url)
+        title = _clean(row.get("title"))[:500]
+        if not title or urlparse(url).scheme not in ("http", "https") or not domain:
+            stats["filtered_item_count"] += 1
+            continue
+        # Incumbent publisher-quality policy, not a new source truth ranking.
+        if not 0 < nc.source_tier(domain) <= 2:
+            stats["filtered_item_count"] += 1
+            continue
+        indexed = _research_iso(row.get("seendate", ""))
+        timestamp_quality = "indexed_not_published" if indexed else "unknown"
+        if indexed and datetime.fromisoformat(indexed) > now + timedelta(minutes=5):
+            indexed = ""
+            timestamp_quality = "future_index_stamp"
+        identity = content_key({"url": url, "headline": title})
+        item = {"id": "research:" + spec["id"] + ":" + hashlib.sha256(identity.encode()).hexdigest()[:24],
+            "feed_id": spec["id"], "source_item_id": normalize_url(url),
+            "source_revision": hashlib.sha256(json.dumps([title, url], ensure_ascii=False).encode()).hexdigest(),
+            "headline": title, "summary": "", "url": url, "canonical_url": normalize_url(url),
+            "published_at": "", "source_updated_at": "", "timestamp_quality": timestamp_quality,
+            "provider_indexed_at": indexed,
+            "source_name": domain, "source_type": "reporting", "category": spec["category"],
+            "language": languages.get(str(row.get("language") or "").lower(), "und"), "publisher_country": str(row.get("sourcecountry") or ""),
+            "coverage_regions": spec.get("coverage_regions", []),
+            "attribution": "Article metadata: The GDELT Project. Reporting belongs to the linked publisher.",
+            "source_use_url": "https://www.gdeltproject.org/", "content_use": "attributed_headline_link"}
+        if item["id"] in revisions:
+            stats["duplicate_item_count"] += 1
+            if revisions[item["id"]] != item["source_revision"]:
+                raise ValueError("ambiguous source revisions")
+            continue
+        revisions[item["id"]] = item["source_revision"]
+        items.append(item)
+        stats["eligible_item_count"] = len(items)
+    return items
+
+
+def _research_error_code(exc: Exception) -> str:
+    """Expose a bounded reason without copying exception text into the product."""
+    if isinstance(exc, TimeoutError) or type(exc).__name__ == "TimeoutExpired":
+        return "deadline_exceeded"
+    if isinstance(exc, ET.ParseError):
+        return "invalid_feed"
+    message = str(exc)
+    if isinstance(exc, OSError):
+        allowed = {"rate_limited", "query_rejected", "deadline_exceeded", "response_too_large",
+                   "request_too_large", "fetch_error", "dns_failed", "connection_failed", "tls_failed"}
+        if message in allowed:
+            return message
+        return "transport_unavailable" if message == "curl unavailable" else "fetch_error"
+    if isinstance(exc, ValueError):
+        known = {"unsupported feed document": "invalid_feed", "not an RSS or Atom feed": "invalid_feed",
+                 "ambiguous source revisions": "revision_rejected", "eligible feed batch exceeds acceptance bound": "batch_too_large",
+                 "unapproved feed destination": "destination_rejected", "invalid conditional validator": "validator_rejected",
+                 "feed exceeds size limit": "response_too_large", "feed headers too large": "headers_too_large",
+                 "missing feed HTTP response": "invalid_http", "feed redirect limit": "redirect_limit"}
+        if message in known:
+            return known[message]
+        if message.startswith("feed HTTP status "):
+            return "http_error"
+    return "processing_error"
+
+
+def poll_research_feeds(specs: list[dict], applied_state: dict, *, now: datetime,
+                        fetcher=None) -> list[dict]:
+    """Return due feed outcomes without consuming source revisions/validators."""
+    fetcher = fetcher or _research_fetch
+    due = []
+    for spec in specs[:30]:
+        if not spec.get("enabled") or spec.get("hold_reason") or spec.get("content_use") not in ("attributed_headline_link", "attributed_feed_excerpt") or not spec.get("terms_url"):
+            continue
+        state = applied_state.get(spec["id"], {})
+        last = _research_iso(state.get("last_attempt_at", ""))
+        interval = max(60, min(3600, int(spec.get("poll_seconds", 120))))
+        delay = min(900, interval * 2 ** min(3, int(state.get("failures", 0))))
+        if last and (now - datetime.fromisoformat(last)).total_seconds() < delay:
+            continue
+        due.append((spec, state))
+
+    # One GDELT turn per tick. Least-recently-attempted selection uses the
+    # existing feed state and never bypasses its cross-process pacing floor.
+    gdelt_due = [pair for pair in due if pair[0].get("transport") == "gdelt"]
+    if gdelt_due:
+        chosen = min(gdelt_due, key=lambda pair: pair[1].get("last_attempt_at", ""))
+        due = [pair for pair in due if pair[0].get("transport") != "gdelt" or pair is chosen]
+
+    def poll(pair):
+        import time
+        spec, state = pair
+        start = time.monotonic()
+        outcome = {"feed_id": spec["id"], "publisher": spec["publisher"], "observed_at": now.isoformat(),
+                   "attempt_started_at": datetime.now(timezone.utc).isoformat(), "items": [],
+                   "http_status": None, "observed_item_count": None, "eligible_item_count": None,
+                   "filtered_item_count": None, "duplicate_item_count": None}
+        diagnostics = {}
+        try:
+            response = fetcher(spec, state)
+            status = int(response.get("status", 0))
+            outcome["http_status"] = status if 100 <= status <= 599 else None
+            if status not in (200, 304):
+                raise ValueError("feed HTTP status " + str(status))
+            outcome.update(status=status, etag=response.get("etag", ""), last_modified=response.get("last_modified", ""))
+            if status == 200:
+                outcome["items"] = (_research_gdelt(response["articles"], spec, now=now, diagnostics=diagnostics)
+                                    if spec.get("transport") == "gdelt"
+                                    else _research_parse(response["body"], spec, now=now, diagnostics=diagnostics))
+            outcome["error"] = ""
+            outcome["error_code"] = ""
+            outcome["outcome"] = ("unchanged" if status == 304 else "eligible" if outcome["items"]
+                                  else "filtered" if diagnostics.get("observed_item_count") else "empty")
+        except Exception as exc:  # one source must never stop the other feeds
+            code = _research_error_code(exc)
+            rejected = {"invalid_feed", "revision_rejected", "batch_too_large", "destination_rejected",
+                        "validator_rejected", "response_too_large", "request_too_large", "headers_too_large", "query_rejected"}
+            outcome.update(status=0, error=type(exc).__name__, error_code=code,
+                           outcome="rejected" if code in rejected else "fetch_failed")
+        finally:
+            outcome.update(diagnostics)
+            outcome["attempt_duration_ms"] = round(max(0.0, time.monotonic() - start) * 1000, 3)
+            outcome["attempt_completed_at"] = datetime.now(timezone.utc).isoformat()
+        return outcome
+
+    if not due:
+        return []
+    with cf.ThreadPoolExecutor(max_workers=min(4, len(due))) as executor:
+        return list(executor.map(poll, due))

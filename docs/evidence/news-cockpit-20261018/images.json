@@ -1,0 +1,56 @@
+[
+  {
+    "file": "browser-company-mobile-dark-en.png",
+    "bytes": 45222,
+    "sha256": "4fb6e2729f22908d9a1d887a4b9c9242f57c9b3479c98f2c71be89f97362c4dc",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-desktop-dark-en.png",
+    "bytes": 124648,
+    "sha256": "06ee98f36fee0efa82ba8488b6d73ddd8952deb351a920a850270f26dcda5280",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-desktop-light-zh.png",
+    "bytes": 119407,
+    "sha256": "075815b016f55c21e927b02850667244ce76f70ce4efa0e869e809fcc344be3c",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-mobile-dark-en.png",
+    "bytes": 43853,
+    "sha256": "d745f220398921a14cfa335e7b959430b01d73c49d97849cceb4bb14b8b6e34e",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-mobile-light-zh.png",
+    "bytes": 42083,
+    "sha256": "7a74aa5dc21c7db23b2f1c7c99995b4be3d310321daa8cb58bd8404b40c13893",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-story-mobile-dark-en.png",
+    "bytes": 39909,
+    "sha256": "c04e9fa07d8b1abf25616f3404e37bb65b943eded3029b675a06d20efc59ba25",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "browser-story-mobile-light-zh.png",
+    "bytes": 43243,
+    "sha256": "48a27d5e674a238ef023a9fef009818ff0493959a481f639ba35e51e54a7a5e8",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "paper-company-dark.jpg",
+    "bytes": 103594,
+    "sha256": "89c002f4d27c7e92d6d67230ebf9277759ae373a3636ec7695a5655e0249718b",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  },
+  {
+    "file": "paper-desktop-light.jpg",
+    "bytes": 175366,
+    "sha256": "9350db1a73df20848e89ebe48a2eeaf07c14cf76da23b5bbd358b1de2bce869f",
+    "scope": "illustrative design specimen, not live news or coverage proof"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "schema": "news_cockpit.recovery_evidence.v1",
+  "mission": "news-cockpit-rebuild-20261018-astra-01",
+  "source_parent": "e4503c4242e908fc446ebf43dd9dac423b3f79bc",
+  "observed_at": "2026-10-20T09:16:57.292541+00:00",
+  "source_sha256": {
+    "app/deploy/update.sh": "7765ade50c52068d0bb470b5cb34e980a2b0bdd0448b9db96735bf4054cb53a0",
+    "app/news_desk.py": "2ce40fb5fcbfb846ae53c56603a8a024adcfec91a90de58056777ab6377d32e4",
+    "engine/marketing/intelligence_desk.py": "18899623e702f0ffb8ffa4eccd2b8180a4753160aa802a1e1dd91bced22d21c6",
+    "scripts/marketing_fastlane_daemon.py": "90afe251635774f847c7e73f280848081bffcca0e3189ef73a49e2533b9f15c6",
+    "tests/test_news_desk_api.py": "c597356c6c3d94959049d348d1fdd49befed1274deeb3629edb36beeb185a794",
+    "tests/test_news_page_render.py": "d1402aa4648547e7fc122b0389770d74986275c27be68a62a46e3a9f590b6259",
+    "tests/test_research_news_intake.py": "a472b0b7f3b698dd4598ba3b8b190a7772b75030c06ed68794f4aa04534b23bd",
+    "tests/test_marketing_intelligence_desk.py": "fd1e8138cc3ba5e71e22272b45865cc25aeee42fd6059ad8a9c3436001456d22",
+    "templates/news_desk.js": "a2dd8f9c6766483d468dc9182164dc4852382f61556484f25d235374900ff8db",
+    "templates/news_company.js": "7b80decdde0425e4e22413bde6a5fbe76d3d9dd945214fc756b919e3f14f4cf9",
+    "templates/news_research.js": "71d95fc988d820bfb825d4368495168b425103b1ab433aa3fd5084c6009787b8",
+    "templates/news_desk.css": "60b0b60a546f9785bf891e278b048bac5af329830b2927ad0c36ec3028b1adc0",
+    "site/news.html": "81d7eadf10f798fcad09fb03d297d3edb022f0b8cf02de2f1850c0c58742cc6c"
+  },
+  "tests": [
+    {
+      "command": "python3 -m pytest -q tests/test_research_news_intake.py tests/test_marketing_intelligence_desk.py tests/test_news_desk_api.py tests/test_news_page_render.py tests/test_deploy_update_self_heal.py tests/test_news_desk_js.py",
+      "passed": 555,
+      "failed": 0,
+      "warnings": 3,
+      "exit_code": 0,
+      "output_sha256": "39e837ca8b9f07a26bafe802036bbd6649da134b5ff3da6427964ce8a7d2e3ba"
+    },
+    {
+      "command": "NODE_PATH=\"$PWD/tests/news-desk/node_modules\" node --test tests/test_news_desk_client.cjs tests/test_news_desk_mounted.cjs tests/test_news_company_protocol.cjs tests/test_news_company_mounted.cjs",
+      "passed": 86,
+      "failed": 0,
+      "exit_code": 0,
+      "output_sha256": "1824a9d58f85aa405f51af64d23303291e2dedd5b36268ced2f7adc210db2b7f"
+    }
+  ],
+  "discriminators": {
+    "restart_dependency": "failed before exact history-module trigger repair; passed afterward",
+    "cache_pair": "unguarded cached revision read fails deterministic owner-lock assertion",
+    "no_op_replay": "three cases failed with changed count 1 before repair, pass at zero after repair",
+    "committed_page": "publication-alias mutation killed by source/served parity guard; exact original bytes restored"
+  },
+  "independent_report": {
+    "run_id": "news-cockpit-recovery-20261020-review-b87b2c97",
+    "reviewed_source": "b87b2c97abcf6af07ee9e7c1449b64074913cbfe",
+    "response_sha256": "9bf380b4cdfef8fd1501fefbd2c6219e480a594f846f9b6317893fc2062f8232",
+    "accepted_as": "diagnostic_report_not_source_approval"
+  },
+  "repair_proposal_request": {
+    "run_id": "news-9612-diagnostic-repair-20261020-01",
+    "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+    "controller_exit": 75,
+    "retried": false,
+    "worker_result": false
+  },
+  "production_proven": false,
+  "current_head_hosted_ci_proven": false,
+  "current_source_independently_approved": false
+}

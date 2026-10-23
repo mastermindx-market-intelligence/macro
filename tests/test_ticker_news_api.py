@@ -504,6 +504,51 @@ def test_editorial_views_filter_rows_groups_details_changes_and_flow(monkeypatch
     ).status_code == 404
 
 
+def test_news_company_legacy_requests_remain_compatible_with_editorial_backend(monkeypatch, tmp_path):
+    api, client, _db, _names = _editorial_app(monkeypatch, tmp_path)
+    response = client.get("/api/ticker-news/NVDA?limit=60")
+    assert response.status_code == 200, response.text
+    snapshot = response.json()
+    assert snapshot["schema"] == "ticker_news.snapshot.v1"
+    assert {row["source_item_id"] for row in snapshot["rows"]} == {"1", "2", "3"}
+    assert "editorial_view" not in snapshot
+
+    first_response = client.get("/api/ticker-news/NVDA?limit=1")
+    assert first_response.status_code == 200, first_response.text
+    first = first_response.json()
+    assert first["has_more"] and isinstance(first["next_cursor"], int)
+    earlier_response = client.get(
+        f"/api/ticker-news/NVDA?limit=1&cursor={first['next_cursor']}"
+    )
+    assert earlier_response.status_code == 200, earlier_response.text
+    earlier = earlier_response.json()
+    assert earlier["schema"] == "ticker_news.snapshot.v1"
+    assert len(first["rows"]) == len(earlier["rows"]) == 1
+    assert first["rows"][0]["story_id"] != earlier["rows"][0]["story_id"]
+    assert "editorial_view" not in earlier
+
+    detail = client.get(f"/api/ticker-news/stories/{first['rows'][0]['story_id']}")
+    assert detail.status_code == 200, detail.text
+    assert detail.json()["schema"] == "ticker_news.story.v1"
+    assert detail.json()["story_id"] == first["rows"][0]["story_id"]
+    assert detail.json()["members"]
+    assert "editorial_view" not in detail.json()
+
+    original_events = api._sse_events
+
+    def bounded_events(**kwargs):
+        return original_events(**kwargs, poll_seconds=0, max_cycles=1)
+
+    monkeypatch.setattr(api, "_sse_events", bounded_events)
+    resumed = client.get("/api/ticker-news/NVDA/stream?after_sequence=1")
+    assert resumed.status_code == 200, resumed.text
+    assert resumed.headers["cache-control"] == "private, no-store"
+    assert "event: upsert" in resumed.text
+    assert "event: reset" not in resumed.text
+    assert "event: restricted" not in resumed.text
+    assert "editorial_view" not in resumed.text
+
+
 def test_editorial_continuations_require_matching_context(monkeypatch, tmp_path):
     _api, client, _db, names = _editorial_app(monkeypatch, tmp_path)
     first = client.get("/api/ticker-news/NVDA?view=news&limit=1").json()

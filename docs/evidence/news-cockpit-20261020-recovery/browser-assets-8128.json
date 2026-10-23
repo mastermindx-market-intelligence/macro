@@ -1,0 +1,413 @@
+{
+  "scope": "committed generated pages with controlled local API fixtures; not production authentication",
+  "page_sha256": {
+    "news.html": "0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17",
+    "plans.html": "c8104b953485c46a2a3af5c1efddb39db429b09edf76fd583008be62ff0bf589"
+  },
+  "states": [
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "feed_rows": 58,
+      "connection": "Stream connected",
+      "desk_width": 1379.53125,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "history_status": "2 / 2 matching reports loaded",
+      "older_retained_match": true,
+      "open_dialogs": [],
+      "touch_emulation": false,
+      "fine_pointer": true,
+      "screenshot_sha256": "8502cc9d88718d94919b3e0f64646f9d1f25b3da7f1594725beb194fa2602ed6",
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "feed_rows": 58,
+      "connection": "新闻流已连接",
+      "desk_width": 1379.53125,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "open_dialogs": [],
+      "touch_emulation": false,
+      "fine_pointer": true,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "feed_rows": 58,
+      "connection": "Stream connected",
+      "desk_width": 1379.53125,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "open_dialogs": [],
+      "touch_emulation": false,
+      "fine_pointer": true,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "feed_rows": 58,
+      "connection": "新闻流已连接",
+      "desk_width": 1379.53125,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "open_dialogs": [],
+      "touch_emulation": false,
+      "fine_pointer": true,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "feed_rows": 58,
+      "connection": "Stream connected",
+      "desk_width": 366,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "modal": "true",
+      "tab_wrap": true,
+      "reverse_tab_wrap": true,
+      "open_dialogs": [],
+      "touch_emulation": true,
+      "fine_pointer": false,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "feed_rows": 58,
+      "connection": "新闻流已连接",
+      "desk_width": 366,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "modal": "true",
+      "tab_wrap": true,
+      "reverse_tab_wrap": true,
+      "open_dialogs": [],
+      "touch_emulation": true,
+      "fine_pointer": false,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "theme": "light",
+      "lang": "en",
+      "feed_rows": 58,
+      "connection": "Stream connected",
+      "desk_width": 366,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "modal": "true",
+      "tab_wrap": true,
+      "reverse_tab_wrap": true,
+      "open_dialogs": [],
+      "touch_emulation": true,
+      "fine_pointer": false,
+      "page_errors": [],
+      "bad_assets": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "feed_rows": 58,
+      "connection": "新闻流已连接",
+      "desk_width": 366,
+      "grid": "block",
+      "linked_styles": [
+        {
+          "href": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "href": "assets/css/ad8c38c0.css?v=ad8c38c0",
+          "loaded": true
+        },
+        {
+          "href": "navigation-refresh.css?v=ef068fe1",
+          "loaded": true
+        }
+      ],
+      "modal": "true",
+      "tab_wrap": true,
+      "reverse_tab_wrap": true,
+      "open_dialogs": [],
+      "touch_emulation": true,
+      "fine_pointer": false,
+      "screenshot_sha256": "2b24c9c55c17b683104bd880b68e961b93e9bbe0dcd23e4e8aebf94d4db40c5f",
+      "page_errors": [],
+      "bad_assets": []
+    }
+  ],
+  "plans_states": [
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "lang": "en",
+      "has_ecb": true,
+      "has_rba": true,
+      "local_assets": [
+        {
+          "url": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/5009dcb0.css?v=5009dcb0",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/17c15c21.css?v=17c15c21",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/account.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/nav_market.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "theme.js?v=1c9d7ad5",
+          "loaded": true
+        },
+        {
+          "url": "onboard.js?v=e9bbc4fb",
+          "loaded": true
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "viewport": 1440,
+      "document_width": 1440,
+      "lang": "zh",
+      "has_ecb": true,
+      "has_rba": true,
+      "local_assets": [
+        {
+          "url": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/5009dcb0.css?v=5009dcb0",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/17c15c21.css?v=17c15c21",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/account.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/nav_market.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "theme.js?v=1c9d7ad5",
+          "loaded": true
+        },
+        {
+          "url": "onboard.js?v=e9bbc4fb",
+          "loaded": true
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "lang": "en",
+      "has_ecb": true,
+      "has_rba": true,
+      "local_assets": [
+        {
+          "url": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/5009dcb0.css?v=5009dcb0",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/17c15c21.css?v=17c15c21",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/account.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/nav_market.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "theme.js?v=1c9d7ad5",
+          "loaded": true
+        },
+        {
+          "url": "onboard.js?v=e9bbc4fb",
+          "loaded": true
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "viewport": 390,
+      "document_width": 390,
+      "lang": "zh",
+      "has_ecb": true,
+      "has_rba": true,
+      "local_assets": [
+        {
+          "url": "theme.css?v=2e861147",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/5009dcb0.css?v=5009dcb0",
+          "loaded": true
+        },
+        {
+          "url": "assets/css/17c15c21.css?v=17c15c21",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/account.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "http://127.0.0.1:55552/nav_market.js?v=20261015-mm-return-language",
+          "loaded": true
+        },
+        {
+          "url": "theme.js?v=1c9d7ad5",
+          "loaded": true
+        },
+        {
+          "url": "onboard.js?v=e9bbc4fb",
+          "loaded": true
+        }
+      ],
+      "page_errors": []
+    }
+  ],
+  "temporary_server_stopped": true,
+  "authentication_scope": "Synthetic ordinary mdx-auth SIGNED_IN event with loopback-visual-test ID, paired with the preview router fixture identity override. Not saved login, canonical live authentication, production rights or real feed proof."
+}

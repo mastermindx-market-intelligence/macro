@@ -1,0 +1,47 @@
+{
+  "requested": {
+    "name": "mobile-en-dark-company",
+    "viewport": "mobile",
+    "locale": "en",
+    "theme": "dark",
+    "access": "anonymous",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "force_state": "company_buffered",
+    "kind": "focus",
+    "selector": "#ndCompanyUpdates"
+  },
+  "observed": {
+    "aggregate_connection": "Stream connected",
+    "applied_locale": "en",
+    "applied_theme": "dark",
+    "captured_at": "2026-10-19T01:59:51.047Z",
+    "company_connection": "Company changes connected",
+    "company_update_visible": true,
+    "desk_width": 366,
+    "document_width": 390,
+    "focus_applied": true,
+    "focus_visible": true,
+    "hover_applied": false,
+    "target_background": "color(srgb 0.109804 0.14549 0.207059)",
+    "target_outline": "color(srgb 0.478431 0.654902 0.878431) solid 2px",
+    "target_present": true,
+    "url": "https://hip-parks-talk.loca.lt/news.html",
+    "viewport_height": 844,
+    "viewport_width": 390,
+    "visible_dialog": "ndCompany"
+  },
+  "native_screenshot": {
+    "format": "JPEG",
+    "sha256": "d5f7a46d679f56f525a53048054ad616aa60867490358ac9ad770afce6245898",
+    "bytes": 42122,
+    "pixel_preserving_png_reencode": true
+  },
+  "image": {
+    "file": "mobile-en-dark-company.png",
+    "bytes": 201324,
+    "sha256": "e4fc69ed4e20c21ab7aa2e2c38881cd178efb6dc8ba5cc377a61dce779c3fea0",
+    "width": 390,
+    "height": 844
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-10-19T01:59:48.198Z",
+  "company_open": true,
+  "company_rect": {
+    "height": 844,
+    "width": 390
+  },
+  "connection_color": "color(srgb 0.239216 0.647059 0.392157)",
+  "connection_state": "connected",
+  "connection_text": "Company changes connected",
+  "expanded_groups": [
+    {
+      "members": 2,
+      "source_links": [
+        {
+          "href": "https://example.com/company-outlook",
+          "title": "Illustrative source report: company outlook"
+        },
+        {
+          "href": "https://example.com/industry-context",
+          "title": "Illustrative source report: industry context"
+        }
+      ]
+    }
+  ],
+  "pending_focus": true,
+  "pending_focus_visible": true,
+  "pending_text": "1 new story groups · Show latest",
+  "pending_visible": true,
+  "rows": [
+    {
+      "headline": "Semiconductor company outlines its next generation of data-center systems"
+    },
+    {
+      "headline": "Suppliers discuss capacity plans as demand for advanced chips develops"
+    },
+    {
+      "headline": "Investors examine margins, order visibility and the timing of new products"
+    }
+  ],
+  "theme": "dark",
+  "url": "https://hip-parks-talk.loca.lt/news.html",
+  "visible_dialogs": [
+    {
+      "id": "ndCompany",
+      "role": null
+    }
+  ]
+}
