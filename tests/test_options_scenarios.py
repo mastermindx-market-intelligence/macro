@@ -1074,12 +1074,13 @@ def test_untrusted_capture_nanosecond_clocks_and_multi_expiry_week_qualify(world
     assert h.gets() == [h.gex_ref.key, h.moves_ref.key] * 3
 
 
-def test_capture_parser_matches_the_canonical_manifest_contract():
-    canonical = pytest.importorskip("api.investigation_scenario")
-    h = World()
+def test_native_route_rejects_invalid_capture_contract_before_authority(world):
+    # The canonical save/parser is Terminal TypeScript/SQL, not a Python api
+    # package. Enforce these wire vectors against the actual Macro parser and
+    # mounted route; cross-project parity is qualified by the joined tests.
+    h = world
     good = h.capture()
     assert S._parse_capture(good) is not None
-    assert canonical.parse_scenario_capture(good) is not None
     for mutate in (
         lambda c: {**c, "schema": "investigation_scenario_reference.v0"},
         lambda c: {**c, "inputs": {**c["inputs"], "targetSpot": 0}},
@@ -1098,14 +1099,15 @@ def test_capture_parser_matches_the_canonical_manifest_contract():
         lambda c: {**c, "source": {**c["source"], "lens": {"kind": "one"}}},
     ):
         mutated = mutate(good)
-        assert (S._parse_capture(mutated) is None) == \
-            (canonical.parse_scenario_capture(mutated) is None), mutated
+        assert S._parse_capture(mutated) is None, mutated
+        assert _qualify_with_capture(h, mutated) == {
+            "status": "unavailable", "reason": "capture_invalid"}, mutated
+    assert h.state.rpc_calls == 0 and h.state.auth_calls == 0 and h.gets() == []
     # JSON integral numbers share the canonical JS/SQL semantics; the native
     # SnapshotReference receives the normalized Python integer.
     float_length = h.capture()
     float_length["source"]["gex"] = {"sha256": h.gex_ref.sha256,
                                      "byte_length": 4096.0}
-    assert canonical.parse_scenario_capture(float_length) is not None
     assert S._parse_capture(float_length) is not None
 
 
