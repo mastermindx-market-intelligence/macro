@@ -17134,6 +17134,25 @@ jobs:
           # Owned, no-network P1 project preflight: explicit run for contract-delta.
           python -m pytest tests/test_linear_projector_p1_offline.py -q
 
+  provider-subscription-plans:
+    if: ${{ false }}
+    gate: code
+    # Provider Control (OpenCode Go): subscription plan catalog, overlay precedence, and
+    # authenticated usage arithmetic. Hermetic: synthetic fixtures, injected http_get, no
+    # network. A new dedicated job rather than an append to capability-broker, which is
+    # `gate: data` and therefore never runs on a pull request (scripts/run_ci_pack.py packs
+    # gate:code only; data-health.yml has no pull_request trigger).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: provider subscription plan + usage tests
+        run: python -m pytest tests/test_provider_subscription_plans.py tests/test_provider_subscription_usage.py tests/test_provider_subscription_plan_overlay.py -q
+
   capability-broker:
     if: ${{ false }}
     gate: data
