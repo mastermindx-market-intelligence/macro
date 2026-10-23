@@ -1,0 +1,99 @@
+{
+  "checkout_commit": "81221cb15345118d0796fabaa7c47476350dc614",
+  "checkout_root": "M2Studio:charting-app (local checkout, not deployment claim)",
+  "default_data_root": "terminal/public/data (relative to observed local checkout)",
+  "default_minute_directory_exists": false,
+  "manifest": {
+    "as_of": "2026-06-26",
+    "bytes": 13038,
+    "path": "terminal/public/data/manifest.json (relative to observed local checkout)",
+    "sha256": "b66f89a606ac5a374d993e2ced21f5332d9312ee069d40ed8ce4f55b73ecb6e3",
+    "symbol_label_count": 34
+  },
+  "market_pilot_admitted": false,
+  "not_equivalent_to": "HOSTED_PRODUCTION_OR_ALL_FLEET_DATA_CENSUS",
+  "observation_scope": "M2_STUDIO_LOCAL_CHECKOUT_DEFAULT_PATH_ONLY",
+  "observed_at_utc": "2026-10-09T05:08:10.644883+00:00",
+  "rights_admitted": false,
+  "schema": "factor_atlas.local_terminal_default_path_census.v1",
+  "selected_cohort": {
+    "AAPL": {
+      "default_path_candidates": {
+        "1h": {
+          "exists": false,
+          "filename": "AAPL.1h.json"
+        },
+        "1m": {
+          "exists": false,
+          "filename": "AAPL.1m.json"
+        },
+        "5m": {
+          "exists": false,
+          "filename": "AAPL.5m.json"
+        }
+      },
+      "manifest_symbol_label_present": true
+    },
+    "MSFT": {
+      "default_path_candidates": {
+        "1h": {
+          "exists": false,
+          "filename": "MSFT.1h.json"
+        },
+        "1m": {
+          "exists": false,
+          "filename": "MSFT.1m.json"
+        },
+        "5m": {
+          "exists": false,
+          "filename": "MSFT.5m.json"
+        }
+      },
+      "manifest_symbol_label_present": true
+    },
+    "NVDA": {
+      "default_path_candidates": {
+        "1h": {
+          "exists": false,
+          "filename": "NVDA.1h.json"
+        },
+        "1m": {
+          "exists": false,
+          "filename": "NVDA.1m.json"
+        },
+        "5m": {
+          "exists": false,
+          "filename": "NVDA.5m.json"
+        }
+      },
+      "manifest_symbol_label_present": true
+    },
+    "SPY": {
+      "default_path_candidates": {
+        "1h": {
+          "exists": false,
+          "filename": "SPY.1h.json"
+        },
+        "1m": {
+          "exists": false,
+          "filename": "SPY.1m.json"
+        },
+        "5m": {
+          "exists": false,
+          "filename": "SPY.5m.json"
+        }
+      },
+      "manifest_symbol_label_present": true
+    }
+  },
+  "source_monetary_basis_proven": false,
+  "terminal_data_dir_override_in_this_process": false,
+  "unknowns": [
+    "Production or other-host TERMINAL_DATA_DIR",
+    "Source-owned retained minute captures in other volumes",
+    "Installed/merged source writer and reader compatibility",
+    "Actual first-seen and exact selected revision receipts",
+    "Stable monetary price/volume basis and action vintage",
+    "Specific dataset and owner admission"
+  ]
+}

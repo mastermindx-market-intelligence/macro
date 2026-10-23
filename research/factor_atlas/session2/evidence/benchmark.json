@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "may_publish": false,
+    "may_start_daemon": false,
+    "may_trade": false
+  },
+  "benchmark_sha256": "7078a1ba586f566a7e7b3c588fed45ee61b4c93ca50ccf761ced9e94da70a647",
+  "bvc_seconds": 2.3435545459999503,
+  "compact_gzip_bytes": 542682,
+  "compact_json_bytes": 3011535,
+  "compact_row_schema": [
+    "security_id",
+    "start_utc_s",
+    "end_utc_s",
+    "available_at_utc_s",
+    "close",
+    "volume",
+    "vwap",
+    "phase",
+    "source_revision"
+  ],
+  "gzip_bytes_per_row": 18.843125,
+  "measured_at_utc": "2026-10-09T03:03:36.210621+00:00",
+  "names": 30,
+  "numpy": "2.3.5",
+  "output_sha256": "b7249a696d60e052ddbd0ce4e4a2180161ec6aaf7f6bff87d9147f88618d1dd8",
+  "parquet_or_vendor_compression_measured": false,
+  "peak_process_rss_kib": 255496,
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "production_schema_complete": false,
+  "python": "3.13.5",
+  "replay_equal": true,
+  "reversed_input_sha256": "b7249a696d60e052ddbd0ce4e4a2180161ec6aaf7f6bff87d9147f88618d1dd8",
+  "rows": 28800,
+  "rows_per_second": 12289.02482733193,
+  "rss_scope": "whole process after input/output/replay/serialization; Linux KiB; not incremental kernel RAM",
+  "scipy": "1.17.0",
+  "slots_per_name": 960,
+  "source": "SYNTHETIC",
+  "source_sha256": "e149ca4e614429309207747d43cf74e1957a98cf7ee5102db9f0b9e17b830f59"
+}

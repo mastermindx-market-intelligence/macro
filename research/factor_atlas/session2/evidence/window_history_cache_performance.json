@@ -1,0 +1,68 @@
+{
+  "baseline_profile_scoped_100x60": {
+    "cprofile_asdict_calls": 37988,
+    "cprofile_asdict_cumulative_seconds": 1.339,
+    "cprofile_window_total_seconds": 2.326
+  },
+  "cases": [
+    {
+      "after_process_max_rss_bytes": 64634880,
+      "after_runtime_seconds": 0.09824837499763817,
+      "before_process_max_rss_bytes": 65847296,
+      "before_runtime_seconds": 0.13021304097492248,
+      "factor_count": 4,
+      "minute_slots": 30,
+      "names": 35,
+      "security_minute_inputs": 1050,
+      "single_run_runtime_reduction_fraction": 0.24547975946157607,
+      "source_permutation_stability": true,
+      "synthetic_only": true
+    },
+    {
+      "after_process_max_rss_bytes": 105267200,
+      "after_runtime_seconds": 0.7349489589687437,
+      "before_process_max_rss_bytes": 99942400,
+      "before_runtime_seconds": 1.0935059579787776,
+      "factor_count": 6,
+      "minute_slots": 60,
+      "names": 100,
+      "security_minute_inputs": 6000,
+      "single_run_runtime_reduction_fraction": 0.3278967036199657,
+      "source_permutation_stability": true,
+      "synthetic_only": true
+    },
+    {
+      "after_process_max_rss_bytes": 259522560,
+      "after_runtime_seconds": 3.6489787499886006,
+      "before_process_max_rss_bytes": 242221056,
+      "before_runtime_seconds": 4.718995374976657,
+      "factor_count": 8,
+      "minute_slots": 120,
+      "names": 200,
+      "security_minute_inputs": 24000,
+      "single_run_runtime_reduction_fraction": 0.22674669923645552,
+      "source_permutation_stability": true,
+      "synthetic_only": true
+    }
+  ],
+  "five_immutable_output_golden_shas": {
+    "complete": "b90642a93c8ea4bb17d73a600d26688a75b5fa2a503d7574d26c4ed0d6b07098",
+    "corrected_history": "4784158ab88c5c39cd38b87507b57679d0af5ab2e585d0e64d963c83b06605b8",
+    "explicit_zero": "299cf1239c29ea2cd977067d02047074bdbab95563ad6cdbc59a5c1ec781f37f",
+    "multi_phase": "11a239ee7048a8ee63a4b5f531b1ccc2573b9013a10bbff3fe928cf5364f2005",
+    "one_missing_minute": "6c91d627535a359bdbc370111274b8585dc3c8793102bee0f47f69fece1bd2d6"
+  },
+  "largest_case_interpretation": "observed runtime improves but process max RSS grows; do not infer production scaling",
+  "m2_local_python": "3.12",
+  "mathematical_algorithm_changed": false,
+  "observed_at": "2026-10-11",
+  "original_window_source_parent": "ad1053958287589a4ecd78c2aba06933ffa57c6e",
+  "output_structure_changed": false,
+  "performance_guarantee_or_SLO": false,
+  "publication_authority": false,
+  "rss_is_process_peak_cumulative_not_per_case_allocation": true,
+  "schema": "factor_atlas.native_window_cached_serialization_benchmark.v1",
+  "source": "PURE_SYNTHETIC_1M_BARS_NOT_REAL_PRICE_DATA",
+  "source_admission": false,
+  "trial_design": "single_before_vs_after process per revision; no statistical performance inference"
+}

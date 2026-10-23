@@ -1,0 +1,37 @@
+{
+  "calculation_integrity_red_tests": 4,
+  "candidate_schema": "contracts/capital_pressure_read_v1_candidate.schema.json",
+  "customer_authority": false,
+  "fixture_file": {
+    "bytes": 6914,
+    "sha256": "3bf7717ad0e52fb1b2d5a9b4405643d134972791ada12597ed61a44bad059e71"
+  },
+  "input_calculation": "UNCOMMITTED_RESEARCH_LOCAL_GEOMETRY",
+  "negative_cases": [
+    "false_market_admission",
+    "false_customer_publication",
+    "true_trade_authority",
+    "false_source_quality",
+    "fabricated_beneficial_owner",
+    "confidence_claim",
+    "out_of_bounds_pressure",
+    "negative_observed_gross",
+    "institutional_flow_status",
+    "partial_with_full_amount",
+    "wrong_schema",
+    "missing_source_quality",
+    "truncated_authority",
+    "invalid_digest",
+    "extra_constituent_field"
+  ],
+  "negative_schema_rejections": 15,
+  "parent_published_head": "f87300c835be44abb7689e0976ce9c1e6ff4fa9a",
+  "positive_schema_validations": 1,
+  "schema": "factor_atlas.read_contract_synthetic_validation.v1",
+  "schema_file": {
+    "bytes": 19142,
+    "sha256": "7a0d4c9758417fb26617281f8464c23afbcb4a203acfd20f8a277d777dd2b7fd"
+  },
+  "source_admitted": false,
+  "synthetic_fixture": "evidence/capital_pressure_read_synthetic.json"
+}
