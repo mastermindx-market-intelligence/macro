@@ -38700,6 +38700,41 @@ jobs:
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
+      # Factor Atlas S3: pure aggregation and byte-bound legacy inspection.
+      # Existing code-pack owner; no second workflow or production integration.
+      - ".github/ci/legacy-jobs.yml"
+      - "engine/options_basket_aggregation.py"
+      - "engine/options_basket_history.py"
+      - "engine/options_basket_inputs.py"
+      - "tests/test_options_basket_aggregation.py"
+      - "tests/test_options_basket_inputs.py"
+      - "tests/test_options_basket_ci.py"
+      - "tests/test_options_basket_risk_attribution.py"
+      - "tests/test_options_basket_iv_history.py"
+      - "research/factor_atlas/session3/reproduce_native_scenarios.py"
+      - "research/factor_atlas/session3/retrospective.py"
+      - "research/factor_atlas/session3/run_retrospective.py"
+      - "research/factor_atlas/session3/mag7_retrospective_inputs.json"
+      - "tests/test_factor_options_retrospective.py"
+      - "tests/test_factor_options_retrospective_io.py"
+      - "research/factor_atlas/session3/retrospective_calibration.py"
+      - "research/factor_atlas/session3/run_retrospective_outcomes.py"
+      - "research/factor_atlas/session3/mag7_retrospective_outcomes_inputs.json"
+      - "tests/test_factor_options_retro_calibration.py"
+      - "tests/test_factor_options_retro_outcomes_io.py"
+      - "research/factor_atlas/session3/retrospective_iv_history.py"
+      - "research/factor_atlas/session3/run_retro_iv_history.py"
+      - "research/factor_atlas/session3/mag7_retrospective_iv_history_inputs.json"
+      - "tests/test_factor_options_iv_retro_history.py"
+      - "tests/test_factor_options_iv_retro_history_io.py"
+      - "tests/test_factor_options_iv_error_sensitivity.py"
+      - "research/factor_atlas/session3/extended_backtest.py"
+      - "research/factor_atlas/session3/run_extended_backtest.py"
+      - "research/factor_atlas/session3/mag7_extended_35day_inputs.json"
+      - "tests/test_factor_options_extended_backtest.py"
+      - "tests/test_factor_options_extended_backtest_io.py"
+      - "research/factor_atlas/session3/raw_eod_provenance.py"
+      - "tests/test_factor_options_raw_eod_provenance.py"
       # MKT-1 hosted execution (Sol 5987749403). scope: exclusive skips
       # inference, so the suite's measured import closure is listed here.
       # A non-exclusive owner fallback-selects ordinary packing probes.
@@ -38755,6 +38790,20 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: options skew engine
         run: python -m pytest tests/test_options_skew.py -q
+      - name: Factor Atlas basket options qualification and sparse-data guards
+        run: |
+          python -m pytest tests/test_options_basket_aggregation.py tests/test_options_basket_inputs.py tests/test_options_basket_ci.py tests/test_options_basket_risk_attribution.py tests/test_options_basket_iv_history.py -q
+          python -m research.factor_atlas.session3.reproduce_native_scenarios > /dev/null
+      - name: Factor Atlas private retrospective research workflow
+        run: python -m pytest tests/test_factor_options_retrospective.py tests/test_factor_options_retrospective_io.py -q
+      - name: Factor Atlas private research forward-outcome validation
+        run: python -m pytest tests/test_factor_options_retro_calibration.py tests/test_factor_options_retro_outcomes_io.py -q
+      - name: Factor Atlas private 252-session IV reconstruction
+        run: python -m pytest tests/test_factor_options_iv_retro_history.py tests/test_factor_options_iv_retro_history_io.py tests/test_factor_options_iv_error_sensitivity.py -q
+      - name: Factor Atlas private 35-day nonoverlap multi-year source-bound outcomes
+        run: python -m pytest tests/test_factor_options_extended_backtest.py tests/test_factor_options_extended_backtest_io.py -q
+      - name: Factor Atlas original EOD-Greek source provenance shape audit
+        run: python -m pytest tests/test_factor_options_raw_eod_provenance.py -q
       - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
         run: python -m pytest tests/test_price_pressure.py -q -rs
 
