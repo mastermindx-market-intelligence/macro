@@ -42,9 +42,11 @@ Coverage:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 import sys
+from types import SimpleNamespace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -952,6 +954,10 @@ def test_research_tool_schema_teaches_the_report_mode_and_its_rights_fence():
     assert "metered" in description
     assert "attribute" in description.lower()
     assert "synthesize" in description.lower()
+    assert "research intelligence" in description.lower()
+    assert "descriptive_research_only" in description
+    assert "state only" in description.lower()
+    assert "never substitute" in description.lower()
     report_id = schema["input_schema"]["properties"]["report_id"]
     assert "mode='report'" in report_id["description"]
     assert "never invent" in report_id["description"].lower()
@@ -1549,6 +1555,52 @@ def _report(root, report_id, *, user_ctx=_PRO, **kw) -> dict:
                                report_id=report_id, user_ctx=user_ctx, **kw)
 
 
+def _stub_research_intelligence(
+        monkeypatch, body: str, *, state="available", calls: list | None = None,
+        summary_text="Derived thesis summary."):
+    """Stub only the incumbent W2 store/projection seams; Brain remains real."""
+    from engine import research_intelligence as rio_mod
+    from engine.research_vault import r2_store
+
+    if state == "unavailable":
+        monkeypatch.setattr(r2_store, "build_store", lambda: None)
+        return
+
+    store = object()
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    monkeypatch.setattr(r2_store, "build_store", lambda: store)
+
+    def _load(active_store, document_id):
+        if calls is not None:
+            calls.append((active_store, document_id))
+        assert active_store is store
+        if state == "missing":
+            return None
+        observed_sha = "b" * 64 if state == "stale" else source_sha
+        return SimpleNamespace(
+            source_content_sha256=observed_sha,
+            rio={"stub": "validated-by-W2-loader"},
+        )
+
+    def _summary(_rio, *, limit=6):
+        assert limit == 6
+        if state == "invalid":
+            raise ValueError("analysis.thesis.summary contains verbatim private evidence")
+        return [{
+            "schema": "mastermind.research_summary_point.v1",
+            "source_document_id": "gs-oil-1",
+            "source_content_sha256": source_sha,
+            "epistemic_layer": "model_synthesis",
+            "text": summary_text,
+            "text_visibility": "derived_summary",
+            "support_claim_indices": [0],
+            "authority": "descriptive_research_only",
+        }]
+
+    monkeypatch.setattr(rio_mod, "load_latest_research_intelligence", _load)
+    monkeypatch.setattr(rio_mod, "summary_points", _summary)
+
+
 def _seed_one(root: pathlib.Path, *, points=("**Thesis**: the range holds.",),
               institution="Goldman Sachs", excerpt=("Opening paragraph of the note.",)):
     _catalog(root, [_note("gs-oil-1", "Oil Tracker", points=points,
@@ -1983,3 +2035,276 @@ def test_real_catalog_report_assembles_against_the_committed_vault(monkeypatch):
     assert 0 < len(report["body_text"]) <= bmi.REPORT_BODY_MAX_CHARS
     assert report["body_truncated"] is True
     assert report["institution"] in result["note"]
+
+
+# --------------------------------------------------------------------------- #
+# W3 — rights-safe Research Intelligence projection into the existing report
+# --------------------------------------------------------------------------- #
+
+def test_report_projects_available_research_intelligence_summary(tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "The curve is backwardated because inventories drew."
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    result = _report(tmp_path, "gs-oil-1")
+
+    rio = result["research_intelligence"]
+    assert rio["state"] == "available"
+    assert rio["authority"] == "descriptive_research_only"
+    assert rio["summary_points"][0]["text"] == "Derived thesis summary."
+    assert rio["summary_points"][0]["text_visibility"] == "derived_summary"
+
+
+def test_report_projects_missing_research_intelligence_without_fabrication(tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "body text"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body, state="missing")
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio == {
+        "state": "missing",
+        "authority": "descriptive_research_only",
+        "summary_points": [],
+    }
+
+
+def test_report_marks_research_intelligence_stale_against_exact_stored_body(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "exact current stored body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body, state="stale")
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio["state"] == "stale"
+    assert rio["summary_points"] == []
+
+
+def test_report_refuses_invalid_private_research_intelligence_projection(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "body text"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body, state="invalid")
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio["state"] == "invalid"
+    assert rio["summary_points"] == []
+
+
+def test_report_degrades_when_research_intelligence_store_is_unavailable(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "body text"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body, state="unavailable")
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio["state"] == "unavailable"
+    assert rio["summary_points"] == []
+
+
+def test_research_intelligence_does_not_change_generic_report_quota_debit(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "metered source body"
+    debits = []
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch, calls=debits)
+    _stub_research_intelligence(monkeypatch, body)
+
+    result = _report(tmp_path, "gs-oil-1")
+
+    assert result["research_intelligence"]["state"] == "available"
+    assert len(debits) == 1
+    assert result["quota"] == {"remaining": 59, "limit": 60}
+
+
+# W3 correction: the Brain boundary must not trust projection dictionaries.
+def test_report_rejects_widened_research_intelligence_rows(tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "rights-safe source body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    from engine import research_intelligence as rio_mod
+
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    row = {
+        "schema": "mastermind.research_summary_point.v1",
+        "source_document_id": "gs-oil-1",
+        "source_content_sha256": source_sha,
+        "epistemic_layer": "model_synthesis",
+        "text": "Derived thesis summary.",
+        "text_visibility": "derived_summary",
+        "support_claim_indices": [0],
+        "authority": "descriptive_research_only",
+        "quote_span": "PRIVATE LICENSED EVIDENCE",
+    }
+    monkeypatch.setattr(rio_mod, "summary_points", lambda _rio: [row])
+
+    result = _report(tmp_path, "gs-oil-1")
+    rio = result["research_intelligence"]
+
+    assert rio["state"] == "invalid"
+    assert rio["summary_points"] == []
+    assert "PRIVATE LICENSED EVIDENCE" not in json.dumps(result)
+
+
+def test_report_rejects_malformed_research_intelligence_support_indices(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "rights-safe source body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    from engine import research_intelligence as rio_mod
+
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    row = {
+        "schema": "mastermind.research_summary_point.v1",
+        "source_document_id": "gs-oil-1",
+        "source_content_sha256": source_sha,
+        "epistemic_layer": "model_synthesis",
+        "text": "Derived thesis summary.",
+        "text_visibility": "derived_summary",
+        "support_claim_indices": [0, "PRIVATE LICENSED EVIDENCE"],
+        "authority": "descriptive_research_only",
+    }
+    monkeypatch.setattr(rio_mod, "summary_points", lambda _rio: [row])
+
+    result = _report(tmp_path, "gs-oil-1")
+    rio = result["research_intelligence"]
+
+    assert rio["state"] == "invalid"
+    assert rio["summary_points"] == []
+    assert "PRIVATE LICENSED EVIDENCE" not in json.dumps(result)
+
+
+def test_report_rejects_empty_research_intelligence_projection(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "rights-safe source body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    from engine import research_intelligence as rio_mod
+
+    monkeypatch.setattr(rio_mod, "summary_points", lambda _rio: [])
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio == {
+        "state": "invalid",
+        "authority": "descriptive_research_only",
+        "summary_points": [],
+    }
+
+
+def test_report_rejects_projection_above_canonical_summary_limit(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "rights-safe source body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    from engine import research_intelligence as rio_mod
+
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    rows = [{
+        "schema": "mastermind.research_summary_point.v1",
+        "source_document_id": "gs-oil-1",
+        "source_content_sha256": source_sha,
+        "epistemic_layer": "model_synthesis",
+        "text": "Derived thesis summary.",
+        "text_visibility": "derived_summary",
+        "support_claim_indices": [0],
+        "authority": "descriptive_research_only",
+    }]
+    rows.extend({
+        "schema": "mastermind.research_summary_point.v1",
+        "source_document_id": "gs-oil-1",
+        "source_content_sha256": source_sha,
+        "epistemic_layer": "source_claim",
+        "text": "",
+        "text_visibility": "private_rio_only",
+        "claim_statement_sha256": hashlib.sha256(
+            f"claim-{index}".encode("utf-8")
+        ).hexdigest(),
+        "support_claim_indices": [index],
+        "authority": "descriptive_research_only",
+    } for index in range(6))
+    monkeypatch.setattr(rio_mod, "summary_points", lambda _rio: rows)
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio["state"] == "invalid"
+    assert rio["summary_points"] == []
+
+
+def test_report_requests_the_canonical_research_intelligence_summary_limit(
+        tmp_path, monkeypatch):
+    _seed_one(tmp_path)
+    body = "rights-safe source body"
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    _stub_research_intelligence(monkeypatch, body)
+
+    from engine import research_intelligence as rio_mod
+
+    source_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    calls = []
+
+    def _summary(_rio, *, limit):
+        calls.append(limit)
+        return [{
+            "schema": "mastermind.research_summary_point.v1",
+            "source_document_id": "gs-oil-1",
+            "source_content_sha256": source_sha,
+            "epistemic_layer": "model_synthesis",
+            "text": "Derived thesis summary.",
+            "text_visibility": "derived_summary",
+            "support_claim_indices": [0],
+            "authority": "descriptive_research_only",
+        }]
+
+    monkeypatch.setattr(rio_mod, "summary_points", _summary)
+
+    rio = _report(tmp_path, "gs-oil-1")["research_intelligence"]
+
+    assert rio["state"] == "available"
+    assert calls == [6]
+
+
+@pytest.mark.parametrize("body", ["", "   \n\t"])
+def test_blank_report_body_never_probes_private_research_intelligence(
+        tmp_path, monkeypatch, body):
+    _seed_one(tmp_path)
+    _stub_document(monkeypatch, body)
+    _stub_quota(monkeypatch)
+    calls = []
+    _stub_research_intelligence(monkeypatch, body, state="missing", calls=calls)
+
+    result = _report(tmp_path, "gs-oil-1")
+
+    assert result["research_intelligence"] == {
+        "state": "unavailable",
+        "authority": "descriptive_research_only",
+        "summary_points": [],
+    }
+    assert calls == [], "blank body identity must stop before the private store"
