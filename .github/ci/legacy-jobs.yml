@@ -15188,6 +15188,8 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/classification_axes/__init__.py"
       - "site/basketdata/foresight_cascade.json"
+      - "engine/theme_graph/identity.py"
+      - "config/theme_graph_identity_breaks.yml"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15259,6 +15261,8 @@ jobs:
       - "engine/research_vault/r2_store.py"
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
+      - "engine/theme_graph/identity.py"
+      - "config/theme_graph_identity_breaks.yml"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22810,6 +22814,7 @@ jobs:
       - "tests/test_biocatalyst_activation.py"
       - "tests/test_biocatalyst_worker.py"
       - "tests/test_clinicaltrials_biocatalyst.py"
+      - "engine/theme_graph/identity.py"
     # Full B1 collector → private evidence → public-generation worker replay.
     # Twelve minutes preserves measured headroom without hiding a slow worker
     # behind the former twenty-minute all-suite timeout.
@@ -23339,6 +23344,10 @@ jobs:
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+      - name: STSI Packet I v2 — controlled contract and future-date refusal
+        run: python -m pytest tests/test_sector_dossier_contract_v2.py -q
+      - name: STSI Technology composer — controlled owner shape and compatibility
+        run: python -m pytest tests/test_sector_federation.py -q
 
   catalyst-opportunity:
     if: ${{ false }}
