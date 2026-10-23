@@ -261,6 +261,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -2159,6 +2160,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -3116,6 +3118,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -9478,6 +9481,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -11750,6 +11754,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/rotation_observation_notification.py"
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -12896,6 +12901,7 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "lib/rotation_observation_notification.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - ".github/workflows/**"
@@ -19084,10 +19090,53 @@ jobs:
         run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
         run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
-      - name: defensive observation contract and actual source-to-mail composition
-        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
+
+  rotation-observation-delivery:
+    # DR3: current receipt, preference and mail-composition consumers. Keep the
+    # exact import/runtime closure, not a whole-template subprocess fallback.
+    # Ordinary unrelated PRs retain the existing packing budgets; all tests run.
+    if: ${{ false }}  # executed by the incumbent ci-pack runner
+    gate: code
+    scope: exclusive
+    paths:
+      - "app/__init__.py"
+      - "app/mailer.py"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_legs.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/nyse_calendar.py"
+      - "lib/rotation_observation_notification.py"
+      - "lib/us_cash_calendar.py"
+      - "site/account.js"
+      - "templates/account.js"
+      - "tests/test_rotation_observation_integration.py"
+      - "tests/test_rotation_observation_notification.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: defensive observation contract and actual source-to-mail composition
+        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py -q
 
   serving-observability:
     if: ${{ false }}
@@ -23588,6 +23637,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -32354,6 +32404,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -35415,6 +35466,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/rotation_observation_notification.py"
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.

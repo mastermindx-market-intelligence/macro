@@ -3,7 +3,7 @@ workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
 program: sector-rotation-intelligence
 session: sol/web-defensive-rotation-notifications-20261023
 model: sol
-ended_because: context_budget
+ended_because: ci_handoff
 mission: Deliver visible defensive rotation evidence, real opted-in alerts and qualified decision support through
   incumbent owners.
 state_before: Display slice independently accepted on PR10103; stateless early_context had no durable per-pair observation
@@ -74,6 +74,11 @@ verified:
     --workflow .github/ci/legacy-jobs.yml --validate-only
   result: 0 contract-delta findings;338 jobs validated. New consumer suites in existing support-email job; four
     source dependency paths added to existing ratio-lens job.
+- claim: Original independent composite review is accepted for its exact two scopes; UI source release merged.
+  command: fabric_result/fabric_accept defensive-rotation-composite-review-20261023; compare16 source hashes; exact-head
+    gh pr merge10103 and readback
+  result: Review512f1c9ca505d235ceb06b268e8d45ad7d2403243aa8dc800f3d02110a209a78 accepted. PR10103 merged2026-10-23T09:25:13Z
+    as8614f39ed1e75ea03b529e2e6f50ecd76148d504. No production/user-delivery proof.
 unverified:
 - claim: The new composite has independent exact-head approval and passing hosted CI.
   what_would_verify: New immutable candidate published/read back, scoped independent consumer/composite verdict,
@@ -85,31 +90,24 @@ unverified:
   what_would_verify: Reconcile original unknown-launch Macro-entry request; pass UI delta review/CI, normal release,
     authenticated browser proof.
 unresolved:
-- PR10103 new head933498fc5fbbf523674c9c1fcb18649228ad4a57 repairs two hosted design-ratchet radius violations.
-  Latest main checks had ci-pack-9 still running; inactive merge-queue-pilot is not a main gate.
-- UI radius delta reviewer defensive-rotation-ui-radius-review-20261023 returned terminalQwen429/noverdict, response1b3fec9a503dd0f14f703a56b7317043142eb6b90b0c023944d365a641d29463.
-  Do not claim independent delta acceptance or blind-retry the original.
-- Original Macro-entry request still has no proven absence and no retry authority; preserve frozen. The new composite
-  review includes the separately reconciled terminal429 UI radius gap, but no verdict has yet been accepted.
-- Original consumer recovered and integrated with parent repairs; new composite review remains owed. Separate read-only
-  recovery request had an incorrect parent brief and is not relied upon.
-- Subscriber activation timestamp/complete opt-in roster, source-to-outbox retry recovery, in-flight supersession
-  and real delivery remain unimplemented.
-- Single-writer activation proof, direct SOXX/QQQ coverage, real Macro entry, accepted risk/alpha sizing and options
-  qualification remain owed.
+- PR10104 source head3c76b7c62a89509cf2325647b224154f81dab4fe remains draft; hosted contract-delta exposed9 missing
+  helper trigger paths and a5weight-second packing increase. Narrow manifest repair is local; original verification
+  process56745 remains the sole full local delta check.
+- Original composite/source/UI reviews are accepted only for pre-bridge scopes; new bridge implementation and its
+  exact-head independent review remain owed.
+- Original Macro-entry launch uncertainty remains frozen; no overlapping entry work is authorized by its absence
+  from status.
+- Recording and delivery remain disabled. Authenticated source-to-user proof, subscription concurrency, canonical-source/sender
+  boundary and single-writer activation proof remain owed.
 next_actions:
-- Read this exact persisted candidate and machine receipt; retain the same two registered workspaces and current
-  Chairman mandate.
-- Consume original independent composite review defensive-rotation-composite-review-20261023, root defensive-rotation-20261022,
-  for consumer head6ad0b54231a0d059508e9a582420dc1e39c29933 and separate UI head933498fc5fbbf523674c9c1fcb18649228ad4a57.
-  This handoff-only successor does not change the reviewed source; verify exact closure before accepting. Do not
-  create a duplicate reviewer while the original is unresolved.
-- Consume PR10103 latest CI and a lawful new independent review of its terminal429 delta gap; merge normally only
-  after applicable gates pass, then verify ordinary production publication and authenticated path.
-- Reconcile the original Macro-entry request before any retry, replacement or overlapping implementation.
-- Build the missing subscriber-to-canonical-receipt-to-outbox bridge through the existing owners, including subscription
-  activation and pre-transport supersession, with no new queue/auth/lease plane; keep recording and live sends disabled
-  until proof.
+- Consume current local CI repair check, preserve tests and budgets, publish the manifest-only repair on the same10104
+  carrier.
+- Consume original Fabric bridge builder defensive-rotation-outbox-bridge-build-20261023/root defensive-rotation-20261022/controller55052;
+  scratch-only scope, no duplicate/shared source writer.
+- Inspect and apply the exact returned patch to this existing carrier, qualify source->subscriber->outbox->drain
+  tests, commission independent review of the new immutable candidate.
+- Verify ordinary production deployment of merged10103 without claiming source merge as user proof. Do not enable
+  recording or sends until separate activation gates are met.
 do_not_redo:
 - Accepted LR waves and frozen failed science.
 - PR10103 accepted display implementation; do not restart its CI with unrelated alert changes.
@@ -126,7 +124,7 @@ danger_areas:
 - No live sends, DB writes, source recording enablement or trades have occurred.
 mission_complete: false
 pinned_skillpack_repo: mastermindx-market-intelligence/Mastermind
-pinned_skillpack_sha: b6a6946ee35d61299caa7a9a884a168032367b65
+pinned_skillpack_sha: 13f6a2c3ac08227a00212496e8e5949109eb0e27
 pinned_skillpack_version: 1.0.1
 source_operation: defensive-rotation-notifications-20261023
 source_branch: sol/web-defensive-rotation-notifications-20261023
@@ -134,51 +132,38 @@ macro_base: 3b5058cf10a6791d5e8097e514af0c8ff15b9b59
 prs:
 - 10103
 - 10104
-classification: CHECKPOINTED_CONTINUATION
-continuity_boundary: Long multi-carrier session has accumulated conflicting recovery paths and copied test counts.
-  Exact artifacts, preimages, source hashes and tests have now been reconciled. Persist this coherent candidate
-  and continue the new subscriber/outbox/transport phase from a fresh same-mode frontier; do not extend this context
-  into new activation or database effects.
+classification: MORE_WORK_EXISTS
+continuity_boundary: In-turn cumulative save after UI source release and composite review acceptance; not a session
+  stop.
 ---
 
-# Defensive rotation: compact continuation frontier
+# Defensive rotation: current continuation frontier
 
-The current assigned receiver retains the full Chairman mandate. The full programme is not complete. This is a continuity boundary for a long multi-carrier session, not a task-completion claim or a request for routine human approval. All production recording and delivery effects remain off.
+This is an in-turn save, not a completed mission. The assigned receiver retains the existing Chairman mandate. No live user preference, outbox, SMTP, recording flag or trade effect has been performed.
 
-## Carriers and proof
+## Current source and review
 
-Display PR #10103: `sol/web-defensive-rotation-command-20261022`, workspace `/Volumes/Mastermind/agent-workspaces/macro/web/defensive-rotation-command-20261022`, current published head `933498fc5fbbf523674c9c1fcb18649228ad4a57`. Core UI was independently accepted at `2a963d70915728b3c73debd18769e836055044af`, then evidence-only head eb672786de7967a396248cc9272bd72ca9eba12f preserved its semantic closure. Hosted run39910968758 failed two new literal radii. The current head repairs those to canonical token/fallback forms, with32Node/139Python/4actual-script browser cases and design/visual gates passing locally. Pure renderer span remains16b3c49ad318e888cf17120bb515a0e3ebe7d753297a900c8e3dff5e7a48882d; whole repaired asset514eba60d3d429ff90e0177d2bc51a2b5ba8d7c6f161b3113c68331a0568d061. No merge/deployment/authenticated proof yet.
+PR10103 is MERGED at `8614f39ed1e75ea03b529e2e6f50ecd76148d504`, October23 09:25:13UTC. Accepted head `933498fc5fbbf523674c9c1fcb18649228ad4a57`. All applicable CI passed, including ci-gate; the red pilot context was independently read as inactive_base_context, not the active main gate. No unresolved review threads. Conflict-free current-main integration tree `b99507bb27da1f60f6d79d075ca75f806ce0b23a` preserved all15 candidate-owned blobs. Production/authenticated visibility remains unverified. Original display workspace is preserved; do not recreate it.
 
-Source/consumer PR #10104: `sol/web-defensive-rotation-notifications-20261023`, workspace `/Volumes/Mastermind/agent-workspaces/macro/web/defensive-rotation-notifications-20261023`. Parent source-only commit c7ae9df1bc30759f6947e11be156ace4f2e29c66 is independently accepted for its scope. This successor adds the recovered and repaired consumer and is not yet independently accepted. Exact new commit is the commit containing this handoff; use its GitHub PR head readback rather than a guessed self-reference.
+PR10104 remains the original `sol/web-defensive-rotation-notifications-20261023` carrier at `/Volumes/Mastermind/agent-workspaces/macro/web/defensive-rotation-notifications-20261023`. Last published head at pickup `3c76b7c62a89509cf2325647b224154f81dab4fe`, whose only delta from reviewed consumer `6ad0b54231a0d059508e9a582420dc1e39c29933` is continuity text. The16 source hashes still matched. Current local parent-owned edit is only the CI manifest; worker-owned source paths are not edited by parent while its task is live.
 
-Current proof: `research/evidence/defensive_rotation_observation_20261023/consumer-verification.json`,871passed/2existingxfail/4warnings, source hashes identical before/after. Earlier verification.json is historical source-only proof. Consumer and source architecture notes contain exact original artifact recovery, defect adjudication, dormant flags and owed integration. No user records, preference changes, outbox writes, SMTP sends, trades or enabled flags occurred.
+Original composite review `defensive-rotation-composite-review-20261023` returned terminalrc0, response `512f1c9ca505d235ceb06b268e8d45ad7d2403243aa8dc800f3d02110a209a78`. Parent accepted the separate recorder/consumer and UI-token verdicts through fabric_accept after exact closure checks. Reviewer reproduced871/2xfail and68 independent cases, plus UI32/139/four browser fixtures. This is NOT review of the new bridge, live activation, or product acceptance. Initial accept response limit8192 was smaller than8353; status reconciled NOT_ACCEPTED before one same-action size-bound correction to12000, which returned acceptedtrue.
 
-## Original children
+## Active bounded child
 
-All conserve root `defensive-rotation-20261022`, parent `chatgpt-defensive-rotation-ceo-20261022`.
+Root `defensive-rotation-20261022`, original parent `chatgpt-defensive-rotation-ceo-20261022`. New bridge builder `defensive-rotation-outbox-bridge-build-20261023`, controller55052, was admitted to an economical Minimax lane on ubuntu0. Original controller shows LAUNCH attempt1; a terminal result is not yet consumed. Grant is isolated scratch implementation and test patch only, never shared source, GitHub, live DB/users/SMTP/flags/deployment or descendants. Its allowed code covers existing preferences, canonical rotation read, builder hook, thin outbox adapter and incumbent drain/mailer. Parent reserves CI manifest and final integration/review. Preserve this exact request until reconciliation.
 
-- Original notification consumer controller30924: TERMINALrc0, actual response9442c67e8c136f250a68ff544db24cf476e1ebb5c2bdeb7904c9898f7b1c21c6. Complete original patch recovered READ-ONLY through existing mmx-ubuntu3 alias from `/home/ubuntu3/lane_scratch/dr3-rot-notif`. Ten exact preimages match canonical source. Parent integrated once and repaired documented gaps; unmodified worker return is NOT_ACCEPTED as a whole.
-- Source review controller34860: TERMINALrc0, ACCEPT_FOR_SCOPE at c7, responsee528144cba2d1834b9ab859d19a49b3b00a6747d61147d9a223cd89556b63819; accepted after parent blob/closure verification. New consumer needs its own review.
-- UI radius review controller59226: TERMINALrc1, Qwen429/noverdict, response1b3fec9a503dd0f14f703a56b7317043142eb6b90b0c023944d365a641d29463. Read-only scope, no source effects. Original operation reconciled, no blind retry.
-- Read-only consumer-return-recovery controller38354: last observation ACTIVE_OR_WAITING, routedubuntu2. Parent packet mistakenly named stale `/tmp/rotation-consumer...DJErb7` path and wrong response digest; this is a briefing error, not evidence original work was absent. Do not rely on or replace it; consume original terminal return when available. Complete actual artifact recovery is already finished.
-- Macro-entry run `defensive-rotation-macro-entry-20261023`, reportedcontroller98034: OBSERVATION_INCOMPLETE then NOT_FOUND with execution_absence_proven=false/retry_allowed=false, CONTROLLER_NOT_BOUND. No duplicate or overlapping parent implementation. Its grant is scratch-return only, no production/source publication. Preserve launch uncertainty and reconcile original owner before any new attempt.
+The original failed read-only recovery request is no longer needed: the real consumer artifact was already recovered and integrated in the previous wave. The unrelated Macro-entry request `defensive-rotation-macro-entry-20261023` remains unresolved with no execution-absence/retry proof; do not replace or overlap it.
 
-## Capability and publication routing
+## Critical acceptance boundaries
 
-Fabric read access recovered after a transport failure; this does not establish every launch route healthy. Studio filesystem/terminal and the original admitted Macro Git path work. Typed Studio Git actions resolve the default Mastermind repository without the Macro selector: their generic PRECHECK_REFUSED/NOT_APPLIED was a verified target-resolution mismatch, not a Macro authorization denial. Do not re-register, change credentials or expand that tool. Use the original Macro carrier with exact HEAD/branch/remote checks, commit/push and readback. This route already published both PRs.
+The bridge must retain trusted subscription activation in the existing auth/preferences owner, never a user-editable timestamp or a second user directory; use complete bounded roster reads, canonical retained receipts (not only this-run deltas), deterministic per-user outbox IDs and exact conflict/uncertain-effect readback. It must not re-date an old event to a new subscriber or claim an enqueue as delivery.
 
-Public production JSON/static requests returned401; Browser connector lacked originating browser context. These are exact observed limitations, not proof all authenticated paths are unavailable. Existing deploy-key metadata was located without key bytes, but exact Macro origin mapping was not verified and no VPS SSH occurred. Mail VPS is not automatically Macro origin. Existing topology is VPS/systemd, not Vercel.
+An immutable observation is checked at an explicit pre-transport decision point. A later correction/optout cannot recall an already-entered SMTP effect. Reuse the existing claim/write-ahead/suppression pipeline, leave uncertain effects held, and do not invent atomicity between a filesystem receipt and external transport. Any unsupported concurrent-write guarantee holds activation rather than licensing a parallel lock/queue.
 
-## Activation remains gated
+Keep the current recording flag absent and no live sends. Before activation, prove source freshness and canonical single writer, subscription save/re-enable behavior, complete eligible recipient selection, version-bound outbox and preflight, real authenticated optin and actual transport/dossier proof. Sizing/options remain distinct from observational delivery.
 
-The missing subscriber/outbox bridge must use incumbent owners and preserve unknown-versus-empty roster, opt-in activation time, deterministic per-user fire IDs and recovery from canonical receipts after enqueue failures. Existing marketing user-page fallback can hide malformed responses; do not use it unqualified or clone a new identity directory. A suppressed PATCH cannot recall a selected/in-flight send; reconcile and extend the existing transport claim path as required, without a parallel queue/lease/retry service. Historical calendar updates can invalidate receipt re-validation; qualify version handling before activation. Preimage guards are not a cross-process writer lock.
 
-Keep `ROTATION_OBSERVATION_RECORDING_ENABLED` absent and no live sends until independent review, required CI, normal release, actual single-writer/source proof and authenticated source-to-user receipts are satisfied. Risk-budget comparisons and alpha-driven allocation/option qualification remain separate from merely observing leadership.
+## Current integration findings
 
-## Published composite and exact next review
-
-The complete recovered/repaired consumer was committed and pushed as `6ad0b54231a0d059508e9a582420dc1e39c29933`; remote branch and PR10104 readback matched. The source is no longer only an uncommitted local patch. PR10104 remains draft. Current machine receipt records871passed/2expectedfailures/4warnings with exact before/after source hashes.
-
-A new independent commission `defensive-rotation-composite-review-20261023`, root `defensive-rotation-20261022`, parent `chatgpt-defensive-rotation-ceo-20261022`, reviews that exact consumer composite and separately the small UI styling delta at PR10103 head933498fc5fbbf523674c9c1fcb18649228ad4a57. It is read-only, offline/scratch tests only; no source edits, descendants, GitHub writes, users/DB/SMTP or activation. The original source-only and UI-core approvals remain scoped evidence, not blanket approval of this composite. Read the original result and verify the two separate verdicts; do not infer worker start, completion or acceptance from delivery or controller metadata.
-
-This final continuity-only successor changes this handoff and no reviewed code or tests. Do not restart implementation, replace workers or create another branch. Resume the original PRs and the explicitly missing subscriber/outbox/transport integration after review reconciliation. Full production acceptance, Macro first-page discovery and qualified portfolio/option policy remain owed.
+CI narrow-job repair now passes the full local contract-delta with0introduced/0inherited and unchanged packing budgets;208 consumer tests pass. Details and the independently reproduced existing preference stale-write/opt-out race are in research/DEFENSIVE_ROTATION_BRIDGE_INTEGRATION_2026-10-23.md. Original bridge worker remains the only scratch builder. A production SSH read was explicitly safety-blocked; do not retry/rephrase or move that effect to another carrier. No production verification is claimed.
