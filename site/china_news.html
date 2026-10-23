@@ -315,18 +315,648 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>18</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>18</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>18</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-policy"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-0.9</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:18.4%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 133<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-23</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">7</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:86%"></i></span>
+          <span class="mx-n">6</span>
+        </div>
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:71%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:29%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:14%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 22 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">8</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 31</span><span class="l-zh">10月31日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3184516" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元mlf操作，期限为1年期 people's bank of china: to maintain ample liquidity in the banking system, on october 26, 2026, the people's bank of china will conduct a 700 billion yuan mlf operation with a 1-year term through fixed-quantity, interest-rate-based bidding with multiple-price allotment 中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元mlf操作，期限为1年期 中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元mlf操作，期限为1年期。 pboc: to maintain ample liquidity in the banking system, on october 26, 2026, the people's bank of china will conduct a 700 billion yuan mlf operation with a 1-year term through fixed-quantity, interest-rate tendering and multiple-price award. 中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元mlf操作，期限为1年期。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="2026-10-23T09:17:30+00:00" datetime="2026-10-23T09:17:30+00:00">10-23<br>09:17</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T09:17:30+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">People's Bank of China: To maintain ample liquidity in the banking system, on October 26, 2026, the People's Bank of China will conduct a 700 billion yuan MLF operation with a 1-year term through fixed-quantity, interest-rate-based bidding with multiple-price allotment</span><span class="l-zh">中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元MLF操作，期限为1年期</span></h2>
+            <p class="tp-sum"><span class="l-en">PBOC: To maintain ample liquidity in the banking system, on October 26, 2026, the People's Bank of China will conduct a 700 billion yuan MLF operation with a 1-year term through fixed-quantity, interest-rate tendering and multiple-price award.</span><span class="l-zh">中国人民银行：为保持银行体系流动性充裕，2026年10月26日，中国人民银行将以固定数量、利率招标、多重价位中标方式开展7000亿元MLF操作，期限为1年期。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3184623" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="吴清会见香港特区政府财政司司长陈茂波一行 wu qing meets with hong kong sar financial secretary paul chan mo-po and his delegation 吴清会见香港特区政府财政司司长陈茂波一行 2026年10月23日，中国证监会主席吴清会见了香港特别行政区政府财政司司长陈茂波、香港证券及期货事务监察委员会行政总裁梁凤仪。双方就支持香港落实第一个五年规划，进一步深化两地资本市场务实合作、促进协同发展，巩固提升香港国际金融中心地位等议题交换了意见。（证监会网站） on october 23, 2026, csrc chairman wu qing met with hong kong special administrative region government financial secretary paul chan mo-po and hong kong securities and futures commission chief executive officer julia leung fung-yee. the two sides exchanged views on supporting hong kong in implementing its first five-year plan, further deepening practical cooperation between the two capital markets, promoting coordinated development, and consolidating and enhancing hong kong's status as an international financial center. (csrc website) 2026年10月23日，中国证监会主席吴清会见了香港特别行政区政府财政司司长陈茂波、香港证券及期货事务监察委员会行政总裁梁凤仪。双方就支持香港落实第一个五年规划，进一步深化两地资本市场务实合作、促进协同发展，巩固提升香港国际金融中心地位等议题交换了意见。（证监会网站） 华尔街见闻 fiscal_trade markets fiscal & trade 财政与贸易 equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T10:35:22+00:00" datetime="2026-10-23T10:35:22+00:00">10-23<br>10:35</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T10:35:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>88</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing meets with Hong Kong SAR Financial Secretary Paul Chan Mo-po and his delegation</span><span class="l-zh">吴清会见香港特区政府财政司司长陈茂波一行</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 23, 2026, CSRC Chairman Wu Qing met with Hong Kong Special Administrative Region Government Financial Secretary Paul Chan Mo-po and Hong Kong Securities and Futures Commission Chief Executive Officer Julia Leung Fung-yee. The two sides exchanged views on supporting Hong Kong in implementing its first five-year plan, further deepening practical cooperation between the two capital markets, promoting coordinated development, and consolidating and enhancing Hong Kong's status as an international financial center. (CSRC website)</span><span class="l-zh">2026年10月23日，中国证监会主席吴清会见了香港特别行政区政府财政司司长陈茂波、香港证券及期货事务监察委员会行政总裁梁凤仪。双方就支持香港落实第一个五年规划，进一步深化两地资本市场务实合作、促进协同发展，巩固提升香港国际金融中心地位等议题交换了意见。（证监会网站）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261023195110384800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行行长潘功胜会见意大利前总理、欧央行前行长马里奥·德拉吉一行 pboc governor pan gongsheng meets with former italian prime minister and former ecb president mario draghi and his delegation 中国人民银行行长潘功胜会见意大利前总理、欧央行前行长马里奥·德拉吉一行 金十数据10月23日讯，2026年10月23日，中国人民银行行长潘功胜会见了意大利前总理、欧央行前行长马里奥·德拉吉，美中关系全国委员会会长斯蒂芬·欧伦斯，城堡证券首席执行官赵鹏。双方围绕全球经济形势、金融市场动态、中国宏观经济政策等议题进行了交流。中国人民银行副行长宣昌能参加会见。 jinshi data, october 23: on october 23, 2026, pboc governor pan gongsheng met with former italian prime minister and former ecb president mario draghi, national committee on u.s.-china relations president stephen orlins, and citadel securities ceo peng zhao. the two sides exchanged views on the global economic situation, financial market developments, china's macroeconomic policies and other topics. pboc deputy governor xuan changneng attended the meeting. 金十数据10月23日讯，2026年10月23日，中国人民银行行长潘功胜会见了意大利前总理、欧央行前行长马里奥·德拉吉，美中关系全国委员会会长斯蒂芬·欧伦斯，城堡证券首席执行官赵鹏。双方围绕全球经济形势、金融市场动态、中国宏观经济政策等议题进行了交流。中国人民银行副行长宣昌能参加会见。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T19:51:10+08:00" datetime="2026-10-23T19:51:10+08:00">10-23<br>19:51</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T19:51:10+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Governor Pan Gongsheng meets with former Italian Prime Minister and former ECB President Mario Draghi and his delegation</span><span class="l-zh">中国人民银行行长潘功胜会见意大利前总理、欧央行前行长马里奥·德拉吉一行</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 23: On October 23, 2026, PBOC Governor Pan Gongsheng met with former Italian Prime Minister and former ECB President Mario Draghi, National Committee on U.S.-China Relations President Stephen Orlins, and Citadel Securities CEO Peng Zhao. The two sides exchanged views on the global economic situation, financial market developments, China's macroeconomic policies and other topics. PBOC Deputy Governor Xuan Changneng attended the meeting.</span><span class="l-zh">金十数据10月23日讯，2026年10月23日，中国人民银行行长潘功胜会见了意大利前总理、欧央行前行长马里奥·德拉吉，美中关系全国委员会会长斯蒂芬·欧伦斯，城堡证券首席执行官赵鹏。双方围绕全球经济形势、金融市场动态、中国宏观经济政策等议题进行了交流。中国人民银行副行长宣昌能参加会见。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3184780" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="法国国债本周经历历史性抛售 市场关注穆迪是否会下调该国评级 french government bonds saw historic sell-off this week; market watches whether moody's will downgrade the country's rating 法国国债本周经历历史性抛售 市场关注穆迪是否会下调该国评级 法国债券市场本周经历了历史性动荡。随着政治局势不安可能进一步加剧市场对该国公共财政的担忧，一项备受关注的风险指标正接近有记录以来最大升幅。数据显示，本周迄今，投资者持有法国10年期国债而非德国同期限国债所要求的风险溢价已上升33个基点，为1990年有记录以来最大升幅。 the french bond market experienced historic turmoil this week. as political instability may further intensify market concerns about the country's public finances, a closely watched risk indicator is approaching its largest increase on record. data showed that so far this week, the risk premium investors demand to hold french 10-year government bonds rather than german bonds of the same maturity has risen 33 basis points, the largest increase since records began in 1990. 法国债券市场本周经历了历史性动荡。随着政治局势不安可能进一步加剧市场对该国公共财政的担忧，一项备受关注的风险指标正接近有记录以来最大升幅。数据显示，本周迄今，投资者持有法国10年期国债而非德国同期限国债所要求的风险溢价已上升33个基点，为1990年有记录以来最大升幅。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 cbon">
+          <time class="tp-when" data-t="2026-10-23T11:28:25+00:00" datetime="2026-10-23T11:28:25+00:00">10-23<br>11:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T11:28:25+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">French government bonds saw historic sell-off this week; market watches whether Moody's will downgrade the country's rating</span><span class="l-zh">法国国债本周经历历史性抛售 市场关注穆迪是否会下调该国评级</span></h2>
+            <p class="tp-sum"><span class="l-en">The French bond market experienced historic turmoil this week. As political instability may further intensify market concerns about the country's public finances, a closely watched risk indicator is approaching its largest increase on record. Data showed that so far this week, the risk premium investors demand to hold French 10-year government bonds rather than German bonds of the same maturity has risen 33 basis points, the largest increase since records began in 1990.</span><span class="l-zh">法国债券市场本周经历了历史性动荡。随着政治局势不安可能进一步加剧市场对该国公共财政的担忧，一项备受关注的风险指标正接近有记录以来最大升幅。数据显示，本周迄今，投资者持有法国10年期国债而非德国同期限国债所要求的风险溢价已上升33个基点，为1990年有记录以来最大升幅。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3184767" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="国常会：研究统筹人口与经济社会发展有关工作 state council executive meeting: studies work related to coordinating population and economic and social development 国常会：研究统筹人口与经济社会发展有关工作 会议指出，人口是经济社会发展的基础条件，要更好统筹人口与经济社会、资源环境的关系，进一步完善相关政策，持续积累和释放人口综合红利，以人口高质量发展更好支撑经济社会高质量发展。要更加突出人的全面发展，提高人口科学文化、职业技能、身心健康等水平，加快完善全民终身学习机制，广泛开展技能培训，强化教育、培训与产业发展协同联动，促进高质量充分就业。 the meeting noted that population is the foundational condition for economic and social development. it is necessary to better coordinate the relationship between population and economic and social development as well as resources and the environment, further improve relevant policies, continuously accumulate and unleash the comprehensive demographic dividend, and better support high-quality economic and social development with high-quality population development. greater emphasis should be placed on people's all-round development, raising the population's levels of scientific and cultural knowledge, vocational skills, and physical and mental health, accelerating the improvement of a lifelong learning mechanism for all, widely carrying out skills training, strengthening coordinated linkages among education, training and industrial development, and promoting high-quality full employment. 会议指出，人口是经济社会发展的基础条件，要更好统筹人口与经济社会、资源环境的关系，进一步完善相关政策，持续积累和释放人口综合红利，以人口高质量发展更好支撑经济社会高质量发展。要更加突出人的全面发展，提高人口科学文化、职业技能、身心健康等水平，加快完善全民终身学习机制，广泛开展技能培训，强化教育、培训与产业发展协同联动，促进高质量充分就业。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-23T11:15:40+00:00" datetime="2026-10-23T11:15:40+00:00">10-23<br>11:15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T11:15:40+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">State Council executive meeting: Studies work related to coordinating population and economic and social development</span><span class="l-zh">国常会：研究统筹人口与经济社会发展有关工作</span></h2>
+            <p class="tp-sum"><span class="l-en">The meeting noted that population is the foundational condition for economic and social development. It is necessary to better coordinate the relationship between population and economic and social development as well as resources and the environment, further improve relevant policies, continuously accumulate and unleash the comprehensive demographic dividend, and better support high-quality economic and social development with high-quality population development. Greater emphasis should be placed on people's all-round development, raising the population's levels of scientific and cultural knowledge, vocational skills, and physical and mental health, accelerating the improvement of a lifelong learning mechanism for all, widely carrying out skills training, strengthening coordinated linkages among education, training and industrial development, and promoting high-quality full employment.</span><span class="l-zh">会议指出，人口是经济社会发展的基础条件，要更好统筹人口与经济社会、资源环境的关系，进一步完善相关政策，持续积累和释放人口综合红利，以人口高质量发展更好支撑经济社会高质量发展。要更加突出人的全面发展，提高人口科学文化、职业技能、身心健康等水平，加快完善全民终身学习机制，广泛开展技能培训，强化教育、培训与产业发展协同联动，促进高质量充分就业。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3184761" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="国常会：听取推进全国服务业大会部署落实情况汇报 state council executive meeting: hears report on implementation of arrangements for the national service industry conference 国常会：听取推进全国服务业大会部署落实情况汇报 会议指出，要进一步发挥服务业对经济发展的支撑作用，加力推进服务业扩能提质，把服务业潜力空间转化为发展动能。要加快破解服务业发展的难点堵点，聚焦生产生活重点领域因业施策，加强融资、用地、人才、数据等支持，稳步推进公共事业领域价格改革，加大力度盘活用好闲置资源。 the meeting noted that it is necessary to further leverage the supporting role of the service sector in economic development, step up efforts to expand and improve the service sector, and transform the service sector's potential into development momentum. it is necessary to accelerate the resolution of difficulties and bottlenecks in service sector development, adopt targeted policies for key production and living areas, strengthen support in financing, land use, talent, data and other areas, steadily advance price reforms in public utilities, and intensify efforts to revitalize and make good use of idle resources. 会议指出，要进一步发挥服务业对经济发展的支撑作用，加力推进服务业扩能提质，把服务业潜力空间转化为发展动能。要加快破解服务业发展的难点堵点，聚焦生产生活重点领域因业施策，加强融资、用地、人才、数据等支持，稳步推进公共事业领域价格改革，加大力度盘活用好闲置资源。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-23T11:14:35+00:00" datetime="2026-10-23T11:14:35+00:00">10-23<br>11:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T11:14:35+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">State Council executive meeting: Hears report on implementation of arrangements for the National Service Industry Conference</span><span class="l-zh">国常会：听取推进全国服务业大会部署落实情况汇报</span></h2>
+            <p class="tp-sum"><span class="l-en">The meeting noted that it is necessary to further leverage the supporting role of the service sector in economic development, step up efforts to expand and improve the service sector, and transform the service sector's potential into development momentum. It is necessary to accelerate the resolution of difficulties and bottlenecks in service sector development, adopt targeted policies for key production and living areas, strengthen support in financing, land use, talent, data and other areas, steadily advance price reforms in public utilities, and intensify efforts to revitalize and make good use of idle resources.</span><span class="l-zh">会议指出，要进一步发挥服务业对经济发展的支撑作用，加力推进服务业扩能提质，把服务业潜力空间转化为发展动能。要加快破解服务业发展的难点堵点，聚焦生产生活重点领域因业施策，加强融资、用地、人才、数据等支持，稳步推进公共事业领域价格改革，加大力度盘活用好闲置资源。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3184531" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="证监会：明确对私募投资母基金豁免计入一层投资层级 csrc: clarifies exemption of private equity fund-of-funds from being counted as one layer of investment hierarchy 证监会：明确对私募投资母基金豁免计入一层投资层级 中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。根据《私募条例》等监管要求，私募基金可以接受或者再投资一层私募基金等其他私募产品，接受投资的私募基金不得再投资其他私募产品，并明确对符合条件的母基金豁免计入一层投资层级。享受豁免的母基金应当持续符合相应条件，严格按照投资范围要求开展投资运作。私募基金管理人不得滥用投资层级豁免规定，规避监管要求。母基金确有必要直接、间接投资其他母基金或者接受其他母基金投资的，投资层级只能豁免一次。 the csrc publicly solicited comments on the provisions on the administration of private investment fund-of-funds (draft for comment). in accordance with regulatory requirements such as the private investment fund regulations, private funds may accept or reinvest in one additional layer of private funds or other private products, and the private fund receiving the investment may not invest in other private products; qualified fund-of-funds are explicitly exempted from being counted as one investment layer. fund-of-funds enjoying the exemption shall continuously meet the corresponding conditions and conduct investment operations strictly in accordance with the investment scope requirements. private fund managers may not abuse the investment-layer exemption provisions to circumvent regulatory requirements. if a fund-of-funds truly needs to directly or indirectly invest in another fund-of-funds or accept investment from another fund-of-funds, the investment-layer exemption may only be granted once. 中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。根据《私募条例》等监管要求，私募基金可以接受或者再投资一层私募基金等其他私募产品，接受投资的私募基金不得再投资其他私募产品，并明确对符合条件的母基金豁免计入一层投资层级。享受豁免的母基金应当持续符合相应条件，严格按照投资范围要求开展投资运作。私募基金管理人不得滥用投资层级豁免规定，规避监管要求。母基金确有必要直接、间接投资其他母基金或者接受其他母基金投资的，投资层级只能豁免一次。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-23T09:22:51+00:00" datetime="2026-10-23T09:22:51+00:00">10-23<br>09:22</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T09:22:51+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Clarifies exemption of private equity fund-of-funds from being counted as one layer of investment hierarchy</span><span class="l-zh">证监会：明确对私募投资母基金豁免计入一层投资层级</span></h2>
+            <p class="tp-sum"><span class="l-en">The CSRC publicly solicited comments on the Provisions on the Administration of Private Investment Fund-of-Funds (Draft for Comment). In accordance with regulatory requirements such as the Private Investment Fund Regulations, private funds may accept or reinvest in one additional layer of private funds or other private products, and the private fund receiving the investment may not invest in other private products; qualified fund-of-funds are explicitly exempted from being counted as one investment layer. Fund-of-funds enjoying the exemption shall continuously meet the corresponding conditions and conduct investment operations strictly in accordance with the investment scope requirements. Private fund managers may not abuse the investment-layer exemption provisions to circumvent regulatory requirements. If a fund-of-funds truly needs to directly or indirectly invest in another fund-of-funds or accept investment from another fund-of-funds, the investment-layer exemption may only be granted once.</span><span class="l-zh">中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。根据《私募条例》等监管要求，私募基金可以接受或者再投资一层私募基金等其他私募产品，接受投资的私募基金不得再投资其他私募产品，并明确对符合条件的母基金豁免计入一层投资层级。享受豁免的母基金应当持续符合相应条件，严格按照投资范围要求开展投资运作。私募基金管理人不得滥用投资层级豁免规定，规避监管要求。母基金确有必要直接、间接投资其他母基金或者接受其他母基金投资的，投资层级只能豁免一次。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.eastmoney.com/a/202610233906417716.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="中国人民银行副行长宣昌能会见法国财政总署署长杜蒙 pboc deputy governor xuan changneng meets with head of the french treasury bertrand dumont 中国人民银行副行长宣昌能会见法国财政总署署长杜蒙 【中国人民银行副行长宣昌能会见法国财政总署署长杜蒙】2026年10月23日，中国人民银行副行长宣昌能会见法国财政总署署长杜蒙。双方就当前经济金融形势、中法经济金融合作等议题进行了交流。 [pboc deputy governor xuan changneng meets with french treasury director general dumont] on october 23, 2026, pboc deputy governor xuan changneng met with french treasury director general dumont. the two sides exchanged views on the current economic and financial situation, china-france economic and financial cooperation and other topics. 【中国人民银行副行长宣昌能会见法国财政总署署长杜蒙】2026年10月23日，中国人民银行副行长宣昌能会见法国财政总署署长杜蒙。双方就当前经济金融形势、中法经济金融合作等议题进行了交流。 eastmoney pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 512800.ss">
+          <time class="tp-when" data-t="2026-10-23 18:48:23" datetime="2026-10-23 18:48:23">10-23<br>18:48</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23 18:48:23"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>65</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Deputy Governor Xuan Changneng meets with Head of the French Treasury Bertrand Dumont</span><span class="l-zh">中国人民银行副行长宣昌能会见法国财政总署署长杜蒙</span></h2>
+            <p class="tp-sum"><span class="l-en">[PBOC Deputy Governor Xuan Changneng meets with French Treasury Director General Dumont] On October 23, 2026, PBOC Deputy Governor Xuan Changneng met with French Treasury Director General Dumont. The two sides exchanged views on the current economic and financial situation, China-France economic and financial cooperation and other topics.</span><span class="l-zh">【中国人民银行副行长宣昌能会见法国财政总署署长杜蒙】2026年10月23日，中国人民银行副行长宣昌能会见法国财政总署署长杜蒙。双方就当前经济金融形势、中法经济金融合作等议题进行了交流。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.futunn.com/flash/1002113366/shenzhen-stock-exchange-last-week-self-regulatory-measures-were-taken" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="深交所：上周共对106起证券异常交易行为采取了自律监管措施 shenzhen stock exchange: took self-regulatory measures against 106 cases of abnormal securities trading last week 深交所：上周共对106起证券异常交易行为采取了自律监管措施 2026年10月16日至10月22日，本所对4宗违规行为进行纪律处分，涉及信息披露及规范运作违规；对2宗违规行为发出监管函，涉及信息披露及规范运作违规。本周发出问询函15份，其他函件29份。共对106起证券异常交易行为采取了自律监管措施，涉及盘中拉抬打压、虚假申报等异常交易情形；共对8起上市公司重大事项进行核查，并上报证监会2起涉嫌违法违规案件线索。（深交所） from october 16 to october 22, 2026, the exchange imposed disciplinary sanctions for 4 violations, involving information disclosure and standardized operation violations; and issued regulatory letters for 2 violations, involving information disclosure and standardized operation violations. this week, 15 inquiry letters and 29 other letters were issued. a total of 106 cases of abnormal securities trading were subject to self-regulatory measures, involving abnormal trading situations such as intraday price ramping and suppression and false declarations; a total of 8 major matters of listed companies were verified, and 2 suspected illegal and non-compliant case leads were reported to the csrc. (shenzhen stock exchange) 2026年10月16日至10月22日，本所对4宗违规行为进行纪律处分，涉及信息披露及规范运作违规；对2宗违规行为发出监管函，涉及信息披露及规范运作违规。本周发出问询函15份，其他函件29份。共对106起证券异常交易行为采取了自律监管措施，涉及盘中拉抬打压、虚假申报等异常交易情形；共对8起上市公司重大事项进行核查，并上报证监会2起涉嫌违法违规案件线索。（深交所） 富途牛牛 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T11:03:54+00:00" datetime="2026-10-23T11:03:54+00:00">10-23<br>11:03</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T11:03:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Shenzhen Stock Exchange: Took self-regulatory measures against 106 cases of abnormal securities trading last week</span><span class="l-zh">深交所：上周共对106起证券异常交易行为采取了自律监管措施</span></h2>
+            <p class="tp-sum"><span class="l-en">From October 16 to October 22, 2026, the Exchange imposed disciplinary sanctions for 4 violations, involving information disclosure and standardized operation violations; and issued regulatory letters for 2 violations, involving information disclosure and standardized operation violations. This week, 15 inquiry letters and 29 other letters were issued. A total of 106 cases of abnormal securities trading were subject to self-regulatory measures, involving abnormal trading situations such as intraday price ramping and suppression and false declarations; a total of 8 major matters of listed companies were verified, and 2 suspected illegal and non-compliant case leads were reported to the CSRC. (Shenzhen Stock Exchange)</span><span class="l-zh">2026年10月16日至10月22日，本所对4宗违规行为进行纪律处分，涉及信息披露及规范运作违规；对2宗违规行为发出监管函，涉及信息披露及规范运作违规。本周发出问询函15份，其他函件29份。共对106起证券异常交易行为采取了自律监管措施，涉及盘中拉抬打压、虚假申报等异常交易情形；共对8起上市公司重大事项进行核查，并上报证监会2起涉嫌违法违规案件线索。（深交所）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://flash.jin10.com/detail/20261023193628402800" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="睿能科技：公司不从事机器人制造业务 ruineng technology: the company does not engage in robot manufacturing business 睿能科技：公司不从事机器人制造业务 金十数据10月23日讯，睿能科技发布异动公告，公司股票交易于2026年10月22日、2026年10月23日连续两个交易日内日收盘价格涨幅偏离值累计达到20%，根据《上海证券交易所交易规则》的有关规定，属于股票交易异常波动的情况。公司主要从事工业自动化控制产品的研发、生产、销售业务和ic产品分销业务。公司不从事机器人制造业务。 jinshi data, october 23: ruineng technology issued an abnormal trading announcement. the company's stock closed with a cumulative deviation of 20% in daily closing price increases over two consecutive trading days, october 22, 2026 and october 23, 2026. in accordance with the relevant provisions of the shanghai stock exchange trading rules, this constitutes an abnormal fluctuation in stock trading. the company is mainly engaged in the research and development, production and sales of industrial automation control products and the distribution of ic products. the company is not engaged in robot manufacturing. 金十数据10月23日讯，睿能科技发布异动公告，公司股票交易于2026年10月22日、2026年10月23日连续两个交易日内日收盘价格涨幅偏离值累计达到20%，根据《上海证券交易所交易规则》的有关规定，属于股票交易异常波动的情况。公司主要从事工业自动化控制产品的研发、生产、销售业务和ic产品分销业务。公司不从事机器人制造业务。 金十数据 industrial industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T19:36:28+08:00" datetime="2026-10-23T19:36:28+08:00">10-23<br>19:36</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T19:36:28+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ruineng Technology: The company does not engage in robot manufacturing business</span><span class="l-zh">睿能科技：公司不从事机器人制造业务</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 23: Ruineng Technology issued an abnormal trading announcement. The company's stock closed with a cumulative deviation of 20% in daily closing price increases over two consecutive trading days, October 22, 2026 and October 23, 2026. In accordance with the relevant provisions of the Shanghai Stock Exchange Trading Rules, this constitutes an abnormal fluctuation in stock trading. The company is mainly engaged in the research and development, production and sales of industrial automation control products and the distribution of IC products. The company is not engaged in robot manufacturing.</span><span class="l-zh">金十数据10月23日讯，睿能科技发布异动公告，公司股票交易于2026年10月22日、2026年10月23日连续两个交易日内日收盘价格涨幅偏离值累计达到20%，根据《上海证券交易所交易规则》的有关规定，属于股票交易异常波动的情况。公司主要从事工业自动化控制产品的研发、生产、销售业务和IC产品分销业务。公司不从事机器人制造业务。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261023194647148800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="智利央行买入2500万美元 central bank of chile buys usd 25 million 智利央行买入2500万美元 智利央行买入2500万美元。 the central bank of chile bought usd 25 million. 智利央行买入2500万美元。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-10-23T19:46:47+08:00" datetime="2026-10-23T19:46:47+08:00">10-23<br>19:46</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T19:46:47+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Central Bank of Chile buys USD 25 million</span><span class="l-zh">智利央行买入2500万美元</span></h2>
+            <p class="tp-sum"><span class="l-en">The Central Bank of Chile bought USD 25 million.</span><span class="l-zh">智利央行买入2500万美元。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.10jqka.com.cn/20261023/c681040082.shtml" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="10月23日 周五《新闻联播》要闻17条 october 23, friday, xinwen lianbo headlines: 17 items 10月23日 周五《新闻联播》要闻17条 1、中共中央政治局召开会议 审议《关于二十届中央第七轮巡视情况的综合报告》 中共中央总书记习近平主持会议； 2、习近平对西藏那曲市巴青县7.0级地震作出重要指示强调 全力开展人员搜救 妥善安置受灾群众 切实保障人民群众生命财产安全 李强作出批示； 3、应习近平邀请 德国总统将访华； 4、在新的长征路上奋力创造新的辉煌——习近平总书记在纪念中国工农红军长征胜利90周年大会上的重要讲话引发热烈反响； 5、李强主持召开国务院常务会议； 6、西藏那曲市巴青县7.0级地震抢险救援工作抓紧进行； 7、中央组织部从代中央管理党费中划拨2500万元用于支持西藏抗震救灾工 1. the political bureau of the cpc central committee held a meeting to review the comprehensive report on the seventh round of inspections of the 20th central committee; xi jinping, general secretary of the cpc central committee, presided over the meeting; 2. xi jinping issued important instructions on the 7.0-magnitude earthquake in baqing county, nagqu city, tibet, emphasizing the need to make every effort to carry out search and rescue, properly resettle affected people, and effectively ensure the safety of people's lives and property; li qiang gave instructions; 3. at xi jinping's invitation, the german president will visit china; 4. striving to create new brilliance on the new long march—general secretary xi jinping's important speech at the meeting commemorating the 90th anniversary of the victory of the chinese workers' and peasants' red army's long march aroused enthusiastic responses; 5. li qiang presided over an executive meeting of the state council; 6. rescue and relief work for the 7.0-magnitude earthquake in baqing county, nagqu city, tibet, is being carried out urgently; 7. the central organization department allocated 25 million yuan from party dues managed on behalf of the central committee to support earthquake relief work in tibet. 1、中共中央政治局召开会议 审议《关于二十届中央第七轮巡视情况的综合报告》 中共中央总书记习近平主持会议； 2、习近平对西藏那曲市巴青县7.0级地震作出重要指示强调 全力开展人员搜救 妥善安置受灾群众 切实保障人民群众生命财产安全 李强作出批示； 3、应习近平邀请 德国总统将访华； 4、在新的长征路上奋力创造新的辉煌——习近平总书记在纪念中国工农红军长征胜利90周年大会上的重要讲话引发热烈反响； 5、李强主持召开国务院常务会议； 6、西藏那曲市巴青县7.0级地震抢险救援工作抓紧进行； 7、中央组织部从代中央管理党费中划拨2500万元用于支持西藏抗震救灾工 同花顺 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-23T11:45:08+00:00" datetime="2026-10-23T11:45:08+00:00">10-23<br>11:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T11:45:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">October 23, Friday, Xinwen Lianbo headlines: 17 items</span><span class="l-zh">10月23日 周五《新闻联播》要闻17条</span></h2>
+            <p class="tp-sum"><span class="l-en">1. The Political Bureau of the CPC Central Committee held a meeting to review the Comprehensive Report on the Seventh Round of Inspections of the 20th Central Committee; Xi Jinping, General Secretary of the CPC Central Committee, presided over the meeting; 2. Xi Jinping issued important instructions on the 7.0-magnitude earthquake in Baqing County, Nagqu City, Tibet, emphasizing the need to make every effort to carry out search and rescue, properly resettle affected people, and effectively ensure the safety of people's lives and property; Li Qiang gave instructions; 3. At Xi Jinping's invitation, the German President will visit China; 4. Striving to create new brilliance on the new Long March—General Secretary Xi Jinping's important speech at the meeting commemorating the 90th anniversary of the victory of the Chinese Workers' and Peasants' Red Army's Long March aroused enthusiastic responses; 5. Li Qiang presided over an executive meeting of the State Council; 6. Rescue and relief work for the 7.0-magnitude earthquake in Baqing County, Nagqu City, Tibet, is being carried out urgently; 7. The Central Organization Department allocated 25 million yuan from Party dues managed on behalf of the Central Committee to support earthquake relief work in Tibet.</span><span class="l-zh">1、中共中央政治局召开会议 审议《关于二十届中央第七轮巡视情况的综合报告》 中共中央总书记习近平主持会议； 2、习近平对西藏那曲市巴青县7.0级地震作出重要指示强调 全力开展人员搜救 妥善安置受灾群众 切实保障人民群众生命财产安全 李强作出批示； 3、应习近平邀请 德国总统将访华； 4、在新的长征路上奋力创造新的辉煌——习近平总书记在纪念中国工农红军长征胜利90周年大会上的重要讲话引发热烈反响； 5、李强主持召开国务院常务会议； 6、西藏那曲市巴青县7.0级地震抢险救援工作抓紧进行； 7、中央组织部从代中央管理党费中划拨2500万元用于支持西藏抗震救灾工</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3184534" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会：对长期资金投资私募投资母基金设置差异化投资比例要求 csrc: sets differentiated investment ratio requirements for long-term capital investing in private equity fund-of-funds 证监会：对长期资金投资私募投资母基金设置差异化投资比例要求 中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。结合境内外实践和广泛市场调研，《母基金规定》从不同维度对母基金提出了投资分散度要求，避免集中投向单只基金、单一管理人、单一资产等，切实体现母基金分散投资的基本特征。同时，考虑创业投资基金特征，以及支持社会保障基金、保险资金、合格境外投资者、国家级政府投资基金等长期资金投资母基金等合理情形，《母基金规定》适当设置了差异化投资比例要求。 the csrc publicly solicited comments on the provisions on the administration of private investment fund-of-funds (draft for comment). based on domestic and overseas practices and extensive market research, the fund-of-funds provisions set investment diversification requirements for fund-of-funds from different dimensions, avoiding concentrated investment in a single fund, a single manager, or a single asset, and effectively reflecting the basic feature of diversified investment by fund-of-funds. at the same time, taking into account the characteristics of venture capital funds and reasonable circumstances such as supporting long-term capital including social security funds, insurance funds, qualified foreign investors, and national-level government investment funds in investing in fund-of-funds, the fund-of-funds provisions appropriately set differentiated investment ratio requirements. 中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。结合境内外实践和广泛市场调研，《母基金规定》从不同维度对母基金提出了投资分散度要求，避免集中投向单只基金、单一管理人、单一资产等，切实体现母基金分散投资的基本特征。同时，考虑创业投资基金特征，以及支持社会保障基金、保险资金、合格境外投资者、国家级政府投资基金等长期资金投资母基金等合理情形，《母基金规定》适当设置了差异化投资比例要求。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-23T09:27:07+00:00" datetime="2026-10-23T09:27:07+00:00">10-23<br>09:27</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T09:27:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Sets differentiated investment ratio requirements for long-term capital investing in private equity fund-of-funds</span><span class="l-zh">证监会：对长期资金投资私募投资母基金设置差异化投资比例要求</span></h2>
+            <p class="tp-sum"><span class="l-en">The CSRC publicly solicited comments on the Provisions on the Administration of Private Investment Fund-of-Funds (Draft for Comment). Based on domestic and overseas practices and extensive market research, the Fund-of-Funds Provisions set investment diversification requirements for fund-of-funds from different dimensions, avoiding concentrated investment in a single fund, a single manager, or a single asset, and effectively reflecting the basic feature of diversified investment by fund-of-funds. At the same time, taking into account the characteristics of venture capital funds and reasonable circumstances such as supporting long-term capital including social security funds, insurance funds, qualified foreign investors, and national-level government investment funds in investing in fund-of-funds, the Fund-of-Funds Provisions appropriately set differentiated investment ratio requirements.</span><span class="l-zh">中国证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见。结合境内外实践和广泛市场调研，《母基金规定》从不同维度对母基金提出了投资分散度要求，避免集中投向单只基金、单一管理人、单一资产等，切实体现母基金分散投资的基本特征。同时，考虑创业投资基金特征，以及支持社会保障基金、保险资金、合格境外投资者、国家级政府投资基金等长期资金投资母基金等合理情形，《母基金规定》适当设置了差异化投资比例要求。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/topicDetail/804430" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="ai会带来什么？在外滩年会，全球央行热议最大未知变量 what will ai bring? at the bund summit, global central banks debate the biggest unknown variable ai会带来什么？在外滩年会，全球央行热议最大未知变量    上海证券报 pboc_liquidity tech_policy pboc & liquidity 央行与流动性 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">What will AI bring? At the Bund Summit, global central banks debate the biggest unknown variable</span><span class="l-zh">AI会带来什么？在外滩年会，全球央行热议最大未知变量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261023195121490800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pboc's pan meets draghi to discuss global economy and china's macro policy  中国人民银行潘功胜会见德拉吉，讨论全球经济与中国宏观政策 oct 23, 2026 — pboc's pan met with former italian prime minister and ex‑ecb president mario draghi, stephen orlins of the national committee on u.s.‑china relations, and castle securities ceo zhao peng. they exchanged views on the global economy, financial‑market dynamics and chi  2026年10月23日——中国人民银行行长潘功胜会见了意大利前总理、欧洲央行前行长马里奥·德拉吉，美中关系全国委员会的斯蒂芬·奥林斯，以及城堡证券首席执行官赵鹏。双方就全球经济、金融市场动态及中 金十数据 pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T19:51:21+08:00" datetime="2026-10-23T19:51:21+08:00">10-23<br>19:51</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T19:51:21+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC's Pan meets Draghi to discuss global economy and China's macro policy</span><span class="l-zh">中国人民银行潘功胜会见德拉吉，讨论全球经济与中国宏观政策</span></h2>
+            <p class="tp-sum"><span class="l-en">Oct 23, 2026 — PBOC's Pan met with former Italian prime minister and ex‑ECB president Mario Draghi, Stephen Orlins of the National Committee on U.S.‑China Relations, and Castle Securities CEO Zhao Peng. They exchanged views on the global economy, financial‑market dynamics and Chi</span><span class="l-zh">2026年10月23日——中国人民银行行长潘功胜会见了意大利前总理、欧洲央行前行长马里奥·德拉吉，美中关系全国委员会的斯蒂芬·奥林斯，以及城堡证券首席执行官赵鹏。双方就全球经济、金融市场动态及中</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-politics" href="https://wallstreetcn.com/livenews/3184578" target="_blank" rel="noopener"
+           data-theme="politics" data-importance="medium"
+           data-search="国家信息化“十五五”规划：加快构建全国一体化算力网，推动算力、电力、网络协同发展 national informatization 15th five-year plan: accelerate building a nationally integrated computing network and promote coordinated development of computing, power and networks 国家信息化“十五五”规划：加快构建全国一体化算力网，推动算力、电力、网络协同发展 中央网络安全和信息化委员会印发《国家信息化“十五五”规划》。其中提出，完善一体化应用基础设施。实施国家区块链网络建设工程，夯实价值互联网基础。加快构建全国一体化算力网，推动算力、电力、网络协同发展。优化通用算力、智能算力、超级算力布局。探索太空算力前瞻研究和技术布局。稳妥建设数据流通利用基础设施。打造新型工业网络，推动移动物联网自主迭代。建设新型广电网络。推进交通、能源、市政、水利等基础设施数智化升级。 the central cyberspace affairs commission issued the national informatization 15th five-year plan. it proposes improving integrated application infrastructure. implement the national blockchain network construction project and consolidate the foundation of the internet of value. accelerate the building of a nationally integrated computing network and promote the coordinated development of computing power, electricity and networks. optimize the layout of general computing power, intelligent computing power and supercomputing power. explore forward-looking research and technological layout for space computing power. steadily build infrastructure for data circulation and utilization. build new industrial networks and promote independent iteration of the mobile internet of things. build a new type of broadcasting network. advance the digital and intelligent upgrading of infrastructure in transportation, energy, municipal services, water conservancy and other areas. 中央网络安全和信息化委员会印发《国家信息化“十五五”规划》。其中提出，完善一体化应用基础设施。实施国家区块链网络建设工程，夯实价值互联网基础。加快构建全国一体化算力网，推动算力、电力、网络协同发展。优化通用算力、智能算力、超级算力布局。探索太空算力前瞻研究和技术布局。稳妥建设数据流通利用基础设施。打造新型工业网络，推动移动物联网自主迭代。建设新型广电网络。推进交通、能源、市政、水利等基础设施数智化升级。 华尔街见闻 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 kweb">
+          <time class="tp-when" data-t="2026-10-23T10:08:25+00:00" datetime="2026-10-23T10:08:25+00:00">10-23<br>10:08</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T10:08:25+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">National Informatization 15th Five-Year Plan: Accelerate building a nationally integrated computing network and promote coordinated development of computing, power and networks</span><span class="l-zh">国家信息化“十五五”规划：加快构建全国一体化算力网，推动算力、电力、网络协同发展</span></h2>
+            <p class="tp-sum"><span class="l-en">The Central Cyberspace Affairs Commission issued the National Informatization 15th Five-Year Plan. It proposes improving integrated application infrastructure. Implement the national blockchain network construction project and consolidate the foundation of the Internet of Value. Accelerate the building of a nationally integrated computing network and promote the coordinated development of computing power, electricity and networks. Optimize the layout of general computing power, intelligent computing power and supercomputing power. Explore forward-looking research and technological layout for space computing power. Steadily build infrastructure for data circulation and utilization. Build new industrial networks and promote independent iteration of the mobile Internet of Things. Build a new type of broadcasting network. Advance the digital and intelligent upgrading of infrastructure in transportation, energy, municipal services, water conservancy and other areas.</span><span class="l-zh">中央网络安全和信息化委员会印发《国家信息化“十五五”规划》。其中提出，完善一体化应用基础设施。实施国家区块链网络建设工程，夯实价值互联网基础。加快构建全国一体化算力网，推动算力、电力、网络协同发展。优化通用算力、智能算力、超级算力布局。探索太空算力前瞻研究和技术布局。稳妥建设数据流通利用基础设施。打造新型工业网络，推动移动物联网自主迭代。建设新型广电网络。推进交通、能源、市政、水利等基础设施数智化升级。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">KWEB</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3184647" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="天孚通信：拟以1亿元-1.5亿元回购公司股份 tianfu communication: plans to repurchase company shares for 100 million to 150 million yuan 天孚通信：拟以1亿元-1.5亿元回购公司股份 天孚通信公告，公司拟使用自有资金以集中竞价方式回购公司股份，回购资金总额不低于人民币1亿元且不超过人民币1.5亿元，回购价格不超过人民币350元/股。回购股份将全部注销并相应减少公司注册资本；方案尚需提交股东会审议。 tianfu communication announced that the company plans to use its own funds to repurchase shares through centralized bidding, with a total repurchase amount of no less than rmb 100 million and no more than rmb 150 million, and a repurchase price of no more than rmb 350 per share. all repurchased shares will be cancelled and the company's registered capital will be reduced accordingly; the plan still needs to be submitted to the shareholders' meeting for review. 天孚通信公告，公司拟使用自有资金以集中竞价方式回购公司股份，回购资金总额不低于人民币1亿元且不超过人民币1.5亿元，回购价格不超过人民币350元/股。回购股份将全部注销并相应减少公司注册资本；方案尚需提交股东会审议。 华尔街见闻 yuan yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-23T10:39:04+00:00" datetime="2026-10-23T10:39:04+00:00">10-23<br>10:39</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T10:39:04+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tianfu Communication: Plans to repurchase company shares for 100 million to 150 million yuan</span><span class="l-zh">天孚通信：拟以1亿元-1.5亿元回购公司股份</span></h2>
+            <p class="tp-sum"><span class="l-en">Tianfu Communication announced that the company plans to use its own funds to repurchase shares through centralized bidding, with a total repurchase amount of no less than RMB 100 million and no more than RMB 150 million, and a repurchase price of no more than RMB 350 per share. All repurchased shares will be cancelled and the company's registered capital will be reduced accordingly; the plan still needs to be submitted to the shareholders' meeting for review.</span><span class="l-zh">天孚通信公告，公司拟使用自有资金以集中竞价方式回购公司股份，回购资金总额不低于人民币1亿元且不超过人民币1.5亿元，回购价格不超过人民币350元/股。回购股份将全部注销并相应减少公司注册资本；方案尚需提交股东会审议。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.cnstock.com/commonDetail/807516" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="中共中央政治局召开会议 中共中央总书记习近平主持会议 the political bureau of the cpc central committee held a meeting, presided over by xi jinping, general secretary of the cpc central committee 中共中央政治局召开会议 中共中央总书记习近平主持会议    上海证券报 policy policy 政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The Political Bureau of the CPC Central Committee held a meeting, presided over by Xi Jinping, General Secretary of the CPC Central Committee</span><span class="l-zh">中共中央政治局召开会议 中共中央总书记习近平主持会议</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/807410" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="引长钱更须稳长钱 持续壮大资本市场稳定力量 attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market 引长钱更须稳长钱 持续壮大资本市场稳定力量    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market</span><span class="l-zh">引长钱更须稳长钱 持续壮大资本市场稳定力量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/807771" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见 csrc seeks public comment on the regulations on the management of private equity fund-of-funds (draft for comment) 证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC seeks public comment on the Regulations on the Management of Private Equity Fund-of-Funds (Draft for Comment)</span><span class="l-zh">证监会就《私募投资母基金管理规定（征求意见稿）》公开征求意见</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/807702" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会批复，花旗证券（中国）来了 csrc approves: citigroup securities (china) is coming 证监会批复，花旗证券（中国）来了    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC approves: Citigroup Securities (China) is coming</span><span class="l-zh">证监会批复，花旗证券（中国）来了</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://flash.jin10.com/detail/20261023193443712800" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="大洋电机：公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期 ocean's king lighting: the company's embodied intelligent robot joint module business still needs a certain cultivation period from technical validation to large-scale application 大洋电机：公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期 金十数据10月23日讯，大洋电机发布异动公告，公司股票连续3个交易日内收盘价格涨幅偏离值累计超过20%，根据《深圳证券交易所交易规则》的相关规定，属于股票交易异常波动的情形。近期资本市场对机器人概念关注度较高，相关板块市场表现活跃。公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期，目前公司该业务处于研发/测试阶段，尚未形成营业收入，预计短期内不会对公司业绩产生重大影响。 jinshi data, october 23: dayang motor issued an abnormal trading announcement. the company's stock closed with a cumulative deviation of more than 20% in closing price increases over three consecutive trading days. in accordance with the relevant provisions of the shenzhen stock exchange trading rules, this constitutes an abnormal fluctuation in stock trading. recently, the capital market has paid relatively high attention to the robot concept, and related sectors have shown active market performance. the company's embodied intelligent robot joint module business still requires a certain cultivation period from technical verification to large-scale application. at present, this business is in the r&d/testing stage and has not yet generated revenue, and is not expected to have a material impact on the company's performance in the short term. 金十数据10月23日讯，大洋电机发布异动公告，公司股票连续3个交易日内收盘价格涨幅偏离值累计超过20%，根据《深圳证券交易所交易规则》的相关规定，属于股票交易异常波动的情形。近期资本市场对机器人概念关注度较高，相关板块市场表现活跃。公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期，目前公司该业务处于研发/测试阶段，尚未形成营业收入，预计短期内不会对公司业绩产生重大影响。 金十数据 tech tech 科技 512880.ss">
+          <time class="tp-when" data-t="2026-10-23T19:34:43+08:00" datetime="2026-10-23T19:34:43+08:00">10-23<br>19:34</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T19:34:43+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ocean's King Lighting: The company's embodied intelligent robot joint module business still needs a certain cultivation period from technical validation to large-scale application</span><span class="l-zh">大洋电机：公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 23: Dayang Motor issued an abnormal trading announcement. The company's stock closed with a cumulative deviation of more than 20% in closing price increases over three consecutive trading days. In accordance with the relevant provisions of the Shenzhen Stock Exchange Trading Rules, this constitutes an abnormal fluctuation in stock trading. Recently, the capital market has paid relatively high attention to the robot concept, and related sectors have shown active market performance. The company's embodied intelligent robot joint module business still requires a certain cultivation period from technical verification to large-scale application. At present, this business is in the R&D/testing stage and has not yet generated revenue, and is not expected to have a material impact on the company's performance in the short term.</span><span class="l-zh">金十数据10月23日讯，大洋电机发布异动公告，公司股票连续3个交易日内收盘价格涨幅偏离值累计超过20%，根据《深圳证券交易所交易规则》的相关规定，属于股票交易异常波动的情形。近期资本市场对机器人概念关注度较高，相关板块市场表现活跃。公司具身智能机器人关节模组业务从技术验证到规模应用仍需一定培育周期，目前公司该业务处于研发/测试阶段，尚未形成营业收入，预计短期内不会对公司业绩产生重大影响。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Tech</span><span class="l-zh">科技</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3184481" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="国务院办公厅：减缓人工智能应用就业替代影响，建立人工智能应用就业风险评估机制 general office of the state council: mitigate the employment substitution impact of ai applications and establish an employment risk assessment mechanism for ai applications 国务院办公厅：减缓人工智能应用就业替代影响，建立人工智能应用就业风险评估机制 国务院办公厅日前印发《关于适应人工智能技术发展助力构建就业友好型发展方式的意见》，对相关工作作出部署。 the general office of the state council recently issued the opinions on adapting to the development of artificial intelligence technology and helping build an employment-friendly development model, making arrangements for related work. 国务院办公厅日前印发《关于适应人工智能技术发展助力构建就业友好型发展方式的意见》，对相关工作作出部署。 华尔街见闻 tech_policy tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-23T09:01:35+00:00" datetime="2026-10-23T09:01:35+00:00">10-23<br>09:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T09:01:35+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Office of the State Council: Mitigate the employment substitution impact of AI applications and establish an employment risk assessment mechanism for AI applications</span><span class="l-zh">国务院办公厅：减缓人工智能应用就业替代影响，建立人工智能应用就业风险评估机制</span></h2>
+            <p class="tp-sum"><span class="l-en">The General Office of the State Council recently issued the Opinions on Adapting to the Development of Artificial Intelligence Technology and Helping Build an Employment-Friendly Development Model, making arrangements for related work.</span><span class="l-zh">国务院办公厅日前印发《关于适应人工智能技术发展助力构建就业友好型发展方式的意见》，对相关工作作出部署。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">8</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×11</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">KWEB</span><span class="nm"><span class="l-en">China internet</span><span class="l-zh">中概互联</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
@@ -415,6 +1045,6 @@
 })();
 </script>
 
-<script src="theme.js?v=315f7ed2" defer></script>
+<script src="theme.js?v=25617108" defer></script>
 </body>
 </html>

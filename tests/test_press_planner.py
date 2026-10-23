@@ -726,6 +726,10 @@ def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path)
     from engine.press import writer
     root, row, plan, path = _prophet_plan_fixture(tmp_path)
     original = path.read_bytes()
+    # Prompt construction now validates the same dossier admission as write().
+    dossier = root / 'site/stocks' / (row['asset'] + '.html')
+    dossier.parent.mkdir(parents=True, exist_ok=True)
+    dossier.write_text('<h1>Fictional dossier</h1>')
     slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
     fact, = [f for f in slot['facts'] if f['id'].startswith('prophet_plan_')]
     assert fact['values'] == ['51.8', '46.22', '60.17', '68.54']

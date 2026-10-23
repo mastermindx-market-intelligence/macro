@@ -843,3 +843,31 @@ def test_internal_document_denials_match_the_canonical_policy():
     declared = set(POLICY["deny"]["exact"])
     declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
     assert set(shlex.split(matcher.group(1))) == declared
+
+
+def test_portfolio_state_cache_migration_covers_every_served_consumer():
+    """A path-wide immutable cache requires hash stamps on every consumer."""
+    from lib.pages import optimize_assets_text
+
+    asset = SITE / "portfolio_state.js"
+    digest = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+    template = (ROOT / "templates/watchlist.html.j2").read_text()
+    tag = '<script src="portfolio_state.js" data-sync></script>'
+    assert tag in template  # Bare source joins the canonical re-stamping path.
+    stamped = optimize_assets_text(tag, lambda path: digest if path == "portfolio_state.js" else None)
+    served = (SITE / "watchlist.html").read_text()
+    assert stamped in served and "defer" not in stamped
+    for text, loading_tag in [(template, tag), (served, stamped)]:
+        assert text.index(loading_tag) < text.index('<script src="watchlist.js?')
+    refs = re.compile(r'<script\b[^>]*\bsrc="([^"]*portfolio_state\.js[^"]*)"[^>]*>')
+    consumers = set()
+    for page in SITE.rglob("*.html"):
+        for url in refs.findall(page.read_text(encoding="utf-8", errors="replace")):
+            if url.startswith(("http://", "https://", "//")):
+                continue
+            bare = url.split("?", 1)[0]
+            if (page.parent / bare).resolve() != asset.resolve():
+                continue
+            assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
+            consumers.add(str(page.relative_to(SITE)))
+    assert {"watchlist.html", "ontology.html"} <= consumers

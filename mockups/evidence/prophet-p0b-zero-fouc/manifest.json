@@ -528,34 +528,34 @@
   ],
   "repair_extension": {
     "browser_receipts": {
-      "ca": {
-        "degraded_control_cases": 16,
-        "pass": true,
-        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "primary_cases": 48,
-        "screenshots": 8,
-        "sha256": "445b30c385e171554b8aeb35a4232fe8d2459536d9d4007090c4edb9a7c90d1a"
-      },
       "hk": {
-        "degraded_control_cases": 16,
-        "pass": true,
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "sha256": "c57aee8f2acfa965b9b3f51a3532facb98106ee9e46a1f956150f12a6161d40f",
+        "pass": true,
         "primary_cases": 48,
-        "screenshots": 8,
-        "sha256": "3098d00bba7c6251ec83e88909ebb3e9d3a04966093b6d27da0e349983a9783f"
+        "degraded_control_cases": 16,
+        "screenshots": 8
+      },
+      "ca": {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "sha256": "82bbcdc2187764d7f4bbd265896727f5aef2a7cfbfedef610117b252765787e5",
+        "pass": true,
+        "primary_cases": 48,
+        "degraded_control_cases": 16,
+        "screenshots": 8
       }
     },
     "claims": {
+      "source_contract": "browser_fixture",
       "browser_fixture": "reproducible",
       "canonical_build": "unavailable",
-      "production": "none",
-      "source_contract": "browser_fixture"
+      "production": "none"
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
       "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
     },
-    "generated_at": "2026-10-22T12:22:13.291753+00:00",
+    "generated_at": "2026-10-23T00:02:56.541628+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
     "pass": true,
     "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
@@ -626,12 +626,12 @@
       }
     ],
     "totals": {
-      "degraded_control_cases": 32,
       "markets": 2,
       "owner_cases_per_market": 3,
       "primary_cases": 96,
-      "screenshots": 16,
-      "total_cases": 128
+      "degraded_control_cases": 32,
+      "total_cases": 128,
+      "screenshots": 16
     }
   },
   "repair_extension_history": [
@@ -1982,28 +1982,28 @@
     {
       "extension": {
         "browser_receipts": {
-          "ca": {
-            "degraded_control_cases": 16,
-            "pass": true,
-            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "bbc6f54d26f36acdbb8daa84ba67095e54c292b5b81b03d6a52851e098e9b7ce"
-          },
           "hk": {
-            "degraded_control_cases": 16,
-            "pass": true,
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "67c2507347d089b35316bf41e16b0eb488f7cd9f6e35da40b8c2bf417af4c8b9",
+            "pass": true,
             "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "b8349824849fa8aeda2ed35e483df1a0e6e55a08ad86784b8da6ff540f512e51"
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "1301819e5858fefd046abecbe842eb59e9d72717e685854961a3f36811b8b5b8",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
           }
         },
         "claims": {
+          "source_contract": "browser_fixture",
           "browser_fixture": "reproducible",
           "canonical_build": "unavailable",
-          "production": "none",
-          "source_contract": "browser_fixture"
+          "production": "none"
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -2080,48 +2080,48 @@
           }
         ],
         "totals": {
-          "degraded_control_cases": 32,
           "markets": 2,
           "owner_cases_per_market": 3,
           "primary_cases": 96,
-          "screenshots": 16,
-          "total_cases": 128
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
         }
       },
-      "prior_manifest_sha256": "168df0b76726c4313777c4fc6a68bc0f1e4658df257e97723a51120bc61a5962",
-      "source_head": "f7e8076c3854bd262db4c73b68fca2410e3e402d"
+      "prior_manifest_sha256": "c679b7fae5fa312857eb2a8769b988182b1777845632fed801706c82b9e60c8f",
+      "source_head": "9ad6532bfa3f9083bcea06661c2408b2d08e8d69"
     },
     {
       "extension": {
         "browser_receipts": {
-          "ca": {
-            "degraded_control_cases": 16,
-            "pass": true,
-            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "653945e890b5e1aca8933c86320dc989f8e8dd72cd5093e3cedc925d84f7e111"
-          },
           "hk": {
-            "degraded_control_cases": 16,
-            "pass": true,
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "c8d0c5a70707bde01af319cfc195150ee25896210934d84279cd4b0957a95966",
+            "pass": true,
             "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "7dc24cc834cb62ceb7e8201776634c9a9ce7533f155dcb89b1a377d670ac804c"
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "e7b5fea38d5da1505df9924d8c8984376586a595b5132881fedc9c77d08c7a06",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
           }
         },
         "claims": {
+          "source_contract": "browser_fixture",
           "browser_fixture": "reproducible",
           "canonical_build": "unavailable",
-          "production": "none",
-          "source_contract": "browser_fixture"
+          "production": "none"
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
           "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
         },
-        "generated_at": "2026-10-22T07:41:03.309635+00:00",
+        "generated_at": "2026-10-22T19:40:51.856949+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
         "pass": true,
         "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
@@ -2192,48 +2192,48 @@
           }
         ],
         "totals": {
-          "degraded_control_cases": 32,
           "markets": 2,
           "owner_cases_per_market": 3,
           "primary_cases": 96,
-          "screenshots": 16,
-          "total_cases": 128
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
         }
       },
-      "prior_manifest_sha256": "3e7521ad38a937c8c1bc23f2f0cff8e1c1dc7ab0e5a81194fd550a9772e36071",
-      "source_head": "98da0dacfae8897ce5e4c556a14820668e5ba365"
+      "prior_manifest_sha256": "0579db768ce0138c2ac2dbe23b25940e3b4c0205b1b96d6fb4163443db7361f8",
+      "source_head": "88f904819b3c8f618228edbdd4b6b490558b0cde"
     },
     {
       "extension": {
         "browser_receipts": {
-          "ca": {
-            "degraded_control_cases": 16,
-            "pass": true,
-            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-            "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "3e9f45cd35d5ac9fd57134184b3081975695a9faa2ba4ad5a575b9729853e3e6"
-          },
           "hk": {
-            "degraded_control_cases": 16,
-            "pass": true,
             "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "4b3566e2810b3ac9efc992ad81f659dd5844a4e2e64ffc9656c5f5c1cba12ee1",
+            "pass": true,
             "primary_cases": 48,
-            "screenshots": 8,
-            "sha256": "ab0fc6a91380c3a4bd9efb4da83c172232afa5e02263cdeb48dce18238128fde"
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "7dee77d576b25c9756ca28b1bb5c3368d430a9467c8ba4aebf0b900eaccedddf",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
           }
         },
         "claims": {
+          "source_contract": "browser_fixture",
           "browser_fixture": "reproducible",
           "canonical_build": "unavailable",
-          "production": "none",
-          "source_contract": "browser_fixture"
+          "production": "none"
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
           "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
         },
-        "generated_at": "2026-10-22T10:24:53.150063+00:00",
+        "generated_at": "2026-10-22T22:32:41.444363+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
         "pass": true,
         "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
@@ -2304,16 +2304,16 @@
           }
         ],
         "totals": {
-          "degraded_control_cases": 32,
           "markets": 2,
           "owner_cases_per_market": 3,
           "primary_cases": 96,
-          "screenshots": 16,
-          "total_cases": 128
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
         }
       },
-      "prior_manifest_sha256": "aa99b2e9fff9589d8e9ee259095ded120025680307b122d2c9aaab1811554238",
-      "source_head": "975b4cdee0027bcb85addba7760a71bc960af571"
+      "prior_manifest_sha256": "2f80923313e2031c717ea8597c60ffa323daf1ce09de08452812cda5672f92c0",
+      "source_head": "8431c310dac4550de76f59fbbb53ffbbd76e063e"
     }
   ],
   "schema": "mastermind.p0_evidence.v2",

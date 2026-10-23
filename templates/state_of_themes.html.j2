@@ -334,7 +334,7 @@ html[data-theme="dark"] body::before{
 </div>
 
 {% if research_priority %}
-<section class="rp">
+<section class="rp" id="research-reading-order">
   <div class="sec-head">{{ t('What to look at first', '先看哪些主题') }}</div>
   {% if research_priority.state == 'empty' %}
   <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in after the next update.', '目前还没有记录到任何主题的新证据。下一次更新后，这里会显示内容。') }}</p>

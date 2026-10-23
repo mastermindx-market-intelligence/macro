@@ -102,7 +102,7 @@ ALLOWED_JOB_KEYS = {
 #: `gate: data` jobs still run and still red something a human reads — the
 #: field never deletes a receipt.
 GATE_VALUES = ("code", "data")
-ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes"}
+ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes", "acquisition"}
 
 # Changing any item in this string changes the job execution contract digest.
 # It deliberately describes only the infrastructure shared by all legacy jobs;
@@ -619,7 +619,19 @@ _BROWSER_SETUP_ALLOWED = frozenset((
 ))
 
 
-def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
+    from scripts.ci_browser_dependency_capture import capture_commands
+
+    return capture_commands()
+
+
+# Native cold acquisition retains its original TOTAL grant even when a
+# broader owner manifest later increases that job's declared timeout.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+
+
+def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
     if "phase" not in step:
         if "timeout-minutes" in step:
@@ -640,6 +652,61 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         "budget": "within_original_logical_job_deadline",
     }
 
+def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    # Unmarked jobs retain the protected projection, validation and digest.
+    if "acquisition" not in step:
+        return _incumbent_browser_setup_spec(step)
+    if type(step.get("acquisition")) is not str or step.get("acquisition") != "native_parallel" or step.get("phase") != "browser_setup":
+        raise ManifestError("native acquisition requires its explicit browser setup phase")
+    incumbent = _incumbent_browser_setup_spec({key: value for key, value in step.items() if key != "acquisition"})
+    assert incumbent is not None
+    from scripts.ci_browser_native_setup import BOUND_FILES
+    return {
+        **incumbent,
+        "acquisition": "native_parallel",
+        "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
+        "logical_job_timeout_minutes": NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+        "activation_job_id": NATIVE_BROWSER_LOGICAL_JOB_ID,
+        "native_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
+        },
+        "diagnostics": _browser_dependency_diagnostic_commands(),
+        "diagnostic_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+            for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
+        },
+    }
+
+
+def _run_native_browser_setup(
+    setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
+) -> CommandObservation:
+    """Ontology-only capture/acquisition consumes one original logical deadline."""
+    commands = (*setup["diagnostics"], setup["command"])
+    setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
+    for command_index, command in enumerate(commands):
+        now = setup_started_at if command_index == 0 else time.monotonic()
+        remaining = max(0.0, setup_deadline - now)
+        if remaining <= 0:
+            return CommandObservation(
+                outcome="timed_out", returncode=None, failure_signature=None,
+                detail="logical job timeout exhausted before this command started",
+                timeout_settlement="not_started",
+            )
+        if command_index == len(commands) - 1:
+            from scripts.ci_browser_native_setup import run_native_setup
+            return CommandObservation(**run_native_setup(
+                deadline=setup_deadline, command_env=command_env,
+                expected_sources=setup["native_source_sha256"], browser_stream=_stream_command,
+            ))
+        result = _stream_command(command, env=command_env, timeout_seconds=remaining)
+        if result.outcome == "timed_out" or result.timeout_settlement == "unknown":
+            return replace(result, detail="dependency input capture: " + (result.detail or result.outcome))
+        if result.outcome != "passed":
+            print("::warning title=browser-dependency-inputs::capture unavailable; required installation remains unchanged", flush=True)
+    raise AssertionError("native browser setup has no installer command")
+
+
 
 def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
     contract = tuple(
@@ -654,6 +721,8 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract) and job.job_id != NATIVE_BROWSER_LOGICAL_JOB_ID:
+        raise ManifestError("native browser acquisition is restricted to ontology-explorer")
     return contract
 
 
@@ -3640,12 +3709,17 @@ def _run_job(
         semantic_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     timeout_minutes = job.definition.get("timeout-minutes")
     timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
+    job_started_at = time.monotonic() if timeout_seconds is not None else None
     job_deadline = (
-        time.monotonic() + timeout_seconds if timeout_seconds is not None else None
+        job_started_at + timeout_seconds if timeout_seconds is not None else None
     )
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
+    if any(spec.get("acquisition") == "native_parallel" for spec in setups.values()):
+        timeout_minutes = min(timeout_minutes, NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES)
+        timeout_seconds = int(timeout_minutes) * 60
+        job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []
     failure: str | None = None
     infrastructure: dict[str, Any] = {"outcome": "passed"}
@@ -3686,9 +3760,10 @@ def _run_job(
             )
             print(f"::group::{job.job_id} — {step_name}", flush=True)
             group_open = True
+            command_started_at = time.monotonic() if job_deadline is not None else None
             remaining = (
-                max(0.0, job_deadline - time.monotonic())
-                if job_deadline is not None
+                max(0.0, job_deadline - command_started_at)
+                if command_started_at is not None
                 else None
             )
             if setup is not None and remaining is not None:
@@ -3703,11 +3778,16 @@ def _run_job(
                 )
             else:
                 command_attempted = True
-                result = _stream_command(
-                    command,
-                    env=semantic_env,
-                    timeout_seconds=remaining,
-                )
+                if setup is not None and setup.get("acquisition") == "native_parallel":
+                    result = _run_native_browser_setup(
+                        setup, job_deadline=job_deadline, setup_started_at=command_started_at, command_env=semantic_env,
+                    )
+                else:
+                    result = _stream_command(
+                        command,
+                        env=semantic_env,
+                        timeout_seconds=remaining,
+                    )
         except Exception as exc:  # noqa: BLE001 — preserve earlier observations
             if command_attempted:
                 timeout_settlement = "unknown"

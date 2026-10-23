@@ -2397,6 +2397,7 @@ def test_outer_base_timeout_stops_replays_and_preserves_first_outcome(tmp_path, 
 
 
 def test_browser_setup_consumes_original_total_deadline(monkeypatch):
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ())
     job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
     ticks = iter([0.0, 0.0, 400.0])
     calls = []
@@ -2410,6 +2411,7 @@ def test_browser_setup_consumes_original_total_deadline(monkeypatch):
 
 
 def test_browser_setup_failure_is_blocking_infrastructure_not_product_pass(monkeypatch):
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ())
     job = _job("browser", [_browser_setup_step(), {"name": "proof", "run": "true"}], timeout=10)
     calls = []
     monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
@@ -3037,3 +3039,361 @@ def test_review_pump_error_after_root_wait_blocks_all_dependent_effects(tmp_path
     assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
     evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
     assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
+
+
+def _capture_job_environment(monkeypatch):
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ("capture apt", "capture playwright"), raising=False)
+    from scripts import ci_browser_native_setup as native
+    def mocked_native_setup(**kwargs):
+        observation = PACK._stream_command(
+            "python -m playwright install --with-deps chromium",
+            env=kwargs["command_env"],
+            timeout_seconds=max(0.0, kwargs["deadline"] - PACK.time.monotonic()),
+        )
+        return dict(outcome=observation.outcome, returncode=observation.returncode,
+                    failure_signature=observation.failure_signature,
+                    timeout_settlement=observation.timeout_settlement, detail=observation.detail)
+    monkeypatch.setattr(native, "run_native_setup", mocked_native_setup)
+
+
+def test_capture_deducts_from_same_original_deadline_and_keeps_installer(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 40.0, 100.0, 100.0, 500.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("capture apt", 600), ("capture playwright", 560),
+                     ("python -m playwright install --with-deps chromium", 500), ("true", 100)]
+    assert [s["outcome"] for s in result.steps] == ["passed"]
+
+
+@pytest.mark.parametrize("outcome", ["timed_out", "failed"])
+def test_capture_uncertainty_blocks_original_installer_and_semantics(monkeypatch, outcome):
+    _capture_job_environment(monkeypatch)
+    job = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"name": "assertion", "run": "true"}], timeout=10)
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        return PACK.CommandObservation(outcome=outcome, returncode=None, timeout_settlement="unknown", detail="original capture uncertainty")
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt"]
+    assert result.timeout_settlement == "unknown"
+    assert result.infrastructure["outcome"] == "unknown"
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+    assert outcome in result.infrastructure["detail"]
+
+
+def test_settled_capture_failure_does_not_replace_required_installation(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"name": "assertion", "run": "true"}], timeout=10)
+    calls = []
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        return PACK.CommandObservation(outcome="failed" if len(calls) == 1 else "passed", returncode=1 if len(calls) == 1 else 0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt", "capture playwright", "python -m playwright install --with-deps chromium", "true"]
+    assert result.failure is None
+    assert result.steps[0]["outcome"] == "passed"
+
+
+def test_capture_cannot_launch_installer_after_total_budget_exhausted(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 600.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **_k: calls.append(command) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["capture apt"]
+    assert result.failure is not None and result.timeout_settlement is None
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+def test_capture_commands_are_bound_only_to_declared_setup_jobs(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    setup = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"run": "true"}], timeout=10)
+    ordinary = _job("ordinary", [{"run": "true"}], timeout=10)
+    before = PACK.semantic_job_digest(setup), PACK.semantic_job_digest(ordinary)
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ("different capture",))
+    after = PACK.semantic_job_digest(setup), PACK.semantic_job_digest(ordinary)
+    assert before[0] != after[0]
+    assert before[1] == after[1]
+
+
+def test_capture_helper_source_is_part_of_setup_digest(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    setup = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition": "native_parallel"}, {"run": "true"}], timeout=10)
+    before = PACK.semantic_job_digest(setup)
+    original = Path.read_bytes
+
+    def changed_helper(path):
+        content = original(path)
+        return content + b"\n# changed capture input source\n" if path.name == "ci_browser_dependency_inputs.py" else content
+
+    monkeypatch.setattr(Path, "read_bytes", changed_helper)
+    assert PACK.semantic_job_digest(setup) != before
+
+
+def test_capture_shares_the_finite_setup_bound_as_well_as_the_job_deadline(monkeypatch):
+    _capture_job_environment(monkeypatch)
+    job = _job("ontology-explorer", [{**_browser_setup_step(minutes=9), "acquisition": "native_parallel"}, {"name": "assertion", "run": "true"}], timeout=10)
+    ticks = iter([0.0, 0.0, 300.0, 540.0])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs: calls.append((command, kwargs["timeout_seconds"])) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == [("capture apt", 540), ("capture playwright", 240)]
+    assert result.failure is not None
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+# Explicit native acquisition is closed opt-in; default setup path is retained.
+def test_native_acquisition_strategy_and_every_helper_are_digest_bound(monkeypatch):
+    original = _job("ontology-explorer", [_browser_setup_step(), {"name":"assertion","run":"true"}], timeout=10)
+    native = _job("ontology-explorer", [{**_browser_setup_step(), "acquisition":"native_parallel"}, {"name":"assertion","run":"true"}], timeout=10)
+    assert PACK.semantic_job_digest(original) != PACK.semantic_job_digest(native)
+    before = PACK.semantic_job_digest(native)
+    read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda p:read(p)+b"#changed" if p.name=="ci_apt_native_stage.py" else read(p))
+    assert PACK.semantic_job_digest(native) != before
+    spec=PACK._browser_setup_contract(native)[0]
+    assert len(spec["native_source_sha256"])==7
+    assert spec["activation_job_id"] == "ontology-explorer"
+    assert spec["budget"]=="within_original_logical_job_deadline"
+
+
+def test_native_acquisition_unknown_never_falls_back_or_runs_assertions(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job=_job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}],timeout=10)
+    calls=[];ticks=iter([0.,0.,20.,40.])
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:next(ticks))
+    monkeypatch.setattr(PACK,"_stream_command",lambda c,**k:calls.append(c) or PACK.CommandObservation(outcome="passed",returncode=0))
+    def setup(**kwargs):
+        assert kwargs["deadline"]==600 and len(kwargs["expected_sources"])==7
+        calls.append("native once")
+        return dict(outcome="timed_out",returncode=None,failure_signature=None,timeout_settlement="unknown",detail="original native acquisition timeout")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert calls==["capture apt","capture playwright","native once"]
+    assert result.timeout_settlement=="unknown" and result.steps[0]["outcome"]=="infrastructure_blocked"
+    assert result.infrastructure["outcome"]=="unknown"
+
+
+def test_native_acquisition_normal_success_leaves_only_remaining_total_for_assertions(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job=_job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}],timeout=10)
+    calls=[];ticks=iter([0.,0.,20.,40.,500.])
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:next(ticks))
+    monkeypatch.setattr(PACK,"_stream_command",lambda c,**k:calls.append((c,k["timeout_seconds"])) or PACK.CommandObservation(outcome="passed",returncode=0))
+    def setup(**kwargs):
+        calls.append(("native once",kwargs["deadline"]))
+        return dict(outcome="passed",returncode=0,failure_signature=None,timeout_settlement=None,detail="native and browser acquisition passed")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert result.failure is None
+    assert calls==[("capture apt",600),("capture playwright",580),("native once",600),("true",100)]
+
+
+@pytest.mark.parametrize("strategy", ["foreign",None,True,{},[]])
+def test_native_acquisition_has_no_unknown_strategy_fallback(strategy):
+    with pytest.raises(PACK.ManifestError):PACK._browser_setup_spec({**_browser_setup_step(),"acquisition":strategy})
+
+
+def test_native_acquisition_manifest_is_explicit_and_nonphase_selection_refused(tmp_path):
+    native=_job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"},{"name":"assertion","run":"true"}],timeout=10)
+    assert len(PACK.load_legacy_jobs(_write_manifest(tmp_path/"manifest.yml",[native])))==1
+    with pytest.raises(PACK.ManifestError):PACK._browser_setup_spec({"name":"assertion","run":"true","acquisition":"native_parallel"})
+
+
+@pytest.mark.parametrize("job_id", ["ontology-explorer"])
+def test_native_manifest900_inherits_one600_total_before_setup_and_preserves_all_assertions(monkeypatch, job_id):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job(job_id, [
+        {"name":"before setup assertion", "run":"before"},
+        {**_browser_setup_step(), "acquisition":"native_parallel"},
+        {"name":"after setup assertion one", "run":"after-one"},
+        {"name":"after setup assertion two", "run":"after-two"},
+    ], timeout=15)
+    ticks = iter([1000., 1000., 1020., 1040., 1060., 1490., 1599.])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda:next(ticks))
+    calls = []
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    def setup(**kwargs):
+        calls.append(("native once", kwargs["deadline"]))
+        return dict(outcome="passed", returncode=0, failure_signature=None, timeout_settlement=None, detail="native and browser acquisition passed")
+    monkeypatch.setattr(native, "run_native_setup", setup)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("before",600), ("capture apt",580), ("capture playwright",560),
+                     ("native once",1600), ("after-one",110), ("after-two",1)]
+    assert [step["outcome"] for step in result.steps] == ["passed"] * 3
+    assert len(result.steps) == len(PACK.semantic_step_specs(job)) == 3
+
+
+@pytest.mark.parametrize("job_id", ["ontology-explorer"])
+def test_native_manifest900_stops_postsetup_assertions_at_original600_without_dropping_evidence(monkeypatch, job_id):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job(job_id, [
+        {"name":"before setup assertion", "run":"before"},
+        {**_browser_setup_step(), "acquisition":"native_parallel"},
+        {"name":"after setup assertion one", "run":"after-one"},
+        {"name":"after setup assertion two", "run":"after-two"},
+    ], timeout=15)
+    ticks = iter([0., 0., 100., 120., 140., 600.])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda:next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs:calls.append(command) or PACK.CommandObservation(outcome="passed", returncode=0))
+    def setup(**kwargs):
+        calls.append(("native once", kwargs["deadline"]))
+        return dict(outcome="passed", returncode=0, failure_signature=None, timeout_settlement=None, detail="native and browser acquisition passed")
+    monkeypatch.setattr(native, "run_native_setup", setup)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert calls == ["before", "capture apt", "capture playwright", ("native once",600)]
+    assert [step["outcome"] for step in result.steps] == ["passed", "timed_out", "not_run_prior_failure"]
+    assert len(result.steps) == len(PACK.semantic_step_specs(job)) == 3
+    assert "after 10 minutes" in result.failure
+    assert result.timeout_settlement is None  # the exhausted assertion never launched
+
+
+def test_native_inherited_total_is_explicitly_digest_bound_without_changing_ordinary_digest(monkeypatch):
+    native = _job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}], timeout=15)
+    ordinary = _job("ordinary", [{"name":"assertion","run":"true"}], timeout=15)
+    assert PACK._browser_setup_contract(native)[0]["logical_job_timeout_minutes"] == 10
+    before = PACK.semantic_job_digest(native), PACK.semantic_job_digest(ordinary)
+    monkeypatch.setattr(PACK, "NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES", 9)
+    assert PACK.semantic_job_digest(native) != before[0]
+    assert PACK.semantic_job_digest(ordinary) == before[1]
+
+
+@pytest.mark.parametrize("minutes", [15,12])
+def test_non_native_owner_total_remains900_or_international720(monkeypatch, minutes):
+    _capture_job_environment(monkeypatch)
+    job = _job("ordinary-owner", [{"name":"first","run":"before"}, {"name":"last","run":"after"}], timeout=minutes)
+    ticks = iter([0., 0., 650.])
+    monkeypatch.setattr(PACK.time, "monotonic", lambda:next(ticks))
+    calls = []
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs:calls.append((command,kwargs["timeout_seconds"])) or PACK.CommandObservation(outcome="passed", returncode=0))
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("before",minutes*60), ("after",minutes*60-650)]
+
+
+@pytest.mark.parametrize("job_id", ["unrun-brain-gateway", "ordinary-browser"])
+def test_ontology_only_native_opt_in_refuses_every_other_job(job_id, tmp_path):
+    job = _job(job_id, [{**_browser_setup_step(), "acquisition": "native_parallel"},
+                        {"name": "assertion", "run": "true"}], timeout=15)
+    with pytest.raises(PACK.ManifestError, match="restricted to ontology-explorer"):
+        PACK.semantic_job_digest(job)
+    with pytest.raises(PACK.ManifestError, match="restricted to ontology-explorer"):
+        PACK.load_legacy_jobs(_write_manifest(tmp_path / "forbidden-native.yml", [job]))
+
+
+def test_unmarked_brain_setup_projection_and_digest_match_protected_contract(monkeypatch):
+    def forbidden(*_a, **_k):
+        raise AssertionError("unmarked setup touched native diagnostics/helpers")
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", forbidden)
+    step = _browser_setup_step()
+    assert PACK._browser_setup_spec(step) == {
+        "phase": "browser_setup", "command": step["run"],
+        "timeout_minutes": 10, "budget": "within_original_logical_job_deadline",
+    }
+    job = _job("unrun-brain-gateway", [step, {"name": "assertion", "run": "true"}], timeout=15)
+    # Frozen protected0feed runner, same synthetic definition; no helper-source inputs.
+    assert PACK.semantic_job_digest(job) == "13f33f0541d856c443f4137c7376a329773632326d9bb6e91f1957a24aaff876"
+    monkeypatch.setattr(PACK, "NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES", 1)
+    assert PACK.semantic_job_digest(job) == "13f33f0541d856c443f4137c7376a329773632326d9bb6e91f1957a24aaff876"
+
+
+@pytest.mark.parametrize("job_id,minutes,setup_minutes", [
+    ("unrun-brain-gateway", 15, 10), ("ordinary-browser", 12, 9),
+])
+def test_unmarked_setup_preserves_installer_only_sequence_and_owner_deadlines(monkeypatch, job_id, minutes, setup_minutes):
+    import builtins
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    def forbidden(*_a, **_k):
+        raise AssertionError("unmarked setup touched native diagnostics/helpers")
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", forbidden)
+    monkeypatch.setattr(PACK, "_run_native_browser_setup", forbidden)
+    original_import = builtins.__import__
+    def scoped_import(name, *args, **kwargs):
+        if name.startswith(("scripts.ci_browser_", "scripts.ci_apt_")):
+            forbidden()
+        return original_import(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, "__import__", scoped_import)
+    clock = [0.0]
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: clock[0])
+    calls = []
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        clock[0] += 100 if command == "before" else 400 if "playwright install" in command else 0
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    job = _job(job_id, [{"name": "before", "run": "before"},
+                       _browser_setup_step(minutes=setup_minutes),
+                       {"name": "after", "run": "after"}], timeout=minutes)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("before", minutes * 60),
+                     ("python -m playwright install --with-deps chromium", min(minutes * 60 - 100, setup_minutes * 60)),
+                     ("after", minutes * 60 - 500)]
+    assert [step["outcome"] for step in result.steps] == ["passed", "passed"]
+
+
+@pytest.mark.parametrize("outcome", ["failed", "timed_out"])
+def test_unmarked_brain_unknown_installer_preserves_settlement_fence(monkeypatch, outcome):
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    def forbidden(*_a, **_k):
+        raise AssertionError("unknown original command must not trigger native capture or Git healing")
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", forbidden)
+    monkeypatch.setattr(PACK, "_run_native_browser_setup", forbidden)
+    monkeypatch.setattr(PACK, "_ensure_pack_git_usable", forbidden)
+    calls = []
+    def stream(command, **kwargs):
+        calls.append(command)
+        return PACK.CommandObservation(outcome=outcome, returncode=None,
+                                       timeout_settlement="unknown", detail="original installer settlement unknown")
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    job = _job("unrun-brain-gateway", [_browser_setup_step(),
+                                     {"name": "assertion", "run": "true"}], timeout=15)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={}, tested_tree_sha=SHA_TREE)
+    assert calls == ["python -m playwright install --with-deps chromium"]
+    assert result.timeout_settlement == "unknown"
+    assert result.infrastructure["outcome"] == "unknown"
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+def test_ontology_only_manifest_activation_keeps_protected_brain_and_international():
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    native = [job.job_id for job in jobs.values()
+              if any(spec.get("acquisition") == "native_parallel" for spec in PACK._browser_setup_contract(job))]
+    assert native == ["ontology-explorer"]
+    assert jobs["unrun-brain-gateway"].definition["timeout-minutes"] == 15
+    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 12
+    assert set(PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]) == {
+        "phase", "command", "timeout_minutes", "budget", "step_index",
+    }
