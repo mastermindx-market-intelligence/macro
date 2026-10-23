@@ -1420,6 +1420,10 @@ if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(a
 	API_RESTART_NEEDED=1
 
 fi
+# Catalyst projection code is imported into the API process.
+if grep -qE '^engine/catalyst_opportunity/.*\.py$' <<<"$CHANGED"; then
+	API_RESTART_NEEDED=1
+fi
 # END MACRO_API_RESTART_TRIGGER
 if [ "$API_RESTART_NEEDED" -eq 1 ]; then
 	disarm_options_timer

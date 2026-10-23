@@ -1,3 +1,48 @@
+## Current Catalyst integration checkpoint — 23 October 2026
+
+This entry records the qualified source composition for existing Draft/HOLD PR #9590. Final commit, contract, push and hosted-CI identities are maintained in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277); a local source result does not establish current-market or production acceptance.
+
+### Composition and measured CI repair
+
+Qualified parent `6232497709d98560539f132cacc5f8c6464e0669` passed the official contract against `afcedb87dd6c6ccaccf53ed14261c69d9333a89e` at07:28:10 UTC: **0 introduced /0 inherited**, NO_REAP=1. Its log SHA-256 is `4feb024295ac1ab2caffeb465f0fe682bc0f88ba937ad859e70aef51c39ced1e`. That result remains scoped to623.
+
+The next normal merge composes locked main `88b5bc86a234a74fd526f974288ef39a33170289`. Both CI packing histories are retained. The canonical merged-tree measurement at08:29:28 UTC,113.92 seconds, established:
+
+| Probe | Selected jobs | Planning weight | Packs |
+| --- | ---: | ---: | ---: |
+| templates/index.html |135|5874|10|
+| scripts/build_free_content.py |135|5856|10|
+| engine/prophet/plan_book.py |130|5640|10|
+
+The manifest preserves all350 prior jobs and adds **one** original upstream Catalyst job with six planning-weight units, for351 total. All prior commands/timeouts and all13 new upstream closure expansions are retained. Only the breached Prophet weight ceiling changes5634→5640, without padding. Job limits136/136/130, other weight limits, ten packs and the canonical planner remain unchanged. These weights are accounting estimates, not measured execution times. Measurement receipt SHA-256: `2a0d4bc70ecf06931a422a0943830442fa72b10663b6d8bb52b8b359fa34e673`.
+
+The focused run PID97416 completed08:35:20 UTC with **3 passes /1 failure**. BioCatalyst inventory, the declared curated set and packing passed; W4's transitive import coverage identified exactly three newly reached files. They were appended only to that existing owner's path list:
+- `app/catalyst_opportunity.py`
+- `engine/catalyst_opportunity/projection.py`
+- `engine/catalyst_opportunity/reader.py`
+
+The failed check alone was requalified by PID6290: **1 passed**,142.72 seconds, completed08:39:14 UTC. Its log SHA-256 is `847990ce17c7fa88e77a17a684cbef09d81ab8ebe3d098aca76c2ef93cd6c234`; repair/qualification receipt SHA-256 `42f9a16cd75adbdc2248006288e06354e60389f226e63233cddb7f388c87620f`. The first run remains failed; these are separate phases, not a single four-pass run. Current manifest SHA-256 is `bfb95e0f0d9f3ad25be6972fc36208392e03c4b56f60cb1ffc80651852aeaf2c`; packing-test SHA-256 is `dfa0429678b39073a8b71e87816cfef51bc67421dfe2c42d7d46b453e9032150`.
+
+A preflight guard initially compared every historical upstream W4 path and stopped before writing. Inspection proved the incoming W4 owner was unchanged from afc, while the local explanation suite's prior transfer remained covered. The corrected comparison preserves every newly introduced upstream path and every local prior command/path; no suite was removed to make the gate pass.
+
+### Evidence retained at its actual scope
+
+All56 pinned native producer source files, the Bonds page and theme assets are unchanged from afc to88b5. The sparse merge removed the worktree page copy; the unchanged Git-index bytes were rematerialized, SHA-256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`. The earlier two page-contract passes,14/14 native result, literal asset closure,142 unique sponsor-date tests and separate W5 phases remain preserved below and in their existing evidence files. No native run or render was repeated for this CI-only delta.
+
+The remaining input gap is still concrete: locked main88b5 retains SPY blob `c84b37ba34104ec453806983b859d01dd9f6c51c`, identical to afc, with last valid close October21. The upstream page carries October22; the private integrated candidate's older feature frame cannot replace it or establish current-feature acceptance. Any new source observation must retain its actual acquisition clock and adjustment basis; it cannot be represented as recovery of the original closing-bell input.
+
+The browser restart leaves no unfinished tab. The retained preview failed with ERR_SOCKET_NOT_CONNECTED and supplied no screenshot or interaction proof. R11's original browser-admission and owning duration-capture requirements remain open; the synthetic source archive and historical dashboard capture are insufficient.
+
+### Resume through the existing owners
+
+1. Read the canonical checkpoint and actual Git state before an effect. Consume any already-recorded process/result; do not replay completed operations. Commit this normal composition, qualify its exact committed head with the official contract and `CONTRACT_DELTA_NO_REAP=1`, then normally push the existing9590 branch after remote ancestry/readback checks. Consume ordinary CI/fences; do not dispatch a new render, arm or merge through HOLD.
+2. Resolve the bounded current-input gap through the existing data/source owner. A route must preserve instrument identity, actual observation time, adjustment basis, overlap and immutable prior evidence before a new input composition can be used. No bulk heal, guessed price/date, fabricated history or retroactive freshness.
+3. Establish the original admitted browser/capture path and accepting operator, then capture the genuine current candidate and its required interaction/viewport states. No unchanged loopback retry or alternate carrier to evade a denial. R11's receipt must own its actual duration template and capture.
+4. Keep source/adoption, independent review and final production gates distinct. The original Terminal repair-review has already returned terminal/unqualified with retry=false; no further polling, replay or replacement review is authorized by source progress. Terminal#1106 stays Draft/HOLD, the refused deployment stays refused, migration0038 is not reapplied, and covering render39688064251 is consumed.
+5. Forex#10052 head227735dcf6a5c2358f898063914a87bef0c9c287 is published and green under CI39918612998/fences39918612860. Its owner integration plan and all admission holds remain separate. Macro#9996's immutable green/live inactive CRUD, original workspaces/private data and held carry/COT/RiskRadar remain preserved. Tiingo licensing/product-use is Chairman-COMPLETE; no outreach.
+
+---
+
 ## Owner integration checkpoint — 23 October 2026
 
 This entry supersedes earlier *current-state* statements while preserving their historical evidence. This is source integration for existing Draft/HOLD PR #9590, not release or current-market UI acceptance.
