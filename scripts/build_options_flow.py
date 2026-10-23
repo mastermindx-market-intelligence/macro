@@ -109,8 +109,9 @@ def build(*, target_session: date | None = None) -> BuildOutcome:
     if d != target:
         return BuildOutcome(False, target, source_session=d, reason="target_session_unavailable",
                             detail=f"newest readable minute object is {d}")
-    from engine.options_universe import gex_symbols
-    syms = gex_symbols((config.load().get("polygon", {}) or {}).get("gex"))
+    from engine.options_universe import legacy_gex_symbols
+    # ThetaData expansion must not enlarge this legacy minute-aggregate lane.
+    syms = legacy_gex_symbols((config.load().get("polygon", {}) or {}).get("gex"))
     if not syms:
         return BuildOutcome(False, target, source_session=d, reason="universe_missing")
     log.info("options_flow: universe = %d underlyings", len(syms))
