@@ -17,6 +17,7 @@ Hermetic by construction: every test passes ``root=tmp_path`` and
 """
 from __future__ import annotations
 
+from datetime import date
 import json
 from unittest import mock
 
@@ -135,9 +136,86 @@ class TestNightlyLaneGate:
             raise AssertionError("assembly ran in a non-nightly lane")
 
         monkeypatch.setattr(ucv, "build_records", _boom)
-        monkeypatch.setattr(ucv, "basket_membership", _boom)
+        monkeypatch.setattr(ucv, "basket_membership_snapshot", _boom)
+        monkeypatch.setattr(ucv, "identity_capture", _boom)
         monkeypatch.setattr(ucv, "context_dimension_frame", _boom)
         assert ucv.append_candidates(verdicts, "2026-07-31", **append_kwargs) == 0
+
+
+class TestProspectiveOwnerCaptureWiring:
+
+    def test_append_binds_data_os_cycle_and_membership_sources(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setenv("COLLECT_LANE", "nightly")
+        reference = tmp_path / "data" / "reference"
+        reference.mkdir(parents=True)
+        pd.DataFrame([{
+            "security_id": "SEC:US-XNAS-AAA",
+            "issuer_id": "ISS:US-XNAS-AAA",
+            "issuer_state": "ACTIVE",
+            "listing_key": "US-XNAS-AAA",
+        }]).to_parquet(reference / "security_master.parquet", index=False)
+        pd.DataFrame([{
+            "vendor": "membership", "vendor_symbol": "AAA",
+            "security_id": "SEC:US-XNAS-AAA",
+            "valid_from": date(2020, 1, 1), "valid_to": None,
+        }]).to_parquet(reference / "vendor_aliases.parquet", index=False)
+        baskets = tmp_path / "data" / "baskets"
+        baskets.mkdir(parents=True)
+        membership_path = baskets / "membership.json"
+        membership_path.write_text(json.dumps({
+            "version": "2026-08-07", "curated": "2026-08-07",
+            "baskets": {"ai_infra": {
+                "weighting": "equal",
+                "members": [{"ticker": "AAA", "added": "2020-01-01",
+                             "removed": None}],
+            }},
+        }))
+
+        total = ucv.append_candidates(
+            {"AAA": _verdict()}, "2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            root=tmp_path, event_rows={}, with_context_dims=False,
+            profile_rows={"AAA": {"state": "RALLY ON", "label": "UPTREND"}},
+            theme_pulse={}, foresight_stages={}, closes=pd.DataFrame(),
+            volumes=pd.DataFrame(),
+        )
+        assert total == 1
+        row = pd.read_parquet(ucv._part_path("2026-07-31", tmp_path)).iloc[0]
+        assert row["security_id"] == "SEC:US-XNAS-AAA"
+        assert row["issuer_id"] == "ISS:US-XNAS-AAA"
+        assert row["identity_capture_state"] == "RESOLVED"
+        assert row["cycle_state"] == "RALLY ON" and row["cycle_label"] == "UPTREND"
+        assert row["theme_capture_group_id"] == "ai_infra"
+        assert row["theme_capture_group_state"] == "SOLE_ACTIVE_MEMBERSHIP"
+        assert row["theme_capture_member_tickers"] == "AAA"
+        assert row["theme_capture_member_count"] == 1
+        assert row["theme_capture_member_weight"] == 1.0
+        assert row["theme_capture_member_set_sha256"].startswith("sha256:")
+        assert row["theme_membership_source_sha256"].startswith("sha256:")
+        assert row["theme_membership_source_version"] == "2026-08-07"
+
+        # The real native writer must remain consumable by the strict S0 reader.
+        # Synthetic Data OS and membership sources above exercise the actual
+        # adapters and canonical storage, not a hand-assembled verifier envelope.
+        from hashlib import sha256
+        from scripts import check_prophet_h1_prospective_accrual as accrual
+
+        part = ucv._part_path("2026-07-31", tmp_path)
+        original = part.read_bytes()
+        proof = accrual.inspect(
+            expected_session="2026-07-31", board_definition="us_prophet_v1",
+            root=tmp_path,
+        )
+        assert proof["status"] == accrual.STATUS_S0_CAPTURE_PRESENT
+        assert proof["rows"] == 1
+        assert proof["coverage"]["identity_resolved"] == 1.0
+        assert proof["coverage"]["sole_supported_peer_group"] == 1.0
+        assert proof["source_receipt"]["sha256"] == sha256(original).hexdigest()
+        assert part.read_bytes() == original
+        assert proof["h1_admitted"] is False
+        assert proof["model_fit_executed"] is False
 
 
 # --------------------------------------------------------------------------- #
@@ -170,6 +248,28 @@ class TestPitDiscipline:
         frame = ucv.load_candidates(tmp_path)
         assert frame.set_index("ticker").loc["AAA"]["ticks"] == 1
         assert frame.set_index("ticker").loc["AAA"]["tier_cascade"] == "T2"
+
+    def test_cycle_pair_rerun_keeps_the_original_partial_board_record(
+        self, verdicts, append_kwargs, tmp_path
+    ):
+        first = {
+            **append_kwargs,
+            "board_rows": {"AAA": {"state": "RALLY ON", "label": None}},
+            "profile_rows": {"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        }
+        ucv.append_candidates(verdicts, "2026-07-31", **first)
+
+        # A rerun cannot fill the original board null from a later profile or
+        # replace the board-sourced state: keep-first freezes the emitted pair.
+        second = {
+            **append_kwargs,
+            "board_rows": {},
+            "profile_rows": {"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        }
+        ucv.append_candidates(verdicts, "2026-07-31", **second)
+        row = ucv.load_candidates(tmp_path).set_index("ticker").loc["AAA"]
+        assert row["cycle_state"] == "RALLY ON"
+        assert pd.isna(row["cycle_label"])
 
     def test_second_night_appends_without_touching_the_first(
         self, verdicts, append_kwargs, tmp_path
@@ -337,13 +437,25 @@ class TestMonthlyPartitionedLayout:
 CONTRACT: dict[str, str] = {
     "stamp_date": "O", "ticker": "O", "name": "O", "sector": "O",
     "board_definition": "O", "lane": "O",
+    "security_id": "O", "issuer_id": "O", "identity_epoch": "O",
+    "identity_epoch_state": "O", "identity_spec_schema": "O",
+    "identity_spec_hash": "O", "identity_capture_state": "O",
+    "identity_capture_basis": "O", "identity_alias_source_sha256": "O",
+    "identity_master_source_sha256": "O",
     "eligible": "b", "buyable": "b",
     "tier_cascade": "O", "tier_sub": "O", "gate_state": "O", "gate_reason": "O",
     "near_miss_reason": "O", "signal_asof": "O", "stage": "O",
     "ticks": "f", "bars_to_cross": "f", "fresh_bars": "f", "gate_weight": "f",
     "alpha": "f", "alpha_percentile": "f", "prophet_score": "f",
     "score_rank": "f", "display_rank": "f",
+    "cycle_state": "O", "cycle_label": "O", "cycle_label_vocab_sha256": "O",
     "theme_membership_count": "i", "theme_membership_ids": "O",
+    "theme_membership_source_sha256": "O", "theme_membership_source_version": "O",
+    "theme_membership_source_curated": "O", "theme_membership_basis": "O",
+    "theme_capture_group_id": "O", "theme_capture_group_state": "O",
+    "theme_capture_group_rule": "O", "theme_capture_group_weighting": "O",
+    "theme_capture_member_tickers": "O", "theme_capture_member_count": "i",
+    "theme_capture_member_set_sha256": "O", "theme_capture_member_weight": "f",
     "theme_primary_id": "O", "theme_primary_name": "O", "theme_label": "O",
     "theme_reco": "O", "theme_score": "f", "theme_bull_days": "f",
     "theme_heat_rank": "f", "foresight_stage": "O",
@@ -476,6 +588,121 @@ class TestBuildRecords:
         # a name off the board carries NULL legs, never a zero
         assert by_ticker["BBB"]["prophet_signal_points"] is None
         assert by_ticker["BBB"]["prophet_score"] is None
+
+    def test_cycle_pair_board_row_wins_whole_pair_on_conflict(self, verdicts):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            board_rows={"AAA": {"state": "RALLY ON", "label": "UPTREND"}},
+            profile_rows={"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        )
+        by_ticker = {r["ticker"]: r for r in records}
+        assert by_ticker["AAA"]["cycle_state"] == "RALLY ON"
+        assert by_ticker["AAA"]["cycle_label"] == "UPTREND"
+        assert by_ticker["AAA"]["cycle_label_vocab_sha256"].startswith("sha256:")
+        assert by_ticker["BBB"]["cycle_state"] is None
+        assert by_ticker["BBB"]["cycle_label"] is None
+
+    def test_cycle_pair_falls_back_to_same_night_candidate_profile(self, verdicts):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            profile_rows={"BBB": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        )
+        by_ticker = {r["ticker"]: r for r in records}
+        assert by_ticker["BBB"]["cycle_state"] == "TURN SIGNALED"
+        assert by_ticker["BBB"]["cycle_label"] == "BOTTOMING"
+        assert by_ticker["AAA"]["cycle_state"] is None
+        assert by_ticker["AAA"]["cycle_label"] is None
+
+    @pytest.mark.parametrize(
+        ("board_row", "expected_state", "expected_label"),
+        [
+            ({"state": "RALLY ON", "label": None}, "RALLY ON", None),
+            ({"state": None, "label": "UPTREND"}, None, "UPTREND"),
+            ({"state": "  ", "label": ""}, None, None),
+            ({"state": "OWNER_UNKNOWN", "label": "OWNER_LABEL_UNKNOWN"},
+             "OWNER_UNKNOWN", "OWNER_LABEL_UNKNOWN"),
+        ],
+    )
+    def test_cycle_pair_never_mixes_partial_or_unknown_board_with_profile(
+        self, verdicts, board_row, expected_state, expected_label
+    ):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            board_rows={"AAA": board_row},
+            profile_rows={"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        )
+        row = {r["ticker"]: r for r in records}["AAA"]
+        assert row["cycle_state"] == expected_state
+        assert row["cycle_label"] == expected_label
+
+    def test_identity_fields_are_read_from_the_shared_data_os_projection(self, verdicts):
+        identity = {
+            "security_id": "SEC:US-XNAS-AAA",
+            "issuer_id": "ISS:US-XNAS-AAA",
+            "identity_epoch": "epoch_0",
+            "identity_epoch_state": "provisional",
+            "identity_spec_schema": "stock_identity.fingerprint_spec.v1",
+            "identity_spec_hash": "sha256:spec",
+            "identity_capture_state": "RESOLVED",
+            "identity_capture_basis": "DATA_OS_CURRENT_SNAPSHOT_CAPTURED_PROSPECTIVELY",
+        }
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            identity_rows={"AAA": identity},
+            identity_meta={
+                "alias_sha256": "sha256:alias",
+                "master_sha256": "sha256:master",
+                "state": "AVAILABLE",
+            },
+        )
+        by_ticker = {r["ticker"]: r for r in records}
+        assert by_ticker["AAA"]["security_id"] == "SEC:US-XNAS-AAA"
+        assert by_ticker["AAA"]["issuer_id"] == "ISS:US-XNAS-AAA"
+        assert by_ticker["AAA"]["identity_capture_state"] == "RESOLVED"
+        assert by_ticker["AAA"]["identity_alias_source_sha256"] == "sha256:alias"
+        assert by_ticker["AAA"]["identity_master_source_sha256"] == "sha256:master"
+        assert by_ticker["BBB"]["security_id"] is None
+        assert by_ticker["BBB"]["identity_capture_state"] == "IDENTITY_UNAVAILABLE"
+
+    def test_capture_group_never_chooses_the_hottest_overlapping_theme(self, verdicts):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            theme_ids={"AAA": ["ai_infra"], "BBB": ["ai_infra", "mag7"]},
+            membership_meta={
+                "state": "AVAILABLE",
+                "source_sha256": "sha256:members",
+                "version": "2026-08-07",
+                "curated": "2026-08-07",
+                "weighting_by_basket": {"ai_infra": "equal", "mag7": "equal"},
+                "members_by_basket": {
+                    "ai_infra": ["AAA", "AMD", "NVDA"],
+                    "mag7": ["BBB", "MSFT", "NVDA"],
+                },
+            },
+            theme_pulse={
+                "BBB": {"id": "mag7", "rank": 1, "name": "Magnificent Seven"},
+            },
+        )
+        by_ticker = {r["ticker"]: r for r in records}
+        assert by_ticker["AAA"]["theme_capture_group_id"] == "ai_infra"
+        assert by_ticker["AAA"]["theme_capture_group_state"] == "SOLE_ACTIVE_MEMBERSHIP"
+        assert by_ticker["AAA"]["theme_capture_group_weighting"] == "equal"
+        assert by_ticker["AAA"]["theme_capture_member_tickers"] == "AAA|AMD|NVDA"
+        assert by_ticker["AAA"]["theme_capture_member_count"] == 3
+        assert by_ticker["AAA"]["theme_capture_member_set_sha256"].startswith("sha256:")
+        assert by_ticker["AAA"]["theme_capture_member_weight"] == pytest.approx(1 / 3)
+        assert by_ticker["BBB"]["theme_primary_id"] == "mag7"  # display context survives
+        assert by_ticker["BBB"]["theme_capture_group_id"] is None
+        assert by_ticker["BBB"]["theme_capture_group_state"] == "AMBIGUOUS_OVERLAP"
+        assert by_ticker["BBB"]["theme_capture_group_rule"] == (
+            "SOLE_ACTIVE_PIT_MEMBERSHIP_ONLY_V1"
+        )
+        assert by_ticker["BBB"]["theme_membership_source_sha256"] == "sha256:members"
 
     def test_near_miss_reason_absent_key_becomes_null(self, verdicts):
         records = ucv.build_records(
@@ -915,17 +1142,27 @@ class TestBasketMembership:
         import json
         data = tmp_path / "data" / "baskets"
         data.mkdir(parents=True)
-        (data / "membership.json").write_text(json.dumps({"baskets": {
-            "ai_infra": {"members": [
-                {"ticker": "OLD", "added": "2020-01-01", "removed": "2026-01-01"},
-                {"ticker": "NOW", "added": "2020-01-01", "removed": None},
-                {"ticker": "FUT", "added": "2026-12-01", "removed": None},
-            ]},
-            "us_sector_tech": {"members": [{"ticker": "XLK", "added": None,
-                                            "removed": None}]},
-        }}))
-        out = ucv.basket_membership("2026-07-31", root=tmp_path)
-        assert out == {"ai_infra": ["NOW"]}      # us_sector_* excluded entirely
+        path = data / "membership.json"
+        path.write_text(json.dumps({
+            "version": "2026-08-07", "curated": "2026-08-07", "baskets": {
+                "ai_infra": {"weighting": "equal", "members": [
+                    {"ticker": "OLD", "added": "2020-01-01", "removed": "2026-01-01"},
+                    {"ticker": "NOW", "added": "2020-01-01", "removed": None},
+                    {"ticker": "FUT", "added": "2026-12-01", "removed": None},
+                ]},
+                "us_sector_tech": {"weighting": "equal", "members": [
+                    {"ticker": "XLK", "added": None, "removed": None},
+                ]},
+            },
+        }))
+        snapshot = ucv.basket_membership_snapshot("2026-07-31", root=tmp_path)
+        assert snapshot.members == {"ai_infra": ["NOW"]}  # us_sector_* excluded entirely
+        assert snapshot.state == "AVAILABLE"
+        assert snapshot.source_sha256.startswith("sha256:")
+        assert snapshot.version == "2026-08-07"
+        assert snapshot.curated == "2026-08-07"
+        assert snapshot.weighting_by_basket == {"ai_infra": "equal"}
+        assert ucv.basket_membership("2026-07-31", root=tmp_path) == snapshot.members
 
     def test_absent_membership_file_is_safe(self, tmp_path):
         assert ucv.basket_membership("2026-07-31", root=tmp_path) == {}
