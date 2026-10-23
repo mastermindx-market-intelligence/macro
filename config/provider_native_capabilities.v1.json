@@ -1,5 +1,5 @@
 {
-  "schema": "mastermind.provider_native_capability_registry/v1",
+  "schema": "mastermind.provider_native_capability_registry/v2",
   "owner_program": "shared-ai-provider-control",
   "capabilities": [
     {
@@ -9,7 +9,8 @@
       "billing_mode": "subscription",
       "credential_kind": "api_key",
       "execution_surface": "native_cli",
-      "registration_state": "registered"
+      "registration_state": "registered",
+      "provider_enabled": false
     }
   ]
 }
