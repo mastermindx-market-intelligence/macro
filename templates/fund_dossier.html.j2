@@ -734,7 +734,7 @@ table.sm-t th.sorted { color:var(--text); }
 {% block body_scripts %}
 <script>
 /* Full-book column sort — the th data-col + tr data-attr idiom (desk convention:
-   sort by row dataset values, numeric when parseable, re-append rows in order;
+   sort text columns lexically and numeric columns numerically; re-append rows in order;
    rows with missing values always sink to the bottom). */
 (function () {
   var tbody = document.getElementById('fd-book-body');
@@ -758,15 +758,14 @@ table.sm-t th.sorted { color:var(--text); }
     var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
     rows.sort(function (a, b) {
       var av = a.dataset[col] || '', bv = b.dataset[col] || '';
-      var an = parseFloat(av), bn = parseFloat(bv);
-      var aBad = isNaN(an), bBad = isNaN(bn);
-      if (!aBad && !bBad) return sortAsc ? an - bn : bn - an;
-      if (aBad && bBad) {
-        if (av < bv) return sortAsc ? -1 : 1;
-        if (av > bv) return sortAsc ? 1 : -1;
-        return 0;
-      }
-      return aBad ? 1 : -1; /* missing values sink regardless of direction */
+      var text = !!TEXT_COLS[col];
+      var an = text ? av : parseFloat(av), bn = text ? bv : parseFloat(bv);
+      var aBad = text ? av === '' : isNaN(an), bBad = text ? bv === '' : isNaN(bn);
+      if (aBad || bBad) return aBad === bBad ? 0 : (aBad ? 1 : -1);
+      if (!text) return sortAsc ? an - bn : bn - an;
+      if (av < bv) return sortAsc ? -1 : 1;
+      if (av > bv) return sortAsc ? 1 : -1;
+      return 0;
     });
     rows.forEach(function (r) { tbody.appendChild(r); });
   };
