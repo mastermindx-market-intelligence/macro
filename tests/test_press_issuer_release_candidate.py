@@ -278,3 +278,27 @@ def test_direct_script_help_bootstraps_repo_path():
     import subprocess,sys
     result=subprocess.run([sys.executable,str(Path(S.__file__)),'--help'],capture_output=True,text=True)
     assert result.returncode==0 and '--confirm-private-staging' in result.stdout
+
+def test_cli_post_checkpoint_valueerror_preserves_unknown_original_identity(inputs,monkeypatch,capsys):
+    _reviewed_numeric_context(inputs);calls=[]
+    real_stage=S.stage_issuer_release_candidate
+    def fixed_stage(root,cfg,**kwargs):
+        return real_stage(root,cfg,now=datetime(2026,10,23,13,tzinfo=timezone.utc),**kwargs)
+    monkeypatch.setattr(S,'stage_issuer_release_candidate',fixed_stage)
+    identity=S._slot_id(invoke(inputs));checkpoint=inputs['root']/'data/press/staging'/f'{identity}.json'
+    def uncertain(slot,cfg,**kwargs):
+        assert checkpoint.exists()
+        assert json.loads(checkpoint.read_text())['progress']['phase']=='provider_started'
+        calls.append(slot['id'])
+        raise ValueError('offline post-checkpoint transport ambiguity')
+    monkeypatch.setattr(S.writer,'write',uncertain)
+    assert S.main(_cli_args(inputs))==1
+    text=capsys.readouterr().out;out=json.loads(text[text.index('{'):])
+    assert out['effect_unknown'] is True
+    assert out['original_slot_id']==identity and out['retry_allowed'] is False
+    assert 'press_issuer_effect_unknown' in text and 'press_issuer_stage_refused' not in text
+    record=json.loads(checkpoint.read_text())
+    assert record['status']=='in_progress' and record['progress']['phase']=='provider_started'
+    assert calls==[identity]
+    assert S.main(_cli_args(inputs))==1
+    assert calls==[identity]  # Duplicate/source guard retains the same operation.

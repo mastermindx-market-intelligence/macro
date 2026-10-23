@@ -109,10 +109,25 @@ def stage_issuer_release_candidate(root, cfg, *, document_path, document_sha256,
         breaker_threshold=_env_int('PRESS_CIRCUIT_BREAKER_FAILURES', int(llm.get('circuit_breaker_consecutive_failures') or 3)))
     _, published_slugs = P.published_refs(root, cfg)
     _, staged_slugs = P.staged_refs(root, cfg)
-    summary = _stage_preplanned_slots(root, cfg, slots=[slot], staging_dir=paths['staging'],
-        run_date=context['as_of'], state=state, max_regenerations=0,
-        taken_slugs=P.taken_slugs(root) | published_slugs | staged_slugs,
-        admission_receipt=receipt, single_provider_attempt=True)
+    taken = P.taken_slugs(root) | published_slugs | staged_slugs
+    try:
+        summary = _stage_preplanned_slots(root, cfg, slots=[slot], staging_dir=paths['staging'],
+            run_date=context['as_of'], state=state, max_regenerations=0,
+            taken_slugs=taken,
+            admission_receipt=receipt, single_provider_attempt=True)
+    except Exception as exc:
+        # The same exception class can describe a source refusal BEFORE this
+        # rail or a provider/validation failure AFTER its exclusive checkpoint.
+        # After entering it, report uncertainty on that original identity.
+        # A missing/unreadable checkpoint cannot prove no effect. Do not
+        # relabel it as refused, edit it, retry or fail over.
+        reason = f'{type(exc).__name__} inside original staging rail; reconcile original operation, never replay'
+        _annotate('error', 'press_issuer_effect_unknown', f'{slot["id"]}: {reason}')
+        return {'staged': None, 'status': 'effect_unknown', 'effect_unknown': True,
+                'original_slot_id': slot['id'], 'checkpoint_path': str(slot_path.relative_to(root)),
+                'checkpoint_observed': slot_path.exists(),
+                'retry_allowed': False, 'reason': reason, 'exception_type': type(exc).__name__,
+                'rail': STAGE_RAIL, 'public_article_approved': False, 'allow_emit': False, **identity}
     _annotate('notice', 'press_issuer_staged', f'issuer candidate staged PRIVATELY: {plan["candidate_id"]}; no public approval')
     return {'staged': True, 'rail': STAGE_RAIL, 'public_article_approved': False,
             'allow_emit': False, 'summary': summary, **identity}
