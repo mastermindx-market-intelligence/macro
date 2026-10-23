@@ -106,6 +106,48 @@ def _bar_seconds(multiplier: int, timespan: str) -> int:
     return multiplier * unit
 
 
+def _require_store_cadence(outdir: Path, *, bar: str, bar_seconds: int) -> None:
+    """Refuse mixed bar widths before fetching or replacing any price bytes.
+
+    The old chart/flow cache is hourly. A separate minute caller must use a
+    dedicated directory; merely changing the config must not relabel existing
+    hourly Parquet as minute data. Inspect the whole directory, not just the
+    requested symbol: --only and --full do not delete other ticker files.
+    """
+    if not outdir.exists():
+        return
+    if not outdir.is_dir():
+        raise ValueError("polygon intraday cadence: output path is not a directory")
+
+    meta_path = outdir / "_meta.json"
+    has_meta = meta_path.exists()
+    if has_meta:
+        try:
+            metadata = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValueError("polygon intraday cadence: unreadable store metadata") from exc
+        if not isinstance(metadata, dict) or metadata.get("bar") != bar:
+            raise ValueError("polygon intraday cadence: existing store metadata disagrees with requested bar")
+
+    for source in outdir.glob("*.parquet"):
+        receipt_path = outdir / f"{source.name}.receipt.json"
+        if receipt_path.exists():
+            try:
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                raise ValueError("polygon intraday cadence: unreadable price receipt") from exc
+            if (not isinstance(receipt, dict)
+                    or type(receipt.get("bar_seconds")) is not int
+                    or receipt["bar_seconds"] != bar_seconds):
+                raise ValueError("polygon intraday cadence: existing price receipt disagrees with requested bar")
+        elif bar != "1hour":
+            # Only the original default hourly collector may use unreceipted
+            # legacy parquet; an alias or a minute source must not relabel it.
+            # Legacy hourly parquet may predate receipts. Its exact cadence
+            # cannot be proven, so it cannot be promoted into minute history.
+            raise ValueError("polygon intraday cadence: unreceipted existing history cannot become minute bars")
+
+
 def _write_price_receipt(
     outdir: Path,
     *,
@@ -234,6 +276,7 @@ def accrue(as_of=None, *, lookback_days: int | None = None, full: bool = False,
     # The VPS uses an external ephemeral store so intraday accrual never mutates
     # canonical repo data. Mac/CI callers keep the historical default.
     outdir = Path(out_dir) if out_dir is not None else config.data_dir() / GROUP
+    _require_store_cadence(outdir, bar=f"{mult}{span}", bar_seconds=bar_seconds)
     outdir.mkdir(parents=True, exist_ok=True)
 
     universe = _universe()
