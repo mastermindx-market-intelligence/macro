@@ -1,0 +1,66 @@
+{
+  "status": "RESEARCH_ONLY_NO_PRODUCTION_CHANGES",
+  "historical_code_commit": "74e8f45060e815a2cb7c515ae09f258919ab9da2",
+  "board_snapshot_sha256_verified": "716c0da79512aceb44b2e0359f755590631a0e53276d6bbb2860863d17a63ebe",
+  "source_blobs": {
+    "scripts/build_stock_library.py": "41f6dbfee3cc7390d1cace95626b87ed7a16aaa0",
+    "engine/us_prophet_fusion.py": "210e070103b36f10bbbf19981420a17bb9fdc4fc",
+    "engine/financial_news.py": "347a2159a0934aad9683e344b2c1e7877ffbf213",
+    "scripts/build_news.py": "96eef09f46789e51fc242f041abf6f1f3c414392",
+    "site/news/by_ticker.json": "02e103c00ed04da1a7d91980147e9d07efc528e2"
+  },
+  "news_snapshot_census": [
+    {"source_commit":"b34e2d6874f7d71bc2a856d66903cbff10aea3a2","committed_at":"2026-07-31T06:25:16Z","asof":"2026-07-31","schema":"news_flow.v1","blob":"a00e8e05f8ef027dfd55fbf8928403e083e844dd","ticker_rows":18,"rows_with_positive_item_count":18,"rows_with_at_least_three_items":8,"nvda_item_count":6},
+    {"source_commit":"67841ce2c29d57e7b03a3533271a23478dac4ca1","committed_at":"2026-08-14T09:04:35Z","asof":"2026-08-14","schema":"news_flow.v1","blob":"9955ba95f8cd9a49506c5d393504a4cb4ed375ba","ticker_rows":325,"rows_with_positive_item_count":59,"rows_with_at_least_three_items":9,"nvda_item_count":6},
+    {"source_commit":"74e8f45060e815a2cb7c515ae09f258919ab9da2","asof":"2026-09-26","schema":"news_flow.v1","blob":"02e103c00ed04da1a7d91980147e9d07efc528e2","ticker_rows":799,"nvda_item_count":6}
+  ],
+  "news_caveats": [
+    "These are exact archived snapshots, not a claim of continuous provider completeness or first launch dates.",
+    "July 17 path-specific commit lookup returned HTTP 500; no July 17 snapshot was inferred.",
+    "Producer maps tagged headlines, quality-ranks and truncates per-ticker output before mastermind_by_ticker assigns n_recent=len(items). Default top_ticker is six; n_recent is not uncapped raw event intensity or a surprise score.",
+    "Canonical fusion uses n_recent>=3 regardless of sentiment, source novelty or event type.",
+    "No-news False may mean fewer than three retained headlines or a missing ticker/source; the boolean alone cannot identify a measured no-event control.",
+    "Producer and source coverage grew substantially even though schema stayed news_flow.v1. Era and coverage require explicit controls."
+  ],
+  "nvda_news_snapshot": {
+    "n_recent":6,"sentiment_lean":"neutral","n_pos":0,"n_neg":0,
+    "top_items":[
+      {"published":"2026-09-25T18:26:00+00:00","source":"Barron's","title":"Nvidia Stock: Here’s How Many AI Chips SpaceX Is Buying."},
+      {"published":"2026-09-25T20:00:00+00:00","source":"Investor's Business Daily","title":"Nvidia, AMD Love This High-Tech Facilitator. So Does Wall Street."},
+      {"published":"2026-09-24T18:32:00+00:00","source":"Barron's","title":"Nvidia Stock Drops as CEO Huang Suggests Drastic Alternative to AI Regulation"},
+      {"published":"2026-09-25T16:58:00+00:00","source":"Investor's Business Daily","title":"Nvidia Tests Key Level Amid Trump-Xi Talks, China Challenge"}
+    ],
+    "interpretation":"Mixed-topic retained headlines; not six independent positive catalysts. Publication timestamps are not verified first-ingestion timestamps. Only four of six items survive this compact source view."
+  },
+  "sue_clock": {
+    "observed_z":1.47,"reported_age_days":1.0,
+    "historical_producer":"scripts/build_stock_library.py:623-646",
+    "age_basis":"EPS-panel synthetic fiscal-period-end plus 60 calendar days, not actual filing/publication time",
+    "legacy_flag":"bool(sue_z and (sue_fresh_days or 999)<=60)",
+    "problems":["Nonzero negative z also passes the legacy flag.","Zero-day reported age becomes 999 via truthiness.","Reported one-day age cannot establish a one-day-old earnings event."],
+    "external_primary_check":{"publisher":"NVIDIA investor relations","earnings_release_date":"2026-08-26","quarter_end":"2026-07-26","url":"https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/"},
+    "calendar_reconciliation":"July 26 plus 60 days is September 24: the September 25 age of one day matches the synthetic schedule. The actual results release was 30 calendar days before September 25.",
+    "current_source_note":"Newer main code at 2d3ab1e087a07d63b6dcf8c4682c7541c5386b73 exposes fresh_positive_relative and explicitly calls its age legacy/unverified. Preserve this existing repair; do not overwrite historical evidence or assume the actual filing clock is now production-proven."
+  },
+  "smartmoney": {
+    "action":"add","tracked_funds_adding":1,"best_fund":"Soros Fund Management","grade":"B","period_end":"2026-06-30","caption":"Q1-2026 13F",
+    "interpretation":"One qualifying lagged holding change, not real-time net stock inflow. Period-end and stale caption disagree. Upstream builder filters qualifying A/B-grade new/add holders; bool(chip) is a downstream lossy summary, not proof that arbitrary chips were actually unfiltered."
+  },
+  "publication_and_fill": {
+    "plan":"site/prophet/plans/NVDA-BULL-20260917.json",
+    "plan_blob":"ef6f2655e0c9dcf87713b8485527ba6e7646012d",
+    "recorded_at":"2026-09-26","signal_date":"2026-09-25","entry_date_field":"2026-09-25","entry_basis_price":225.1,
+    "accumulate_zone":[220.5,225.1],"do_not_chase_above":226.9,"invalidation":184.1,"targets":[286.6,348.1],"horizon_calendar_days":56,
+    "regular_session_low_by_date":{"2026-09-28":228.04,"2026-09-29":227.03,"2026-09-30":228.17,"2026-10-01":228.16,"2026-10-02":233.60,"2026-10-05":235.15},
+    "public_data_sources":["https://stockanalysis.com/stocks/nvda/history/","https://www.quiverquant.com/stock/NVDA/historical-prices/"],
+    "conclusion":"The final recorded T2/partial plan does not establish a September 25 fill. Quoted regular-session lows after its recorded date through October 5 stay above both the accumulate zone and chase ceiling. Earlier September 25 T1/buy-now alerts are separate vintages requiring their own availability and fill evidence. Extended-hours and actual fills were not established.",
+    "named_detectors":{"early_turn_fired":false,"early_turn_union_fired":false,"leader_pullback":false},
+    "performance_boundary":"Price appreciation from the printed basis is mark-to-market illustration, not verified realized P&L or a completed target/horizon success."
+  },
+  "persistence_scope_correction": {
+    "stock_level_readout":"Mastermind@877b1e7f275da0b6d3558d2667778b32d628bf67:research/TREND_PERSISTENCE_READOUT.md",
+    "stock_level_result":"V1 forward-relative-return: zero of 72 survived. B2 incremental drawdown-model comparison: zero of two horizons passed; previously passing associations reproduced substantially in volatility-only simulations.",
+    "sector_level_result":"C1-NULL closes the tested eleven-sector as-of-now-labelled rank-linear 20/60-session construction; no return cell carried.",
+    "required_next_comparator":"Any ignition-conditioned durability proposal must beat strong own-return/volatility/market/group baselines and volatility-only negative controls. Finer groups or survival models are untested, not validated replacements."
+  }
+}
