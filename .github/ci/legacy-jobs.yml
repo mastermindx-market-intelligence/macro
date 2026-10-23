@@ -5712,6 +5712,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "tests/test_ipo_prospectus_terms.py"
       - "data/ipo/lockups.parquet"
@@ -8238,6 +8241,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -8573,6 +8579,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
@@ -11793,6 +11802,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -12201,6 +12212,8 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -18307,6 +18320,9 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -18639,6 +18655,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -21690,6 +21709,7 @@ jobs:
       - "engine/press/desk_planner.py"
       - "engine/press/earnings_adapter.py"
       - "engine/press/external_candidate.py"
+      - "engine/press/issuer_release_candidate.py"
       - "engine/press/research_triage.py"
       - "engine/press/validators.py"
       - "engine/press/native_plan_scope.py"
@@ -22088,6 +22108,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/vault_adapter.py"
@@ -23344,6 +23366,45 @@ jobs:
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+
+  ohlc-origin-delivery:
+    # Synthetic retained-artifact delivery contracts must execute on the PR code gate.
+    # Exact import/read closure prevents an unrelated renderer/Prophet probe rider.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "app/__init__.py"
+      - "app/deploy/ohlc_origin_known_hosts"
+      - "app/deploy/update.sh"
+      - "config/dag.yml"
+      - "config.yml"
+      - "engine/__init__.py"
+      - "engine/bar_derive.py"
+      - "engine/ohlc_reconstruct.py"
+      - "engine/session_anchor.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/build_chart_data.py"
+      - "scripts/publish_ohlc.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_publish_ohlc.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install synthetic OHLC test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: producer completion and atomic origin delivery
+        run: python -m pytest tests/test_publish_ohlc.py -q
 
   catalyst-opportunity:
     if: ${{ false }}
@@ -24865,7 +24926,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests beautifulsoup4
       - name: press validator, planner, writer, orchestrator, admin and property suites
-        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_fda_document.py tests/test_press_fda_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_issuer_release_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_fda_document.py tests/test_press_fda_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -25972,6 +26033,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "engine/ipo_prospectus_terms.py"
       - "engine/fundamental_forensics/models.py"
@@ -28691,6 +28755,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
@@ -30007,6 +30073,9 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -30156,6 +30225,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "engine/intl_global_universe.py"
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
@@ -37694,6 +37765,14 @@ jobs:
       - "engine/press/__init__.py"
       - "engine/press/desk_planner.py"
       - "engine/press/native_plan_scope.py"
+      - "engine/press/issuer_release_candidate.py"
+      - "engine/press/official_feed_candidate.py"
+      - "engine/press/fda_document.py"
+      - "engine/marketing/breaking_feed.py"
+      - "engine/marketing/breaking_relevance.py"
+      - "scripts/stage_official_feed_press.py"
+      - "scripts/stage_issuer_release_press.py"
+      - "tests/test_press_issuer_release_candidate.py"
       - "tests/test_press_native_plan_scope.py"
       - "tests/test_press_native_plan_integration.py"
       - "engine/press/external_candidate.py"
@@ -37869,7 +37948,7 @@ jobs:
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
           tests/test_press_run.py tests/test_press_writer.py
-          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py -q -rs
+          tests/test_press_native_plan_scope.py tests/test_press_native_plan_integration.py tests/test_press_issuer_release_candidate.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
@@ -38416,6 +38495,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - app/__init__.py
+      - app/deploy/ohlc_origin_known_hosts
+      - scripts/publish_ohlc.py
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
       - "scripts/probe_theme_exposure_axes.py"
       - "scripts/calibrate_rate_inflation.py"
