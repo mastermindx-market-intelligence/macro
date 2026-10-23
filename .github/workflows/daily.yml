@@ -6803,7 +6803,11 @@ jobs:
     needs: [et_gate, collect]
     if: always() && needs.et_gate.outputs.run != 'false'
     runs-on: [self-hosted, macstudio]
-    timeout-minutes: 10
+    # At 806 open PRs the bounded four-reader collector took ~342s on Linux.
+    # A real macstudio checkout took 386s during a degraded nightly. The former
+    # 600s job cap could kill the sole publisher before its commit; 25m preserves
+    # this same one-writer nightly job without adding a runner or retry plane.
+    timeout-minutes: 25
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
@@ -6816,6 +6820,10 @@ jobs:
           VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
           [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
           echo "$VENV/bin" >> "$GITHUB_PATH"
+      - name: log installed GitHub CLI capability
+        # The generator uses --paginate but not --slurp, so older gh clients
+        # can safely decode flat or paged REST arrays without a version floor.
+        run: gh --version | head -n 1
       - name: generate active build map
         env:
           GH_TOKEN: ${{ github.token }}
