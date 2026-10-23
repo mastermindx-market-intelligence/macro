@@ -1,0 +1,31 @@
+{
+  "source_commit": "ca00b1c549733b562aae33d15f070300de3fb21e",
+  "path": "data/breadth/sp1500_pit_membership.parquet",
+  "git_blob": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+  "bytes": 42778,
+  "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+  "rows": 3286,
+  "unique_tickers": 2589,
+  "columns": [
+    "ticker",
+    "start_date",
+    "end_date",
+    "src"
+  ],
+  "sources": {
+    "sp500": 1255,
+    "sp600": 1062,
+    "sp400": 969
+  },
+  "start_min": "1996-01-02",
+  "start_max": "2026-06-02",
+  "closed_intervals": 1780,
+  "open_intervals": 1506,
+  "coverage_from_daily_store_start": {
+    "store_start": "2021-07-06",
+    "intervals_overlapping_or_after_start": 2205,
+    "unique_tickers_overlapping_or_after_start": 1924
+  },
+  "source_contract_limit": "sp400 history reliable ~2012+, sp600 ~2020+ per scripts/midsmall_pit.py; common Daily store starts 2021-07-06, so this membership artifact is a plausible bounded first-wave population, subject to source-owner acceptance and explicit price/missingness coverage.",
+  "not_proved": "price availability for every member-date, identity/ticker-rename continuity, market-wide generalization, historical data first-receipt/correction vintage"
+}

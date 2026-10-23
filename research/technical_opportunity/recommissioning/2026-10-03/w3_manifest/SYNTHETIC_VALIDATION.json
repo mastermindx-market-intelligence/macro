@@ -1,0 +1,77 @@
+{
+  "binary_calibration": {
+    "estimable": true,
+    "intercept": 0.27243813256293997,
+    "slope": 1.481436365433959
+  },
+  "binary_fit": {
+    "converged": true,
+    "grad_inf": 5.033469169246629e-09,
+    "iterations": 3,
+    "objective": 0.6736023745597673
+  },
+  "block_bootstrap": {
+    "block_sessions": 22,
+    "deterministic": true,
+    "first_positions": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      0,
+      1,
+      2
+    ],
+    "seed": 20261006
+  },
+  "holm": {
+    "adjusted_p": {
+      "a": 0.004,
+      "b": 0.03,
+      "blocked": 1.0,
+      "c": 0.08
+    },
+    "alpha": 0.05,
+    "m": 4,
+    "rejected": {
+      "a": true,
+      "b": true,
+      "blocked": false,
+      "c": false
+    }
+  },
+  "intersection_union_example_p": 0.03,
+  "market_data_or_outcomes_read": false,
+  "multinomial_calibration": {
+    "estimable": true,
+    "grad_inf": 3.095137257602687e-10,
+    "intercepts_nonref": [
+      -1.5952824254051845,
+      -1.1976990587919778
+    ],
+    "iterations": 5,
+    "objective": 0.9682422365359743,
+    "reference_intercept": 0.0,
+    "slope": 5.0347257075003204
+  },
+  "multinomial_fit": {
+    "converged": true,
+    "grad_inf": 1.679302958595181e-11,
+    "iterations": 4,
+    "max_probability_sum_error": 2.220446049250313e-16,
+    "objective": 1.0607108552433848
+  },
+  "penalty_scaling": {
+    "different": true,
+    "house_cycle_penalty_gradient_term": 0.005,
+    "n": 100,
+    "toi_required_penalty_gradient_term": 0.5,
+    "w": 0.5
+  },
+  "schema": "toi.r0.stat_contract.synthetic_validation.v1"
+}

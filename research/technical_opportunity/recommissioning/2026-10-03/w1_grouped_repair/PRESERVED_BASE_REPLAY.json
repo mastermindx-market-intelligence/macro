@@ -1,0 +1,31 @@
+{
+  "patch_sha256": "bc0a41c63ab182fce0244f70c40298a3b054ad0feacae348c957bed76d33c5a3",
+  "patch_bytes": 57572,
+  "input_base": "frozen15e4dfb0 export with exactly the two preserved pending preimages overlaid in this isolated copy",
+  "preserved_inputs": [
+    {
+      "path": "scripts/research/validate_toi_w1_passports.py",
+      "sha256": "7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2",
+      "original_unchanged": true
+    },
+    {
+      "path": "tests/test_toi_w1_census.py",
+      "sha256": "5a84cd21521e01ac8d4931e23722cd11a5aba95719848b2aef886e235418dcbd",
+      "original_unchanged": true
+    }
+  ],
+  "changed_paths": [
+    "research/technical_opportunity/W1_EVIDENCE_CENSUS.md",
+    "research/technical_opportunity/W1_REPORT.md",
+    "research/technical_opportunity/W1_TO_W3_HANDOFF.md",
+    "research/technical_opportunity/w1_local_coverage.json",
+    "research/technical_opportunity/w1_method_passports.jsonl",
+    "research/technical_opportunity/w1_reproduction_sample.json",
+    "tests/test_toi_w1_census.py"
+  ],
+  "clean_apply_check": true,
+  "all_postimages_equal_tested_candidate": true,
+  "postimage_files_compared": 30,
+  "test_repetition": "Not repeated: every postimage is byte-identical to the37-test/four-validator replay result",
+  "source_branch_or_live_pending_write": false
+}

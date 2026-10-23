@@ -1,0 +1,47 @@
+{
+  "operation": "toi-w2-weekly-calendar-completion-20261006-c2-001",
+  "observed_at": "2026-10-06T06:57:55.998666+00:00",
+  "source_commit": "ca00b1c549733b562aae33d15f070300de3fb21e",
+  "source_path": "lib/nyse_calendar.py",
+  "source_blob": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+  "source_sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+  "cases": [
+    {
+      "case": "normal_friday",
+      "last_observed_daily": "2026-10-02",
+      "w_fri_label": "2026-10-02",
+      "remaining_sessions": [],
+      "weekly_bucket_complete": true
+    },
+    {
+      "case": "midweek_wednesday",
+      "last_observed_daily": "2026-09-30",
+      "w_fri_label": "2026-10-02",
+      "remaining_sessions": [
+        "2026-10-01",
+        "2026-10-02"
+      ],
+      "weekly_bucket_complete": false
+    },
+    {
+      "case": "independence_observed_friday_closed",
+      "last_observed_daily": "2026-07-02",
+      "w_fri_label": "2026-07-03",
+      "remaining_sessions": [],
+      "weekly_bucket_complete": true
+    },
+    {
+      "case": "black_friday_early_close_still_session",
+      "last_observed_daily": "2026-11-26",
+      "w_fri_label": "2026-11-27",
+      "remaining_sessions": [
+        "2026-11-27"
+      ],
+      "weekly_bucket_complete": false
+    }
+  ],
+  "contract": "A W-FRI bucket is complete when no canonical US cash-equity session exists strictly after the bucket last-observed daily date and on/before the W-FRI label. Early-close Friday is still a session; full-day Friday closure allows Thursday completion.",
+  "scope": "Session-existence only; exact intraday close time is not required for Daily-bar weekly completion, while daily source publication/availability remains separately qualified.",
+  "market_data_or_outcomes_used": false,
+  "source_or_production_mutation": false
+}

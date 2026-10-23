@@ -1,0 +1,107 @@
+{
+  "source_head": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+  "scope": "Unchanged exact-head native record-validation modules in an isolated artifact cache; not a full repository or data/production qualification",
+  "observed_at": "2026-10-03T20:02:32.191722+00:00",
+  "fetched_files": [
+    {
+      "path": "scripts/research/validate_toi_w2_store_contracts.py",
+      "git_blob": "cb7f7414d30355a7a128823fcc256babdeb55f4d",
+      "sha256": "42727acd7c8bb599435fe8a182feca6c2eb06b2597c72b259abf096e82dabc0a"
+    },
+    {
+      "path": "scripts/research/run_toi_w2_terminal_parity.py",
+      "git_blob": "94ed4a8b22f933a606903bb2f5e3e8f49d0fd439",
+      "sha256": "6be9410f68b58e094b3caa996d3d8aaa742629bf79146f66942ae94201069967"
+    },
+    {
+      "path": "scripts/research/run_toi_w2_clock_fixtures.py",
+      "git_blob": "390a448fe44ad7d63f50634e41b82066f0a4cf4b",
+      "sha256": "4d93fc6c45597d1d3faea565bf7c664858405575cec09296497e09b221668e07"
+    },
+    {
+      "path": "scripts/research/run_toi_w2_coverage.py",
+      "git_blob": "f70d8f08de239e94113b4d4abf05c035c778e96d",
+      "sha256": "17c1e2f7f32c81e9356bdf6a7401773258c3d53236a445dd4e9ca822e4a31ce9"
+    },
+    {
+      "path": "tests/test_toi_w2_data_clock.py",
+      "git_blob": "dd87287e2589351be34e82c7fe1e58760354b649",
+      "sha256": "39de2827f23b3451e3a2033c7eaefd48fd09865d9aef0ed96d0871bad55e9690"
+    },
+    {
+      "path": "research/technical_opportunity/w2_store_contracts.json",
+      "git_blob": "881b0b787a5b384e1d0e8afcfe1d90ca5906822d",
+      "sha256": "a17fb199be8e38154cafc4c1cd190f54988b189dd62f68beaf177cd605dc7697"
+    },
+    {
+      "path": "research/technical_opportunity/w2_clock_matrix.json",
+      "git_blob": "7299f0d23dee59ea006b0d6a5ea3aab69c84ec54",
+      "sha256": "fee2040142bd5b217dc46ed9db14a1379fea9007dd1b8bf8d9fa0bd17036a47a"
+    },
+    {
+      "path": "research/technical_opportunity/w2_terminal_parity_receipts.json",
+      "git_blob": "e8dfdca1fa53a42ab0ceee07ae7524df63bfbaad",
+      "sha256": "4bfbed826804c366f0ac9724a48fccab31cc5729e6589e594fa1143bddd131cd"
+    },
+    {
+      "path": "research/technical_opportunity/w2_coverage_receipts.json",
+      "git_blob": "2f04afa2a5cc209a3a3e6b612632cf6b609908db",
+      "sha256": "d8304e68365cf94a06d8fb6375591c9bccbe9f4498594ff8f9c252fb3a3257a6"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "scripts/research/validate_toi_w2_store_contracts.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"combined_gate\": \"HOLD\", \"n\": 5, \"status\": \"valid\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "scripts/research/run_toi_w2_terminal_parity.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"cases\": 20, \"fail\": 5, \"pass\": 15, \"status\": \"valid\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "scripts/research/run_toi_w2_clock_fixtures.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"n_clocks\": 4, \"status\": \"valid\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "scripts/research/run_toi_w2_coverage.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"combined_gate\": \"HOLD\", \"status\": \"valid\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_toi_w2_data_clock.py"
+      ],
+      "exit_code": 0,
+      "stdout": "4 passed, 4 warnings in 0.08s",
+      "stderr": ""
+    }
+  ],
+  "warnings": {
+    "count": 4,
+    "kind": "Unrelated existing pytest temporary-cache cleanup PermissionError",
+    "cleanup_retry_or_permission_change": false
+  },
+  "post_test_source_hashes_match": true,
+  "actual_market_parity_executed": false,
+  "production_or_source_mutation": false
+}

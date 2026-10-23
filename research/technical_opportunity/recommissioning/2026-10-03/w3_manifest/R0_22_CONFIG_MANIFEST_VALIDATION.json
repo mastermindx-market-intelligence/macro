@@ -1,0 +1,26 @@
+{
+  "schema": "toi.r0.daily_first_22_manifest_validation.v1",
+  "manifest_sha256": "e80f3c69325eb99de081fcc5dd86462a137fd4f47d419b4012b166caa3d4609a",
+  "objects": 22,
+  "directions": {
+    "UP": 11,
+    "DOWN": 11
+  },
+  "kinds": {
+    "core_construction": 4,
+    "simple_breakout_comparator": 2,
+    "near_boundary_placebo": 2,
+    "confirmation_policy_application": 4,
+    "activation_model_specification": 4,
+    "post_trigger_model_specification": 6
+  },
+  "primary_contrasts": 8,
+  "planning_fingerprints_unique": true,
+  "selected": 0,
+  "registered": 0,
+  "outcomes_read": false,
+  "all_material_blocks_content_hashed": true,
+  "unresolved_fields_fail_closed": true,
+  "native_trial_hashes_written": 0,
+  "admission": false
+}

@@ -1,0 +1,59 @@
+{
+  "checks": {
+    "corporate_action_still_fail_closed": true,
+    "cost_proxy_not_invented": true,
+    "directions_11_each": true,
+    "folds_three": true,
+    "mature_2026_end": true,
+    "native_trial_hashes_zero": true,
+    "objects_22": true,
+    "outcomes_false": true,
+    "planning_fingerprints_unique": true,
+    "primary_contrasts_8": true,
+    "prospective_results_not_claimed": true,
+    "registered_zero": true,
+    "runtime_source_still_fail_closed": true,
+    "selected_zero": true,
+    "solver_pinned": true
+  },
+  "files": [
+    {
+      "bytes": 56062,
+      "name": "R0_22_CONFIG_MANIFEST_DRAFT_V3.json",
+      "sha256": "76795b39910762e068f48c6c05920d3da2d200f254e147941de17422607af099"
+    },
+    {
+      "bytes": 1196,
+      "name": "R0_22_CONFIG_MANIFEST_V3_VALIDATION.json",
+      "sha256": "f8920989fdea30951e7731d13abab54b708f81ee7919f49363ff0b0ee82d7d8b"
+    },
+    {
+      "bytes": 1589,
+      "name": "SYNTHETIC_VALIDATION.json",
+      "sha256": "dc2812c8709e0579e6b065f79985a9a918fd942800eb5efd74e79818cb02bc5c"
+    },
+    {
+      "bytes": 14497,
+      "name": "W3_MODEL_EVALUATION_FREEZE_CANDIDATE_2026-10-06.json",
+      "sha256": "78b1b19fe4cfcb447eecb96561e200843c5a68c204ebaf697cc3a100638453a4"
+    },
+    {
+      "bytes": 3347,
+      "name": "W3_MODEL_EVALUATION_FREEZE_CANDIDATE_2026-10-06.md",
+      "sha256": "0a6062b922540f86cad719c8cf55813ebd3122b75851e7cd2215784ad2c29d8c"
+    },
+    {
+      "bytes": 16355,
+      "name": "toi_r0_stat_contract.py",
+      "sha256": "d19fef5fe7429d92f05ef6edc0cd5face490355c2ecfe213d9ff0ceaf69ac7ce"
+    }
+  ],
+  "generated_at": "2026-10-07T01:54:36.329029+00:00",
+  "macro_main_freshness_fence": "3ed9be2dc59eb94cb84a4511ca5f97969dcfbdd9",
+  "outcomes_read": false,
+  "protected_procedure": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+  "schema": "toi.w3_model_eval_freeze_packet_validation.v1",
+  "source_or_production_mutation": false,
+  "toi_carrier_parent": "d58d23b113782d93aaab2d1e600f847a79880b08",
+  "trial_ledger_written": false
+}

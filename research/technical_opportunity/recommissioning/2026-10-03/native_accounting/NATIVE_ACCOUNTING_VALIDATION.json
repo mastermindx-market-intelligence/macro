@@ -1,0 +1,66 @@
+{
+  "operation": "toi-pro-steering-native-accounting-20261005-c2-001",
+  "generated_at": "2026-10-05T07:17:12.873791+00:00",
+  "test_scope": "Unmodified native TrialLedger with explicit temporary synthetic ledgers, plus the existing proposed 22-slot subset; no real scientific configuration is registered.",
+  "source_refs": [
+    {
+      "path": "engine/trial_ledger.py",
+      "commit": "dc59164faa9c7126115dc5f3aaba6984560b421a",
+      "git_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+      "sha256": "7b99683c9aee822df138d35b8294318e3316c3b6a8b5a80934614141a15413f7"
+    },
+    {
+      "path": "research/technical_opportunity/recommissioning/2026-10-03/TOI_R0_CONFIGURATION_INVENTORY_DRAFT.json",
+      "commit": "c9c1e7eea12868bda9d396c654b55bd1d0ab1aea",
+      "git_blob": "76db520ab00d8948ca558520c9345c08267b8040",
+      "sha256": "2e41f2ce632da6d5a55343fd1ef8e22b03219d0a504873bc435d29e43ec88e2f"
+    }
+  ],
+  "test_sha256": "3ffcbee9430c27ab991968b78520c09190d964324c6698881de2374e060c4c06",
+  "exit_code": 0,
+  "output": "test_22_itemized_configs_count_22 (__main__.LedgerContract.test_22_itemized_configs_count_22) ... ok\ntest_budget_is_floor_not_addition (__main__.LedgerContract.test_budget_is_floor_not_addition) ... ok\ntest_config_bound_data_version_is_a_distinct_trial (__main__.LedgerContract.test_config_bound_data_version_is_a_distinct_trial) ... ok\ntest_context_budget_precedes_body_with_explicit_ledger (__main__.LedgerContract.test_context_budget_precedes_body_with_explicit_ledger) ... ok\ntest_counted_policy_endpoint_variants_do_not_collapse (__main__.LedgerContract.test_counted_policy_endpoint_variants_do_not_collapse) ... ok\ntest_decorator_budget_precedes_body_with_explicit_ledger (__main__.LedgerContract.test_decorator_budget_precedes_body_with_explicit_ledger) ... ok\ntest_dictionary_key_order_does_not_create_new_trial (__main__.LedgerContract.test_dictionary_key_order_does_not_create_new_trial) ... ok\ntest_empty_effective_n_is_not_registration_evidence (__main__.LedgerContract.test_empty_effective_n_is_not_registration_evidence) ... ok\ntest_historical_family_stays_separate (__main__.LedgerContract.test_historical_family_stays_separate) ... ok\ntest_invalid_zero_budget_refuses_before_body (__main__.LedgerContract.test_invalid_zero_budget_refuses_before_body) ... ok\ntest_lower_budget_and_correlation_credit_cannot_erase_floor (__main__.LedgerContract.test_lower_budget_and_correlation_credit_cannot_erase_floor) ... ok\ntest_metadata_only_change_is_not_hashed_configuration (__main__.LedgerContract.test_metadata_only_change_is_not_hashed_configuration) ... ok\ntest_rerun_and_restart_idempotent (__main__.LedgerContract.test_rerun_and_restart_idempotent) ... ok\ntest_reverse_budget_order_same_result (__main__.LedgerContract.test_reverse_budget_order_same_result) ... ok\ntest_22_proposed_slots_are_balanced_daily_only (__main__.ProposedInventoryContract.test_22_proposed_slots_are_balanced_daily_only) ... ok\ntest_exact_object_mix_and_eight_contrasts (__main__.ProposedInventoryContract.test_exact_object_mix_and_eight_contrasts) ... ok\ntest_original_147_slots_are_untouched_and_unadmitted (__main__.ProposedInventoryContract.test_original_147_slots_are_untouched_and_unadmitted) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.017s\n\nOK\n",
+  "production_ledger_accessed": false,
+  "market_data_or_outcomes_accessed": false,
+  "native_source_unchanged": true,
+  "draft_inventory_unchanged": true,
+  "real_selections_registrations_or_runs": 0,
+  "tests_run": 17,
+  "tests_passed": 17,
+  "mutation_checks": [
+    {
+      "mutation": "drop_registration_floor",
+      "exit_code": 1,
+      "failed_cases": [
+        "test_context_budget_precedes_body_with_explicit_ledger (__main__.LedgerContract.test_context_budget_precedes_body_with_explicit_ledger)",
+        "test_decorator_budget_precedes_body_with_explicit_ledger (__main__.LedgerContract.test_decorator_budget_precedes_body_with_explicit_ledger)",
+        "test_invalid_zero_budget_refuses_before_body (__main__.LedgerContract.test_invalid_zero_budget_refuses_before_body)"
+      ],
+      "error_cases": [],
+      "killed_by_assertions": true
+    },
+    {
+      "mutation": "add_floor_instead_of_max",
+      "exit_code": 1,
+      "failed_cases": [
+        "test_budget_is_floor_not_addition (__main__.LedgerContract.test_budget_is_floor_not_addition)",
+        "test_historical_family_stays_separate (__main__.LedgerContract.test_historical_family_stays_separate)",
+        "test_lower_budget_and_correlation_credit_cannot_erase_floor (__main__.LedgerContract.test_lower_budget_and_correlation_credit_cannot_erase_floor)",
+        "test_reverse_budget_order_same_result (__main__.LedgerContract.test_reverse_budget_order_same_result)"
+      ],
+      "error_cases": [],
+      "killed_by_assertions": true
+    },
+    {
+      "mutation": "disable_trial_idempotence",
+      "exit_code": 1,
+      "failed_cases": [
+        "test_dictionary_key_order_does_not_create_new_trial (__main__.LedgerContract.test_dictionary_key_order_does_not_create_new_trial)",
+        "test_metadata_only_change_is_not_hashed_configuration (__main__.LedgerContract.test_metadata_only_change_is_not_hashed_configuration)",
+        "test_rerun_and_restart_idempotent (__main__.LedgerContract.test_rerun_and_restart_idempotent)"
+      ],
+      "error_cases": [],
+      "killed_by_assertions": true
+    }
+  ],
+  "mutations_touch_only_disposable_copies": true
+}

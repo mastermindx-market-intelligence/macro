@@ -1,0 +1,63 @@
+{
+  "kind": "steering-and-source-integrity-validation",
+  "source_docs_head": "c9c1e7eea12868bda9d396c654b55bd1d0ab1aea",
+  "native_source_commit": "dc59164faa9c7126115dc5f3aaba6984560b421a",
+  "native_source_git_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+  "same_native_source_sha256": "7b99683c9aee822df138d35b8294318e3316c3b6a8b5a80934614141a15413f7",
+  "native_tests_passed": 17,
+  "hostile_mutations_killed": 3,
+  "relative_links_checked": 25,
+  "relative_links_resolve": true,
+  "source_code_syntax_checked": true,
+  "source_census_scope": "exact TOI documentation subtree",
+  "source_subtree": "2c59343aef9996ad077e81c51c0406bdea8b9c65",
+  "source_subtree_truncated": false,
+  "initial_check": "repository-wide tree was truncated; no completeness claim made, replaced with exact-subtree acquisition",
+  "production_source_paths_changed": false,
+  "market_outcomes_read": false,
+  "real_selections_registrations_runs": 0,
+  "browser_fixture_preparation": "EXPLICIT_PREDISPATCH_BLOCK_NOT_RETRIED",
+  "browser_screenshots_produced": 0,
+  "files": [
+    {
+      "path": "BROWSER_EVIDENCE_BOUNDARY_2026-10-05.json",
+      "bytes": 615,
+      "sha256": "ba75bc4553f20c47bfb49e7a174357ecc1cf0f5b23cdddcad9a442cdfe9fdb5b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3713,
+      "sha256": "86da6ab0add4e32e30ae96821aa6a0315767320d66e6246c67ff19545f087715"
+    },
+    {
+      "path": "TOI_CEO_START_PROMPT_2026-10-03.md",
+      "bytes": 6506,
+      "sha256": "233bdc62369f25b6fd92c52de9e32655dc795510069badfdbde9f57919950a35"
+    },
+    {
+      "path": "TOI_FIRST_VERTICAL_STEERING_2026-10-05.md",
+      "bytes": 19592,
+      "sha256": "e796800e5e0ad031ca6eeb973fe43ecf5569316f7cb521310a6149f11dba3729"
+    },
+    {
+      "path": "TOI_RECONCILED_EXECUTION_PLAN_2026-10-03.md",
+      "bytes": 26336,
+      "sha256": "c86dcf75f7f99fc6eeb8af08fc06d623c8f1322653432ed840f79379780ba7b1"
+    },
+    {
+      "path": "native_accounting/NATIVE_ACCOUNTING_VALIDATION.json",
+      "bytes": 5502,
+      "sha256": "22f218f148e1400f058f6c85ba1255c6c54605c9229c7d9232c70be38e2491c2"
+    },
+    {
+      "path": "native_accounting/README.md",
+      "bytes": 1701,
+      "sha256": "76baecbbe6eb4b0f93f05cdcb79046c115e7d4dc419d3e8da97b87d5bbf86777"
+    },
+    {
+      "path": "native_accounting/native_accounting_contract.py.txt",
+      "bytes": 6701,
+      "sha256": "3ffcbee9430c27ab991968b78520c09190d964324c6698881de2374e060c4c06"
+    }
+  ]
+}
