@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WING-BULL-20260911",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 51.7,
@@ -14,13 +14,13 @@
     "progress": 60.0,
     "pace": 28.1,
     "retention": 29.1,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
     "dist_to_stop_r": 1.602,
     "dist_to_t1_r": 0.898,
     "dist_to_t2_r": 2.398,
-    "horizon_pct_used": 91.1,
+    "horizon_pct_used": 93.3,
     "p1": 0.4016,
     "p2": 0.2008,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": "2026-10-15",
   "_first_t2_ts": "2026-10-20",
-  "days_elapsed": 41,
-  "tau": 0.9111
+  "days_elapsed": 42,
+  "tau": 0.9333
 }
