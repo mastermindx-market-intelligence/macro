@@ -1906,3 +1906,64 @@ class TestPlanNativeSourceReadOwnership:
         assert result["read_status"] == "UNAVAILABLE"
         assert result["reason_codes"] == ["CANDIDATE_SNAPSHOT_UNAVAILABLE"]
         assert result["native_identity"] is None
+
+
+# Nightly publication reads the canonical ledger a second time after advancing it.
+# These tests live with the existing PlanNativeSourceRead producer contract
+# because that CI gate owns native source-read safety and runs this named subset
+# on every relevant code change (no new unregistered test suite).
+class TestPlanNativeSourceReadSameBuildLedger:
+    @staticmethod
+    def _open(plan_id="A-20261023"):
+        return {
+            "id": plan_id,
+            "closed": False,
+            "phase": "triggered",
+            "clock_age_days": 8,
+            "pulse": "8d · triggered",
+            "pulse_zh": "8天 · 已触发",
+            "what_to_do_now": ["Buy above trigger"],
+            "what_to_do_now_zh": ["突破触发价买入"],
+            "recommended_action": "buy",
+            "state": {"recommended_action": "buy", "phase": "triggered"},
+        }
+
+    def test_new_close_withholds_live_action_in_both_languages(self):
+        entry = self._open()
+        bp._reconcile_same_build_closures([entry], {"A-20261023": "INVALIDATED"})
+        assert entry["closed"] is True
+        en, zh = bp._plan_pulse(
+            8, "triggered", None, closed=True, outcome="INVALIDATED"
+        )
+        assert (entry["pulse"], entry["pulse_zh"]) == (en, zh)
+        now_en, now_zh = bp._closed_state_lines("INVALIDATED")
+        assert (entry["what_to_do_now"], entry["what_to_do_now_zh"]) == (
+            now_en, now_zh
+        )
+        assert "Buy above" not in repr(entry)
+        assert entry["recommended_action"] is None
+        assert entry["state"]["recommended_action"] is None
+
+    def test_open_and_previously_closed_rows_remain_unchanged(self):
+        opened = self._open("OPEN")
+        closed = self._open("ALREADY")
+        closed.update(closed=True, pulse="existing historical pulse",
+                      recommended_action=None)
+        before = (dict(opened), dict(closed))
+        bp._reconcile_same_build_closures(
+            [opened, closed], {"ALREADY": "T1_HIT"}
+        )
+        assert opened == before[0]
+        assert closed == before[1]
+
+    def test_missing_id_and_unnamed_outcome_withhold_action(self):
+        missing = self._open("")
+        fresh = self._open("NEW")
+        bp._reconcile_same_build_closures(
+            [missing, fresh], {"": "EXPIRED", "NEW": ""}
+        )
+        assert missing["closed"] is False
+        assert fresh["closed"] is True
+        assert fresh["what_to_do_now"] == bp._closed_state_lines("")[0]
+        assert fresh["what_to_do_now_zh"] == bp._closed_state_lines("")[1]
+        assert fresh["recommended_action"] is None
