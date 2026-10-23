@@ -2748,6 +2748,15 @@ except Exception as _options_issue_desk_exc:  # noqa: BLE001
         _options_issue_desk_exc,
     )
 
+# Protected exact-source scenario reads; bindings stay absent until genuine
+# current source-use authority and a private retained destination qualify.
+try:
+    from app.options_scenarios import router as options_scenarios_router  # noqa: E402
+    app.include_router(options_scenarios_router)
+except Exception:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning("protected scenario source router unavailable")
+
 # ---------------------------------------------------------------------------
 # Lifecycle mail sweeper (SEE W3 — app/billing_emails.py): the behaviour-triggered
 # trial-ending T-2 reminder. DEFAULT OFF — register_lifecycle is a no-op unless the

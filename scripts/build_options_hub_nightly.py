@@ -309,6 +309,53 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(clean, allow_nan=False, default=str), encoding="utf-8")
 
 
+def capture_built_scenario_sources(descriptor, viewer, *, operation_id: str,
+                                  out_dir: Path, s3=None, bucket=None,
+                                  destination=None, source_save_decision=None,
+                                  retention_decision=None, current_viewer=None, clock=None):
+    """Deliberate PRIVATE capture of expected bytes already serialized by this producer.
+
+    This is not called by the nightly loop and does not build/recompute/fetch or
+    upload a public head. A native caller must supply current Save/retention and
+    private-destination bindings. No binding is configured by importing this file.
+    Browser bytes and arbitrary source paths are not accepted. The composer
+    checks exact expected identities before retention and emits metadata only;
+    it does not verify native TS scenario math or apply a canonical save.
+    """
+    import os
+    import stat
+    from engine.options_scenario_capture import capture_producer_sources
+
+    def producer_read(kind):
+        ref = descriptor.gex if kind == "gex" else descriptor.moves if kind == "moves" else None
+        if ref is None:
+            raise ValueError("source kind unavailable")
+        # Hold directory descriptors and refuse symlink/FIFO source leaves. The
+        # root and expected length have already passed native descriptor checks.
+        with_fd = os.open(out_dir, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        kind_fd = file_fd = None
+        try:
+            kind_fd = os.open(kind, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=with_fd)
+            file_fd = os.open(f"{descriptor.root}.json", os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=kind_fd)
+            info = os.fstat(file_fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_size != ref.byte_length:
+                raise ValueError("producer source changed")
+            with os.fdopen(file_fd, "rb") as handle:
+                file_fd = None
+                return handle.read(ref.byte_length + 1)
+        finally:
+            if file_fd is not None:
+                os.close(file_fd)
+            if kind_fd is not None:
+                os.close(kind_fd)
+            os.close(with_fd)
+
+    return capture_producer_sources(descriptor, viewer, operation_id=operation_id,
+        producer_read=producer_read, s3=s3, bucket=bucket, destination=destination,
+        source_save_decision=source_save_decision, retention_decision=retention_decision,
+        current_viewer=current_viewer, clock=clock)
+
+
 def _publish_aggregates(
     roots_ok: list[str],
     asof: str,
