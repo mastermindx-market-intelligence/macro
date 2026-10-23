@@ -13,7 +13,7 @@ fact known before the recorded clock start.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from functools import lru_cache
 import re
 from typing import Any, Mapping
@@ -23,6 +23,7 @@ from engine.sector_intelligence.contracts import (
     ContractRegistry,
     ContractValidationError,
     canonical_json_sha256,
+    validate_trial_registry_change_fact_against_diff,
 )
 
 
@@ -153,7 +154,7 @@ def _validate_fact(fact: Mapping[str, Any]) -> str:
 
 def _validate_snapshot_binding(
     fact: Mapping[str, Any], snapshot: Mapping[str, Any], nct_id: str
-) -> tuple[str, datetime, str, datetime]:
+) -> tuple[str, datetime, str, datetime, date]:
     _verify_self_hash(
         snapshot,
         "snapshot_payload_sha256",
@@ -176,6 +177,14 @@ def _validate_snapshot_binding(
     ):
         raise OutcomeAccrualError("OUTCOME_ACCRUAL_SOURCE_BINDING_INVALID")
 
+    submitted = snapshot.get("source_submitted_at")
+    if not isinstance(submitted, str):
+        raise OutcomeAccrualError("OUTCOME_ACCRUAL_SNAPSHOT_CLOCK_INVALID")
+    try:
+        submitted_date = date.fromisoformat(submitted)
+    except ValueError as exc:
+        raise OutcomeAccrualError("OUTCOME_ACCRUAL_SNAPSHOT_CLOCK_INVALID") from exc
+
     retrieved_literal, retrieved = _utc(
         snapshot.get("retrieved_at"), "OUTCOME_ACCRUAL_SNAPSHOT_CLOCK_INVALID"
     )
@@ -184,7 +193,36 @@ def _validate_snapshot_binding(
     )
     if transaction < retrieved:
         raise OutcomeAccrualError("OUTCOME_ACCRUAL_SNAPSHOT_CLOCK_INVALID")
-    return retrieved_literal, retrieved, transaction_literal, transaction
+    return (
+        retrieved_literal,
+        retrieved,
+        transaction_literal,
+        transaction,
+        submitted_date,
+    )
+
+
+def _validate_derivation(
+    fact: Mapping[str, Any],
+    before_snapshot: Mapping[str, Any] | None,
+    diff: Mapping[str, Any] | None,
+    after_snapshot: Mapping[str, Any],
+) -> None:
+    """Use Record History's replay owner; two self-hashes do not prove derivation."""
+    before = _record(before_snapshot, "OUTCOME_ACCRUAL_SOURCE_BINDING_REQUIRED")
+    exact_diff = _record(diff, "OUTCOME_ACCRUAL_SOURCE_BINDING_REQUIRED")
+    _verify_self_hash(
+        before, "snapshot_payload_sha256", "OUTCOME_ACCRUAL_SNAPSHOT_HASH_INVALID"
+    )
+    _verify_self_hash(
+        exact_diff, "diff_payload_sha256", "OUTCOME_ACCRUAL_DIFF_HASH_INVALID"
+    )
+    try:
+        validate_trial_registry_change_fact_against_diff(
+            fact, exact_diff, before, after_snapshot
+        )
+    except ContractValidationError as exc:
+        raise OutcomeAccrualError("OUTCOME_ACCRUAL_SOURCE_BINDING_INVALID") from exc
 
 
 def build_trial_progression_outcome(
@@ -192,9 +230,13 @@ def build_trial_progression_outcome(
     fact: Mapping[str, Any],
     after_snapshot: Mapping[str, Any],
     activation: Mapping[str, Any],
+    before_snapshot: Mapping[str, Any] | None = None,
+    diff: Mapping[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """Project one post-activation registry status change into BC-O1b.
 
+    The before snapshot and exact diff are required to prove the claimed
+    status change through Record History's existing replay validator.
     None means the source fact was already knowable before the immutable
     family-clock start. That is an explicit no-backfill disposition, not a
     negative outcome.
@@ -211,18 +253,27 @@ def build_trial_progression_outcome(
     _start_literal, accrual_start = _activation_start(activation)
     nct_id = _validate_fact(fact)
     (
-        retrieved_literal,
+        _retrieved_literal,
         retrieved_at,
         transaction_literal,
         _transaction_at,
+        source_submitted_date,
     ) = _validate_snapshot_binding(fact, after_snapshot, nct_id)
-
-    if retrieved_at < accrual_start:
-        return None
 
     source_status = fact.get("after_value")
     if not isinstance(source_status, str) or _SOURCE_STATUS.fullmatch(source_status) is None:
         raise OutcomeAccrualError("OUTCOME_ACCRUAL_SOURCE_STATUS_INVALID")
+
+    _validate_derivation(fact, before_snapshot, diff, after_snapshot)
+
+    # Record History can retrieve years-old source versions after a family clock
+    # opens. Those are historical backfill, not prospective accrual. The source
+    # supplies only a calendar date, so the clock-open day itself is ambiguous
+    # and remains excluded; only a strictly later submitted date is admissible.
+    if source_submitted_date <= accrual_start.date():
+        return None
+    if retrieved_at < accrual_start:
+        return None
 
     fact_digest = str(fact["fact_payload_sha256"])
     payload = {
@@ -238,10 +289,11 @@ def build_trial_progression_outcome(
         # The policy calls this a revisable state, so even source statuses such
         # as COMPLETED or TERMINATED remain non-terminal in the outcome ledger.
         "terminality": "non_terminal",
-        # Record History provides a day-granular source submission date. Do not
-        # manufacture midnight precision: use the exact retained retrieval time.
-        "effective_at": retrieved_literal,
-        "known_at": retrieved_literal,
+        # The submitted date has only day precision. Record History binds
+        # the fact and exact diff to the after-snapshot transaction boundary;
+        # retrieval alone does not make the derived fact available earlier.
+        "effective_at": transaction_literal,
+        "known_at": transaction_literal,
         "observed_at": transaction_literal,
         "evidence_refs": [f"internal:ctgov_change_{fact_digest[:32]}"],
         "policy_version": str(activation["policy_version"]),
@@ -262,6 +314,8 @@ def append_trial_progression_outcome(
     fact: Mapping[str, Any],
     after_snapshot: Mapping[str, Any],
     activation: Mapping[str, Any],
+    before_snapshot: Mapping[str, Any] | None = None,
+    diff: Mapping[str, Any] | None = None,
     recorded_at: str | None = None,
 ) -> AppendReceipt | None:
     """Append one eligible status-change outcome through the existing O1b writer."""
@@ -270,6 +324,8 @@ def append_trial_progression_outcome(
         fact=fact,
         after_snapshot=after_snapshot,
         activation=activation,
+        before_snapshot=before_snapshot,
+        diff=diff,
     )
     if payload is None:
         return None
