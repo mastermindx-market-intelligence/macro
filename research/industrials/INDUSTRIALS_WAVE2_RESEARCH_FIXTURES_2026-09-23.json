@@ -1,0 +1,37 @@
+{
+  "purpose": "Research-only arithmetic and semantic counterexamples; not an enrolled production contract, live dataset, valuation recommendation or application test suite.",
+  "research_date": "2026-09-23",
+  "operation": "gmi-industrials-sector-research-20260923-sol-001",
+  "source_register": "INDUSTRIALS_WAVE2_EVIDENCE_2026-09-23.md",
+  "examples": {
+    "eaton_margin": {"sources": ["W2-S01", "W2-S02"], "basis": "reported segment margin, percent", "current": "27.5", "prior_year": "29.5", "reported_sequential_change_bp": "190"},
+    "siemens_scoped_shares": {"sources": ["W2-S05"], "basis": "EUR million, fiscal Q3 2026", "di_software": "1790", "di_revenue": "4932", "si_service": "1256", "si_revenue": "6387", "permitted_claims": ["software as share of Digital Industries sales", "service as share of Smart Infrastructure sales"], "forbidden_inferences": ["group software purity", "ARR purity", "EDA share"]},
+    "siemens_profit_bridge": {"sources": ["W2-S05"], "basis": "EUR million, fiscal Q3 2026", "di_profit": "923", "purchased_intangible_amortization": "110", "di_ebit": "813"},
+    "rockwell_scoped_share": {"sources": ["W2-S03"], "basis": "USD million, fiscal Q3 2026", "software_control_sales": "751", "group_sales": "2313", "forbidden_inference": "recurring software share"},
+    "nvent_reconciliation": {"sources": ["W2-S14"], "basis": "USD million, Q2 2026", "systems_sales": "1072.1", "group_sales": "1471.3", "systems_adjusted_operating_income": "248.2", "connections_adjusted_operating_income": "108.8", "enterprise_cost": "34.3", "group_adjusted_operating_income": "322.7", "forbidden_inference": "Systems Protection share equals liquid-cooling share"},
+    "abb_cash": {"sources": ["W2-S08"], "basis": "USD million, Q2 2026 and matched prior quarter", "consolidated_current": "1150", "consolidated_prior": "1059", "continuing_current": "1303", "continuing_prior": "971"},
+    "vertiv_cash": {"sources": ["W2-S13"], "basis": "USD million, Q2 2026", "cfo": "1099.8", "working_capital": {"deferred_revenue": "1171.5", "inventories": "-663.8", "receivables": "-586.5", "payables": "482.5", "other_current_assets": "-56.8", "accrued_liabilities": "117.6", "income_taxes": "-13.5"}, "reported_wc_total": "451.0", "capex": "173.3", "capitalized_software": "1.2", "reported_adjusted_fcf": "925.3", "interpretation_limit": "CFO less working capital is a decomposition, not normalized CFO or an investment forecast."},
+    "keyence_period": {"sources": ["W2-S16", "W2-S17"], "basis": "JPY million, March 21-June 20, 2026 and matched prior interval", "sales_current": "346621", "operating_income_current": "187076", "sales_prior": "261076", "operating_income_prior": "129301", "prior_europe_others_local_growth_percent": "-2.5", "period_end": "2026-06-20"},
+    "smc_bridge": {"sources": ["W2-S21"], "basis": "rounded contribution percentage points and reported growth, not unit counts", "volume": "22.3", "price": "0.1", "currency": "12.9", "reported_growth": "35.4", "rounding_tolerance_pp": "0.2", "order_index_base": "FY25=100", "july_consolidated_order_index": "138", "profit_bridge_jpy_100m": {"opening_profit": "444", "volume": "198", "price": "3", "currency": "119", "inventory_valuation": "26", "manufacturing_materials_other": "-8", "sga": "-43", "ending_profit": "739"}},
+    "eaton_cdu_conditions": {"sources": ["W2-S26"], "model": "ROL2300-48U40", "rating_1_kw": "1150", "rating_1_approach_c": "4", "rating_2_kw": "2300", "rating_2_approach_c": "8", "forbidden_inference": "new generation doubles capacity under identical conditions"}
+  },
+  "hypothetical_scenarios": {
+    "profit_bridge": {"source_status": "original hypothetical, not issuer forecast", "base_revenue": "100", "base_variable_cost": "65", "base_fixed_cost": "15", "volume_growth": "0.10", "price_growth": "0.02", "unit_variable_cost_growth": "0.03", "next_fixed_cost": "17"},
+    "reinvestment": {"source_status": "original hypothetical; maintenance investment equals depreciation; no acquisitions or financing", "base_revenue": "100", "next_revenue": "120", "operating_margin": "0.20", "tax_rate": "0.25", "incremental_sales_to_capital_a": "4", "incremental_sales_to_capital_b": "1"},
+    "stable_value": {"source_status": "original stable-state sensitivity, not current fair-value estimate", "growth": "0.03", "cost_of_capital_base": "0.09", "cost_of_capital_higher": "0.105", "incremental_return_a": "0.12", "incremental_return_b": "0.24", "necessary_condition": "growth < cost_of_capital; internally consistent reinvestment and stable business assumptions"}
+  },
+  "semantic_negative_cases": [
+    {"id": "N01", "reason": "quarterly and rolling order windows differ", "kind": "compare", "left": {"scope": "EA", "measure": "organic orders", "window": "rolling_12m", "unit": "growth_percent"}, "right": {"scope": "EA", "measure": "organic orders", "window": "quarter", "unit": "growth_percent"}},
+    {"id": "N02", "reason": "consolidated and continuing cash scopes differ", "kind": "compare", "left": {"scope": "consolidated", "measure": "CFO", "window": "Q2", "unit": "USDm"}, "right": {"scope": "continuing", "measure": "CFO", "window": "Q2", "unit": "USDm"}},
+    {"id": "N03", "reason": "DI segment share is not group share", "kind": "denominator", "actual": "Digital Industries revenue", "requested": "Siemens group revenue"},
+    {"id": "N04", "reason": "composite segment is not ARR", "kind": "measure", "actual": "hardware_and_software_sales", "requested": "annual_recurring_revenue"},
+    {"id": "N05", "reason": "forecast closing is not completed ownership", "kind": "statement", "actual": "announced_pending", "requested": "completed_ownership"},
+    {"id": "N06", "reason": "index level is not growth percent", "kind": "measure", "actual": "index_FY25_100", "requested": "growth_percent"},
+    {"id": "N07", "reason": "capacity conditions differ", "kind": "compare", "left": {"scope": "ROL2300", "measure": "rated_capacity", "window": "catalog", "unit": "kW", "approach_c": "4"}, "right": {"scope": "ROL2300", "measure": "rated_capacity", "window": "catalog", "unit": "kW", "approach_c": "8"}},
+    {"id": "N08", "reason": "revenue recognized over time is not physical completion", "kind": "statement", "actual": "over_time_recognition", "requested": "commissioned_asset"},
+    {"id": "N09", "reason": "quarter intervals differ", "kind": "compare", "left": {"scope": "company", "measure": "sales", "window": "2026-03-21/2026-06-20", "unit": "JPY m"}, "right": {"scope": "company", "measure": "sales", "window": "2026-04-01/2026-06-30", "unit": "JPY m"}},
+    {"id": "N10", "reason": "offering launch is not paid adoption", "kind": "statement", "actual": "offering_announced", "requested": "paid_customer_adoption"},
+    {"id": "N11", "reason": "growth cannot equal or exceed discount rate in stable formula", "kind": "stable_value", "growth": "0.09", "cost_of_capital": "0.09", "incremental_return": "0.20"},
+    {"id": "N12", "reason": "system contains its component, so totals overlap", "kind": "aggregation", "items": [{"id": "system", "value": "100"}, {"id": "component", "parent": "system", "value": "20"}]}
+  ]
+}

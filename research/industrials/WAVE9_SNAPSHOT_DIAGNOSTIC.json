@@ -1,0 +1,67 @@
+{
+  "research_only": true,
+  "not_a_provider_feed": true,
+  "input_commit": "ba368abe90542c82ae2267575f739b251dac1263",
+  "input_path": "data/earnings/earnings.parquet",
+  "file_blob": "01a732f8e4d5db94011957797b9df9ba1c865aa3",
+  "sha256": "4392e814502723b988629ea759311192fb1c7d77eb2274c654c0a6d4bde1425e",
+  "bytes": 18581,
+  "rows": 1364,
+  "as_of_counts": {
+    "2026-07-28T03:27:22.828710+00:00": 3,
+    "2026-06-19T02:36:58.649552+00:00": 1361
+  },
+  "eps_nonnull": 1261,
+  "eps_null": 103,
+  "nonempty_surprises": 4,
+  "selected_rows": [
+    {
+      "next_date": "2026-07-28",
+      "next_time": "time-not-supplied",
+      "eps_forecast": 1.48,
+      "surprises_json": "[]",
+      "as_of": "2026-06-19T02:36:58.649552+00:00",
+      "ticker": "PNR"
+    },
+    {
+      "next_date": "2026-07-30",
+      "next_time": "time-not-supplied",
+      "eps_forecast": 0.55,
+      "surprises_json": "[]",
+      "as_of": "2026-06-19T02:36:58.649552+00:00",
+      "ticker": "EXPO"
+    },
+    {
+      "next_date": "2026-08-04",
+      "next_time": "time-not-supplied",
+      "eps_forecast": 0.52,
+      "surprises_json": "[]",
+      "as_of": "2026-06-19T02:36:58.649552+00:00",
+      "ticker": "ULS"
+    },
+    {
+      "next_date": "2026-08-05",
+      "next_time": "time-not-supplied",
+      "eps_forecast": 3.31,
+      "surprises_json": "[]",
+      "as_of": "2026-06-19T02:36:58.649552+00:00",
+      "ticker": "ROK"
+    }
+  ],
+  "absent_exact_labels": [
+    "SGSN",
+    "SGSN.SW",
+    "SGSOY",
+    "RANJY",
+    "RAND.AS"
+  ],
+  "qualified_consensus_comparisons": 0,
+  "standard_engine_crosscheck": false,
+  "limitations": [
+    "Snapshot is historical, not a current production audit.",
+    "GAAP/adjusted, fiscal-endpoint, contributor and revision clocks absent.",
+    "Source-label absence is not a canonical identity or organization-wide absence verdict.",
+    "Authored one-file reader and footer checks are not an independent engine review.",
+    "No price, source-rights or corporate-action qualification."
+  ]
+}
