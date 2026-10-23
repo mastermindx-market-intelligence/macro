@@ -34,7 +34,12 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: trusted-ci-executor-${{ github.run_id }}
+  # Production same-repository PR calls share one GitHub-owned completion queue.
+  # queue:max preserves up to 100 pending calls FIFO instead of letting newer
+  # matrices repeatedly leapfrog older eligible work at the three-runner pool.
+  # Direct diagnostics keep a run-unique group and remain independently callable.
+  group: ${{ github.event_name == 'pull_request' && 'trusted-ci-executor-production-fifo' || format('trusted-ci-executor-{0}', github.run_id) }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
