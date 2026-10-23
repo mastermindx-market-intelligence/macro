@@ -17096,12 +17096,14 @@ jobs:
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
       - scripts/linear_portfolio_plan.py
+      - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
       - tests/linear_portfolio_plan_live_cases.py
+      - tests/test_linear_projector_p1_offline.py
       - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_compile.py
       - tests/test_agentos_records_draft.py
@@ -17129,6 +17131,8 @@ jobs:
             tests/test_agentos_compile.py tests/test_agentos_records_draft.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
+          # Owned, no-network P1 project preflight: explicit run for contract-delta.
+          python -m pytest tests/test_linear_projector_p1_offline.py -q
 
   capability-broker:
     if: ${{ false }}
