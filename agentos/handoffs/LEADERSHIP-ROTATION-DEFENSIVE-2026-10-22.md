@@ -19,6 +19,9 @@ changed:
   what: Added 32 executable UI contracts in the existing registered Python test pack.
 - path: tests/probe_rotation_early_context_browser.py
   what: Added an isolated actual-script browser probe and retained four responsive bilingual receipts.
+- path: research/DEFENSIVE_ROTATION_ALERT_DELIVERY_2026-10-23.md
+  what: Froze opted-in observational delivery contract and recorded actual live outbox schema plus source-owner
+    integration obligations.
 verified:
 - claim: The pinned six-instrument store ends October 21 and the reported returns and sustained divergence dates
     reproduce.
@@ -37,6 +40,16 @@ verified:
   command: python3 tests/probe_rotation_early_context_browser.py --output /tmp/defensive-rotation-ui-proof-20261022
   result: 'Four cases: 320/390/1280 widths, light/dark, English/Chinese; keyboard disclosures work. Isolated shell,
     not production.'
+- claim: An older retained repository build already contained early defensive divergence with no confirmed events.
+  command: git show 48cf3140e2ff153769044fe0b621f4719d3bace8:site/marketdata/rotation_events.json; actual candidate
+    earlyContextHtml with explicit 2026-10-09 replay clock
+  result: October 8 source snapshot generated October 9 reports XLP +1.980434%, SMH -3.988930% over two sessions
+    and zero active/created events; six render assertions passed. No historic delivery/deployment claim.
+- claim: The existing production alert outbox already supports suppression and idempotent fire identities.
+  command: Supabase list_projects; one metadata-only pg_catalog/information_schema SELECT for public.alert_outbox
+    and public.alert_runs
+  result: 'MarketIntelligence fsldfzlxyavsuwqbceod: both tables exist with RLS, unique fire_event_id, pending/deferred/sent/failed/suppressed
+    status check, owner-only authenticated SELECT. No DML/DDL/user records or credentials accessed.'
 unverified:
 - claim: The candidate is independently reviewed and live on the authenticated product path.
   what_would_verify: Independent exact-candidate verdict, required CI, normal merge/deployment and authenticated
@@ -46,11 +59,16 @@ unverified:
 unresolved:
 - Independent exact-candidate review, normal source release and authenticated product proof are still required.
 - Macro entry-path prominence, alert delivery and qualified policy remain incomplete.
+- The initial Qwen reviewer failed with 429 and no verdict; its separate admitted GLM review and notification-consumer
+  build remain unreconciled pending child returns.
 next_actions:
-- Publish the tested candidate on PR 10103 and commission independent exact-head review.
+- Consume independent GLM review defensive-rotation-ui-review-alt-20261023 for immutable UI candidate 2a963d70915728b3c73debd18769e836055044af;
+  docs-only successors preserve semantic blobs but verify the closure.
 - Consume and repair review findings, qualify required CI and normal merge/deployment.
 - Implement and test opted-in rotation alerts through the existing state and outbox owners; preserve no-send until
   appropriate proof and authorization.
+- Consume original notification-consumer child defensive-rotation-notification-consumer-20261023, validate its returned
+  diff and obtain separate exact-candidate independent review before activation.
 do_not_redo:
 - Accepted Leadership Rotation waves and frozen failed research.
 - Existing rotation data, lifecycle, outbox, notification and portfolio owners.
@@ -92,6 +110,16 @@ All Fabric children conserve root `defensive-rotation-20261022`, parent `chatgpt
 - `defensive-rotation-replay-20261022`, controller13361: TERMINAL rc0. Core arithmetic independently reproduced; incorrect 'nine sessions earlier' corrected to four. Uncorrected response NOT_ACCEPTED. No source edits.
 - `defensive-rotation-ui-builder-20261022`, controller57820: TERMINAL rc0. Text artifact returned and integrated with substantive parent repairs described in the replay report. Unmodified worker return is not accepted; independent review of the exact integrated candidate remains required. No shared-source writes or descendants.
 - `defensive-rotation-alert-path-20261022`, controller80552: TERMINAL rc0, response SHA256 9885ee112aee1f40daea60d492799e670ece78b494229e240ab9b2319df0f5f1. Identified missing per-user rotation outbox producer and category. Architecture suggestions remain under parent adjudication; reject far-future deferred-status cancellation hacks. No source edits or sends.
+
+## Current pending children and release observations
+
+- `defensive-rotation-ui-review-20261022`: TERMINAL rc1, Qwen 429, response SHA256 `f5e7cf2a52e764db6b2eae2c6677104ce1600e23b19945409aaa7be78fa08fd5`. No review verdict. Read-only grant, no source writes; original operation is reconciled and not retried.
+- `defensive-rotation-ui-review-alt-20261023`, controller36334: separate independent commission on exact candidate `2a963d70915728b3c73debd18769e836055044af`. Actual subject builder pool is Minimax. Retained route evidence admits GLM5.3/glm-frontier on ubuntu2 after the documented Qwen capacity failure. Last observation ACTIVE_OR_WAITING; terminal verdict and worker return not yet proven. No replacement or duplicate commission while unresolved.
+- `defensive-rotation-notification-consumer-20261023`, controller30924: original bounded scratch-only builder for the frozen account/category/mailer/drain contract. Last observation ACTIVE_OR_WAITING; no implementation result claimed. No source-transition producer, live DB mutation, SMTP send, deployment or activation is authorized by this child.
+
+PR #10103 remains draft at the implementation head above. Main authority and 17 checks were successful at the last bounded read; three CI packs were still running. The red `ci-authority/codex/merge-queue-pilot` is an inactive base context, not a main-branch denial. No merge/deployment or full acceptance is claimed. The isolated component proofs remain valid; the public production JSON request returned HTTP401, so no authenticated production behavior was verified by that request.
+
+Historical source receipt and live DB catalog findings are material new evidence; neither provides alpha qualification, a trade recommendation or proof of notification delivery. Consumer implementation and source-to-outbox continuity remain separate. The new alert delivery note preserves those remaining obligations.
 
 ## Exact next action
 

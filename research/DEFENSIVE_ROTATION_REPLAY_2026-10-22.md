@@ -68,3 +68,24 @@ Fabric builder `defensive-rotation-ui-builder-20261022` returned terminal rc0 wi
 Verification: `node tests/rotation_early_context_ui.test.cjs` -> 32/32 passed. `python3 -m pytest -q tests/test_rotation_early_context.py tests/test_rotation_events.py tests/test_rotation_events_v2.py` -> 139 passed, including the executable Node suite in the already-registered Python CI pack. The initial two baseline failures were missing sparse-checkout registry bytes; materializing only the exact HEAD blob `data/oracle/ratio_pairs.json` resolved them without source changes. Existing 138 backend tests were green before the patch.
 
 Browser probe: `python3 tests/probe_rotation_early_context_browser.py --output /tmp/defensive-rotation-ui-proof-20261022`. Four intercepted-network cases (320 light English, 390 dark English, 1280 light English, 390 dark Chinese) showed four comparisons, three horizon conflicts, zero page errors, no horizontal overflow and working keyboard disclosure. Receipt and selected screenshots are retained in `research/evidence/defensive_rotation_ui_20261022/`. This is a real candidate-script test with a pinned producer snapshot in an isolated shell, NOT authenticated production or deployment proof. No external browser requests, credentials or notifications were used.
+
+## Stronger historical evidence: a retained October 8 observation
+
+A bounded source-history query for `site/marketdata/rotation_events.json` before October 13 found commit `48cf3140e2ff153769044fe0b621f4719d3bace8` (committer timestamp October 9, 14:20:55 UTC). Its actual tracked build artifact, blob `6de0971e238d29a6ec3875c00880b2d67a2ec8c2`, has source date October 8 and generated timestamp October 9, 14:18 UTC. This is stronger evidence than recomputing all observations from the October 21 price history: the earlier artifact already contains `early_context` with state MIXED_ROTATION. It is still NOT proof of production deployment, a user seeing it, or an alert delivered then.
+
+Its two-session observations (October 6 to October 8) were:
+
+| Pair | Defensive absolute | Risk-leg absolute | Relative wealth | Honest interpretation |
+|---|---:|---:|---:|---|
+| XLP / SMH | +1.980434% | -3.988930% | +6.217370% | Staples rising while semiconductors fall |
+| XLP / XLK | +1.980434% | -2.089110% | +4.156375% | Staples rising while technology falls |
+| XLU / XLK | -0.218659% | -2.089110% | +1.910360% | Relative shelter only; utilities also fell |
+| XLV / XLK | +0.640378% | -2.089110% | +2.787726% | Healthcare rising while technology falls |
+
+The same artifact has zero active confirmed rotation events and zero newly created events. All four defensive comparisons explicitly record a two-session versus twenty-session sign disagreement. Therefore a confirmed-event-only consumer can be empty while material early sector evidence exists. This narrows a real delivery/interpretation failure; it does not retrospectively authorize buying all defensive sectors with leverage.
+
+The previous tracked artifact found in the bounded query, `856c5939858fe6adcf41bfc2e10787a21de649a3` (October 7 commit, October 6 source date), has no early_context. This does not establish the exact first-ever production observation or delivery; it bounds only the inspected repository history. The October 9 artifact also cannot be called an alert available at the October 8 close: its recorded generation time is the following morning, 10:18 New York time.
+
+The new production-function candidate was executed against the actual older artifact with an explicit replay clock of October 9, 14:30 UTC. Six assertions passed: the XLP and SMH absolute values, +6.22% relative display, positive absolute divergence wording, both-down relative shelter wording and horizon-disagreement visibility. The unchanged function SHA256 is `b6235b6eef93ea4cd82fdd2172bba816358135e28c1f59229a822c08df73d608`. Machine receipt: `research/evidence/defensive_rotation_ui_20261022/historical_observation_receipt.json`. This is a counterfactual consumer reconstruction using retained earlier data, not a claim that the newly built interface existed on October 9.
+
+Interpretation rule for the product plan: short-horizon relative strength against a still-negative longer trend is a possible early reversal, whereas a negative short horizon inside a positive longer trend can signal weakening. Both are disagreements, but they are not economically identical. Preserve the signed observations and timing; do not automatically suppress an early watch merely because slow confirmation has not arrived, or promote either case to a calibrated forecast without prospective validation.
