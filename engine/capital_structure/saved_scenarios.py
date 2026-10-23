@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Mapping
 
 from engine.capital_structure.issuer_state_contracts import (
@@ -56,19 +56,23 @@ RESTORE_OUTCOMES = (
     "source_outage",
     "inputs_unavailable",
     "scenario_rejected",
+    "changed_unattributed",
 )
 
 #: The closed note sentences a restore outcome may carry, keyed by outcome
-#: (two no-change sentences: same generations, and a generation move that did
-#: not touch this issuer).
+#: (three no-change sentences: same generations, a ledgered generation move
+#: that did not touch this issuer, and a move no retained ledger spans).
 RESTORE_NOTES: dict[str, str] = {
     "no_change": "no change: same state and inputs generations",
     "no_change_moved": "generation moved without change to this issuer",
+    "no_change_unledgered": "the answer is unchanged; the change ledger does not span this generation move",
     "correction": "a correction changed this issuer's prior answer",
     "new_events": "new events were observed for this issuer",
     "source_outage": "no bindable state generation is served",
     "inputs_unavailable": "input families are unavailable for this issuer",
     "scenario_rejected": "the saved scenario does not reconstruct under the served contract version",
+    "scenario_refused": "the served engine refuses the saved assumptions at the restore anchor",
+    "changed_unattributed": "the answer changed and the change ledger does not attribute the cause",
 }
 
 _MAX_LABEL_CHARS = 120
@@ -85,6 +89,59 @@ def result_digest_of(result: Mapping[str, Any]) -> str:
     return hashlib.sha256(
         json.dumps(result, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
+
+
+#: The closed identity-key set a substance digest removes at EVERY depth.  The
+#: top-level ``as_of`` is removed separately (one level deep only): nested
+#: ``as_of`` values are data vintages and stay substance.
+_SUBSTANCE_IDENTITY_KEYS = frozenset({"result_id", "scenario_id", "state_id", "receipt"})
+
+
+def result_substance_digest_of(result: Mapping[str, Any]) -> str:
+    """The answer's substance identity: canonical JSON with identity removed.
+
+    ``result_id``, ``scenario_id``, ``state_id`` and ``receipt`` are identity at
+    every depth (dicts nested in dicts and in lists); ``as_of`` is identity at
+    the TOP level only, because a re-run at a served generation's as_of is the
+    same answer re-anchored, while a nested vintage is a fact about the data.
+    The input is never mutated.
+    """
+    def strip(node: Any, top: bool) -> Any:
+        if isinstance(node, Mapping):
+            stripped: dict[str, Any] = {}
+            for key, value in node.items():
+                name = str(key)
+                if name in _SUBSTANCE_IDENTITY_KEYS or (top and name == "as_of"):
+                    continue
+                stripped[name] = strip(value, False)
+            return stripped
+        if isinstance(node, list):
+            return [strip(item, False) for item in node]
+        return node
+
+    payload = json.dumps(
+        strip(result, True), sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def restore_anchor(saved: SavedScenario, served_as_of: str) -> FinancingScenario:
+    """The assumption set one restore re-runs (DEC:CS-V2-U2-RESTORE-REBASES-AS-OF).
+
+    A ``current`` or ``scenario`` anchor re-runs the SAVED assumptions at the
+    served generation's as_of (S′): every other assumption, the horizon
+    included, is kept verbatim, and S′.scenario_id is whatever the contract
+    recomputes — never edited by hand.  A ``then_known`` anchor is returned
+    unchanged: it re-runs at its own cutoff, and a mismatch stays a refusal
+    downstream.  The saved body must reconstruct under the served contract
+    version (:class:`ContractViolation` otherwise — the caller maps that to the
+    rejected-restore answer, never to a guessed outcome).  Pure: no I/O, no
+    clock, no globals.
+    """
+    scenario = financing_scenario_from_record(saved.scenario)
+    if str(saved.view.get("mode") or "") == "then_known":
+        return scenario
+    return replace(scenario, as_of=served_as_of)
 
 
 def _recommendation_words() -> tuple[str, ...]:
@@ -176,6 +233,7 @@ class SavedScenario:
     inputs_generation_id: str
     result_id: str
     result_digest: str
+    result_substance_digest: str
     rule_pack_digest: str
     saved_at: str
     contract_version: str = STATE_CONTRACT_VERSION
@@ -201,6 +259,8 @@ class SavedScenario:
             "state_generation_id",
             "inputs_generation_id",
             "result_id",
+            "result_digest",
+            "result_substance_digest",
             "rule_pack_digest",
             "saved_at",
         ):
@@ -248,6 +308,7 @@ class SavedScenario:
             "inputs_generation_id": self.inputs_generation_id,
             "result_id": self.result_id,
             "result_digest": self.result_digest,
+            "result_substance_digest": self.result_substance_digest,
             "rule_pack_digest": self.rule_pack_digest,
             "saved_at": self.saved_at,
             "contract_version": self.contract_version,
@@ -272,9 +333,12 @@ class RestoreOutcome:
     """One typed restore answer (A39): what changed, or precisely which outage
     or refusal stands in front of the saved answer.
 
-    ``result_identical`` is computed from the saved result's byte digest, never
-    from a numeric comparison; it is ``None`` exactly when no current result
-    exists to compare.
+    ``result_identical`` compares SUBSTANCE digests (identity keys removed), so
+    a re-anchored re-run of the same assumptions stays the same answer; it is
+    ``None`` exactly when no current result exists to compare.  ``from_as_of``
+    is the saved scenario's as_of (always set); ``to_as_of``,
+    ``scenario_id_after`` and ``result_id_after`` are the evaluated S′'s
+    identity, and all three are null together or non-null together.
     """
 
     outcome: str
@@ -282,8 +346,12 @@ class RestoreOutcome:
     to_generation_id: str | None
     from_inputs_generation_id: str | None
     to_inputs_generation_id: str | None
+    from_as_of: str
+    to_as_of: str | None
     result_id_before: str
     result_id_after: str | None
+    scenario_id_before: str
+    scenario_id_after: str | None
     result_identical: bool | None
     changes_n: int
     change_kinds: tuple[str, ...]
@@ -292,10 +360,17 @@ class RestoreOutcome:
 
     def __post_init__(self) -> None:
         _require(self.outcome in RESTORE_OUTCOMES, f"restore.outcome: {self.outcome!r} is not a restore outcome")
+        _require(isinstance(self.from_as_of, str) and bool(self.from_as_of), "restore.from_as_of required")
         _require(isinstance(self.result_id_before, str) and bool(self.result_id_before),
                  "restore.result_id_before required")
-        if self.result_id_after is not None:
-            _require(isinstance(self.result_id_after, str), "restore.result_id_after must be text or null")
+        _require(isinstance(self.scenario_id_before, str) and bool(self.scenario_id_before),
+                 "restore.scenario_id_before required")
+        after = (self.to_as_of, self.result_id_after, self.scenario_id_after)
+        if any(entry is not None for entry in after) and not all(entry is not None for entry in after):
+            raise ContractViolation("restore: to_as_of, result_id_after and scenario_id_after are null together")
+        for entry in after:
+            if entry is not None:
+                _require(isinstance(entry, str) and bool(entry), "restore: the evaluated identity must be text or null")
         if self.result_identical is not None:
             _require(isinstance(self.result_identical, bool), "restore.result_identical must be boolean or null")
         _require(isinstance(self.changes_n, int) and self.changes_n >= 0, "restore.changes_n must be a count")
@@ -314,8 +389,12 @@ class RestoreOutcome:
             "to_generation_id": self.to_generation_id,
             "from_inputs_generation_id": self.from_inputs_generation_id,
             "to_inputs_generation_id": self.to_inputs_generation_id,
+            "from_as_of": self.from_as_of,
+            "to_as_of": self.to_as_of,
             "result_id_before": self.result_id_before,
             "result_id_after": self.result_id_after,
+            "scenario_id_before": self.scenario_id_before,
+            "scenario_id_after": self.scenario_id_after,
             "result_identical": self.result_identical,
             "changes_n": self.changes_n,
             "change_kinds": list(self.change_kinds),
@@ -334,47 +413,82 @@ def classify_restore(
     state_unavailable: bool,
     scenario_rejected: bool,
     changes: StateChangeSet | None,
+    scenario_refused: bool = False,
+    current_scenario_id: str | None = None,
+    current_as_of: str | None = None,
 ) -> RestoreOutcome:
     """Classify one restore attempt in a closed precedence (SPEC_U2 §1.2).
 
     1. the saved body no longer reconstructs under the served contract version
-       → ``scenario_rejected``;
+       → ``scenario_rejected``; the served engine refusing the rebased anchor
+       (``scenario_refused``) → the same outcome, with its own note;
     2. no bindable state generation → ``source_outage``;
     3. any input family unavailable → ``inputs_unavailable`` with its components;
     4. same state and inputs generations → ``no_change``, and a different
-       result on the same generations is NEVER an outcome: it is identity drift;
-    5. a new event for this issuer → ``new_events``;
-    6. a correction or withdrawal, an inputs move that changed the result, or a
-       rule-pack edition change → ``correction``;
-    7. otherwise — generations moved, result byte-identical, no issuer change
-       → ``no_change`` with the stated note.
+       identity on the same generations is NEVER an outcome: it is drift;
+    5. a new event for this issuer on the spanning ledger → ``new_events``;
+    6. a correction or withdrawal for this issuer, or a rule-pack edition
+       change, on the spanning ledger → ``correction``;
+    7. substance identical → ``no_change`` — ``no_change_moved`` when the
+       spanning ledger is retained, ``no_change_unledgered`` when it is not;
+    8. substance differs and nothing above attributed it →
+       ``changed_unattributed``.
+
+    The ledger counts ONLY when it spans exactly saved→served and is not a
+    baseline; any other ledger classifies nothing and is treated as absent.
     """
     _require(isinstance(saved, SavedScenario), "classify_restore: a SavedScenario is required")
-    issuer_changes = changes_for_issuer(changes, saved.issuer_id)
+    if current_result is not None:
+        _require(
+            isinstance(current_scenario_id, str) and bool(current_scenario_id),
+            "classify_restore: current_scenario_id is required with a current result",
+        )
+        _require(
+            isinstance(current_as_of, str) and bool(current_as_of),
+            "classify_restore: current_as_of is required with a current result",
+        )
+    spanning = (
+        changes is not None
+        and not changes.baseline
+        and changes.from_generation_id == saved.state_generation_id
+        and changes.to_generation_id == state_generation_id
+    )
+    ledger = changes if spanning else None
+    issuer_changes = changes_for_issuer(ledger, saved.issuer_id)
     kinds = tuple(sorted({change.kind for change in issuer_changes}))
     same_state = state_generation_id is not None and state_generation_id == saved.state_generation_id
     same_inputs = inputs_generation_id is not None and inputs_generation_id == saved.inputs_generation_id
+    from_as_of = str(saved.scenario.get("as_of") or "")
+    _require(bool(from_as_of), "classify_restore: the saved scenario names no as_of")
 
     def identity(current: Mapping[str, Any]) -> tuple[str, bool]:
         result_id = str(current.get("result_id") or "")
         if not result_id:
             raise ContractViolation("classify_restore: the current result names no result_id")
-        return result_id, result_digest_of(current) == saved.result_digest
+        return result_id, result_substance_digest_of(current) == saved.result_substance_digest
 
-    if scenario_rejected:
+    if scenario_rejected or scenario_refused:
         return RestoreOutcome(
             outcome="scenario_rejected",
             from_generation_id=saved.state_generation_id,
             to_generation_id=state_generation_id,
             from_inputs_generation_id=saved.inputs_generation_id,
             to_inputs_generation_id=inputs_generation_id,
+            from_as_of=from_as_of,
+            to_as_of=None,
             result_id_before=saved.result_id,
             result_id_after=None,
+            scenario_id_before=saved.scenario_id,
+            scenario_id_after=None,
             result_identical=None,
             changes_n=len(issuer_changes),
             change_kinds=kinds,
             unavailable_components=(),
-            note=RESTORE_NOTES["scenario_rejected"],
+            note=(
+                RESTORE_NOTES["scenario_rejected"]
+                if scenario_rejected
+                else RESTORE_NOTES["scenario_refused"]
+            ),
         )
     if state_unavailable:
         return RestoreOutcome(
@@ -383,8 +497,12 @@ def classify_restore(
             to_generation_id=state_generation_id,
             from_inputs_generation_id=saved.inputs_generation_id,
             to_inputs_generation_id=inputs_generation_id,
+            from_as_of=from_as_of,
+            to_as_of=None,
             result_id_before=saved.result_id,
             result_id_after=None,
+            scenario_id_before=saved.scenario_id,
+            scenario_id_after=None,
             result_identical=None,
             changes_n=len(issuer_changes),
             change_kinds=kinds,
@@ -398,8 +516,12 @@ def classify_restore(
             to_generation_id=state_generation_id,
             from_inputs_generation_id=saved.inputs_generation_id,
             to_inputs_generation_id=inputs_generation_id,
+            from_as_of=from_as_of,
+            to_as_of=None,
             result_id_before=saved.result_id,
             result_id_after=None,
+            scenario_id_before=saved.scenario_id,
+            scenario_id_after=None,
             result_identical=None,
             changes_n=len(issuer_changes),
             change_kinds=kinds,
@@ -410,7 +532,7 @@ def classify_restore(
         if current_result is None:
             raise ContractViolation("classify_restore: the same generations name no current result")
         result_id, identical = identity(current_result)
-        if result_id != saved.result_id:
+        if result_id != saved.result_id or not identical:
             raise ContractViolation("saved_scenario:identity_drift")
         return RestoreOutcome(
             outcome="no_change",
@@ -418,8 +540,12 @@ def classify_restore(
             to_generation_id=state_generation_id,
             from_inputs_generation_id=saved.inputs_generation_id,
             to_inputs_generation_id=inputs_generation_id,
+            from_as_of=from_as_of,
+            to_as_of=current_as_of,
             result_id_before=saved.result_id,
             result_id_after=result_id,
+            scenario_id_before=saved.scenario_id,
+            scenario_id_after=current_scenario_id,
             result_identical=identical,
             changes_n=len(issuer_changes),
             change_kinds=kinds,
@@ -429,25 +555,34 @@ def classify_restore(
     if current_result is None:
         raise ContractViolation("classify_restore: a moved generation names no current result")
     result_id, identical = identity(current_result)
-    inputs_moved = inputs_generation_id is not None and inputs_generation_id != saved.inputs_generation_id
     if "new_event" in kinds:
         outcome, note = "new_events", RESTORE_NOTES["new_events"]
     elif (
         {"corrected_observation", "withdrawn_observation"} & set(kinds)
-        or (inputs_moved and result_id != saved.result_id)
         or "rule_pack_changed" in kinds
     ):
         outcome, note = "correction", RESTORE_NOTES["correction"]
+    elif identical:
+        outcome = "no_change"
+        note = (
+            RESTORE_NOTES["no_change_moved"]
+            if ledger is not None
+            else RESTORE_NOTES["no_change_unledgered"]
+        )
     else:
-        outcome, note = "no_change", RESTORE_NOTES["no_change_moved"]
+        outcome, note = "changed_unattributed", RESTORE_NOTES["changed_unattributed"]
     return RestoreOutcome(
         outcome=outcome,
         from_generation_id=saved.state_generation_id,
         to_generation_id=state_generation_id,
         from_inputs_generation_id=saved.inputs_generation_id,
         to_inputs_generation_id=inputs_generation_id,
+        from_as_of=from_as_of,
+        to_as_of=current_as_of,
         result_id_before=saved.result_id,
         result_id_after=result_id,
+        scenario_id_before=saved.scenario_id,
+        scenario_id_after=current_scenario_id,
         result_identical=identical,
         changes_n=len(issuer_changes),
         change_kinds=kinds,
@@ -465,4 +600,6 @@ __all__ = [
     "classify_restore",
     "financing_scenario_from_record",
     "result_digest_of",
+    "result_substance_digest_of",
+    "restore_anchor",
 ]
