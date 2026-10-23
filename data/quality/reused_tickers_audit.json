@@ -349,7 +349,7 @@
     {
      "name": "GETY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-21) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-22) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "GPRE",
@@ -674,7 +674,7 @@
     {
      "name": "STRS",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-21) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-22) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "SVC",
@@ -1056,8 +1056,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-10-21",
-     "days_past_death": 1251,
+     "store_tip": "2026-10-22",
+     "days_past_death": 1252,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -2603,7 +2603,7 @@
     },
     {
      "ticker": "GETY",
-     "store_tip": "2026-10-21",
+     "store_tip": "2026-10-22",
      "acked": false
     },
     {
@@ -2623,7 +2623,7 @@
     },
     {
      "ticker": "STRS",
-     "store_tip": "2026-10-21",
+     "store_tip": "2026-10-22",
      "acked": true
     },
     {
