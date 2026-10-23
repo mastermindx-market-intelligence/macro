@@ -359,6 +359,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -2297,6 +2302,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3272,6 +3282,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -7324,6 +7339,11 @@ jobs:
       - "engine/baskets_intl.py"
       - "engine/beneficial_ownership.py"
       - "engine/btc_mtf.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/capital_allocation.py"
       - "engine/coiled.py"
       - "engine/composite_score.py"
@@ -9995,6 +10015,12 @@ jobs:
       - "engine/intelligence_workspace/context_compiler.py"
       - "engine/intelligence_workspace/contracts.py"
       - "engine/intelligence_workspace/entity.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/projection.py"
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
@@ -13410,6 +13436,11 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
@@ -22345,6 +22376,10 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_regime.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/narrative_rotation.py"
       - "engine/news_common.py"
       - "engine/news_events.py"
@@ -22992,6 +23027,11 @@ jobs:
       - "engine/press/**"
       - "engine/prophet_board_read.py"
       - "engine/oracle/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/pick_lab/**"
       - "engine/prophet_live/**"
       - "engine/activist.py"
@@ -23295,6 +23335,104 @@ jobs:
           tests/test_sector_intelligence_ownership.py -q
       - name: BioCatalyst D0a finite reference integrity
         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+
+  catalyst-opportunity:
+    if: ${{ false }}
+    gate: code
+    # The existing site-full auth dependency reaches these owner domains.
+    # Keep that closure covered, but do not run on unrelated page/free-content edits.
+    # Derived with infer_job_scopes for both suites; no packing ceilings changed.
+    scope: exclusive
+    paths:
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/test_catalyst_opportunity_api.py"
+      - "tests/__init__.py"
+      - "tests/test_catalyst_opportunity_projection.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+    # The pack runner owns execution; keep both new source/API suites in CI.
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Catalyst contract test dependencies
+        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
+      - name: Catalyst projection, reader and entitled API contracts
+        run: >
+          python -m pytest tests/test_catalyst_opportunity_projection.py
+          tests/test_catalyst_opportunity_api.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
@@ -25308,6 +25446,12 @@ jobs:
       - engine/intelligence_workspace/__init__.py
       - engine/intelligence_workspace/adapters/base.py
       - engine/intelligence_workspace/adapters/company_intelligence.py
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - engine/intelligence_workspace/adapters/earnings.py
       - engine/intelligence_workspace/adapters/industry.py
       - engine/intelligence_workspace/adapters/quote.py
@@ -26674,6 +26818,10 @@ jobs:
       - "engine/research_vault/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/theme_graph/**"
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
@@ -27576,6 +27724,11 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -33111,6 +33264,11 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -33976,6 +34134,12 @@ jobs:
       - "engine/intelligence_workspace/runtime.py"
       - "engine/intraday_greeks.py"
       - "engine/k3e_expectation_surface.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
       - "engine/liquidity_chip.py"
@@ -37038,6 +37202,12 @@ jobs:
       - "engine/intelligence_workspace/adapters/industry.py"
       - "engine/intelligence_workspace/adapters/quote.py"
       - "engine/intelligence_workspace/adapters/stage.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/adapters/technicals.py"
       - "engine/intelligence_workspace/adapters/theme.py"
       - "engine/intelligence_workspace/consumers.py"
