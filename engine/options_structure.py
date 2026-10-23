@@ -961,8 +961,9 @@ class ProphetTradePlan:
         "plan": "display — NW-originated; Prophet manages; LLM narrates only",
         "option_premium": "display — EOD/delayed, not NBBO-live",
     })
-    # Append-only optional management base; preserve legacy positional args.
-    # It is ordinal/display-only, not a calibrated win probability.
+    # Append-only OPTIONAL, separately evidenced management display base.
+    # The board's uncalibrated ordinal conviction.score MUST NOT populate it.
+    # A missing value retains the incumbent 60-point management reference.
     confidence: float | None = None
 
 
@@ -1129,8 +1130,9 @@ def validate_trade_plan(d: dict) -> list[str]:
         errors.append(f"tranche {tranche!r} must be 1 or 2")
     if "targets" in d and not isinstance(d["targets"], list):
         errors.append("targets must be a list")
-    # WP04: a prospective explicit confidence is a bounded descriptive input,
-    # never a calibrated likelihood. Absence/None remains valid for legacy plans.
+    # WP04: validate separately provided management reference if present.
+    # This does not license promotion of board ordinal scores or claim
+    # calibration; absence/None preserves the longstanding 60 baseline.
     conf = d.get("confidence")
     if conf is not None and (
         isinstance(conf, bool)

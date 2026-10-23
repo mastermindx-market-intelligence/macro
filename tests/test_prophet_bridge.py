@@ -1139,20 +1139,17 @@ def test_originate_plans_passes_validate_trade_plan(tmp_path):
         assert errs == [], f"Plan {plan['id']} failed validation: {errs}"
 
 
-@pytest.mark.parametrize(("score", "expected_base"), [
-    (70, 70.0), (99, 92.0), (0, 0.0),
-])
-def test_origination_carries_display_confidence_to_management_base(
-    tmp_path, score, expected_base,
+@pytest.mark.parametrize("score", [0, 11, 70, 99])
+def test_originated_board_score_never_becomes_management_confidence(
+    tmp_path, score,
 ):
-    """WP04: pass the already-computed, capped descriptive score; no rank change."""
+    """Science review: board ordinal is not the separate 60-based management estimand."""
     path = tmp_path / "us_standouts.json"
     path.write_text(json.dumps(_make_standouts(
-        gate_go=False,
-        buys=[_make_buy("AAPL", score=score, act_level=3)],
+        gate_go=False, buys=[_make_buy("AAPL", score=score, act_level=3)],
     )), encoding="utf-8")
     [plan] = originate_plans(path, "2026-07-02", set(), None)
-    assert plan["confidence"] == expected_base
+    assert "confidence" not in plan
     assert plan["_conviction_score"] == score
     assert plan["authority_tier"] == "display"
     assert validate_trade_plan(plan) == []
@@ -1181,11 +1178,12 @@ def test_optional_management_base_is_append_only_in_plan_constructor():
     assert fields.index("option_contract") < fields.index("confidence")
 
 
-def test_origination_refuses_out_of_range_source_conviction(tmp_path):
-    """An impossible board score must not silently cap into a valid plan."""
+@pytest.mark.parametrize("score", [101, -1, True, "70"])
+def test_origination_refuses_out_of_range_source_conviction(tmp_path, score):
+    """Invalid, boolean or text board score is not laundered into a plan."""
     path = tmp_path / "us_standouts.json"
     path.write_text(json.dumps(_make_standouts(
-        gate_go=False, buys=[_make_buy("AAPL", score=101, act_level=3)],
+        gate_go=False, buys=[_make_buy("AAPL", score=score, act_level=3)],
     )), encoding="utf-8")
     plans = originate_plans(path, "2026-07-02", set(), None)
     assert plans == []
