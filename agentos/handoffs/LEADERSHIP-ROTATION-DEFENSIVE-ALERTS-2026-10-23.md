@@ -89,7 +89,8 @@ unresolved:
   Latest main checks had ci-pack-9 still running; inactive merge-queue-pilot is not a main gate.
 - UI radius delta reviewer defensive-rotation-ui-radius-review-20261023 returned terminalQwen429/noverdict, response1b3fec9a503dd0f14f703a56b7317043142eb6b90b0c023944d365a641d29463.
   Do not claim independent delta acceptance or blind-retry the original.
-- Original Macro-entry request still has no proven absence and no retry authority; preserve frozen.
+- Original Macro-entry request still has no proven absence and no retry authority; preserve frozen. The new composite
+  review includes the separately reconciled terminal429 UI radius gap, but no verdict has yet been accepted.
 - Original consumer recovered and integrated with parent repairs; new composite review remains owed. Separate read-only
   recovery request had an incorrect parent brief and is not relied upon.
 - Subscriber activation timestamp/complete opt-in roster, source-to-outbox retry recovery, in-flight supersession
@@ -99,8 +100,10 @@ unresolved:
 next_actions:
 - Read this exact persisted candidate and machine receipt; retain the same two registered workspaces and current
   Chairman mandate.
-- Consume or commission independent review of the new exact composite; repair findings on this same carrier. Source-only
-  c7 review is not approval of consumer edits.
+- Consume original independent composite review defensive-rotation-composite-review-20261023, root defensive-rotation-20261022,
+  for consumer head6ad0b54231a0d059508e9a582420dc1e39c29933 and separate UI head933498fc5fbbf523674c9c1fcb18649228ad4a57.
+  This handoff-only successor does not change the reviewed source; verify exact closure before accepting. Do not
+  create a duplicate reviewer while the original is unresolved.
 - Consume PR10103 latest CI and a lawful new independent review of its terminal429 delta gap; merge normally only
   after applicable gates pass, then verify ordinary production publication and authenticated path.
 - Reconcile the original Macro-entry request before any retry, replacement or overlapping implementation.
@@ -171,3 +174,11 @@ Public production JSON/static requests returned401; Browser connector lacked ori
 The missing subscriber/outbox bridge must use incumbent owners and preserve unknown-versus-empty roster, opt-in activation time, deterministic per-user fire IDs and recovery from canonical receipts after enqueue failures. Existing marketing user-page fallback can hide malformed responses; do not use it unqualified or clone a new identity directory. A suppressed PATCH cannot recall a selected/in-flight send; reconcile and extend the existing transport claim path as required, without a parallel queue/lease/retry service. Historical calendar updates can invalidate receipt re-validation; qualify version handling before activation. Preimage guards are not a cross-process writer lock.
 
 Keep `ROTATION_OBSERVATION_RECORDING_ENABLED` absent and no live sends until independent review, required CI, normal release, actual single-writer/source proof and authenticated source-to-user receipts are satisfied. Risk-budget comparisons and alpha-driven allocation/option qualification remain separate from merely observing leadership.
+
+## Published composite and exact next review
+
+The complete recovered/repaired consumer was committed and pushed as `6ad0b54231a0d059508e9a582420dc1e39c29933`; remote branch and PR10104 readback matched. The source is no longer only an uncommitted local patch. PR10104 remains draft. Current machine receipt records871passed/2expectedfailures/4warnings with exact before/after source hashes.
+
+A new independent commission `defensive-rotation-composite-review-20261023`, root `defensive-rotation-20261022`, parent `chatgpt-defensive-rotation-ceo-20261022`, reviews that exact consumer composite and separately the small UI styling delta at PR10103 head933498fc5fbbf523674c9c1fcb18649228ad4a57. It is read-only, offline/scratch tests only; no source edits, descendants, GitHub writes, users/DB/SMTP or activation. The original source-only and UI-core approvals remain scoped evidence, not blanket approval of this composite. Read the original result and verify the two separate verdicts; do not infer worker start, completion or acceptance from delivery or controller metadata.
+
+This final continuity-only successor changes this handoff and no reviewed code or tests. Do not restart implementation, replace workers or create another branch. Resume the original PRs and the explicitly missing subscriber/outbox/transport integration after review reconciliation. Full production acceptance, Macro first-page discovery and qualified portfolio/option policy remain owed.
