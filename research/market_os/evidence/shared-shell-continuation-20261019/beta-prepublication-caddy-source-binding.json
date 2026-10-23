@@ -1,0 +1,7 @@
+{
+  "incoming_main": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "incoming_caddy_sha256": "17aefed0146aad5e022062873c1a36fd5416176e8ae7c02cc965454c2bda3023",
+  "actual_host_caddy_sha256": "17aefed0146aad5e022062873c1a36fd5416176e8ae7c02cc965454c2bda3023",
+  "matches_incoming_main": true,
+  "observation": "Installed Caddy changed since01:37 without this session modifying it; service/build/global Terminal owner identities still match accepted baseline. Attribution to an actor is not inferred."
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "risk_radar.helper_combined_native.v2",
+  "status": "COMPLETED",
+  "started_at_utc": "2026-10-18T10:05:59.296270+00:00",
+  "source_status": "WORKTREE_CANDIDATE",
+  "base_source_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "source_sha256": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "4f91f32c0b81d0038fdcbbe51f1d36d1b975096abd1b47c887ce0ea93f6e701a",
+    "tests/conftest.py": "27f8e1b605eac16fad17a17b92878e2d561b8dd17d2481c6ecf5fb8024245f80",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "runtime_versions": {
+    "claude-agent-sdk": "0.2.168",
+    "mcp": "1.28.1",
+    "uvicorn": "0.52.4",
+    "PyJWT": "2.13.0",
+    "pytest": "9.1.1",
+    "pydantic": "2.13.4",
+    "fastapi": "0.141.1",
+    "anyio": "4.14.2"
+  },
+  "argv": [
+    "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--basetemp=/tmp/rr-helper-combined114-20261018-pytest",
+    "--junitxml=/tmp/rr-helper-combined114-native-20261018.xml",
+    "tests/test_deploy_provenance.py",
+    "tests/test_datadog_vps_install.py",
+    "tests/test_forward_evaluation.py",
+    "tests/test_portfolio_archival.py"
+  ],
+  "fuses": {
+    "BOT_TEST_LIVE_LLM": "0",
+    "MASTERMIND_BOT_RESPONSE_LOG_DISABLED": "1",
+    "MASTERMIND_RESEARCH_LLM": "0",
+    "AUTONOMOUS_FIRST_RUN": "0",
+    "CHINA_FIRST_RUN": "0",
+    "HK_FIRST_RUN": "0",
+    "ETF_FIRST_RUN": "0"
+  },
+  "purpose": "Verify the reviewed exact-interpreter launcher correction and all four affected modules together in the real SDK-enabled spaced-path environment.",
+  "prior_113_result": {
+    "passed": 60,
+    "failed": 53,
+    "failure": "space-sensitive fixture shebang",
+    "receipt": "/tmp/rr-helper-combined113-native-receipt-20261018.json"
+  },
+  "production_deploy": false,
+  "held_worktree_mutation": false,
+  "completed_at_utc": "2026-10-18T10:08:18.030895+00:00",
+  "elapsed_seconds": 138.734,
+  "exit_code": 1,
+  "log_path": "/tmp/rr-helper-combined114-native-20261018.log",
+  "log_bytes": 14384,
+  "log_sha256": "3e8686ef13a11d893e1c89424e81e99a3d440941a2898963599e2be40eb07263",
+  "post_source_hashes_match": true,
+  "post_git_status": " M tests/test_datadog_vps_install.py\n M tests/test_deploy_provenance.py\n M tests/test_forward_evaluation.py\n M tests/test_portfolio_archival.py\n",
+  "junit_sha256": "d22bcd254a3d5b80dd962171877b2aa6234a5742402b6428dfd9cb0e83595829",
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "114",
+      "time": "138.110",
+      "timestamp": "2026-10-18T03:05:59.589129-07:00",
+      "hostname": "m2studio"
+    }
+  ]
+}

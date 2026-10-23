@@ -1,0 +1,49 @@
+[Unit]
+Description=Mastermind low-latency ticker news single writer
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/macro-ticker-news.env
+ConditionPathExists=/etc/macro-ticker-news-rights.json
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/macro
+# Provider credentials only. This file is operator-owned/root-only and must never
+# be inherited by macro-api; the serving process receives path-only MM_* values.
+EnvironmentFile=/etc/macro-ticker-news.env
+StateDirectory=macro-ticker-news
+StateDirectoryMode=0700
+UMask=0077
+
+# Rebuild the derived exact S&P universe from incumbent Data OS owners before
+# every operator start/restart. This creates no second membership authority.
+ExecStartPre=/opt/macro-api/.venv/bin/python scripts/build_qbus_news_universe.py --output /var/lib/macro-ticker-news/news_universe.json --write
+ExecStart=/opt/macro-api/.venv/bin/python scripts/run_qbus_news.py --run --database /var/lib/macro-ticker-news/qbus.sqlite3 --universe-snapshot /var/lib/macro-ticker-news/news_universe.json --rights-receipt /etc/macro-ticker-news-rights.json --health-path /var/lib/macro-ticker-news/health.json
+
+# A clean rights-revocation exit remains stopped until an operator explicitly
+# starts it again after a qualified receipt exists. Transport/runtime failures
+# retry under the incumbent systemd owner.
+Restart=on-failure
+# CLI exit 2 is an activation/admission refusal (missing/expired rights, token,
+# or other explicit prerequisite). Never turn that operator gate into a restart storm.
+RestartPreventExitStatus=2
+RestartSec=5
+# Refresh the derived universe before its 36h qualification can expire. A
+# RuntimeMaxSec stop is a failure and restarts; a clean rights-revocation exit
+# remains stopped under Restart=on-failure.
+RuntimeMaxSec=24h
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/macro-ticker-news
+
+[Install]
+WantedBy=multi-user.target

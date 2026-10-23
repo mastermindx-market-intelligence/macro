@@ -256,6 +256,217 @@ def test_r2_strict_read_returns_payload_and_propagates_other_failures(monkeypatc
             "snapshots/one.json")
 
 
+def test_r2_strict_read_recovers_new_get_after_ssl_body_failure(monkeypatch):
+    import ssl
+
+    class SequencedClient:
+        def __init__(self):
+            self.calls = []
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            self.calls.append((Bucket, Key))
+            outcome = (
+                ssl.SSLError("[SSL] record layer failure")
+                if len(self.calls) == 1 else b"complete corpus bytes"
+            )
+            body = _Body(outcome)
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = SequencedClient()
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == b"complete corpus bytes"
+    assert len(client.calls) == 2
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25]
+
+
+def test_r2_strict_read_exhausted_tls_failures_remain_fatal(monkeypatch):
+    import ssl
+
+    class BrokenClient:
+        def __init__(self):
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = BrokenClient()
+    with pytest.raises(ssl.SSLError, match="record layer failure"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert len(client.bodies) == 3
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25, 0.75]
+
+
+def test_r2_strict_read_never_retries_nontransport_failures(monkeypatch):
+    class DeniedBodyClient:
+        def __init__(self):
+            self.calls = 0
+            self.body = _Body(PermissionError("access denied"))
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            return {"Body": self.body}
+
+    client = DeniedBodyClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda x: pytest.fail(
+        "non-transport failures must not consume retry budget"
+    ))
+    with pytest.raises(PermissionError, match="access denied"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert client.calls == 1
+    assert client.body.closed
+
+
+def test_r2_strict_read_bounded_tls_header_retry_does_not_soften_404(monkeypatch):
+    import ssl
+    ClientError = _install_fake_botocore(monkeypatch)
+
+    class HeaderClient:
+        def __init__(self):
+            self.calls = 0
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            if self.calls == 1:
+                raise ssl.SSLError("[SSL] record layer failure")
+            raise ClientError("NoSuchKey")
+
+    client = HeaderClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda _: None)
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) is None
+    assert client.calls == 2
+
+
+
+class _VersionedRangeCorpusClient:
+    """A bounded, version-pinned S3 response emulator; no private R2 is touched."""
+
+    def __init__(self, payload: bytes):
+        self.payload = payload
+        self.calls: list[dict] = []
+        self.bodies = []
+        self.bad_range = False
+        self.changed_etag = False
+        self.short_body = False
+        self.once_tls = False
+        self._range_attempts = 0
+
+    def head_object(self, *, Bucket, Key):
+        assert Bucket == "research" and Key == "research_vault/corpus.sqlite"
+        return {"ContentLength": len(self.payload), "ETag": '"v1"'}
+
+    def get_object(self, *, Bucket, Key, Range=None, IfMatch=None):
+        assert Bucket == "research" and Key == "research_vault/corpus.sqlite"
+        self.calls.append({"Range": Range, "IfMatch": IfMatch})
+        if Range is None:
+            import ssl
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {"Body": body}
+        assert IfMatch == '"v1"', "every range must pin the original ETag"
+        first, last = map(int, Range.removeprefix("bytes=").split("-"))
+        self._range_attempts += 1
+        if self.once_tls and self._range_attempts == 1:
+            import ssl
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {
+                "Body": body, "ResponseMetadata": {"HTTPStatusCode": 206},
+                "ContentRange": f"bytes {first}-{last}/{len(self.payload)}",
+                "ContentLength": last - first + 1, "ETag": '"v1"',
+            }
+        fragment = self.payload[first:last + 1]
+        if self.short_body and first:
+            fragment = fragment[:-1]
+        body = _Body(fragment)
+        self.bodies.append(body)
+        crange = f"bytes {first}-{last}/{len(self.payload)}"
+        if self.bad_range and first:
+            crange = f"bytes {first + 1}-{last}/{len(self.payload)}"
+        etag = '"changed"' if self.changed_etag and first else '"v1"'
+        return {
+            "Body": body, "ResponseMetadata": {"HTTPStatusCode": 206},
+            "ContentRange": crange, "ContentLength": last - first + 1,
+            "ETag": etag,
+        }
+
+
+def test_r2_corpus_ssl_recovers_exact_same_version_ranged_bytes(monkeypatch):
+    payload = b"SQLite format 3\\x00" + bytes(range(30))
+    client = _VersionedRangeCorpusClient(payload)
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 7)
+    monkeypatch.setattr(store_mod.time, "sleep", lambda _: pytest.fail(
+        "successful version-pinned range read must not sleep"
+    ))
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == payload
+    assert len(client.calls) == 1 + (len(payload) + 6) // 7
+    assert client.calls[0]["Range"] is None
+    assert all(call["IfMatch"] == '"v1"' for call in client.calls[1:])
+    assert all(body.closed for body in client.bodies)
+
+
+@pytest.mark.parametrize("fault", ["changed_etag", "bad_range", "short_body"])
+def test_r2_corpus_range_mismatch_refuses_partial_publication(monkeypatch, fault):
+    client = _VersionedRangeCorpusClient(b"SQLite format 3\\x00" + b"abcdefghij")
+    setattr(client, fault, True)
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 10)
+    with pytest.raises(RuntimeError, match="range|incomplete"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert all(body.closed for body in client.bodies)
+
+
+def test_r2_corpus_versioned_range_retries_only_failed_chunk(monkeypatch):
+    payload = b"SQLite format 3\\x00" + b"many small chunks"
+    client = _VersionedRangeCorpusClient(payload)
+    client.once_tls = True
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 12)
+    delays = []
+    monkeypatch.setattr(store_mod.time, "sleep", delays.append)
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == payload
+    assert delays == [0.25]
+    assert all(body.closed for body in client.bodies)
+
+
+def test_r2_corpus_range_refuses_unbounded_source_before_streaming(monkeypatch):
+    client = _VersionedRangeCorpusClient(b"sqlite-header")
+    original_head = client.head_object
+    def too_large(**kwargs):
+        meta = original_head(**kwargs)
+        meta["ContentLength"] = store_mod._STRICT_CORPUS_MAX_BYTES + 1
+        return meta
+    client.head_object = too_large
+    with pytest.raises(RuntimeError, match="bounded length"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert len(client.calls) == 1
+    assert all(body.closed for body in client.bodies)
+
 def test_r2_strict_read_rejects_unavailable_store(monkeypatch):
     monkeypatch.setattr(store_mod, "_r2_client", lambda: None)
     with pytest.raises(RuntimeError, match="unavailable"):
@@ -1092,7 +1303,7 @@ def test_rio_valid_model_output_is_validated():
     import json
     from engine.research_intelligence.extractor import analyze_document
     def call(_system, user, **kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "m"
     out = analyze_document(
         {"id": "r1", "source_type": "institutional_research"},
         RIO_BODY, model_id="m", call=call,
@@ -1100,7 +1311,7 @@ def test_rio_valid_model_output_is_validated():
     assert out["state"] == "ok"
     assert out["rio"]["authority"] == "descriptive_research_only"
     assert out["requested_model"] == "m"
-    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v1"
+    assert out["prompt_version"] == PROMPT_VERSION
     assert len(out["prompt_contract_sha256"]) == 64
     assert len(out["prompt_sha256"]) == 64
 
@@ -1109,7 +1320,7 @@ def test_rio_vault_adapter_preserves_report_identity():
     import json
     from engine.research_intelligence.vault_adapter import analyze_vault_report
     def call(_system, user, **kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "m"
     out = analyze_vault_report(
         {"id": "r1", "institution": "Goldman Sachs", "desk": "Macro", "title": "Rates"},
         RIO_BODY, model_id="m", call=call,
@@ -1163,6 +1374,16 @@ def test_rio_drops_fabricated_statement_even_with_real_quote():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = "GS recommends clients sell ALL equities immediately."
+    # A thesis still citing the rejected claim must not survive with less support.
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1180,6 +1401,15 @@ def test_rio_drops_statement_backed_by_unrelated_real_evidence():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = obj["claims"][1]["statement"]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1480,6 +1710,17 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     })
     obj["analysis"]["thesis"]["support_claim_indices"] = [0, 1, 2]
     obj["analysis"]["forecasts"][0]["support_claim_indices"] = [0, 2]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    # Now the bad claim is genuinely uncited by the mandatory thesis. Optional
+    # assertions that cite it drop whole; separately supported assertions remap.
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1, 2]
+    obj["analysis"]["forecasts"].append({
+        **obj["analysis"]["forecasts"][0], "support_claim_indices": [2],
+    })
     raw = json.dumps(obj)
     out = parse_model_output(
         raw,
@@ -1490,6 +1731,7 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     assert len(out["claims"]) == 2
     assert all("Fabricated" not in claim["statement"] for claim in out["claims"])
     assert out["analysis"]["thesis"]["support_claim_indices"] == [0, 1]
+    assert len(out["analysis"]["forecasts"]) == 1
     assert out["analysis"]["forecasts"][0]["support_claim_indices"] == [1]
 
 
@@ -1662,7 +1904,7 @@ def test_rio_analyze_uses_normalized_canonical_document_id():
     from engine.research_intelligence.extractor import analyze_document
 
     def call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "served-model"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "served-model"
 
     out = analyze_document(
         {"id": " r1 ", "source_type": "institutional_research"},
@@ -1852,6 +2094,7 @@ def _analysis(
         "prompt_version": PROMPT_VERSION,
         "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),
         "prompt_sha256": _sha(system + "\n" + user),
+        "source_context": json.loads(user.split("SOURCE CONTEXT:\n", 1)[1].split("\n\n", 1)[0]),
     }
 
 
@@ -1859,6 +2102,21 @@ def _rio_from_prompt(user: str) -> dict:
     identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
     identity = json.loads(identity_text)
     return _rio(identity["id"], body=BODY) | {"document": identity}
+
+
+def _selector_from_prompt(user: str, rio: dict | None = None) -> dict:
+    """Synthetic callback migration; pure RIO parser fixtures stay unchanged."""
+    value = copy.deepcopy(rio or _rio_from_prompt(user))
+    catalog = json.loads(user.split("EVIDENCE CATALOG:\n", 1)[1].split("\n\n", 1)[0])
+    selections = []
+    for claim in value["claims"]:
+        unit = next(unit for unit in catalog["units"] if unit["text"] == claim["evidence"][0]["quote_span"])
+        selections.append({"evidence_id": unit["evidence_id"], **{
+            key: claim.get(key, [] if key in ("numbers", "entities") else "" if key == "horizon" else False)
+            for key in ("numbers", "entities", "horizon", "explicit")}})
+    return {"selector": catalog["catalog_version"], "document": value["document"],
+            "catalog_sha256": catalog["catalog_sha256"], "selections": selections,
+            "analysis": value["analysis"]}
 
 
 class _GuardedStore(LocalStore):
@@ -2243,7 +2501,7 @@ def test_vault_adapter_persists_full_success_receipt_only(tmp_path):
     store = LocalStore(tmp_path / "store")
 
     def good_call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user)), "fake-provider", "served-model"
 
     result = analyze_and_persist_vault_report(
         {
@@ -2393,7 +2651,7 @@ def test_artifact_preserves_exact_prompt_identity_while_rio_stays_normalized(tmp
         identity = json.loads(identity_text)
         rio = _rio(identity["id"], body=BODY)
         rio["document"] = identity
-        return json.dumps(rio), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user, rio)), "fake-provider", "served-model"
 
     analysis = analyze_document(
         document,
@@ -2440,7 +2698,7 @@ def test_vault_adapter_preserves_exact_source_bytes_through_persistence(tmp_path
     store = LocalStore(tmp_path / "store")
 
     def good_call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user)), "fake-provider", "served-model"
 
     result = analyze_and_persist_vault_report(
         {

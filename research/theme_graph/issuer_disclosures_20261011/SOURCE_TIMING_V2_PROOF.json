@@ -1,0 +1,28 @@
+{
+  "schema": "gmi.source_timing_v2_proof/v1",
+  "observed_at": "2026-10-11T17:04:02.667048+00:00",
+  "baseline": "84d3ca1b43413fea6b41ccf4ddaf2dbd57747776",
+  "red": {
+    "exec": 8305,
+    "rc": 1,
+    "failed": 4
+  },
+  "green": {
+    "exec": 60880,
+    "rc": 0,
+    "passed": 144,
+    "seconds": 3.96
+  },
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "decision": "ACCEPT",
+    "scope": "reasoning source review; execution evidence parent-owned"
+  },
+  "source_pins": {
+    "engine/company_intelligence/issuer_disclosures.py": "25c4f7684dc147f4722efab39879dc45c94e1e9b976d446b8724dfa31159f7d6",
+    "tests/test_company_issuer_disclosures.py": "eb2540e52c4f4cd964791e1c9f4a30516a4945a5fe0fe2b327fe060428aaf232",
+    "tests/test_company_disclosures_api.py": "911390d53441c0ba6cdc11f0e3bcdbed33d168da604916bc80b5d7dcb9c94b2a",
+    "research/theme_graph/issuer_disclosures_20261011/PRIVATE_CONSUMER_CONTRACT.md": "af970a1a29b3495b141596876958203c3c8f80c6bb2420b2f8b3d156c63d8e61"
+  },
+  "production_accepted": false
+}

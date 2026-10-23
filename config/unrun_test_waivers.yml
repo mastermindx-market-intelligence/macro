@@ -240,3 +240,28 @@ research/prophet_v4/astra_regime_indicator_handoff_20261004/results/F1/code/test
   Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
   artifacts are published to R2 and a research-resident CI step adopts the suite, or when
   the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/code/test_C2.py: >-
+  Prophet regime/timeframe wave-1 lane C2 (phase-conditioned DiD, round 2) guard suite:
+  reads the lane's parquet panels directly. Those artifacts are kept off git by
+  research/prophet_v4/astra_regime_indicator_handoff_20261004/results/.gitignore (program
+  rule 03 §5 / 04 §3: parquets stay on the compute host), so in CI the suite's inputs do
+  not exist and it cannot execute; its receipt is the lane's hashes.txt + RESULT.md pinned
+  beside it, verified on the compute host by the seat before acceptance. Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only research PR. Owner:
+  WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this row when the lane
+  artifacts are published to R2 and a research-resident CI step adopts the suite, or when
+  the results directory is archived.
+
+research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/code/test_d0.py: >-
+  Prophet regime/timeframe wave-1 lane D0 (point-in-time regime vintage audit, round 3)
+  guard suite: reads the lane's parquet vintages directly. Those artifacts are kept off git
+  by research/prophet_v4/astra_regime_indicator_handoff_20261004/results/.gitignore
+  (program rule 03 §5 / 04 §3), so in CI the suite's inputs do not exist and it cannot
+  execute; its receipt is the lane's hashes.txt + RESULT.md pinned beside it, verified on
+  the compute host by the seat before acceptance. Not wired into
+  .github/ci/legacy-jobs.yml (global CI invalidator, ci-authority hit) for a records-only
+  research PR. Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this
+  row when the lane artifacts are published to R2 and a research-resident CI step adopts
+  the suite, or when the results directory is archived.

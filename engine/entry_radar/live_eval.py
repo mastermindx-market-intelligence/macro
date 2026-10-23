@@ -94,6 +94,7 @@ import copy
 import json
 import os
 import tempfile
+import time
 from dataclasses import dataclass, field, fields, replace
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -1193,6 +1194,16 @@ class PassResult:
     committed: bool
     exit_code: int
     names: tuple[NameResult, ...] = ()
+    #: Wall-clock seconds per evaluator stage (``setup_s``/``loop_s``/``eval_s``/
+    #: ``eval_c3_s``/``apply_s``/``merge_s``/``health_s``/``spool_commit_s``/
+    #: ``journal_s``/``payload_s``/``total_s``) plus ``names_n``/``c3_names_n``.
+    #: A RECEIPT FOR THE UNIT LOG, NEVER PAYLOAD CONTENT: the served shape is
+    #: pinned (LIV-7) and a wall-clock is not content.  Empty on every refusal
+    #: path, which never enters the evaluator.  Measured 2026-10-06 on the VPS:
+    #: in-window passes ran 479-504 s against ``TimeoutStartSec`` 570 s and the
+    #: journal carried no stage timing at all, so the slow stage could not be
+    #: named — three passes died to the timeout before anyone could say why.
+    timings: dict[str, Any] = field(default_factory=dict)
 
 
 def _authority_block() -> dict[str, bool]:
@@ -1704,6 +1715,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     the same protection: it constructs ``LiveEpisode`` records whose validation
     raises, and it sat OUTSIDE the try entirely.
     """
+    t_start = time.perf_counter()
     book = (quotes or {}).get("quotes") if isinstance(quotes, Mapping) else None
     book = book if isinstance(book, Mapping) else {}
     budget = quote_budget(quotes, slack_min=cfg.quote_slack_min)
@@ -1722,6 +1734,12 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
                    "refused": []}
     stale_quotes = 0
     covered = 0
+    # Stage wall-clocks for :attr:`PassResult.timings` — the loop is split into
+    # the engine call (C3 names apart, since they alone touch the vendor) and
+    # the ledger apply; everything else a name costs is the loop remainder.
+    timing: dict[str, Any] = {"eval_s": 0.0, "eval_c3_s": 0.0, "apply_s": 0.0}
+    t_setup = time.perf_counter()
+    timing["setup_s"] = t_setup - t_start
 
     for ticker in sorted(probe):
         # THE PROTECTED REGION IS THE WHOLE NAME, not the engine call alone.
@@ -1778,18 +1796,22 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             else:
                 basis_stats["unchecked_n"] += 1
 
+            t_name = time.perf_counter()
             result = _evaluate_name(
                 ticker=ticker, now=now, session=session, session_iso=session_iso,
                 pack=pack, pack_name=pack_name, daily=daily, quote=quote,
                 audit=audit, journal=journal, ledger=ledger, cfg=cfg,
                 intraday_reader=(intraday_reader if ticker in c3_names else None),
                 c3_deferred=(ticker in c3_deferred), c3_stats=c3_stats)
+            t_eval = time.perf_counter()
+            timing["eval_c3_s" if ticker in c3_names else "eval_s"] += t_eval - t_name
             delta = None
             if result.runs:
                 delta = ledger.apply_run(
                     ticker=ticker, as_of_session=session_iso,
                     runs=list(result.runs), pass_id=cfg.pass_id,
                     context={"pack_as_of": pack.as_of, "pack_hash": pack.pack_hash})
+                timing["apply_s"] += time.perf_counter() - t_eval
         except Exception as exc:  # noqa: BLE001 — one name, never the pass
             results.append(NameResult(
                 ticker=ticker, state="unavailable",
@@ -1800,15 +1822,21 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
         if delta is not None:
             deltas.append(delta)
 
+    t_loop = time.perf_counter()
+    timing["loop_s"] = t_loop - t_setup
     delta = ll.merge_deltas(deltas, as_of_session=session_iso, pass_id=cfg.pass_id) \
         if deltas else ll.PendingDelta(ticker="*", as_of_session=session_iso,
                                        pass_id=cfg.pass_id)
+    t_merge = time.perf_counter()
+    timing["merge_s"] = t_merge - t_loop
 
     health = _health(now=now, session=session, pack=pack, quotes=quotes,
                      results=results, ledger=ledger, state_dir=state_dir, cfg=cfg,
                      c3_stats=c3_stats, basis_stats=basis_stats,
                      stale_quotes=stale_quotes, covered=covered, probe=probe,
                      delta=delta)
+    t_health = time.perf_counter()
+    timing["health_s"] = t_health - t_merge
 
     # STEP 8 — spool BEFORE commit.  A failure withholds the transitions from
     # both the ledger and the payload; the next pass re-derives and retries, and
@@ -1828,6 +1856,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             spool_key, committed, spool_error = None, False, str(exc)
     health["inputs"]["spool"] = {"ok": committed if not delta.empty else None,
                                  "key": spool_key, "error": spool_error}
+    t_spool = time.perf_counter()
+    timing["spool_commit_s"] = t_spool - t_health
     if not committed:
         health["state"] = "degraded"
         if "spool_failed" not in health["reasons"]:
@@ -1838,6 +1868,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             record = journal.read(session_iso, result.ticker)
             if record is not None:
                 journal.flush(record)
+    t_journal = time.perf_counter()
+    timing["journal_s"] = t_journal - t_spool
 
     # The content-advance signal is re-read AFTER the commit, so it describes the
     # ledger the payload actually reports.  Taken before, it would be the PREVIOUS
@@ -1847,12 +1879,17 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     payload = _payload(now=now, session=session, pack=pack, results=results,
                        delta=delta, committed=committed, health=health,
                        ledger=ledger)
+    t_payload = time.perf_counter()
+    timing["payload_s"] = t_payload - t_journal
     if not dry_run:
         _write_heartbeat(state_dir, _beat_from(health, now=now, session=session))
+    timing["total_s"] = time.perf_counter() - t_start
+    timing["names_n"] = len(probe)
+    timing["c3_names_n"] = len(c3_names)
     exit_code = 4 if not committed else 0
     return PassResult(payload=payload, health=health, delta=delta,
                       spool_key=spool_key, committed=committed,
-                      exit_code=exit_code, names=tuple(results))
+                      exit_code=exit_code, names=tuple(results), timings=timing)
 
 
 def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: str,

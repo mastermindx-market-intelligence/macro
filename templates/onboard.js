@@ -287,6 +287,7 @@
 
     // step 4 — billing
     billTitle:    ["Add your card", "添加银行卡"],
+    ecbSourceNotice: ["ECB deposit-rate data shown in International is also available free from the <a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>European Central Bank</a>.", "国际市场页面中的欧洲央行存款利率数据也可在<a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>欧洲央行网站</a>免费获取。"],
     billSub:      ["Your 7-day trial starts now. Cancel any time before it ends and you pay nothing.", "7 天试用现在开始。在结束前随时取消，分文不收。"],
     billSubNoTrial:["Your plan starts as soon as you confirm. Cancel any time from your account.", "确认后方案立即生效。可随时在账户中取消。"],
     billPerMo:    ["/mo", "/月"],
@@ -1222,7 +1223,7 @@
     stashSave();
     sbClient().then(function (sb) {
       if (!sb) { showErr(tx("billNotConfigured")); return; }
-      var redirectTo = location.origin + location.pathname + "?onboard=resume";
+      var redirectTo = oauthRedirect();
       sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirectTo } })
         .then(function (r) { if (r && r.error) showErr(r.error.message); });
     });
@@ -2196,7 +2197,9 @@
     var note = T("p", "obm-up-note", trialing ? "upConfirmTrial" : "upConfirmProrate");
     var goBtn = T("button", "obm-btn", "upConfirmGo", { type: "button" });
     var msg = h("div", "obm-err obm-up-msg"); msg.style.display = "none";
-    confirm.appendChild(note); confirm.appendChild(goBtn); confirm.appendChild(msg);
+    confirm.appendChild(note);
+    confirm.appendChild(T("p", "obm-up-note", "ecbSourceNotice"));
+    confirm.appendChild(goBtn); confirm.appendChild(msg);
     card.appendChild(confirm);
 
     card.addEventListener("click", function (e) {
@@ -2335,6 +2338,7 @@
     root.appendChild(T("p", "obm-sub", planHasTrial(S.plan) ? "billSub" : "billSubNoTrial"));
     if (S.mode === "upgrade") root.appendChild(upgradeRail("billing"));
     root.appendChild(orderCard());
+    root.appendChild(T("p", "obm-caption", "ecbSourceNotice"));
     var host = h("div", "", { "data-obm-billhost": "" });
     root.appendChild(host);
     footNav({ back: true, onBack: backFromBilling, dots: S.mode !== "upgrade" });
@@ -2600,6 +2604,18 @@
   }
   var _lastFocus = null;
   function openSheet(mode, opts) {
+    // Shared Shell: ONE central guard covers every sheet opener in this file —
+    // the delegated CTA-capture listener, the gear/nav/pricing wirings
+    // (bindChromeCta, bindPlanCta, wireGearAccount), window.MMOnboard.open for
+    // hosts/tests, and bootDeepLinks (?upgrade=1, ?signup/?signin/?plan intents,
+    // the OAuth-resume stash, and the mid-flow reload restore). Claiming on
+    // candidate existence — including pre-INIT, where openAuth queues — means
+    // boot-time deep links hand off instead of building an in-frame sheet, and
+    // exactly one bridge intent crosses per user action. Only fixed tokens
+    // map; `opts` (plan target, period, resume flags, opts.me) never cross.
+    // Standalone (no candidate): zero delta, the legacy sheet opens with the
+    // caller's opts untouched.
+    if (_mmShellHandoff(mode)) return;
     if (mode === "upgrade") { openUpgrade(opts || {}); return; }
     ensureAssets();
     // Warm the Supabase broker + SDK the instant the sheet opens, so the first
@@ -2650,6 +2666,29 @@
     return "";
   }
   function loginDest() { return retTarget() || "/start.html"; }
+  function oauthRedirect() {
+    var target = new URL(location.pathname, location.origin);
+    target.searchParams.set("onboard", "resume");
+    var ret = retTarget();
+    try {
+      var checked = new URL(ret, location.origin);
+      if (ret && ret.length <= 4096 && checked.origin === location.origin) {
+        target.searchParams.set("ret", checked.pathname + checked.search + checked.hash);
+      }
+    } catch (e) { /* An invalid return cannot replace the ordinary landing. */ }
+    return target.href;
+  }
+  function resumeSignin() {
+    // Let the incumbent SDK finish the one-time code exchange before navigation.
+    // Navigating first drops the code and can strand a fresh Google sign-in.
+    return sbClient().then(function (sb) {
+      if (!sb) throw new Error("auth-client-unavailable");
+      return sb.auth.getSession();
+    }).then(function (r) {
+      if (r && !r.error && r.data && r.data.session) { location.href = loginDest(); return; }
+      openSheet("signin", {});
+    }).catch(function () { openSheet("signin", {}); });
+  }
   // ── Silent wall-resume (sticky login) ───────────────────────────────────────
   // The registration wall (app/regwall.py) verifies the ~1-hour ACCESS token
   // server-side, but the ~390-day session cookie also carries a REFRESH token the
@@ -2750,6 +2789,8 @@
   }
   // delegated listener: intercept CTA <a> to app.mastermind-x.com/terminal?sign…
   document.addEventListener("click", function (e) {
+    // Another capture listener may already own this CTA; keep modified clicks native.
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target.closest ? e.target.closest('a[href*="app.mastermind-x.com/terminal?sign"]') : null;
     if (!a) return;
     var href = a.getAttribute("href") || "";
@@ -2892,6 +2933,28 @@
     el.setAttribute("data-zh", zh);
     el.__en = en;
     el.innerHTML = (lang() === "zh") ? zh : en;
+  }
+  // Shared Shell bridge: when a qualified candidate exists — its installation
+  // already passed the parent/frame-generation/referrer guards, and it is
+  // deleted on teardown — the parent owns the auth UI, so this frame never
+  // builds a duplicate sheet. The handoff claims BEFORE and after the first
+  // context apply, because bridge.openAuth is queue-safe pre-INIT and the
+  // bridge drains queued intents right after INIT. Only the fixed intent
+  // tokens cross: "signup" stays "signup", "upgrade" maps to "billing"; every other real sheet mode
+  // this file carries ("signin", and the password-recovery "recover"/"reset"
+  // legs) maps to "signin" — the parent's sign-in panel owns recovery UX, so
+  // no credential surface is ever re-rendered inside the frame. Stash
+  // contents, plan targets, credentials, and any other parameters never cross
+  // the bridge. No candidate => false => the legacy sheet opens exactly as
+  // before (standalone landing behavior is untouched).
+  function _mmShellHandoff(mode) {
+    try {
+      var s = window.MMXSharedShell;
+      if (!s || typeof s.openAuth !== 'function') return false;
+      var intent = (mode === 'signup') ? 'signup' : (mode === 'upgrade' ? 'billing' : 'signin');
+      try { s.openAuth(intent); } catch (e) {}
+      return true;
+    } catch (e) { return false; }
   }
   function setChromeLabel(el, key) { paintBilingual(el, UPCHROME[key][0], UPCHROME[key][1]); }
   function bindChromeCta(cta) {
@@ -3077,7 +3140,7 @@
       // not back in the sheet; a pending-upgrade round-trip resumes the upgrade panel.
       if (intent.resume && resumeStash) {
         if (resumeStash.pendingUpgrade) { stripOnboardParams(); openSheet("upgrade", resumeStash.upgradeOpts || {}); return; }
-        if (resumeStash.mode === "signin") { stripOnboardParams(); location.href = loginDest(); return; }
+        if (resumeStash.mode === "signin") { stripOnboardParams(); resumeSignin(); return; }
       }
       // STICKY LOGIN: a regwall bounce (?signin=1[&ret=…]) with a session cookie
       // present is a returning SIGNED-IN visitor whose access token expired —

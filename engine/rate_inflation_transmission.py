@@ -84,7 +84,7 @@ DRIVERS_META = {
     "be10y": ("10y breakeven (inflation comp.)", "10年期盈亏平衡通胀", "level"),
     "be10y_chg63": ("10y breakeven — 63d change", "10年期盈亏平衡—63日变动", "change"),
     "be5y5y": ("5y5y forward breakeven (anchor)", "5年5年远期盈亏平衡（锚）", "level"),
-    "curve_tp_adj": ("TP-adjusted 2s10s curve", "期限溢价调整后的2-10年曲线", "level"),
+    "curve_tp_adj": ("Legacy TP10 curve heuristic", "旧版TP10曲线启发式", "level"),
     "policy_gap": ("us2y − funds (cut/hike pricing)", "2年期−联邦基金（降/加息定价）", "level"),
     "corepce_gap": ("Core PCE YoY − 2% target", "核心PCE同比−2%目标", "level"),
     "infl_accel": ("Inflation re-acceleration (3m−12m)", "通胀再加速（3月−12月）", "change"),
@@ -647,4 +647,43 @@ def snapshot(f: pd.DataFrame) -> dict | None:
             f"仅供展示。可计分腿检验：{'，'.join(elig) if elig else '没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性'}（详见校准报告）。"),
         "caveats": CAVEATS,
         "calibrated": cal is not None,
+        "curve_accounting": _curve_accounting_or_shell(f),
     }
+
+
+# --- RIC Y1b: curve accounting producer (display-only, additive) -------------
+def _curve_accounting_or_shell(f: pd.DataFrame) -> dict:
+    """Y1 curve accounting for the transmission snapshot, fail-open.
+
+    Never None and never silent: any failure -- including the lazy import --
+    returns the curve_accounting.v1 shell with status "unavailable" and the
+    exception named in ``reason``; every number stays null. Display-only."""
+    try:
+        from engine.yield_momentum import build_curve_accounting
+
+        out = build_curve_accounting(f)
+        if not isinstance(out, dict):
+            raise TypeError(f"build_curve_accounting returned {type(out).__name__}")
+        return out
+    except Exception as exc:  # noqa: BLE001 -- fail-open by contract
+        reason = f"{type(exc).__name__}: {' '.join(str(exc).split())}"[:240]
+        log.warning("transmission: curve_accounting unavailable (%s)", reason)
+        return {
+            "schema": "curve_accounting.v1",
+            "calculation_version": "ric_y1_curve_accounting.v1",
+            "basis_schema": None,
+            "cutoff": None,
+            "asof": None,
+            "status": "unavailable",
+            "reason": reason,
+            "display_only": True,
+            "authority": False,
+            "can_score": False,
+            "can_size": False,
+            "can_trade": False,
+            "law": [],
+            "observations": {},
+            "comparisons": {},
+            "accounting_views": [],
+            "views_are_alternatives_never_summed": True,
+        }

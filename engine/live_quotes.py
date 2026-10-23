@@ -62,7 +62,7 @@ _CN_TZ = ZoneInfo("Asia/Shanghai")
 # --------------------------------------------------------------- routing ----
 
 def _us_settle_window(now: datetime | None = None) -> bool:
-    """True outside the US pre/RTH window (16:00 ET → next 04:00 ET + weekends).
+    """True outside US pre/RTH, including exchange holidays and early closes.
 
     Post-close, Polygon's trade/minute price rungs keep updating with
     extended-hours prints — a snapshot built then stamps after-hours drift as
@@ -71,12 +71,18 @@ def _us_settle_window(now: datetime | None = None) -> bool:
     symbols route there instead. Premarket (04:00–09:30 ET) stays on Polygon:
     the premarket tape is a designed feature (FTR W2c).
     """
-    from zoneinfo import ZoneInfo
+    from datetime import time as local_time
+    from lib.exchange_holidays import early_close
+    from lib.us_cash_calendar import is_session
 
-    et = (now or _now()).astimezone(ZoneInfo("America/New_York"))
-    if et.weekday() >= 5:
+    instant = now or _now()
+    if instant.tzinfo is None:
+        instant = instant.replace(tzinfo=timezone.utc)
+    et = instant.astimezone(ZoneInfo("America/New_York"))
+    if not is_session(et.date()):
         return True
-    return et.hour >= 16 or et.hour < 4
+    cash_close = early_close("US", et.date()) or local_time(16)
+    return et.time() >= cash_close or et.time() < local_time(4)
 
 
 def is_us_symbol(sym: str) -> bool:

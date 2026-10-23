@@ -1414,3 +1414,61 @@ def test_W4R_LOW_the_printed_receipt_NAMES_the_durable_write_set(
     assert receipt, "the pass printed no receipt line at all"
     assert "durable_writes=[]" in receipt[0]
     assert ERL.DURABLE_WRITES == ()
+
+
+# ---------------------------------------------------------------------------
+# LIV-9 — the pass TIMES its stages (the TimeoutStartSec margin receipt)
+# ---------------------------------------------------------------------------
+
+LIV9_STAGE_KEYS = {"setup_s", "loop_s", "eval_s", "eval_c3_s", "apply_s", "merge_s",
+                   "health_s", "spool_commit_s", "journal_s", "payload_s", "total_s"}
+
+
+def test_LIV9_an_evaluating_pass_reports_stage_timings_OUTSIDE_the_served_payload(
+        pack, tmp_path):
+    """Measured 2026-10-06 on the VPS: in-window passes ran 479-504 s against a
+    570 s ``TimeoutStartSec`` and the journal carried no per-stage timing, so the
+    slow stage could not be named — three passes died to the timeout first.
+
+    The receipt lives on the ``PassResult`` (the unit log prints it) and never in
+    the published payload: the served shape is pinned by LIV-7 and a wall-clock
+    is not content.
+    """
+    result = arming_pass(pack, tmp_path)
+    timing = result.timings
+    missing = (LIV9_STAGE_KEYS | {"names_n", "c3_names_n"}) - set(timing)
+    assert not missing, sorted(missing)
+    for key in LIV9_STAGE_KEYS:
+        assert isinstance(timing[key], float) and timing[key] >= 0.0, (key, timing[key])
+    assert timing["total_s"] >= timing["loop_s"] >= timing["eval_s"] + timing["eval_c3_s"]
+    assert timing["names_n"] == len(result.payload["names"])
+    assert timing["c3_names_n"] == 0, "no minute reader was handed in"
+    assert "timings" not in result.payload and "timings" not in result.health
+    assert le.emitted_keys(result.payload).isdisjoint(LIV9_STAGE_KEYS)
+
+
+def test_LIV9_CONTROL_a_whole_cycle_refusal_carries_NO_timings(pack, tmp_path):
+    """A refusal never enters the evaluator, so an empty receipt is the truth —
+    and without this control the test above would pass on a constant."""
+    refused = arming_pass(pack, tmp_path, pack=None)
+    assert state_of(refused) == "stale_pack"
+    assert refused.timings == {}
+
+
+def test_LIV9_the_SCRIPT_prints_one_timings_line_naming_every_stage(
+        tmp_path, monkeypatch, capsys):
+    """Journal-readable, bare-printed and after the receipt: the unit log is the
+    only instrument a 2-core VPS gets, and a line that starts with ``::`` would
+    be an annotation, not a measurement."""
+    ERL, live = _script_env(monkeypatch, tmp_path)
+    code = ERL.run(ROOT, now=session_instant(12), state_override=str(tmp_path / "st"),
+                   live_override=str(live))
+    assert code != 6
+    out = capsys.readouterr().out.splitlines()
+    lines = [ln for ln in out if ln.startswith("entry-radar-live timings ")]
+    assert len(lines) == 1, lines
+    for token in ("total_s=", "load_pack_s=", "load_ledger_s=", "load_quotes_s=",
+                  "reader_s=", "run_pass_s=", "ledger_save_s=", "publish_s="):
+        assert token in lines[0], (token, lines[0])
+    receipt_at = next(i for i, ln in enumerate(out) if ln.startswith("entry-radar-live pass="))
+    assert out.index(lines[0]) > receipt_at, "timings must follow the receipt line"

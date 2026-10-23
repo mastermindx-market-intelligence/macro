@@ -54,10 +54,9 @@ def test_canonical_packet_manifest_is_exact_and_complete() -> None:
     )
     assert result["ok"] is True
     assert result["payload_count"] == EXPECTED_PAYLOAD_COUNT
-    # Baseline release intentionally has the same payload bytes as recovery.
-    assert result["manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
-    assert result["receipt_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+    # #8452 split immutable recovery lineage from the evolvable current release plane.
     assert result["recovery_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+    assert result["manifest_sha256"] == result["receipt_manifest_sha256"]
     assert result["missing"] == []
     assert result["mismatched"] == []
     assert result["unexpected"] == []

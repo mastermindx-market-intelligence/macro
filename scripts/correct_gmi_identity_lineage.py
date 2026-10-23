@@ -71,6 +71,11 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("correct_gmi_identity_lineage")
 
 CONTRACT_DOC = "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
+DUPLICATE_MINTS_FILE = "config/theme_graph_duplicate_mints.yml"
+
+_REQUIRED_DUP_KEYS = (
+    "node_id", "merged_into", "effective", "ratified_at", "evidence", "ratified_by",
+)
 
 #: Duplicated from engine.theme_graph.materialize.evidence_id_for ON PURPOSE (same
 #: algorithm, same output shape) rather than imported — importing materialize would
@@ -104,6 +109,55 @@ def _load_breaks_rows(breaks_file: Path) -> list[dict]:
     return list(doc.get("breaks") or [])
 
 
+def _duplicate_mints_path() -> Path:
+    return Path(__file__).resolve().parent.parent / DUPLICATE_MINTS_FILE
+
+
+def _parse_iso_date(value: str, *, field: str) -> str:
+    raw = str(value or "").strip()
+    if len(raw) < 10 or raw[4] != "-" or raw[7] != "-":
+        raise ValueError(f"duplicate_mints row {field!r} is not a parseable date: {value!r}")
+    return raw[:10]
+
+
+def _load_duplicate_mint_rows(dup_file: Path) -> list[dict]:
+    if not dup_file.exists():
+        return []
+    doc = yaml.safe_load(dup_file.read_text(encoding="utf-8")) or {}
+    rows = list(doc.get("duplicate_mints") or [])
+    out: list[dict] = []
+    for i, r in enumerate(rows):
+        if not isinstance(r, dict):
+            raise ValueError(f"duplicate_mints[{i}] is not a mapping")
+        missing = [k for k in _REQUIRED_DUP_KEYS if k not in r or r.get(k) in (None, "")]
+        if missing:
+            raise ValueError(f"duplicate_mints[{i}] missing required key(s): {missing}")
+        node_id = str(r["node_id"]).strip()
+        merged_into = str(r["merged_into"]).strip()
+        if not identity.COMPANY_ID_RE.match(node_id):
+            raise ValueError(f"duplicate_mints[{i}] node_id {node_id!r} outside grammar")
+        if not identity.COMPANY_ID_RE.match(merged_into):
+            raise ValueError(
+                f"duplicate_mints[{i}] merged_into {merged_into!r} outside grammar")
+        if node_id == merged_into:
+            raise ValueError(f"duplicate_mints[{i}] self-merge {node_id!r}")
+        effective = _parse_iso_date(str(r["effective"]), field="effective")
+        ratified_at = _parse_iso_date(str(r["ratified_at"]), field="ratified_at")
+        ratified_by = str(r["ratified_by"]).strip()
+        if not ratified_by.startswith("DEC:"):
+            raise ValueError(
+                f"duplicate_mints[{i}] ratified_by must start with DEC: (got {ratified_by!r})")
+        out.append({
+            "node_id": node_id,
+            "merged_into": merged_into,
+            "effective": effective,
+            "ratified_at": ratified_at,
+            "evidence": str(r["evidence"]).strip(),
+            "ratified_by": ratified_by,
+        })
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Targets — both shapes are STRUCTURAL/REGISTRY-DRIVEN, never a ticker literal
 # ---------------------------------------------------------------------------
@@ -125,6 +179,65 @@ def identity_break_targets(nodes_df: pd.DataFrame, breaks_rows: list[dict]) -> l
             "ratified_by": str(r.get("ratified_by") or "").strip() or "unknown",
             "ratified_at": str(r.get("ratified_at") or "").strip() or None,
         })
+    return out
+
+
+def duplicate_mint_targets(
+    nodes_df: pd.DataFrame,
+    dup_rows: list[dict],
+    *,
+    lifecycle_latest: pd.DataFrame,
+    idres_latest: pd.DataFrame,
+) -> list[dict]:
+    """Registry rows whose duplicate node EXISTS in nodes.parquet and passes fail-closed
+    preconditions (same security_id, live merged_into target)."""
+    if nodes_df.empty:
+        return []
+    kinds = {str(n): str(k) for n, k in zip(nodes_df["node_id"], nodes_df["kind"])}
+    known = set(kinds)
+    retired_like: set[str] = set()
+    if not lifecycle_latest.empty and "status" in lifecycle_latest.columns:
+        retired_like = {str(n) for n in lifecycle_latest.loc[
+            lifecycle_latest["status"].isin(store.RETIRED_LIKE_STATUSES), "node_id"]}
+
+    sec_by_node: dict[str, str] = {}
+    if not idres_latest.empty and {"node_id", "security_id"} <= set(idres_latest.columns):
+        for row in idres_latest.to_dict("records"):
+            sid = row.get("security_id")
+            if sid and not pd.isna(sid):
+                sec_by_node[str(row["node_id"])] = str(sid)
+
+    out: list[dict] = []
+    for r in dup_rows:
+        node_id, merged_into = r["node_id"], r["merged_into"]
+        if node_id not in known:
+            continue
+        if str(kinds.get(node_id)) != "company":
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r} is not a company node in nodes.parquet")
+        if merged_into not in known:
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r}: merged_into {merged_into!r} "
+                f"absent from nodes.parquet")
+        if str(kinds.get(merged_into)) != "company":
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r}: merged_into {merged_into!r} "
+                f"is not a company node")
+        if merged_into in retired_like:
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r}: merged_into {merged_into!r} "
+                f"is retired-like in the current lifecycle view")
+        dup_sec = sec_by_node.get(node_id)
+        canon_sec = sec_by_node.get(merged_into)
+        if not dup_sec or not canon_sec:
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r}: identity_resolution missing "
+                f"security_id for duplicate and/or incumbent (fail-closed)")
+        if dup_sec != canon_sec:
+            raise ValueError(
+                f"duplicate_mints row for {node_id!r}: security_id {dup_sec!r} != "
+                f"{merged_into!r}'s {canon_sec!r}")
+        out.append(dict(r))
     return out
 
 
@@ -199,7 +312,9 @@ def _corrected_edge_row(prior: dict, *, valid_to: str, today: str, computed_at: 
 # ---------------------------------------------------------------------------
 
 def compute_correction(*, nodes_df: pd.DataFrame, live_edges: pd.DataFrame,
-                       breaks_rows: list[dict], already_retired: set[str],
+                       breaks_rows: list[dict], dup_rows: list[dict],
+                       lifecycle_latest: pd.DataFrame, idres_latest: pd.DataFrame,
+                       already_retired: set[str],
                        today: str, computed_at: str
                        ) -> tuple[list[dict], list[dict], list[dict], dict]:
     """Pure: no store read/write beyond what the caller already loaded. Returns
@@ -208,7 +323,7 @@ def compute_correction(*, nodes_df: pd.DataFrame, live_edges: pd.DataFrame,
     edge_rows: list[dict] = []
     evidence_rows: list[dict] = []
     receipt: dict = {"identity_break": [], "entity_type_conflict": [],
-                     "skipped_already_retired": []}
+                     "duplicate_mint": [], "skipped_already_retired": []}
 
     for target in identity_break_targets(nodes_df, breaks_rows):
         node_id = target["node_id"]
@@ -278,6 +393,44 @@ def compute_correction(*, nodes_df: pd.DataFrame, live_edges: pd.DataFrame,
         receipt["entity_type_conflict"].append({
             "node_id": node_id, "retire_date": today, "edges_annulled": annulled_ids})
 
+    for target in duplicate_mint_targets(
+            nodes_df, dup_rows, lifecycle_latest=lifecycle_latest,
+            idres_latest=idres_latest):
+        node_id = target["node_id"]
+        if node_id in already_retired:
+            receipt["skipped_already_retired"].append(node_id)
+            continue
+        source_ref = f"{DUPLICATE_MINTS_FILE}#{node_id}"
+        published_at = target["ratified_at"]
+        ev_id = _evidence_id_for("operator_curation", source_ref, published_at)
+        evidence_rows.append({
+            "evidence_id": ev_id, "kind": "operator_curation",
+            "published_at": published_at, "effective_at": target["effective"],
+            "source_ref": source_ref,
+            "licensing_internal_ok": True, "licensing_display_ok": True,
+            "licensing_redistribution_ok": True, "retention": None,
+            "computed_at": computed_at, "provider": None, "claim_type": "membership",
+        })
+        registry_pointer = f"{DUPLICATE_MINTS_FILE}#{node_id}"
+        lifecycle_rows.append({
+            "schema": "gmi.node_lifecycle/v1", "node_id": node_id, "status": "merged",
+            "retire_date": today, "merged_into": target["merged_into"],
+            "reason": "duplicate_mint",
+            "evidence": f"{registry_pointer}; {target['evidence']}",
+            "ratified_by": target["ratified_by"],
+            "computed_at": computed_at, "engine_version": store.ENGINE_VERSION,
+        })
+        annulled_ids: list[str] = []
+        for e in _open_member_of_edges(live_edges, node_id):
+            corrected = _corrected_edge_row(
+                e, valid_to=e["valid_from"], today=today, computed_at=computed_at,
+                extra_evidence_id=ev_id)
+            edge_rows.append(corrected)
+            annulled_ids.append(str(corrected["edge_id"]))
+        receipt["duplicate_mint"].append({
+            "node_id": node_id, "merged_into": target["merged_into"],
+            "edges_annulled": annulled_ids, "evidence_id": ev_id})
+
     return lifecycle_rows, edge_rows, evidence_rows, receipt
 
 
@@ -290,19 +443,38 @@ def run(*, dry_run: bool) -> int:
     today, computed_at = _now()
     breaks_file = identity.breaks_path()
     breaks_rows = _load_breaks_rows(breaks_file)
+    dup_file = _duplicate_mints_path()
+    try:
+        dup_rows = _load_duplicate_mint_rows(dup_file)
+    except ValueError as exc:
+        log.error("duplicate_mints registry refusal: %s", exc)
+        return 1
     nodes_df = store.read_nodes()               # raw, write-once — never written to
     live_edges = store.read_edges(latest_belief=True)
 
     existing_lifecycle = store.read_node_lifecycle(latest=True)
+    lifecycle_latest = existing_lifecycle
     already_retired: set[str] = set()
     if not existing_lifecycle.empty and "status" in existing_lifecycle.columns:
         already_retired = set(existing_lifecycle.loc[
             existing_lifecycle["status"].isin(store.RETIRED_LIKE_STATUSES),
             "node_id"].astype(str))
 
+    idres_latest = store.read_identity_resolution(latest=True)
+    try:
+        dup_targets = duplicate_mint_targets(
+            nodes_df, dup_rows, lifecycle_latest=lifecycle_latest,
+            idres_latest=idres_latest)
+    except ValueError as exc:
+        log.error("duplicate_mint target refusal: %s", exc)
+        return 1
+    _ = dup_targets  # validated; compute_correction re-resolves
+
     lifecycle_rows, edge_rows, evidence_rows, receipt = compute_correction(
         nodes_df=nodes_df, live_edges=live_edges, breaks_rows=breaks_rows,
-        already_retired=already_retired, today=today, computed_at=computed_at)
+        dup_rows=dup_rows, lifecycle_latest=lifecycle_latest,
+        idres_latest=idres_latest, already_retired=already_retired,
+        today=today, computed_at=computed_at)
 
     summary = {
         "dry_run": dry_run, "today": today, "computed_at": computed_at,
