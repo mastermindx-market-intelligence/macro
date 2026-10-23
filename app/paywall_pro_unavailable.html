@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mm-bot-service-retry" content="enabled">
+  <meta name="robots" content="noindex,noarchive">
+  <title>Mastermind Bot · Checking membership</title>
+  <style>
+    :root{color-scheme:light;--ink:#111827;--muted:#667085;--line:#dfe4ea;--blue:#2463eb}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.55
+      ui-sans-serif,system-ui,-apple-system,sans-serif;color:var(--ink);
+      background:radial-gradient(circle at 25% 10%,#eaf1ff 0,transparent 34%),#f7f8fa}
+    main{width:min(92vw,620px);padding:42px;border:1px solid var(--line);
+      border-radius:22px;background:#fff;box-shadow:0 22px 70px rgba(16,24,40,.12)}
+    h1{margin:.6rem 0 .7rem;font-size:clamp(28px,5vw,40px);line-height:1.1;letter-spacing:-.03em}
+    p{color:var(--muted)}
+    .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+    nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+    a,button{padding:11px 16px;border-radius:10px;text-decoration:none;font:inherit;
+      font-weight:700;border:1px solid var(--line);color:var(--ink);background:white;cursor:pointer}
+    button{color:white;background:var(--blue);border-color:var(--blue)}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Mastermind Bot · Account check</div>
+  <h1>We're reconnecting to your account.</h1>
+  <p>We couldn't verify your membership right now. This is a temporary service issue,
+     not a determination that you need to upgrade. Please try again shortly.</p>
+  <p lang="zh">暂时无法验证您的会员资格，这并不表示您需要升级。请稍后重试。</p>
+  <nav>
+    <button type="button" id="mm-bot-try-again">Try again · 重试</button>
+    <a href="https://www.mastermind-x.com/">Return to Mastermind</a>
+  </nav>
+</main>
+<script>
+  // A slow, bounded retry only for vendor outages. A locally saturated auth
+  // semaphore marks this page "disabled": no automatic retry amplification.
+  // The 5s minimum honors Retry-After: 5; the server still revalidates all access.
+  (function () {
+    var button = document.getElementById('mm-bot-try-again');
+    if (button) button.addEventListener('click', function () { location.reload(); });
+    var meta = document.querySelector('meta[name="mm-bot-service-retry"]');
+    if (!meta || meta.content !== 'enabled') return;
+    try {
+      var key = 'mm.bot.pro-check.retry.v2', now = Date.now();
+      var state = JSON.parse(sessionStorage.getItem(key) || 'null');
+      if (!state || !Number.isFinite(state.since) || now < state.since ||
+          now - state.since > 60000) state = {since: now, attempts: 0};
+      if (state.attempts >= 2) return;
+      state.attempts++;
+      sessionStorage.setItem(key, JSON.stringify(state));
+      var delay = 5000 * Math.pow(2, state.attempts - 1)
+                + Math.floor(Math.random() * 2000);
+      setTimeout(function () { location.reload(); }, delay);
+    } catch (e) { /* Storage disabled: no automatic retry; manual button works. */ }
+  }());
+</script>
+</body>
+</html>
