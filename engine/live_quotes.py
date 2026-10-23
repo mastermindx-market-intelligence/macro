@@ -206,6 +206,8 @@ def parse_polygon_snapshot(payload: dict, now: datetime | None = None) -> dict:
             "price": round(float(price), 4), "quote_ts": ts.isoformat(),
             "quote_ts_synthetic": synthetic,
             "source": "polygon", "price_basis": basis, "delay_min": _delay_min(ts, now),
+            "native_quote_identity": {"schema": "native_quote_identity.v1", "vendor": "polygon",
+                "vendor_symbol": sym, "response_field": "tickers[].ticker"},
             "prev_close": round(float(prev["c"]), 4) if prev.get("c") else None,
             "currency": "USD",
             "day_volume": int(day_vol) if day_vol is not None else None,
@@ -242,6 +244,8 @@ def parse_yahoo_spark(payload: dict, now: datetime | None = None) -> dict:
             "price": round(float(price), 4), "quote_ts": ts.isoformat(),
             "quote_ts_synthetic": synthetic,
             "source": "yahoo", "price_basis": "regular", "delay_min": _delay_min(ts, now),
+            "native_quote_identity": {"schema": "native_quote_identity.v1", "vendor": "yahoo",
+                "vendor_symbol": sym, "response_field": "spark.result[].symbol"},
             "prev_close": (round(float(meta["previousClose"]), 4)
                            if meta.get("previousClose") is not None else None),
             "currency": meta.get("currency"),

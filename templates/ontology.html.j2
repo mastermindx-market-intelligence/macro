@@ -5,7 +5,8 @@
 
     This template renders a public, cacheable page that contains no current
     reading of any kind. It describes what the trace is and hands off to
-    ontology.js, which is the only thing that talks to the authenticated API.
+    ontology.js and the company inspector, which read their existing private
+    APIs only in the browser. No company reading is included in this shell.
 
     Nothing here may be filled from `data/transmission/` at build time. A
     "realistic" example baked into the shell to avoid an empty first paint is a
@@ -19,11 +20,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% include "_interfonts.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>WTI Live Path — Mastermind</title>
-{% set seo_title = 'WTI Live Path — which step in the oil-to-duration path is actually met | Mastermind' %}{% set seo_desc = 'A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.' %}{% set seo_path = 'ontology.html' %}
+<title>Ontology Explorer — Mastermind</title>
+{% set seo_title = 'Ontology Explorer — transmission paths and source-bound company research | Mastermind' %}{% set seo_desc = 'A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.' %}{% set seo_path = 'ontology.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="{{ nav_prefix|default('') }}theme.css">
 <link rel="stylesheet" href="{{ nav_prefix|default('') }}ontology.css">
+<link rel="stylesheet" href="{{ nav_prefix|default('') }}ontology-company.css">
 <style>
 /* The canvas is this page's own responsibility. theme.css defines the palette
    but never paints <body>, so a page that omits this rule ships dark panels on
@@ -37,9 +39,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 {% include "_site_nav.html.j2" %}
 
 <main class="ox-wrap">
+  <nav class="ox-company-choices" aria-label="{{ 'Transmission path / 传导路径' }}">
+    <a class="ox-cta secondary" href="ontology.html" data-ontology-chain="oil_inflation_duration_derate">{{ t('Oil & rates path', '石油与利率路径') }}</a>
+    <a class="ox-cta secondary" href="ontology.html?chain=dollar_spike_em_multinational" data-ontology-chain="dollar_spike_em_multinational">{{ t('Dollar & emerging markets path', '美元与新兴市场路径') }}</a>
+  </nav>
   <div id="ox-root" class="ox-skeleton" aria-busy="true" aria-live="polite">
     <header class="ox-hero">
-      <p class="ox-eyebrow">{{ t('WTI Live Path', 'WTI 实时路径') }}</p>
+      <p class="ox-eyebrow">{{ t('Observed transmission path', '已观测传导路径') }}</p>
       <div class="ox-state" data-state="unknown">
         <span class="ox-state-word">{{ t('Loading', '加载中') }}</span>
       </div>
@@ -59,6 +65,83 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
       {% endfor %}
     </ol>
   </div>
+
+
+  <section id="ox-scenario" class="ox-company" aria-labelledby="ox-scenario-title">
+    <h2 id="ox-scenario-title">{{ t('Explicit scenario assumption', '明确情景假设') }}</h2>
+    <p class="ox-note">{{ t('Live Trace remains observed. This separate evaluation uses your assumption.', '实时路径仍表示观测结果。此独立评估使用您的假设。') }}</p>
+    <form class="ox-company-form" data-scenario-form autocomplete="off"></form>
+    <div data-scenario-result aria-live="polite" aria-busy="false"></div>
+  </section>
+
+  <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
+    <h2 id="ox-portfolio-title">{{ t('Your Portfolio and Watchlists in this path', '此路径中的投资组合与观察列表') }}</h2>
+    <p class="ox-note">{{ t('Compare saved open positions or a selected Watchlist with dated screen membership. Reads are private and explicit; this view never edits your saved data.',
+      '将已保存的未平仓持仓或所选观察列表与历史筛选成员名单对照。读取保持私有且须明确请求；此视图不会修改已保存的数据。') }}</p>
+    <div class="ox-company-choices" role="group" aria-label="{{ 'Saved data / 已保存的数据' }}">
+      <button class="ox-cta secondary" type="button" data-private-kind="portfolio" aria-pressed="true">{{ t('Portfolio', '投资组合') }}</button>
+      <button class="ox-cta secondary" type="button" data-private-kind="watchlist" aria-pressed="false">{{ t('Watchlist', '观察列表') }}</button>
+    </div>
+    <div class="ox-company-form">
+      <label class="ox-company-label" data-watchlist-picker hidden>{{ t('Saved Watchlist', '已保存的观察列表') }}<select data-watchlist-select></select></label>
+      <button class="ox-cta" type="button" data-portfolio-read disabled>{{ t('Read my Portfolio', '读取我的投资组合') }}</button>
+      <button class="ox-cta secondary" type="button" data-portfolio-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-portfolio-result aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Load a current path reading before reading your Portfolio.', '请先加载当前路径读数，再读取投资组合。') }}</p>
+    </div>
+  </section>
+
+  <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
+    <h2 id="ox-company-title">{{ t('Company research', '公司研究') }}</h2>
+    <p class="ox-note">{{ t(
+      'Inspect source disclosures and reported supplier roles. Selecting a company does not establish a connection to the path above.',
+      '查看来源披露及已报告的供应商角色。选择公司并不确立其与上方路径的联系。') }}</p>
+    <form class="ox-company-form">
+      <label class="ox-company-label" for="ox-company-query">{{ t('Company symbol', '公司代码') }}
+        <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required>
+      </label>
+      <button class="ox-cta" type="submit">{{ t('Inspect company', '查看公司') }}</button>
+      <button class="ox-cta secondary" type="button" data-company-clear>{{ t('Clear', '清除') }}</button>
+    </form>
+    <div data-company-result aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Choose a company to inspect its source-announced plans.', '选择一家公司，查看其来源披露的计划。') }}</p>
+    </div>
+  </section>
+
+  <section id="ox-theme" class="ox-company" aria-labelledby="ox-theme-title">
+    <h2 id="ox-theme-title">{{ t('Company Theme Map', '公司主题图谱') }}</h2>
+    <p class="ox-note">{{ t('Follow the selected company into Mastermind’s curated theme hierarchy. Membership describes classification, not revenue exposure or an estimated market impact.', '沿所选公司查看 Mastermind 整理的主题层级。成员关系表示分类，不代表收入敞口或市场影响估计。') }}</p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-theme-read disabled>{{ t('Read house Theme Map', '读取自有主题图谱') }}</button>
+      <button class="ox-cta secondary" type="button" data-theme-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-theme-result aria-live="polite" aria-busy="false"></div>
+  </section>
+
+  <details id="ox-research" class="ox-company ox-detail ox-detail--flush">
+    <summary>{{ t('Inspect a native price-pressure event', '查看原生价格压力事件') }}</summary>
+    <p class="ox-note">{{ t('Open a retrospective research case from one exact observed event. Its relationship to the transmission path above is not established.', '从一个确切的已观测事件打开回溯研究案例。该事件与上方传导路径的关系尚未确立。') }}</p>
+    <p><a class="ox-action" href="stocks/index.html#pressure">{{ t('Find an event in Pressure Watch', '在个股承压中查找事件') }}</a></p>
+    <form class="ox-company-form" autocomplete="off">
+      <label class="ox-company-label">{{ t('Event date', '事件日期') }}<input type="date" name="date" required></label>
+      <label class="ox-company-label">{{ t('Symbol', '代码') }}<input type="text" name="ticker" maxlength="15" spellcheck="false" autocapitalize="characters" required></label>
+      <label class="ox-company-label">{{ t('Residual side', '残差方向') }}<select name="side"><option value="down" data-en="Negative residual" data-zh="负残差">Negative residual</option><option value="up" data-en="Positive residual" data-zh="正残差">Positive residual</option></select></label>
+      <button class="ox-cta" type="submit">{{ t('Inspect event', '查看事件') }}</button>
+      <button class="ox-cta secondary" type="button" data-research-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </form>
+    <div data-research-result aria-live="polite" aria-busy="false"></div>
+  </details>
+
+  <details id="ox-radar-research" class="ox-company ox-detail ox-detail--flush">
+    <summary>{{ t('Read research from Entry Radar candidates', '读取入场雷达候选的研究证据') }}</summary>
+    <p class="ox-note">{{ t('Inspect published cases and earnings context for existing Radar candidates. This view creates no candidates and changes no priority or lifecycle.', '查看现有雷达候选已发布的案例与财报背景。此视图不创建候选，也不改变优先级或生命周期。') }}</p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-radar-read>{{ t('Read published candidates', '读取已发布候选') }}</button>
+      <button class="ox-cta secondary" type="button" data-radar-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-radar-result aria-live="polite" aria-busy="false"></div>
+  </details>
 
   <noscript>
     <section class="ox-gate">
@@ -89,6 +172,14 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <script src="{{ nav_prefix|default('') }}supabase.js" defer></script>
 <script src="{{ nav_prefix|default('') }}theme.js" defer></script>
+<script src="{{ nav_prefix|default('') }}portfolio_state.js" defer></script>
+<script src="{{ nav_prefix|default('') }}watchstore.js" defer></script>
 <script src="{{ nav_prefix|default('') }}ontology.js" defer></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-portfolio.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-scenario.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-theme.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-research.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-radar-research.js"></script>
 </body>
 </html>
