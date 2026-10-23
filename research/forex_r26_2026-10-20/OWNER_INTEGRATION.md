@@ -1,3 +1,17 @@
+## Exact observation-identity design — 23 October 2026
+
+The assigned source owner has completed the name/encoding/local-revision design in [BATCH_CANDIDATE_CONTRACT.md](BATCH_CANDIDATE_CONTRACT.md#owner-selected-observation-identity-for-qualified-review--23-october-2026). The selected future feed literal remains `tiingo.fx.USDJPY.reported-close.utc4h.local/v1`. Logical IDs use the exact six-string contract/pair/interval/calendar/UTC-start/UTC-end array, compact ASCII JSON and lowercase SHA-256 encoding; the document includes two 125-byte conformance vectors.
+
+Validate full timestamp precision and aligned 240-minute membership before serialization. Local revision is positive non-boolean integer 1, separate from rule revision and Terminal condition version. Equal qualified witnesses project one logical observation per slot while preserving proof receipts; relevant closed conflicts withhold rather than minting a new ID/revision. The unchanged evaluator rejects duplicate IDs/ends and does not independently verify this encoding or source eligibility.
+
+This completes owner design preparation, not policy adoption. The existing original Forex policy review is separately unqualified/retry-disallowed; native advice and the owner's decision do not replace it. Keep the qualified-review-before-adoption sequence below. No projection adapter, feed registry, evaluator, account activation, outbox integration or delivery vintage is implemented by these documents. The full Terminal vintage and atomic owned-revision/source/expiry/enqueue boundary remain separate future qualification work.
+
+The parent 227735 exact green CI/fences and all source evidence remain preserved. The documentation child requires its own ordinary exact-head contract and published checks; actual identities/results are maintained in [the existing lane checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600). No market acquisition or existing operation is replayed.
+
+---
+
+## Retained earlier integration handoff
+
 # Forex R26 — current-owner integration
 
 MISSION_COMPLETE: false. Inactive account conditions have accepted live save/reload/edit/delete proof. Finalized-4H monitoring and delivery remain unaccepted.

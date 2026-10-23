@@ -1,3 +1,24 @@
+## Current owner-design completion — 23 October 2026
+
+The existing recovery owner has completed the remaining precise source-contract name, logical observation-ID serialization and local-revision decisions in [BATCH_CANDIDATE_CONTRACT.md](BATCH_CANDIDATE_CONTRACT.md). This is documentation submitted to qualified review, with no runtime change or source admission.
+
+The exact proposed feed literal is selected for review. A six-string contract/pair/interval/calendar/start/end array has a fully specified compact ASCII JSON encoding and SHA-256 ID; two 125-byte vectors are bound to their actual offline hashes. Full timestamp precision is validated before formatting. Local observation revision is integer 1, equal qualified witnesses retain one logical slot, and relevant closed conflicts withhold without a replacement revision. Macro evidence digest and the complete Terminal delivery vintage remain distinct.
+
+The unchanged implementation remains research-only, with `CANDIDATE_NOT_ADOPTED`, empty eligibility and false admission flags. The actual October 22 observation remains expired at 20:00 UTC; no provider/archive read or freshness promotion occurred. Source parent 227735 retains its green CI 39918612998/fences 39918612860 and exact contract 0/0.
+
+### Exact continuation
+
+1. Read the [existing Forex checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600) and actual local/remote state before effects. These design decisions and offline vector calculations are complete; do not repeat market acquisition or source qualification merely to refresh documentation.
+2. Commit this normal documentation child, qualify its exact head through the existing contract against locked 7f57e913 with CONTRACT_DELTA_NO_REAP=1, then push normally to the same owned source branch after ancestry checks. Consume its ordinary CI/fences. Preserve every parent result; do not relabel parent green as child green.
+3. Operative adoption still requires qualified source-policy review. The original Forex operation `forex-r26-candidate-policy-review-20261022-sol-001` returned first-attempt 429/rc1/no verdict, accepted=false, retry_allowed=false. Its response SHA-256 is `aaa15c5bbc2e99cb34a07f8a8e6ef8cab50ff9a56a29e4ce0505d38225a26e31`. No new review, poll, replay or provider/carrier substitution is authorized by the completed owner design.
+4. After actual review/adoption, incumbent Macro/Terminal owners still owe the full feed projection, account/API parity, stable ordered delivery vintage and atomic current-owned-revision/eligibility/expiry/enqueue qualification. Do not implement a second evaluator or infer final source status from a valid ID.
+5. Continue the same Bonds source recovery through its [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). Its local page-adoption child 66b5c90b passed the exact contract 0/0 at 09:42:32 UTC; final parent-CI and normal-push state are recorded there. The page's native/static source results do not supply missing genuine browser/owning visual evidence.
+6. Preserve Terminal #1106 Draft/HOLD and its separate original repair-review condition, the refused deployment, once-applied 0038, consumed covering render 39688064251, Macro #9996's immutable green/live inactive CRUD, all original private workspaces and held carry/COT/RiskRadar. Licensing/product use remains Chairman-COMPLETE; no outreach or new execution/publication plane.
+
+---
+
+## Retained earlier recovery checkpoints
+
 ## Incumbent-owner handoff — 23 October 2026
 
 The [existing owner-integration handoff](OWNER_INTEGRATION.md#existing-owner-integration-handoff--source-audit-23-october-2026) now binds the actual Macro and Terminal source seams, the candidate-to-evaluator field map, and ten remaining integration qualification cases. The [batch candidate contract](BATCH_CANDIDATE_CONTRACT.md) clarifies that the alert runner belongs to the Terminal repository and that stable Forex vintage/delivery binding is a future requirement; no present evaluation_id-based Terminal dedupe defect was demonstrated.

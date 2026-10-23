@@ -1,3 +1,63 @@
+# Owner-selected observation identity for qualified review — 23 October 2026
+
+The assigned recovery/source owner has completed the remaining name, byte encoding and local-revision design decisions below. They are submitted for the existing qualified source review. **The /2 candidate policy remains unadopted:** no feed is registered, observation admitted, account activated, or evaluator/queue added. The original Forex policy-review operation remains unqualified; this owner decision and native advisory analysis do not replace its verdict.
+
+## Exact source-contract name
+
+Select the existing proposed literal `tiingo.fx.USDJPY.reported-close.utc4h.local/v1` for the reviewed future `feed` binding. Its scope remains USDJPY, JPY per USD, Tiingo-reported native historical close with the incumbent minute-consistency evidence and local UTC4H qualification. It does not mean midpoint, executable transaction price, vendor finality or independently attested producer execution. The name is a design selection, not an installed registry entry. No aliases, trimming or case folding are admitted. A later change to this literal or encoding requires an explicit versioned contract decision; it must not silently preserve or migrate old identities.
+
+## Deterministic logical observation ID
+
+After the existing source qualification succeeds under an actually adopted contract, the future owner projection uses exactly six strings in this order:
+
+```text
+[contract,"USDJPY","4H","fx-utc-4h/v1",startUTC,endUTC]
+```
+
+Here `contract` is the exact literal above. Validate the full represented timestamp precision before formatting: both endpoints must be timezone-aware, normalize to UTC, and must have zero minute, second and fractional components, including microseconds and nanoseconds. Each UTC hour must be one of 00/04/08/12/16/20. The end must be exactly 14,400 seconds after the start, preserving the existing half-open slot and complete aligned 240-minute witness. Never truncate a fractional timestamp, bridge a gap or change the calendar to make an endpoint qualify.
+
+Serialize the six-string array as compact JSON using ASCII bytes, literal unescaped `/`, ordinary double-quote string delimiters and commas, with no spaces, BOM, leading/trailing whitespace or newline. Endpoints use exactly `YYYY-MM-DDTHH:mm:ssZ`, with four-digit year and zero-padded fields. The logical `observation_id` is the literal lowercase prefix `sha256:` followed by the 64 lowercase hexadecimal digits of SHA-256 over those exact bytes. The closed ASCII inputs make the serialization explicit; no locale or general-purpose Unicode canonicalization is involved.
+
+Do not include close price, selected receipt ID, receipt order, scan time, readback time, availability, fixed expiry, rule/account identity or incidental equal witness selection in this slot identity. The contract version fixes the price-basis semantics. Original receipts, prices, clocks and their proof identities remain separate evidence. An identity hash does not authenticate that evidence or independently establish source eligibility.
+
+### Documentation conformance vectors
+
+These are offline encoding examples for already-documented slot boundaries, not new acquired or admitted observations. Both preimages have **125 ASCII bytes**, no final newline.
+
+```json
+["tiingo.fx.USDJPY.reported-close.utc4h.local/v1","USDJPY","4H","fx-utc-4h/v1","2026-10-22T08:00:00Z","2026-10-22T12:00:00Z"]
+```
+
+Result: `sha256:11bd014973059403cf8a8d8b6fa8b617ce1b9270979431398d5f1190de313e57`.
+
+```json
+["tiingo.fx.USDJPY.reported-close.utc4h.local/v1","USDJPY","4H","fx-utc-4h/v1","2026-10-22T12:00:00Z","2026-10-22T16:00:00Z"]
+```
+
+Result: `sha256:52df079d29892cec2ca624d44bf32ae4bfd5dd994ba8fc6adf26b5451887433e`.
+
+## Local revision, equal witnesses and conflicts
+
+Use JSON numeric `1`, consumed as a positive non-boolean Python built-in `int`, for the proposed local observation revision. String `"1"`, floating `1.0` and boolean `true` do not satisfy the current evaluator. This local revision is separate from the saved rule revision and Terminal condition version and is not a Tiingo vendor revision.
+
+An equal reread retains the same logical ID and local revision 1. After **all** relevant closed vintages have qualified, the future projection supplies one logical observation per slot; equal proof receipts remain separately retained. The current evaluator refuses duplicate observation IDs and duplicate bar ends across the supplied window, so passing multiple equal receipts as separate bars is not an integration strategy.
+
+A relevant conflicting closed vintage withholds the incumbent sequence. Do not discard the conflict during equal-witness grouping, choose the newest receipt to hide it, hash the changed price into a replacement identity, or mint local revision 2. No accepted replacement/correction policy is introduced. This remains a bounded local inventory assertion, not proof that no unobserved vendor correction exists.
+
+## Incumbent integration and review limits
+
+The unchanged `engine/forex_alerts.py::evaluate_price_condition` accepts caller-supplied identity and qualified convention fields; it does not recompute this proposed ID, verify the hashed start endpoint or adopt a feed. The source owner must qualify both endpoints and evidence before any future projection. Valid encoding cannot turn a research result into `status="final"`. Keep `CANDIDATE_NOT_ADOPTED`, empty eligibility and all admission flags unchanged.
+
+Macro `evaluation_id` remains an evidence digest and may change with readback/availability metadata even when logical observation ID/revision remain stable. This observation specification does not define the complete Terminal delivery vintage. Its existing `(alert_id, condition_version, vintage)` boundary still needs the reviewed feed contract and ordered observation IDs/revisions, exact owned active rule/source eligibility, both expiries and atomic enqueue/idempotency qualification.
+
+The original Forex review is `forex-r26-candidate-policy-review-20261022-sol-001`, under root `forex-r26-native-completion-20261020-sol-001`, controller 50810. Its retained first-attempt 429/rc1 result has no qualified verdict, accepted=false and retry_allowed=false; 690-byte response SHA-256 `aaa15c5bbc2e99cb34a07f8a8e6ef8cab50ff9a56a29e4ce0505d38225a26e31`. Preserve that operation without polling, replay, replacement or provider/carrier substitution. Terminal #1106's original repair-review and deployment refusal remain separate.
+
+The two vector digests were calculated offline on source parent `227735dcf6a5c2358f898063914a87bef0c9c287`. Evaluator blob `aea6b913a9642a34b6cfb26657c0c970ee639ede` and candidate-reader blob `be4e99308aebbdac83677d9d12be8dd20e865901` remain unchanged. No provider/archive read, new runtime helper, observation store or prospective cohort was created. The actual October 22 observation expired at 20:00 UTC; specifying its slot encoding does not renew it.
+
+---
+
+## Retained earlier design and implementation checkpoints
+
 # Existing-owner prospective USDJPY contract decisions — 22 October 2026
 
 The accountable recovery owner records the following **design decisions for qualified source review and later existing-owner integration**. They do not adopt the current `/2` policy, admit observations, register a production feed or activate saved conditions. The successful 19:15 readback below is the actual bounded witness. No provider-support or licensing email is required.
