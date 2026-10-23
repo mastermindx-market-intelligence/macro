@@ -1,0 +1,32 @@
+{
+  "schema": "mmx.defensive.v27.research.v1",
+  "date": "2026-10-13",
+  "freeze_utc": "2026-10-13T21:43:09.260712+00:00",
+  "equity_data_cutoff": "2026-10-13",
+  "source_finality": "AFTER_CLOSE_VENDOR_UNATTESTED",
+  "archive_sha256": "a2604490fa80fbb0a839ec59064f23cdf9dbccb164318749515752b80f9f7123",
+  "archive_bytes": 24544,
+  "archive_git_blob": "12a8f89ce21aa7b1511407c6d29fb09a4640c32e",
+  "research_report_sha256": "ede1e6eb0deff5bf752f61145c3c072782e0ca46d08f4a465a3cb937550027a4",
+  "table_sha256": {
+    "CORE_PAPER_2026-10-13.csv": "40614edf5d52f8dd8e909dbd7f746806355630e58305f4269af773bd2ed474dc",
+    "ALL18_PAPER_2026-10-13.csv": "bdd62dbc36d8b1065b06c31a04381c57232fcee434e4f61effc51ad0c341ec0a",
+    "FREEZE_RECEIPT.json": "6c13132572cda2e3df4f9f53766c6ec8414222207d816bae3b15dd7df22dfe8c"
+  },
+  "symbols_accepted": 19,
+  "daily_sessions": 4220,
+  "paper_rows": 72,
+  "mechanical_tests": 15,
+  "vendor_raw_data_included": false,
+  "production_watcher": false,
+  "broker_orders": false,
+  "actual_fills": false,
+  "prospective_outcome_observed": false,
+  "related_research_prs": [
+    9034,
+    9064,
+    9129,
+    9174,
+    9176
+  ]
+}
