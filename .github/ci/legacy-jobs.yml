@@ -14520,7 +14520,12 @@ jobs:
       - "tests/test_dataos_identity.py"
       - "engine/neuralweb/market_memory_retained_cohort_cache.py"
       - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
-    timeout-minutes: 10
+    # Hosted 39988474287: verified Chromium setup and source suites passed,
+    # but 84% of real browser checks took the unchanged 10-minute TOTAL to
+    # expiry. Fund only two additional measured minutes for this ONE logical
+    # job; browser_setup itself stays capped at 10 minutes and every original
+    # browser/semantic assertion stays mandatory and fail-closed.
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

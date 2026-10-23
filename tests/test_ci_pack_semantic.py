@@ -2278,7 +2278,10 @@ def test_approved_ontology_browser_setup_is_exact_smoke_and_digest_bound(tmp_pat
             PACK.load_legacy_jobs(_write_manifest(tmp_path / f"refused-{n}.yml", [invalid]))
 
     actual = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]["ontology-explorer"]
-    assert actual["timeout-minutes"] == 10
+    # Two-minute total extension is solely for the measured Ontology job,
+    # not for its bounded browser acquisition or a test/pass exemption.
+    assert actual["timeout-minutes"] == 12
+    assert PACK.NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES == 12
     assert actual["steps"][3]["run"].strip() == command
     assert actual["steps"][3]["timeout-minutes"] == 10
     assert actual["steps"][-1]["run"].startswith("MM_REQUIRE_BROWSER=1 ")
@@ -3224,7 +3227,7 @@ def test_native_acquisition_manifest_is_explicit_and_nonphase_selection_refused(
 
 
 @pytest.mark.parametrize("job_id", ["ontology-explorer"])
-def test_native_manifest900_inherits_one600_total_before_setup_and_preserves_all_assertions(monkeypatch, job_id):
+def test_native_manifest900_inherits_one720_total_before_setup_and_preserves_all_assertions(monkeypatch, job_id):
     from scripts import ci_browser_native_setup as native
     _capture_job_environment(monkeypatch)
     job = _job(job_id, [
@@ -3246,14 +3249,16 @@ def test_native_manifest900_inherits_one600_total_before_setup_and_preserves_all
     monkeypatch.setattr(native, "run_native_setup", setup)
     result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
     assert result.failure is None
-    assert calls == [("before",600), ("capture apt",580), ("capture playwright",560),
-                     ("native once",1600), ("after-one",110), ("after-two",1)]
+    # Setup phase remains bounded to ten minutes from its own start;
+    # the surrounding logical job is separately limited to twelve total.
+    assert calls == [("before",720), ("capture apt",600), ("capture playwright",580),
+                     ("native once",1620), ("after-one",230), ("after-two",121)]
     assert [step["outcome"] for step in result.steps] == ["passed"] * 3
     assert len(result.steps) == len(PACK.semantic_step_specs(job)) == 3
 
 
 @pytest.mark.parametrize("job_id", ["ontology-explorer"])
-def test_native_manifest900_stops_postsetup_assertions_at_original600_without_dropping_evidence(monkeypatch, job_id):
+def test_native_manifest900_stops_postsetup_assertions_at_bounded720_without_dropping_evidence(monkeypatch, job_id):
     from scripts import ci_browser_native_setup as native
     _capture_job_environment(monkeypatch)
     job = _job(job_id, [
@@ -3262,7 +3267,7 @@ def test_native_manifest900_stops_postsetup_assertions_at_original600_without_dr
         {"name":"after setup assertion one", "run":"after-one"},
         {"name":"after setup assertion two", "run":"after-two"},
     ], timeout=15)
-    ticks = iter([0., 0., 100., 120., 140., 600.])
+    ticks = iter([0., 0., 100., 120., 140., 720.])
     monkeypatch.setattr(PACK.time, "monotonic", lambda:next(ticks))
     calls = []
     monkeypatch.setattr(PACK, "_stream_command", lambda command, **kwargs:calls.append(command) or PACK.CommandObservation(outcome="passed", returncode=0))
@@ -3271,17 +3276,17 @@ def test_native_manifest900_stops_postsetup_assertions_at_original600_without_dr
         return dict(outcome="passed", returncode=0, failure_signature=None, timeout_settlement=None, detail="native and browser acquisition passed")
     monkeypatch.setattr(native, "run_native_setup", setup)
     result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
-    assert calls == ["before", "capture apt", "capture playwright", ("native once",600)]
+    assert calls == ["before", "capture apt", "capture playwright", ("native once",700)]
     assert [step["outcome"] for step in result.steps] == ["passed", "timed_out", "not_run_prior_failure"]
     assert len(result.steps) == len(PACK.semantic_step_specs(job)) == 3
-    assert "after 10 minutes" in result.failure
+    assert "after 12 minutes" in result.failure
     assert result.timeout_settlement is None  # the exhausted assertion never launched
 
 
 def test_native_inherited_total_is_explicitly_digest_bound_without_changing_ordinary_digest(monkeypatch):
     native = _job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}], timeout=15)
     ordinary = _job("ordinary", [{"name":"assertion","run":"true"}], timeout=15)
-    assert PACK._browser_setup_contract(native)[0]["logical_job_timeout_minutes"] == 10
+    assert PACK._browser_setup_contract(native)[0]["logical_job_timeout_minutes"] == 12
     before = PACK.semantic_job_digest(native), PACK.semantic_job_digest(ordinary)
     monkeypatch.setattr(PACK, "NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES", 9)
     assert PACK.semantic_job_digest(native) != before[0]

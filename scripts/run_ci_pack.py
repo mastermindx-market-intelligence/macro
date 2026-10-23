@@ -625,9 +625,12 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     return capture_commands()
 
 
-# Native cold acquisition retains its original TOTAL grant even when a
-# broader owner manifest later increases that job's declared timeout.
-NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+# Ontology-only TOTAL native deadline. Hosted CI 39988474287 completed
+# browser acquisition and reached 84% of real browser assertions before its
+# prior 10-minute cap; two further minutes are measured/explicit, not a
+# general browser_setup exception. Native setup remains <=10 minutes and
+# every assertion consumes this same finite 12-minute total.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 12
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
 
 
