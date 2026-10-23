@@ -553,6 +553,16 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
             "original prose is allowed; do not hide or split the fragment:")
         parts.extend(f"  - {fragment}" for fragment in native_disclosures)
         parts.append(
+            "CONFIRMATION SCOPE: signal_tier and signal_provisional describe "
+            "the source's signal admission. confirmed_date is the T1 marker "
+            "buy-filter date, never a T2 confirmation date. A missing T1 date is "
+            "not evidence that a T2 event was unconfirmed. Missing tier or "
+            "provisional metadata stays unknown. Plan entry status and authority "
+            "remain separate. Signal admission does not prove an executed entry. "
+            "Describe only the declared simulated plan/window outcome, not a "
+            "failed market thesis or a fresh issuer event. These state labels "
+            "add no numeric receipts.")
+        parts.append(
             "RECEIPT MATCHING: the final receipt count requires a whole clause "
             "matching a BOUND RECEIPT CLAUSES key. Clauses end at sentence, "
             "semicolon or colon boundaries; case, whitespace and edge . ; : "
