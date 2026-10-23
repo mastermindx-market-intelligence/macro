@@ -1,0 +1,76 @@
+{
+  "operation": "signal-lab-benchmark-labels-20260916-sol-001",
+  "source_base": "3daf739affa12a43a6b3a0feb3b4c57154587756",
+  "procedure_pin": "eec5324c5205e8bad206512e0a936898e50b2408",
+  "label_version": "sf-excess-target-2",
+  "initial_red": {
+    "pid": 49188,
+    "failed": 31,
+    "passed": 1,
+    "seconds": 47.51
+  },
+  "final_standalone_suite": {
+    "pid": 54017,
+    "tests": 168,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 15.84,
+    "exit_code": 0,
+    "junit_sha256": "a9b2f5525ee3f305bf4fff584c61a81144e03e99f88e1f47a20b7aead4d18445",
+    "log_sha256": "fef585727aee16ca4d09b64547df95ba640a3fdce114b39968bf0eaa077d47dc",
+    "command": "python3.12 -m pytest tests/test_sf_*.py --basetemp=.pytest_cache/<new-private-directory> -q"
+  },
+  "four_candidate_proof": "four-candidate-proof.json",
+  "real_input_arithmetic": "real-input-label-proof.json",
+  "code_gate_coverage": "ci-coverage-proof.json",
+  "mutation_proof": "mutation-receipt.json",
+  "full_contract_frozen": {
+    "status": "RUNNING",
+    "pid": 56124,
+    "receipt": ".pytest_cache/benchmark-contract-frozen-002.json"
+  },
+  "source_sha256": {
+    "engine/signal_foundry/spec.py": "cd494f8ccdacca239b2ee075f7d3812f6946a0c3e47701421fbb93d4e12e50ed",
+    "engine/signal_foundry/harness.py": "f2bf34a035cb807cc8f4122fc2afbbebb0969ac4b8f8bf9db24f355800dcd19e",
+    "engine/signal_foundry/screen.py": "6e8eb639f8c85f1bf089997ffc78436fe2b6d53a86e22ed58d6f3035e036eb37",
+    "scripts/run_signal_foundry_brainstorm.py": "2abef6650bdcdd0faac3d74dc0ed09ea43980a25117fd14c656230c7692891d3",
+    "tests/test_sf_benchmark_labels.py": "37064b9ab315b92ce19cc791bc96e804e2891e21b66abdfd3ad59edbc9524387",
+    "tests/test_sf_spec.py": "2aab77e57c66d77acfadac5a141c57beccb85779496500ae2c937951ea127953",
+    ".github/ci/legacy-jobs.yml": "c894ea30de951baa6a5c1338d507053c87f7076ba5a4d657e55b8fc8a149ccec"
+  },
+  "production_proven": false,
+  "independent_review_complete": false,
+  "canonical_data_changed": false,
+  "new_alpha_admitted": false,
+  "minimal_dependency_environment": {
+    "pid": 70701,
+    "tests": 168,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 55.69,
+    "exit_code": 0,
+    "dependency_command": "pip install pytest pandas numpy pyarrow pyyaml scipy",
+    "junit_sha256": "20779f9cf0c2e77708f8a6061dfd2af4b1f94ef72fbfe6fa27a09a438dd6aade",
+    "dependency_log_sha256": "af67fada64c098084755222e4f8710ab9cd5c298dc2f7e1f2b14a15bc3eba099"
+  },
+  "intermediate_contract_checks": [
+    {
+      "pid": 84488,
+      "exit_code": 0,
+      "introduced": 0,
+      "inherited": 0,
+      "seconds": 210.51,
+      "qualification": "Before code-gate job addition"
+    },
+    {
+      "pid": 24198,
+      "exit_code": 0,
+      "introduced": 0,
+      "inherited": 0,
+      "seconds": 535.68,
+      "qualification": "New job present; subsequent source changes moved a contract import and shared documentation only. Not the frozen receipt."
+    }
+  ]
+}

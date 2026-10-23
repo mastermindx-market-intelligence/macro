@@ -1,0 +1,76 @@
+{
+  "scope": "isolated in-memory negative controls, not independent review",
+  "source_sha256": {
+    "engine/signal_foundry/spec.py": "cd494f8ccdacca239b2ee075f7d3812f6946a0c3e47701421fbb93d4e12e50ed",
+    "engine/signal_foundry/harness.py": "f2bf34a035cb807cc8f4122fc2afbbebb0969ac4b8f8bf9db24f355800dcd19e",
+    "engine/signal_foundry/screen.py": "6e8eb639f8c85f1bf089997ffc78436fe2b6d53a86e22ed58d6f3035e036eb37",
+    "tests/test_sf_benchmark_labels.py": "37064b9ab315b92ce19cc791bc96e804e2891e21b66abdfd3ad59edbc9524387"
+  },
+  "cases": [
+    {
+      "case": "asset_as_benchmark",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "9285be14d710d21f2adb06b6b466e9c9f4b6a8acbf7c524ec67fdbabb98c21fa"
+    },
+    {
+      "case": "benchmark_row_stride",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "c8c4336d1b66cc916e7b4b99086f63bff736e2d8b29e9c80643005a55a700f9e"
+    },
+    {
+      "case": "benchmark_fill",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "aead41fa9ea566ccd4d11fb3f817ad28dfe72748c5ea01e73394ed05b426b0ab"
+    },
+    {
+      "case": "column_fallback",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "cd5ef3ef7795e2601549c3e4cbb5a844c9d5776a91c5e4a9c85a60a8e3e76ced"
+    },
+    {
+      "case": "self_reference",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "3477b21935c03632ed0264e4e4aaef72f2bb63d2f5c22d9c22ad2fe14ef668d7"
+    },
+    {
+      "case": "unknown_benchmark_fields",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "fc2f2d968148e2e87e7981f21e7fd3fceb964d896a2d1dbcbb1c653876db876d"
+    },
+    {
+      "case": "unversioned_receipt",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "11eb4774b966681cc277d2c74d21ca3d0c9a6dc9db1f57f056f1d5ae5b9b3a0a"
+    },
+    {
+      "case": "nonfinite_arithmetic",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "f44e1eb6a5e8aacd1cec32099b761e177421dfc7a590668b5a5ae2d76820d904"
+    }
+  ],
+  "all_caught": true
+}

@@ -450,7 +450,7 @@ SPEC JSON SCHEMA (compiler must emit this structure):
   "seed_provenance": {"source": "<source file>", "ref": "<edge id or name>"},
   "data": [{"path": "data/<store>/<file>.parquet", "column": "<col>", "pit": "proxy|lagged|release_lag|clean"}],
   "feature": {"pipeline": [["<transform>", {"<param>": <value>}], ...]},
-  "target": {"path": "data/yahoo/SPY.parquet", "kind": "excess_return|absolute_return|drawdown_onset|forward_vol", "horizon_d": 5|10|21|63|126},
+  "target": {"path": "<tracked asset price file>", "column": "<exact price column>", "kind": "excess_return|absolute_return|drawdown_onset|forward_vol", "horizon_d": 5|10|21|63|126},
   "universe": "single_series",
   "baseline": "buy_and_hold|sma_200|flat",
   "gates": {"min_t_hac": 2.0, "fdr_q": 0.10, "dsr": 0.90},
@@ -458,6 +458,16 @@ SPEC JSON SCHEMA (compiler must emit this structure):
   "orthogonality_note": "what makes this distinct from existing signals",
   "evidence_note": "literature or empirical basis"
 }
+
+For excess_return, target.benchmark is REQUIRED:
+  {"path": "<explicit distinct tracked price-benchmark file>", "column": "<exact price column>"}
+The label is asset simple price return minus benchmark simple price return over
+same target-price timestamps, with horizon_d measured in target-price bars.
+Do not infer the benchmark from the top-level strategy baseline, invent missing
+benchmark data, or compare an asset with its own identical price-series reference.
+A missing endpoint is unavailable evidence, never zero or a forward-filled price.
+The label does not describe a costed hedge or authorize a trade. Other target
+kinds retain their existing contract and do not require a benchmark.
 
 WHITELISTED TRANSFORM VOCABULARY (only these are allowed in feature.pipeline):
 zscore, pctile_rank, diff, pct_change, sma, ema, ratio, spread, lag, sign, clip,

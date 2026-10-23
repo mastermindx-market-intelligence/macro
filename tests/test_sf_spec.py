@@ -36,6 +36,7 @@ def _make_good_spec(tmp_path: Path, tracked_file: str) -> dict:
             "kind": "excess_return",
             "horizon_d": 21,
             "column": "value",
+            "benchmark": {"path": tracked_file, "column": "benchmark"},
         },
         "universe": "single_series",
         "baseline": "buy_and_hold",
@@ -54,7 +55,7 @@ def _git_init_with_file(tmp_path: Path) -> Path:
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     csv_file = data_dir / "test_series.csv"
-    csv_file.write_text("date,value\n2010-01-01,1.0\n2020-01-01,2.0\n")
+    csv_file.write_text("date,value,benchmark\n2010-01-01,1.0,1.0\n2020-01-01,2.0,1.5\n")
     subprocess.run(["git", "add", "."], cwd=str(tmp_path), capture_output=True)
     subprocess.run(["git", "commit", "-m", "init"], cwd=str(tmp_path), capture_output=True)
     return csv_file

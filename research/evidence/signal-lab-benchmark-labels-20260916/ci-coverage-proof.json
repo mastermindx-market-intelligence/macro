@@ -1,0 +1,47 @@
+{
+  "source_base": "3daf739affa12a43a6b3a0feb3b4c57154587756",
+  "prior_foundry_enrollment": [
+    {
+      "job": "causal-factory",
+      "gate": "data"
+    },
+    {
+      "job": "unrun-builders-stores",
+      "gate": "data"
+    }
+  ],
+  "trusted_executor_uses_gate_code": true,
+  "new_job": "signal-foundry-regressions",
+  "new_gate": "code",
+  "new_command": "python -m pytest tests/test_sf_*.py -q",
+  "selection_checks": [
+    {
+      "changed_path": "engine/signal_foundry/harness.py",
+      "selected": "signal-foundry-regressions"
+    },
+    {
+      "changed_path": "engine/signal_foundry/spec.py",
+      "selected": "signal-foundry-regressions"
+    },
+    {
+      "changed_path": "engine/signal_foundry/screen.py",
+      "selected": "signal-foundry-regressions"
+    },
+    {
+      "changed_path": "scripts/run_signal_foundry_brainstorm.py",
+      "selected": "signal-foundry-regressions"
+    },
+    {
+      "changed_path": "scripts/codex_signal_lane.py",
+      "selected": "signal-foundry-regressions"
+    },
+    {
+      "changed_path": "tests/test_sf_benchmark_labels.py",
+      "selected": "signal-foundry-regressions"
+    }
+  ],
+  "manifest_sha256": "c894ea30de951baa6a5c1338d507053c87f7076ba5a4d657e55b8fc8a149ccec",
+  "prior_green_ci_does_not_prove_data_job_execution": true,
+  "no_new_workflow_or_runner": true,
+  "hosted_execution_on_new_head_proven": false
+}
