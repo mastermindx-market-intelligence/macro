@@ -1,0 +1,33 @@
+{
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission": "A04",
+  "whole_mission_accepted": false,
+  "worker": "rs_20261006T164213Z_50821",
+  "status": "ACCEPTED_SCOPED_EXECUTED_SQL_PROTOTYPE",
+  "native_started": true,
+  "native_returncode": 0,
+  "native_cleanup_proven": true,
+  "native_residual_count": 0,
+  "db_version": "17.11 (Debian 17.11-1.pgdg13+2)",
+  "guard_cases_pass": 33,
+  "transaction_cases_pass": 11,
+  "independent_two_session_replay_rollback_cases": 3,
+  "skips": 0,
+  "psql_exit": 0,
+  "container_removed_receipt_and_parent_readback": true,
+  "immutable_source_sha256": {
+    "replace-drawings.sql": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
+    "direct-validator.sql": "1b9d5472005a585beb231e44b4f20cfcb107411df6731f54f28a1ca894bdfcf1",
+    "validator-regressions.sql": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f"
+  },
+  "transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249",
+  "owed": [
+    "incumbent TerminalShell PR597 caller/source incorporation",
+    "legacy collection bootstrap without fabricated old receipts",
+    "operation/revision/outbox integration",
+    "migration prefix/custody and actualproduction17.6 qualification",
+    "authenticated two-tab/offline/reload browser/live proof"
+  ],
+  "source_writer": false,
+  "production_effects": false
+}

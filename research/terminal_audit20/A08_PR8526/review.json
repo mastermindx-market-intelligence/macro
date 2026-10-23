@@ -1,0 +1,38 @@
+{
+  "schema": "terminal.audit20.scoped_review.v1",
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission": "A08",
+  "whole_mission_accepted": false,
+  "status": "ACCEPTED_EXACT_OWNER_PROPOSAL_FIXTURE",
+  "owner_pr": 8526,
+  "owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
+  "worker": "rs_20261006T153815Z_23083",
+  "accepted_scope": "canonical Brain widget freshness lookup and inherited-key repair; parent transferred exact proposal onto owner53a without changing owner mobile/focus changes",
+  "checks": {
+    "asset_and_source": 20,
+    "skipped": 0,
+    "node_syntax": "both widgets passed",
+    "browser_cases": 5,
+    "actual_widget": true,
+    "backend_and_SSE": "declared synthetic stubs; not live account/model/backend proof",
+    "browser": "149.0.7827.55",
+    "server_stopped": true
+  },
+  "files": {
+    "site/mm_brain.js": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "templates/mm_brain.js": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "site/theme.js": "5d96774b56541d67fea2a17d162a3086dfa7fa1f0f5e30050efe0b3b1f5af35c",
+    "owner-8526.patch": "edb472e1e24857d7e0ba5785c3dbd612a5ba3ad3d2f25c43890586a723cfc1e3",
+    "tests/harness/inspector_freshness_fixture.cjs": "ada96b2f0d35cf8028f4f502b014405ecbfef7504268e9e0e520d1526f8a19d2",
+    "artifacts/inspector-freshness-results.json": "b0807484b434394053f85e13b3ed9d4c25e03700029844e7c6fd38e75f5055fa"
+  },
+  "owed": [
+    "exact owner carrier incorporation and acceptance",
+    "owning CI and production integration",
+    "broader GEX snapshot/truncation/source contracts in original A08"
+  ],
+  "source_writer": false,
+  "owner_branch_mutated": false,
+  "production_effects": false,
+  "reviewed_utc": "2026-10-06T16:22:20.330041+00:00"
+}
