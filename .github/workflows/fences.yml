@@ -291,7 +291,8 @@ jobs:
             //     records from older runs (a different external_id) are normal and do
             //     not block recovery. Only then is the full receipt validated (GitHub
             //     Actions app 15368, repo, head, run, attempt, check name, terminal
-            //     status/conclusion, output title+summary, details_url). Any omitted or
+            //     status/conclusion, output title+summary, submitted details_url or
+            //     the strictly bound GitHub Actions check self-links). Any omitted or
             //     mismatched field fails closed: absence NEVER means no-write;
             //   * anything unresolvable raises a fixed EFFECT_UNKNOWN error and stops
             //     every later create in this invocation. This is per-invocation only; it
@@ -312,6 +313,7 @@ jobs:
             const RUN_ID = String(process.env.RUN_ID || '');
             const RUN_ATTEMPT = String(process.env.RUN_ATTEMPT || '');
             const SERVER_URL = String(context.serverUrl || '').replace(/\/+$/, '');
+            const API_URL = String(context.apiUrl || '').replace(/\/+$/, '');
             const OWNER = String((context.repo && context.repo.owner) || '');
             const REPO = String((context.repo && context.repo.repo) || '');
             const DETAILS_URL = `${SERVER_URL}/${OWNER}/${REPO}/actions/runs/${RUN_ID}`;
@@ -397,6 +399,21 @@ jobs:
               return crypto.createHash('sha256').update(canonical, 'utf8').digest('hex');
             }
 
+            // GitHub Actions can normalize details_url to the created check's own
+            // /runs/{check-id} URL. Accept only that exact same-repo self-link, with
+            // matching HTML/API identities; the external_id above still binds the
+            // submitted workflow run and attempt. Missing/mismatched links fail closed.
+            function detailsUrlMatches(record, expected) {
+              if (record.details_url === expected.details_url) return true;
+              if (!Number.isSafeInteger(record.id) || record.id <= 0) return false;
+              if (!/^https:\/\//.test(API_URL)) return false;
+              const checkUrl = `${SERVER_URL}/${OWNER}/${REPO}/runs/${record.id}`;
+              const apiUrl = `${API_URL}/repos/${OWNER}/${REPO}/check-runs/${record.id}`;
+              return record.details_url === checkUrl
+                && record.html_url === checkUrl
+                && record.url === apiUrl;
+            }
+
             // Returns null only when `record` is a COMPLETE receipt that exactly
             // matches the binding; otherwise a short reason. An API response that
             // omits a field yields a reason — equality is never claimed across a
@@ -412,7 +429,7 @@ jobs:
               if (!record.output || typeof record.output !== 'object' || Array.isArray(record.output)) return 'output';
               if (record.output.title !== expected.title) return 'output.title';
               if (record.output.summary !== expected.summary) return 'output.summary';
-              if (typeof record.details_url !== 'string' || record.details_url !== expected.details_url) return 'details_url';
+              if (typeof record.details_url !== 'string' || !detailsUrlMatches(record, expected)) return 'details_url';
               return null;
             }
 

@@ -44,6 +44,7 @@ These bounds hold per invocation only — the tests deliberately do NOT assert
 global exactly-once across invocations.
 """
 
+import copy
 import json
 import re
 import shutil
@@ -62,7 +63,7 @@ ATTEMPT = "3"
 OWNER = "octo"
 REPO = "hut"
 DETAILS_URL = f"https://github.com/{OWNER}/{REPO}/actions/runs/{RUN_ID}"
-CONTEXT = {"serverUrl": "https://github.com", "repo": {"owner": OWNER, "repo": REPO}}
+CONTEXT = {"serverUrl": "https://github.com", "apiUrl": "https://api.github.com", "repo": {"owner": OWNER, "repo": REPO}}
 CONTEXT_NAMES = ["self-mod-fence", "capability-broker", "grader-manifest"]
 
 NODE_RUNNER = r"""'use strict';
@@ -128,8 +129,9 @@ async function create(p) {
   sentCreates.push(snap(p));
   lastSent = p;
   if (!p.request || p.request.retries !== 0) badRetries.push('create#' + sentCreates.length);
+  retained = caseSpec.liveRecord && sentCreates.length === 1 ? snap(caseSpec.liveRecord) : null;
   if (caseSpec.create === 'throw') throw new Error(caseSpec.throwMessage || 'Original 500 from checks.create');
-  retained = recordFrom(p);
+  if (!retained) retained = recordFrom(p);
   if (caseSpec.create === 'malformed') {
     const partial = snap(retained);
     delete partial.output;
@@ -755,3 +757,108 @@ def test_recovered_create_still_hides_thrown_error_text(harness, tmp_path):
     assert report["createCalls"] == 3
     assert report["listCalls"] == 3
     assert_no_sentinel(report)
+
+
+# Exact selected fields from the hosted GitHub Actions record for workflow run
+# 39979973324 attempt 1, retained in pr9682-self-mod-382903e2-fields-20261023.json.
+# This fixture intentionally does not derive receipt URLs from submitted params.
+HOSTED_RECORD = {
+    "app": {"id": 15368, "slug": "github-actions"},
+    "conclusion": "success",
+    "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/120505179588",
+    "external_id": "fb07f1859ae24b48f2bb0017ab24de2c15d00e749c8cde4c53149af686ccd92c",
+    "head_sha": "382903e20533855f89492844e6b0b66280a4560b",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/runs/120505179588",
+    "id": 120505179588,
+    "name": "self-mod-fence",
+    "output": {"summary": "success, success, success, success", "title": "self-mod-fence: passed"},
+    "status": "completed",
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/120505179588",
+}
+
+
+def hosted_case(**overrides):
+    return base_case(
+        env=base_env(HEAD_SHA=HOSTED_RECORD["head_sha"], RUN_ID="39979973324", RUN_ATTEMPT="1"),
+        context={"serverUrl": "https://github.com", "apiUrl": "https://api.github.com",
+                 "repo": {"owner": "mastermindx-market-intelligence", "repo": "macro"}},
+        liveRecord=copy.deepcopy(HOSTED_RECORD), **overrides,
+    )
+
+
+@pytest.mark.parametrize("create", ["ok", "throw", "malformed"])
+def test_exact_hosted_normalized_receipt_is_confirmed(harness, tmp_path, create):
+    report = run_case(harness, tmp_path, hosted_case(create=create))
+    assert report["ok"], report
+    assert len(report["createParams"]) == 3
+    assert len(report["listParams"]) == (0 if create == "ok" else 3)
+    assert report["createParams"][0]["external_id"] == HOSTED_RECORD["external_id"]
+    assert report["createParams"][0]["details_url"] == (
+        "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39979973324"
+    )
+
+
+NORMALIZED_BAD_FIELDS = [
+    ("id", 0), ("id", -1), ("id", 1.5), ("id", "120505179588"),
+    ("id", 9007199254740992), ("id", None), ("id", 120505179589),
+    ("details_url", "https://github.com/other/macro/runs/120505179588"),
+    ("details_url", "https://github.com/mastermindx-market-intelligence/other/runs/120505179588"),
+    ("details_url", "https://evil.example/mastermindx-market-intelligence/macro/runs/120505179588"),
+    ("details_url", HOSTED_RECORD["details_url"] + "?q=1"),
+    ("details_url", HOSTED_RECORD["details_url"] + "#fragment"),
+    ("html_url", HOSTED_RECORD["html_url"] + "/"),
+    ("html_url", None), ("url", None),
+    ("url", "https://api.github.com/repos/other/macro/check-runs/120505179588"),
+    ("url", "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/120505179589"),
+    ("url", "https://evil.example/repos/mastermindx-market-intelligence/macro/check-runs/120505179588"),
+    ("external_id", "wrong-run-binding"), ("app", {"id": 42}),
+]
+
+
+@pytest.mark.parametrize("field,value", NORMALIZED_BAD_FIELDS)
+def test_normalized_receipt_requires_exact_self_links_and_provenance(harness, tmp_path, field, value):
+    case = hosted_case()
+    case["liveRecord"][field] = value
+    report = run_case(harness, tmp_path, case)
+    assert not report["ok"], report
+    assert "EFFECT_UNKNOWN" in report["message"]
+    assert len(report["createParams"]) == 1
+    assert len(report["listParams"]) == 1
+
+
+@pytest.mark.parametrize("field", ["id", "details_url", "html_url", "url"])
+def test_normalized_receipt_missing_self_link_field_fails_closed(harness, tmp_path, field):
+    case = hosted_case()
+    del case["liveRecord"][field]
+    report = run_case(harness, tmp_path, case)
+    assert not report["ok"]
+    assert "EFFECT_UNKNOWN" in report["message"]
+    assert len(report["createParams"]) == len(report["listParams"]) == 1
+
+
+@pytest.mark.parametrize("api_url", [None, "http://api.github.com", "https://api.example.com"])
+def test_normalized_receipt_needs_trusted_api_origin(harness, tmp_path, api_url):
+    case = hosted_case()
+    if api_url is None:
+        del case["context"]["apiUrl"]
+    else:
+        case["context"]["apiUrl"] = api_url
+    report = run_case(harness, tmp_path, case)
+    assert not report["ok"]
+    assert "EFFECT_UNKNOWN" in report["message"]
+    assert len(report["createParams"]) == len(report["listParams"]) == 1
+
+
+@pytest.mark.parametrize("field,value", [
+    ("serverUrl", "https://evil.example"),
+    ("serverUrl", "http://github.com"),
+    ("repo", {"owner": "other", "repo": "macro"}),
+    ("repo", {"owner": "mastermindx-market-intelligence", "repo": "other"}),
+])
+def test_hosted_receipt_rejects_context_server_or_repo_mismatch(harness, tmp_path, field, value):
+    case = hosted_case()
+    case["context"][field] = value
+    report = run_case(harness, tmp_path, case)
+    assert not report["ok"]
+    assert len(report["createParams"]) <= 1
+    assert len(report["listParams"]) <= 1
