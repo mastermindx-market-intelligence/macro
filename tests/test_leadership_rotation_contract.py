@@ -49,6 +49,7 @@ from engine.leadership_rotation_context import (
     parse_time,
     rank_measured,
     relative_wealth,
+    fixed_minute_horizons,
     return_difference,
     rolling_carry,
     sector_cohort_snapshot,
@@ -1681,3 +1682,251 @@ def test_fix_a2_adapters_total_on_nested_malformed_payloads():
     assert keyed["rows"] == [] and keyed["malformed_rows"] == 0
     assert diagnose_rotation_payload(None, cohort_id="c")["malformed_rows"] == 0
     assert diagnose_rotation_payload(None, cohort_id="c")["malformed_container"] is False
+
+
+# --- descriptive fixed minute horizons (display-only, source-qualified) ---
+
+from datetime import datetime as _dt, timedelta as _td, timezone as _utc
+
+
+def _fixed_bars(symbol: str, *, session="2026-10-09:RTH"):
+    start = _dt(2026, 10, 9, 15, 0, tzinfo=_utc.utc)
+    slopes = {"SPY": 0.01, "XLK": 0.05, "XLV": -0.02}
+    return [{"bar_start_at": (start + _td(minutes=i)).isoformat(),
+             "available_at": (start + _td(minutes=i, seconds=75)).isoformat(),
+             "close": 100 + slopes[symbol] * i,
+             "bar_seconds": 60, "source_id": "massive-rest", "venue_scope": "ct_us_rth",
+             "session_id": session, "price_basis": "adjusted"}
+            for i in range(61)]
+
+
+def _fixed_case():
+    end = _dt(2026, 10, 9, 16, tzinfo=_utc.utc)
+    args = {"bars_by_symbol": {s: _fixed_bars(s) for s in ("SPY", "XLK", "XLV")},
+            "memberships": {"TECH": ["XLK"], "DEF": ["XLV"]},
+            "membership_version": "members-2026-10-09", "endpoint": end,
+            "knowledge_cutoff": end + _td(minutes=2), "session_id": "2026-10-09:RTH",
+            "source_id": "massive-rest", "venue_scope": "ct_us_rth",
+            "price_basis": "adjusted", "venue_admitted": True,
+            "rights": {"display": "permitted"}}
+    return args
+
+
+def _fixed_at(result, horizon: int, group: str):
+    row = next(r for r in result["windows"] if r["minutes"] == horizon)
+    return next(r for r in row["groups"] if r["group_id"] == group)
+
+
+def test_fixed_minute_hidden_daily_handoff_and_four_exact_horizons():
+    args = _fixed_case(); frozen = copy.deepcopy(args)
+    out = fixed_minute_horizons(**args)
+    assert args == frozen and out["scope"] == "display_only"
+    assert [w["minutes"] for w in out["windows"]] == [5, 15, 30, 60]
+    for h in (5, 15, 30, 60):
+        tech, defense = _fixed_at(out, h, "TECH"), _fixed_at(out, h, "DEF")
+        assert tech["state"] == defense["state"] == "measured"
+        assert tech["relative_wealth_pct"] > 0 and defense["relative_wealth_pct"] < 0
+        assert tech["coverage_fraction"] == 1 and tech["matched_n"] == 1
+        assert set(tech) <= {"group_id", "state", "reason", "absolute_return_pct", "relative_wealth_pct", "matched_n", "expected_n", "coverage_fraction", "excluded_members", "measurement_available_at", "source_lag_seconds"}
+    # Raw and benchmark returns are different quantities; no predictive tier.
+    assert _fixed_at(out, 5, "TECH")["absolute_return_pct"] != pytest.approx(
+        _fixed_at(out, 5, "TECH")["relative_wealth_pct"])
+
+
+def test_fixed_minute_expired_window_never_substituted_for_missing_exact_clock():
+    args = _fixed_case()
+    args["bars_by_symbol"]["XLK"] = [b for b in args["bars_by_symbol"]["XLK"] if b["bar_start_at"] != args["endpoint"].isoformat()]
+    out = fixed_minute_horizons(**args)
+    assert all(_fixed_at(out, h, "TECH")["state"] == "unmeasured" for h in (5, 15, 30, 60))
+    assert all(_fixed_at(out, h, "TECH")["relative_wealth_pct"] is None for h in (5, 15, 30, 60))
+
+
+def test_fixed_minute_benchmark_missing_withholds_all_relative_measurements():
+    args = _fixed_case(); args["bars_by_symbol"]["SPY"] = []
+    out = fixed_minute_horizons(**args)
+    assert all(r["state"] == "unmeasured" and r["relative_wealth_pct"] is None
+               for window in out["windows"] for r in window["groups"])
+
+
+def test_fixed_minute_partial_membership_is_identified_not_ranked_as_full_group():
+    args = _fixed_case(); args["memberships"] = {"MIX": ["XLK", "MISSING"]}
+    row = _fixed_at(fixed_minute_horizons(**args), 5, "MIX")
+    assert row["state"] == "partial" and row["matched_n"] == 1 and row["expected_n"] == 2
+    assert row["coverage_fraction"] == 0.5 and row["excluded_members"] == ["MISSING"]
+
+
+def test_fixed_minute_future_available_correction_is_not_as_known():
+    args = _fixed_case(); bars = args["bars_by_symbol"]["XLK"]
+    corrected = dict(bars[-1], close=160.0, available_at=(args["knowledge_cutoff"] + _td(minutes=1)).isoformat())
+    bars.append(corrected)
+    before = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert before["state"] == "measured"
+    args["knowledge_cutoff"] += _td(minutes=2)
+    after = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert after["state"] == "measured" and after["absolute_return_pct"] > before["absolute_return_pct"]
+
+
+def test_fixed_minute_ambiguous_equal_time_corrections_withheld():
+    args = _fixed_case(); bars = args["bars_by_symbol"]["XLK"]
+    bars.append(dict(bars[-1], close=150.0))
+    assert _fixed_at(fixed_minute_horizons(**args), 5, "TECH")["state"] == "unmeasured"
+
+
+def test_fixed_minute_price_and_venue_basis_refusals():
+    for key, val in (("price_basis", "raw"), ("venue_scope", "vendor_equity_reference"),
+                     ("session_id", "2026-10-09:EXT"), ("bar_seconds", 3600)):
+        args = _fixed_case();args["bars_by_symbol"]["XLK"][-1][key] = val
+        row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+        assert row["state"] == "unmeasured" and row["absolute_return_pct"] is None, key
+
+
+def test_fixed_minute_session_seam_withheld_without_interpolation():
+    args = _fixed_case(); args["bars_by_symbol"]["XLK"][-16]["session_id"] = "2026-10-09:PRE"
+    out = fixed_minute_horizons(**args)
+    assert _fixed_at(out, 15, "TECH")["state"] == "unmeasured"
+    assert _fixed_at(out, 5, "TECH")["state"] == "measured"
+
+
+def test_fixed_minute_rights_and_venue_admission_fail_closed():
+    for key, val in (("rights", {}), ("rights", {"display": "refused"}),
+                     ("venue_admitted", False)):
+        args = _fixed_case(); args[key] = val
+        out = fixed_minute_horizons(**args)
+        assert all(r["state"] == "unmeasured" and r["relative_wealth_pct"] is None
+                   for w in out["windows"] for r in w["groups"])
+
+
+def test_fixed_minute_source_availability_unknown_is_not_zero():
+    args = _fixed_case(); args["bars_by_symbol"]["XLK"][-1]["available_at"] = None
+    row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert row["state"] == "unmeasured" and row["reason"] == "availability_unknown"
+
+
+def test_fixed_minute_invalid_and_duplicate_population_rejected():
+    args = _fixed_case(); args["memberships"] = {"TECH": ["XLK", "XLK"]}
+    assert _fixed_at(fixed_minute_horizons(**args), 5, "TECH")["state"] == "unmeasured"
+    args = _fixed_case();args["horizons"] = (5, 5)
+    with pytest.raises(ValueError):fixed_minute_horizons(**args)
+    args = _fixed_case();args["horizons"] = (True,)
+    with pytest.raises(ValueError):fixed_minute_horizons(**args)
+
+
+def test_fixed_minute_both_groups_daily_flat_but_opposing_five_minute_moves():
+    args = _fixed_case()
+    for sym, left, right in (("SPY", 100.0, 100.0), ("XLK", 105.0, 100.0),
+                              ("XLV", 98.0, 100.0)):
+        bars = args["bars_by_symbol"][sym]
+        bars[-6]["close"] = left
+        bars[-1]["close"] = right
+    out = fixed_minute_horizons(**args)
+    # Previous daily close=100 is hypothetical context, not inferred by this helper.
+    assert args["bars_by_symbol"]["XLK"][-1]["close"] == 100
+    assert args["bars_by_symbol"]["XLV"][-1]["close"] == 100
+    assert _fixed_at(out, 5, "TECH")["absolute_return_pct"] == pytest.approx(-100*5/105)
+    assert _fixed_at(out, 5, "DEF")["absolute_return_pct"] == pytest.approx(100*2/98)
+
+
+def test_fixed_minute_bar_finality_clock_is_not_assumed_from_build_time():
+    args = _fixed_case()
+    args["bars_by_symbol"]["XLK"][-1]["available_at"] = (
+        args["endpoint"] + _td(seconds=20)).isoformat()
+    row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert row["state"] == "unmeasured" and row["reason"] == "unfinalized_minute"
+    args = _fixed_case()
+    args["knowledge_cutoff"] = args["endpoint"] + _td(seconds=30)
+    row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert row["state"] == "unmeasured" and row["reason"] == "endpoint_not_yet_final"
+
+
+def test_fixed_minute_naive_or_missing_clock_never_becomes_assumed_utc():
+    args = _fixed_case()
+    args["bars_by_symbol"]["XLK"][-1]["bar_start_at"] = "2026-10-09T16:00:00"
+    row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert row["state"] == "unmeasured" and row["reason"] == "invalid_source_clock"
+    args = _fixed_case();args["endpoint"] = args["endpoint"].replace(tzinfo=None)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        fixed_minute_horizons(**args)
+
+
+def test_fixed_minute_bad_numeric_prices_never_rescue_prior_valid():
+    for price in (0.0, -1.0, float("nan"), float("inf"), True):
+        args = _fixed_case();args["bars_by_symbol"]["XLK"][-1]["close"] = price
+        row = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+        assert row["state"] == "unmeasured" and row["relative_wealth_pct"] is None
+        assert row["reason"] == "invalid_price"
+
+
+def test_fixed_minute_timezone_offsets_are_normalized_without_cross_session_guessing():
+    args = _fixed_case()
+    for rows in args["bars_by_symbol"].values():
+        for row in rows:
+            row["bar_start_at"] = _dt.fromisoformat(row["bar_start_at"]).astimezone(
+                _utc(_td(hours=-4))).isoformat()
+            row["available_at"] = _dt.fromisoformat(row["available_at"]).astimezone(
+                _utc(_td(hours=-4))).isoformat()
+    out = fixed_minute_horizons(**args)
+    assert _fixed_at(out, 5, "TECH")["state"] == "measured"
+    assert out["endpoint_at"].endswith("+00:00")
+
+
+def test_fixed_minute_unknown_venue_or_research_rights_cannot_be_displayed():
+    args = _fixed_case()
+    args["venue_admitted"] = False
+    args["venue_scope"] = "vendor_equity_reference"
+    args["rights"] = {"display": "refused", "research": "permitted"}
+    out = fixed_minute_horizons(**args)
+    assert all(r["relative_wealth_pct"] is None
+               for w in out["windows"] for r in w["groups"])
+
+
+def test_fixed_minute_malformed_group_identity_is_a_programmer_error():
+    args = _fixed_case();args["memberships"] = {None: ["XLK"]}
+    with pytest.raises(ValueError, match="group identities"):
+        fixed_minute_horizons(**args)
+
+
+def test_fixed_minute_first_observable_clock_and_no_refresh_freshness_fraud():
+    args = _fixed_case()
+    out = fixed_minute_horizons(**args)
+    base = _fixed_at(out, 5, "TECH")
+    expected = (args["endpoint"] + _td(seconds=75)).isoformat()
+    assert base["measurement_available_at"] == expected
+    assert base["source_lag_seconds"] == pytest.approx(15)
+    assert out["windows"][0]["benchmark_available_at"] == expected
+    # Merely rebuilding later cannot move the producer's first-observable clock.
+    args["knowledge_cutoff"] += _td(minutes=30)
+    repeated = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert repeated["measurement_available_at"] == expected
+    assert repeated["source_lag_seconds"] == pytest.approx(15)
+
+
+def test_fixed_minute_late_member_correction_moves_available_at_not_bar_at():
+    args = _fixed_case()
+    prior = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    new_available = args["endpoint"] + _td(minutes=11)
+    args["bars_by_symbol"]["XLK"].append(dict(args["bars_by_symbol"]["XLK"][-1],
+                                             close=120, available_at=new_available.isoformat()))
+    args["knowledge_cutoff"] = args["endpoint"] + _td(minutes=12)
+    revised = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert revised["measurement_available_at"] == new_available.isoformat()
+    assert revised["source_lag_seconds"] == pytest.approx(600)
+    assert revised["absolute_return_pct"] > prior["absolute_return_pct"]
+
+
+def test_fixed_minute_denied_or_unknown_has_no_observable_clock():
+    args = _fixed_case();args["rights"] = {}
+    out = fixed_minute_horizons(**args)
+    assert all(r["measurement_available_at"] is None and r["source_lag_seconds"] is None
+               for w in out["windows"] for r in w["groups"])
+    assert all(w["benchmark_available_at"] is None for w in out["windows"])
+
+
+def test_fixed_minute_research_rights_cannot_relabel_data_as_display():
+    args = _fixed_case()
+    args["rights"] = {"research": "permitted"}
+    out = fixed_minute_horizons(**args)
+    assert all(r["state"] == "unmeasured" and r["measurement_available_at"] is None
+               for window in out["windows"] for r in window["groups"])
+    args["rights"] = {"research": "permitted", "display": "permitted"}
+    with pytest.raises(TypeError):
+        fixed_minute_horizons(**args, use="research")
