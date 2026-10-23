@@ -1,4 +1,185 @@
 ---
+workstream: "WS:MARKET-OS"
+session: "sol/web-portfolio-recovery-handoff-20261023-6ada"
+model: "sol"
+ended_because: "context_budget"
+mission: "Recover the Portfolio Terminal work after predecessor conversation 6ad826c0-5554-83ea-b48d-e1c80a2f6a7c exhausted context. Successor 6ada0d4a-2ca0-83ea-ae3b-c7c6fd57f25b owns the assigned continuation through source, independent review, CI, merge, installation and product acceptance. The project remains incomplete."
+state_before: "The October 21 record contains accepted historical evidence but stale active instructions. The current frontier is Terminal #1044 comment 6332922000; its latest dated continuation controls over older paragraphs. This refresh preserves the original record while replacing its active machine state."
+changed:
+  - path: "Terminal PR #1143"
+    what: "Published the currency-gap Risk explanation patch, rendered browser proof and current-base integration as head269623e0eb6f5110bedde31166e4acea8817d556. Only explanations and regression evidence change; calculations, account data and layout remain unchanged."
+  - path: "Macro PR #10073"
+    what: "Published OHLC delivery composition with accepted current-main fixes as head2e677fb637f926e0e604af9e88b57056e78975e1. Retained both complete new manifest jobs and all accepted updater/CI behavior."
+  - path: "Macro PR #10071"
+    what: "Completed the FRED response-hardening merge and incumbent installation. Confirmed one genuine scheduled collection, its published changed DGS3MO bytes, installed parity, and the existing reader's explicit stale result through the requested October22 floor."
+  - path: "agentos/handoffs/MARKET-OS-2026-10-21-PORTFOLIO-SESSION-RECOVERY.md"
+    what: "Refresh this existing handoff in a separate records-only managed operation; keep the complete October 21 frontmatter and body as dated historical evidence."
+verified:
+  - claim: "The Risk explanation patch has focused regression and rendered fixture proof."
+    command: "Run the eight added regression cases against old and corrected portfolioRisk source; run the full affected suite, Next typegen, TypeScript, language guard and TERMINAL_E2E_PORT=18783 TERMINAL_CROPS=1 npm run test:e2e:responsive -- portfolio-risk-reasons.spec.ts --workers=1; inspect retained crops."
+    result: "Old source: 7 failed/27 passed. Corrected source: 34 passed; typegen/TypeScript/language guard passed. Twelve browser cases passed in 38.2 seconds across desktop/tablet/mobile, English/Chinese and dark/light. Twelve raw synthetic crops are committed; six selected crops spanning all three viewports and both languages/themes were visually inspected. Initial Turbopack symlink startup ran zero tests; corrected dependency placement was environmental only. Scoped ESLint has inherited baseline findings and is not claimed green."
+  - claim: "The current Risk source is published with its actual main parent and fresh local composition checks."
+    command: "Read native merge commit parents/tree, exact source hashes, current-base-integration-20261023.json, typed publisher status and canonical GitHub commit/PR; consume the current CI checkout and unit log."
+    result: "Head269623e0eb6f5110bedde31166e4acea8817d556 has parents0180bd40e200f3996b3890799d274980aa71d12c and03133eb3d579d24297fa6933751e6ef1dfde25cc, tree92573c888bf18275ff87b794cee6d010c771ead3. Local34 focused tests/typegen/TypeScript passed with source hashes unchanged. CI39945260944 concluded SUCCESS at12:09:11Z with all17jobs passing. Actual tested merge412c697ccf3f04e1591a04fe2d0cccbbaa04684c has parents03133+269623 and the same candidate tree. Unit/typecheck16666passed/2skipped/4todo,977filespassed/2skipped; all12browser-job logs consumed:2948passed/845skipped/0flaky/0failed. All21reported check-runs, including CodeQL and the three required checks, succeeded. At12:10Z canonical master remained03133 and PR1143 was draft/unarmed/mergeable/clean."
+  - claim: "The OHLC integration preserves accepted main behavior and passes its bounded local composition checks."
+    command: "Compare resolved source blobs with independent three-way predictions, compare parsed manifest fields, run deployment, BioCatalyst census, OHLC/chart and CI packing suites; verify native merge parents and canonical push readback."
+    result: "Head2e677fb637f926e0e604af9e88b57056e78975e1, parentsc0aef9d74ca8306603b7c6ba928256b30a1410a5 andf4c0634e561eaa423d2ca0c3e8060d5dc2e3597d, treee80a2eab6cbe1d2a9407782a8911f5f7c73c19ef. Deployment422 passed; BioCatalyst45 passed after placing its temporary fixture under the existing owner-group workspace cache; OHLC/chart78 passed; scope/import/ancestor/packing8 passed. The initial44-pass/1-failure census and its exact UID/GID environment cause are retained. No source, assertion, permission or ownership check was weakened."
+  - claim: "Current OHLC hosted proof is bound to the newer actual tested main, not the stale PR base field."
+    command: "Read CI39947225492 ci-plan job120392724538 checkout, verified parent identities and emitted plan."
+    result: "Actual tested merge d0687c1cdbb1e78e8893199614db923a3d3556a0 combines head2e677 with base0955f19c8e474b0f65da479c42a02ac91824cd21. Plan selects281 logical jobs into12 packs; digestfec2678fd0d0fe5a073ad126d644ebece6491b0c7d5535dd8db7fe62720e6271. Workflow remained running at11:51Z. Companion medtech/fences/ci-authority checks succeeded; no final CI acceptance is claimed."
+  - claim: "The October 23 Finviz discretionary preference has ended."
+    command: "Read the user's release-edge ruling and canonical #847 squash commit/parent/tree."
+    result: "Protected squash03133eb3d579d24297fa6933751e6ef1dfde25cc at10:08:56Z ends that preference immediately. Parent ea1f6ffe429aa329c64522b14ffa6e12d63493d5; treea6eca2e9c01262676fd8834b490d66b43cdb7134. No wait for its deployment, another ACK or10:45 expiry. Independent requirements remain; its deployment80728 and authenticated journey remain its owner's duty."
+  - claim: "FRED hardening is merged and installed, without claiming real series freshness."
+    command: "Read #10071 merge/tree, incumbent installation receipt /tmp/portfolio-fred-10071-installed-1739-20261022.json and installed source hashes."
+    result: "Accepted head59cbd1864e310b28cb17610d73a0c46a1db5da8d merged as7a8f690d35693976b2854575833eb2041618a005 at17:33:05Z October22; tree35c3253ad32ea91bd357248cbd4d0ee3bdbdea06 matched acceptance. Installed17:39:47Z. Collector SHA256cd283e3de968314e620df1b84bd5945106c88f6e357f481f8d2c6be8c244e048. Its41 focused tests are local evidence; that test file was not registered as a code-gated PR suite."
+  - claim: "The original publication and permission fences are preserved."
+    command: "Consume the exact Fabric request result and one same-run status; read back #1143 after the separately rejected PR-description mutation; do not replay either."
+    result: "Fabric runportfolio-risk-reasons-review-20261023-01 returned 'user rejected MCP tool call'. Same-run status was NOT_FOUND, result_available=false, root_verified=false, execution_absence_proven=false and retry_allowed=false. The separate PR-description write returned the same rejection string; canonical body remained unchanged. No alternate provider, run ID or native review substitutes for the denied Fabric request."
+  - claim: "The genuine scheduled collection's changed DGS3MO file is installed, and its exact current coverage is known."
+    command: "Read daily39880538794 collect logs and the canonical0bfbe8a0 publication metadata; use the existing strict SSH carrier for read-only installed file hashes and the installed read_history(root=/opt/macro,start=2026-10-01,end=2026-10-22,expected_through=2026-10-22)."
+    result: "One actual collection ran00:58:52–03:55:54Z October23; attempt2 carries forward identical collect logs. Publication0bfbe8a0c948e79466c52edc52aeaa8f16941888 changed DGS3MO to blobff4ea0aa2aee6c0c106fa506413f409d4b1173ef/121279bytes. At11:58:26Z installed Macro HEAD0955f19 and the same file blob/SHA256bc6bdfc4bb930fbc04d8fdd83093c4c0867256cee89639e3384cb6bfae023333 were observed. At11:59:39Z the installed helper returned stale/before_expected_through,14 observations, first2026-10-01,last2026-10-21. Origin remains FRED and publication_status not_qualified. This is not an authenticated Terminal request or positive consumer acceptance; no collector was rerun."
+unverified:
+  - claim: "Current Terminal #1143 has fresh independent Fabric acceptance and is merged, deployed and live-proven."
+    what_would_verify: "Preserve current fully consumed CI proof for269623/base03133 unless materially invalidated. Obtain explicit renewed approval before submitting the concrete fresh Fabric review, consume independent acceptance, then follow normal protected expected-head merge, exact squash/tree verification, incumbent deployment and authenticated live proof."
+  - claim: "Current OHLC #10073 has completed its backend delivery chain."
+    what_would_verify: "Consume CI39947225492 and all current checks, verify current candidate/base and review coverage, then normal merge. Observe incumbent root updater installation and exact helper/updater bytes, a genuine trusted-main daily completion, receiver receipt/atomic selection and authenticated consumer evidence."
+  - claim: "Positive real price-window and Treasury coverage is established."
+    what_would_verify: "Read qualifying real data and the existing authenticated consumer path. A collector aggregate success, no-op schedule, fixture or old successful UI path does not establish per-series freshness or positive Portfolio coverage. Historical entry currency must not be guessed."
+unresolved:
+  - "Risk Fabric acceptance is still owed. The explicit review-request refusal is a real boundary; current source publication and supporting native judgments do not clear it."
+  - "The separately rejected #1143 description write remains unretried. Current status is retained in the single canonical checkpoint and source evidence."
+  - "Risk CI is fully consumed and green on269623/base03133. OHLC hosted CI was running at12:07Z with four of twelve packs successful. One bounded120-second observer43377 owns the remaining original OHLC run; its retained files are under /tmp/portfolio-current-ci-269-2e-20261023. Read its original result instead of creating a duplicate observer."
+  - "Positive historical-source and real consumer acceptance remain open; current negative-state behavior is correctly withholding unsupported metrics."
+next_actions:
+  - "Read the latest dated continuation in Terminal #1044 comment6332922000 and inspect the exact current PR heads/checks before acting. Preserve the original managed source carriers."
+  - "Preserve consumed green Terminal CI39945260944 and its exact head/base/tree. Consume Macro CI39947225492 through the original observer43377, then final jobs/semantic evidence and current base/head qualification. Triage concrete failures without cancelling unrelated jobs or weakening checks."
+  - "Keep #1143 draft and unarmed until the denied Fabric-review lane is explicitly reauthorized and independently accepted. Do not retry the request under another run ID/provider or use native review as a replacement."
+  - "Advance eligible OHLC backend work through its existing review, normal merge and incumbent install/daily/receiver/consumer gates. Do not use Macro --auto: its unprotected path can merge immediately."
+  - "Finish this records-only carrier with schema validation, source/wording review and applicable CI. No runtime deployment is required for the handoff."
+  - "Refresh this same handoff and canonical checkpoint at material changes; do not recreate the predecessor's work or restart old observers."
+do_not_redo:
+  - "Do not recreate Portfolio implementation, accepted Paper design, research, original PRs or existing source workspaces."
+  - "Do not reapply migration0036 or superseded migrations. SQL SHA2569c09540e7b4e451e55a39d8229b3a73eb93c997578f3dadfdc3f24b47a7f7f4c and original receipt511faa4788ca35b8946070bdc8420057fcd0bd62be96fa289c058609e3fe3ff1 remain authoritative."
+  - "Preserve completed Terminal1044/1097/1099/1114/1125 releases, Macro Treasury9880 and FRED10071; their evidence stays bound to its original source and execution."
+  - "The seven-action disposable QA and cleanup completed to0 open/0 closed/no Targets. The old write grant is closed and cannot be reused; existing real-account work is read-only."
+  - "Do not replay Fabric014/015 or current Risk review-run01, uncertain blob98d8106ec3051f839f34177dfd0cf2d6c6a757e2, the denied history acquisition or blocked host-identity probe."
+  - "Do not revive merged records carrier9987, its unused duplicate operation, completed observer20721 or historical observers38412/18202/8270. Unrelated preview38004 at port18778 remains preserved; a retained PID is not proof of liveness."
+  - "Do not replay the ambiguous tests/test_build_chart_data.py append; unchanged259-line/hash7d2200b2054eb334eec965e1ccedb7c13c7b69586eb29227c32eb5d4ba99fcf0 reconciliation is final."
+  - "Do not alter account data or infer entry currency to manufacture positive risk/history proof. Do not dispatch broad collectors or fabricate daily completion receipts."
+danger_areas:
+  - "An unknown write effect is reconciled through the same original carrier, never retried or failed over. Native bounded source judgments are not the requested Fabric independent review."
+  - "The typed commit publisher creates one parent. For a pending merge use ordinary native Git commit with hooks and verify both actual parents; typed push remains appropriate."
+  - "Macro PR base metadata can lag actual main. Bind CI to its logged merge/base/head and semantic plan. Historical green proof and inherited replay results are not automatically current acceptance."
+  - "Current local OHLC fixtures require matching UID/GID. The corrected --basetemp stays inside the existing ignored workspace cache; do not weaken the secure helper or change ownership."
+  - "Terminal source identity is /opt/terminal/.gitsrc HEAD plus .deployment-id and actual browser asset dpl markers. The intentionally constant Next BUILD_ID is not a source identifier."
+  - "Use the existing incumbent production owners and strict pinned carrier. Preserve FD9 locking, Caddy adoption fences, source rights, exact check protection and all independent holds. Finviz deployment80728 remains with its owner; this handoff assigns no executor or observer for it."
+  - "Public proof must omit private account identifiers, holdings, costs, hydration state, tokens, cookies and unsolicited personal screenshots."
+  - "Generated Agent OS views are nightly-owned. Edit this record only; do not hand-regenerate docs/AGENT_OS_STATE.md or data/governance/agent_os_state.json."
+prs:
+  - 1044
+  - 1097
+  - 1099
+  - 1114
+  - 1125
+  - 1143
+  - 9880
+  - 9987
+  - 10071
+  - 10073
+decisions:
+  - "DEC:PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18"
+  - "DEC:TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP"
+---
+
+# Portfolio Terminal recovery — current frontier
+
+## §0 State — 2026-10-23, 12:10 UTC snapshot
+
+The currency-gap Risk explanation patch is published in [Terminal #1143](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1143) at **269623e0eb6f5110bedde31166e4acea8817d556**. Its focused tests and twelve rendered fixture cases passed; the complete current hosted CI and CodeQL are green, while the requested fresh Fabric review remains blocked by an explicit tool rejection. [Macro #10073](https://github.com/mastermindx-market-intelligence/macro/pull/10073) is published at **2e677fb637f926e0e604af9e88b57056e78975e1** with its current-base local checks passing and hosted CI still running at the12:07Z census. Both remain draft and unarmed; neither is claimed merged, installed or live-proven.
+
+The assigned successor conversation is `6ada0d4a-2ca0-83ea-ae3b-c7c6fd57f25b`. Its single cumulative continuation checkpoint is [Terminal #1044 comment 6332922000](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1044#issuecomment-6332922000). Read the latest dated section and actual evidence rather than executing older pending-action prose. The schema's `ended_because: context_budget` records the predecessor's exhausted conversation, which caused this recovery; it does not declare that the current continuation has stopped. `model: sol` records the assigned principal role, not the actual model product name.
+
+The October 23 Finviz-specific discretionary preference ended on #847's **10:08:56 UTC** protected merge, commit **03133eb3d579d24297fa6933751e6ef1dfde25cc**. No Finviz deployment observation or additional acknowledgment is owed by this receiver. Review, CI, backend, custody, rights and other independent requirements remain.
+
+### Current carriers and evidence
+
+| Lane | Existing operation and workspace | Exact proof |
+|---|---|---|
+| Risk explanations | `portfolio-risk-reasons-20261022`; `/Volumes/Mastermind/agent-workspaces/terminal/web/portfolio-risk-reasons-20261022` | [Committed source/browser evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/269623e0eb6f5110bedde31166e4acea8817d556/terminal/docs/verification/portfolio-risk-reasons-20261022); [CI39945260944](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39945260944); [CodeQL39945255027](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39945255027) |
+| OHLC delivery | `portfolio-ohlc-delivery-20261022`; `/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022` | [Current integration receipt and raw logs](https://github.com/mastermindx-market-intelligence/macro/blob/2e677fb637f926e0e604af9e88b57056e78975e1/docs/verification/portfolio-ohlc-delivery-20261022/current-base-integration-20261023.json); [CI39947225492](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39947225492) |
+| This record | `portfolio-recovery-handoff-20261023-6ada`; `/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-recovery-handoff-20261023-6ada` | Started from exact Macro main0955f19c8e474b0f65da479c42a02ac91824cd21. Workspace acquisition returned EFFECT_UNKNOWN; same-operation publisher status and local Git inspection reconciled an existing clean workspace at the requested base/branch. No acquisition replay or replacement operation occurred. |
+
+Risk changes select the existing monetary refusal reason for unavailable concentration, industry, size and liquidity explanations: overflow, unknown currency, then mixed currency. They scan the complete gap collection, not the capped visible rows. The existing three cards and liquidity detail retain their layout. No calculation, schema, historic entry currency or account data is changed.
+
+The first successful rendered run used an isolated synthetic record with positive shares/price and unknown entry currency. It established truthful negative-state copy, not positive live history. The full Terminal run concluded successfully at12:09:11Z. Its actual tested merge412c697 has the same tree92573c8 as the published candidate and parents03133+269623. All17 workflow jobs and all21 reported check-runs succeeded. Unit/typecheck produced16666 passes/2 skips/4 todo; the12 browser-job logs produced2948 passes/845 skips/0 flaky/0 failed, with all checkout bindings verified. Canonical master was still03133 at12:10Z. Fresh Fabric acceptance remains separate.
+
+Current-base source hashes remain unchanged:
+
+- Risk source: `d9927185b9a536baf391b434e615258647c7a81a1d593b8abf38791d30851ae8`.
+- Unit regression source: `1234ec82351450c8aa59f2a5b63f7cd31e1c36cc5884d8d8b23fe89aaba831a9`.
+- Browser source: `6f523d62b63217d11054ece8d62e98e051db3e0112eeaa4db561c40bdf4aec2b`.
+
+OHLC retained the complete `ohlc-origin-delivery` and `catalyst-opportunity` manifest jobs, current packing ceilings and accepted browser/Brain timeouts. Three-way source judgment and exact blobs are in the integration receipt. The helper SHA256 remains `ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8`; chart producer remains `41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719`.
+
+### New retained-data evidence — 2026-10-23, 11:59 UTC
+
+[Scheduled daily39880538794](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39880538794) used the accepted FRED collector source and completed one real collection. Its attempt2 collect logs are the same original execution, not a second independent pass. The collect job published [market-data checkpoint0bfbe8a0](https://github.com/mastermindx-market-intelligence/macro/commit/0bfbe8a0c948e79466c52edc52aeaa8f16941888) at03:54:28Z before the broader daily failed. DGS3MO changed from blobc80072cc5524e5dd559243f0fe523bd8c6cf5b5d to **ff4ea0aa2aee6c0c106fa506413f409d4b1173ef**. The aggregate FRED maximum date2029-01-01 is not a per-series freshness measure.
+
+The existing production carrier observed Macro HEAD0955f19 at11:58:26Z and the installed121279-byte DGS3MO file with that exact published blob; SHA256 **bc6bdfc4bb930fbc04d8fdd83093c4c0867256cee89639e3384cb6bfae023333**. The accepted collector SHA stayed unchanged. Installed Treasury helper SHA256 is **eea63b3bdaa9fed90948df1f304ac811eb4c9fc8704aab6f56eeeda98943296a**.
+
+At11:59:39Z, a read-only call to that installed helper for the explicit October1–22 window and October22 floor returned **stale / before_expected_through**,14 observations, firstOctober1 and last **October21**. That proves the installed file's latest observation and the helper's explicit stale classification. It does not prove a fresh authenticated Terminal response, replace the positive-price-window prerequisite, or qualify an original H.15 acquisition. No HTTP/account request, collector rerun or manual receiver reconciliation was invoked; original read processes299 and3897 completed with exit0 and were consumed.
+
+### Actual OHLC CI composition qualification
+
+A bounded independent read compared the complete268-file incoming main deltaf4→0955 and candidate2e→tested merged0687; neither comparison was truncated. All resulting non-manifest files match incoming main, and the manifest adds only four lines for an existing Agent OS scope's offline Linear preflight paths and command. Previously reviewed OHLC/helper/updater/runner/test source is unchanged. The added command remains a current-run proof obligation. Tested tree **13da4afff390ae3c422209d6a4c1abac3c1bbcb0** and parents0955+2e were independently confirmed and read back by root. This source qualification is not a CI or release verdict.
+
+### Explicit permission fences
+
+The exact Fabric request `portfolio-risk-reasons-review-20261023-01` returned **user rejected MCP tool call**. One same-run read returned NOT_FOUND, no available result, `execution_absence_proven=false` and `retry_allowed=false`. No dispatch receipt or controller PID was supplied. A new source head does not clear this refusal. Obtain explicit renewed approval before a new submission; do not change run ID, provider or carrier to evade it, and do not treat a native reviewer as the requested Fabric review.
+
+A separate attempt to update the #1143 description returned the same rejection text. Canonical readback confirmed the body stayed unchanged. Do not replay that description mutation. Code publication and the existing canonical checkpoint updates are distinct actions and succeeded. Neither rejection was reported as an automatic approval-review rejection.
+
+## §1 What remains — in order
+
+1. Preserve the fully consumed green Terminal CI39945260944 for269623/base03133:17 successful jobs,16666 unit passes and2948 browser passes, with845 browser skips and no flaky or failed browser result. All21 reported check-runs succeeded. Consume the remaining Macro CI39947225492 through original observer43377 and its final semantic evidence; no duplicate observer. Earlier green Risk run39925598350 belongs to0180/baseea1f6; failed OHLC run39827098646 belongs toc0 and remains failed evidence.
+2. Continue eligible OHLC delivery through existing independent source acceptance and normal merge, followed by incumbent updater installation, exact byte parity, a genuine trusted-main daily completion, receiver receipt/atomic selection and authenticated consumer proof. Do not arm or merge on pending proof; never use Macro `--auto` as a waiting mechanism.
+3. Keep the concrete published Risk candidate ready for the user's renewed Fabric authorization. After that review is genuinely accepted and all required proof is current, follow normal protected merge and incumbent deployment. Verify actual merged tree and served generation.
+4. Complete this records-only publication with `python3 scripts/agentos.py validate`, diff review, independent wording judgment and applicable CI. Do not deploy a runtime for a handoff-only change.
+5. Resolve real data availability using retained evidence and the existing authorized read paths. FRED #10071 is merged and installed. The genuine scheduled run39880538794 published changed DGS3MO bytes, and the installed file matches that publication. Its latest observation is2026-10-21; the installed helper returned stale for the explicit2026-10-22 floor. Positive authenticated consumer proof is still owed. Off-slot39885618806 is a no-op, and attempt2 reuses the original successful collect execution. Do not rerun collectors to create a receipt.
+
+## §2 What will cause mistakes
+
+- **Keep source, execution and acceptance separate.** Current Risk CI checks merge412c697 against03133; current OHLC CI checks merged0687 against0955, despite the PR base field having reportedf4. A green old head or a historical accepted tree cannot be relabeled as current proof.
+- **Use native Git for a pending merge.** The typed commit publisher produced a single-parent commit during an earlier OHLC merge. That incident was repaired on the same carrier. Current269623 and2e677 were committed with ordinary Git hooks and have both verified parents.
+- **Keep raw failed evidence.** The OHLC fixture under Mac /tmp inherited GID0, whereas the secure check expected process GID20. Moving only its pytest temporary directory into the existing owner-group cache produced45 passes. No chmod, chown, source change or assertion relaxation was used. Historical whitespace diagnostics in frozen evidence files are preserved.
+- **Do not confuse installation with serving.** The last root-proven Terminal generation was32b6ba43704a5a87db2582b2b9617271382358b5 on October22. New current serving identity must be read at the next eligible release. Use `/opt/terminal/.gitsrc`, `.deployment-id` and loaded asset `dpl`; Next BUILD_ID is intentionally constant.
+- **Use incumbent backend mechanisms.** The root Macro cron runs every three minutes through terminal-volume-guard and /usr/local/bin/macro-update. Inactive systemd updater/timer units can be normal. OHLC staging stays outside FD9; selection remains bounded, monotonic, digest-checked and atomic. Do not manually reconcile merely to create proof.
+- **Preserve data meaning.** Treasury uses the literal loopback backend, existing server Bearer and actual peer loopback; no X-MM-Peer, browser cookies, holdings or costs are forwarded. Qualified positive price coverage precedes the Treasury request. Unknown historical entry currency independently prevents weights/history; ticker or current quote currency cannot repair it.
+- **Keep account authorization closed.** Earlier disposable QA and cleanup finished. No new writes or Targets mutation are authorized by a historical grant. Public evidence excludes all private account details.
+- **Do not revive old execution.** Observer20721 completed and its return was consumed. Current code/check processes also completed locally. The bounded120-second observer43377 monitors the original runs from /tmp/portfolio-current-ci-269-2e-20261023; it observed Terminal SUCCESS at12:09:38Z and now polls only the remaining OHLC run. It is not an automatic conversation wake-up. Unrelated preview38004/18778 is preserved. Do not infer process liveness from a saved number.
+
+## §3 Decisions and findings retained
+
+Existing decisions `DEC:PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18` and `DEC:TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP` remain. No new policy, authority map, lease, scheduler or release gate is created by this record.
+
+Migration0036 was applied once on October19. Core1044 and ledger1097, consumer1099, later1114 and design1125 completed their recorded releases. Macro Treasury9880 merged as1f0b19fb3a60940ff3084b606f25d6e9eac84529 and installation parity was observed; its old custody hold is historical. FRED10071 merged as7a8f690d35693976b2854575833eb2041618a005 and installation was observed. Their limited receipts remain accepted where unchanged; positive source/consumer acceptance is separate.
+
+## §4 Out of scope — preserve rather than adopt
+
+The Brief-book consistency operation `portfolio-brief-book-consistency-20261022` remains prepared but unimplemented. EventImpactPanel material in comment6339613771 remains unadopted and lacks whole-workflow/review acceptance. Portfolio Bot rebuild work is separate. No Slack or email message was sent. Finviz deployment80728 is exclusively its owner's work; do not add an executor or observer.
+
+The complete original record follows for provenance. It is not a second active handoff or a set of current commands.
+
+---
+
+## Historical record — October 21, 2026
+
+All sections below retain their original evidence and timestamps. Their pending work, current heads, observer instructions, permissions and capability observations are superseded by the current frontier in this record. Accepted evidence remains bound to its original source and execution. The immutable prior version is [blob97b918d at Macro0955f19](https://github.com/mastermindx-market-intelligence/macro/blob/0955f19c8e474b0f65da479c42a02ac91824cd21/agentos/handoffs/MARKET-OS-2026-10-21-PORTFOLIO-SESSION-RECOVERY.md).
+
+### Original frontmatter — historical only
+
+````yaml
 workstream: WS:MARKET-OS
 session: sol/web-portfolio-session-recovery-20261021
 model: sol
@@ -95,7 +276,9 @@ prs: [1044, 1097, 1099, 9880, 9987]
 decisions:
   - "DEC:PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18"
   - "DEC:TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP"
----
+````
+
+### Original body — historical only
 
 ## Continuation checkpoint — 2026-10-21, 13:39Z
 
