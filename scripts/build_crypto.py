@@ -710,5 +710,25 @@ def build(site_dir: Path | None = None) -> Path:
     return output
 
 
+def _build_r4_shadow(site: Path) -> None:
+    """Refresh the isolated R4 preview after legacy Crypto writes its contracts.
+
+    This is additive only. Legacy crypto.html/vector.html stay with their
+    established owners, and preview failure cannot abort their daily render.
+    """
+    try:
+        from scripts.build_crypto_intelligence_r4 import build as build_r4
+
+        result = build_r4(site, site)
+    except Exception:
+        log.exception("crypto R4 shadow failed; existing production routes preserved")
+    else:
+        log.info(
+            "crypto R4 shadow refreshed: as_of=%s market_as_of=%s, production cutover=%s",
+            result["as_of"], result["market_as_of"], result["production_routes_replaced"],
+        )
+
+
 if __name__ == "__main__":
-    build()
+    legacy_output = build()
+    _build_r4_shadow(legacy_output.parent)
