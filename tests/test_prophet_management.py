@@ -148,6 +148,32 @@ def _run(
     )
 
 
+# WP04 — legacy/null base vs explicit zero (not a probability claim)
+
+def test_management_confidence_default_only_when_missing_or_null():
+    ordinary = _run(_make_plan(confidence=60.0))
+    missing_plan = _make_plan()
+    del missing_plan["confidence"]
+    missing = _run(missing_plan)
+    null_plan = _make_plan()
+    null_plan["confidence"] = None
+    null = _run(null_plan)
+    for key in ("management_confidence", "raw_confidence", "delta_vs_base"):
+        assert missing[key] == ordinary[key]
+        assert null[key] == ordinary[key]
+
+
+def test_management_confidence_explicit_zero_is_not_default_sixty():
+    zero = _run(_make_plan(confidence=0.0))
+    sixty = _run(_make_plan(confidence=60.0))
+    # The input affects the existing management scoring projection, not phase,
+    # recommendation, plan identity, geometry or trading permissions.
+    assert zero["delta_vs_base"] == pytest.approx(zero["management_confidence"])
+    assert zero["delta_vs_base"] != sixty["delta_vs_base"]
+    assert zero["phase"] == sixty["phase"]
+    assert zero["recommended_action"] == sixty["recommended_action"]
+
+
 # ===========================================================================
 # 1. PHASE_WEIGHTS integrity
 # ===========================================================================
