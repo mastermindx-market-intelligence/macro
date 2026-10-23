@@ -899,7 +899,17 @@ def _build_maturity_wall(cm_path: Path | None) -> list[dict]:
     try:
         import pandas as _pd
         mw = _pd.read_parquet(mw_path)
-        mw = mw[mw["scope_type"] == "theme"]
+        mw = mw[mw["scope_type"] == "theme"].copy()
+        # PIT: compare all themes from the same latest observed snapshot.
+        # An old per-bucket row cannot stand in for the currently dated view.
+        if mw.empty or "as_of" not in mw.columns:
+            return []
+        mw["as_of"] = _pd.to_datetime(mw["as_of"], errors="coerce")
+        mw = mw.dropna(subset=["as_of"])
+        if mw.empty:
+            return []
+        maturity_asof = mw["as_of"].max()
+        mw = mw[mw["as_of"] == maturity_asof]
     except Exception:  # noqa: BLE001
         return []
 
@@ -918,7 +928,8 @@ def _build_maturity_wall(cm_path: Path | None) -> list[dict]:
             if val > 0:
                 segs.append({"css_class": _SEG_CSS[bkt], "flex": round(val / 1_000_000, 1)})
         if segs:
-            rows.append({"slug": slug, "en": en, "zh": zh, "segs": segs})
+            rows.append({"slug": slug, "en": en, "zh": zh, "segs": segs,
+                         "as_of": maturity_asof.strftime("%Y-%m-%d")})
     return rows
 
 

@@ -1162,7 +1162,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   {# 7. MATURITY WALL MINI-CARD #}
   {% if cc_vm.maturity_wall %}
   <div class="card cs-card cs-neutral">
-    <h2>{{ t('When the debt comes due', '债务到期分布') }}</h2>
+    <h2>{{ t('Tracked bond-fund holdings by maturity', '跟踪债券基金持仓到期期限分布') }}</h2>
     <div class="cc-mat-wall">
       {% for row in cc_vm.maturity_wall %}
       <div class="cc-mat-row">
@@ -1184,7 +1184,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       <span><span class="cc-dot" style="background:var(--blue)"></span><span class="l-en">5–10y</span><span class="l-zh">5–10年</span></span>
       <span><span class="cc-dot" style="background:var(--indigo)"></span><span class="l-en">10y+</span><span class="l-zh">10年+</span></span>
     </div>
-    <p class="sub faint" style="margin:8px 0 0;font-size:11px">{{ t('All themes had zero bonds maturing within 1 year as of ' ~ cc_vm.as_of ~ '.', '截至' ~ cc_vm.as_of ~ '，所有主题均无1年内到期债券。') }}</p>
+    <p class="sub faint" style="margin:8px 0 0;font-size:11px">{{ t('Fund holdings only: face values held by five tracked funds, not total issuer debt or refinancing maturities. Holdings as of ' ~ cc_vm.maturity_wall[0].as_of ~ '.', '仅显示五只跟踪基金的债券持仓面值，并非发行人全部在外债务或完整再融资到期负担。持仓日期：' ~ cc_vm.maturity_wall[0].as_of ~ '。') }}</p>
   </div>
   {% endif %}
 
