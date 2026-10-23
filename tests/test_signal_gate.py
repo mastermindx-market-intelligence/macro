@@ -391,3 +391,79 @@ class TestEngineErrorIsDistinguishableFromThinHistory:
         v = sg.gate("TEST", self._thin_tape())
         assert v["reason"] == "insufficient history"
         assert v["eligible"] is False
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+@pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+    from copy import deepcopy
+    from engine import signal_gate as sg
+    full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+            'asof': '2026-09-18', 'input_asof': input_asof}
+    before = deepcopy(full)
+    out = getattr(sg, serializer_name)(full)
+    assert 'input_asof' in out
+    assert out['input_asof'] == input_asof
+    assert json.loads(json.dumps(out, allow_nan=False))['input_asof'] == input_asof
+    assert sg.is_buyable(out) == sg.is_buyable(full)
+    assert full == before
+    if serializer_name == 'compact':
+        assert out['asof'] == '2026-09-18'  # analytical bucket remains independent
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+def test_signal_serializer_does_not_invent_a_daily_receipt_from_the_bucket(serializer_name):
+    from engine import signal_gate as sg
+    out = getattr(sg, serializer_name)({'eligible': True, 'tier_cascade': 'T2',
+                                      'asof': '2026-09-22'})
+    assert 'input_asof' not in out  # preserve legacy shape as well as honest absence
+    assert 'input_asof' not in getattr(sg, serializer_name)(None)
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+@pytest.mark.parametrize('invalid', [True, 20260922, float('nan'), {}, ['2026-09-22']])
+def test_signal_daily_receipt_is_json_safe_without_coercing_unknown_types(serializer_name, invalid):
+    from engine import signal_gate as sg
+    out = getattr(sg, serializer_name)({'eligible': False, 'tier_cascade': None,
+                                      'input_asof': invalid})
+    assert out['input_asof'] is None
+    assert sg.is_buyable(out) is False
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+def test_receipt_preservation_never_changes_the_signal_eligibility_decision(serializer_name):
+    from engine import signal_gate as sg
+    serializer = getattr(sg, serializer_name)
+    for eligible in (False, True):
+        for tier in (None, 'T1', 'T2', 'T3', 'T4'):
+            legacy = {'eligible': eligible, 'tier_cascade': tier, 'ticks': 1}
+            enriched = {**legacy, 'input_asof': '2026-09-22'}
+            before, after = serializer(legacy), serializer(enriched)
+            assert after.pop('input_asof') == '2026-09-22'
+            assert after == before
+            assert sg.is_buyable(serializer(enriched)) == sg.is_buyable(legacy)
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+@pytest.mark.parametrize('invalid', ['', '2026-09-31', '20260922', '2026-W39-2',
+                                      '2026-09-22T00:00:00Z', '2026-9-22'])
+def test_daily_input_receipt_rejects_noncanonical_dates(serializer_name, invalid):
+    from engine import signal_gate as sg
+    out = getattr(sg, serializer_name)({'input_asof': invalid, 'eligible': False})
+    assert out['input_asof'] is None
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+def test_daily_input_correction_is_not_hidden_by_bucket_identity(serializer_name):
+    from engine import signal_gate as sg
+    serializer = getattr(sg, serializer_name)
+    original = {'asof': '2026-09-18', 'input_asof': '2026-09-21',
+                'eligible': True, 'tier_cascade': 'T2'}
+    before = serializer(original)
+    corrected = serializer({**original, 'input_asof': '2026-09-22'})
+    assert before['input_asof'] == '2026-09-21'
+    assert corrected['input_asof'] == '2026-09-22'
+    assert before.get('asof') == corrected.get('asof')
+    assert sg.is_buyable(before) == sg.is_buyable(corrected)

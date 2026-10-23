@@ -668,12 +668,33 @@ def blend_sorted(items: list, base_of, verdict_of, reverse: bool = True, bonus_o
     return sorted(items, key=_score, reverse=reverse)
 
 
+def _with_input_receipt(out: dict, verdict: dict) -> dict:
+    """Retain an explicit daily-input date without assigning freshness or validity.
+
+    Legacy receipts keep their key set. Invalid/non-date values stay unknown;
+    the consumer owns exchange-session checks. The analytical bucket is not a
+    fallback, and serialization must never stamp today's date onto old input.
+    """
+    from datetime import date
+
+    if "input_asof" in verdict:
+        value = verdict["input_asof"]
+        out["input_asof"] = None
+        if isinstance(value, str) and len(value) == 10:
+            try:
+                if date.fromisoformat(value).isoformat() == value:
+                    out["input_asof"] = value
+            except ValueError:
+                pass
+    return out
+
+
 def compact(v: dict | None) -> dict:
     """The display-safe verdict subset to attach to a grid card row (drops "result")."""
     if not v:
         return {"eligible": False, "tier": None, "sub": None, "reason": "no signal",
                 "reasons": ["no signal"]}
-    return {k: v.get(k) for k in _VERDICT_KEYS}
+    return _with_input_receipt({k: v.get(k) for k in _VERDICT_KEYS}, v)
 
 
 # the SLIM, fully JSON-safe verdict for the "what to buy" boards (Top-setups strip on
@@ -693,7 +714,7 @@ def buy_signal(v: dict | None) -> dict:
         return {"eligible": False, "tier_cascade": None, "htf_s1": False, "htf_s2": False,
                 "young_history": False, "anchor_era": confluence_tiers.ANCHOR_ERA,
                 "sq_anchor_era": signal_quality.ANCHOR_ERA}
-    return {k: v.get(k) for k in _BUY_KEYS}
+    return _with_input_receipt({k: v.get(k) for k in _BUY_KEYS}, v)
 
 
 def validity_block(as_of: str | None, emitted_at: str, pair_id: str) -> dict:
