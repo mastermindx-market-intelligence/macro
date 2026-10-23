@@ -39900,3 +39900,31 @@ jobs:
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas pyarrow
       - name: Options R1 W2A relative trend tests
         run: python -m pytest tests/test_rotation_relative_trend.py -q
+
+  bot-session-recovery-browser:
+    # Exercise the real shipped broker + vendored GoTrue lifecycle, with a
+    # synthetic provider and no live account or network. Browser absence is red.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "app/__init__.py"
+      - "app/paywall_pro_session_refresh.html"
+      - "templates/theme.js"
+      - "templates/terminal_overlay.js"
+      - "templates/supabase.js"
+      - "site/theme.js"
+      - "tests/__init__.py"
+      - "tests/test_bot_session_recovery_browser.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install browser test dependencies
+        run: pip install pytest playwright
+      - name: install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Bot recovery deadline, replay, cookie and cross-tab contracts
+        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
