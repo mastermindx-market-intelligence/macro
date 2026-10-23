@@ -2,6 +2,135 @@
 
 MISSION_COMPLETE: false. Inactive account conditions have accepted live save/reload/edit/delete proof. Finalized-4H monitoring and delivery remain unaccepted.
 
+## Existing-owner integration handoff — source audit, 23 October 2026
+
+This source map makes the future integration and its qualification boundary concrete.
+It does not adopt a policy, bind a feed, activate a saved condition or authorize deployment.
+Accepted inactive save/reload/edit/delete remains complete; do not repeat that proof.
+
+### Source identity and custody
+
+| Repository | Exact inspected revision | Scope |
+| --- | --- | --- |
+| Macro | `9b51f07165996f3e16cdf4898998cc695f87644e` | Documentation child of qualified implementation `467f03e043054b956c3805883d73570a2aff2dcf`. |
+| Terminal | `4f0e533a8ca6438470c51ef256f83b52a6302b05` | Current inactive storage/API and incumbent alert runner source. |
+
+Retain the two existing program operations:
+
+- Macro integration: `forex-r26-owner-adoption-20261020-sol-001`.
+- Terminal account integration: `forex-r26-account-owner-20261021-sol-002`.
+
+An operation name is not proof of a live writer, writable workspace or release authority.
+Reconcile current custody before any future mutation; do not alter the stale primary Terminal checkout.
+The [master plan](MASTER_PLAN.md) and canonical checkpoints retain current procedure and effect status.
+This handoff creates no owner, lifecycle, queue, wrapper or parallel plan.
+
+### Actual incumbent seams
+
+| Existing owner and repository | Source seam | Current behavior and forward boundary |
+| --- | --- | --- |
+| Macro source evidence | `lib/dataos/tiingo_forex.py::assess_forex_source_batch_candidate` and `::read_forex_source_batch_candidate` | Research-only projection; eligibility is empty and admission flags are false even when candidate checks pass. Qualified adoption is separate. |
+| Macro pure evaluation | `engine/forex_alerts.py::evaluate_price_condition` | Consumes caller-qualified feed assertions; performs no acquisition, persistence, activation or delivery. Preserve its withholding checks. |
+| Macro browser caller | `templates/forex_watch_client.js::canonicalRule`, `::rowValid`, `::save` | Requires null feed, inactive state and captured owner/revision; uses the incumbent RPCs. No automatic upgrade of saved rows. |
+| Terminal account owner | `supabase/migrations/0038_forex_inactive_conditions.sql`; `terminal/lib/forexWatches.ts`; `terminal/app/api/alerts/route.ts` | Storage, shared validation and API agree on inactive-only/null-feed rules. Future binding must be coordinated across these existing boundaries; never reapply 0038. |
+| Terminal evaluation/delivery owner | **Terminal repository** `ingest/alerts_engine.py` | No Forex dispatch branch is wired at the inspected revision. Existing fire identity and enqueue behavior require specific future Forex qualification. |
+
+[Macro source](https://github.com/mastermindx-market-intelligence/macro/blob/9b51f07165996f3e16cdf4898998cc695f87644e/lib/dataos/tiingo_forex.py),
+[pure evaluator](https://github.com/mastermindx-market-intelligence/macro/blob/9b51f07165996f3e16cdf4898998cc695f87644e/engine/forex_alerts.py),
+[Terminal SQL](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/4f0e533a8ca6438470c51ef256f83b52a6302b05/supabase/migrations/0038_forex_inactive_conditions.sql),
+and [Terminal runner](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/4f0e533a8ca6438470c51ef256f83b52a6302b05/ingest/alerts_engine.py) bind this map.
+
+### Existing candidate projection to evaluator fields
+
+The projection already supplies the economic values; no new handoff wrapper is needed to rename them.
+The table is a target for qualified contract review, not permission to manufacture an admitted observation.
+
+| Current slot projection or adopted contract | Incumbent evaluator field | Binding requirement |
+| --- | --- | --- |
+| `literal_pair` | `pair` | Literal USDJPY, JPY per USD, within the reviewed scope. |
+| `interval_end_utc` | `bar_end` | Exact half-open UTC four-hour slot end. |
+| `utc_slot_index` | `bar_sequence` | Adjacent supported slots; never skip a gap or closure. |
+| `native_reported_close` | `close` | Reported native close and exact normalized comparison. |
+| `candidate_available_at_utc` | `available_at` | Actual readback completion; no historical backdating. |
+| `candidate_expires_at_utc` | `expires_at` | Fixed expiry; rereads do not extend it. |
+| Adopted source contract identity | `feed` | Draft naming alone does not register or admit a feed. |
+| Reviewed conventions | `interval`, `calendar`, `quote_basis` | Existing `4H`, `fx-utc-4h/v1` and literal semantics. |
+| Reviewed logical identity/revision | `observation_id`, `revision` | Exclude incidental readback time, receipt order and equal witness selection. |
+| Qualified source-owner assertion | `status` | Never cast `batch_checks_satisfied=true` directly to `status="final"`. |
+
+The candidate implementation retains `CANDIDATE_NOT_ADOPTED`, `eligible_observations=[]`,
+and false monitoring, DataOS identity, PIT/backtest and redistribution admission flags.
+The evaluator trusts its caller's qualified feed assertion; it does not perform source adoption.
+The recorded October 22 observation expired at 20:00 UTC and cannot supply current activation evidence.
+
+### Ten future integration qualification cases
+
+These cases concern changed integration boundaries; reuse accepted unchanged source and inactive-CRUD evidence.
+Recording a case below does not claim it has run or passed, nor authorize its runtime effect.
+
+1. **Admission versus research checks.** A checks-satisfied but unadopted candidate cannot activate, dispatch or enqueue.
+   Missing or unqualified policy evidence preserves the current closed posture.
+
+2. **Exact source/rule binding.** Pair, feed, interval, calendar and quote convention must match the exact saved rule.
+   Another source or transformed quote direction cannot silently replace that binding.
+
+3. **Supported consecutive history.** Use the rule's exact count of adjacent qualified slots.
+   Missing slots, closures and insufficient history withhold; two observed slots do not prove a longer sequence.
+
+4. **Both expiry boundaries.** Rule expiry and newest-source expiry must still qualify when enqueue occurs.
+   Equality is expired; delayed enqueue cannot use an earlier positive evaluation to evade either boundary.
+
+5. **Corrections and equal rereads.** Conflicting observed vintages withhold the sequence.
+   Equal rereads preserve logical identity and fixed expiry; reordering receipts cannot create a new bar/revision.
+
+6. **Evidence digest and delivery identity.** Keep Macro `evaluation_id` as evidence, separate from delivery dedupe.
+   Qualify stable reviewed Forex vintage encoding at Terminal's existing `(alert_id, condition_version, vintage)` identity.
+
+7. **Current owned revision at enqueue.** Disarm, edit, delete, owner mismatch, source invalidation or expiry
+   between evaluation and enqueue must prevent a stale insertion; a later PATCH cannot supply that guarantee.
+
+8. **Concurrency and uncertain acknowledgment.** Concurrent qualifying attempts yield one authoritative outbox event.
+   A lost reply stays unconfirmed and uses existing reconciliation; it must not cause a blind replay.
+
+9. **Account/client parity.** Any future active/feed-bound representation must agree across existing SQL,
+   Terminal shared validation/API and Macro caller, while preserving valid inactive rows and their accepted behavior.
+
+10. **Actual end-to-end acceptance.** Fixtures, pure evaluation and mocked transport are bounded source evidence.
+    Genuine runtime binding and delivery require their qualified review/adoption and permitted existing release path.
+
+### Existing qualification locations
+
+- Source projection: Macro `tests/test_tiingo_forex_source.py`; preserve its recorded source qualification.
+- Account storage: Terminal `tests/test_forex_watch_postgres.py`; inspect only the affected future contract delta.
+- API boundary: Terminal `terminal/lib/__tests__/forexWatchesRoute.test.ts`.
+- Account presentation: Terminal `terminal/lib/__tests__/forexWatchesInventory.test.tsx`.
+- Runner identity compatibility: Terminal `tests/test_alerts_engine_identity.py` covers options-root canonicalization, not Forex fire-vintage dedupe.
+
+Use existing test ownership and affected scopes; this map creates no CI job or dispatch.
+Do not rerun accepted inactive CRUD, migrations, captures or census to fill this checklist.
+
+### Owner continuation sequence and gates
+
+1. Consume qualified source-policy review through its existing owner and operation constraints.
+2. Record adoption of the exact source identity, clocks, correction/precision scope and logical revision semantics.
+3. Reconcile the two existing operations' current custody and the incumbent evaluator/outbox integration boundary.
+4. Qualify only the actual changed source/account/enqueue delta against the cases above.
+5. Obtain permitted runtime and delivery acceptance through the existing owners after all required gates qualify.
+
+The current Terminal fire identity is `(alert_id, condition_version, vintage)`, not Macro `evaluation_id`.
+The documented dedupe concern is therefore a future Forex binding requirement, not a proven current Terminal defect.
+Likewise, generic outbox-before-PATCH behavior is insufficient forward Forex proof; no wired Forex activation bug is claimed.
+
+Terminal #1106 remains Draft/HOLD under its original repair-review condition; the separate Forex policy review remains held.
+No replay, provider/account/carrier substitution or new review operation follows from this source map.
+The exact deployment safety refusal remains fenced. Migration 0038 stays applied once; covering render 39688064251 is consumed.
+Tiingo licensing/product use remains Chairman-COMPLETE; no outreach is introduced.
+Preserve Macro #9996, original workspaces and held carry/COT/RiskRadar work.
+
+Historical sections below remain point-in-time evidence; this handoff does not rewrite their receipts.
+
+---
+
 ## Current recovery frontier — 22 October 2026
 
 The [joint Forex/Bonds master plan](MASTER_PLAN.md) and [current recovery checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815) supersede earlier frontier status. The fresh compatible protected procedure pin is `230e9a301ed774e79410829f1b5c049226fa59f1`. Source PR#10024 merged at `0c88d3b09700465b28a8eeb0e3302c833e52b061` with its required CI/fences qualified. The original Terminal#1106 repair review is now confirmed final with **no verdict and no permitted same-operation continuation**; do not keep polling or replay it. A new review requires a specific amendment to the original-only restriction. The independently safety-refused Terminal deployment stays blocked. The candidate-policy source continuation is offline-only and does not replace either gate.

@@ -1,3 +1,15 @@
+## Incumbent-owner handoff — 23 October 2026
+
+The [existing owner-integration handoff](OWNER_INTEGRATION.md#existing-owner-integration-handoff--source-audit-23-october-2026) now binds the actual Macro and Terminal source seams, the candidate-to-evaluator field map, and ten remaining integration qualification cases. The [batch candidate contract](BATCH_CANDIDATE_CONTRACT.md) clarifies that the alert runner belongs to the Terminal repository and that stable Forex vintage/delivery binding is a future requirement; no present evaluation_id-based Terminal dedupe defect was demonstrated.
+
+This is documentation of source inspected at Macro `9b51f07165996f3e16cdf4898998cc695f87644e` and Terminal `4f0e533a8ca6438470c51ef256f83b52a6302b05`. No runtime, source-admission or inactive-CRUD behavior changes. Existing operations `forex-r26-owner-adoption-20261020-sol-001` and `forex-r26-account-owner-20261021-sol-002` remain the owners; reconcile their current custody before any future integration effect.
+
+The previous exact documentation head `9b51f07165996f3e16cdf4898998cc695f87644e` is fully green: ordinary CI **39911927789 SUCCESS**, all twelve packs plus contract-delta/ci-plan/ci-gate, completed **07:13:42 UTC**; fences **39911927685 SUCCESS**. Implementation head `467f03e043054b956c3805883d73570a2aff2dcf` and its earlier green CI remain preserved ancestors. Record this new documentation commit's exact-head qualification/push in the [existing canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600); do not relabel prior CI as testing a later head.
+
+Accepted inactive live save/reload/edit/delete remains complete. Qualified source adoption, current owner integration, genuine monitoring/delivery proof and the original Terminal review/deployment gates remain required. The expired October22 observation is not current activation evidence. No migration0038, covering render39688064251, Fabric429, refused deployment, or accepted browser proof is replayed; Tiingo licensing/product-use remains Chairman-COMPLETE.
+
+---
+
 ## Current Forex checkpoint — 23 October 2026
 
 **Source-qualified implementation is published; review, policy adoption and activation remain gated.** This opening records the published implementation and its exact qualification. The earlier pending-local `92f` / remote `0a` checkpoint retained below is historical.
