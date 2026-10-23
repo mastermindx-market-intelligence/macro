@@ -1501,7 +1501,8 @@ def _decision_workspace(index_snap: dict, asof: str, physical_context: dict | No
         snapshot = {"asof": asof, "members": index_snap.get("members", []),
                     "index": index_snap.get("index", {}), "breadth": index_snap.get("breadth", {})}
         return workspace_from_publications(snapshot, root=config.ROOT, data_root=config.data_dir(),
-                                           physical_context=physical_context)
+                                           physical_context=physical_context,
+                                           commodity_config=config.load().get("commodities"))
     except Exception as exc:  # preserve the accepted legacy page if an optional projection fails
         log.warning("Commodity decision workspace unavailable (%s)", type(exc).__name__)
         return None

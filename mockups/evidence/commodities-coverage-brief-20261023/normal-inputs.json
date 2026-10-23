@@ -1,0 +1,831 @@
+{
+  "purpose": "Restore bounded incumbent publisher inputs omitted by sparse checkout; no acquisition or source synthesis",
+  "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "head": "82766f6fcea1f2db807830c370f1a03222965ece",
+  "merge_head": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "inputs": [
+    {
+      "path": "data/commodity/alerts.jsonl",
+      "blob": "e39428098d39bd6709cb7970011b843c32eaf88c",
+      "bytes": 4143540,
+      "sha256": "b3eda60aafd64828fd9063e9cdf1531724bb7f5d1ea396d39e59353f9a94b7cb",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/calibration.json",
+      "blob": "8d2f47739de8246539da6dcc2fbe585367b937cd",
+      "bytes": 130234,
+      "sha256": "fe53b68161e5572b0569fe02707f823a82365f26d25bcc1e054a70f2a7c94612",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/commodity_strategies_latest.json",
+      "blob": "048fbd824c44494e997673963f01701d565974f2",
+      "bytes": 1739,
+      "sha256": "69e461ecf2bed39f8bdd4778426326113082e39aafe9b4b1e1a15b616cf0e50a",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/complex_latest.json",
+      "blob": "b7f1fc94458e078c4e24f80ea53e83d99a28c290",
+      "bytes": 47077,
+      "sha256": "01d69dc4d4d1ca421d2fbf6bd960dad4a99858f16f4ba85607c75abe6c092479",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/conviction_calibration.json",
+      "blob": "0fd154c93fced0acdca359c1b4bcc6aae6a2817a",
+      "bytes": 17209,
+      "sha256": "7dfb5ed1a36d42a9435efd5b8e203a3d86598ea67134662c6897ebc36e97f256",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/copper_hourly.parquet",
+      "blob": "e283dbfdf7caaff2a441673021a53d1e10ad7a78",
+      "bytes": 62158,
+      "sha256": "c208889b9e45b53f0eb833f25e971b40ba47e503f99b3a1eb02698201d8cdc4c",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/cycle_positions.json",
+      "blob": "0eae65143c269e03793a49a3735c7cddd107dbc1",
+      "bytes": 2587,
+      "sha256": "d3dc5015d40f24744cc7145d2cf2277833791c895428ea874fcdc15b61872cfa",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/gold_hourly.parquet",
+      "blob": "53ce9c229af31470669ed62dab377a646d6c3205",
+      "bytes": 77187,
+      "sha256": "565a5a5913e9f870ac485efae6f6448a7ae8acb68aa38e8b0abdbf68bf7f5a6d",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/latest.json",
+      "blob": "d2ac0fe075e5f3fe531c2fd19dc79680d494c10e",
+      "bytes": 36802,
+      "sha256": "ecfd83f63d69294c16570c253478261a958cda0b77be2f7cf1dfd3fcea53d4a4",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/oil_hourly.parquet",
+      "blob": "446444c84c6820c555efa80964d7a4b31deaef3d",
+      "bytes": 74425,
+      "sha256": "859029021995890744d81ac85473a76fcc14a3a85940a63080de35bdcd75b43d",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/shock_state.json",
+      "blob": "002eed95b85d20823969e0758cef0e90a001b3cf",
+      "bytes": 799,
+      "sha256": "a6d0363818d005466359f7a5d954e2fdb45610d5c1716664ea325cb56d7da428",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_complex.parquet",
+      "blob": "79192cb1f1e89a3a2e0ab776468bf692836004f5",
+      "bytes": 246620,
+      "sha256": "8d52099292f82eff6033c803f4acde9ee3d69ebfdcf79666773dfa23b9637964",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_copper.parquet",
+      "blob": "ed0455bf87cbe3e316e7c47d43235db1a195e8b4",
+      "bytes": 817515,
+      "sha256": "4f56c038a6e28d6ec32f5d3922adfab8384216ce68980975534d0ab62770ceac",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_gold.parquet",
+      "blob": "9d1aa9ef4b56346736840df5a6b78581547ce3df",
+      "bytes": 923062,
+      "sha256": "28c28855c52142da7bc32ddb1db72aa4f98665fc300a96617b21d8a872bea9b2",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_index.parquet",
+      "blob": "97636722d70149afda7af93d0cc32d62848caf31",
+      "bytes": 745716,
+      "sha256": "acdb88efc2b1f1996231a9cf214fe89a7a5b011f0a79a6247207816627785b16",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_oil.parquet",
+      "blob": "1ae47157839dac157367940068d71df3951d6a0a",
+      "bytes": 876065,
+      "sha256": "d691a0e4623545bdbf0100c25943f827c875ca64f4176a79ba33ece08c474bf3",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/signals_silver.parquet",
+      "blob": "18e7a76fa658f5b5ad29983a24af5a9d858fc225",
+      "bytes": 931847,
+      "sha256": "a380573890b6be43ab5ac42fa2134046eeb310b625583a53a354c3b946f931f0",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/silver_hourly.parquet",
+      "blob": "06d5627ac950a98eb28f0a620e1f02c8c385f766",
+      "bytes": 75963,
+      "sha256": "1c3c3bc90d91bd2a513c494d3fe203097169c411d081c390d0d13d57afcf26a6",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity/trial_log.json",
+      "blob": "c90fe5bbeebdb3fb113a05d6e73c7808e3c58552",
+      "bytes": 678,
+      "sha256": "46da52dd7321f63892820038ed5d5ebaf9cf9df572c08b8dfad17c7066bae887",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/_meta.json",
+      "blob": "920c09c8c46171811c1a5fca11bc4ef4492cef53",
+      "bytes": 101,
+      "sha256": "237baa283e32cc0b4667b16059ae9d6b5ef641b7f1d3643d0daaa9898e5d0a40",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/brent.parquet",
+      "blob": "35d24ff8de57fca779fb4a17a46a920ddbbe61dc",
+      "bytes": 15502,
+      "sha256": "86ff72a1ab5fbf3620778c699cc98871d99205a54d6730d422c79021035d06a4",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/copper.parquet",
+      "blob": "f009fadd7251695372f1bab7a1810d0dad549a6e",
+      "bytes": 15869,
+      "sha256": "7c7116e57f2a6e32d69c17ea72e2183671f3e9dc8290091887cbfc4eee88d6ac",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/eia_wti_termstructure.parquet",
+      "blob": "e56e41c4ed066d97ddb7b4c98bfa1ded39bcdec7",
+      "bytes": 296914,
+      "sha256": "2f9b25baef0794dcf57da1d787911d24369d111227e72c4be2f29486e5865d4d",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/gold.parquet",
+      "blob": "8603eb17b4318eba0df5e0265bda9b88908bb7c5",
+      "bytes": 15860,
+      "sha256": "cb791d9c2e9f24578379cf2b9046a2af24ddc1eaa73773f7eb600257801b6b25",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/oil.parquet",
+      "blob": "2f10776816d8ccdb777511e513261117d642c821",
+      "bytes": 15537,
+      "sha256": "544413a3937e69361f440f64c0364c973d756ad15b73412b6687877cf178fa23",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/phase0_verdict.json",
+      "blob": "546479bae36ec8ce5ac8154bac484eb05aad357c",
+      "bytes": 6014,
+      "sha256": "61861f635b2cc7bc8e072c03c105f79c18181e6dc03f59dc489ea79cb1331357",
+      "materialized": true
+    },
+    {
+      "path": "data/commodity_carry/silver.parquet",
+      "blob": "76cc1bf0a4442c90c9df6ca7e0d1bf4f0d348965",
+      "bytes": 16070,
+      "sha256": "d624a3f3d0aa11e4198d303a32a210ae8d3772b4944ef9913c1f32be40d574e0",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_cocoa.parquet",
+      "blob": "359943d37ba1188650b12da0dbb51954ca646f21",
+      "bytes": 37823,
+      "sha256": "ef22de2f2a571c08854c9570390895d6f82a9a2004792987cf88515ef44c5527",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_coffee.parquet",
+      "blob": "1eb6f5888845c9e65cb3517db8b84c4f88c49334",
+      "bytes": 37802,
+      "sha256": "9390ce73c0f8e41194685bf8152c950e59a394283fd3d0823a55b8fb025b68d7",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_copper.parquet",
+      "blob": "40d5bab4deffa20ee9154d30c7cc4e7d01844261",
+      "bytes": 53182,
+      "sha256": "5a7629071bab210a4fcb9483ffa2dd367a4b6740c5935e76b3db2597b8672273",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_corn.parquet",
+      "blob": "e7037c3c02c146a9421c0eacd7c2ae9c285bdd3f",
+      "bytes": 54648,
+      "sha256": "9ba4658b9782009524e29a079a3f3fe848585cb4c1da06c95883f8784cf72b31",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_cotton.parquet",
+      "blob": "12a7dd96a1d4c4b9a6cf89cf4a947e4667fe2b28",
+      "bytes": 37919,
+      "sha256": "044f7ba9f028c912d78a38102cc77485a836dadaca5e9315af9afc9a16699186",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_dollar.parquet",
+      "blob": "f5b6ba206e9ee6664d5faac7bf244f160b00c1a0",
+      "bytes": 50490,
+      "sha256": "87279a814ec66d5848dddd0d932016d46bc7ae2f70cf0bb1c2724f92d038117b",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_gasoline.parquet",
+      "blob": "70710147c91c9d5f51d01dd3d83080db1e9d08c5",
+      "bytes": 36003,
+      "sha256": "0d2e60050000dd8a0d814d94e586f2fa722ca1431f362da15b4c5fe4519f21e6",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_gold.parquet",
+      "blob": "164f40b6acff79be6c6913f721a3c314d8a025a5",
+      "bytes": 54095,
+      "sha256": "71d6b64503cff63613e441a45a1045b4a4c1bbfe8f9b79acea596d2764dc9bbc",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_heating_oil.parquet",
+      "blob": "15b1cb36102d9b00c7eee73426270519c65e4360",
+      "bytes": 32475,
+      "sha256": "d684e7bd818fa07944d0c707ee178baff141fe6c9c289c8ff45848a473e0c411",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_live_cattle.parquet",
+      "blob": "8e5093ab8ab673a794402a9aaf6f75e5600abc4a",
+      "bytes": 53420,
+      "sha256": "581eb976b2cb972b59d9754c8cfa5c29c1e646c766575db326f8db4776868334",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_natgas.parquet",
+      "blob": "9288e051f6b2962d9ce5c5c1da10a1a6e083e334",
+      "bytes": 46621,
+      "sha256": "02cfce6c3db9b8ffa112bf624facc3cd5d103e7ebb740fa400dc6201be14a691",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_oil.parquet",
+      "blob": "0e744a5ff61576176d744b10d837047852c712cd",
+      "bytes": 54338,
+      "sha256": "98bb7d8015740fbc15d58ad6c6e5425009845e1d8a35f1489d2c0fcd4cd5de4d",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_palladium.parquet",
+      "blob": "06c9813ffecae122fb2fad7b85483726b5b07821",
+      "bytes": 49560,
+      "sha256": "638f448c7baf5d9cf70164a6eeff501a77e73d4eb0b999bf7bdd8604973ebabd",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_platinum.parquet",
+      "blob": "46433c8c699c48ef4b9a97b27431f89949249f17",
+      "bytes": 52084,
+      "sha256": "cf77969af09633f8967573d2a23854f36d78838948618ff2986ad84e086408fc",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_silver.parquet",
+      "blob": "d271e5a29d6b82769b73714ef09bfbcf752fd267",
+      "bytes": 52985,
+      "sha256": "da51d79ff1912aafce49759d0cb233f3259f9a0042dd98aef9c4792d6b9d9369",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_soybeans.parquet",
+      "blob": "a939696edb659dfeec8c00ad4beec8a9cc24124e",
+      "bytes": 54307,
+      "sha256": "dc2162f97bc38728c8a704263e8c7772aebe5d203706e34df9485841299bc996",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_sugar.parquet",
+      "blob": "69de5168d792e94765b972fb8333a09de2a948d8",
+      "bytes": 38441,
+      "sha256": "4a0faec9bf110d2f14ab7a65c33d5faaf3efaec37bd7d4f6dd3dcaca0330a16d",
+      "materialized": true
+    },
+    {
+      "path": "data/cot/cot_wheat.parquet",
+      "blob": "41b73fe4739270e582ca28447df01a972947d416",
+      "bytes": 53757,
+      "sha256": "be99a7b37ca532806e19beb7f0befef202d5fe39bdad2a197c8e4d3eb6cb0ee3",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/crude_production.parquet",
+      "blob": "35cf2ea3b9a0430973731e4bb597d2a8ae7c5af7",
+      "bytes": 30242,
+      "sha256": "edad52ab7d28e277f83937215d856e1df59f0e1989bf627bf4dba96d414cc163",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/crude_stocks.parquet",
+      "blob": "c38559e8f0deff244ae7bbc59e4da3661739b6dc",
+      "bytes": 35402,
+      "sha256": "01ec9fb7c45f7a868c48564d399fcdabea6025c991b3f9c6e5f800d99d5ca279",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/cushing_stocks.parquet",
+      "blob": "91d7f1dbb0da37c0f4d9692778a9d7c3d084423d",
+      "bytes": 19230,
+      "sha256": "b71f1b4056ab4c4f5832bdad39d6d0a575e61cc2f9268333c699c8fffd334c4e",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/distillate_stocks.parquet",
+      "blob": "ceb15d4a78b7fb2e7661b2392d04fd93af56d63a",
+      "bytes": 35154,
+      "sha256": "d991c5c65c9aa230aec77626999d79a5ac80cf6fb2b2666401ea2a7a5887ae3b",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/distillate_supplied.parquet",
+      "blob": "31a443f747967caf24646d48fe3c12cc784ab25c",
+      "bytes": 25750,
+      "sha256": "86988ab0a26b85033d2d130c00def21e2c7a1ecf863475202750e81ab93ba263",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/gasoline_stocks.parquet",
+      "blob": "7fedebbb9da4e9a5c3afd7bcae9fd5b15b355e0e",
+      "bytes": 29871,
+      "sha256": "f6d36d5a5fc2c15c429346aa45d2d155f2a5a794b1893f18d66fa8984d8b228b",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/gasoline_supplied.parquet",
+      "blob": "0b47750c32c1bccb1ab27cb77d6fb032cb6e395f",
+      "bytes": 26406,
+      "sha256": "bea2ce5937b3ba46f90afb0b5b3f3bf6f6df6b924d98af4db90b848e48aa2484",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/refinery_inputs.parquet",
+      "blob": "23a7ca7d75fa473ced48256b204ea35400b73161",
+      "bytes": 32557,
+      "sha256": "9e09bc436c8861a32100f7a56dec0045c911bef4ef24a32142fd3562ebe898fd",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/refinery_util.parquet",
+      "blob": "897ec350be699d050d3951b20b49053f977508bc",
+      "bytes": 21675,
+      "sha256": "11a3e12f90821cd43f649b4de3b07aa1bf46d239b7e5f5d3edd85a98ee363e9f",
+      "materialized": true
+    },
+    {
+      "path": "data/eia/spr_stocks.parquet",
+      "blob": "05d07034a6b3442edcbb8bbb3d5434396187dcfe",
+      "bytes": 31339,
+      "sha256": "2a7ac20ac7f03013f0811db52bde07a4c53093b83d26476dac043386f8da96e3",
+      "materialized": true
+    },
+    {
+      "path": "data/forex/latest.json",
+      "blob": "0794ebe37012430b233e3218249c431772ff3ce4",
+      "bytes": 48619,
+      "sha256": "04ae82e5218fdf58a615afa97f8c7bc962d75be5168d5e11c05b1f56bab3485d",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/BAMLH0A0HYM2.parquet",
+      "blob": "b854a8f7318fe66a9e1e9fba9ea1eebd086169e6",
+      "bytes": 82834,
+      "sha256": "9d361c1ffe72887d420b9f606fddf4723b689a50232db25dccea7b3ca9f7f63c",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DCOILWTICO.parquet",
+      "blob": "fc3d9b92d2513b39d0b462b7eae6dd599cfba42b",
+      "bytes": 133827,
+      "sha256": "34c9f0ee022d8716f3d76a843ccf615f8fff04e9e52c5b57254f878e8059b057",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DFII10.parquet",
+      "blob": "e1fbb79b20448ac71defada72753cbe940605077",
+      "bytes": 62077,
+      "sha256": "68ce502d300ebbaf5dc4cafe844bcb0d50dbe5f22ae0be0b45539551e1735844",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DGS10.parquet",
+      "blob": "932f0ae78f437aaf8efe65d381c79f8327b41eec",
+      "bytes": 171669,
+      "sha256": "075ceb860f84f188105d666a182280d33282f4f6948740b57405ed93d74ebc61",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DGS2.parquet",
+      "blob": "5cd952875a40e91d8882cd738b4cdc9eb1e5ba18",
+      "bytes": 135837,
+      "sha256": "76c2a22dacb459690816d3856e9b60bb5ab4ba7353f281af5ac192ef1f18e46d",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DHHNGSP.parquet",
+      "blob": "f2052403a0e34d930e8933d5f60c870ff1cd597b",
+      "bytes": 79718,
+      "sha256": "6465dab1cd78a64e20dd5b5b0510d22fd224bf9c3434c2f35ba5bdad838c66ec",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/DTWEXBGS.parquet",
+      "blob": "e106163695991f214f1809d23929f88e3dea02bc",
+      "bytes": 87736,
+      "sha256": "7245777d50ee8a9e0703cf3f2b113fbea6bd15ed9c52ca410500e0d6af479092",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/INDPRO.parquet",
+      "blob": "333862d77820e8930d2f550f8a477f7ce7d4bb95",
+      "bytes": 24883,
+      "sha256": "74f64f87d62945225913930448dcc4dc20d772037f47dc563f3b43c5ef616530",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/M2SL.parquet",
+      "blob": "49d40a3d11bd6aaaa2547220dd2be8595635b4a1",
+      "bytes": 14469,
+      "sha256": "23bb9af973d0740fbff7152533ad5cdabccca9e63497a46f5f70979076a585b5",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/RRPONTSYD.parquet",
+      "blob": "cc3fd994be933680b868b839f2e1177367cbc8de",
+      "bytes": 51697,
+      "sha256": "b3990e626e6445f9cab9b188e343ac840df46d7de26f8d5253f2f4002f661af4",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/T10Y2Y.parquet",
+      "blob": "3ace730fd7b9d42ecade2bac9f7f9c825ed58eaf",
+      "bytes": 128719,
+      "sha256": "bdae0fe01068d88ab93a0b680c23f074e2abd55b019bb7fe44dd4a7c09e3c022",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/T10YIE.parquet",
+      "blob": "f3e2dd94add6a2f92586c9c616c4647d4d85979c",
+      "bytes": 60670,
+      "sha256": "a569903d808eec395dde17c0e10aeba3617ed94007b52cf74533dda993f03ebf",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/T5YIFR.parquet",
+      "blob": "e80a786e94292baab2719a786c1377ca33b00202",
+      "bytes": 60461,
+      "sha256": "7a9b35c8c3c49c877188c7c4ca430352bbd3b6e77d33ac6b141e082c52a8b60d",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/VIXCLS.parquet",
+      "blob": "f26be4dd892d73f2d0d4c52b2115de1230253228",
+      "bytes": 108502,
+      "sha256": "3481f6bb1af026555df1efffcb933425b1013a7552441800d78e0e34cf80cbef",
+      "materialized": true
+    },
+    {
+      "path": "data/fred/WALCL.parquet",
+      "blob": "6079dd704b81a35e561c0aec7cdcbc53458c90c2",
+      "bytes": 21636,
+      "sha256": "61306b550d6f67cba053efc4734e092fe70a3c2211b696d094a95e5af3b9ef28",
+      "materialized": true
+    },
+    {
+      "path": "data/gold_china_basis/sge_au9999.parquet",
+      "blob": "39c2f6d729477593e1e0f71ad649b81686f92931",
+      "bytes": 5922,
+      "sha256": "37032d0a6e1fc2bc3e07a2762d57390882a84ca18b3ed13e7e0da50a316e2439",
+      "materialized": true
+    },
+    {
+      "path": "data/gold_china_basis/xaucny_spot.parquet",
+      "blob": "24c72b96ab890d43aa09e5acaf27036d0a6f859a",
+      "bytes": 6348,
+      "sha256": "535126bff815e0147fcee1424242d7ee80cf62681a87d23f7b024520a799db2e",
+      "materialized": true
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "blob": "fd72967495c0dcb02120f4cb4b7a07f3baccb6b2",
+      "bytes": 60065,
+      "sha256": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306",
+      "materialized": true
+    },
+    {
+      "path": "data/transmission/chain_state.json",
+      "blob": "9f732614ac6702d868ba5528a4a22382eba85706",
+      "bytes": 79660,
+      "sha256": "a2ca4cd461b4af4d1a94bfefda828eecd083e583172be6899377be075958e694",
+      "materialized": true
+    },
+    {
+      "path": "data/transmission/latest.json",
+      "blob": "e7c0852f3fcc42ce239dee3f35c22fb63cad57b0",
+      "bytes": 105686,
+      "sha256": "556bb1ebb1928b4580b4cdd48198cc01ef1704be01bb20abb0997f06d92bc9c9",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/BZ_F.parquet",
+      "blob": "ff81b3490cc450b46e21739577ff5152a8bd0836",
+      "bytes": 123539,
+      "sha256": "5d2139b10ac686218ec1ae9529fe3e17384c9b2c76bc71a8e1c008cd7caebfa7",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/CC_F.parquet",
+      "blob": "573ad6c6f564be19bdbf257c320e05bc9f3d2799",
+      "bytes": 128274,
+      "sha256": "559012e834c24b5de48d70562fe810a0c97f0d62bf75bd20a580c89b29e52d13",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/CL_F.parquet",
+      "blob": "17fff4bfb05e415e434c9bd24a31fafd3fa49442",
+      "bytes": 172137,
+      "sha256": "747a4387ab4ff341e5af278a2ac62f9d9b62a521b26c51789120b765021411d8",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/CT_F.parquet",
+      "blob": "b9c107b310b353f716bdfc7d36162d1e216e7825",
+      "bytes": 154515,
+      "sha256": "42b9aa875b1f231fa064ad72a5093058f4a790857ae93fad49fcbdf97c43e7ff",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/DBA.parquet",
+      "blob": "189725932dd1ec11728041a36bdfa37239a0be55",
+      "bytes": 113228,
+      "sha256": "61563f8e115777bcca8f987af8dd58022db764223264fe0d7db51795c8f4abe7",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/DBC.parquet",
+      "blob": "f9ad064f37b969ce7a833a33e08ad9d5ad380e26",
+      "bytes": 121490,
+      "sha256": "a22f8f231dc3811f9c4b8140824a074d86799a09358894ce80b2c94d2c90512c",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "blob": "72f28dadb26634e8c40524a1cdfd942cfa2667b4",
+      "bytes": 214487,
+      "sha256": "bbc3a5b38edad8619f1a310fe274367e7dfbbeed57ae716b4e80a900e32a45a9",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/GC_F.parquet",
+      "blob": "90f25b42523bbb30af0f18a592392a434e053d4c",
+      "bytes": 156699,
+      "sha256": "671326e87a7fe5352193aaa1f68d89a3d5aeed4323c8b6d2c345bca189a2d15a",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/GSG.parquet",
+      "blob": "620d3d193cf129ab9d414d0e1649347da9f95c54",
+      "bytes": 113078,
+      "sha256": "991d9198c80ba34394f19cf6e0aee16e4f07a05aa62702314c6a18677f67c11a",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/HG_F.parquet",
+      "blob": "19e1e8770927c553c821bdd7f87caafadba6d213",
+      "bytes": 142059,
+      "sha256": "7e221ec4ea2fa68983a3b2dd93e33b01c59aa0b5c64654ba0c037d67f3acb48c",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/HO_F.parquet",
+      "blob": "eed06df3a4a5fd305b695472cff3259337a36c8a",
+      "bytes": 183907,
+      "sha256": "717d70f13108406c6f1d65bd9730d80792330ec7e897196b43ad18204785648a",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/KC_F.parquet",
+      "blob": "d77006f34993dc0ff89b9f699abb95bc3960eec9",
+      "bytes": 143376,
+      "sha256": "064e982db28361b81376f57da297da0b623d8ad1eba299e8487b4d9cd16e7308",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/LE_F.parquet",
+      "blob": "5cae102a989c6d0bb3477df56656d95580aa7213",
+      "bytes": 142788,
+      "sha256": "df1417c581a4b6443c248ed9c241e415c2f8bfa85a2b6d12c1b87885ea2f5160",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/NG_F.parquet",
+      "blob": "011702afb4a9c53da788631d7e56bf1d379774d6",
+      "bytes": 162107,
+      "sha256": "28d2bf1c66518e9e73d7c895a39562fb01fa81b0f99e98acde848be0292a2d9a",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/PA_F.parquet",
+      "blob": "17005ae59aeb011b396eb9af68a90201ef34a2d8",
+      "bytes": 146395,
+      "sha256": "8b94ad9b42eff1e1825c160739ab773c6303174ff82b70177634b0771ce04d96",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/PL_F.parquet",
+      "blob": "828f035c9e4fd15847e4022137f52c2c379d0c1c",
+      "bytes": 143516,
+      "sha256": "f187b3cf3f0c04d9ca00da39087ae9b897fdb6b93dc8d24b6f05fafa4ee070d8",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/RB_F.parquet",
+      "blob": "34f6d43b6fd250dda27b321c6da8bdd5db7d54e9",
+      "bytes": 182038,
+      "sha256": "93ab6f3fc0cfbfc0034fa2f92dd8b9dc959a0535e1fb9bdce215e1908c57d989",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/SB_F.parquet",
+      "blob": "9a847d8bde00734cee8fc08dd40de8c6b42e4999",
+      "bytes": 140511,
+      "sha256": "8946747106e5b3cac7ddb9546eea0ca1e16b96353d72d2fef43a34be82c04f16",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/SI_F.parquet",
+      "blob": "93368aff8741fc947d84e09d295a4b802d46c464",
+      "bytes": 154276,
+      "sha256": "6b8fee2c85cee11079f9800f12f1e8eea9ce1eeef70474609d3f7f1a67c9b4fa",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/ZC_F.parquet",
+      "blob": "57b8b2dfd6f00720ab864d3c16b885dd18694fe8",
+      "bytes": 126280,
+      "sha256": "da1fd7a87e7906394d68adef3f94f90a9f3d4c3ab4c98a0d12728ec8b21b442a",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/ZQ_F.parquet",
+      "blob": "0ec0da593c4ae73d522ea5bf5ea574e1fb6763e2",
+      "bytes": 107299,
+      "sha256": "50bf4cc66476f9ab58388b781def91827e8216a8e4f19063abfbe96b2de9f6bc",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/ZS_F.parquet",
+      "blob": "44a54996a5a37c0c5183c165fc954b6a8085aa6c",
+      "bytes": 136111,
+      "sha256": "718616cdd2b66cb9d811f77e847007ee39cda26317157d59d7e105dcca26abf5",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/ZW_F.parquet",
+      "blob": "7cf1fe633e6b37f6e96547dd5c51c98856b12983",
+      "bytes": 127576,
+      "sha256": "d4ba7e3682f89db4dfef3cffc521748d46c919afb908f6746bdf6480fc007bb1",
+      "materialized": true
+    },
+    {
+      "path": "data/yahoo/_MOVE.parquet",
+      "blob": "74748ca854a3437bb402592d92e7dc64767fd2e2",
+      "bytes": 166141,
+      "sha256": "36edfd5880dbc6166b47c06bc9328ad56c2d3a74394d9fbe10893f81d79f2fd0",
+      "materialized": true
+    }
+  ],
+  "not_tracked": [],
+  "core": {
+    "gold": {
+      "ticker": "GC=F",
+      "rows": 6577,
+      "latest": "2026-10-22"
+    },
+    "silver": {
+      "ticker": "SI=F",
+      "rows": 6578,
+      "latest": "2026-10-22"
+    },
+    "copper": {
+      "ticker": "HG=F",
+      "rows": 6581,
+      "latest": "2026-10-22"
+    },
+    "oil": {
+      "ticker": "CL=F",
+      "rows": 6585,
+      "latest": "2026-10-22"
+    }
+  },
+  "members": {
+    "gold": {
+      "ticker": "GC=F",
+      "rows": 6577,
+      "latest": "2026-10-22"
+    },
+    "silver": {
+      "ticker": "SI=F",
+      "rows": 6578,
+      "latest": "2026-10-22"
+    },
+    "platinum": {
+      "ticker": "PL=F",
+      "rows": 6601,
+      "latest": "2026-10-22"
+    },
+    "palladium": {
+      "ticker": "PA=F",
+      "rows": 6612,
+      "latest": "2026-10-22"
+    },
+    "copper": {
+      "ticker": "HG=F",
+      "rows": 6581,
+      "latest": "2026-10-22"
+    },
+    "oil": {
+      "ticker": "CL=F",
+      "rows": 6585,
+      "latest": "2026-10-22"
+    },
+    "natgas": {
+      "ticker": "NG=F",
+      "rows": 6579,
+      "latest": "2026-10-22"
+    },
+    "gasoline": {
+      "ticker": "RB=F",
+      "rows": 6536,
+      "latest": "2026-10-22"
+    },
+    "heating_oil": {
+      "ticker": "HO=F",
+      "rows": 6575,
+      "latest": "2026-10-22"
+    },
+    "corn": {
+      "ticker": "ZC=F",
+      "rows": 6580,
+      "latest": "2026-10-22"
+    },
+    "wheat": {
+      "ticker": "ZW=F",
+      "rows": 6592,
+      "latest": "2026-10-22"
+    },
+    "soybeans": {
+      "ticker": "ZS=F",
+      "rows": 6572,
+      "latest": "2026-10-22"
+    },
+    "live_cattle": {
+      "ticker": "LE=F",
+      "rows": 6428,
+      "latest": "2026-10-22"
+    },
+    "coffee": {
+      "ticker": "KC=F",
+      "rows": 6721,
+      "latest": "2026-10-22"
+    },
+    "sugar": {
+      "ticker": "SB=F",
+      "rows": 6684,
+      "latest": "2026-10-22"
+    },
+    "cocoa": {
+      "ticker": "CC=F",
+      "rows": 6723,
+      "latest": "2026-10-22"
+    },
+    "cotton": {
+      "ticker": "CT=F",
+      "rows": 6723,
+      "latest": "2026-10-22"
+    }
+  },
+  "driver_dates": {
+    "real_yield": "2026-10-21 00:00:00",
+    "dxy": "2026-10-22 00:00:00",
+    "broad_dollar": "2026-10-16 00:00:00",
+    "breakeven10": "2026-10-22 00:00:00",
+    "breakeven5y5y": "2026-10-22 00:00:00",
+    "us10y": "2026-10-21 00:00:00",
+    "us2y": "2026-10-21 00:00:00",
+    "fed_balance": "2026-10-21 00:00:00",
+    "indpro": "2026-09-01 00:00:00",
+    "vix": "2026-10-21 00:00:00"
+  },
+  "canonical_runtime": "/Users/chriswong/.cache/mm-venv-mac-builder-light/bin/python"
+}

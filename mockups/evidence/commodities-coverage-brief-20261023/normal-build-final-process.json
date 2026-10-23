@@ -1,0 +1,902 @@
+{
+  "invocation": "runpy.run_module('scripts.build_commodities', run_name='__main__')",
+  "observation": "Python file-read observation only; no replaced owner functions or inputs",
+  "observer_sha256": "301933180864aa9e518158ce9e2fe7189758e67c285336bc7b79e16283bedb9a",
+  "source_sha256": {
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "engine/commodity_decision_workspace.py": "0765eaaa059e253536c859a92fa210c900a6825c86cc7e5c146a04adf956f674",
+    "engine/commodity_workspace_adapter.py": "f1e22114179c4e610e0fb8331342ed05446ed07c466e7f93a56cdbc58e5dd76f",
+    "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
+    "scripts/build_commodities.py": "7bfa23a6353968c9ec2259bac72417eeb38493d64a0f35b073c0f1501ae6bcf0",
+    "scripts/render_commodity_workspace_review.py": "f671dcd74798cbcd514276777d4626a0a1d7a100065364a7dd620de678711540",
+    "scripts/verify_commodity_workspace_browser.py": "745c2376a51fc3583957263a1b26decb37dbc734342318c123b7a2de0b54a5e8",
+    "templates/commodities.html.j2": "be740470943c0692f05573ac0f65da6dd9e622b8fbd5ee6c186d7b8f8413bb45",
+    "templates/_commodity_decision_workspace.html.j2": "ef978eeb6d7f367f72c138d8ea987456a0602b1800a3ac7a59e4aa7b4a44343c",
+    "templates/commodity-workspace.js": "8770d7daa252a1d5ab9ff47e91beed8b4fdea90c64331efd0fe7a84f0fea1a9a",
+    "templates/commodity-workspace.css": "a54a082a5a2c342a960fd6356892c60c0285a5048695ca0385e901608515468d",
+    "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
+    "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1",
+    "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21"
+  },
+  "head": "82766f6fcea1f2db807830c370f1a03222965ece",
+  "merge_head": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "started_at": "2026-10-23T07:03:02.840994+00:00",
+  "production_acceptance": false,
+  "returncode": 0,
+  "finished_at": "2026-10-23T07:03:41.871422+00:00",
+  "elapsed_seconds": 39.03,
+  "source_unchanged": true,
+  "observed_data_reads": [
+    {
+      "path": "data/commodity/alerts.jsonl",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "48345872bb0b1cbf68bb6cbc295ce245616c467bd70255abf305c6f76cf8c6ac",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/calibration.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "fe53b68161e5572b0569fe02707f823a82365f26d25bcc1e054a70f2a7c94612",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/conviction_calibration.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "7dfb5ed1a36d42a9435efd5b8e203a3d86598ea67134662c6897ebc36e97f256",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/copper_hourly.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "c208889b9e45b53f0eb833f25e971b40ba47e503f99b3a1eb02698201d8cdc4c",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/cycle_positions.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "9d460e6b6d1c94a8ac7a166ecdb0031316b2d6ce2c7a4ecc5064d3ab2487c016",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/gold_hourly.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "565a5a5913e9f870ac485efae6f6448a7ae8acb68aa38e8b0abdbf68bf7f5a6d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/latest.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "4b59d20df764e0555234967078df43a46a611252864449f4da2e7673c94db923",
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/oil_hourly.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "859029021995890744d81ac85473a76fcc14a3a85940a63080de35bdcd75b43d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/silver_hourly.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "1c3c3bc90d91bd2a513c494d3fe203097169c411d081c390d0d13d57afcf26a6",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/_meta.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "76d89e27d26323cad0969a4baececf50178ce3d154fa7d0edd7373e37823a0fb",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/brent.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "d515539003b84d673e2d0d5f6736c768ca838ac2a3603b542528c41fb79f452e",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/copper.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "4b990e01b6df186e7b3bcf9a0e2c01a70ccae96cff960a4098b8730d9a215e61",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/eia_wti_termstructure.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "2f9b25baef0794dcf57da1d787911d24369d111227e72c4be2f29486e5865d4d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/gold.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "fba99407edfa71b69926a397d244b96b88b9d9a7d566dfd62562e3ed955e5a19",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/oil.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "646f2b41c543014af762f399c81b717e9e46927e822509336774ae88a06b636a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/silver.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "1f14f8f300826e7c17bca06e8d63bc714e868a37a115173dac1ebafc4c57c209",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_cocoa.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "ef22de2f2a571c08854c9570390895d6f82a9a2004792987cf88515ef44c5527",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_coffee.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "9390ce73c0f8e41194685bf8152c950e59a394283fd3d0823a55b8fb025b68d7",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_copper.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "5a7629071bab210a4fcb9483ffa2dd367a4b6740c5935e76b3db2597b8672273",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_corn.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "9ba4658b9782009524e29a079a3f3fe848585cb4c1da06c95883f8784cf72b31",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_cotton.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "044f7ba9f028c912d78a38102cc77485a836dadaca5e9315af9afc9a16699186",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_dollar.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "87279a814ec66d5848dddd0d932016d46bc7ae2f70cf0bb1c2724f92d038117b",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_gasoline.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "0d2e60050000dd8a0d814d94e586f2fa722ca1431f362da15b4c5fe4519f21e6",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_gold.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "71d6b64503cff63613e441a45a1045b4a4c1bbfe8f9b79acea596d2764dc9bbc",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_heating_oil.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "d684e7bd818fa07944d0c707ee178baff141fe6c9c289c8ff45848a473e0c411",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_live_cattle.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "581eb976b2cb972b59d9754c8cfa5c29c1e646c766575db326f8db4776868334",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_natgas.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "02cfce6c3db9b8ffa112bf624facc3cd5d103e7ebb740fa400dc6201be14a691",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_oil.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "98bb7d8015740fbc15d58ad6c6e5425009845e1d8a35f1489d2c0fcd4cd5de4d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_palladium.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "638f448c7baf5d9cf70164a6eeff501a77e73d4eb0b999bf7bdd8604973ebabd",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_platinum.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "cf77969af09633f8967573d2a23854f36d78838948618ff2986ad84e086408fc",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_silver.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "da51d79ff1912aafce49759d0cb233f3259f9a0042dd98aef9c4792d6b9d9369",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_soybeans.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "dc2162f97bc38728c8a704263e8c7772aebe5d203706e34df9485841299bc996",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_sugar.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "4a0faec9bf110d2f14ab7a65c33d5faaf3efaec37bd7d4f6dd3dcaca0330a16d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_wheat.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "be99a7b37ca532806e19beb7f0befef202d5fe39bdad2a197c8e4d3eb6cb0ee3",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/crude_imports.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "d9f8179501546e6e590463380de6704f0646c1a2e2b592036f897897598930ae",
+      "observed_by": [
+        "pathlib.exists"
+      ]
+    },
+    {
+      "path": "data/eia/crude_production.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "edad52ab7d28e277f83937215d856e1df59f0e1989bf627bf4dba96d414cc163",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/crude_stocks.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "01ec9fb7c45f7a868c48564d399fcdabea6025c991b3f9c6e5f800d99d5ca279",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/cushing_stocks.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "b71f1b4056ab4c4f5832bdad39d6d0a575e61cc2f9268333c699c8fffd334c4e",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/distillate_stocks.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "d991c5c65c9aa230aec77626999d79a5ac80cf6fb2b2666401ea2a7a5887ae3b",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/distillate_supplied.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "86988ab0a26b85033d2d130c00def21e2c7a1ecf863475202750e81ab93ba263",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/gasoline_stocks.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "f6d36d5a5fc2c15c429346aa45d2d155f2a5a794b1893f18d66fa8984d8b228b",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/gasoline_supplied.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "bea2ce5937b3ba46f90afb0b5b3f3bf6f6df6b924d98af4db90b848e48aa2484",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/refinery_inputs.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "9e09bc436c8861a32100f7a56dec0045c911bef4ef24a32142fd3562ebe898fd",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/refinery_util.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "11a3e12f90821cd43f649b4de3b07aa1bf46d239b7e5f5d3edd85a98ee363e9f",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/spr_stocks.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "2a7ac20ac7f03013f0811db52bde07a4c53093b83d26476dac043386f8da96e3",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/forex/latest.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "04ae82e5218fdf58a615afa97f8c7bc962d75be5168d5e11c05b1f56bab3485d",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/BAMLH0A0HYM2.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "9d361c1ffe72887d420b9f606fddf4723b689a50232db25dccea7b3ca9f7f63c",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DCOILWTICO.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "34c9f0ee022d8716f3d76a843ccf615f8fff04e9e52c5b57254f878e8059b057",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DFII10.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "68ce502d300ebbaf5dc4cafe844bcb0d50dbe5f22ae0be0b45539551e1735844",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DGS10.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "075ceb860f84f188105d666a182280d33282f4f6948740b57405ed93d74ebc61",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DGS2.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "76c2a22dacb459690816d3856e9b60bb5ab4ba7353f281af5ac192ef1f18e46d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DHHNGSP.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "6465dab1cd78a64e20dd5b5b0510d22fd224bf9c3434c2f35ba5bdad838c66ec",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DTWEXBGS.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "7245777d50ee8a9e0703cf3f2b113fbea6bd15ed9c52ca410500e0d6af479092",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/INDPRO.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "74f64f87d62945225913930448dcc4dc20d772037f47dc563f3b43c5ef616530",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/M2SL.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "23bb9af973d0740fbff7152533ad5cdabccca9e63497a46f5f70979076a585b5",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/RRPONTSYD.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "b3990e626e6445f9cab9b188e343ac840df46d7de26f8d5253f2f4002f661af4",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T10Y2Y.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "bdae0fe01068d88ab93a0b680c23f074e2abd55b019bb7fe44dd4a7c09e3c022",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T10YIE.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "a569903d808eec395dde17c0e10aeba3617ed94007b52cf74533dda993f03ebf",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T5YIFR.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "7a9b35c8c3c49c877188c7c4ca430352bbd3b6e77d33ac6b141e082c52a8b60d",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/VIXCLS.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "3481f6bb1af026555df1efffcb933425b1013a7552441800d78e0e34cf80cbef",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/WALCL.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "61306b550d6f67cba053efc4734e092fe70a3c2211b696d094a95e5af3b9ef28",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/gold_china_basis/sge_au9999.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "37032d0a6e1fc2bc3e07a2762d57390882a84ca18b3ed13e7e0da50a316e2439",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/gold_china_basis/xaucny_spot.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "535126bff815e0147fcee1424242d7ee80cf62681a87d23f7b024520a799db2e",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/hazard/km_baseline_price_c4414dcb.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "1d1a05904633dff46566b033628cf99e29f55a18d83f5781b6ced3df5c874fa6",
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/hazard/model_price_c4414dcb.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "518469686c2b0f84c911ce53fa91fefc25d3f3a2dff08bcbd9933fe61295caf6",
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/neuralweb/critical_minerals_supply.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "988673c0f713d0bfe7b7c697ebabe8afe9bc0c8c5701e4619c49af3ba8d64d9c",
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306",
+      "observed_by": [
+        "pathlib.is_file",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/regime/cycle_bands_fit.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "712074725c35fec247c9e9dc4fde9eb271c5f85af06e7d8c50b871f722e558cf",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/regime/ladder_risk_calibration.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "614da90a0cd2eb72f9d6b228ee2989d32ee3cef99d1eb006e60a03b7332e4efb",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/transmission/chain_state.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "a2ca4cd461b4af4d1a94bfefda828eecd083e583172be6899377be075958e694",
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/transmission/latest.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "556bb1ebb1928b4580b4cdd48198cc01ef1704be01bb20abb0997f06d92bc9c9",
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/vol_regime/basket_overlay_gate.json",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "90761f20b7a7cd280aab912a758a779f2fc7dc9c5a178e39f0979870245d807c",
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/BZ_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "5d2139b10ac686218ec1ae9529fe3e17384c9b2c76bc71a8e1c008cd7caebfa7",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CC_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "559012e834c24b5de48d70562fe810a0c97f0d62bf75bd20a580c89b29e52d13",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CL_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "747a4387ab4ff341e5af278a2ac62f9d9b62a521b26c51789120b765021411d8",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CT_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "42b9aa875b1f231fa064ad72a5093058f4a790857ae93fad49fcbdf97c43e7ff",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DBA.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "61563f8e115777bcca8f987af8dd58022db764223264fe0d7db51795c8f4abe7",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DBC.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "a22f8f231dc3811f9c4b8140824a074d86799a09358894ce80b2c94d2c90512c",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "bbc3a5b38edad8619f1a310fe274367e7dfbbeed57ae716b4e80a900e32a45a9",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/GC_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "671326e87a7fe5352193aaa1f68d89a3d5aeed4323c8b6d2c345bca189a2d15a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/GSG.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "991d9198c80ba34394f19cf6e0aee16e4f07a05aa62702314c6a18677f67c11a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/HG_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "7e221ec4ea2fa68983a3b2dd93e33b01c59aa0b5c64654ba0c037d67f3acb48c",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/HO_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "717d70f13108406c6f1d65bd9730d80792330ec7e897196b43ad18204785648a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/KC_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "064e982db28361b81376f57da297da0b623d8ad1eba299e8487b4d9cd16e7308",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/LE_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "df1417c581a4b6443c248ed9c241e415c2f8bfa85a2b6d12c1b87885ea2f5160",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/NG_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "28d2bf1c66518e9e73d7c895a39562fb01fa81b0f99e98acde848be0292a2d9a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/PA_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "8b94ad9b42eff1e1825c160739ab773c6303174ff82b70177634b0771ce04d96",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/PL_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "f187b3cf3f0c04d9ca00da39087ae9b897fdb6b93dc8d24b6f05fafa4ee070d8",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/RB_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "93ab6f3fc0cfbfc0034fa2f92dd8b9dc959a0535e1fb9bdce215e1908c57d989",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/SB_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "8946747106e5b3cac7ddb9546eea0ca1e16b96353d72d2fef43a34be82c04f16",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/SI_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "6b8fee2c85cee11079f9800f12f1e8eea9ce1eeef70474609d3f7f1a67c9b4fa",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZC_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "da1fd7a87e7906394d68adef3f94f90a9f3d4c3ab4c98a0d12728ec8b21b442a",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZQ_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "50bf4cc66476f9ab58388b781def91827e8216a8e4f19063abfbe96b2de9f6bc",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZS_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "718616cdd2b66cb9d811f77e847007ee39cda26317157d59d7e105dcca26abf5",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZW_F.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "d4ba7e3682f89db4dfef3cffc521748d46c919afb908f6746bdf6480fc007bb1",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/_MOVE.parquet",
+      "exists_at_first_observation": true,
+      "sha256_at_first_observation": "36edfd5880dbc6166b47c06bc9328ad56c2d3a74394d9fbe10893f81d79f2fd0",
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    }
+  ],
+  "page_sha256": "a09b027bcab4f6ffc39bb8d2bc8e2f0cb7fc817dd00ff874e5bba5162e1becc4",
+  "log_sha256": "4a824645adbb9678a37361fed728c397db64390ab153cb28292099d800fc5277"
+}

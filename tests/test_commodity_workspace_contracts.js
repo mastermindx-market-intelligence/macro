@@ -5,7 +5,8 @@ const test = require("node:test");
 const api = require("../templates/commodity-workspace.js");
 const data = {
   as_of: "2026-10-16", fingerprint: "dated-fixture-v1", projection_revision: 6,
-  assets: ["oil","gold","copper","silver","natgas"].map(id => ({id, returns:{"20":null}})),
+  assets: [["oil","energy"],["gold","precious"],["copper","industrial"],["silver","precious"],["natgas","energy"]]
+    .map(([id,family]) => ({id, family, returns:{"20":null}})),
   hypotheses: {oil:[{id:"supply"}], gold:[{id:"rates"}]}, chains: [],
   rates: {real_10y:null}, fx: {direction:null,direction_as_of:null},
   physical: null, gold_physical: null, ratios: [],
@@ -18,6 +19,7 @@ const raw = {
 };
 const copy = value => JSON.parse(JSON.stringify(value));
 const saved = () => {const result=api.checkDraft(copy(raw),data);assert.deepEqual(result.errors,[]);return result.value;};
+const discoveryDefaults = {view:"detail",query:"",family:"all",sort:"source",trend:"all",momentum:"all",layout:"table"};
 
 test("unknown and inherited asset names are rejected before semantic lookup",()=>{
   for (const asset of ["constructor","__proto__","toString","hasOwnProperty","unknown",null,{},["oil"]]) {
@@ -55,18 +57,58 @@ test("research expiry is checked against its snapshot without enabling monitorin
   }
 });
 test("fragment normalization bounds comparisons and rejects unsupported state",()=>{
-  const fallback=api.normalizeState({},data);
+  const fallback={tab:"overview",asset:"oil",window:"1m",hypothesis:"unresolved",compare:["oil","gold","copper","silver"],...discoveryDefaults};
+  assert.deepEqual(api.normalizeState({},data),fallback);
   for (const fragment of ["#other","#cw/"+ "x".repeat(2001)]) assert.deepEqual(api.readState(fragment,data),fallback);
   const examples=[
     ["#cw/relationships/constructor?window=9&hypothesis=__proto__&compare=oil,oil,unknown,gold,copper,silver,natgas",
-      {tab:"relationships",asset:"oil",window:"1m",hypothesis:"unresolved",compare:["oil","gold","copper","silver"]}],
+      {tab:"relationships",asset:"oil",window:"1m",hypothesis:"unresolved",compare:["oil","gold","copper","silver"],...discoveryDefaults}],
     ["#cw/research/gold?window=60&hypothesis=rates&compare=",
-      {tab:"research",asset:"gold",window:"60",hypothesis:"rates",compare:[]}]
+      {tab:"research",asset:"gold",window:"60",hypothesis:"rates",compare:[],...discoveryDefaults}]
   ];
   for (const [fragment,expected] of examples) {
     const state=api.readState(fragment,data);assert.deepEqual(state,expected);
     assert.deepEqual(api.readState(api.stateHash(state),data),expected);
   }
+});
+test("discovery state round trip retains filters and comparison order independently",()=>{
+  const expected={tab:"explore",asset:"gold",window:"20",hypothesis:"rates",compare:["silver","oil","gold"],
+    view:"universe",query:"Gold 黄金 & oil?",family:"precious",sort:"return_desc",trend:"up",momentum:"bear",layout:"map"};
+  const fragment="#cw/explore/gold?window=20&compare=silver%2Coil%2Cgold&hypothesis=rates&view=universe&q=Gold+%E9%BB%84%E9%87%91+%26+oil%3F&family=precious&sort=return_desc&trend=up&momentum=bear&layout=map";
+  const before=copy(data), candidate=copy(expected);
+  assert.deepEqual(api.normalizeState(candidate,data),expected);
+  assert.deepEqual(candidate,expected);assert.deepEqual(data,before);
+  assert.deepEqual(api.readState(fragment,data),expected);
+  assert.deepEqual(api.readState(api.stateHash(expected),data),expected);
+  // The Energy selection stays ordered even while the discovery family is Precious Metals.
+  assert.deepEqual(api.readState(fragment,data).compare,["silver","oil","gold"]);
+  const unavailable={...expected,trend:"unknown",momentum:"unknown"};
+  assert.deepEqual(api.readState(api.stateHash(unavailable),data),unavailable);
+});
+test("unsupported discovery controls fall back without losing the selected investigation",()=>{
+  const selected={tab:"explore",asset:"gold",window:"60",hypothesis:"rates",compare:["silver","oil"],...discoveryDefaults};
+  const unsupported={view:"grid",query:{text:"gold"},family:"missing-family",sort:"opportunity",trend:"bull",momentum:"up",layout:"chart"};
+  assert.deepEqual(api.normalizeState({...selected,...unsupported},data),selected);
+  const fragment="#cw/explore/gold?window=60&compare=silver%2Coil&hypothesis=rates&view=grid&family=missing-family&sort=opportunity&trend=bull&momentum=up&layout=chart";
+  assert.deepEqual(api.readState(fragment,data),selected);
+  for (const field of ["view","query","family","sort","trend","momentum","layout"]) {
+    for (const invalid of [null,{},[]]) {
+      assert.deepEqual(api.normalizeState({...selected,[field]:invalid},data),selected,field);
+    }
+  }
+  assert.deepEqual(api.readState(api.stateHash(selected),data),selected);
+});
+test("discovery queries remove controls and stay bounded without losing encoded text",()=>{
+  const query="黄金& ?".repeat(16);
+  assert.equal(query.length,80);
+  const input="\u0000"+query.slice(0,23)+"\n\t\u007f"+query.slice(23)+"tail";
+  const expected={tab:"explore",asset:"gold",window:"1m",hypothesis:"rates",compare:["gold"],
+    ...discoveryDefaults,view:"universe",query};
+  assert.deepEqual(api.normalizeState({...expected,query:input},data),expected);
+  const fragment="#cw/explore/gold?compare=gold&hypothesis=rates&view=universe&q="+encodeURIComponent(input);
+  assert.deepEqual(api.readState(fragment,data),expected);
+  assert.deepEqual(api.readState(api.stateHash(expected),data),expected);
+  assert.deepEqual(api.normalizeState({...expected,query:query+"x"},data),expected);
 });
 test("company continuation keeps owner identity and encodes an exact bounded return",()=>{
   const original="https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=oil_inflation_duration_derate&mo_channel=long_duration_valuation&mo_asof=2026-10-16&mo_security=SEC%3AUS-XNYS-A";
@@ -82,4 +124,17 @@ test("company continuation keeps owner identity and encodes an exact bounded ret
     assert.equal(api.companyReturnHref(original,state,page),original);
   }
   assert.equal(api.companyReturnHref("https://evil.example/analysis?page=intelligence",state,expected),"https://evil.example/analysis?page=intelligence");
+});
+test("company return preserves the complete discovery state and ignores stale page context",()=>{
+  const original="https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_security=SEC%3AUS-XNYS-A";
+  const state={tab:"explore",asset:"gold",window:"252",hypothesis:"rates",compare:["silver","oil","gold"],
+    view:"universe",query:"Gold 黄金 & oil?",family:"precious",sort:"return_asc",trend:"up",momentum:"bear",layout:"map"};
+  const expected="https://www.mastermind-x.com/commodities.html#cw/explore/gold?window=252&compare=silver%2Coil%2Cgold&hypothesis=rates&view=universe&q=Gold+%E9%BB%84%E9%87%91+%26+oil%3F&family=precious&trend=up&momentum=bear&sort=return_asc&layout=map";
+  const target=new URL(api.companyReturnHref(original,state,"https://www.mastermind-x.com/commodities.html?ret=https://evil.example#cw/overview/oil"));
+  assert.equal(target.searchParams.get("ret"),expected);
+  assert.equal(target.searchParams.get("from"),"macro");
+  assert.equal(target.searchParams.getAll("ret").length,1);
+  for (const [key,value] of new URL(original).searchParams) assert.equal(target.searchParams.get(key),value);
+  assert.deepEqual(api.readState(new URL(target.searchParams.get("ret")).hash,data),state);
+  assert.equal(api.companyReturnHref(target.href,state,expected),target.href);
 });

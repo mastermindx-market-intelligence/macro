@@ -1,0 +1,144 @@
+{
+  "as_of": "2026-10-22",
+  "coverage": {
+    "expected_n": 17,
+    "issues": [],
+    "matched_n": 17,
+    "missing_ids": [],
+    "present_n": 17,
+    "price_1m_known_n": 17,
+    "price_1m_state": "complete",
+    "price_1m_unavailable_ids": [],
+    "state": "complete",
+    "unqualified_ids": []
+  },
+  "covering_merged_render": false,
+  "created_at": "2026-10-23T07:12:03.367088+00:00",
+  "emitted_assets": {
+    "assets/css/080bfc12.css": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
+    "assets/css/61614127.css": "616141270b2945428236d02ebadcd20854e6fbb7d6dcea12a8e34552de81ecb6",
+    "assets/css/a24dfa7e.css": "a24dfa7e7aa786777ccf59bcd39624a545b6b138153504d331fc810dd8edc76a",
+    "assets/css/c45789fd.css": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+  },
+  "exact_emitted_snapshot_reprojection": true,
+  "final_browser_qualification": {
+    "capture_cells": 40,
+    "intentional_assistant_aborts": 1,
+    "missing_family_browser_tests": 5,
+    "passed": true,
+    "producer_tests": 59,
+    "receipts": {
+      "final-guards.json": "c1cca5592371470ae84af92e2c3fd38087a1f17d6dff5904687e58de391aea15",
+      "final-test-process.json": "74f4b5a700cdb2194c9a8703aa0764e19f055ce904f18c28216daeecbc66a5a0",
+      "final/manifest.json": "a22c32b03b520793436dfe60fe483f7da74f832e29793b1930e1eb932c8b8c33",
+      "final/smells.json": "987bbbd34a3362ec98b56adfa50c4726fc37b289bd931c2f818fd20ffeca1ae1",
+      "normal-browser.json": "5940034b48f49376d91a270cd77c341cfce9c989e4086a257aca9defed90d970"
+    },
+    "rendered_dom_journeys": 43,
+    "renderer_tests": 3,
+    "responsive_cells": 24,
+    "scope": "local static candidate; not authenticated production",
+    "state_contracts": 10,
+    "unavailable_local_service_responses": 4,
+    "unexpected_same_origin_asset_failures": []
+  },
+  "fingerprint": "0af2bfd9202a3665c1a6ca1c29feb31e3c70cf5effeb2e04cbec3483120dd77b",
+  "input_audit_receipt": "normal-build-input-audit.json",
+  "normal_publisher_command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-light/bin/python",
+    "-u",
+    "-m",
+    "scripts.build_commodities"
+  ],
+  "normalization_owners": [
+    "scripts.externalize_css.externalize",
+    "scripts.optimize_assets.make_optimizer"
+  ],
+  "page_sha256": "19bc315458d83f384e4b3080b408b53ee25abc9e0c4a7d4c9c73f6d4cbe2db55",
+  "payload_bytes_preserved": true,
+  "payload_sha256": "b26ef7a04b0e91e197ddd362adb96df8bcf942b99b463a2f0b353f0460b535b7",
+  "post_qualification_integration": {
+    "bound_source_and_page_unchanged": true,
+    "exact_commit_publication_guard_passed": true,
+    "incoming_non_commodity_paths": 29,
+    "integration_commit": "381ca77e4a3e344ec5a2d8f3e0d1b8e3dd8d70c6",
+    "latest_main": "044eba3d856b47100601576a33f5b984345ead80",
+    "pending_merge_completed_commit": "0acf98fc79b079e4002a8310fc97655d43572759",
+    "pending_merge_tree_unchanged": true,
+    "source_commit": "40aa7c1a32c4b408d7a8913f2f88db22cb42c8c1",
+    "state_contracts_rerun_passed": 10,
+    "unresolved_merge": false
+  },
+  "principal_visual_inspection": {
+    "inspected": [
+      "final/49c60c82a6df458b.png",
+      "final/3515613d8795e78e.png",
+      "final/5b106e36a40ac9a5.png",
+      "final/ec44f42a5e885729.png",
+      "final/06b9e440a5637a75.png",
+      "final/0cde55860920b8b1.png",
+      "final/dd9cb05ba64a98c4.png",
+      "evidence/normal-browser/gold-source-interpretation-320-light-zh.png"
+    ],
+    "limitations": [
+      "Full original Paper parity and all19scenarioacceptances remain open.",
+      "Capture timings are synthetic lab measurements, not real-user performance proof.",
+      "No deployment, covering merged render, authenticated Save or reopen acceptance."
+    ],
+    "observations": [
+      "Trend and momentum remain separately labeled in family members.",
+      "WTI price and physical evidence are paired on desktop and stacked on phone with separate clocks.",
+      "Comparison results remain readable on the Chinese light phone state.",
+      "Research remains an export-only worksheet with explicit account-saving limits.",
+      "Source drawer remains readable at 320px with independent missing clocks explicit."
+    ],
+    "scope": "bounded candidate composition and preservation; not original Paper or scenario completion"
+  },
+  "process_receipt": "normal-build-release-process.json",
+  "production_acceptance": false,
+  "projection_revision": 7,
+  "publication_guard": {
+    "accepted_commit": "82766f6fcea1f2db807830c370f1a03222965ece",
+    "action": "kept",
+    "candidate_commit": null,
+    "fingerprint": "0af2bfd9202a3665c1a6ca1c29feb31e3c70cf5effeb2e04cbec3483120dd77b",
+    "freshness_verified": false,
+    "page": "site/commodities.html",
+    "page_sha256": "19bc315458d83f384e4b3080b408b53ee25abc9e0c4a7d4c9c73f6d4cbe2db55",
+    "projection_revision": 7,
+    "repair_reason": null,
+    "schema": "mmx.commodities.publication_guard.v1"
+  },
+  "qualified_at": "2026-10-23T07:18:57.160183+00:00",
+  "raw_page_sha256": "4e5c4a2ad4c388883b3f5c5712273e1bcb890c96a321537083b132d3a749667b",
+  "snapshot_asof": "2026-10-22",
+  "source_date_disagreement": "resolved by actual normal publisher output; historical Oct21 review artifact is superseded",
+  "source_sha256": {
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "engine/commodity_decision_workspace.py": "0765eaaa059e253536c859a92fa210c900a6825c86cc7e5c146a04adf956f674",
+    "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
+    "engine/commodity_workspace_adapter.py": "f1e22114179c4e610e0fb8331342ed05446ed07c466e7f93a56cdbc58e5dd76f",
+    "scripts/build_commodities.py": "7bfa23a6353968c9ec2259bac72417eeb38493d64a0f35b073c0f1501ae6bcf0",
+    "scripts/render_commodity_workspace_review.py": "f671dcd74798cbcd514276777d4626a0a1d7a100065364a7dd620de678711540",
+    "scripts/verify_commodity_workspace_browser.py": "745c2376a51fc3583957263a1b26decb37dbc734342318c123b7a2de0b54a5e8",
+    "templates/_commodity_decision_workspace.html.j2": "ef978eeb6d7f367f72c138d8ea987456a0602b1800a3ac7a59e4aa7b4a44343c",
+    "templates/commodities.html.j2": "be740470943c0692f05573ac0f65da6dd9e622b8fbd5ee6c186d7b8f8413bb45",
+    "templates/commodity-workspace.css": "a54a082a5a2c342a960fd6356892c60c0285a5048695ca0385e901608515468d",
+    "templates/commodity-workspace.js": "8770d7daa252a1d5ab9ff47e91beed8b4fdea90c64331efd0fe7a84f0fea1a9a",
+    "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1",
+    "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
+    "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21"
+  },
+  "visual_evidence_gate": {
+    "command": [
+      "python3",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/tmp/commodities-final-ui-diff-20261023.patch",
+      "--repo-root",
+      "."
+    ],
+    "comparison_base": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "passed": true
+  }
+}

@@ -1,0 +1,818 @@
+{
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-light/bin/python",
+    "-u",
+    "-m",
+    "scripts.build_commodities"
+  ],
+  "head_before": "82766f6fcea1f2db807830c370f1a03222965ece",
+  "pending_merge": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "source_sha256": {
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "engine/commodity_decision_workspace.py": "0765eaaa059e253536c859a92fa210c900a6825c86cc7e5c146a04adf956f674",
+    "engine/commodity_workspace_adapter.py": "f1e22114179c4e610e0fb8331342ed05446ed07c466e7f93a56cdbc58e5dd76f",
+    "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
+    "scripts/build_commodities.py": "7bfa23a6353968c9ec2259bac72417eeb38493d64a0f35b073c0f1501ae6bcf0",
+    "scripts/render_commodity_workspace_review.py": "f671dcd74798cbcd514276777d4626a0a1d7a100065364a7dd620de678711540",
+    "scripts/verify_commodity_workspace_browser.py": "745c2376a51fc3583957263a1b26decb37dbc734342318c123b7a2de0b54a5e8",
+    "templates/commodities.html.j2": "be740470943c0692f05573ac0f65da6dd9e622b8fbd5ee6c186d7b8f8413bb45",
+    "templates/_commodity_decision_workspace.html.j2": "ef978eeb6d7f367f72c138d8ea987456a0602b1800a3ac7a59e4aa7b4a44343c",
+    "templates/commodity-workspace.js": "8770d7daa252a1d5ab9ff47e91beed8b4fdea90c64331efd0fe7a84f0fea1a9a",
+    "templates/commodity-workspace.css": "a54a082a5a2c342a960fd6356892c60c0285a5048695ca0385e901608515468d",
+    "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
+    "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1",
+    "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21"
+  },
+  "input_receipt": "normal-inputs.json",
+  "input_receipt_sha256": "ef8d46d73b5d461910825932de9d4cbf63c6f1497d8d6541c3a84a22b983027c",
+  "accepted_research_cutoff": "2026-10-22",
+  "pre_build_page_sha256": "43f5a7581ff5b01cf8a8152159fc845230b3d5133e5b23975f05c334354fde21",
+  "runtime_versions": {
+    "pandas": "3.0.6",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "jinja2": "3.1.6",
+    "yfinance": "1.7.0",
+    "scipy": "1.18.1"
+  },
+  "started_at": "2026-10-23T06:59:03.792030+00:00",
+  "normal_entrypoint_invoked": true,
+  "production_acceptance": false,
+  "invocation": "runpy.run_module(scripts.build_commodities, run_name=__main__) with observation-only Python file-read profiling; no replaced functions, values, or sources",
+  "additional_input_receipt": "normal-extra-inputs.json",
+  "returncode": 0,
+  "finished_at": "2026-10-23T06:59:43.462249+00:00",
+  "elapsed_seconds": 39.67,
+  "source_unchanged": true,
+  "observed_data_reads": [
+    {
+      "path": "data/fred/DFII10.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DTWEXBGS.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T10YIE.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T5YIFR.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DGS10.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DGS2.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/WALCL.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/INDPRO.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/VIXCLS.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/GC_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_gold.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/SI_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_silver.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/HG_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_copper.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CL_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_oil.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/BZ_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZQ_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/T10Y2Y.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/_MOVE.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/BAMLH0A0HYM2.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/RRPONTSYD.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/M2SL.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_dollar.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/conviction_calibration.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/_meta.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/oil.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/brent.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/gold.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/silver.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/copper.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/calibration.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/gold_hourly.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/silver_hourly.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/copper_hourly.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/oil_hourly.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/alerts.jsonl",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/regime/cycle_bands_fit.json",
+      "exists_before_read": false,
+      "observed_by": [
+        "pathlib.exists"
+      ]
+    },
+    {
+      "path": "data/vol_regime/basket_overlay_gate.json",
+      "exists_before_read": false,
+      "observed_by": [
+        "pathlib.exists"
+      ]
+    },
+    {
+      "path": "data/regime/ladder_risk_calibration.json",
+      "exists_before_read": false,
+      "observed_by": [
+        "pathlib.exists"
+      ]
+    },
+    {
+      "path": "data/forex/latest.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity_carry/eia_wti_termstructure.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/crude_stocks.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/cushing_stocks.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/gasoline_stocks.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/distillate_stocks.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/refinery_inputs.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/gasoline_supplied.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/distillate_supplied.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/crude_production.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/refinery_util.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/spr_stocks.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/PL_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_platinum.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/PA_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_palladium.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/NG_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_natgas.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/RB_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_gasoline.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/HO_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_heating_oil.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZC_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_corn.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZW_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_wheat.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/ZS_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_soybeans.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/LE_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_live_cattle.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/KC_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_coffee.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/SB_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_sugar.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CC_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_cocoa.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/CT_F.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/cot/cot_cotton.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DBC.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/GSG.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/hazard/model_price_c4414dcb.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/hazard/km_baseline_price_c4414dcb.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DCOILWTICO.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/fred/DHHNGSP.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/yahoo/DBA.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/cycle_positions.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/gold_china_basis/sge_au9999.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/gold_china_basis/xaucny_spot.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.exists",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/eia/crude_imports.parquet",
+      "exists_before_read": false,
+      "observed_by": [
+        "pathlib.exists"
+      ]
+    },
+    {
+      "path": "data/neuralweb/critical_minerals_supply.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/transmission/chain_state.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/transmission/latest.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/commodity/latest.json",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.read_text",
+        "open-read"
+      ]
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "exists_before_read": true,
+      "observed_by": [
+        "pathlib.is_file",
+        "open-read"
+      ]
+    }
+  ],
+  "post_build_page_sha256": "db513b6b27b459a050938f364242b2cf771aca41a58399f8cddda05705a29375",
+  "log_sha256": "a53710ebb1240260e2e5b779a44ae54d6929cae98611768a2c6d164bc8b66012"
+}

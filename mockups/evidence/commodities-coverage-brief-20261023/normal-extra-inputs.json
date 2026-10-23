@@ -1,0 +1,23 @@
+[
+  {
+    "path": "data/hazard/model_price_c4414dcb.json",
+    "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "blob": "54530e57b4030cc04c432243008db7522a738472",
+    "sha256": "518469686c2b0f84c911ce53fa91fefc25d3f3a2dff08bcbd9933fe61295caf6",
+    "bytes": 2315567
+  },
+  {
+    "path": "data/hazard/km_baseline_price_c4414dcb.json",
+    "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "blob": "38221010a2d6c51adfe48209e73bf9cc240e3b6d",
+    "sha256": "1d1a05904633dff46566b033628cf99e29f55a18d83f5781b6ced3df5c874fa6",
+    "bytes": 55949
+  },
+  {
+    "path": "data/neuralweb/critical_minerals_supply.json",
+    "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "blob": "b293eb5cf56c648a9261f80ba41e37f71b7df94a",
+    "sha256": "988673c0f713d0bfe7b7c697ebabe8afe9bc0c8c5701e4619c49af3ba8d64d9c",
+    "bytes": 16237
+  }
+]

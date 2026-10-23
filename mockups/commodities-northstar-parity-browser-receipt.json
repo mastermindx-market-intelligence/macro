@@ -1,0 +1,312 @@
+{
+  "scope": "anonymous local rendered page",
+  "production_verified": false,
+  "assistant_scope": "anonymous local widget; no prompt submitted",
+  "unobstructed_desktop_returns": 17,
+  "accessible_reading_cases": {
+    "scope": "actual published universe; no values injected",
+    "numeric_cases_observed": {
+      "positive": 13,
+      "negative": 21,
+      "zero": 0,
+      "unavailable": 0
+    },
+    "numeric_cases_not_present": [
+      "zero",
+      "unavailable"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "trend_and_momentum": true
+  },
+  "screenshots": [
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-desktop-dark-en.png",
+      "sha256": "9ef4bfb328cb450ab3f5c4e576bfdb2327e16a23da23f284f2016b263d269345",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-technical-desktop-dark-en.png",
+      "sha256": "783f072fae07555534ce20ad93fc95d5b6185dcdd24b0d2e603aaecfddb5efad",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/physical-seasonal-source-desktop-dark-en.png",
+      "sha256": "9bd2f58494056f46b3861041b5d7759083d88f05c9cbc190b8274cd2a0d2d682",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/oil?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/overview-320-dark-en.png",
+      "sha256": "1e770bce4e187e0cebe8a6b8f3fe66010efa67fb5a827bb22033215e3d7d7d02",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/overview/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-320-light-zh.png",
+      "sha256": "308aa02a70e5b4bc1e78366a81129cba4cf8fc413e91bbb59e29e169436460fd",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    },
+    {
+      "file": "mockups/evidence/commodities-northstar-parity-browser-receipt/gold-source-interpretation-320-light-zh.png",
+      "sha256": "308aa02a70e5b4bc1e78366a81129cba4cf8fc413e91bbb59e29e169436460fd",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "route": "/commodities.html#cw/explore/gold?window=1m&compare=oil%2Cgold%2Ccopper%2Csilver&hypothesis=unresolved&view=universe",
+      "page_sha256": "16837e4d81e9da8d28f4ad4b796f616b57acbf55bd8dc69c5351b0f3ea3709ea"
+    }
+  ],
+  "physical_accessible_name_checks": 24,
+  "available_company_continuations": 0,
+  "research_as_of": "2026-10-22",
+  "workspace_fingerprint": "96d565cd6a66e39e7137b074101721d466eaa22030b39556f4563a31b80a479b",
+  "fresh_document_import": {
+    "separate_browser_context": true,
+    "exact_export_round_trip": true,
+    "threshold": 0,
+    "window_sessions": 20,
+    "monitoring_active": false
+  },
+  "expired_draft_fixture": {
+    "scope": "isolated simulated clock; no market data changed",
+    "expires_on": "2026-10-22",
+    "evaluation_clock": "2026-10-23T12:00:00Z"
+  },
+  "unobstructed_mobile_returns": 17,
+  "responsive_layout_checks": [
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "dark",
+      "view": "overview"
+    },
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "dark",
+      "view": "explore"
+    },
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "dark",
+      "view": "compare"
+    },
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "light",
+      "view": "overview"
+    },
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "light",
+      "view": "explore"
+    },
+    {
+      "width": 320,
+      "locale": "en",
+      "theme": "light",
+      "view": "compare"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "overview"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "explore"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "compare"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "light",
+      "view": "overview"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "light",
+      "view": "explore"
+    },
+    {
+      "width": 320,
+      "locale": "zh",
+      "theme": "light",
+      "view": "compare"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "dark",
+      "view": "overview"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "dark",
+      "view": "explore"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "dark",
+      "view": "compare"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "light",
+      "view": "overview"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "light",
+      "view": "explore"
+    },
+    {
+      "width": 768,
+      "locale": "en",
+      "theme": "light",
+      "view": "compare"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "overview"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "explore"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "dark",
+      "view": "compare"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "light",
+      "view": "overview"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "light",
+      "view": "explore"
+    },
+    {
+      "width": 768,
+      "locale": "zh",
+      "theme": "light",
+      "view": "compare"
+    }
+  ],
+  "company_return_transport": {
+    "scope": "intercepted first-party-origin fixture; authenticated Terminal unverified",
+    "requested_href": "https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-10-20&mo_security=SEC%3AUS-XNYS-A&from=macro&ret=https%3A%2F%2Fwww.mastermind-x.com%2Fcommodities.html%23cw%2Frelationships%2Fgold%3Fwindow%3D60%26compare%3Doil%252Cgold%26hypothesis%3Drates",
+    "return_url": "https://www.mastermind-x.com/commodities.html#cw/relationships/gold?window=60&compare=oil%2Cgold&hypothesis=rates",
+    "restored": true
+  },
+  "passed": true,
+  "checks": [
+    "compact headline resolves the canonical heading token above body text; panel radius resolves",
+    "failed assistant load remains visible and retryable through the inline entry",
+    "keyboard retry opens shared Brain, reuses mounted owner and returns focus on close",
+    "overview numeric values remain unobstructed at desktop scroll positions",
+    "Explore presents the complete 17-commodity published universe",
+    "actual universe source buttons expose commodity, reading/sign and available state in both languages",
+    "source interpretation retains field scope and the expanded technical reference fits the drawer",
+    "native source dialog preserves exact reading, independent clocks, modal focus and Escape return",
+    "search and family intersect, preserve comparison selection and recover with visible focus",
+    "signal map counts actual independent states and transfers keyboard focus to matching results",
+    "brief and Back preserve search, family, sort, selection and the exact result focus",
+    "browser Back dismisses an open receipt and restores focus to the current visible route",
+    "primary and session returns retain numeric hierarchy instead of caption styling",
+    "exact published physical headline, clocks, dates and downstream context",
+    "stock, seasonal deviation, four-week change and days-cover names retain actual values/units in both languages",
+    "all four physical receipt types preserve observation week, analysis date, unknown release clock and Escape focus",
+    "physical evidence navigation preserves the selected explanation and keyboard focus",
+    "oil supply selection carries a conditional mechanism and evidence questions",
+    "changing explanation changes the investigation",
+    "research headings show only the chosen language and context follows the draft lookback",
+    "real research export retains dated physical evidence and fits its import limit",
+    "real download preserves exact condition, hypothesis and inactive monitoring",
+    "exported research restores in a fresh document with exact condition and complete evidence",
+    "an expired historical draft reopens with an explicit inactive expiry disclosure",
+    "changing commodity removes the oil explanation and petroleum claims",
+    "Gold proxy retains its exact published timestamp, percentage units and price interpretation",
+    "comparison window changes actual bar geometry on one shared signed scale",
+    "selected-window receipt follows 60 sessions while the distinct one-month column remains available",
+    "real file import restores the same investigation",
+    "browser history preserves investigation context",
+    "partial coverage clears stale support and invalidation text",
+    "Chinese mobile investigation retains meaning without horizontal overflow",
+    "light mobile view retains the investigation and layout",
+    "Chinese mobile physical evidence retains all stock cards and dates without page overflow",
+    "overview numeric values remain unobstructed at mobile scroll positions",
+    "mobile direct routes reveal the active tab and comparison choices are not clipped",
+    "Done collapses the selection editor and returns focus to its summary",
+    "320px and 768px Overview, universe, Compare and source dialog fit in both themes and languages",
+    "no uncaught browser errors",
+    "first-party company link opens with unchanged identity fields and exact Macro return",
+    "decoded company return restores commodity, tab, window, comparisons and hypothesis"
+  ],
+  "browser_errors": []
+}
