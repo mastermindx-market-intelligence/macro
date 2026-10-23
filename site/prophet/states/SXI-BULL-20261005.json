@@ -17,20 +17,20 @@
     "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.104,
+    "dist_to_stop_r": -0.23,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 35.6,
-    "p1": -0.7362,
-    "p2": -0.3681,
+    "p1": -0.8197,
+    "p2": -0.4098,
     "p3": null,
-    "move_r": -1.104,
+    "move_r": -1.23,
     "mfe_r": 0.001,
-    "mae_r": -1.104
+    "mae_r": -1.23
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.05000000000001137,
-  "_mae": -45.19999999999999,
+  "_mae": -50.32499999999999,
   "_max_p1": 0.0008143985666587073,
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": null,
