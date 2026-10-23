@@ -1,3 +1,34 @@
+## Current Forex checkpoint — 23 October 2026
+
+**Source-qualified implementation is published; review, policy adoption and activation remain gated.** This opening records the published implementation and its exact qualification. The earlier pending-local `92f` / remote `0a` checkpoint retained below is historical.
+
+### Published source and qualification
+
+- Published head: `467f03e043054b956c3805883d73570a2aff2dcf`; normal push completed at **05:20:32.577457 UTC on 23 October**.
+- Two ownership tests passed. The **75 pre-existing pytest cleanup warnings** remain recorded; they were not silently discarded.
+- The local official contract delta against `7f57e913a5fa17e11001564a31c4c70a425cb102` completed at **05:24:44 UTC**: **0 introduced / 0 inherited**.
+- Hosted CI **39905223662** completed **SUCCESS at 05:57:06 UTC**: all **12 packs**, contract, ci-plan and gate succeeded. Fences **39905223590** also completed **SUCCESS**.
+- Preserve the earlier **524-test source result** as its separate historical qualification; do not combine its count with the ownership tests or hosted packs.
+- Protected Mastermind procedure pin: `b61ab772a88c68c97bd6931a5698708909c9320c`.
+
+Current receipts: [canonical Forex checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600) and [joint checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6336042815). Preserve their receipt bodies; these references do not create additional authority.
+
+### Decision and observation boundaries
+
+The current source-design USDJPY decisions are already documented. Actual implementation `/2` observations remain historical: their fixed expiry was **20:00 UTC on 22 October**, all flags were false, `eligible=[]`, and the candidate was `candidate_not_adopted`. Source qualification and documentation updates do not renew those observations or adopt the candidate.
+
+The original Fabric repair-review operation was read at **05:45 UTC on 23 October** and remained terminal/unqualified, with retry false; this blocks **Terminal #1106, which remains Draft/HOLD**. The separate held Forex policy review also remains unqualified. Preserve each operation’s own gate and custody. Do not retry the denied deployment, replay migration 0038, or spawn another render for the consumed covering run `39688064251`.
+
+### Remaining gates, in order
+
+1. Obtain qualified Forex policy review/acceptance through its existing owner. The original Fabric repair-review gate separately continues to hold Terminal #1106; it is not a substitute Forex review.
+2. Complete existing-owner policy adoption and prove atomic eligibility plus account, revision, expiry, source and idempotency binding under the existing contract.
+3. Use the existing authorized activation/deployment pathway only after those gates are qualified.
+
+No new wrapper, evaluator, watch or queue is introduced. This checkpoint makes no activation, deployment, production-publication or fresh-observation claim. It does not assign a head or CI result to a future documentation commit.
+
+---
+
 ## Recovery and CI integration checkpoint — 2026-10-23
 
 The browser/session restart left the existing source workspaces intact. Forex
