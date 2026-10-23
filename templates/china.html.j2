@@ -2,6 +2,7 @@
 {% import "_decision_card.html.j2" as dc %}
 {% import "_lens.html.j2" as lens %}
 {% import "_risk_radar_dlg.html.j2" as rrd %}{# shared country Risk Radar dialog (CN/HK/CA) #}
+{% import "_risk_radar_card.html.j2" as rrc %}{# shared semantic helpers for percentile/hazard labels #}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
@@ -1024,7 +1025,24 @@
   body.page-china .cnx-pop-big{display:flex;align-items:baseline;gap:10px;margin:2px 0 4px}
   body.page-china .cnx-pop-big .n{font-size:30px;font-weight:750;color:var(--ink-down, var(--down))}
   body.page-china .cnx-pop-big .t{font-size:12.5px;font-weight:700;color:var(--ink-down, var(--down))}
-  body.page-china .cnx-pop-sub{font-size:11.5px;color:var(--muted);margin-bottom:8px}
+  body.page-china .cnx-pop-sub{font-size:11.5px;color:var(--muted);margin-bottom:8px;line-height:1.48;overflow-wrap:anywhere}
+  body.page-china .cnx-semantic-kicker{margin:10px 0 3px}
+  body.page-china .cnx-boundary-chip{display:inline-flex;max-width:100%;align-items:center;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:650;line-height:1.25;color:var(--muted);background:color-mix(in srgb,var(--warn) 8%,transparent);border:1px solid color-mix(in srgb,var(--warn) 28%,transparent);white-space:normal}
+  body.page-china .cnx-risk-pop{width:min(430px,calc(100vw - 32px));max-height:min(72vh,640px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+  body.page-china .cnx-pop-eyebrow{margin:13px 0 6px;font-size:9.5px;letter-spacing:.8px}
+  body.page-china .cnx-authority-line{display:block;margin:7px 0 8px;padding:6px 8px;border-radius:8px;font-size:10.5px;font-weight:750;line-height:1.4;color:var(--muted);background:color-mix(in srgb,var(--text) 4%,transparent);border:1px solid color-mix(in srgb,var(--text) 9%,transparent);overflow-wrap:anywhere}
+  body.page-china .cnx-authority-line.is-binding{color:var(--ink-down,var(--down));border-color:color-mix(in srgb,var(--down) 26%,transparent)}
+  body.page-china .cnx-hazard-rank{margin-top:2px;overflow-wrap:anywhere}
+  body.page-china .cnx-hazard-card .cnx-kv{align-items:flex-start}
+  body.page-china .cnx-hazard-card .cnx-kv .k{min-width:0;overflow-wrap:anywhere}
+  body.page-china .cnx-hazard-card .cnx-kv .v{flex:0 0 auto;max-width:48%;overflow-wrap:anywhere}
+  body.page-china .cnx-risk-foot{display:grid;gap:6px;line-height:1.45;overflow-wrap:anywhere}
+  body.page-china .cnx-risk-authority{font-weight:750;color:var(--muted)}
+  @media(max-width:560px){
+    body.page-china .cnx-risk-pop{position:fixed;left:16px!important;right:16px!important;top:auto;bottom:16px;width:auto;max-height:72vh}
+    body.page-china .cnx-hazard-card .cnx-kv{display:grid;grid-template-columns:minmax(0,1fr) auto}
+    body.page-china .cnx-hazard-card .cnx-kv .v{max-width:46vw}
+  }
   /* tiles rack */
   body.page-china .cnx-secbar{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
   body.page-china .cnx-secbar b{color:var(--text);font-weight:700}
@@ -1785,6 +1803,39 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _ms_flip_zh = (ms.flip_zh if ms else '') %}
   {% set _comps = (ms.components if ms else []) %}
   {% set _rr = (ms.radar if ms else {}) %}
+  {# P0 semantic projection only: derive truthful labels from existing machine fields. #}
+  {% set _mslegs = namespace(trend=none, breadth=none, liquidity=none, stress=none) %}
+  {% for _c in _comps %}
+    {% if _c.key == 'trend' %}{% set _mslegs.trend = _c.score %}
+    {% elif _c.key == 'breadth' %}{% set _mslegs.breadth = _c.score %}
+    {% elif _c.key == 'liquidity' %}{% set _mslegs.liquidity = _c.score %}
+    {% elif _c.key == 'stress' %}{% set _mslegs.stress = _c.score %}{% endif %}
+  {% endfor %}
+  {% set _ms_boundary_gap = (42 - _ms_score) if _ms_verdict == 'RISK_OFF' else ((_ms_score - 60) if _ms_verdict == 'RISK_ON' else none) %}
+  {% set _ms_near_boundary = (_ms_boundary_gap is not none and _ms_boundary_gap >= 0 and _ms_boundary_gap <= 5) %}
+  {% set _ms_truth_en = 'Participation and liquidity are weak; trend remains soft.' if (_mslegs.breadth is not none and _mslegs.breadth < 42 and _mslegs.liquidity is not none and _mslegs.liquidity < 42 and _mslegs.trend is not none and _mslegs.trend < 42) else (_ms_thesis or 'Market-state headline unavailable.') %}
+  {% set _ms_truth_zh = '参与度与流动性偏弱；趋势仍然疲软。' if (_mslegs.breadth is not none and _mslegs.breadth < 42 and _mslegs.liquidity is not none and _mslegs.liquidity < 42 and _mslegs.trend is not none and _mslegs.trend < 42) else (_ms_thesis_zh or '市场状态标题暂不可用。') %}
+  {% set _rr_score = (_rr.get('top_score') if (_rr and _rr.get('top_score') is not none and _rr.get('top_score') != '') else none) %}
+  {% set _rr_p21 = _rr.get('dd21') if _rr else none %}
+  {% set _rr_lift = _rr.get('dd_lift') if _rr else none %}
+  {% set _rr_base = (_rr.get('dd_base') or {}) if _rr else {} %}
+  {% set _rr_base21 = _rr_base.get('h21') if _rr_base else none %}
+  {% set _rr_gross = _rr.get('gross') if _rr else none %}
+  {% set _rr_binding = (_rr.get('binding') or false) if _rr else false %}
+  {% set _rr_fl = (_rr.get('forward_log') or {}) if _rr else {} %}
+  {% set _rr_track = (_rr.get('track') or {}) if _rr else {} %}
+  {# forward_log owns matured rows; track owns monitoring and alert outcomes. #}
+  {% set _rr_audit = _rr_track if _rr_track else _rr_fl %}
+  {% set _rr_mon = (_rr_audit.get('monitoring') or {}) if _rr_audit else {} %}
+  {% set _rr_windows = (_rr_audit.get('windows') or {}) if _rr_audit else {} %}
+  {% set _rr_full = (_rr_windows.get('full') or _rr_windows.get('y1') or {}) if _rr_windows else {} %}
+  {% set _rr_alerts = (_rr_full.get('alerts') or {}) if _rr_full else {} %}
+  {% set _rr_matured = _rr_fl.get('n_graded') if (_rr_fl and _rr_fl.get('n_graded') is not none) else (_rr_mon.get('graded_n') or 0) %}
+  {% set _rr_loud = _rr_alerts.get('n') or 0 %}
+  {% set _rr_hits = _rr_alerts.get('tp') or 0 %}
+  {% set _rr_awaiting = _rr_mon.get('awaiting_maturity') if _rr_mon else none %}
+  {% set _rr_do_en = (_rr.get('do_en') or '') if _rr else '' %}
+  {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
   {% set I = internals or {} %}
   {% set P = property %}
   {% set pb_obj = pb %}
@@ -1815,6 +1866,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} feeds</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 数据源</span></span>{% endif %}
         </span>
       </div>
+      <div class="cnx-eyebrow cnx-semantic-kicker">{{ t('MEASURED STATE','实测状态') }}</div>
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
          Geometry: arc M14,75 A56 → π·56≈175.93 arc-len; needle+numeral rotate around
          (70,75). data-gauge-* attrs let china_risk_state_live.js patch geometry without
@@ -1880,7 +1932,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
            wrapper via .cnx-big-score/.cnx-verdict/.cnx-sub-line rules (--up/--down), so these
            DIRECTION reads flip in zh (risk-off → green), matching the gauge, tiles and path. #}
         <div>
-          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span></div>
+          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span><span id="ms-boundary-chip" class="cnx-boundary-chip"{% if not _ms_near_boundary %} hidden{% endif %}><span class="l-en">{% if _ms_near_boundary %}near Mixed boundary · {{ _ms_boundary_gap|round|int }} points {{ 'below' if _ms_verdict == 'RISK_OFF' else 'above' }}{% endif %}</span><span class="l-zh">{% if _ms_near_boundary %}接近「混合」边界 · {{ '低' if _ms_verdict == 'RISK_OFF' else '高' }} {{ _ms_boundary_gap|round|int }} 分{% endif %}</span></span></div>
           <div class="cnx-sub-line">
             {# zh names the TIER (偏多/中性/避险), never the colour word — the paint flips 红涨绿跌
                in zh (risk-off→green), so a literal 红/绿 would contradict it. Matches macro.html. #}
@@ -1890,7 +1942,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           </div>
         </div>
       </div>
-      <p class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_thesis or 'Market-state headline unavailable.' }}</span><span class="l-zh">{{ _ms_thesis_zh or '市场状态标题暂不可用。' }}</span></p>
+      <p class="v-thesis cnx-thesis"><span class="l-en">{{ _ms_truth_en }}</span><span class="l-zh">{{ _ms_truth_zh }}</span></p>
       <div class="cnx-playbook-context"><span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span></div>
       <div class="v-flip cnx-flip">{{ t(_ms_flip or '—', _ms_flip_zh or '—') }}</div>
       <div class="cnx-hero-btns">
@@ -1900,16 +1952,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-signals',event)">⌁
           <span class="l-en">{{ _n_bull }} of {{ _n_total }} signals aligned</span><span class="l-zh">{{ _n_total }} 项中 {{ _n_bull }} 项一致</span>
           <span class="n">▾</span></button>
-        {# risk button #}
-        {% set _rr_score = (_rr.get('top_score') if (_rr and _rr.get('top_score') is not none and _rr.get('top_score') != '') else none) %}
-        {% set _rr_p21 = _rr.get('dd21') if _rr else none %}
-        {% set _rr_lift = _rr.get('dd_lift') if _rr else none %}
-        {% set _rr_do_en = (_rr.get('do_en') or '') if _rr else '' %}
-        {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
-        {% set _rr_sub_en = ('~%d%% chance of a ≥5%% pullback within a month'|format((_rr_p21*100)|round|int) ~ (' · %.1f× the usual odds'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_en or ms.posture_en or '') %}
-        {% set _rr_sub_zh = ('未来一个月内出现≥5%%回撤的概率约%d%%'|format((_rr_p21*100)|round|int) ~ (' · 约为平时的%.1f倍'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_zh or ms.posture_zh or '') %}
-        <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
-          <span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span>{% if _rr_score is not none %} · <span class="n" style="color:var(--ink-down, var(--down))">{{ _rr_score }}</span>{% endif %} ▾</button>
+        {# transition-hazard button: percentile configuration, never a probability #}
+        <button class="cnx-hbtn cnx-hazard-btn" onclick="cnxTogglePop('cnx-pop-risk',event)"
+                aria-controls="cnx-pop-risk"
+                data-tip-en="External-driver hazard percentile, not a crash probability."
+                data-tip-zh="外部驱动风险百分位，并非崩盘概率。"
+                style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
+          <span class="l-en">Transition hazard</span><span class="l-zh">转变风险</span>{% if _rr_score is not none %} · <span class="n" style="color:var(--ink-down, var(--down))">{{ rrc.rr_hazard_band(_rr.state) }} · {{ rrc.rr_score_percentile(_rr_score) }}</span>{% endif %} ▾</button>
 
         <!-- popover: factor breakdown -->
         <div class="cnx-pop" id="cnx-pop-signals">
@@ -1926,22 +1975,30 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <span class="cnx-pop-link" onclick="cnxClosePops();cnxOpenDlg('cnx-dlg-read')">{{ t('Full breakdown ↓', '完整分解 ↓') }}</span>
         </div>
 
-        <!-- popover: risk radar -->
-        <div class="cnx-pop" id="cnx-pop-risk" style="left:auto">
-          <div class="cnx-pop-h">{{ t('Pullback risk radar', '回撤风险雷达') }}</div>
+        <!-- popover: measured state / transition hazard / evidence authority -->
+        <div class="cnx-pop cnx-risk-pop" id="cnx-pop-risk" style="left:auto">
+          <div class="cnx-pop-h">{{ t('TRANSITION HAZARD', '转变风险') }}</div>
           {% if _rr_score is not none %}
-          <div class="cnx-pop-big"><span class="n">{{ _rr_score }}</span><span class="t">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</span></div>
-          <div class="cnx-pop-sub">{{ t(_rr_sub_en, _rr_sub_zh) }}</div>
+          <div class="cnx-pop-big"><span class="n">{{ rrc.rr_hazard_band(_rr.state) }}</span><span class="t">{{ rrc.rr_score_percentile(_rr_score) }}</span></div>
+          <div class="cnx-pop-sub">{{ t('Dominant driver', '主导因素') }} · {{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
           {% for leg in (_rr.scares or [])[:3] %}
           <div class="cnx-pop-row">
-            <div class="pr-t"><span>{{ t(leg.label_en or leg.scare, leg.label_zh or leg.scare or '') }}</span><b>{{ leg.score|round|int }}</b></div>
+            <div class="pr-t"><span>{{ t(leg.label_en or leg.scare, leg.label_zh or leg.scare or '') }}</span><b>{{ '%g'|format(leg.score) }}</b></div>
             <div class="cnx-pop-bar"><i style="width:{{ leg.score|round|int }}%;background:var(--down)"></i></div>
           </div>
           {% endfor %}
+          <div class="cnx-eyebrow cnx-pop-eyebrow">{{ t('FORWARD ODDS','前瞻概率') }}</div>
+          {% if _rr_p21 is not none %}
+          <div class="cnx-pop-sub"><span class="l-en">Historical model estimate: ≥5% pullback within 21 sessions ≈ {{ '%g'|format(_rr_p21*100) }}%{% if _rr_base21 is not none %} · normal historical rate {{ '%g'|format(_rr_base21*100) }}%{% endif %}{% if _rr_lift is not none %} · {{ '%.2f'|format(_rr_lift) }}× reference odds{% endif %}</span><span class="l-zh">历史模型估计：21个交易日内出现≥5%回撤 ≈ {{ '%g'|format(_rr_p21*100) }}%{% if _rr_base21 is not none %} · 常态历史率 {{ '%g'|format(_rr_base21*100) }}%{% endif %}{% if _rr_lift is not none %} · {{ '%.2f'|format(_rr_lift) }}× 参考概率{% endif %}</span></div>
+          {% endif %}
+          <div class="cnx-eyebrow cnx-pop-eyebrow">{{ t('EVIDENCE / AUTHORITY','证据／权限') }}</div>
+          <div class="cnx-pop-sub"><span class="l-en">Live forward evidence still accruing · {{ _rr_matured }} matured · {{ _rr_loud }} loud · {{ _rr_hits }} hits{% if _rr_awaiting is not none %} · {{ _rr_awaiting }} awaiting maturity{% endif %}</span><span class="l-zh">实时前瞻证据仍在积累 · {{ _rr_matured }} 条已成熟 · {{ _rr_loud }} 条强警报 · {{ _rr_hits }} 次命中{% if _rr_awaiting is not none %} · {{ _rr_awaiting }} 条待成熟{% endif %}</span></div>
+          <div class="cnx-authority-line{{ ' is-binding' if _rr_binding else ' is-advisory' }}">{% if _rr_binding %}{{ t('BINDING — evidence-gated guard may cap measured tape','约束性 — 经证据门槛确认的护栏可限制实测盘面') }}{% else %}{{ t('ADVISORY — does not override measured tape','提示性 — 不覆盖实测盘面') }}{% endif %}</div>
+          {% if _rr_gross is not none %}<div class="cnx-pop-sub"><span class="l-en">{{ 'Binding risk-budget ceiling' if _rr_binding else 'Advisory risk-budget reference' }} ×{{ '%.2f'|format(_rr_gross) }} · sizing context, never stock selection</span><span class="l-zh">{{ '约束性风险预算上限' if _rr_binding else '提示性风险预算参考' }} ×{{ '%.2f'|format(_rr_gross) }} · 仅作仓位背景，不用于选股</span></div>{% endif %}
           {% else %}
           <div class="cnx-pop-sub">{{ t('No radar data available.', '暂无雷达数据。') }}</div>
           {% endif %}
-          <span class="cnx-pop-link" onclick="cnxClosePops();cnxOpenDlg('cnx-dlg-risk')">{{ t('Full risk detail ↓', '完整风险详情 ↓') }}</span>
+          <span class="cnx-pop-link" onclick="cnxClosePops();cnxOpenDlg('cnx-dlg-risk')">{{ t('Open state, hazard & authority detail ↓', '打开状态、风险与权限详情 ↓') }}</span>
         </div>
       </div>
     </div>
@@ -2217,22 +2274,29 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {% set _rr_sev_col  = 'var(--warn)' if _risk_state == 'caution' else 'var(--down)' %}
     {% set _rr_sev_bg   = 'rgba(224,160,48,.16)' if _risk_state == 'caution' else 'color-mix(in srgb,var(--down) 16%,transparent)' %}
     {% set _rr_sev_bord = 'rgba(224,160,48,.35)' if _risk_state == 'caution' else 'color-mix(in srgb,var(--down) 35%,transparent)' %}
-    {% set _rr_sev_en   = 'HIGH' if _risk_state == 'risk-off' else ('ELEVATED' if _risk_state == 'elevated' else 'CAUTION') %}
-    {% set _rr_sev_zh   = '高' if _risk_state == 'risk-off' else ('偏高' if _risk_state == 'elevated' else '谨慎') %}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-risk')" style="border-color:{{ _rr_sev_bord }}">
-      <div class="cnx-ctitle">{{ t('Pullback Risk','回撤风险') }} <span class="cnx-alert-pill" style="background:{{ _rr_sev_bg }};color:{{ _rr_sev_col }}">{{ t(_rr_sev_en, _rr_sev_zh) }}</span></div>
+    <div class="cnx-card cnx-hazard-card" role="button" tabindex="0" aria-haspopup="dialog"
+         aria-controls="cnx-dlg-risk"
+         onclick="cnxOpenDlg('cnx-dlg-risk')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-risk');}"
+         style="border-color:{{ _rr_sev_bord }}">
+      <div class="cnx-ctitle">{{ t('Transition Hazard','转变风险') }}
+        {% if _rr_score is not none %}<span class="cnx-alert-pill" style="background:{{ _rr_sev_bg }};color:{{ _rr_sev_col }}">{{ rrc.rr_hazard_band(_rr.state) }}</span>{% endif %}
+      </div>
       {% if _rr_score is not none %}
-      <div class="cnx-bignum" style="color:{{ _rr_sev_col }}">{{ _rr_score }}<span style="font-size:14px;color:var(--muted)"> /100</span></div>
-      <div class="cnx-bigsub" style="color:{{ _rr_sev_col }}">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
+      <div class="cnx-bignum cnx-hazard-rank" style="color:{{ _rr_sev_col }}">{{ rrc.rr_score_percentile(_rr_score) }}</div>
+      <div class="cnx-bigsub" style="color:{{ _rr_sev_col }}">{{ t('Dominant driver','主导因素') }} · {{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
       {% endif %}
-      <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
-      <div class="cnx-kv"><span class="k">{{ t('Deep-drawdown gauge','深跌仪表') }}</span>
-        {# SAME recession score + 60/40 bands as the detail dialog (was label-based, which
-           could disagree with the dialog's score-based colour); direction pair per the
-           2026-07-21 ruling so the whole pullback family flips together in zh. #}
+      <div class="cnx-kv"><span class="k">{{ t('Historical model estimate · ≥5% / 21 sessions','历史模型估计 · ≥5%／21个交易日') }}</span><span class="v">{% if _rr_p21 is not none %}{{ '%g'|format(_rr_p21*100) }}%{% else %}—{% endif %}</span></div>
+      {% if _rr_base21 is not none or _rr_lift is not none %}<div class="cnx-kv"><span class="k">{{ t('Reference','参考') }}</span><span class="v"><span class="l-en">{% if _rr_base21 is not none %}normal {{ '%g'|format(_rr_base21*100) }}%{% endif %}{% if _rr_base21 is not none and _rr_lift is not none %} · {% endif %}{% if _rr_lift is not none %}{{ '%.2f'|format(_rr_lift) }}× odds{% endif %}</span><span class="l-zh">{% if _rr_base21 is not none %}常态 {{ '%g'|format(_rr_base21*100) }}%{% endif %}{% if _rr_base21 is not none and _rr_lift is not none %} · {% endif %}{% if _rr_lift is not none %}{{ '%.2f'|format(_rr_lift) }}× 概率{% endif %}</span></span></div>{% endif %}
+      <div class="cnx-kv"><span class="k">{{ t('Local deep-drawdown context','本地深跌背景') }}</span>
+        {# SAME recession score + 60/40 bands as the detail dialog; local context only. #}
         {% set _rr_rec_sc = (latest.conditions.recession.score if latest.conditions and latest.conditions.get('recession') and latest.conditions.recession else none) %}
         <span class="v"><span style="font-weight:700;color:{{ 'var(--down)' if (_rr_rec_sc or 0) >= 60 else ('var(--warn)' if (_rr_rec_sc or 0) >= 40 else 'var(--up)') }}">{{ t('High','高危') if (_rr_rec_sc or 0) >= 60 else (t('Elevated','偏高') if (_rr_rec_sc or 0) >= 40 else t('Calm','平静')) }}</span></span></div>
-      <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
+      <div class="cnx-foot cnx-risk-foot">
+        <span class="l-en">Live forward evidence still accruing · {{ _rr_matured }} matured · {{ _rr_loud }} loud · {{ _rr_hits }} hits{% if _rr_awaiting is not none %} · {{ _rr_awaiting }} awaiting maturity{% endif %}</span><span class="l-zh">实时前瞻证据仍在积累 · {{ _rr_matured }} 条已成熟 · {{ _rr_loud }} 条强警报 · {{ _rr_hits }} 次命中{% if _rr_awaiting is not none %} · {{ _rr_awaiting }} 条待成熟{% endif %}</span>
+        <span class="cnx-risk-authority">{% if _rr_binding %}{{ t('BINDING — may cap measured tape','约束性 — 可限制实测盘面') }}{% else %}{{ t('ADVISORY — does not override measured tape','提示性 — 不覆盖实测盘面') }}{% endif %}</span>
+        {% if _rr_gross is not none %}<span><span class="l-en">{{ 'Binding risk-budget ceiling' if _rr_binding else 'Advisory risk-budget reference' }} ×{{ '%.2f'|format(_rr_gross) }} · sizing context, never stock selection</span><span class="l-zh">{{ '约束性风险预算上限' if _rr_binding else '提示性风险预算参考' }} ×{{ '%.2f'|format(_rr_gross) }} · 仅作仓位背景，不用于选股</span></span>{% endif %}
+      </div>
     </div>
     {% else %}
     {# Top Stocks card — when radar is quiet #}
@@ -2523,10 +2587,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div class="cnx-dlg-panel">
       <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market State — Evidence & Signals','市场状态 — 证据与信号') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
-        <div class="cnx-eyebrow">{{ t('What the composite measures','综合指标测量') }} · {{ _ms_score }}/100 {{ t(_ms_label, _ms_label_zh) }}</div>
-        {% if _ms_thesis or _ms_thesis_zh %}
-        <div class="cnx-row"><span class="ic" aria-hidden="true">↳</span><div class="tx"><b>{{ t('Model headline','模型原始标题') }}</b><span class="sub">{{ t(_ms_thesis or '—', _ms_thesis_zh or '—') }}</span></div></div>
-        {% endif %}
+        <div class="cnx-eyebrow"><span class="l-en">MEASURED STATE · {{ _ms_score }}/100 {{ _ms_label }}{% if _ms_near_boundary %} · near Mixed boundary{% endif %}</span><span class="l-zh">实测状态 · {{ _ms_score }}/100 {{ _ms_label_zh }}{% if _ms_near_boundary %} · 接近「混合」边界{% endif %}</span></div>
+        <div class="cnx-row"><span class="ic" aria-hidden="true">↳</span><div class="tx"><b>{{ t('Current measured read','当前实测解读') }}</b><span class="sub">{{ t(_ms_truth_en, _ms_truth_zh) }}</span><span class="sub">{{ t('The 0–100 scale is the live tape composite, not a China crash probability.','0–100分是实时盘面综合状态，并非中国市场崩盘概率。') }}</span></div></div>
         {% for c in _comps %}
         <div class="cnx-frow">
           <span>{{ t(c.label_en, c.label_zh) }}</span>
@@ -2608,7 +2670,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
      resolver) and the page's own cnxCloseDlg / Escape / backdrop-click keep working.
      ctx is assembled in scripts/build_china.py as vm['radar_dlg'] from EXISTING stores
      only; each section is absent-safe, so a store that failed to read renders nothing. #}
-{{ rrd.risk_radar_dlg('cn', _rr, (_rr.scares if _rr else none), (radar_dlg if radar_dlg is defined else none)) }}
+{{ rrd.risk_radar_dlg('cn', _rr, (_rr.scares if _rr else none), (radar_dlg if radar_dlg is defined else none), ms) }}
 
   <!-- Markets dialog (index health + heatmap + cross-asset rates) -->
   <div class="cnx-dlg" id="cnx-dlg-markets">
