@@ -1,0 +1,1399 @@
+{
+  "counts": {
+    "hostile_checks": 32,
+    "prototype_checks": 31
+  },
+  "driver_passes": [
+    {
+      "close_board": false,
+      "event_count": 3,
+      "phase": "morning",
+      "states": {
+        "forming": 2,
+        "near": 1
+      },
+      "time": "2026-10-12T02:00:00+00:00"
+    },
+    {
+      "close_board": false,
+      "event_count": 1,
+      "phase": "morning",
+      "states": {
+        "forming": 3
+      },
+      "time": "2026-10-12T02:05:00+00:00"
+    },
+    {
+      "close_board": false,
+      "event_count": 0,
+      "phase": "session_break",
+      "states": {
+        "forming": 3
+      },
+      "time": "2026-10-12T03:35:00+00:00"
+    },
+    {
+      "close_board": false,
+      "event_count": 0,
+      "phase": "afternoon",
+      "states": {
+        "forming": 3
+      },
+      "time": "2026-10-12T05:00:00+00:00"
+    },
+    {
+      "close_board": true,
+      "event_count": 0,
+      "phase": "post_close",
+      "states": {
+        "forming": 3
+      },
+      "time": "2026-10-12T07:01:00+00:00"
+    },
+    {
+      "close_board": true,
+      "event_count": 0,
+      "phase": "post_close",
+      "states": {
+        "forming": 3
+      },
+      "time": "2026-10-12T07:06:00+00:00"
+    }
+  ],
+  "executed_at_utc": "2026-10-09T23:54:12.499300+00:00",
+  "hostile_checks": [
+    {
+      "name": "duplicate_board_ticker",
+      "reason": "duplicate_primary_ticker",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_board_rank",
+      "reason": "invalid_frozen_rank",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_board_score",
+      "reason": "invalid_frozen_score",
+      "status": "PASS"
+    },
+    {
+      "name": "row_wrong_day",
+      "reason": "row_date_disagreement",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_board",
+      "reason": "board_asof_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_pack_rank",
+      "reason": "pack_hash_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "new_settlement_pack_cannot_evaluate_old_session",
+      "reason": "stale_or_future_pack",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_envelope_session",
+      "reason": "spool_session_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_unbound_envelope",
+      "reason": "legacy_or_unknown_spool_schema",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_event_generation",
+      "reason": "event_generation_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_event_pack_day",
+      "reason": "wrong_event_pack_session",
+      "status": "PASS"
+    },
+    {
+      "name": "event_unknown_ticker",
+      "reason": "event_ticker_outside_pack",
+      "status": "PASS"
+    },
+    {
+      "name": "event_unknown_kind",
+      "reason": "invalid_event_kind",
+      "status": "PASS"
+    },
+    {
+      "name": "event_future_clock",
+      "reason": "future_event",
+      "status": "PASS"
+    },
+    {
+      "name": "event_us_phase",
+      "reason": "wrong_event_phase",
+      "status": "PASS"
+    },
+    {
+      "name": "event_invalid_price",
+      "reason": "invalid_event_price",
+      "status": "PASS"
+    },
+    {
+      "name": "event_stale_quote",
+      "reason": "stale_event_quote",
+      "status": "PASS"
+    },
+    {
+      "name": "event_wrong_entry_class",
+      "reason": "event_entry_class_disagreement",
+      "status": "PASS"
+    },
+    {
+      "name": "event_ambiguous_price_alias",
+      "reason": "ambiguous_event_price",
+      "status": "PASS"
+    },
+    {
+      "name": "event_unknown_adjustment",
+      "reason": "unknown_event_price_adjustment",
+      "status": "PASS"
+    },
+    {
+      "name": "event_identity_modified",
+      "reason": "event_identity_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_spool_listing",
+      "reason": "incomplete_spool_list",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_spool_body",
+      "reason": "unreadable_spool_object",
+      "status": "PASS"
+    },
+    {
+      "name": "lost_prior_pack_archive",
+      "reason": "unreadable_spool_object",
+      "status": "PASS"
+    },
+    {
+      "name": "existing_row_generation_conflict",
+      "reason": "existing_identity_conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_row_cannot_gain_invented_provenance",
+      "reason": "legacy_unbound_row",
+      "status": "PASS"
+    },
+    {
+      "name": "spool_regression_cannot_overwrite_counts",
+      "reason": "spool_regression",
+      "status": "PASS"
+    },
+    {
+      "name": "confirmation_revision_requires_separate_adjudication",
+      "reason": "confirmation_revision_conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "same_day_canonical_generation_must_match_settlement_pack",
+      "reason": "settlement_canonical_generation_disagreement",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_close_session",
+      "reason": "close_board_session_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_close_generation",
+      "reason": "close_board_generation_mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "unreadable_ledger_refuses_write",
+      "reason": "unreadable_existing_ledger",
+      "status": "PASS"
+    }
+  ],
+  "laboratory_code": {
+    "contract_prototype.py": {
+      "bytes": 24665,
+      "sha256": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0"
+    },
+    "run_lab.py": {
+      "bytes": 32343,
+      "sha256": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+    }
+  },
+  "limitations": [
+    "Research wrappers/injected transport are not a production patch or deployed proof.",
+    "Quotes and October 12 settlement fixture are synthetic; no natural live event was generated.",
+    "Only three actual names were gate-probed; the 180-name pass proves frozen-field projection only.",
+    "Prices and frozen source fields are from the study pin, not original publication-time receipts.",
+    "Close/fill economics remain unresolved; no return, fill feasibility or alpha claim is made.",
+    "A changed generation colliding with the same daily key is refused for existing-owner adjudication.",
+    "The 60-second future-clock allowance is an explicit laboratory parameter requiring production ratification."
+  ],
+  "loaded_source_hashes": {
+    "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "engine/confluence_latch.py": "67a309621eec93ef32890edd32ce9c4b9d83e5b3748e732ffa1879b1b03ab7c3",
+    "engine/confluence_tiers.py": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65",
+    "engine/hysteresis.py": "49eeeccf6f02110e11e57a4f5fd6b82de4d1c804157dc9a9605cf40dd5eca6a7",
+    "engine/prophet_live/__init__.py": "215a1254dd4e767a1f19fe68a029a6a3a34195f8dbc3ae8da07716028f590fcc",
+    "engine/prophet_live/armed_pack.py": "57bfb8206fd1392763da3fbd96438268d2bc668b921019cd2b9e3dd7edd76df9",
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_pack.py": "c692f4b473203cbcebce680ef99919a357a386a3ddf162953a72ee2c8f54df4b",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "engine/signal_gate.py": "8ac545beb3d9cd1164069bd4850c2406e7f2ea88f972c6382490896653dff2fb",
+    "engine/signal_quality.py": "7191d7adef0942465465bd83baf5b02ea14a9465626089415987ed35763252ef",
+    "engine/technicals.py": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739",
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "scripts/__init__.py": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378",
+    "scripts/build_cn_live_pack.py": "8ff726b8da1e9fd9309a18caa0aa048bdcb2508bd90107175fddd9092007680a",
+    "scripts/cn_live_evaluator.py": "eeeaea820ebf513cc23f1f7725e8266efe7bb3e4c078498cf1bbccdcb5bc4ec4",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "native_controls": {
+    "native_reconciled_event_rows": [
+      {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "confirming_into_close",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "ticker": "002460.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "forming",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "ticker": "002460.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "crossing_unconfirmed",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "ticker": "300750.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "confirming_into_close",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "ticker": "603799.SS"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "forming",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "ticker": "603799.SS"
+      }
+    ],
+    "path_only_repair_rows": 0,
+    "raw_attach_frozen": {
+      "lane": "featured",
+      "microstructure": {
+        "as_of": "2026-10-09",
+        "board": "main",
+        "chase_veto": {
+          "flag": false,
+          "reason": null
+        },
+        "fillable": true,
+        "limit_state": "open",
+        "limit_width": 10.0,
+        "t_plus_one_risk": "normal",
+        "ticker": "002460.SZ"
+      },
+      "relay": {
+        "count_3d": 0,
+        "position": "early"
+      },
+      "rev_z": 0.8545551890548774,
+      "reversal_member": false
+    },
+    "real_canonical_reader_rows": 0,
+    "real_driver_rows": [
+      {
+        "close_same_day": null,
+        "confirmed": true,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "confirming_into_close",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "002460.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": true,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "forming",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "002460.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": true,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "crossing_unconfirmed",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "300750.SZ"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": true,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "confirming_into_close",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "603799.SS"
+      },
+      {
+        "close_same_day": null,
+        "confirmed": true,
+        "cross_px": null,
+        "date": "2026-10-12",
+        "first_px": null,
+        "first_ts": "2026-10-12T02:00:00Z",
+        "kind": "forming",
+        "last_px": null,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "603799.SS"
+      }
+    ],
+    "real_evaluator_events": [
+      {
+        "entered": "board",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.1029,
+        "quote_age_min": 0.0,
+        "session_phase": "rth",
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "board",
+        "from": null,
+        "kind": "confirming_into_close",
+        "passes": 1,
+        "price": 46.1029,
+        "quote_age_min": 0.0,
+        "session_phase": "rth",
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "board",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 36.0955,
+        "quote_age_min": 0.0,
+        "session_phase": "rth",
+        "ticker": "603799.SS",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "board",
+        "from": null,
+        "kind": "confirming_into_close",
+        "passes": 1,
+        "price": 36.0955,
+        "quote_age_min": 0.0,
+        "session_phase": "rth",
+        "ticker": "603799.SS",
+        "ts": "2026-10-12T02:00:00Z"
+      },
+      {
+        "entered": "cross",
+        "from": null,
+        "kind": "crossing_unconfirmed",
+        "passes": 1,
+        "price": 349.1875,
+        "quote_age_min": 0.0,
+        "session_phase": "rth",
+        "ticker": "300750.SZ",
+        "ts": "2026-10-12T02:00:00Z"
+      }
+    ],
+    "unreadable_ledger_replaced_by_native_driver": 5
+  },
+  "prototype_checks": [
+    {
+      "alias_watch_rows_ignored": 156,
+      "name": "canonical_primary_lanes_read_once",
+      "rows": 180,
+      "status": "PASS"
+    },
+    {
+      "name": "exact_frozen_projection_all_180",
+      "status": "PASS"
+    },
+    {
+      "name": "no_projection_rank_reordering",
+      "status": "PASS"
+    },
+    {
+      "name": "zero_score_and_board_vs_score_rank_semantics",
+      "status": "PASS"
+    },
+    {
+      "name": "native_gate_dependencies_complete",
+      "status": "PASS"
+    },
+    {
+      "edges": 6,
+      "name": "native_gate_probe_no_mismatches",
+      "probed": 3,
+      "status": "PASS"
+    },
+    {
+      "name": "real_pack_has_armed_observation",
+      "status": "PASS"
+    },
+    {
+      "name": "real_driver_six_offline_passes",
+      "status": "PASS"
+    },
+    {
+      "name": "lunch_keeps_state_without_new_events",
+      "status": "PASS"
+    },
+    {
+      "name": "zero_event_close_board_persisted",
+      "status": "PASS"
+    },
+    {
+      "name": "native_publish_switches_remain_set",
+      "status": "PASS"
+    },
+    {
+      "name": "events_reconciled_after_current_pack_rollover",
+      "status": "PASS"
+    },
+    {
+      "name": "native_event_price_survives",
+      "status": "PASS"
+    },
+    {
+      "name": "cn_event_phase_survives",
+      "status": "PASS"
+    },
+    {
+      "name": "no_us_close_marker",
+      "status": "PASS"
+    },
+    {
+      "name": "board_observation_and_true_cross_remain_distinct",
+      "status": "PASS"
+    },
+    {
+      "name": "score_rank_frozen_through_ledger",
+      "status": "PASS"
+    },
+    {
+      "name": "confirmation_uses_settlement_gate_not_provisional_presence",
+      "status": "PASS"
+    },
+    {
+      "name": "membership_receipt_is_separate",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_replay_exact_idempotence",
+      "status": "PASS"
+    },
+    {
+      "name": "unavailable_same_session_confirmation_stays_null",
+      "status": "PASS"
+    },
+    {
+      "name": "old_canonical_board_cannot_confirm_new_session",
+      "status": "PASS"
+    },
+    {
+      "name": "native_atomic_parquet_writer_roundtrip",
+      "status": "PASS"
+    },
+    {
+      "name": "actual_parquet_read_replay_idempotence",
+      "status": "PASS"
+    },
+    {
+      "name": "future_quote_per_name_dark",
+      "status": "PASS"
+    },
+    {
+      "name": "prior_session_quote_per_name_dark",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_quote_price_per_name_dark",
+      "status": "PASS"
+    },
+    {
+      "name": "native_stale_quote_guard_preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_generation_predecessor_resets_debounce",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_event_id_not_double_counted",
+      "status": "PASS"
+    },
+    {
+      "name": "refusal_preserves_existing_bytes",
+      "status": "PASS"
+    }
+  ],
+  "real_probe": {
+    "center_verdicts": {
+      "002460.SZ": {
+        "eligible": true,
+        "reason": "buy fired; forward confirmation pending",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      },
+      "300750.SZ": {
+        "eligible": true,
+        "reason": "early advance-warning (no open buy)",
+        "tier": "anticipation",
+        "tier_cascade": null
+      },
+      "603799.SS": {
+        "eligible": true,
+        "reason": "buy fired; forward confirmation pending",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      }
+    },
+    "gate": "native signal_gate.gate",
+    "latch_record": false,
+    "meta": {
+      "armed_n": 3,
+      "band_rule": "per_class_daily_limit",
+      "board_probe_share": 0.4,
+      "build_seconds": 10.6,
+      "by_class": {
+        "board": {
+          "armed_n": 2,
+          "candidates_n": 2,
+          "probe_seconds": 0.0,
+          "probed_n": 2
+        },
+        "cross": {
+          "armed_n": 1,
+          "candidates_n": 1,
+          "probe_seconds": 0.0,
+          "probed_n": 1
+        }
+      },
+      "calendar": "cn",
+      "edge_mismatches": [],
+      "edges_checked": 6,
+      "gate_calls": 60,
+      "price_adjustment_counts": {
+        "unknown": 3
+      },
+      "probe_center_flips": 0,
+      "probe_order": "buyable__eligible__bars_to_cross__hist_d2__ticker",
+      "probe_scope": "two_sided_for_buyable__up_only_for_rest",
+      "probed_n": 3,
+      "skipped": {},
+      "states": {
+        "buyable": 2,
+        "eligible_t4": 1
+      },
+      "t2_latch": "CN",
+      "universe_n": 3,
+      "unrounded_edges": 0,
+      "wanted_probe_n": 3
+    },
+    "names": {
+      "002460.SZ": {
+        "as_of_close": 45.47,
+        "band_hi_px": 50.0171,
+        "band_lo_px": 40.9229,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "fade_px": 42.1886,
+        "frozen": {
+          "lane": "featured",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "main",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 10.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "002460.SZ"
+          },
+          "rank": 1,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.8545551890548774,
+          "reversal_member": false,
+          "score": 90.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 1
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      },
+      "300750.SZ": {
+        "as_of_close": 297.75,
+        "band_hi_px": 357.3,
+        "band_lo_px": 0.0,
+        "band_pct": 20.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": false,
+        "fade_hi_px": null,
+        "frozen": {
+          "lane": "forming",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "chinext",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 20.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "300750.SZ"
+          },
+          "rank": 162,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.5631071264197222,
+          "reversal_member": false,
+          "score": 54.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 162
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": false,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "eligible_t4",
+        "tier": "anticipation",
+        "tier_cascade": null,
+        "trigger_px": 341.075
+      },
+      "603799.SS": {
+        "as_of_close": 35.6,
+        "band_hi_px": 39.1601,
+        "band_lo_px": 32.0399,
+        "band_pct": 10.0,
+        "bar_date": "2026-10-09",
+        "buyable_in_band": true,
+        "center_buyable": true,
+        "fade_hi_px": null,
+        "fade_px": 33.0309,
+        "frozen": {
+          "lane": "featured",
+          "microstructure": {
+            "as_of": "2026-10-09",
+            "board": "main",
+            "chase_veto": {
+              "flag": false,
+              "reason": null
+            },
+            "fillable": true,
+            "limit_state": "open",
+            "limit_width": 10.0,
+            "t_plus_one_risk": "normal",
+            "ticker": "603799.SS"
+          },
+          "rank": 2,
+          "relay": {
+            "count_3d": 0,
+            "position": "early"
+          },
+          "rev_z": 0.6947872223679032,
+          "reversal_member": false,
+          "score": 88.0,
+          "score_basis": "cn_prophet_v3_score",
+          "score_rank": 2
+        },
+        "frozen_status": "in_source_board",
+        "price_adjustment": "split_and_dividend_adjusted",
+        "probe_center_buyable": true,
+        "probed": true,
+        "repaint_disclosure": {
+          "frozen_as_of": [
+            "score",
+            "rank",
+            "lane",
+            "rev_z",
+            "reversal_member",
+            "theme_timing",
+            "relay",
+            "liquidity",
+            "microstructure"
+          ],
+          "live_derived": [
+            "state",
+            "market_status",
+            "price"
+          ]
+        },
+        "state": "buyable",
+        "tier": "anticipation",
+        "tier_cascade": "T2"
+      }
+    },
+    "tickers": [
+      "002460.SZ",
+      "603799.SS",
+      "300750.SZ"
+    ]
+  },
+  "roundtrip": {
+    "canonical_source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+    "intraday_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+    "ledger": [
+      {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529",
+        "confirmed": true,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 45.47,
+        "cross_px": 46.1029,
+        "date": "2026-10-12",
+        "entered": "board",
+        "event_ids": [
+          "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db"
+        ],
+        "first_event_id": "e6a09a3845e94e766c49f134783b4f2b1765a86c522431b17df1a5612307f5db",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 1,
+        "first_px": 46.1029,
+        "first_quote_age_min": 0.0,
+        "first_quote_ts": "2026-10-12T02:00:00Z",
+        "first_ts": "2026-10-12T02:00:00Z",
+        "from_state": null,
+        "frozen_lane": "featured",
+        "frozen_rank": 1,
+        "frozen_score": 90.0,
+        "frozen_score_rank": 1,
+        "ingest_contract": "cn_prophet_live.evidence/research-v1",
+        "kind": "forming",
+        "last_px": 46.1029,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "price_adjustment": "unadjusted_vendor_print",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "002460.SZ",
+        "via": null
+      },
+      {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529",
+        "confirmed": true,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 297.75,
+        "cross_px": 349.1875,
+        "date": "2026-10-12",
+        "entered": "cross",
+        "event_ids": [
+          "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90"
+        ],
+        "first_event_id": "7867a35db1899e3f7a74c7183f2ad3832220b91ab8bb31cd653d2357d3baab90",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 1,
+        "first_px": 349.1875,
+        "first_quote_age_min": 0.0,
+        "first_quote_ts": "2026-10-12T02:00:00Z",
+        "first_ts": "2026-10-12T02:00:00Z",
+        "from_state": null,
+        "frozen_lane": "forming",
+        "frozen_rank": 162,
+        "frozen_score": 54.0,
+        "frozen_score_rank": 162,
+        "ingest_contract": "cn_prophet_live.evidence/research-v1",
+        "kind": "crossing_unconfirmed",
+        "last_px": 349.1875,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "price_adjustment": "unadjusted_vendor_print",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "300750.SZ",
+        "via": null
+      },
+      {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529",
+        "confirmed": true,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 297.75,
+        "cross_px": 349.1875,
+        "date": "2026-10-12",
+        "entered": "cross",
+        "event_ids": [
+          "39d4b3db518f7eec0a20480ceff39c8b375f36772d28b9ba2e96dbc88bef80e8"
+        ],
+        "first_event_id": "39d4b3db518f7eec0a20480ceff39c8b375f36772d28b9ba2e96dbc88bef80e8",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 2,
+        "first_px": 349.1875,
+        "first_quote_age_min": 0.0,
+        "first_quote_ts": "2026-10-12T02:05:00Z",
+        "first_ts": "2026-10-12T02:05:00Z",
+        "from_state": "near",
+        "frozen_lane": "forming",
+        "frozen_rank": 162,
+        "frozen_score": 54.0,
+        "frozen_score_rank": 162,
+        "ingest_contract": "cn_prophet_live.evidence/research-v1",
+        "kind": "forming",
+        "last_px": 349.1875,
+        "last_ts": "2026-10-12T02:05:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "price_adjustment": "unadjusted_vendor_print",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "300750.SZ",
+        "via": null
+      },
+      {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529",
+        "confirmed": false,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 35.6,
+        "cross_px": 36.0955,
+        "date": "2026-10-12",
+        "entered": "board",
+        "event_ids": [
+          "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7"
+        ],
+        "first_event_id": "677f831effe8c898889fed456de4aec1b1e884fd501e2ace5e461b6a42d447d7",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 1,
+        "first_px": 36.0955,
+        "first_quote_age_min": 0.0,
+        "first_quote_ts": "2026-10-12T02:00:00Z",
+        "first_ts": "2026-10-12T02:00:00Z",
+        "from_state": null,
+        "frozen_lane": "featured",
+        "frozen_rank": 2,
+        "frozen_score": 88.0,
+        "frozen_score_rank": 2,
+        "ingest_contract": "cn_prophet_live.evidence/research-v1",
+        "kind": "forming",
+        "last_px": 36.0955,
+        "last_ts": "2026-10-12T02:00:00Z",
+        "next_close_fill": null,
+        "occurrences": 1,
+        "price_adjustment": "unadjusted_vendor_print",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "603799.SS",
+        "via": null
+      }
+    ],
+    "reconciliation": {
+      "archived_packs": [
+        "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09"
+      ],
+      "canonical_board_sha256": "15b8e0fd7824345b7d29c469ff87ca8bc5d8dc2ad3e971b4a94a37d172520539",
+      "close_and_fill_labels": "unresolved; this lab does not manufacture price-basis-aligned fills",
+      "close_board_available": true,
+      "distinct_events": 4,
+      "receipt": {
+        "adjusted": [],
+        "as_of": "2026-10-12",
+        "built_at": "2026-10-12T12:00:00Z",
+        "confirmed": [
+          "002460.SZ",
+          "300750.SZ"
+        ],
+        "detail": {
+          "added": [
+            "000027.SZ",
+            "000035.SZ",
+            "000088.SZ",
+            "000089.SZ",
+            "000719.SZ",
+            "000786.SZ",
+            "000858.SZ",
+            "000860.SZ",
+            "000902.SZ",
+            "000927.SZ",
+            "000932.SZ",
+            "000959.SZ",
+            "000963.SZ",
+            "000973.SZ",
+            "001286.SZ",
+            "001391.SZ",
+            "001872.SZ",
+            "002001.SZ",
+            "002004.SZ",
+            "002007.SZ",
+            "002027.SZ",
+            "002032.SZ",
+            "002043.SZ",
+            "002063.SZ",
+            "002091.SZ",
+            "002128.SZ",
+            "002226.SZ",
+            "002233.SZ",
+            "002270.SZ",
+            "002294.SZ",
+            "002332.SZ",
+            "002340.SZ",
+            "002372.SZ",
+            "002405.SZ",
+            "002493.SZ",
+            "002507.SZ",
+            "002511.SZ",
+            "002557.SZ",
+            "002572.SZ",
+            "002608.SZ",
+            "002709.SZ",
+            "002847.SZ",
+            "002867.SZ",
+            "002911.SZ",
+            "003816.SZ",
+            "300014.SZ",
+            "300036.SZ",
+            "300070.SZ",
+            "300075.SZ",
+            "300122.SZ",
+            "300182.SZ",
+            "300253.SZ",
+            "300284.SZ",
+            "300294.SZ",
+            "300459.SZ",
+            "300601.SZ",
+            "300768.SZ",
+            "300772.SZ",
+            "300896.SZ",
+            "300919.SZ",
+            "301015.SZ",
+            "301219.SZ",
+            "600000.SS",
+            "600015.SS",
+            "600017.SS",
+            "600025.SS",
+            "600028.SS",
+            "600037.SS",
+            "600050.SS",
+            "600057.SS",
+            "600064.SS",
+            "600085.SS",
+            "600196.SS",
+            "600219.SS",
+            "600256.SS",
+            "600268.SS",
+            "600269.SS",
+            "600273.SS",
+            "600276.SS",
+            "600282.SS",
+            "600299.SS",
+            "600312.SS",
+            "600315.SS",
+            "600329.SS",
+            "600403.SS",
+            "600406.SS",
+            "600426.SS",
+            "600509.SS",
+            "600517.SS",
+            "600521.SS",
+            "600546.SS",
+            "600585.SS",
+            "600595.SS",
+            "600597.SS",
+            "600600.SS",
+            "600623.SS",
+            "600629.SS",
+            "600633.SS",
+            "600657.SS",
+            "600660.SS",
+            "600717.SS",
+            "600718.SS",
+            "600741.SS",
+            "600757.SS",
+            "600787.SS",
+            "600795.SS",
+            "600803.SS",
+            "600827.SS",
+            "600866.SS",
+            "600871.SS",
+            "600938.SS",
+            "600941.SS",
+            "601006.SS",
+            "601018.SS",
+            "601077.SS",
+            "601083.SS",
+            "601088.SS",
+            "601216.SS",
+            "601225.SS",
+            "601228.SS",
+            "601326.SS",
+            "601390.SS",
+            "601577.SS",
+            "601598.SS",
+            "601607.SS",
+            "601728.SS",
+            "601766.SS",
+            "601800.SS",
+            "601808.SS",
+            "601818.SS",
+            "601857.SS",
+            "601858.SS",
+            "601877.SS",
+            "601880.SS",
+            "601898.SS",
+            "601965.SS",
+            "601985.SS",
+            "603027.SS",
+            "603055.SS",
+            "603087.SS",
+            "603100.SS",
+            "603127.SS",
+            "603195.SS",
+            "603279.SS",
+            "603659.SS",
+            "603707.SS",
+            "603866.SS",
+            "603883.SS",
+            "603899.SS",
+            "603919.SS",
+            "603927.SS",
+            "603939.SS",
+            "605499.SS",
+            "688005.SS",
+            "688050.SS",
+            "688099.SS",
+            "688213.SS",
+            "688223.SS",
+            "688271.SS",
+            "688353.SS",
+            "688472.SS"
+          ],
+          "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+          "lane_moves": {},
+          "n_added": 161
+        },
+        "dropped": [
+          "603799.SS"
+        ],
+        "n_adjusted": 0,
+        "n_confirmed": 2,
+        "n_dropped": 1,
+        "n_total": 3,
+        "schema": "cn_board_confirmation/v1"
+      },
+      "row_count": 4,
+      "spool_objects": 4
+    },
+    "settlement_pack_id": "fb46b4407fcc78ba0f398427efc0ea42779e47323f7cb133dde04e0becec3529"
+  },
+  "runtime": {
+    "pandas": "3.0.5",
+    "python": "3.14.7"
+  },
+  "safety": {
+    "all_quotes_synthetic": true,
+    "ledger": "temporary file only",
+    "natural_process_proof": false,
+    "no_publish_switches": true,
+    "object_store": "memory only",
+    "production_source_or_data_changed": false,
+    "settlement_board_synthetic": true
+  },
+  "schema": "cn-integration-lab/v1",
+  "source_manifest": {
+    ".github/workflows/asia-close.yml": {
+      "bytes": 82692,
+      "git_blob": "8cfb53eb3c3037c5858d6cc91fbe2c30c2c05a17",
+      "sha256": "42c097f88544870ffe6634fe097b1486dffa64f82c42c598b9bdb619a1dab069"
+    },
+    "config.yml": {
+      "bytes": 492226,
+      "git_blob": "efd14dbfe2fa5b0bbf5994e17e1c299e71fd36de",
+      "sha256": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f"
+    },
+    "config/dag.yml": {
+      "bytes": 288481,
+      "git_blob": "68ca8883b6f09c64564f4f7904708684c3a55ee1",
+      "sha256": "eaaa4d77971da6fe42fe2f77e4ec5ee2402e4667d2b5b49233c6637bd541f77e"
+    },
+    "data/china/000001.SS.parquet": {
+      "bytes": 132043,
+      "git_blob": "be7404fc467659707334519fde108182f45915b3",
+      "sha256": "3482108489339b7dccbe3529ea3e391bca9424725509fb177bdbe29fb49b8c9b"
+    },
+    "data/china_stocks/002460.SZ.parquet": {
+      "bytes": 199129,
+      "git_blob": "460a613ea5d4129e22e52f06d4cb2436c29e5ce2",
+      "sha256": "ff622d2a0af743c04cb208f6958c6b7b20f48ec1ee10a71f85fcd691cba07cd4"
+    },
+    "data/china_stocks/300750.SZ.parquet": {
+      "bytes": 105047,
+      "git_blob": "e3138f43eabd88fa75f1b56b6fab1f3f0b6099c4",
+      "sha256": "349afe15d5d0004a5d53bd7020400b7cea25608c39f3216ebf416d411b876d9b"
+    },
+    "data/china_stocks/603799.SS.parquet": {
+      "bytes": 120608,
+      "git_blob": "22c55bc0a2c74033dedcd3d3ff0d9c3b03d21b6f",
+      "sha256": "72ea0c235ed302c8deba10321276e30fe054eb0991230ff72594fe68f5d174e2"
+    },
+    "data/confluence_latch/cn_t2.parquet": {
+      "bytes": 100169,
+      "git_blob": "c49bbc09fe16367e1a0fceb487a55829596e5ece",
+      "sha256": "c45d1c5c1881cfeb5c6138d00dd6eb127c4e92badf8ee0f4f39aabbbb943a925"
+    },
+    "engine/confluence_latch.py": {
+      "bytes": 7621,
+      "git_blob": "a557e66d53441ab637303d1e9bc1233e25afdb09",
+      "sha256": "67a309621eec93ef32890edd32ce9c4b9d83e5b3748e732ffa1879b1b03ab7c3"
+    },
+    "engine/prophet_live/armed_pack.py": {
+      "bytes": 55572,
+      "git_blob": "0c2d2214c91cb9171a14718b71288cf4e197a43e",
+      "sha256": "57bfb8206fd1392763da3fbd96438268d2bc668b921019cd2b9e3dd7edd76df9"
+    },
+    "engine/prophet_live/cn_clock.py": {
+      "bytes": 19456,
+      "git_blob": "3ebcdc629a7e1427f7936b729aa31627b0166269",
+      "sha256": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3"
+    },
+    "engine/prophet_live/cn_pack.py": {
+      "bytes": 7916,
+      "git_blob": "b4e3f71c45a6fe3e9fcf7416ea76f9eb80fa5713",
+      "sha256": "c692f4b473203cbcebce680ef99919a357a386a3ddf162953a72ee2c8f54df4b"
+    },
+    "engine/prophet_live/cn_reconcile.py": {
+      "bytes": 7006,
+      "git_blob": "a3f42ae5c4de1766efc59d04bfa0feb89f5aefd2",
+      "sha256": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb"
+    },
+    "engine/prophet_live/cn_states.py": {
+      "bytes": 18227,
+      "git_blob": "701b05e7f9cb9dce608c63f93959c9ba4d42fe02",
+      "sha256": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880"
+    },
+    "engine/prophet_live/interval.py": {
+      "bytes": 16751,
+      "git_blob": "e92bd6c49ac3f02c4e81c733ce1b59135e236cc8",
+      "sha256": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3"
+    },
+    "engine/prophet_live/live_states.py": {
+      "bytes": 60789,
+      "git_blob": "a6d907f21cefa3984dc814537d807fc349c5a4af",
+      "sha256": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012"
+    },
+    "engine/prophet_live/r2io.py": {
+      "bytes": 7909,
+      "git_blob": "1e03b73adc938aa51dc0bfa7b90e23b9ff09804b",
+      "sha256": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271"
+    },
+    "engine/signal_gate.py": {
+      "bytes": 44184,
+      "git_blob": "cccf77910f875925910e5adda14bbb33d6dc942d",
+      "sha256": "8ac545beb3d9cd1164069bd4850c2406e7f2ea88f972c6382490896653dff2fb"
+    },
+    "lib/cn_calendar.py": {
+      "bytes": 12262,
+      "git_blob": "72a9cf8b4ee4f32a542b77b530d40af8caa99a1a",
+      "sha256": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c"
+    },
+    "lib/exchange_holidays.py": {
+      "bytes": 11873,
+      "git_blob": "336f47b283f3e7a802ae412d1809d718d876e72d",
+      "sha256": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e"
+    },
+    "research/CN_BREATHING_PLATFORM_ARCHITECTURE_2026-08-15.md": {
+      "bytes": 23529,
+      "git_blob": "9557a87e3fc761f01003103b6938a92b650afb6b",
+      "sha256": "9d1e389d9c4ae004481e1ba8543d416e80fdb0f44e7822d49bc9a46307b37583"
+    },
+    "scripts/build_cn_live_pack.py": {
+      "bytes": 9069,
+      "git_blob": "cd34927f428a45ab22c1da124f740d5c8bee3aee",
+      "sha256": "8ff726b8da1e9fd9309a18caa0aa048bdcb2508bd90107175fddd9092007680a"
+    },
+    "scripts/cn_live_evaluator.py": {
+      "bytes": 11683,
+      "git_blob": "aec8abfb16fa291447b0eae5a97d0d3af88cb75a",
+      "sha256": "eeeaea820ebf513cc23f1f7725e8266efe7bb3e4c078498cf1bbccdcb5bc4ec4"
+    },
+    "scripts/reconcile_cn_live.py": {
+      "bytes": 7382,
+      "git_blob": "c4f805d3c852555a138708f33beb32b62a1b9140",
+      "sha256": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+    },
+    "site/factordata/china_standouts.json": {
+      "bytes": 5870788,
+      "git_blob": "d67a21a962a34c7ad10a601a5c565320e21890e1",
+      "sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72"
+    }
+  },
+  "status": "PASS",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

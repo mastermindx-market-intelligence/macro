@@ -1,0 +1,1172 @@
+{
+  "check_count": 39,
+  "checks": [
+    {
+      "details": null,
+      "family": "source",
+      "name": "exact_final_probe_and_result",
+      "passed": true
+    },
+    {
+      "details": {
+        "bytes": 12249,
+        "git_blob": "0d5fc5fbe92a61a4327a59359f3b40fc6a9df801",
+        "path": "collectors/china_margin_detail.py",
+        "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6"
+      },
+      "family": "source",
+      "name": "collector_full_source_bytes_bound",
+      "passed": true
+    },
+    {
+      "details": {
+        "current_statement": "cur_date, cur = _first_populated(dates[-3:])",
+        "lookback": 20
+      },
+      "family": "source",
+      "name": "native_lookback_and_current_lookup_contract",
+      "passed": true
+    },
+    {
+      "details": "prior_slice = dates[max(0, ci - LOOKBACK_TD - 2): ci - LOOKBACK_TD + 1] or dates[:1]",
+      "family": "source",
+      "name": "native_prior_slice_matches_retained_result",
+      "passed": true
+    },
+    {
+      "details": {
+        "condition": "len(dates) < LOOKBACK_TD + 1",
+        "short_history_scenarios_pass_this_guard": true
+      },
+      "family": "source",
+      "name": "native_guard_admits_21_rows",
+      "passed": true
+    },
+    {
+      "details": {
+        "full_host_census_repeated": false,
+        "n": 8
+      },
+      "family": "reproduction",
+      "name": "all_eight_original_probe_scenarios_exactly_reproduced",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": 19,
+        "calls": [
+          {
+            "index": 39,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": true,
+            "stage": "prior"
+          },
+          {
+            "index": 19,
+            "populated": true,
+            "stage": "bounded_prior"
+          }
+        ],
+        "candidate_indices": [
+          17,
+          18,
+          19
+        ],
+        "chosen_index": 19,
+        "current_index": 39,
+        "history_length": 40,
+        "name": "full_history_target_20",
+        "source_index_gap": 20
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_full_history_target_20",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": 18,
+        "calls": [
+          {
+            "index": 39,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 18,
+            "populated": true,
+            "stage": "prior"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "bounded_prior"
+          },
+          {
+            "index": 18,
+            "populated": true,
+            "stage": "bounded_prior"
+          }
+        ],
+        "candidate_indices": [
+          17,
+          18,
+          19
+        ],
+        "chosen_index": 18,
+        "current_index": 39,
+        "history_length": 40,
+        "name": "full_history_fallback_21",
+        "source_index_gap": 21
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_full_history_fallback_21",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": 17,
+        "calls": [
+          {
+            "index": 39,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 18,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 17,
+            "populated": true,
+            "stage": "prior"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "bounded_prior"
+          },
+          {
+            "index": 18,
+            "populated": false,
+            "stage": "bounded_prior"
+          },
+          {
+            "index": 17,
+            "populated": true,
+            "stage": "bounded_prior"
+          }
+        ],
+        "candidate_indices": [
+          17,
+          18,
+          19
+        ],
+        "chosen_index": 17,
+        "current_index": 39,
+        "history_length": 40,
+        "name": "full_history_fallback_22",
+        "source_index_gap": 22
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_full_history_fallback_22",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": null,
+        "calls": [
+          {
+            "index": 39,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 18,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 17,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "bounded_prior"
+          },
+          {
+            "index": 18,
+            "populated": false,
+            "stage": "bounded_prior"
+          },
+          {
+            "index": 17,
+            "populated": false,
+            "stage": "bounded_prior"
+          }
+        ],
+        "candidate_indices": [
+          17,
+          18,
+          19
+        ],
+        "chosen_index": null,
+        "current_index": 39,
+        "history_length": 40,
+        "name": "full_history_missing_prior",
+        "source_index_gap": null
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_full_history_missing_prior",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": null,
+        "calls": [
+          {
+            "index": 20,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 18,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "prior"
+          },
+          {
+            "index": 18,
+            "populated": true,
+            "stage": "prior"
+          }
+        ],
+        "candidate_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "chosen_index": 18,
+        "current_index": 18,
+        "history_length": 21,
+        "name": "short_history_21_current_oldest_recent_selects_itself",
+        "source_index_gap": 0
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_short_history_21_current_oldest_recent_selects_itself",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": true,
+        "bounded_repair_chosen_index": null,
+        "calls": [
+          {
+            "index": 20,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 18,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": true,
+            "stage": "prior"
+          }
+        ],
+        "candidate_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "chosen_index": 19,
+        "current_index": 18,
+        "history_length": 21,
+        "name": "short_history_21_newly_available_future_can_be_selected",
+        "source_index_gap": -1
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_short_history_21_newly_available_future_can_be_selected",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": null,
+        "calls": [
+          {
+            "index": 20,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 0,
+            "populated": true,
+            "stage": "prior"
+          }
+        ],
+        "candidate_indices": [
+          0
+        ],
+        "chosen_index": 0,
+        "current_index": 19,
+        "history_length": 21,
+        "name": "short_history_21_current_middle_uses_19_gap",
+        "source_index_gap": 19
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_short_history_21_current_middle_uses_19_gap",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": 0,
+        "calls": [
+          {
+            "index": 20,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 0,
+            "populated": true,
+            "stage": "prior"
+          },
+          {
+            "index": 0,
+            "populated": true,
+            "stage": "bounded_prior"
+          }
+        ],
+        "candidate_indices": [
+          0
+        ],
+        "chosen_index": 0,
+        "current_index": 20,
+        "history_length": 21,
+        "name": "short_history_21_current_latest_uses_20_gap",
+        "source_index_gap": 20
+      },
+      "family": "lookup",
+      "name": "independent_native_sequence_short_history_21_current_latest_uses_20_gap",
+      "passed": true
+    },
+    {
+      "details": [
+        {
+          "index": 20,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": true,
+          "stage": "prior"
+        }
+      ],
+      "family": "lookup",
+      "name": "future_claim_requires_second_call_availability_change",
+      "passed": true
+    },
+    {
+      "details": {
+        "availability_changes_between_current_and_prior_lookup": false,
+        "bounded_repair_chosen_index": null,
+        "calls": [
+          {
+            "index": 20,
+            "populated": false,
+            "stage": "current"
+          },
+          {
+            "index": 19,
+            "populated": true,
+            "stage": "current"
+          },
+          {
+            "index": 0,
+            "populated": false,
+            "stage": "prior"
+          }
+        ],
+        "candidate_indices": [
+          0
+        ],
+        "chosen_index": null,
+        "current_index": 19,
+        "history_length": 21,
+        "name": "stable_newer_date_already_available",
+        "source_index_gap": null
+      },
+      "family": "lookup",
+      "name": "stable_available_newer_date_is_selected_as_current",
+      "passed": true
+    },
+    {
+      "details": {
+        "read_order": [
+          [
+            "china",
+            "000001.SS"
+          ],
+          [
+            "china",
+            "510300.SS"
+          ]
+        ],
+        "selected_rows": 21
+      },
+      "family": "lookup",
+      "name": "first_nonempty_index_wins_even_if_shorter",
+      "passed": true
+    },
+    {
+      "details": {
+        "read_order": [
+          [
+            "china",
+            "000001.SS"
+          ],
+          [
+            "china",
+            "510300.SS"
+          ]
+        ],
+        "selected_rows": 40
+      },
+      "family": "lookup",
+      "name": "existing_index_fallback_order_and_tail_preserved",
+      "passed": true
+    },
+    {
+      "details": {
+        "bytes": 22092,
+        "git_blob": "11219d650fc06f685b5effbd14f809b97cdcad74",
+        "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1"
+      },
+      "family": "source",
+      "name": "exact_extras_consumer_source_retained",
+      "passed": true
+    },
+    {
+      "details": {
+        "consumer_block": {
+          "date": "2026-01-19",
+          "fin_balance_yi": 0.0
+        },
+        "stored_rows": [
+          {
+            "asof": "2026-10-09",
+            "date": "2026-01-19",
+            "fin_balance": 1018.0,
+            "fin_balance_prior": null,
+            "prior_date": null,
+            "short_balance": null,
+            "short_balance_yuan": null,
+            "ticker": "000001.SZ"
+          }
+        ]
+      },
+      "family": "consumer",
+      "name": "bounded_unavailable_prior_stays_nullable_through_consumer",
+      "passed": true
+    },
+    {
+      "details": {
+        "consumer_block": {
+          "chg_pct": 0.0,
+          "date": "2026-01-19",
+          "fin_balance_yi": 0.0
+        },
+        "stored_row": {
+          "asof": "2026-10-09",
+          "date": "2026-01-19",
+          "fin_balance": 1018.0,
+          "fin_balance_prior": 1018.0,
+          "prior_date": "2026-01-19",
+          "short_balance": null,
+          "short_balance_yuan": null,
+          "ticker": "000001.SZ"
+        }
+      },
+      "family": "consumer",
+      "name": "synthetic_native_self_selection_yields_same_date_zero_change",
+      "passed": true
+    },
+    {
+      "details": {
+        "chg_pct": 25.0,
+        "date": "2026-09-29",
+        "fin_balance_yi": 0.0
+      },
+      "family": "consumer",
+      "name": "consumer_uses_balance_pair_and_drops_prior_date",
+      "passed": true
+    },
+    {
+      "details": "A positive usable prior is required; nonmissing-balance aggregate counts are not automatically qualified feature counts.",
+      "family": "consumer",
+      "name": "nonnull_prior_balance_alone_does_not_guarantee_change",
+      "passed": true
+    },
+    {
+      "details": [
+        {
+          "asof": "2026-10-09",
+          "date": "2026-02-09",
+          "fin_balance": 100.0,
+          "fin_balance_prior": null,
+          "prior_date": "2026-01-20",
+          "short_balance": null,
+          "short_balance_yuan": null,
+          "ticker": "000001.SZ"
+        },
+        {
+          "asof": "2026-10-09",
+          "date": "2026-02-09",
+          "fin_balance": 200.0,
+          "fin_balance_prior": 180.0,
+          "prior_date": "2026-01-20",
+          "short_balance": null,
+          "short_balance_yuan": null,
+          "ticker": "000002.SZ"
+        }
+      ],
+      "family": "consumer",
+      "name": "global_prior_date_can_be_present_when_issuer_balance_missing",
+      "passed": true
+    },
+    {
+      "details": {
+        "pairs": 62
+      },
+      "family": "aggregate",
+      "name": "all_62_pair_rows_are_unique_positive_valid_dates",
+      "passed": true
+    },
+    {
+      "details": 155688,
+      "family": "aggregate",
+      "name": "pair_counts_sum_to_155688",
+      "passed": true
+    },
+    {
+      "details": {
+        "missing_prior_balance": 916,
+        "nonmissing_prior_balance": 154772,
+        "rows": 155688
+      },
+      "family": "aggregate",
+      "name": "pair_missing_prior_balances_sum_to_916",
+      "passed": true
+    },
+    {
+      "details": {
+        "20": 155688
+      },
+      "family": "aggregate",
+      "name": "reported_pair_gaps_reproduce_weighted_totals",
+      "passed": true
+    },
+    {
+      "details": [
+        {
+          "date": "2026-10-08",
+          "nonmissing_prior_balance": 3521,
+          "prior_date": "2026-09-02",
+          "rows": 3530,
+          "source_index_gap": 20
+        }
+      ],
+      "family": "aggregate",
+      "name": "latest_pair_reconciles_3530_rows_and_9_missing",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "aggregate",
+      "name": "no_missing_prior_dates_in_pair_aggregate",
+      "passed": true
+    },
+    {
+      "details": {
+        "bytes": 3713664,
+        "git_blob": "cc0ebb8e78c6280586f0997dd2dd8ba0697095f9",
+        "sha256": "64b752ada586acd6af7ac19985a3ee4aa9b8e2bebf686de7ab66471cb29097e4"
+      },
+      "family": "receipt",
+      "name": "detail_receipt_matches_prior_source_inventory",
+      "passed": true
+    },
+    {
+      "details": {
+        "bytes": 132043,
+        "git_blob_sha1": "be7404fc467659707334519fde108182f45915b3",
+        "sha256": "3482108489339b7dccbe3529ea3e391bca9424725509fb177bdbe29fb49b8c9b"
+      },
+      "family": "receipt",
+      "name": "index_receipt_matches_corrected_native_tradability_census",
+      "passed": true
+    },
+    {
+      "details": {
+        "asof": {
+          "distinct": 62,
+          "max": "2026-10-09",
+          "min": "2026-07-01",
+          "non_null": 155688
+        },
+        "date": {
+          "distinct": 62,
+          "max": "2026-10-08",
+          "min": "2026-06-30",
+          "non_null": 155688
+        },
+        "prior_date": {
+          "distinct": 62,
+          "max": "2026-09-02",
+          "min": "2026-06-01",
+          "non_null": 155688
+        }
+      },
+      "family": "receipt",
+      "name": "detail_rows_and_date_domain_match_prior_inventory",
+      "passed": true
+    },
+    {
+      "details": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "family": "receipt",
+      "name": "prior_input_identity_intelligence_lab/source_input.json",
+      "passed": true
+    },
+    {
+      "details": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3",
+      "family": "receipt",
+      "name": "prior_input_identity_tradability_lab/TRADABILITY_INPUT.json",
+      "passed": true
+    },
+    {
+      "details": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "family": "receipt",
+      "name": "prior_input_identity_intelligence_lab/weight_input.json",
+      "passed": true
+    },
+    {
+      "details": {
+        "pid": 90480,
+        "terminal": "[Reading 0 new lines (total: 0 lines)]\n\n(No output in requested range)\n✅ Process completed with exit code 0 (runtime: 1.60s)"
+      },
+      "family": "receipt",
+      "name": "retained_host_terminal_exit_zero",
+      "passed": true
+    },
+    {
+      "details": {
+        "n": 8
+      },
+      "family": "custody",
+      "name": "all_eight_sealed_payloads_unchanged",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "final_manifest_unchanged",
+      "passed": true
+    }
+  ],
+  "effects": {
+    "cache_writes": 0,
+    "collector_calls": 0,
+    "host_census_repeats": 0,
+    "latch_writes": 0,
+    "production_edits": 0,
+    "vendor_calls": 0
+  },
+  "failed_n": 0,
+  "independent_lookup_cases": [
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": 19,
+      "calls": [
+        {
+          "index": 39,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": true,
+          "stage": "prior"
+        },
+        {
+          "index": 19,
+          "populated": true,
+          "stage": "bounded_prior"
+        }
+      ],
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 19,
+      "current_index": 39,
+      "history_length": 40,
+      "name": "full_history_target_20",
+      "source_index_gap": 20
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": 18,
+      "calls": [
+        {
+          "index": 39,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "prior"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "bounded_prior"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "bounded_prior"
+        }
+      ],
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 18,
+      "current_index": 39,
+      "history_length": 40,
+      "name": "full_history_fallback_21",
+      "source_index_gap": 21
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": 17,
+      "calls": [
+        {
+          "index": 39,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 18,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 17,
+          "populated": true,
+          "stage": "prior"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "bounded_prior"
+        },
+        {
+          "index": 18,
+          "populated": false,
+          "stage": "bounded_prior"
+        },
+        {
+          "index": 17,
+          "populated": true,
+          "stage": "bounded_prior"
+        }
+      ],
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 17,
+      "current_index": 39,
+      "history_length": 40,
+      "name": "full_history_fallback_22",
+      "source_index_gap": 22
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": null,
+      "calls": [
+        {
+          "index": 39,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 18,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 17,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "bounded_prior"
+        },
+        {
+          "index": 18,
+          "populated": false,
+          "stage": "bounded_prior"
+        },
+        {
+          "index": 17,
+          "populated": false,
+          "stage": "bounded_prior"
+        }
+      ],
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": null,
+      "current_index": 39,
+      "history_length": 40,
+      "name": "full_history_missing_prior",
+      "source_index_gap": null
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": null,
+      "calls": [
+        {
+          "index": 20,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "prior"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "prior"
+        }
+      ],
+      "candidate_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 18,
+      "current_index": 18,
+      "history_length": 21,
+      "name": "short_history_21_current_oldest_recent_selects_itself",
+      "source_index_gap": 0
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": true,
+      "bounded_repair_chosen_index": null,
+      "calls": [
+        {
+          "index": 20,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 18,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": true,
+          "stage": "prior"
+        }
+      ],
+      "candidate_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 19,
+      "current_index": 18,
+      "history_length": 21,
+      "name": "short_history_21_newly_available_future_can_be_selected",
+      "source_index_gap": -1
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": null,
+      "calls": [
+        {
+          "index": 20,
+          "populated": false,
+          "stage": "current"
+        },
+        {
+          "index": 19,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 0,
+          "populated": true,
+          "stage": "prior"
+        }
+      ],
+      "candidate_indices": [
+        0
+      ],
+      "chosen_index": 0,
+      "current_index": 19,
+      "history_length": 21,
+      "name": "short_history_21_current_middle_uses_19_gap",
+      "source_index_gap": 19
+    },
+    {
+      "availability_changes_between_current_and_prior_lookup": false,
+      "bounded_repair_chosen_index": 0,
+      "calls": [
+        {
+          "index": 20,
+          "populated": true,
+          "stage": "current"
+        },
+        {
+          "index": 0,
+          "populated": true,
+          "stage": "prior"
+        },
+        {
+          "index": 0,
+          "populated": true,
+          "stage": "bounded_prior"
+        }
+      ],
+      "candidate_indices": [
+        0
+      ],
+      "chosen_index": 0,
+      "current_index": 20,
+      "history_length": 21,
+      "name": "short_history_21_current_latest_uses_20_gap",
+      "source_index_gap": 20
+    }
+  ],
+  "limits": [
+    "No raw Parquet census was repeated. All 62 aggregate rows and receipt links were reconciled; unique-ticker/raw index-position counts remain the retained hash-bound producer census.",
+    "Source-index gaps are not certified exchange-calendar completeness or first-seen/publication availability.",
+    "Current stored pairs show no underfilled window failure. Self/future/19-position results are explicitly synthetic.",
+    "Eight original scenarios and connecting native statements were executed; the collector, vendor and storage writer were never invoked.",
+    "A nonmissing prior balance is not automatically a positive usable prior or a qualified feature count.",
+    "No broader weight, score, rank, board or investment-return recalculation occurred."
+  ],
+  "manifest_sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+  "observations": {
+    "exact_consumer_source": {
+      "git_blob": "11219d650fc06f685b5effbd14f809b97cdcad74",
+      "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1"
+    },
+    "paired_aggregate": {
+      "latest_date": "2026-10-08",
+      "latest_missing": 9,
+      "latest_rows": 3530,
+      "missing_prior_balance": 916,
+      "nonmissing_prior_balance": 154772,
+      "pairs": 62,
+      "reported_gap_weighted_rows": {
+        "20": 155688
+      },
+      "rows": 155688
+    },
+    "source_locations": {
+      "LOOKBACK_TD": 53,
+      "current_lookup": 147,
+      "margin_positioning": 138,
+      "prior_lookup": 157,
+      "prior_slice": 156,
+      "stored_rows": 165
+    }
+  },
+  "original_scenarios_reproduced": 8,
+  "passed_n": 39,
+  "probe_sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+  "remaining_blockers": [],
+  "review_script_sha256": "113e7ba89c7b3bfb855f77f64c949215582dfe84d0e7b206f9ee465010a2c9cb",
+  "runtime": {
+    "pandas": "2.2.3",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "schema": "independent_margin_horizon_review_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "ACCEPTED_BOUNDED_ADDENDUM"
+}

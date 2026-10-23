@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "/workspace/scratch/cb265ed3ed34/deliverable/research/cn_prophet_audit/census_20261009/deepening_20261009/display_lab/verify.mjs"
+  ],
+  "elapsed_seconds": 0.12509,
+  "exit_code": 0,
+  "finished_at": "2026-10-10T00:30:00.259782+00:00",
+  "log_sha256": "026c1d8041d27b9a14cc6af9124017e8524f61d0071a23208d60a306541ed03f",
+  "started_at": "2026-10-10T00:30:00.134692+00:00"
+}

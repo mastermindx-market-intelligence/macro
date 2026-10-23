@@ -1,0 +1,647 @@
+{
+  "schema": "cn-display-independent-review/v1",
+  "status": "BLOCKED",
+  "subject_manifest_sha256": "5bb6c5b3b76d1f2739bd5f362b042c11b3d4e17d5f57fa4552c38ad83864b549",
+  "candidate_sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+  "native_sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+  "review_code_sha256": "41cd321eeb6de5b2d1641f2bd0f5d840e99054daa7f2b7de4e0bff90bb994792",
+  "node_version": "v24.19.0",
+  "counts": {
+    "checks": 29,
+    "pass": 27,
+    "fail": 2
+  },
+  "checks": [
+    {
+      "name": "absolute request deadline survives delayed timer: headers",
+      "status": "FAIL",
+      "observed": true,
+      "expected": false,
+      "family": "D1",
+      "native": {
+        "before_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            null
+          ]
+        },
+        "after_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            null
+          ]
+        }
+      },
+      "candidate": {
+        "before_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            false
+          ]
+        },
+        "after_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            false
+          ]
+        }
+      },
+      "synthetic_order": "request at 02:00:00; wall clock +30001ms without timer callbacks; fresh response consumed; queued timers then run"
+    },
+    {
+      "name": "absolute request deadline survives delayed timer: body",
+      "status": "FAIL",
+      "observed": true,
+      "expected": false,
+      "family": "D1",
+      "native": {
+        "before_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            null
+          ]
+        },
+        "after_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            null
+          ]
+        }
+      },
+      "candidate": {
+        "before_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            false
+          ]
+        },
+        "after_queued_timers": {
+          "now": "2026-10-09T02:00:30.001Z",
+          "visible": true,
+          "text": "Forming正在形成",
+          "tooltips": {
+            "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+            "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+          },
+          "cards": [
+            {
+              "ticker": "000001.SZ",
+              "rank": 1,
+              "ssr": "Original score and text 000001.SZ"
+            },
+            {
+              "ticker": "000002.SZ",
+              "rank": 2,
+              "ssr": "Original score and text 000002.SZ"
+            }
+          ],
+          "requests": 1,
+          "request_times": [
+            "2026-10-09T02:00:00.000Z"
+          ],
+          "request_aborts": [
+            false
+          ]
+        }
+      },
+      "synthetic_order": "request at 02:00:00; wall clock +30001ms without timer callbacks; fresh response consumed; queued timers then run"
+    },
+    {
+      "name": "obsolete completion cannot change latest result: header_error",
+      "status": "PASS",
+      "observed": true,
+      "expected": true,
+      "candidate": {
+        "now": "2026-10-09T02:00:00.000Z",
+        "visible": true,
+        "text": "Near临近",
+        "tooltips": {
+          "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+          "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+        },
+        "cards": [
+          {
+            "ticker": "000001.SZ",
+            "rank": 1,
+            "ssr": "Original score and text 000001.SZ"
+          },
+          {
+            "ticker": "000002.SZ",
+            "rank": 2,
+            "ssr": "Original score and text 000002.SZ"
+          }
+        ],
+        "requests": 3,
+        "request_times": [
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z"
+        ],
+        "request_aborts": [
+          false,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "obsolete completion cannot change latest result: body_error",
+      "status": "PASS",
+      "observed": true,
+      "expected": true,
+      "candidate": {
+        "now": "2026-10-09T02:00:00.000Z",
+        "visible": true,
+        "text": "Near临近",
+        "tooltips": {
+          "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+          "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+        },
+        "cards": [
+          {
+            "ticker": "000001.SZ",
+            "rank": 1,
+            "ssr": "Original score and text 000001.SZ"
+          },
+          {
+            "ticker": "000002.SZ",
+            "rank": 2,
+            "ssr": "Original score and text 000002.SZ"
+          }
+        ],
+        "requests": 3,
+        "request_times": [
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z"
+        ],
+        "request_aborts": [
+          false,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "obsolete completion cannot change latest result: old_body_after_new_auth",
+      "status": "PASS",
+      "observed": false,
+      "expected": false,
+      "candidate": {
+        "now": "2026-10-09T02:00:00.000Z",
+        "visible": false,
+        "text": "",
+        "tooltips": {},
+        "cards": [
+          {
+            "ticker": "000001.SZ",
+            "rank": 1,
+            "ssr": "Original score and text 000001.SZ"
+          },
+          {
+            "ticker": "000002.SZ",
+            "rank": 2,
+            "ssr": "Original score and text 000002.SZ"
+          }
+        ],
+        "requests": 3,
+        "request_times": [
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z"
+        ],
+        "request_aborts": [
+          false,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "obsolete completion cannot change latest result: old_body_after_new_state",
+      "status": "PASS",
+      "observed": true,
+      "expected": true,
+      "candidate": {
+        "now": "2026-10-09T02:00:00.000Z",
+        "visible": true,
+        "text": "Near临近",
+        "tooltips": {
+          "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+          "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+        },
+        "cards": [
+          {
+            "ticker": "000001.SZ",
+            "rank": 1,
+            "ssr": "Original score and text 000001.SZ"
+          },
+          {
+            "ticker": "000002.SZ",
+            "rank": 2,
+            "ssr": "Original score and text 000002.SZ"
+          }
+        ],
+        "requests": 3,
+        "request_times": [
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z"
+        ],
+        "request_aborts": [
+          false,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "obsolete deadline cannot erase newer chip",
+      "status": "PASS",
+      "observed": true,
+      "expected": true,
+      "candidate": {
+        "now": "2026-10-09T02:00:30.000Z",
+        "visible": true,
+        "text": "Near · Lunch break临近 · 盘中暂歇",
+        "tooltips": {
+          "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+          "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+        },
+        "cards": [
+          {
+            "ticker": "000001.SZ",
+            "rank": 1,
+            "ssr": "Original score and text 000001.SZ"
+          },
+          {
+            "ticker": "000002.SZ",
+            "rank": 2,
+            "ssr": "Original score and text 000002.SZ"
+          }
+        ],
+        "requests": 3,
+        "request_times": [
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:00.000Z",
+          "2026-10-09T02:00:10.000Z"
+        ],
+        "request_aborts": [
+          false,
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "name": "timeout sequence guard works without AbortController",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "poll recovers without AbortController",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "body completed after executed timeout remains obsolete",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "poll recovers after executed body timeout",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "last admissible millisecond",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "inclusive age refusal",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "exact future tolerance",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "beyond future tolerance",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "accepted near-expiry artifact tears down at exact boundary",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "suspended expiry checked before new forced response",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "non-OK 404 tears down live layer",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "non-OK 404 preserves exact SSR and removes tooltips",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "non-OK 429 tears down live layer",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "non-OK 429 preserves exact SSR and removes tooltips",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "non-OK 500 tears down live layer",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "non-OK 500 preserves exact SSR and removes tooltips",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "non-OK 503 tears down live layer",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "non-OK 503 preserves exact SSR and removes tooltips",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "current malformed body clears old chip",
+      "status": "PASS",
+      "observed": false,
+      "expected": false
+    },
+    {
+      "name": "recovery keeps both vocabulary spans",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "header gate preserves SSR-only page",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    },
+    {
+      "name": "complete bilingual STATE/STATUS source block unchanged",
+      "status": "PASS",
+      "observed": true,
+      "expected": true
+    }
+  ],
+  "preexisting_scope_note": {
+    "name": "unknown wire enum is echoed by both versions",
+    "native": {
+      "now": "2026-10-09T02:00:00.000Z",
+      "visible": true,
+      "text": "confirmedconfirmed",
+      "tooltips": {
+        "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+        "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+      },
+      "cards": [
+        {
+          "ticker": "000001.SZ",
+          "rank": 1,
+          "ssr": "Original score and text 000001.SZ"
+        },
+        {
+          "ticker": "000002.SZ",
+          "rank": 2,
+          "ssr": "Original score and text 000002.SZ"
+        }
+      ],
+      "requests": 1,
+      "request_times": [
+        "2026-10-09T02:00:00.000Z"
+      ],
+      "request_aborts": [
+        null
+      ]
+    },
+    "candidate": {
+      "now": "2026-10-09T02:00:00.000Z",
+      "visible": true,
+      "text": "confirmedconfirmed",
+      "tooltips": {
+        "data-tip-en": "Intraday read — windows, not certainties. Tonight's settlement decides.",
+        "data-tip-zh": "盘中暂读 — 窗口，不是定论。今晚结算才算数。"
+      },
+      "cards": [
+        {
+          "ticker": "000001.SZ",
+          "rank": 1,
+          "ssr": "Original score and text 000001.SZ"
+        },
+        {
+          "ticker": "000002.SZ",
+          "rank": 2,
+          "ssr": "Original score and text 000002.SZ"
+        }
+      ],
+      "requests": 1,
+      "request_times": [
+        "2026-10-09T02:00:00.000Z"
+      ],
+      "request_aborts": [
+        false
+      ]
+    },
+    "interpretation": "The unchanged source vocabulary table does not itself validate arbitrary wire enums. This is preexisting and not counted as a new expiry/concurrency repair blocker."
+  },
+  "limits": [
+    "Deterministic Node evidence; no claim about measured browser task scheduling, layout, deployment or device-clock accuracy.",
+    "All network payloads and clock/failure schedules are synthetic. No browser/network/operational writes."
+  ]
+}

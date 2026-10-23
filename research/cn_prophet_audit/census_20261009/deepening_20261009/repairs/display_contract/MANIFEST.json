@@ -1,0 +1,57 @@
+{
+  "schema": "research.display_repair_manifest.v1",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "files": [
+    {
+      "path": "DESIGN.md",
+      "bytes": 1465,
+      "sha256": "c1d02caccba26b4a502ed2df02a48bc32d4eeafb85f07ef314f6889efe6ad97f"
+    },
+    {
+      "path": "EXECUTION_RECEIPT.json",
+      "bytes": 683,
+      "sha256": "483e3b30a9ee2a00dfcfec659792e681a7aac7457c1b4a5078102bbeb9014e44"
+    },
+    {
+      "path": "REPAIR_DECISIONS.md",
+      "bytes": 3463,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79"
+    },
+    {
+      "path": "build_candidate.py",
+      "bytes": 3810,
+      "sha256": "32cba0154c45b0f582b888f6714e0fb25282f3eafad90157b2136a019740b1e9"
+    },
+    {
+      "path": "candidate.diff",
+      "bytes": 3997,
+      "sha256": "b27daa87ee1178afc2dd807df76842e8db4a6734104b233c799c02057aa572b5"
+    },
+    {
+      "path": "candidate_cn_prophet_live.js",
+      "bytes": 8076,
+      "sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49"
+    },
+    {
+      "path": "pinned_cn_prophet_live.js",
+      "bytes": 6651,
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147"
+    },
+    {
+      "path": "previous_candidate.js",
+      "bytes": 7885,
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc"
+    },
+    {
+      "path": "results.json",
+      "bytes": 8042,
+      "sha256": "5c87aa6acb631c8ef5fe695293e5c05001824ee09baaaf026f8c0b60c77eead2"
+    },
+    {
+      "path": "verify.mjs",
+      "bytes": 14435,
+      "sha256": "512cd6d2277e9f4c3cefa3a327bb388302a2e522ba3da121b99c1e570769e513"
+    }
+  ],
+  "payload_bytes": 58507
+}

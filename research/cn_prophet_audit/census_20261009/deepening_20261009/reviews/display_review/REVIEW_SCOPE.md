@@ -1,0 +1,7 @@
+# Independent display review: discriminating plan
+
+Review only the sealed display candidate `595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc` and manifest `5bb6c5b3b76d1f2739bd5f362b042c11b3d4e17d5f57fa4552c38ad83864b549`. All subject files remain read-only. The native paired source is frozen at Macro `3d90aad6d83152dfeeaf8345bc995826ac9d3139`.
+
+The producer's 28 controls will be checked by running an exact copied harness in this review's own directory. Additional controls use an independently written Node DOM/fetch/timer harness with independently deferred response headers and JSON body, optional AbortController, and wall-clock jumps that do not execute queued timers. This distinguishes a scheduled timeout callback from an absolute deadline enforced when a response is consumed. It does not claim real browser task ordering or layout proof.
+
+Challenge expiry at its precise age boundary, current versus obsolete header/body completions and rejections, force-request timers, timeout recovery without cancellation support, visibility resumption, exact server-rendered card preservation, and bilingual vocabulary. Any observed preexisting behavior outside the stated repair scope will be identified separately from a blocker of the candidate's claimed semantics. Produce concise blockers or acceptance, exact input/code hashes and executable results. No browser, vendor, operational or production writes.

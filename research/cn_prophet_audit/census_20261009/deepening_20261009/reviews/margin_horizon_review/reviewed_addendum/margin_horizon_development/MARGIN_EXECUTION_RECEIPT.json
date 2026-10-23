@@ -1,0 +1,17 @@
+{
+  "terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 0 new lines (total: 0 lines)]\n\n(No output in requested range)\n✅ Process completed with exit code 0 (runtime: 1.18s)"
+      }
+    ],
+    "isError": false
+  },
+  "read_projection": {
+    "receipt_id": "ebccaeff-cfc3-4dc7-b12c-2d787a12c01d",
+    "sha256": "f9600cdbc268bdb9644f22b9ac0f481254bc948df5c80bea305215733635deee",
+    "source_bytes": 17688
+  },
+  "method": "Read complete retained output pages without re-execution; stripped only read_file header, preserved JSON data plus final newline."
+}

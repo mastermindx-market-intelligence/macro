@@ -1,0 +1,23 @@
+{
+  "acceptance_case_n": 79,
+  "acceptance_result_sha256": "abdebdbbd2374f5e18daaf2eacca66c4c56366962278197a71aca7679885d62a",
+  "all_79_pass": true,
+  "checks": [
+    "accept_repaired_contract.py receipt SHA256 matches",
+    "ACCEPTANCE_DESIGN.md receipt SHA256 matches",
+    "INPUT_FREEZE.json receipt SHA256 matches",
+    "All five final source/input copies match freeze hashes",
+    "All ten original review files unchanged",
+    "All eleven first repaired acceptance files unchanged",
+    "Completed matched-control package manifest and all payload hashes unchanged",
+    "Python AST and JSON parsing pass"
+  ],
+  "principal_suite_n": 56,
+  "production_effects": 0,
+  "remote_replays": 0,
+  "repaired_script_sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+  "schema": "intelligence_final_acceptance_terminal_verification_v1",
+  "status": "PASS",
+  "vendor_calls": 0,
+  "writes_scope": "acceptance_f2f5aeeb only for this final acceptance"
+}

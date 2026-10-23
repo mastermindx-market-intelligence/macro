@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "operation": "MMX-CN-PROPHET-CENSUS-20261009",
+  "research_date": "2026-10-09",
+  "state": "RESEARCH_COMPLETE / DRAFT-HOLD; candidate-quality upgrade unproven",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "carrier_integration_base_sha": "698fd13e5f0a041ec5b9010293175232983f4f44",
+  "carrier_integration_base_tree": "231d9c5c16fa84887dd509ef68d233ed297851e1",
+  "carrier_initial_checkpoint_sha": "0dab913b711bf4a761cb728bf8602695c05ea075",
+  "scope": "All authored dossier and one AgentOS discovery; excludes this self-referential manifest and Python bytecode. Hashes are exact UTF-8 bytes. Source inputs remain separately bound by SOURCE_MANIFEST.json and evidence receipts.",
+  "files": [
+    {
+      "path": "agentos/discoveries/DSC-CN-PROPHET-DEEP-CENSUS-20261009.md",
+      "bytes": 4753,
+      "characters": 4743,
+      "utf16_code_units": 4743,
+      "sha256": "c1e43bf8b7df1fcaf7a67b7af5584e20672dc398d18787b09254e59868dbf02a",
+      "git_blob_sha": "3ff092bdb8d2ac294c51f489b005c4dd555c54b6"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/CHECKPOINT.md",
+      "bytes": 6237,
+      "characters": 6225,
+      "utf16_code_units": 6225,
+      "sha256": "002ddafd78f9a642578d96a4183b766f14af658dcb8f31206b9eb7dcfa77df80",
+      "git_blob_sha": "48e59d0fb08abdb3181143bf6524f8e7d2e72283"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/CHINA_MARKET_AND_RESEARCH.md",
+      "bytes": 30752,
+      "characters": 30529,
+      "utf16_code_units": 30529,
+      "sha256": "884a1a52aabcd54881ee56e52eae93c7fdaaadb03f3f8d4f4b973e42cee65780",
+      "git_blob_sha": "d517a156b74f635e68b352ddcc94e59eef55e007"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/COMMISSION.md",
+      "bytes": 21144,
+      "characters": 21076,
+      "utf16_code_units": 21076,
+      "sha256": "999adf4faa64bc115cac317eb708fa97bfd39e26b0b1c8a1804f740710f5d95b",
+      "git_blob_sha": "dd3b25f7b06153a3700e9d39e7006356d17dbdc5"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/EXPERIMENTS_AND_ACCEPTANCE.md",
+      "bytes": 20882,
+      "characters": 20841,
+      "utf16_code_units": 20841,
+      "sha256": "4f2fb3def10272bd0877a615579c692358371b3e20fc087a83c2338d2cdfd1c7",
+      "git_blob_sha": "ee0d184a83a767b57577f323cb1416cd670cd0fc"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/FINAL_REVIEW.md",
+      "bytes": 9337,
+      "characters": 9287,
+      "utf16_code_units": 9287,
+      "sha256": "be9f5b2b4c4d7cf210389c29836355aafed3f1a82e01e6f42e72fa4e356bcc72",
+      "git_blob_sha": "5765772326a334ba1f11dea985c78873443a6dc3"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/HISTORICAL_EVALUATION.md",
+      "bytes": 24363,
+      "characters": 24219,
+      "utf16_code_units": 24219,
+      "sha256": "49096c1197adb12bc29e526497700aa87073852ab3aee73d6e9efdc4fec668c0",
+      "git_blob_sha": "e7c91e13a08657ccbba9e39b8b1284bb50afd557"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/HISTORY_REVIEW.md",
+      "bytes": 11701,
+      "characters": 11650,
+      "utf16_code_units": 11650,
+      "sha256": "156eb232e9549f59c5b397d763b95e4b5338e28c51b1b091dbd1147532780648",
+      "git_blob_sha": "0eeda2ec3cad2d89ae732ad65c3464eb9f4fe073"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/IMPLEMENTATION_HANDOFF.md",
+      "bytes": 20691,
+      "characters": 20663,
+      "utf16_code_units": 20663,
+      "sha256": "968a4c4307645aa51c02f2179088d560ddb71eca9139157d352c7475f10ba5e3",
+      "git_blob_sha": "1efa07e1424401a54395b49456c4397328fcab58"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/MECHANISM_CENSUS.md",
+      "bytes": 58034,
+      "characters": 57725,
+      "utf16_code_units": 57725,
+      "sha256": "d1e0ae1d92cef91ad14d34b39265514af3f9ddb87896828ac0c2ee679c9fcc69",
+      "git_blob_sha": "7b2a1ff44ba5ab7fd56626b8cc2f23e11a39213a"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/ORDERING_REVIEW.md",
+      "bytes": 8828,
+      "characters": 8794,
+      "utf16_code_units": 8794,
+      "sha256": "90d812a943601a875f2502d98a36f0d58291498d8d0cc8a2eff9339f1a649c21",
+      "git_blob_sha": "960ad9f0aadd4a8242a4229dfb1a9ea6a39ff101"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/RANK_METRICS_ADDENDUM.md",
+      "bytes": 13722,
+      "characters": 13694,
+      "utf16_code_units": 13694,
+      "sha256": "639aca43549f80e974701d5a9e2b1920fd224233eaf00ba5ed7e21c223ad0bae",
+      "git_blob_sha": "5240c2c014ab08030b18146c15e77f3307829bde"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/RANK_METRICS_REVIEW.md",
+      "bytes": 9669,
+      "characters": 9595,
+      "utf16_code_units": 9595,
+      "sha256": "f1a799a4ac4388fc121a40fb6ec5a9ea7c2fbaae50d4eb469b696fad8ec95809",
+      "git_blob_sha": "737ce190d67a7bde612d4dcdfbc7a169e1d4bac1"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/README.md",
+      "bytes": 2941,
+      "characters": 2925,
+      "utf16_code_units": 2925,
+      "sha256": "b9160cd7a16df0e7e127bd7340dd9760850d6f67464e61c071c4c8f8ba7294f1",
+      "git_blob_sha": "5d60ffe9981bbac6f7a69a670b37f84931332d12"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/REPORT.md",
+      "bytes": 38657,
+      "characters": 38490,
+      "utf16_code_units": 38490,
+      "sha256": "b6c9a044fcbe7422b539b1267ae3b82bbd68faae047cfd107f34e4f7ff46dec3",
+      "git_blob_sha": "a38ba5e08ef8102734749e1bf24443bcf34728b7"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/SOURCE_INDEX.md",
+      "bytes": 17712,
+      "characters": 17708,
+      "utf16_code_units": 17708,
+      "sha256": "2950d3d2a28dab0a4211265b9bd5d1312ef50665ce5b1fe10ef6515922f12d2d",
+      "git_blob_sha": "871864312b25366b79f09372e5707ed93d58c645"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/SOURCE_MANIFEST.json",
+      "bytes": 3990,
+      "characters": 3990,
+      "utf16_code_units": 3990,
+      "sha256": "5a27f16f8aa46265844e1560efa871a9385505c65bbca123916a78d9ff4dc3d9",
+      "git_blob_sha": "1d09ae7dffc66377fb5b6e1ff6511f1378998ddf"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/VERIFICATION.md",
+      "bytes": 15644,
+      "characters": 15641,
+      "utf16_code_units": 15641,
+      "sha256": "8aa5b5c874d39515a7878172869c805959501390e375b93cef6556dc4fd0a131",
+      "git_blob_sha": "6ef3f6d2b639be70e72148aa5e1cdc7d4b70cd0d"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/autopsy.py",
+      "bytes": 28850,
+      "characters": 28850,
+      "utf16_code_units": 28850,
+      "sha256": "5a09a5112b3920201001d7fceefefcd336716154c696269fa6d680043a05e6a6",
+      "git_blob_sha": "2513089dff582dbee3ee36cba7b9262fd82dc22c"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/extend_audit.py",
+      "bytes": 10750,
+      "characters": 10750,
+      "utf16_code_units": 10750,
+      "sha256": "3838a50f85067e6a1a3ff990ec70c7f7a0f997699fb123a1406a3efc28f11408",
+      "git_blob_sha": "c63fd65c3341b48eafd6cdb6d832f420920408cd"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/historical_evidence.json",
+      "bytes": 531920,
+      "characters": 531920,
+      "utf16_code_units": 531920,
+      "sha256": "8b651cf4df19736f66a3cf184c5a47478ffe0bf2fc62a24bb5452c01b836e54d",
+      "git_blob_sha": "1ee7ab61881baf68d86b072470f414e45cb6e230"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/last_cap_qualified_rows.json",
+      "bytes": 70338,
+      "characters": 70338,
+      "utf16_code_units": 70338,
+      "sha256": "78f1a1658bc6a0960c8e0479394ced5a63d20d76e6afd1b5d4677e461be30381",
+      "git_blob_sha": "91d20a60c9cff4d45c27b2175b8c43f5bfbf7462"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/ordering_diagnostics.json",
+      "bytes": 15170,
+      "characters": 15170,
+      "utf16_code_units": 15170,
+      "sha256": "527ece9b344c34d64d184ff5fb67dbaafbe6efe557b794b03b08a908b03dde86",
+      "git_blob_sha": "b3fb64e851d93b5655e8763c4b2bc856333d2e67"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/ordering_diagnostics.py",
+      "bytes": 11740,
+      "characters": 11738,
+      "utf16_code_units": 11738,
+      "sha256": "e9b0a0cdb2ad8e831b5071ab831ffddeb6dc0884bf2037ff1be7a16efb731368",
+      "git_blob_sha": "970411e0bbe505e9d0e2c6f22f27cbcd7c228c33"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/pipeline_evidence.json",
+      "bytes": 12074,
+      "characters": 12070,
+      "utf16_code_units": 12070,
+      "sha256": "0f2290f66e542958313d427a6c2ecc013cd932539eddd33a99cddc71aa26331c",
+      "git_blob_sha": "1eac768938c4374ba9978c28b35f5fdc39107c9f"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/pr_overlap.json",
+      "bytes": 10014,
+      "characters": 10009,
+      "utf16_code_units": 10009,
+      "sha256": "6b9b967114170eea9998fc9741b30284ae7bd00d4af4ed1ed4e0df1d9d7b4749",
+      "git_blob_sha": "c2720df6b3f3f63ea394800a336014011016c887"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/publication_probe.json",
+      "bytes": 3590,
+      "characters": 3588,
+      "utf16_code_units": 3588,
+      "sha256": "2161a923a6245cac0db7d13950893fdc57e4690a92a3ac7dcccc1a3591ddf963",
+      "git_blob_sha": "043bae14bad123d435e82776abc54529895aaa80"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/publication_probe.py",
+      "bytes": 3433,
+      "characters": 3433,
+      "utf16_code_units": 3433,
+      "sha256": "2aa725f4f464f79d57fc0c4a56d84bd6a18df7ab419009f52d6e1cfd7b5d2474",
+      "git_blob_sha": "6022b50f35df2a2b4478fb115100fe3be7be1063"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/rank_metrics_addendum.json",
+      "bytes": 158390,
+      "characters": 158390,
+      "utf16_code_units": 158390,
+      "sha256": "d514efe4c8bcb624603d32ab6c0ece6b3ef2292c858f83ebc1e55e8834985dbc",
+      "git_blob_sha": "a0aa49d2b738336d3c7978f470a9575e57e8d5b9"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/rank_metrics_addendum.py",
+      "bytes": 38814,
+      "characters": 38788,
+      "utf16_code_units": 38788,
+      "sha256": "da214bd49e4e7f37975463d6cf891696ae95e767ef112562f08826295f42ce39",
+      "git_blob_sha": "91d7243a003f017f40cce8cce64e829b53b60a63"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/rank_metrics_pool_input.json",
+      "bytes": 484979,
+      "characters": 484979,
+      "utf16_code_units": 484979,
+      "sha256": "1f6708ca0e8ec12d2983900f5d5d0313a9272e726730d7a91a220b4165bb6976",
+      "git_blob_sha": "e24b5c3fd070298c66051eafda55bd2460b39837"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/reproduce_census.py",
+      "bytes": 6758,
+      "characters": 6758,
+      "utf16_code_units": 6758,
+      "sha256": "7215a720893d13d3ad8c1d45a0cea8f84f8145f54ce92036eff42cbe45d51fa1",
+      "git_blob_sha": "c9e3a129718a171a5579783e1f1a043277a4a3cc"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/selected_case_records.json",
+      "bytes": 23160,
+      "characters": 23130,
+      "utf16_code_units": 23130,
+      "sha256": "06098fa27fd395e3c9e6bc084337e1c4f14cbea90a27ee9f553a6324b297b12d",
+      "git_blob_sha": "be6f327887262e015582a436d0706c66261c5d26"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/v4_review_rows.json",
+      "bytes": 375297,
+      "characters": 375297,
+      "utf16_code_units": 375297,
+      "sha256": "626aacda09bdef9ba6cd8bb01a3688e445228b48ce63d5496defb07ce0482830",
+      "git_blob_sha": "aaf1c8cf157ab19c20d0e03997aa4fd6bf73a1ea"
+    },
+    {
+      "path": "research/cn_prophet_audit/census_20261009/verify_diagnostic.py",
+      "bytes": 1722,
+      "characters": 1722,
+      "utf16_code_units": 1722,
+      "sha256": "4334791ad7d7e3944511d707e78227ec43163ff445e43ae413b80cd2bc3f2ba9",
+      "git_blob_sha": "05e9347c994e82bd239d71b6ecc8f3867c1b67f1"
+    }
+  ]
+}

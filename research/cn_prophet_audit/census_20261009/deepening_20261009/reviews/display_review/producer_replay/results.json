@@ -1,0 +1,225 @@
+{
+  "status": "PASS",
+  "source_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "native_template_and_site_git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73",
+  "native_sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147",
+  "candidate_sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc",
+  "harness_sha256": "150787696c210036e164d88953288757d78c8274dec96cf899cc026427cc34fa",
+  "node_version": "v24.19.0",
+  "test_count": 28,
+  "tests": [
+    {
+      "name": "non-OK 500 removes prior live chip",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "non-OK 503 removes prior live chip",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "non-OK 404 removes prior live chip",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "non-OK 429 removes prior live chip",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: 401",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: 403",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: network",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: invalid_json",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: 204_empty",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: bad_schema",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: old_session",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: stale",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: dark",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "existing refusal preserved: invalid_clock",
+      "status": "PASS",
+      "native_observed": false,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "absolute expiry admission boundary age=900000",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "absolute expiry admission boundary age=899999",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": true,
+      "required_candidate": true
+    },
+    {
+      "name": "future artifact offset=86400000",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false,
+      "explicit_research_skew_allowance_ms": 60000
+    },
+    {
+      "name": "future artifact offset=30000",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": true,
+      "required_candidate": true,
+      "explicit_research_skew_allowance_ms": 60000
+    },
+    {
+      "name": "last-good artifact expires at its own deadline between polls",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "hanging response cannot keep last chip past expiry and polling can retry",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false,
+      "native_requests": 2,
+      "candidate_requests": 8
+    },
+    {
+      "name": "visibility resumption expires last chip before a fresh response",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "obsolete forced response cannot override auth_refusal",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "obsolete forced response cannot override newer_state",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "teardown preserves exact SSR card order/content and clears live tooltip",
+      "status": "PASS",
+      "native_observed": null,
+      "candidate_observed": true,
+      "required_candidate": true
+    },
+    {
+      "name": "a later valid response restores the unchanged observational vocabulary",
+      "status": "PASS",
+      "native_observed": null,
+      "candidate_observed": true,
+      "required_candidate": true
+    },
+    {
+      "name": "page without existing stocks header does not create a live runtime",
+      "status": "PASS",
+      "native_observed": null,
+      "candidate_observed": false,
+      "required_candidate": false
+    },
+    {
+      "name": "all hanging requests abort at deadline and late results stay obsolete",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": false,
+      "required_candidate": false,
+      "native_all_aborted": false,
+      "candidate_all_aborted": true
+    },
+    {
+      "name": "poll cadence, maximum age and STATE/STATUS vocabulary are unchanged",
+      "status": "PASS",
+      "native_observed": true,
+      "candidate_observed": true,
+      "required_candidate": true
+    }
+  ],
+  "explicit_research_choices": {
+    "request_deadline_ms": 30000,
+    "future_artifact_clock_allowance_ms": 60000,
+    "expiry_inclusive": true
+  },
+  "limits": [
+    "The exact IIFE runs in Node with a small DOM/fetch/timer adapter; this is not browser, layout, authenticated-service or deployed-source proof.",
+    "All payloads, statuses, clocks and network failures are synthetic. No network or operational writes occur.",
+    "Browser/device clock accuracy, hidden/frozen-tab scheduling, actual installed script bytes and natural API receipts remain implementation acceptance gates.",
+    "The candidate is a research copy. Both actual paired production files must be updated through their existing owner if implementation is authorized."
+  ]
+}

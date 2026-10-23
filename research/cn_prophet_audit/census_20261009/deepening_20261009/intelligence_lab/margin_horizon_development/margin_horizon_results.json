@@ -1,0 +1,605 @@
+{
+  "schema": "research.margin_horizon_trace.v1",
+  "pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "method": "git show immutable source/data; AST-execute only pure slice and lookup with synthetic inputs; no collector/network calls",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "pandas": "3.0.5",
+  "receipts": [
+    {
+      "path": "collectors/china_margin_detail.py",
+      "git_blob": "0d5fc5fbe92a61a4327a59359f3b40fc6a9df801",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6"
+    },
+    {
+      "path": "data/china_margin_detail/detail.parquet",
+      "git_blob": "cc0ebb8e78c6280586f0997dd2dd8ba0697095f9",
+      "bytes": 3713664,
+      "sha256": "64b752ada586acd6af7ac19985a3ee4aa9b8e2bebf686de7ab66471cb29097e4"
+    },
+    {
+      "path": "data/china/000001.SS.parquet",
+      "git_blob": "be7404fc467659707334519fde108182f45915b3",
+      "bytes": 132043,
+      "sha256": "3482108489339b7dccbe3529ea3e391bca9424725509fb177bdbe29fb49b8c9b"
+    }
+  ],
+  "source_contract": {
+    "LOOKBACK_TD": 20,
+    "prior_slice": "prior_slice = dates[max(0, ci - LOOKBACK_TD - 2): ci - LOOKBACK_TD + 1] or dates[:1]",
+    "lookup_order": "newest populated whole-source date first; not per-issuer fallback"
+  },
+  "synthetic_cases": [
+    {
+      "name": "full_history_target_20",
+      "history_length": 40,
+      "current_index": 39,
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 19,
+      "source_index_gap": 20,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "full_history_fallback_21",
+      "history_length": 40,
+      "current_index": 39,
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 18,
+      "source_index_gap": 21,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "full_history_fallback_22",
+      "history_length": 40,
+      "current_index": 39,
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 17,
+      "source_index_gap": 22,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "full_history_missing_prior",
+      "history_length": 40,
+      "current_index": 39,
+      "candidate_indices": [
+        17,
+        18,
+        19
+      ],
+      "chosen_index": null,
+      "source_index_gap": null,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "short_history_21_current_oldest_recent_can_select_future",
+      "history_length": 21,
+      "current_index": 18,
+      "candidate_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "chosen_index": 19,
+      "source_index_gap": -1,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "short_history_21_current_middle_uses_19_gap",
+      "history_length": 21,
+      "current_index": 19,
+      "candidate_indices": [
+        0
+      ],
+      "chosen_index": 0,
+      "source_index_gap": 19,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    },
+    {
+      "name": "short_history_21_current_latest_uses_20_gap",
+      "history_length": 21,
+      "current_index": 20,
+      "candidate_indices": [
+        0
+      ],
+      "chosen_index": 0,
+      "source_index_gap": 20,
+      "passed": true,
+      "mode": "synthetic index positions, not an exchange calendar"
+    }
+  ],
+  "data": {
+    "rows": 155688,
+    "tickers": 3538,
+    "observation_dates": 62,
+    "latest_date": "2026-10-08",
+    "missing_prior_date_rows": 0,
+    "missing_prior_balance_rows": 916,
+    "latest_rows": 3530,
+    "latest_missing_prior_date": 0,
+    "latest_missing_prior_balance": 9,
+    "index_rows": 7089,
+    "index_start": "1997-07-02",
+    "index_end": "2026-10-09",
+    "index_duplicate_dates": 0,
+    "known_source_index_gap_weighted_rows": {
+      "20": 155688
+    },
+    "rows_without_both_dates_in_index": 0,
+    "date_pairs": [
+      {
+        "date": "2026-06-30",
+        "prior_date": "2026-06-01",
+        "rows": 3471,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-01",
+        "prior_date": "2026-06-02",
+        "rows": 3471,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-02",
+        "prior_date": "2026-06-03",
+        "rows": 3472,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-03",
+        "prior_date": "2026-06-04",
+        "rows": 1652,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1651
+      },
+      {
+        "date": "2026-07-06",
+        "prior_date": "2026-06-05",
+        "rows": 3472,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-07",
+        "prior_date": "2026-06-08",
+        "rows": 3471,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3467
+      },
+      {
+        "date": "2026-07-09",
+        "prior_date": "2026-06-10",
+        "rows": 3471,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-10",
+        "prior_date": "2026-06-11",
+        "rows": 1651,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1650
+      },
+      {
+        "date": "2026-07-13",
+        "prior_date": "2026-06-12",
+        "rows": 3512,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-14",
+        "prior_date": "2026-06-15",
+        "rows": 3512,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-15",
+        "prior_date": "2026-06-16",
+        "rows": 3511,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3467
+      },
+      {
+        "date": "2026-07-16",
+        "prior_date": "2026-06-17",
+        "rows": 3511,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3467
+      },
+      {
+        "date": "2026-07-17",
+        "prior_date": "2026-06-18",
+        "rows": 1667,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1650
+      },
+      {
+        "date": "2026-07-20",
+        "prior_date": "2026-06-22",
+        "rows": 3511,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3467
+      },
+      {
+        "date": "2026-07-21",
+        "prior_date": "2026-06-23",
+        "rows": 3512,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3467
+      },
+      {
+        "date": "2026-07-22",
+        "prior_date": "2026-06-24",
+        "rows": 3512,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-23",
+        "prior_date": "2026-06-25",
+        "rows": 3512,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3468
+      },
+      {
+        "date": "2026-07-24",
+        "prior_date": "2026-06-26",
+        "rows": 1668,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1651
+      },
+      {
+        "date": "2026-07-27",
+        "prior_date": "2026-06-29",
+        "rows": 1844,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1818
+      },
+      {
+        "date": "2026-07-28",
+        "prior_date": "2026-06-30",
+        "rows": 1844,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1818
+      },
+      {
+        "date": "2026-07-29",
+        "prior_date": "2026-07-01",
+        "rows": 1844,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1818
+      },
+      {
+        "date": "2026-07-30",
+        "prior_date": "2026-07-02",
+        "rows": 1845,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-07-31",
+        "prior_date": "2026-07-03",
+        "rows": 1845,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-08-03",
+        "prior_date": "2026-07-06",
+        "rows": 1845,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-08-04",
+        "prior_date": "2026-07-07",
+        "rows": 1846,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-08-05",
+        "prior_date": "2026-07-08",
+        "rows": 1846,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-08-06",
+        "prior_date": "2026-07-09",
+        "rows": 1846,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1819
+      },
+      {
+        "date": "2026-08-07",
+        "prior_date": "2026-07-10",
+        "rows": 1847,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1820
+      },
+      {
+        "date": "2026-08-10",
+        "prior_date": "2026-07-13",
+        "rows": 1847,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1844
+      },
+      {
+        "date": "2026-08-11",
+        "prior_date": "2026-07-14",
+        "rows": 1848,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1844
+      },
+      {
+        "date": "2026-08-12",
+        "prior_date": "2026-07-15",
+        "rows": 1848,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1844
+      },
+      {
+        "date": "2026-08-13",
+        "prior_date": "2026-07-16",
+        "rows": 1848,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1844
+      },
+      {
+        "date": "2026-08-14",
+        "prior_date": "2026-07-17",
+        "rows": 3519,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3510
+      },
+      {
+        "date": "2026-08-18",
+        "prior_date": "2026-07-21",
+        "rows": 3520,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3511
+      },
+      {
+        "date": "2026-08-19",
+        "prior_date": "2026-07-22",
+        "rows": 1673,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1667
+      },
+      {
+        "date": "2026-08-20",
+        "prior_date": "2026-07-23",
+        "rows": 3522,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3511
+      },
+      {
+        "date": "2026-08-21",
+        "prior_date": "2026-07-24",
+        "rows": 1673,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1667
+      },
+      {
+        "date": "2026-08-24",
+        "prior_date": "2026-07-27",
+        "rows": 3522,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3512
+      },
+      {
+        "date": "2026-08-25",
+        "prior_date": "2026-07-28",
+        "rows": 3522,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3511
+      },
+      {
+        "date": "2026-08-26",
+        "prior_date": "2026-07-29",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1668
+      },
+      {
+        "date": "2026-08-27",
+        "prior_date": "2026-07-30",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1668
+      },
+      {
+        "date": "2026-08-28",
+        "prior_date": "2026-07-31",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1668
+      },
+      {
+        "date": "2026-08-31",
+        "prior_date": "2026-08-03",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1668
+      },
+      {
+        "date": "2026-09-02",
+        "prior_date": "2026-08-05",
+        "rows": 3525,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3513
+      },
+      {
+        "date": "2026-09-04",
+        "prior_date": "2026-08-07",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-07",
+        "prior_date": "2026-08-10",
+        "rows": 3525,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3514
+      },
+      {
+        "date": "2026-09-08",
+        "prior_date": "2026-08-11",
+        "rows": 3525,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3516
+      },
+      {
+        "date": "2026-09-09",
+        "prior_date": "2026-08-12",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1668
+      },
+      {
+        "date": "2026-09-10",
+        "prior_date": "2026-08-13",
+        "rows": 1674,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-11",
+        "prior_date": "2026-08-14",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-14",
+        "prior_date": "2026-08-17",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-15",
+        "prior_date": "2026-08-18",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1670
+      },
+      {
+        "date": "2026-09-17",
+        "prior_date": "2026-08-20",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-18",
+        "prior_date": "2026-08-21",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1669
+      },
+      {
+        "date": "2026-09-21",
+        "prior_date": "2026-08-24",
+        "rows": 3527,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3517
+      },
+      {
+        "date": "2026-09-22",
+        "prior_date": "2026-08-25",
+        "rows": 3528,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3518
+      },
+      {
+        "date": "2026-09-23",
+        "prior_date": "2026-08-26",
+        "rows": 3528,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3518
+      },
+      {
+        "date": "2026-09-24",
+        "prior_date": "2026-08-27",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1670
+      },
+      {
+        "date": "2026-09-28",
+        "prior_date": "2026-08-28",
+        "rows": 3528,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3518
+      },
+      {
+        "date": "2026-09-29",
+        "prior_date": "2026-08-31",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1670
+      },
+      {
+        "date": "2026-09-30",
+        "prior_date": "2026-09-01",
+        "rows": 1675,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 1671
+      },
+      {
+        "date": "2026-10-08",
+        "prior_date": "2026-09-02",
+        "rows": 3530,
+        "source_index_gap": 20,
+        "nonmissing_prior_balance": 3521
+      }
+    ]
+  },
+  "limits": [
+    "Stored pairs and current index coverage do not prove historical exchange-calendar completeness, source publication or first-seen time.",
+    "Actual data receipts describe the frozen snapshot. Synthetic underfilled-history behavior is not asserted to have occurred in these rows.",
+    "No score, board, rank, gate, weight or investment-return recalculation is performed."
+  ]
+}

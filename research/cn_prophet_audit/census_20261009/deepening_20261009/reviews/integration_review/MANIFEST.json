@@ -1,0 +1,69 @@
+{
+  "files": [
+    {
+      "bytes": 14847,
+      "path": "REVIEW.md",
+      "sha256": "25fc1ad2aa322e3ef707a1abc690794e6afc5112d8d20043bdf86c52e68187ef"
+    },
+    {
+      "bytes": 22630,
+      "path": "REVIEW_RESULTS.json",
+      "sha256": "f5503340395f1fd857b00ffb45441b2d5947d65e85248db98047237bb554bf4c"
+    },
+    {
+      "bytes": 174543,
+      "path": "native_source_bundle.json",
+      "sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829"
+    },
+    {
+      "bytes": 23732,
+      "path": "parquet_cases/duplicate_daily_keys.before.parquet",
+      "sha256": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd"
+    },
+    {
+      "bytes": 23696,
+      "path": "parquet_cases/duplicate_daily_keys.parquet",
+      "sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351"
+    },
+    {
+      "bytes": 6229,
+      "path": "parquet_counterexample.py",
+      "sha256": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827"
+    },
+    {
+      "bytes": 2417,
+      "path": "parquet_review_receipt.json",
+      "sha256": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9"
+    },
+    {
+      "bytes": 26548,
+      "path": "review_integration.py",
+      "sha256": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699"
+    }
+  ],
+  "original_input_sha256": {
+    "INTEGRATION_DECISIONS.md": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0",
+    "INTEGRATION_MANIFEST.json": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+    "contract_prototype.py": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+    "execution.log": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469",
+    "execution_receipt.json": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8",
+    "integration_fixture.json": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+    "integration_results.json": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128",
+    "run_lab.py": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+  },
+  "reviewed_integration_manifest_sha256": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+  "schema": "cn_integration_independent_review_manifest_v1",
+  "self_excluded": true,
+  "status": "BLOCKED_FOR_END_TO_END_IMPLEMENTATION_AS_WRITTEN",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "total_payload_bytes": 294642,
+  "verification": {
+    "failed_checks": 0,
+    "findings_confirmed": 7,
+    "local_parquet_engine_available": false,
+    "pandas": "2.2.3",
+    "parquet_execution_origin": "independent_host_native_write_receipt_and_binary_files",
+    "passed_checks": 56,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "status": "PASS",
+  "scope": "Research-only pure prototype; synthetic counterfactuals and explicit legacy-admission falsifiers. Not a production patch or test-suite claim.",
+  "tests": [
+    {
+      "name": "aligned fixed-cohort price-mark arithmetic",
+      "result": "PASS",
+      "details": {
+        "status": "ALIGNED_MARK_DIAGNOSTIC",
+        "stock_return_pct": 10.000000000000009,
+        "benchmark_return_pct": 10.000000000000009,
+        "excess_pp": 0.0,
+        "execution_status": "MARK_ONLY",
+        "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence."
+      }
+    },
+    {
+      "name": "benchmark open cannot be synthesized from close",
+      "result": "PASS",
+      "details": {
+        "refused_with": "PRICE_FIELD_UNAVAILABLE:open"
+      }
+    },
+    {
+      "name": "entry-day close is not opening comparator",
+      "result": "PASS",
+      "details": {
+        "refused_with": "ENTRY_ANCHOR_MISMATCH"
+      }
+    },
+    {
+      "name": "mismatched exact exit dates",
+      "result": "PASS",
+      "details": {
+        "refused_with": "EXIT_ANCHOR_MISMATCH"
+      }
+    },
+    {
+      "name": "HL2 does not acquire an exact execution clock",
+      "result": "PASS",
+      "details": {
+        "refused_with": "HL2_EXACT_TIME_UNAVAILABLE"
+      }
+    },
+    {
+      "name": "entry and exit cannot mix basis versions",
+      "result": "PASS",
+      "details": {
+        "refused_with": "BASIS_ID_MISMATCH"
+      }
+    },
+    {
+      "name": "same basis label does not permit a different price vintage",
+      "result": "PASS",
+      "details": {
+        "refused_with": "WITHIN_INSTRUMENT_VINTAGE_MISMATCH"
+      }
+    },
+    {
+      "name": "unavailable future source at grading",
+      "result": "PASS",
+      "details": {
+        "refused_with": "FUTURE_SOURCE_AT_GRADING"
+      }
+    },
+    {
+      "name": "Git commit clock is not a vendor availability receipt",
+      "result": "PASS",
+      "details": {
+        "refused_with": "SOURCE_AVAILABILITY_UNVERIFIED"
+      }
+    },
+    {
+      "name": "missing publication clock stays explicit",
+      "result": "PASS",
+      "details": {
+        "refused_with": "PUBLICATION_CLOCK_UNVERIFIED"
+      }
+    },
+    {
+      "name": "late publication cannot support prior opening entry",
+      "result": "PASS",
+      "details": {
+        "refused_with": "PUBLICATION_AFTER_ENTRY_ANCHOR"
+      }
+    },
+    {
+      "name": "exact original replay is idempotent",
+      "result": "PASS",
+      "details": null
+    },
+    {
+      "name": "silent original-entry rewrite",
+      "result": "PASS",
+      "details": {
+        "refused_with": "ORIGINAL_ENTRY_IMMUTABLE"
+      }
+    },
+    {
+      "name": "correction is separate and original remains identical",
+      "result": "PASS",
+      "details": {
+        "original_event_id": "3d3932419de581365ce366f1d110b83f1d3d829b994eb261e4de86fbabd9d044",
+        "correction_event_id": "1034d490ba981b3476386dc75cca1421036d9ac6d49c059023366bfee1f15300"
+      }
+    },
+    {
+      "name": "tampered sealed correction",
+      "result": "PASS",
+      "details": {
+        "refused_with": "EVENT_HASH_MISMATCH"
+      }
+    },
+    {
+      "name": "basis-only heal preserves HL2 but changes chosen entry assumption",
+      "result": "PASS",
+      "details": {
+        "type": "SYNTHETIC_MECHANISM_COUNTERFACTUAL",
+        "old_bar": {
+          "open": 16.3,
+          "high": 17.7,
+          "low": 17.4,
+          "close": 17.5
+        },
+        "healed_bar": {
+          "open": 17.5,
+          "high": 17.7,
+          "low": 17.4,
+          "close": 17.5
+        },
+        "original_hl2": 17.549999999999997,
+        "healed_open": 17.5,
+        "same_fixed_exit": 18,
+        "original_proxy_return_pct": 2.564102564102577,
+        "healed_open_return_pct": 2.857142857142847,
+        "interpretation": "The original proxy and later healed open answer different entry-price assumptions. Unchanged HLC explains the difference without a common price-scale transformation. Neither price is evidence of an actual executed trade."
+      }
+    },
+    {
+      "name": "uniform scale changes price levels while consistent endpoint return is invariant",
+      "result": "PASS",
+      "details": {
+        "type": "SYNTHETIC_MECHANISM_COUNTERFACTUAL",
+        "scale": 0.8,
+        "old_entry": 100,
+        "old_exit": 110,
+        "new_entry": 80.0,
+        "new_exit": 88.0,
+        "consistent_old_return_pct": 10.000000000000009,
+        "consistent_new_return_pct": 10.000000000000009,
+        "old_entry_with_new_exit_pct": -12.0,
+        "new_entry_with_old_exit_pct": 37.5,
+        "interpretation": "A common positive scale applied to BOTH endpoints preserves return. Replacing only one endpoint does not. A real transformation requires identified old/new vintages and a supported adjustment bridge; a numerical pattern alone cannot certify its corporate-action or vendor cause."
+      }
+    },
+    {
+      "name": "all existing latch observations remain preserved without invented provenance",
+      "result": "PASS",
+      "details": {
+        "unique_existing_latches_preserved": 1948,
+        "no_automatic_upgrade_from_raw_numerical_match": 206,
+        "snapshot_set_sha256": "03fa433b9d285ffccd64400820234c1e6cc3759ce03945aa0bf90b9cb00b2100"
+      }
+    }
+  ],
+  "test_count": 18,
+  "actual_legacy_summary": {
+    "unique_existing_latches_preserved": 1948,
+    "no_automatic_upgrade_from_raw_numerical_match": 206,
+    "snapshot_set_sha256": "03fa433b9d285ffccd64400820234c1e6cc3759ce03945aa0bf90b9cb00b2100"
+  }
+}

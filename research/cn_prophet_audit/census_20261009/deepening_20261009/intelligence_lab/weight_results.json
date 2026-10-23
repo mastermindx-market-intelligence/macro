@@ -1,0 +1,272 @@
+{
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "input_sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+  "script_sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+  "source_locations": {
+    "load_validation": 43,
+    "leg_weights_for": 57
+  },
+  "minimum_time_series_n": 25,
+  "checks": [
+    {
+      "name": "exact_pinned_signal_lab_source",
+      "passed": true,
+      "details": {
+        "git_blob": "ef1d38e714000f9031ee21e3b65b3f6780fb612a"
+      }
+    },
+    {
+      "name": "exact_pinned_altdata_source",
+      "passed": true,
+      "details": {
+        "git_blob": "1665966a51112807f09b6c7336f49940eb752f32"
+      }
+    },
+    {
+      "name": "exact_pinned_scorecard_raw",
+      "passed": true,
+      "details": {
+        "git_blob": "5783de47e17b02c0e78d10041955a27e4296ca29"
+      }
+    },
+    {
+      "name": "current_weights_equal_unchanged_normalized_priors",
+      "passed": true,
+      "details": {
+        "weights": {
+          "value": 0.3429,
+          "margin": 0.2857,
+          "flow": 0.2571,
+          "comment": 0.2143,
+          "lhb": -0.1429,
+          "block": -0.0714,
+          "analyst": 0.1143
+        }
+      }
+    },
+    {
+      "name": "current_mapped_families_are_not_proven",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "native_weight_api_has_no_cutoff",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_card_can_change_weight_without_cutoff",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "unproven_weakly_independent_result_can_zero_leg",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "macro_margin_family_changes_per_issuer_weight",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "nan_ic_can_change_weight",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "infinite_ic_can_change_weight",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "truthy_false_verdict_strings_can_change_weight",
+      "passed": true,
+      "details": null
+    }
+  ],
+  "check_count": 12,
+  "scenarios": [
+    {
+      "label": "current_pinned_scorecard",
+      "synthetic": false,
+      "changes": {},
+      "weights": {
+        "value": 0.3429,
+        "margin": 0.2857,
+        "flow": 0.2571,
+        "comment": 0.2143,
+        "lhb": -0.1429,
+        "block": -0.0714,
+        "analyst": 0.1143
+      },
+      "interpretation": "Actual current scorecard; no weight action is inferred from metadata alone."
+    },
+    {
+      "label": "future_scorecard",
+      "synthetic": true,
+      "changes": {
+        "family": "valuation",
+        "proven": true,
+        "sign_ok": true,
+        "mean_ic": 0.1,
+        "t_hac": 3.0,
+        "n_obs": 400,
+        "n_weeks": 80,
+        "n_indep": 20,
+        "generated_utc": "2026-10-20T08:00:00Z"
+      },
+      "weights": {
+        "value": 0.439,
+        "margin": 0.2439,
+        "flow": 0.2195,
+        "comment": 0.1829,
+        "lhb": -0.122,
+        "block": -0.061,
+        "analyst": 0.0976
+      },
+      "interpretation": "A future card changes native weights. This is a synthetic cutoff-blindness witness, not a detected historical board leak."
+    },
+    {
+      "label": "dense_unproven_wrong_sign",
+      "synthetic": true,
+      "changes": {
+        "family": "valuation",
+        "proven": false,
+        "sign_ok": false,
+        "mean_ic": -0.1,
+        "t_hac": -3.0,
+        "n_obs": 120,
+        "n_weeks": 2,
+        "n_indep": 1
+      },
+      "weights": {
+        "value": 0.0,
+        "margin": 0.4348,
+        "flow": 0.3913,
+        "comment": 0.3261,
+        "lhb": -0.2174,
+        "block": -0.1087,
+        "analyst": 0.1739
+      },
+      "interpretation": "The native negative-action branch uses n_obs >= the time-series constant 25, bypassing the cross-sectional weeks/independent-window gate."
+    },
+    {
+      "label": "whole_market_margin_verdict",
+      "synthetic": true,
+      "changes": {
+        "family": "margin",
+        "proven": true,
+        "sign_ok": true,
+        "mean_ic": -0.1,
+        "t_hac": 3.0,
+        "n_obs": 400,
+        "n_weeks": 80,
+        "n_indep": 20
+      },
+      "weights": {
+        "value": 0.3,
+        "margin": 0.375,
+        "flow": 0.225,
+        "comment": 0.1875,
+        "lhb": -0.125,
+        "block": -0.0625,
+        "analyst": 0.1
+      },
+      "interpretation": "The macro margin family changes the per-issuer margin leg. Source definitions describe different predictors and targets; current weights are unchanged."
+    },
+    {
+      "label": "nan_ic",
+      "synthetic": true,
+      "changes": {
+        "family": "valuation",
+        "proven": true,
+        "sign_ok": true,
+        "mean_ic": "NaN",
+        "t_hac": 3.0,
+        "n_obs": 400,
+        "n_weeks": 80,
+        "n_indep": 20
+      },
+      "weights": {
+        "value": 0.439,
+        "margin": 0.2439,
+        "flow": 0.2195,
+        "comment": 0.1829,
+        "lhb": -0.122,
+        "block": -0.061,
+        "analyst": 0.0976
+      },
+      "interpretation": "Synthetic invalid evidence is consumed by the native reader; the pinned actual scorecard does not contain this payload."
+    },
+    {
+      "label": "infinite_ic",
+      "synthetic": true,
+      "changes": {
+        "family": "valuation",
+        "proven": true,
+        "sign_ok": true,
+        "mean_ic": "Infinity",
+        "t_hac": 3.0,
+        "n_obs": 400,
+        "n_weeks": 80,
+        "n_indep": 20
+      },
+      "weights": {
+        "value": 0.439,
+        "margin": 0.2439,
+        "flow": 0.2195,
+        "comment": 0.1829,
+        "lhb": -0.122,
+        "block": -0.061,
+        "analyst": 0.0976
+      },
+      "interpretation": "Synthetic invalid evidence is consumed by the native reader; the pinned actual scorecard does not contain this payload."
+    },
+    {
+      "label": "truthy_false_verdict_strings",
+      "synthetic": true,
+      "changes": {
+        "family": "valuation",
+        "proven": "false",
+        "sign_ok": "false",
+        "mean_ic": 0.1,
+        "t_hac": 3.0,
+        "n_obs": 400,
+        "n_weeks": 80,
+        "n_indep": 20
+      },
+      "weights": {
+        "value": 0.439,
+        "margin": 0.2439,
+        "flow": 0.2195,
+        "comment": 0.1829,
+        "lhb": -0.122,
+        "block": -0.061,
+        "analyst": 0.0976
+      },
+      "interpretation": "Synthetic invalid evidence is consumed by the native reader; the pinned actual scorecard does not contain this payload."
+    }
+  ],
+  "actual_current_card_generated_utc": "2026-10-09T16:15:18.750930+00:00",
+  "actual_current_weight_action": "none: normalized priors retained",
+  "estimand_mapping": {
+    "consumer": "per-issuer financing balance change, approximately 20 sessions; positively signed raw alt-data feature",
+    "validation_family": "whole-market financing balance / float; market-wide CSI300 return timer, contrarian prior",
+    "qualification": "source-level feature/target mismatch; no current weight action or return effect demonstrated"
+  },
+  "implementation_decision": [
+    "Freeze the current baseline weights while source-time and calibration contracts are repaired.",
+    "At the existing calibration reader, bind exact feature, target, horizon, benchmark/basis, artifact and availability identity.",
+    "Require all evidence labels to mature before the decision cutoff and retain the original scorecard receipt.",
+    "Apply strict finite-number/Boolean checks and equivalent effective-evidence gates to positive and negative weight actions.",
+    "Do not use a market-wide timer result as empirical qualification of a per-issuer cross-sectional feature.",
+    "A qualified calibration reader is a correctness requirement; it does not itself authorize a new ranker or establish investment improvement."
+  ],
+  "limits": [
+    "Unmodified native weight functions are AST-extracted; only the scorecard reader is injected with the pinned or labeled synthetic object.",
+    "No full intelligence, featured selection, historical return, vendor data, source collection or production behavior is recalculated.",
+    "Current scorecard fields are valid for the tested numerical boundaries and currently retain the prior weights.",
+    "The alternative-data and validation headers remain context-only claims; this audit does not grant empirical selection authority."
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "source_path": "collectors/china_prices.py",
+  "source_sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a",
+  "source_git_blob": "4324c7299af32abd22380488e86d97abdc552f72",
+  "source_function_lines": [
+    90,
+    98
+  ],
+  "test_count": 9,
+  "tests": [
+    {
+      "name": "exact incumbent extractor drops available benchmark OHLC",
+      "status": "PASS",
+      "observed_columns": [
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "name": "candidate preserves all incumbent Close/Volume values",
+      "status": "PASS",
+      "observed_columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ]
+    },
+    {
+      "name": "provider MultiIndex and single-instrument layouts agree",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy close-only schema remains close-only with unavailable opening marks",
+      "status": "PASS",
+      "diagnostics": {
+        "status": "OBSERVATIONS_RETAINED",
+        "opening_mark_refusals": [
+          {
+            "session": "2026-09-16",
+            "reason": "OPEN_UNAVAILABLE"
+          },
+          {
+            "session": "2026-09-17",
+            "reason": "OPEN_UNAVAILABLE"
+          }
+        ],
+        "qualified_open_rows": 0
+      }
+    },
+    {
+      "name": "corrupt open preserved as observation and refused as opening mark",
+      "status": "PASS",
+      "diagnostics": {
+        "status": "OBSERVATIONS_RETAINED",
+        "opening_mark_refusals": [
+          {
+            "session": "2026-09-16",
+            "reason": "OPEN_OUTSIDE_RANGE"
+          }
+        ],
+        "qualified_open_rows": 1
+      }
+    },
+    {
+      "name": "zero open remains refused without close substitution or changing old consumers",
+      "status": "PASS",
+      "diagnostics": {
+        "status": "OBSERVATIONS_RETAINED",
+        "opening_mark_refusals": [
+          {
+            "session": "2026-09-16",
+            "reason": "OPEN_INVALID"
+          }
+        ],
+        "qualified_open_rows": 1
+      }
+    },
+    {
+      "name": "infinite open remains refused without close substitution or changing old consumers",
+      "status": "PASS",
+      "diagnostics": {
+        "status": "OBSERVATIONS_RETAINED",
+        "opening_mark_refusals": [
+          {
+            "session": "2026-09-16",
+            "reason": "OPEN_INVALID"
+          }
+        ],
+        "qualified_open_rows": 1
+      }
+    },
+    {
+      "name": "NaN open remains refused without close substitution or changing old consumers",
+      "status": "PASS",
+      "diagnostics": {
+        "status": "OBSERVATIONS_RETAINED",
+        "opening_mark_refusals": [
+          {
+            "session": "2026-09-16",
+            "reason": "OPEN_UNAVAILABLE"
+          }
+        ],
+        "qualified_open_rows": 1
+      }
+    },
+    {
+      "name": "required Close remains required",
+      "status": "PASS"
+    }
+  ],
+  "decision": "Extend the existing canonical benchmark collector's extraction contract to retain optional OHLC, attach owned basis/vintage provenance, and qualify opening marks. No new collector or benchmark owner is required. Existing historical close rows must not be backfilled with invented opens.",
+  "limits": [
+    "All input frames in this probe are explicitly synthetic.",
+    "This proves the deterministic field-loss seam and a compatible extraction candidate; it does not establish that the upstream response currently includes every required field for every symbol/date.",
+    "No paid/vendor request, historical refresh, store write, production import or installation occurred.",
+    "The existing source adjustment guard, storage policies, calendar/session completion and ownership remain implementation review requirements; this shim is not a production-ready patch."
+  ]
+}

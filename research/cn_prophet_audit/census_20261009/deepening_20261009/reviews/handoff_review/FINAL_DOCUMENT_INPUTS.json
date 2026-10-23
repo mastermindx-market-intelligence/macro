@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "bytes": 19931,
+      "sha256": "db3970b0f5860c907cb0b446d27906e813a2d94ecc0fa97500c5c643f0f8add5",
+      "snapshot_path": "final_documents/RESEARCH_DECISIONS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/RESEARCH_DECISIONS.md"
+    },
+    {
+      "bytes": 35320,
+      "sha256": "6d98c9e66e3264c6a9543f8f6d1005514f06ae2da0132294abda2b160fb2a728",
+      "snapshot_path": "final_documents/IMPLEMENTATION_HANDOFF.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/IMPLEMENTATION_HANDOFF.md"
+    },
+    {
+      "bytes": 11507,
+      "sha256": "d450499c2b47d2143a1a1f7c97771909d65ce007da44cdd3da65a60dfce267b1",
+      "snapshot_path": "final_documents/EVIDENCE_INDEX.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/EVIDENCE_INDEX.md"
+    },
+    {
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "snapshot_path": "final_documents/INTERFACE_JOIN_MAP.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/INTERFACE_JOIN_MAP.md"
+    },
+    {
+      "bytes": 5383,
+      "sha256": "6c62782110170b4424b0b328318de0ba4feccbb0429a4b9cf89c7ed57748f00e",
+      "snapshot_path": "final_documents/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md",
+      "source_path": "agentos/discoveries/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md"
+    }
+  ],
+  "schema": "cross_component_handoff_exact_final_documents/v1",
+  "source_root": "deliverable"
+}

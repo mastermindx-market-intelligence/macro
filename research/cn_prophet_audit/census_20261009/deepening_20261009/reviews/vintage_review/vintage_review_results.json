@@ -1,0 +1,478 @@
+{
+  "aggregate_mean_change_pp": 0.009029304238045575,
+  "blocker_count": 4,
+  "checks": [
+    {
+      "name": "all 18 frozen input files and both producer manifests agree",
+      "status": "PASS"
+    },
+    {
+      "counts": [
+        18,
+        9
+      ],
+      "name": "producer 18 contract and 9 retention checks independently replay unchanged",
+      "source_acquisition": "Independent GitHub immutable-file read, exact source Git blob and SHA-256 verified; only the script's source-read operation substituted.",
+      "status": "PASS"
+    },
+    {
+      "counts": {
+        "changed_classes": {
+          "basis_selection_only_at_current_bar": 274,
+          "latch_matches_current_raw_same_basis": 206,
+          "same_session_price_or_basis_revision_unresolved": 176
+        },
+        "changed_mature_v4": 136,
+        "changed_unique_latches": 656,
+        "mature_classes": {
+          "basis_selection_only_at_current_bar": 61,
+          "latch_matches_current_raw_same_basis": 35,
+          "same_session_price_or_basis_revision_unresolved": 40,
+          "unchanged_derived_entry": 153
+        },
+        "mature_hl2_corrupt_flags": 73,
+        "mature_latched_basis": {
+          "t1_hl2": 73,
+          "t1_open": 216
+        },
+        "mature_v4_dates": 21,
+        "mature_v4_episodes": 289,
+        "overlap_changed_and_mature": 136,
+        "unchanged_mature_v4": 153,
+        "union_witness_cohort": 809,
+        "unique_latches": 1948
+      },
+      "name": "656 and 289 denominators, basis classes and all V4 accounting contributions independently reconstructed",
+      "status": "PASS"
+    },
+    {
+      "name": "all 1618 witness rows and exact bounded-clock classes independently reconstructed",
+      "qualifications": {
+        "changed_656": {
+          "best_matching_change_shape": {
+            "identical_ohlc": 49,
+            "mixed_field_revision": 26,
+            "open_only_rewrite": 317,
+            "uniform_ohlc_scale": 179
+          },
+          "matching_prior_witness": 385,
+          "n": 656,
+          "neither_nearest_witness_matches": 85,
+          "only_later_matching_witness": 186,
+          "prior_matching_change_shape": {
+            "mixed_field_revision": 26,
+            "open_only_rewrite": 317,
+            "uniform_ohlc_scale": 42
+          }
+        },
+        "mature_v4_289": {
+          "best_matching_change_shape": {
+            "identical_ohlc": 161,
+            "mixed_field_revision": 8,
+            "open_only_rewrite": 75,
+            "uniform_ohlc_scale": 28
+          },
+          "matching_prior_witness": 239,
+          "n": 289,
+          "neither_nearest_witness_matches": 17,
+          "only_later_matching_witness": 33,
+          "prior_matching_change_shape": {
+            "identical_ohlc": 137,
+            "mixed_field_revision": 8,
+            "open_only_rewrite": 75,
+            "uniform_ohlc_scale": 19
+          }
+        }
+      },
+      "source_limit": "All output-to-input identity links checked; this local replay does not reread all 3360 historical Git blobs or independently verify their ancestry.",
+      "status": "PASS"
+    },
+    {
+      "diagnostic": {
+        "status": "MISSING_REQUIRED_COLUMN"
+      },
+      "name": "backward compatibility control: missing Volume",
+      "status": "PASS"
+    },
+    {
+      "diagnostic": {
+        "status": "NO_CLOSE_ROWS"
+      },
+      "name": "backward compatibility control: all Close missing",
+      "status": "PASS"
+    },
+    {
+      "diagnostic": {
+        "status": "NO_CLOSE_ROWS"
+      },
+      "name": "backward compatibility control: empty frame",
+      "status": "PASS"
+    },
+    {
+      "name": "all optional values missing preserve incumbent close/volume observations",
+      "status": "PASS"
+    },
+    {
+      "name": "no producer file changed during review",
+      "status": "PASS"
+    }
+  ],
+  "counts": {
+    "changed_classes": {
+      "basis_selection_only_at_current_bar": 274,
+      "latch_matches_current_raw_same_basis": 206,
+      "same_session_price_or_basis_revision_unresolved": 176
+    },
+    "changed_mature_v4": 136,
+    "changed_unique_latches": 656,
+    "mature_classes": {
+      "basis_selection_only_at_current_bar": 61,
+      "latch_matches_current_raw_same_basis": 35,
+      "same_session_price_or_basis_revision_unresolved": 40,
+      "unchanged_derived_entry": 153
+    },
+    "mature_hl2_corrupt_flags": 73,
+    "mature_latched_basis": {
+      "t1_hl2": 73,
+      "t1_open": 216
+    },
+    "mature_v4_dates": 21,
+    "mature_v4_episodes": 289,
+    "overlap_changed_and_mature": 136,
+    "unchanged_mature_v4": 153,
+    "union_witness_cohort": 809,
+    "unique_latches": 1948
+  },
+  "findings": [
+    {
+      "counterexamples": [
+        {
+          "name": "exit after grading admitted with an earlier source-availability string",
+          "outcome": "ACCEPTED",
+          "result": {
+            "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence.",
+            "benchmark_return_pct": 10.000000000000009,
+            "excess_pp": 0.0,
+            "execution_status": "MARK_ONLY",
+            "status": "ALIGNED_MARK_DIAGNOSTIC",
+            "stock_return_pct": 10.000000000000009
+          }
+        },
+        {
+          "name": "late publication admitted using an unrelated later entry_anchor_at",
+          "outcome": "ACCEPTED",
+          "result": {
+            "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence.",
+            "benchmark_return_pct": 10.000000000000009,
+            "excess_pp": 0.0,
+            "execution_status": "MARK_ONLY",
+            "status": "ALIGNED_MARK_DIAGNOSTIC",
+            "stock_return_pct": 10.000000000000009
+          }
+        },
+        {
+          "name": "nonexistent session date passes lexical session ordering",
+          "outcome": "ACCEPTED",
+          "result": {
+            "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence.",
+            "benchmark_return_pct": 10.000000000000009,
+            "excess_pp": 0.0,
+            "execution_status": "MARK_ONLY",
+            "status": "ALIGNED_MARK_DIAGNOSTIC",
+            "stock_return_pct": 10.000000000000009
+          }
+        }
+      ],
+      "id": "V1",
+      "minimal_fix": "Require a calendar-owned anchor receipt linked to exact market/session/anchor; validate canonical session dates, entry and exit anchor ordering, publication <= actual entry anchor, and grading >= actual exit anchor. Validate source availability against the endpoint it contains. Add exit_anchor_at or a resolver/receipt covering both endpoints; do not trust an unrelated free timestamp.",
+      "severity": "BLOCKER_FOR_CONTRACT_HANDOFF",
+      "source": "fill_vintage_contract.py:validate_mark/aligned_excess",
+      "title": "Session and publication clocks are not bound to graded mark endpoints"
+    },
+    {
+      "counterexamples": [
+        {
+          "name": "stored original price changed 100 to 80 while event_id remained original",
+          "outcome": "ACCEPTED",
+          "replayed_original": {
+            "basis": "t1_open",
+            "decision_id": "synthetic-decision-001",
+            "entry_session": "2026-09-16",
+            "event_id": "3d3932419de581365ce366f1d110b83f1d3d829b994eb261e4de86fbabd9d044",
+            "kind": "original_entry",
+            "price": 80,
+            "recorded_at": "2026-09-16T08:00:00Z",
+            "ticker": "SYNTHETIC.SZ"
+          }
+        },
+        {
+          "ledger": [
+            {
+              "basis": "t1_open",
+              "decision_id": "synthetic-decision-001",
+              "entry_session": "2026-09-16",
+              "event_id": "3d3932419de581365ce366f1d110b83f1d3d829b994eb261e4de86fbabd9d044",
+              "kind": "original_entry",
+              "price": 80,
+              "recorded_at": "2026-09-16T08:00:00Z",
+              "ticker": "SYNTHETIC.SZ"
+            },
+            {
+              "basis": "t1_open",
+              "correction_of": "3d3932419de581365ce366f1d110b83f1d3d829b994eb261e4de86fbabd9d044",
+              "decision_id": "synthetic-decision-001",
+              "entry_session": "2026-09-16",
+              "event_id": "1bddd1763cd85587dba941dc2637cfd5ca533d4c562bc32b1fc767e4e64d4514",
+              "kind": "entry_correction",
+              "price": 90,
+              "reason": "Synthetic correction",
+              "recorded_at": "2026-10-09T08:00:00Z",
+              "ticker": "SYNTHETIC.SZ"
+            }
+          ],
+          "name": "correction accepted against the same tampered original",
+          "outcome": "ACCEPTED"
+        },
+        {
+          "ledger": [
+            {
+              "basis": "t1_open",
+              "decision_id": "synthetic-decision-001",
+              "entry_session": "2026-09-16",
+              "event_id": "3d3932419de581365ce366f1d110b83f1d3d829b994eb261e4de86fbabd9d044",
+              "kind": "original_entry",
+              "price": 100,
+              "recorded_at": "2026-09-16T08:00:00Z",
+              "ticker": "SYNTHETIC.SZ"
+            },
+            {
+              "basis": "t1_open",
+              "decision_id": "synthetic-decision-001",
+              "entry_session": "2026-09-17",
+              "event_id": "7918971866eb5920424fb7674f900020564ce602d171199cd13e583c655e43d5",
+              "kind": "original_entry",
+              "price": 80,
+              "recorded_at": "2026-09-16T08:00:00Z",
+              "ticker": "SYNTHETIC.SZ"
+            }
+          ],
+          "name": "same decision/ticker gets a second original by changing entry_session",
+          "outcome": "ACCEPTED"
+        }
+      ],
+      "id": "V2",
+      "minimal_fix": "Verify every prior record's digest, permitted kind and original-key uniqueness before replay or correction lookup. Bind the original to the incumbent decision/latch identity (stable board decision plus ticker), with entry_session a protected original field; a different session requires a separate correction. Require store-level immutable-original custody at persistence.",
+      "severity": "BLOCKER_FOR_CONTRACT_HANDOFF",
+      "source": "fill_vintage_contract.py:append_event",
+      "title": "Existing original records are not authenticated before replay or amendment"
+    },
+    {
+      "counterexamples": [
+        {
+          "constructed_mark": {
+            "anchor": "session_open",
+            "bar_row_sha256": "4030523eb891a3fb9f6f9917a8b2135f4498e36375a1512d8a8f41ecce4a4373",
+            "basis_id": "synthetic-SYNTHETIC_BENCH-v1",
+            "execution_status": "MARK_ONLY",
+            "price": 9.0,
+            "session": "2026-09-16",
+            "source": {
+              "available_at": "2026-10-09T08:00:00Z",
+              "clock_kind": "producer_available_at",
+              "fixture_only": true,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "ticker": "SYNTHETIC_BENCH"
+          },
+          "name": "shim refuses open 9 outside range 4.7 to 4.9, constructor and comparator still admit it",
+          "result": {
+            "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence.",
+            "benchmark_return_pct": 2344.4444444444443,
+            "excess_pp": -2334.4444444444443,
+            "execution_status": "MARK_ONLY",
+            "status": "ALIGNED_MARK_DIAGNOSTIC",
+            "stock_return_pct": 10.000000000000009
+          },
+          "retention_diagnostic": {
+            "opening_mark_refusals": [
+              {
+                "reason": "OPEN_OUTSIDE_RANGE",
+                "session": "2026-09-16"
+              }
+            ],
+            "qualified_open_rows": 1,
+            "status": "OBSERVATIONS_RETAINED"
+          }
+        },
+        {
+          "bar_row_hash_unchanged": true,
+          "name": "mark price changed 100 to 80 without changing source or bar-row hash",
+          "result": {
+            "accounting": "Price marks on each instrument's declared consistent basis; total-return certification and execution costs require separate evidence.",
+            "benchmark_return_pct": 10.000000000000009,
+            "excess_pp": 27.499999999999993,
+            "execution_status": "MARK_ONLY",
+            "status": "ALIGNED_MARK_DIAGNOSTIC",
+            "stock_return_pct": 37.5
+          }
+        }
+      ],
+      "id": "V3",
+      "minimal_fix": "Make validated OHLC/range status part of the mark-admission contract, and require exact source-blob/row/field/anchor binding. Preserve bad observations while refusing derived opening marks. Recompute or verify the retained row identity rather than accepting an unchecked hash string.",
+      "severity": "BLOCKER_FOR_CONTRACT_HANDOFF",
+      "source": "fill_vintage_contract.py:mark_from_bar/validate_mark; benchmark_retention_probe.py:retain_optional_ohlcv",
+      "title": "Opening-mark refusal and bar-row identity do not reach the comparator"
+    },
+    {
+      "counterexamples": [
+        {
+          "exception": "TypeError",
+          "incumbent_close_volume": "ACCEPTED_UNCHANGED",
+          "name": "numeric string open",
+          "original_optional_value": "4.8",
+          "outcome": "REFUSED_OR_FAILED",
+          "reason": "ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''"
+        },
+        {
+          "exception": "TypeError",
+          "incumbent_close_volume": "ACCEPTED_UNCHANGED",
+          "name": "nonnumeric open token",
+          "original_optional_value": "vendor-missing",
+          "outcome": "REFUSED_OR_FAILED",
+          "reason": "ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''"
+        },
+        {
+          "exception": "TypeError",
+          "incumbent_close_volume": "ACCEPTED_UNCHANGED",
+          "name": "nonnumeric high token",
+          "original_optional_value": "vendor-missing",
+          "outcome": "REFUSED_OR_FAILED",
+          "reason": "ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''"
+        }
+      ],
+      "id": "V4",
+      "minimal_fix": "Type-check optional scalars before np.isfinite or comparisons. Keep original observed values, emit an explicit opening-mark refusal, and return the unchanged required Close/Volume projection. Decide explicitly whether numeric strings are refused or parsed under a named policy; optional data must not break existing consumers.",
+      "severity": "BLOCKER_FOR_BACKWARD_COMPATIBLE_RETENTION",
+      "source": "benchmark_retention_probe.py:retain_optional_ohlcv",
+      "title": "Malformed optional OHLC aborts a frame whose incumbent Close/Volume is usable"
+    },
+    {
+      "counterexamples": [
+        {
+          "factor": 0,
+          "observed_class": "uniform_ohlc_scale"
+        },
+        {
+          "factor": -0.8,
+          "observed_class": "uniform_ohlc_scale"
+        }
+      ],
+      "id": "V5",
+      "minimal_fix": "Require finite positive new OHLC/ratios before naming a positive common scale. All retained actual uniform-scale witnesses independently pass positivity; no published denominator changes.",
+      "severity": "MINOR_GUARD_GAP_NO_RETAINED_DATA_IMPACT",
+      "source": "collect_vintage_evidence.py:classify_bar",
+      "title": "Shape classifier accepts zero and negative common scale"
+    }
+  ],
+  "independent_check_count": 9,
+  "limits": [
+    "2632 and 933 aggregate episode-row totals remain tied to the hash-bound prior CSV; this review independently recounts the directly retained unique-entry and V4 episode rows.",
+    "No original-latch production mutation, production imports, vendor calls, history fetches, or canonical PR writes occurred.",
+    "Matching historical bars prove recoverable repository content, not availability to the original decision or execution. Action titles are leads without adjustment factors.",
+    "Counterexamples are wholly synthetic and demonstrate contract-admission gaps; they do not relabel the retained empirical witnesses or adjust published returns."
+  ],
+  "minor_count": 1,
+  "producer_reproduction": {
+    "benchmark_checks": 9,
+    "contract_checks": 18,
+    "exact_result_replay": true
+  },
+  "review_scope": "Research facts accepted; these pure prototypes require the listed contract corrections before an implementation handoff can treat their guards as complete. No claim of production failure, economic P&L certification or live execution is made.",
+  "reviewed_manifest_sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3",
+  "sign_changes": {
+    "loss_to_win": 6,
+    "total": 16,
+    "win_to_loss": 10
+  },
+  "status": "REVIEW_COMPLETE_WITH_CONTRACT_BLOCKERS",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "v4_accounting": {
+    "basis_selection_only_at_current_bar": {
+      "contribution_to_289_row_mean_difference_pp": -0.04151352561168988,
+      "current_mean_excess_pp": 0.11582674002550397,
+      "latched_mean_excess_pp": 0.31250557448088717,
+      "mean_current_minus_latched_pp": -0.19667883445538323,
+      "n": 61,
+      "original_loss_to_current_win": 4,
+      "original_win_to_current_loss": 3,
+      "win_sign_changes": 7
+    },
+    "latch_matches_current_raw_same_basis": {
+      "contribution_to_289_row_mean_difference_pp": 0.1064254619039904,
+      "current_mean_excess_pp": 1.2201426441408858,
+      "latched_mean_excess_pp": 0.34137240156222215,
+      "mean_current_minus_latched_pp": 0.8787702425786635,
+      "n": 35,
+      "original_loss_to_current_win": 1,
+      "original_win_to_current_loss": 1,
+      "win_sign_changes": 2
+    },
+    "same_session_price_or_basis_revision_unresolved": {
+      "contribution_to_289_row_mean_difference_pp": -0.055882644020145616,
+      "current_mean_excess_pp": -0.833942288958393,
+      "latched_mean_excess_pp": -0.43019018591284075,
+      "mean_current_minus_latched_pp": -0.4037521030455521,
+      "n": 40,
+      "original_loss_to_current_win": 1,
+      "original_win_to_current_loss": 6,
+      "win_sign_changes": 7
+    },
+    "unchanged_derived_entry": {
+      "contribution_to_289_row_mean_difference_pp": 1.1965890677389568e-08,
+      "current_mean_excess_pp": -0.5097936736915275,
+      "latched_mean_excess_pp": -0.5097936962937656,
+      "mean_current_minus_latched_pp": 2.2602237946180297e-08,
+      "n": 153,
+      "original_loss_to_current_win": 0,
+      "original_win_to_current_loss": 0,
+      "win_sign_changes": 0
+    }
+  },
+  "witness_qualifications": {
+    "changed_656": {
+      "best_matching_change_shape": {
+        "identical_ohlc": 49,
+        "mixed_field_revision": 26,
+        "open_only_rewrite": 317,
+        "uniform_ohlc_scale": 179
+      },
+      "matching_prior_witness": 385,
+      "n": 656,
+      "neither_nearest_witness_matches": 85,
+      "only_later_matching_witness": 186,
+      "prior_matching_change_shape": {
+        "mixed_field_revision": 26,
+        "open_only_rewrite": 317,
+        "uniform_ohlc_scale": 42
+      }
+    },
+    "mature_v4_289": {
+      "best_matching_change_shape": {
+        "identical_ohlc": 161,
+        "mixed_field_revision": 8,
+        "open_only_rewrite": 75,
+        "uniform_ohlc_scale": 28
+      },
+      "matching_prior_witness": 239,
+      "n": 289,
+      "neither_nearest_witness_matches": 17,
+      "only_later_matching_witness": 33,
+      "prior_matching_change_shape": {
+        "identical_ohlc": 137,
+        "mixed_field_revision": 8,
+        "open_only_rewrite": 75,
+        "uniform_ohlc_scale": 19
+      }
+    }
+  }
+}

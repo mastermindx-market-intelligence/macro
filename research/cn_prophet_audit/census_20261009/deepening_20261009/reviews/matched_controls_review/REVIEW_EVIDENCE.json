@@ -1,0 +1,6503 @@
+{
+  "aggregate_reconstructions": [
+    {
+      "arm": "intel_top6",
+      "complete_date_n": 1,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 0.2584764220568094,
+      "mean_selected_excess_pp": 0.020924493225862022,
+      "mean_selected_minus_expected_control_pp": -0.23755192883094736,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "intel_top6",
+      "complete_date_n": 5,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": -0.5259348839325272,
+      "mean_selected_excess_pp": -1.1972786093958572,
+      "mean_selected_minus_expected_control_pp": -0.67134372546333,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "intended_intel_top6",
+      "complete_date_n": 1,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 0.2584764220568094,
+      "mean_selected_excess_pp": 0.020924493225862022,
+      "mean_selected_minus_expected_control_pp": -0.23755192883094736,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "intended_intel_top6",
+      "complete_date_n": 5,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": -0.5259348839325272,
+      "mean_selected_excess_pp": -1.1972786093958572,
+      "mean_selected_minus_expected_control_pp": -0.67134372546333,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "momentum_top6",
+      "complete_date_n": 1,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 3.826825614814967,
+      "mean_selected_excess_pp": -4.693858919288466,
+      "mean_selected_minus_expected_control_pp": -8.520684534103433,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "momentum_top6",
+      "complete_date_n": 4,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 1.2178794051421256,
+      "mean_selected_excess_pp": 0.2344404149011538,
+      "mean_selected_minus_expected_control_pp": -0.9834389902409717,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "quality_top6",
+      "complete_date_n": 2,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 1.1230472101128215,
+      "mean_selected_excess_pp": -1.0304730208011759,
+      "mean_selected_minus_expected_control_pp": -2.1535202309139976,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "quality_top6",
+      "complete_date_n": 7,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": -0.6031373862723852,
+      "mean_selected_excess_pp": -1.5398652987514627,
+      "mean_selected_minus_expected_control_pp": -0.9367279124790774,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "reversal_top6",
+      "complete_date_n": 1,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": -2.4585329849810225,
+      "mean_selected_excess_pp": 0.6893245925137369,
+      "mean_selected_minus_expected_control_pp": 3.1478575774947593,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "reversal_top6",
+      "complete_date_n": 6,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": -1.146478460964934,
+      "mean_selected_excess_pp": 1.3957783115553484,
+      "mean_selected_minus_expected_control_pp": 2.542256772520282,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "score_top6",
+      "complete_date_n": 2,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 0.09472575754295648,
+      "mean_selected_excess_pp": -1.6348382102345709,
+      "mean_selected_minus_expected_control_pp": -1.7295639677775274,
+      "scope": "accepted_common_features",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "score_top6",
+      "complete_date_n": 8,
+      "matured_pool_date_n": 11,
+      "mean_expected_control_excess_pp": 0.11781414169980478,
+      "mean_selected_excess_pp": 0.22009533765513534,
+      "mean_selected_minus_expected_control_pp": 0.10228119595533054,
+      "scope": "accepted_common_features",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "featured_top6",
+      "complete_date_n": 9,
+      "matured_pool_date_n": 17,
+      "mean_expected_control_excess_pp": -0.9213760057860613,
+      "mean_selected_excess_pp": -1.0295240834214354,
+      "mean_selected_minus_expected_control_pp": -0.1081480776353741,
+      "scope": "broad_qualified",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "featured_top6",
+      "complete_date_n": 12,
+      "matured_pool_date_n": 17,
+      "mean_expected_control_excess_pp": 0.28470815321791837,
+      "mean_selected_excess_pp": -0.40206708417759557,
+      "mean_selected_minus_expected_control_pp": -0.6867752373955142,
+      "scope": "broad_qualified",
+      "specification": "sector_only_sensitivity"
+    },
+    {
+      "arm": "score_top6",
+      "complete_date_n": 9,
+      "matured_pool_date_n": 17,
+      "mean_expected_control_excess_pp": -0.9213760057860613,
+      "mean_selected_excess_pp": -1.0295240834214354,
+      "mean_selected_minus_expected_control_pp": -0.1081480776353741,
+      "scope": "broad_qualified",
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "arm": "score_top6",
+      "complete_date_n": 12,
+      "matured_pool_date_n": 17,
+      "mean_expected_control_excess_pp": 0.28470815321791837,
+      "mean_selected_excess_pp": -0.40206708417759557,
+      "mean_selected_minus_expected_control_pp": -0.6867752373955142,
+      "scope": "broad_qualified",
+      "specification": "sector_only_sensitivity"
+    }
+  ],
+  "calendar_gap_bootstrap_reconstruction": {
+    "block_sessions": 5,
+    "calendar_sessions": 15,
+    "case": "accepted_common_features/reversal_top6/sector_only_sensitivity",
+    "empty_replicates": 168,
+    "finite_only_percentile_95_pp": [
+      1.5941360868392975,
+      2.8054839083367584
+    ],
+    "finite_replicates": 9832,
+    "interpretation": "Conditional descriptive sensitivity on nonempty resamples; no calibrated confidence claim.",
+    "observed_dates": 6,
+    "replicates": 10000
+  },
+  "checks": [
+    {
+      "id": "hash:lab:AMENDMENTS.md",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:AMENDMENTS.md",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:DECISION_MEMO.md",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:DECISION_MEMO.md",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:DESIGN.md",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:DESIGN.md",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:FROZEN_MATCHING_RECEIPT.json",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:FROZEN_MATCHING_RECEIPT.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:MATCHED_CONTROLS_RESULTS.json",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:MATCHED_CONTROLS_RESULTS.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:VALIDATION.json",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:VALIDATION.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:analyze_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:analyze_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:benchmark_sessions_input.json",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:benchmark_sessions_input.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:lab:validate_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "bytes:lab:validate_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:accepted:historical_evidence.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:accepted:rank_metrics_addendum.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:accepted:rank_metrics_pool_input.json",
+      "status": "PASS"
+    },
+    {
+      "id": "hash:accepted:v4_review_rows.json",
+      "status": "PASS"
+    },
+    {
+      "id": "source_pin",
+      "status": "PASS"
+    },
+    {
+      "id": "unique_pool_row_keys",
+      "status": "PASS"
+    },
+    {
+      "id": "toy:four_assignments_three_portfolios",
+      "status": "PASS"
+    },
+    {
+      "id": "toy:uniform_assignment_mean",
+      "status": "PASS"
+    },
+    {
+      "id": "toy:uniform_portfolio_mean",
+      "status": "PASS"
+    },
+    {
+      "id": "toy:missing_probability_is_not_slot_share",
+      "status": "PASS"
+    },
+    {
+      "id": "toy:sector_product_bijection",
+      "status": "PASS"
+    },
+    {
+      "id": "alternatives:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "source_neighbor_counts:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:1",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:2",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:3",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:4",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:5",
+      "status": "PASS"
+    },
+    {
+      "id": "cartesian_assignment_count:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_sector_factorization:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "all_observed_assignment_count:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "all_observed_assignment_probability:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:001227.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:001227.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:002099.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:002099.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:300251.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:300251.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601059.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601059.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601108.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601108.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601136.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601136.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601162.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601162.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601456.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601456.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601878.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601878.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601881.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:601881.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_unknown_name_share:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_known_return_contribution:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_precision_bound:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_precision_bound:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:1",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_selected_mean:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "unknown_full_policy_mean_remains_null:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:-20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:-20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:-20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:-20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:20",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_scenario_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01:20",
+      "status": "PASS"
+    },
+    {
+      "id": "alternatives:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "source_neighbor_counts:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:0",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:1",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:2",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:3",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:4",
+      "status": "PASS"
+    },
+    {
+      "id": "source_edges:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:5",
+      "status": "PASS"
+    },
+    {
+      "id": "cartesian_assignment_count:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_sector_factorization:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "all_observed_assignment_count:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "all_observed_assignment_probability:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002025.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002025.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002126.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002126.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002249.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002249.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002920.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:002920.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:300638.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:300638.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:300657.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:300657.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:603063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:603063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:688208.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:688208.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:688262.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_slot_inclusion:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:688262.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_unknown_name_share:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_known_return_contribution:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_precision_bound:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:0",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_precision_bound:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03:1",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_selected_mean:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_complete_control_mean:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "direct_policy_population_sd:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/intel_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/intel_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intel_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/intended_intel_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:intended_intel_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/momentum_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/momentum_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:momentum_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/quality_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/quality_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:quality_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/reversal_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/reversal_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:reversal_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/score_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:accepted_common_features/score_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:accepted_common_features/score_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:broad_qualified/featured_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/featured_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:broad_qualified/featured_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:featured_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:broad_qualified/score_top6/sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_adv_0.5_to_2:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "sum_inclusion_mass:broad_qualified/score_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "date_return_difference:broad_qualified/score_top6/sector_only_sensitivity/2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "complete_dates:broad_qualified/score_top6/sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_selected_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_expected_control_excess_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_selected_minus_expected_control_pp",
+      "status": "PASS"
+    },
+    {
+      "id": "aggregate:score_top6:sector_only_sensitivity:mean_precision_difference",
+      "status": "PASS"
+    },
+    {
+      "id": "common_support:sector_adv_0.5_to_2",
+      "status": "PASS"
+    },
+    {
+      "id": "common_support:sector_only_sensitivity",
+      "status": "PASS"
+    },
+    {
+      "id": "primary_support_denominators",
+      "status": "PASS"
+    },
+    {
+      "id": "primary_hypothetical_completion_envelope:0",
+      "status": "PASS"
+    },
+    {
+      "id": "primary_hypothetical_completion_envelope:1",
+      "status": "PASS"
+    },
+    {
+      "id": "infeasible_is_not_unobserved_label",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:000002.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:000066.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:000422.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:000503.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:000534.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:000539.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:000625.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:000625.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:000676.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:000681.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:000685.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:000690.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:000727.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:000727.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:000739.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:000766.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:000776.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:000791.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:000800.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:000883.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:000899.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:000899.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:000935.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:000935.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:000962.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:000962.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:000969.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:001286.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:001896.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:002003.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:002008.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:002046.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:002048.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:002051.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:002051.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:002077.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:002080.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:002091.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:002099.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:002126.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:002127.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:002139.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002171.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:002174.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002183.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:002203.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:002222.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:002230.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:002236.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:002240.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:002241.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:002249.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002258.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002268.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:002290.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:002338.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002354.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:002429.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:002456.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:002466.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:002472.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002488.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:002517.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:002517.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:002518.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002555.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:002594.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:002643.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002654.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:002705.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:002709.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:002709.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002736.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:002797.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:002812.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:002815.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:002837.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:002838.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:002839.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:002847.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:002851.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002901.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:002920.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:002925.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:002929.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:002939.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:002939.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:002947.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:003022.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:003022.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:003022.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:300037.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:300049.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:300065.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:300065.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:300077.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:300085.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:300124.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:300185.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:300207.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:300251.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:300257.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:300315.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:300322.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:300322.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:300327.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:300347.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:300353.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:300363.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:300398.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:300432.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:300432.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:300443.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:300487.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:300602.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:300623.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:300638.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:300657.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:300660.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:300672.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:300726.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:300751.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:300760.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:300782.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:300782.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:300783.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:300870.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:300870.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:300870.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:300910.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:300913.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:300999.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:301000.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:301087.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:301155.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:301196.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:301207.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:301216.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:301216.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:301263.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:301291.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:301363.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:301371.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:301389.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:301487.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:301488.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:301489.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:301489.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:301565.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:301626.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:301662.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:301662.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:600000.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:600009.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:600011.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:600016.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:600023.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600036.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:600057.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:600061.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:600063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600064.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:600094.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600105.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600109.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:600113.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:600114.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:600141.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:600161.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-15:600176.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:600177.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:600179.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:600221.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:600221.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:600233.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:600246.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600305.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:600369.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600373.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:600480.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:600507.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:600509.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600515.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:600549.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:600595.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:600596.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:600621.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:600674.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:600682.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:600699.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600699.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:600777.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:600777.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600777.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600809.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:600812.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:600835.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:600866.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:600879.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:600879.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-28:600887.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:600958.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:601001.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:601009.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:601061.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:601117.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:601138.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:601162.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:601166.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:601169.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:601229.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:601288.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:601318.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:601328.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:601377.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:601398.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:601577.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:601601.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:601618.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:601688.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:601689.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:601689.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:601696.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:601788.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:601801.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:601801.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:601818.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:601818.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:601818.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:601868.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:601881.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:601888.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:601901.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:601933.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:601933.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:601958.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:603026.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:603026.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:603063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:603063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:603067.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:603093.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-27:603179.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:603260.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:603260.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:603267.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:603301.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:603306.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:603369.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:603477.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-25:603605.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:603606.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-26:603730.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:603876.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:603920.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:603983.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:603992.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:605123.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:605198.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-10:605507.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-14:605507.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:688029.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:688029.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:688048.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-08:688088.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-24:688097.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-09:688110.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:688110.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:688122.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:688208.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:688262.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-04:688295.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:688301.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:688327.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:688327.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-18:688351.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-20:688351.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:688353.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-01:688387.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:688388.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-16:688521.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:688559.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-11:688605.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-07:688660.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-19:688676.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-31:688691.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-09-03:688691.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_exact_H10:2026-08-21:688800.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_denominators",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_row_mean",
+      "status": "PASS"
+    },
+    {
+      "id": "episode_date_mean",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-16",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-14",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-04",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-26",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-11",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-27",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-15",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-09-10",
+      "status": "PASS"
+    },
+    {
+      "id": "one_window_per_date:2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "date_overlap_count",
+      "status": "PASS"
+    },
+    {
+      "id": "issuer_overlap_count",
+      "status": "PASS"
+    },
+    {
+      "id": "maximum_three_nonoverlapping_windows_by_exhaustive_subsets",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:0",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:0",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:0",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:1",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:1",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:1",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:2",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:2",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:2",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:3",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:3",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:3",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:4",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:4",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:4",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:5",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:5",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:5",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:6",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:6",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:6",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:7",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:7",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:7",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:8",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:8",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:8",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_dates:9",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_no_shared_return_segments:9",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_mean:9",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-09",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-19",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-27",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-31",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-18",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-26",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-04",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-10",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-20",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-03",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-15",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-21",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-07",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-24",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-16",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-08",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-28",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-08-25",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-01",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-11",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_date_out:2026-09-14",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301216.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000962.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300432.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:605507.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300870.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002815.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688521.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301489.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300207.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002837.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301371.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000002.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600105.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:001896.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600596.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300398.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300443.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301626.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000739.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603876.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300602.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002518.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600176.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688048.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002517.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300353.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688029.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300077.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601061.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301196.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688351.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600094.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002171.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300760.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002046.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301207.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300124.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002901.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601933.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300363.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002709.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301263.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300782.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002812.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002925.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300657.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600699.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000534.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002472.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603267.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301662.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300315.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301291.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601958.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002051.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603369.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002847.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300726.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600809.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601001.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601801.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688388.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301389.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688605.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000066.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002003.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002268.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:605198.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600113.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:001286.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002594.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002077.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603301.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600036.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300085.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600233.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000681.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000935.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688353.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002456.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688327.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603026.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000503.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300049.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601688.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000422.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601169.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600246.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002354.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002555.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601328.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601577.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603983.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600480.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603260.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600023.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601162.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300487.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000766.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300322.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300783.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002126.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600373.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300623.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300751.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301565.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002851.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688122.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:605123.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601601.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002947.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002222.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601398.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002240.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600674.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603605.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002643.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002705.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601696.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601888.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601818.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300672.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002488.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300638.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301087.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300660.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601138.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600016.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600221.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600887.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000676.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688559.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002091.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603067.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600515.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002127.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002048.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002429.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688387.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688301.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600621.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002080.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000690.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600595.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301000.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300251.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300037.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601788.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600057.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600305.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002338.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002249.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002920.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600011.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000539.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000776.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603179.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300347.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301488.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002939.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600179.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600064.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600682.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002230.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601117.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601229.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601166.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600812.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600507.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000899.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600063.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:003022.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000625.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600509.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002466.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000791.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600009.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000685.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600141.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002241.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300910.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600549.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002174.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002797.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002838.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002290.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600000.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301487.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600177.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603093.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300185.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688660.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688088.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688208.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601288.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002929.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002139.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300999.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688097.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300257.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300327.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603306.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002203.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600114.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002736.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601618.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300065.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002183.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688800.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603477.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600958.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688691.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600061.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600777.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600835.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000800.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002839.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002008.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688262.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000969.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002099.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601318.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603606.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002236.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601901.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000883.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:300913.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688676.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688295.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600109.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601868.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600866.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:688110.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601689.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301155.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600879.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603730.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603992.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002258.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600369.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601881.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:603920.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601377.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:000727.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:600161.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:002654.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:301363.SZ",
+      "status": "PASS"
+    },
+    {
+      "id": "leave_one_issuer_out:601009.SS",
+      "status": "PASS"
+    },
+    {
+      "id": "calendar_gap_draw_counts",
+      "status": "PASS"
+    },
+    {
+      "id": "calendar_gap_conditional_percentile:0",
+      "status": "PASS"
+    },
+    {
+      "id": "calendar_gap_conditional_percentile:1",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_mean:intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_sample_sd:intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:0",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:0:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:0:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:0:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:0:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:1:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:1:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:1:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:1:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:2:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:2:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:2:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:2:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:3",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:3:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:3:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:3:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:3:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:4",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:4:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:4:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:4:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:4:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:5:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:5:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:5:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:5:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:6:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:6:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:6:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:6:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:7",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:7:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:7:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:7:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:7:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:8",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:8:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:8:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:8:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:8:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:9",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:9:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:9:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:9:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:9:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:10:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:10:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:10:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:10:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:11",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:11:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:11:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:11:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:11:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:12",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:12:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:12:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:12:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:12:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:13",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:13:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:13:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:13:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:13:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:14",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:14:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:14:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:14:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:14:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:15",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:15:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:15:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:15:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:15:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:16",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:16:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:16:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:16:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:16:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intel_top6:17",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:17:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:17:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:17:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:17:5",
+      "status": "PASS"
+    },
+    {
+      "id": "detect_point_two_five_vs_zero:intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_mean:momentum_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_sample_sd:momentum_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:18",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:18:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:18:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:18:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:18:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:19",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:19:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:19:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:19:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:19:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:20",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:20:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:20:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:20:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:20:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:21",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:21:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:21:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:21:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:21:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:22",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:22:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:22:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:22:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:22:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:23",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:23:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:23:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:23:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:23:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:24",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:24:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:24:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:24:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:24:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:25",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:25:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:25:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:25:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:25:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:26",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:26:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:26:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:26:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:26:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:27",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:27:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:27:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:27:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:27:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:28",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:28:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:28:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:28:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:28:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:29",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:29:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:29:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:29:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:29:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:30",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:30:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:30:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:30:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:30:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:31",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:31:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:31:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:31:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:31:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:32",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:32:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:32:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:32:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:32:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:33",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:33:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:33:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:33:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:33:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:34",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:34:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:34:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:34:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:34:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:momentum_top6:35",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:35:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:35:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:35:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:35:5",
+      "status": "PASS"
+    },
+    {
+      "id": "detect_point_two_five_vs_zero:momentum_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_mean:reversal_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_sample_sd:reversal_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:36",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:36:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:36:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:36:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:36:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:37",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:37:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:37:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:37:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:37:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:38",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:38:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:38:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:38:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:38:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:39",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:39:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:39:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:39:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:39:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:40",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:40:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:40:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:40:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:40:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:41",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:41:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:41:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:41:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:41:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:42",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:42:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:42:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:42:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:42:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:43",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:43:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:43:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:43:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:43:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:44",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:44:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:44:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:44:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:44:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:45",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:45:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:45:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:45:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:45:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:46",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:46:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:46:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:46:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:46:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:47",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:47:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:47:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:47:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:47:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:48",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:48:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:48:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:48:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:48:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:49",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:49:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:49:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:49:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:49:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:50",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:50:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:50:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:50:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:50:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:51",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:51:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:51:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:51:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:51:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:52",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:52:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:52:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:52:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:52:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:reversal_top6:53",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:53:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:53:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:53:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:53:5",
+      "status": "PASS"
+    },
+    {
+      "id": "detect_point_two_five_vs_zero:reversal_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_mean:quality_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_sample_sd:quality_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:54",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:54:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:54:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:54:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:54:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:55",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:55:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:55:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:55:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:55:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:56",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:56:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:56:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:56:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:56:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:57",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:57:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:57:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:57:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:57:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:58",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:58:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:58:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:58:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:58:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:59",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:59:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:59:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:59:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:59:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:60",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:60:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:60:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:60:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:60:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:61",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:61:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:61:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:61:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:61:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:62",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:62:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:62:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:62:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:62:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:63",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:63:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:63:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:63:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:63:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:64",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:64:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:64:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:64:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:64:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:65",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:65:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:65:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:65:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:65:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:66",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:66:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:66:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:66:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:66:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:67",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:67:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:67:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:67:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:67:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:68",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:68:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:68:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:68:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:68:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:69",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:69:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:69:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:69:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:69:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:70",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:70:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:70:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:70:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:70:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:quality_top6:71",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:71:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:71:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:71:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:71:5",
+      "status": "PASS"
+    },
+    {
+      "id": "detect_point_two_five_vs_zero:quality_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_mean:intended_intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "paired_sample_sd:intended_intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:72",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:72:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:72:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:72:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:72:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:73",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:73:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:73:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:73:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:73:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:74",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:74:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:74:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:74:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:74:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:75",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:75:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:75:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:75:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:75:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:76",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:76:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:76:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:76:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:76:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:77",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:77:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:77:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:77:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:77:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:78",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:78:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:78:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:78:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:78:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:79",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:79:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:79:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:79:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:79:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:80",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:80:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:80:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:80:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:80:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:81",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:81:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:81:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:81:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:81:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:82",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:82:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:82:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:82:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:82:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:83",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:83:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:83:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:83:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:83:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:84",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:84:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:84:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:84:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:84:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:85",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:85:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:85:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:85:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:85:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:86",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:86:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:86:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:86:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:86:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:87",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:87:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:87:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:87:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:87:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:88",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:88:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:88:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:88:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:88:5",
+      "status": "PASS"
+    },
+    {
+      "id": "power_grid:intended_intel_top6:89",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:89:1",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:89:10",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:89:2",
+      "status": "PASS"
+    },
+    {
+      "id": "power_multiplier:89:5",
+      "status": "PASS"
+    },
+    {
+      "id": "detect_point_two_five_vs_zero:intended_intel_top6",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/AMENDMENTS.md",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/DECISION_MEMO.md",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/DESIGN.md",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/FROZEN_MATCHING_RECEIPT.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/MATCHED_CONTROLS_RESULTS.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/VALIDATION.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/analyze_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/benchmark_sessions_input.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/validate_matched_controls.py",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:historical_evidence.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:rank_metrics_addendum.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:rank_metrics_pool_input.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:v4_review_rows.json",
+      "status": "PASS"
+    },
+    {
+      "id": "after_review_hash:deepening_20261009/matched_controls/MANIFEST.json",
+      "status": "PASS"
+    }
+  ],
+  "common_support": [
+    {
+      "all_six_arm_common_dates": [],
+      "specification": "sector_adv_0.5_to_2"
+    },
+    {
+      "all_six_arm_common_dates": [
+        "2026-08-25"
+      ],
+      "specification": "sector_only_sensitivity"
+    }
+  ],
+  "direct_real_graphs": [
+    {
+      "all_observed_assignment_n": 138,
+      "all_observed_assignment_probability": 0.44805194805194803,
+      "cartesian_tuple_n_before_distinctness": 720,
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "conditional_on_observed_mean_pp": -1.4625087317468437,
+      "conditional_on_observed_population_variance_pp_squared": 0.16027384569603126,
+      "control_precision_bounds_fraction": [
+        0.09199134199134198,
+        0.18398268398268397
+      ],
+      "full_assignment_n": 308,
+      "full_policy_mean_pp": null,
+      "known_control_return_contribution_pp": -1.303686221980328,
+      "missing_scenarios": [
+        {
+          "expected_control_pp": -3.143513061807168,
+          "selected_minus_control_pp": 1.0034387241217337,
+          "unknown_excess_pp": -20
+        },
+        {
+          "expected_control_pp": -1.303686221980328,
+          "selected_minus_control_pp": -0.8363881157051061,
+          "unknown_excess_pp": 0
+        },
+        {
+          "expected_control_pp": 0.5361406178465116,
+          "selected_minus_control_pp": -2.676214955531946,
+          "unknown_excess_pp": 20
+        }
+      ],
+      "neighbors_from_original_features": [
+        [
+          "002099.SZ"
+        ],
+        [
+          "300251.SZ"
+        ],
+        [
+          "001227.SZ",
+          "601059.SS",
+          "601136.SS",
+          "601456.SS",
+          "601878.SS"
+        ],
+        [
+          "001227.SZ",
+          "601059.SS",
+          "601136.SS",
+          "601456.SS",
+          "601878.SS",
+          "601881.SS"
+        ],
+        [
+          "001227.SZ",
+          "601059.SS",
+          "601136.SS",
+          "601456.SS",
+          "601878.SS",
+          "601881.SS"
+        ],
+        [
+          "601108.SS",
+          "601162.SS",
+          "601878.SS",
+          "601881.SS"
+        ]
+      ],
+      "sector_component_counts": {
+        "Communication Services": 1,
+        "Financial Services": 308,
+        "Healthcare": 1
+      },
+      "selected_mean_pp": -2.140074337685434,
+      "slot_order": [
+        "000503.SZ",
+        "000681.SZ",
+        "000686.SZ",
+        "002936.SZ",
+        "002939.SZ",
+        "601901.SS"
+      ],
+      "unique_unordered_portfolio_n": 54,
+      "unknown_inclusion_counts": {
+        "601059.SS": 170
+      },
+      "unknown_name_share": 0.09199134199134198,
+      "unknown_name_share_exact": "85/924"
+    },
+    {
+      "all_observed_assignment_n": 36,
+      "all_observed_assignment_probability": 1.0,
+      "cartesian_tuple_n_before_distinctness": 96,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "conditional_on_observed_mean_pp": 2.838573571064619,
+      "conditional_on_observed_population_variance_pp_squared": 0.7450676792550193,
+      "control_precision_bounds_fraction": [
+        0.6666666666666666,
+        0.6666666666666666
+      ],
+      "full_assignment_n": 36,
+      "full_policy_mean_pp": 2.8385735710646185,
+      "known_control_return_contribution_pp": 2.8385735710646185,
+      "missing_scenarios": [],
+      "neighbors_from_original_features": [
+        [
+          "300638.SZ",
+          "300657.SZ",
+          "688262.SS"
+        ],
+        [
+          "002126.SZ",
+          "002249.SZ",
+          "002920.SZ",
+          "688208.SS"
+        ],
+        [
+          "603063.SS"
+        ],
+        [
+          "002126.SZ",
+          "002920.SZ"
+        ],
+        [
+          "002025.SZ",
+          "300657.SZ"
+        ],
+        [
+          "300638.SZ",
+          "688262.SS"
+        ]
+      ],
+      "sector_component_counts": {
+        "Consumer Cyclical": 6,
+        "Industrials": 1,
+        "Technology": 6
+      },
+      "selected_mean_pp": 3.052529420523451,
+      "slot_order": [
+        "300065.SZ",
+        "600699.SS",
+        "600879.SS",
+        "601689.SS",
+        "688387.SS",
+        "688691.SS"
+      ],
+      "unique_unordered_portfolio_n": 20,
+      "unknown_inclusion_counts": {},
+      "unknown_name_share": 0.0,
+      "unknown_name_share_exact": "0"
+    }
+  ],
+  "episode_dependence_reconstruction": {
+    "all_ten_phases": [
+      {
+        "date_n": 3,
+        "mean_excess_pp": -0.9838402483359426,
+        "phase": 0,
+        "row_n": 42
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": 1.5100378564206092,
+        "phase": 1,
+        "row_n": 31
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": 1.532701083540548,
+        "phase": 2,
+        "row_n": 26
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": -0.30831005393853306,
+        "phase": 3,
+        "row_n": 31
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": 0.749032805708688,
+        "phase": 4,
+        "row_n": 26
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": -0.15136127929109164,
+        "phase": 5,
+        "row_n": 24
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": 0.400042448518612,
+        "phase": 6,
+        "row_n": 38
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": -0.0906533600935681,
+        "phase": 7,
+        "row_n": 26
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": 0.5702542249965314,
+        "phase": 8,
+        "row_n": 15
+      },
+      {
+        "date_n": 2,
+        "mean_excess_pp": -0.8919478195083419,
+        "phase": 9,
+        "row_n": 29
+      }
+    ],
+    "date_n": 21,
+    "date_pairs": 210,
+    "episode_n": 288,
+    "interpretation": "Structural counts and descriptive resampling; neither maximum nonoverlap nor multiplicity bootstrap estimates a certified effective sample size.",
+    "issuer_n": 249,
+    "max_nonoverlapping_windows": 3,
+    "nonoverlapping_quadruples_found": 0,
+    "nonoverlapping_triples_found": 2,
+    "overlapping_date_pairs": 135,
+    "repeat_observation_n": 39,
+    "repeated_issuer_n": 35,
+    "row_mean_excess_pp": 0.16373831303753206,
+    "same_issuer_overlapping_pairs": 36
+  },
+  "independence": {
+    "author_role": "independent reviewing subagent",
+    "direct_oracle": "Cartesian product of rebuilt source-feature neighbors, filtered by distinct names",
+    "producer_code_imported_or_executed": false,
+    "scope": "Two real graph enumerations plus a synthetic distribution/factorization falsifier; source-label aggregation, dependence and power independently rebuilt. This is not a second enumeration of all 109344 producer-oracle assignments."
+  },
+  "input_sha256": {
+    "deepening_20261009/matched_controls/AMENDMENTS.md": "69d0e657a319fd4724acfc2af47c0499443ee7008b9c378a1fff7569b578cac7",
+    "deepening_20261009/matched_controls/DECISION_MEMO.md": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+    "deepening_20261009/matched_controls/DESIGN.md": "d8a40683dd0727d72df7d520a98ee587cf07ea28045901bbc109e0845b2052ef",
+    "deepening_20261009/matched_controls/FROZEN_MATCHING_RECEIPT.json": "88421899efd56f2d101e60d7fbdd48de0c86c58f3f5739224d2782e225eb16b5",
+    "deepening_20261009/matched_controls/MANIFEST.json": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5",
+    "deepening_20261009/matched_controls/MATCHED_CONTROLS_RESULTS.json": "6ae06242803a2a7cc59079ebc862f1a5373e01eb77f8606c1bbcb7bf2d1899f8",
+    "deepening_20261009/matched_controls/VALIDATION.json": "6284c8e9c7b1f6a8e7cf6d1c31f4cf49094c41aa4e7b963257ef19fbf4e46f91",
+    "deepening_20261009/matched_controls/analyze_matched_controls.py": "6e742491568f313945c77f2e9d47e1591967e804e16484768fc4e13fd6faf606",
+    "deepening_20261009/matched_controls/benchmark_sessions_input.json": "6be35e860db377f8a1a154c65cf55de2581e2ff222191582219e2c286091f30e",
+    "deepening_20261009/matched_controls/validate_matched_controls.py": "4ea1ad8fcdc3b72000d5a7758d14f5cd9bc9ea3d67a28c7260a490115c7c5466",
+    "historical_evidence.json": "8b651cf4df19736f66a3cf184c5a47478ffe0bf2fc62a24bb5452c01b836e54d",
+    "rank_metrics_addendum.json": "d514efe4c8bcb624603d32ab6c0ece6b3ef2292c858f83ebc1e55e8834985dbc",
+    "rank_metrics_pool_input.json": "1f6708ca0e8ec12d2983900f5d5d0313a9272e726730d7a91a220b4165bb6976",
+    "v4_review_rows.json": "626aacda09bdef9ba6cd8bb01a3688e445228b48ce63d5496defb07ce0482830"
+  },
+  "power_reconstruction": {
+    "arms": [
+      {
+        "80pct_power_baseline_sd_independent_date_equivalents": {
+          "0.5": 2908,
+          "0.75": 727,
+          "1.0": 324
+        },
+        "arm": "intel_top6",
+        "paired_date_n": 11,
+        "paired_mean_pp": -0.24690744109587143,
+        "paired_sample_sd_pp": 4.811818685860394
+      },
+      {
+        "80pct_power_baseline_sd_independent_date_equivalents": {
+          "0.5": 2911,
+          "0.75": 728,
+          "1.0": 324
+        },
+        "arm": "momentum_top6",
+        "paired_date_n": 11,
+        "paired_mean_pp": 0.3131781136437407,
+        "paired_sample_sd_pp": 4.8140981765102495
+      },
+      {
+        "80pct_power_baseline_sd_independent_date_equivalents": {
+          "0.5": 1454,
+          "0.75": 364,
+          "1.0": 162
+        },
+        "arm": "reversal_top6",
+        "paired_date_n": 11,
+        "paired_mean_pp": 0.8339061048971689,
+        "paired_sample_sd_pp": 3.402565312914914
+      },
+      {
+        "80pct_power_baseline_sd_independent_date_equivalents": {
+          "0.5": 3226,
+          "0.75": 807,
+          "1.0": 359
+        },
+        "arm": "quality_top6",
+        "paired_date_n": 11,
+        "paired_mean_pp": -0.26893258887696303,
+        "paired_sample_sd_pp": 5.068145360273014
+      },
+      {
+        "80pct_power_baseline_sd_independent_date_equivalents": {
+          "0.5": 2908,
+          "0.75": 727,
+          "1.0": 324
+        },
+        "arm": "intended_intel_top6",
+        "paired_date_n": 11,
+        "paired_mean_pp": -0.24690744109587143,
+        "paired_sample_sd_pp": 4.811818685860394
+      }
+    ],
+    "formula": "ceil(((z_0.975 + z_power) * sample_SD * SD_multiplier / (true_effect_pp - 0.25)) ** 2)",
+    "grid_rows_checked": 90,
+    "interpretation": "Known-variance normal approximation using an unstable eleven-date sample SD as a planning scenario; not a release schedule, calibrated power guarantee, or prospective trading date target.",
+    "units": "percentage points of paired daily H10 excess difference; independent date equivalents",
+    "z_lower": 1.959963984540054,
+    "z_power": {
+      "0.8": 0.8416212335729143,
+      "0.9": 1.2815515655446004
+    }
+  },
+  "review_script_sha256": "3865c12dc0cc48b4bcb2193d302591416ce12905ccd5ec324d6114acb3279969",
+  "schema": "cn_prophet_matched_controls_independent_review_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "ACCEPTED_WITH_ONE_INTERPRETATION_QUALIFICATION",
+  "strict_policy_support_qualification": {
+    "feasible_complete_dates": 9,
+    "hall_fixture": {
+      "all_slots_nonempty": true,
+      "full_assignments": [],
+      "neighbors": [
+        [
+          "a"
+        ],
+        [
+          "a"
+        ],
+        [
+          "b"
+        ]
+      ]
+    },
+    "infeasible_dates": [
+      "2026-08-21",
+      "2026-09-07",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-16"
+    ],
+    "meaning": "An envelope over arbitrary hypothetical completions on unsupported dates. A uniform draw from an empty assignment set does not exist. Do not export this envelope as an identified bound for the strict full-cohort policy.",
+    "original_matured_dates": 17,
+    "reported_conservative_completion_envelope_fraction": [
+      -0.4397977395699524,
+      0.5013787310182829
+    ],
+    "reported_conservative_completion_envelope_percentage_points": [
+      -43.97977395699524,
+      50.13787310182829
+    ],
+    "strict_full_cohort_estimand": null,
+    "strict_full_cohort_status": "UNAVAILABLE_NO_FULL_ASSIGNMENT_ON_EIGHT_DATES"
+  },
+  "toy_assignment_policy": {
+    "assignments": [
+      [
+        "x",
+        "y"
+      ],
+      [
+        "x",
+        "z"
+      ],
+      [
+        "y",
+        "x"
+      ],
+      [
+        "y",
+        "z"
+      ]
+    ],
+    "combined_count": 8,
+    "disjoint_sector_component_counts": [
+      4,
+      2
+    ],
+    "missing_z_assignment_probability": 0.5,
+    "missing_z_name_share": 0.25,
+    "neighbors": [
+      [
+        "x",
+        "y"
+      ],
+      [
+        "x",
+        "y",
+        "z"
+      ]
+    ],
+    "portfolio_multiplicities": [
+      {
+        "assignment_n": 2,
+        "portfolio": [
+          "x",
+          "y"
+        ]
+      },
+      {
+        "assignment_n": 1,
+        "portfolio": [
+          "x",
+          "z"
+        ]
+      },
+      {
+        "assignment_n": 1,
+        "portfolio": [
+          "y",
+          "z"
+        ]
+      }
+    ],
+    "uniform_assignment_mean_pp": 2.5,
+    "uniform_unique_portfolio_mean_pp": 3.3333333333333335
+  },
+  "verification": {
+    "check_count": 1469,
+    "fail_count": 0,
+    "numpy_version": "2.3.5",
+    "original_input_hashes_unchanged": true,
+    "pass_count": 1469,
+    "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  }
+}

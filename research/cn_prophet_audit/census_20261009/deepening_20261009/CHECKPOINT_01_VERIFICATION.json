@@ -1,0 +1,38 @@
+{
+  "commit": "54b96656b01fdc10fc505a43d2e9ac0dc085f064",
+  "tree": "8326c294d259ebf277be15ea3fa8d7d9b09bf9d1",
+  "parent": "492c2c3f137ee80df14a7192715dde72aea4eff9",
+  "deepening_tree": "e8b0e8ebfc29a03aecc8568300fbb6c517a6c6c7",
+  "files_verified": 64,
+  "bytes_verified": 8338058,
+  "outside_deepening_changes": 0,
+  "scope_proof": [
+    {
+      "child": "research",
+      "old_tree": "6a26fb962a9956a4eefc9fe3f9ca9c7b5a7cb331",
+      "new_tree": "8326c294d259ebf277be15ea3fa8d7d9b09bf9d1",
+      "outside_child_equal": true
+    },
+    {
+      "child": "cn_prophet_audit",
+      "old_tree": "e15ada77682ddb827e08cabc23607b530e0a3eec",
+      "new_tree": "bd851576ee4513d9eb1a817615e79a12a9aceb9e",
+      "outside_child_equal": true
+    },
+    {
+      "child": "census_20261009",
+      "old_tree": "33b169e80918c69f641d373cfc6bbeeec96bc60f",
+      "new_tree": "9f5ec2048cf7ea3ab2d1d5d437e2acbc0526681e",
+      "outside_child_equal": true
+    },
+    {
+      "child": "deepening_20261009",
+      "old_tree": "660e6fb58d62103a126eb039bbb80d6179c28bf4",
+      "new_tree": "de021ddf1fec12d81397e9394c24bde61b351fd6",
+      "outside_child_equal": true
+    }
+  ],
+  "all_expected_blob_identities_and_sizes_match": true,
+  "manifest_sha256": "07a5928526b00c9e4714cb7d1a9b5450e10a428c7ffb65889e9c4f4c23f23c59",
+  "note": "Identities refer to checkpoint commit, including the then-current intelligence prototype. Later repaired acceptance remains separately versioned."
+}
