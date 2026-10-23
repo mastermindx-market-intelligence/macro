@@ -46,6 +46,7 @@
   var TAB = 'subsectors';
   var NIDATA = null;
   var LEAD = null;
+  var HISTORY = null;
   var SORT = {};   // per-tab full-table sort {col, dir}
   var FILTER = {}; // per-tab full-table search text
 
@@ -61,6 +62,26 @@
     if (e.tier === 'T3' || e.tier === 'T4') return L('about to fire', '即将触发');
     if (e.ticks != null) return e.ticks === 0 ? L('just fired', '刚刚触发') : L('fired ' + e.ticks + ' bar' + (e.ticks > 1 ? 's' : '') + ' ago', e.ticks + ' 根K线前触发');
     return '';
+  }
+  /* Entry trigger and entry condition answer different questions.  Keep the raw
+     producer regime visible, but never render EXTENDED as though it cancels a fresh
+     T1/T2/T3 cross.  This is presentation semantics only; no ranking/gate changes. */
+  function entryCondition(r) {
+    r = r || {};
+    var state = String(r.state || r.regime_state || '').toUpperCase();
+    var side = String(r.side || r.regime_side || '').toLowerCase();
+    if (state === 'EXTENDED') return { key: 'stretched', label: ['Stretched — wait for pullback', '已伸展——等待回撤'] };
+    if (state === 'BELOW_TREND') return { key: 'below_trend', label: ['Below trend — require confirmation', '低于趋势——需要确认'] };
+    if (side === 'avoid') return { key: 'caution', label: ['Caution — confirm before entry', '谨慎——入场前确认'] };
+    return { key: 'clean', label: ['Clear enough to act', '入场环境较清晰'] };
+  }
+  function conditionText(r) {
+    var q = entryCondition(r);
+    return L(q.label[0], q.label[1]);
+  }
+  function rawRegime(r) {
+    var state = (r && (r.state || r.regime_state)) || '';
+    return state ? '<span class="g-fresh">(' + esc(state) + ')</span>' : '';
   }
   function detailHref(ds, key) { var d = DS[ds]; return d.dir + d.prefix + key + '.html'; }
   function stockHref(tk) { return 'stock.html#' + encodeURIComponent(tk); }
@@ -195,21 +216,23 @@
 
   function bestEntryHTML(stats, ds) {
     var g = stats.best;
-    if (!g) return '<div class="sc-best none"><span class="ar">◦</span><div class="bd"><span class="nm">' + L('No group is buyable right now', '当前无可买子行业') + '</span> <span class="why">— ' + L('the cleanest setups are still forming; watch the board below.', '最干净的形态仍在构筑；关注下方看板。') + '</span></div></div>';
+    if (!g) return '<div class="sc-best none"><span class="ar">◦</span><div class="bd"><span class="nm">' + L('No fresh entry signal right now', '当前无新入场信号') + '</span> <span class="why">— ' + L('the cleanest setups are still forming; watch the board below.', '最干净的形态仍在构筑；关注下方看板。') + '</span></div></div>';
     var r = g.regime || {}, e = g.entry || {};
     var avoid = r.side === 'avoid';
-    var good = stats.bestIsEntry && !avoid;   // green beacon only when the freshest entry is also clean
-    var why = r.signal_line ? esc(r.signal_line) : (r.action ? esc(r.action) : '');
+    var good = stats.bestIsEntry && !avoid;
     var href = g.chart_key ? detailHref(ds, g.key) : null;
     var nm = href ? '<a class="nm" href="' + href + '">' + esc(g.label) + '</a>' : '<span class="nm">' + esc(g.label) + '</span>';
-    var tag = !stats.bestIsEntry ? L('Closest to buyable', '最接近可买')
-      : avoid ? L('Freshest cross — but extended, confirm', '最新交叉——但已伸展，请确认')
-      : L('Best-timed entry now', '当前最佳择时入场');
+    var tag = stats.bestIsEntry ? L('Fresh entry signal', '新入场信号') : L('Closest to a fresh signal', '最接近新信号');
     var fresh = freshTxt(e);
+    var sigLine = L('Signal: ', '信号：') + (e.tier ? tierBadge(e.tier) : '') + (fresh ? ' <span class="why">' + fresh + '</span>' : '');
+    var condLine = L('Entry condition: ', '入场条件：') + '<b>' + conditionText(r) + '</b> ' + rawRegime(r);
+    var context = r.action ? '<div class="why" style="margin-top:4px">' + L('Context: ', '背景：') + L(esc(r.action), esc(r.action_zh || r.action)) + '</div>' : '';
     return '<div class="sc-best' + (good ? '' : ' none') + '"><span class="ar">▸</span><div class="bd">'
       + '<span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">' + tag + '</span><br>'
-      + nm + ' ' + tierBadge(e.tier) + ' ' + regimePill(r)
-      + (why ? '<br><span class="why">' + why + (fresh ? ' · ' : '') + '</span>' + (fresh ? '<span class="why">' + fresh + '</span>' : '') : '')
+      + nm
+      + '<div class="why" style="margin-top:5px">' + sigLine + '</div>'
+      + '<div class="why" style="margin-top:3px">' + condLine + '</div>'
+      + context
       + '</div></div>';
   }
 
@@ -265,17 +288,20 @@
     var col = side === 'avoid' ? (g['class'] === 'headwind' ? 'var(--down)' : 'var(--orange)')
       : (g['class'] === 'entry_now' ? 'var(--up)' : g['class'] === 'forming' ? 'var(--info)' : 'color-mix(in srgb,var(--up) 55%,var(--info))');
     var href = g.chart_key ? detailHref(ds, g.key) : '#';
-    var avoid = r.side === 'avoid';
     var action = regimeAction(r);
     var sig = r.signal_line ? esc(r.signal_line) : '';
-    var pills = regimePill(r) + (e.tier && g['class'] === 'entry_now' ? ' <span class="pill entry">' + L('ENTRY', '入场') + '</span>' : '') + behavesAsChip(g);
+    var pills = side === 'buy'
+      ? ((g['class'] === 'entry_now' ? '<span class="pill entry">' + L('FRESH TRIGGER', '新触发') + '</span> ' : '') + behavesAsChip(g))
+      : (regimePill(r) + behavesAsChip(g));
     var body;
     if (side === 'avoid') {
       body = action ? '<div class="g-act"><span class="lead">' + action + '</span></div>' : '';
     } else {
       var er = entryRead(g);
       body = (er ? '<div class="g-act"><span class="lead">' + er + '</span></div>' : '')
-        + (action ? '<div class="g-act" style="margin-top:5px' + (avoid ? ';color:var(--ink-orange, var(--orange))' : ';color:var(--muted)') + '">' + (avoid ? '⚠ ' : '') + action + '</div>' : '');
+        + '<div class="g-act" style="margin-top:5px;color:var(--muted)">' + L('Entry condition: ', '入场条件：')
+        + '<b>' + conditionText(r) + '</b> ' + rawRegime(r) + '</div>'
+        + (action ? '<div class="g-sig">' + L('Context: ', '背景：') + action + '</div>' : '');
     }
     return '<a class="gcard" style="border-left-color:' + col + '" href="' + href + '">'
       + '<div class="g-top"><div><div class="g-nm">' + esc(g.label) + '</div>'
@@ -290,13 +316,14 @@
     var groups = groupsOf(ds);
     var noun = DS[ds].noun;
     var buy = groups.filter(function (g) { return g['class'] === 'entry_now'; });
-    var forming = (payload.forming || []);
+    var formingKeys = payload.forming || [];
+    var forming = groups.filter(function (g) { return g['class'] === 'forming' || formingKeys.indexOf(g.key) >= 0; });
     var avoid = groups.filter(function (g) { return g['class'] === 'headwind' || g['class'] === 'late'; })
       .sort(function (a, b) { return (a['class'] === 'headwind' ? 0 : 1) - (b['class'] === 'headwind' ? 0 : 1); });
 
-    var buyCol = '<div class="sc-col"><div class="sc-colhead"><span class="pip buy"></span>' + L('Buy-ready — just turned', '可买——刚转向') + ' <span class="n">' + buy.length + '</span></div>';
+    var buyCol = '<div class="sc-col"><div class="sc-colhead"><span class="pip buy"></span>' + L('Fresh signals — just triggered', '新信号——刚触发') + ' <span class="n">' + buy.length + '</span></div>';
     buyCol += buy.length ? '<div class="gcards">' + buy.map(function (g) { return gcardHTML(g, ds, 'buy'); }).join('') + '</div>'
-      : '<div class="empty">' + L('No ' + noun[0] + ' is firing a fresh entry tier right now. When one crosses, it lands here first.', '当前无' + noun[1] + '触发新的入场层级。一旦有交叉，将最先显示于此。') + '</div>';
+      : '<div class="empty">' + L('No ' + noun[0] + ' is firing a fresh entry signal right now. When one crosses, it lands here first.', '当前无' + noun[1] + '触发新的入场信号。一旦有交叉，将最先显示于此。') + '</div>';
     if (forming.length) {
       buyCol += '<div style="margin-top:11px;font-size:11px;color:var(--muted)">' + L('Also forming (T4 — earliest, weakest)', '构筑中（T4 — 最早、最弱）') + ' <span class="num">' + forming.length + '</span></div>'
         + '<div class="gcards" style="margin-top:6px">' + forming.slice(0, 4).map(function (g) { return gcardHTML(g, ds, 'buy'); }).join('') + '</div>';
@@ -310,8 +337,8 @@
     avoidCol += '</div>';
 
     return '<div class="sec sc-stagger sc-s1"><div class="sec-head"><h2>' + ic('target','sc-h2-ic') + ' ' + L('What to do now', '当下操作') + '</h2></div>'
-      + '<div class="desc">' + L('Fresh T1–T3 confluence crosses on the left (buy-ready); groups that are overbought or below trend on the right (don\'t chase). The detail page shows each group\'s chart and which members are firing.',
-        '左侧为新触发的 T1–T3 汇聚交叉（可买）；右侧为超买或跌破趋势的组（勿追）。详情页展示各组图表与触发成分。') + '</div>'
+      + '<div class="desc">' + L('Fresh T1–T3 crosses are signals that the setup just triggered. Entry condition is shown separately: a stretched group can have a fresh signal and still be a poor place to chase. The detail page shows the chart and which members are firing.',
+        'T1–T3 新交叉表示形态刚刚触发。入场条件会单独显示：一个已伸展的组可以同时出现新信号，但并不代表适合追涨。详情页展示图表与触发成分。') + '</div>'
       + '<div class="sc-board">' + buyCol + avoidCol + '</div></div>';
   }
 
@@ -338,6 +365,46 @@
       + '<div class="desc">' + L('Stocks with an active or forming T1–T4 entry read inside a subsector that is also working. Strongest combined reads come first' + (buys.length > PICKS_CAP ? '; the top ' + PICKS_CAP + ' are shown.' : '.'),
         '这些股票出现了已生效或正在形成的 T1–T4 入场判断，同时所在子行业也在走强。综合判断最强的排在前面' + (buys.length > PICKS_CAP ? '；默认显示前 ' + PICKS_CAP + ' 个。' : '。')) + '</div>'
       + '<div class="sc-tablecard">' + body + '</div></div>';
+  }
+
+
+  /* ══ HISTORY — immutable first-seen publication record ═══════════════════════ */
+  function historySection(ds) {
+    if (!HISTORY || !Array.isArray(HISTORY.days) || !HISTORY.days.length) return '';
+    var days = HISTORY.days.slice(0, 12);
+    var rows = [];
+    days.forEach(function (day) {
+      var desk = day.desks && day.desks[ds];
+      var recs = desk && Array.isArray(desk.recommendations) ? desk.recommendations : [];
+      if (!recs.length) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('No fresh entry signal published.', '当日未发布新入场信号。') + '</td></tr>');
+        return;
+      }
+      recs.forEach(function (r) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td>'
+          + '<td style="font-weight:700">' + esc(r.label || r.key || '') + '</td>'
+          + '<td>' + tierBadge(r.entry_tier) + '</td>'
+          + '<td>' + conditionText(r) + '</td>'
+          + '<td style="color:var(--muted)">' + esc(r.regime_state || '—') + '</td></tr>');
+      });
+    });
+    var acc = HISTORY.accuracy || {};
+    var status = acc.status === 'measuring'
+      ? L('Forward scorecard: measuring', '前瞻评分：测量中')
+      : L('Forward scorecard: accruing', '前瞻评分：累积中');
+    var start = HISTORY.pit_only_since || HISTORY.history_start || '—';
+    var note = L('Point-in-time record starts ' + esc(start) + '. Earlier dates are not reconstructed from today\'s membership.',
+                 '时点记录始于 ' + esc(start) + '。更早日期不会用当前成分进行回溯重建。');
+    return '<div class="sec sc-stagger sc-s3"><div class="sec-head"><h2>' + ic('list','sc-h2-ic') + ' '
+      + L('Recommendation history', '推荐历史') + '</h2></div>'
+      + '<div class="desc">' + L('What this desk actually published each day — immutable first-seen snapshots, built for audit and future accuracy measurement.',
+          '记录本页面每日实际发布的内容——首次发布后不可改写，用于审计与未来准确性测量。') + '</div>'
+      + '<div class="sc-tablecard"><div class="tbl-scroll"><table class="sc-tbl"><thead><tr>'
+      + '<th>' + L('Date', '日期') + '</th><th>' + L('Group', '组别') + '</th><th>' + L('Signal', '信号') + '</th>'
+      + '<th>' + L('Entry condition', '入场条件') + '</th><th>' + L('Raw regime', '原始状态') + '</th>'
+      + '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>'
+      + '<div class="sc-note">' + note + ' · ' + status + '</div></div></div>';
   }
 
   /* ══ EXPLORE — leadership, sector backdrop, internals, full table ═════════════ */
@@ -510,6 +577,7 @@
     app.innerHTML = heroSection(payload, ds)
       + boardSection(payload, ds)
       + picksSection(payload, ds)
+      + historySection(ds)
       + leadershipSection(ds)
       + sectorStrip(payload, ds)
       + niSection
@@ -557,10 +625,14 @@
     var appEl = document.getElementById('sc-app');
     if (appEl) { appEl.addEventListener('click', onAppClick); appEl.addEventListener('input', onAppInput); }
     var keys = Object.keys(DS);
-    Promise.all(keys.map(function (k) {
+    var deskFetches = keys.map(function (k) {
       return fetch(DS[k].url, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    })).then(function (res) {
+    });
+    var historyFetch = fetch('marketdata/subsector_confluence_history.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all(deskFetches.concat([historyFetch])).then(function (res) {
       keys.forEach(function (k, i) { DATA[k] = res[i]; });
+      HISTORY = res[keys.length];
       var cnt = function (k) { var p = DATA[k]; return p ? (p[DS[k].groupsKey] || []).length : 0; };
       var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
       set('tabn-sub', cnt('subsectors')); set('tabn-bas', cnt('baskets'));

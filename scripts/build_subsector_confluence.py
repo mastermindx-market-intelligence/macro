@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +36,7 @@ sys.path.insert(0, str(_ROOT))
 
 from engine import bar_derive          # the display-grid anchor era + b3 boundaries (DG-R3/R6)  # noqa: E402
 from engine import subsector_confluence as sc  # noqa: E402
+from engine import subsector_confluence_history as sch  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -45,6 +47,7 @@ SIG_DIR = "subsector_signals"
 DETAIL_DIR = "subsector"
 BOARD_JSON = "marketdata/subsector_confluence.json"
 BASKET_JSON = "marketdata/basket_confluence.json"
+HISTORY_JSON = "marketdata/subsector_confluence_history.json"
 
 # China 同花顺 (THS) concept desk — namespaced so it never clobbers the US outputs.
 CN_OHLC_DIR = "subsectorohlc_china"
@@ -88,6 +91,30 @@ def _bars_from_candle(cand) -> list[list]:
 def _write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(_clean(obj), separators=(",", ":"), allow_nan=False))
+
+
+def _record_history(site: Path, *items: tuple[str, dict]) -> int:
+    """Accrue first-seen Confluence publications only on the canonical nightly lane.
+
+    Render-only / ad-hoc builds never append.  The browser projection is refreshed from
+    the immutable backend ledger after each nightly desk so a partial later desk failure
+    cannot erase history already recorded by an earlier successful desk.
+    """
+    if os.environ.get("COLLECT_LANE", "").strip().lower() != "nightly":
+        return 0
+    appended = 0
+    asofs: list[str] = []
+    for desk, payload in items:
+        if not payload or not payload.get("ok"):
+            continue
+        appended += sch.snapshot(payload, desk, today=payload.get("as_of"))
+        if payload.get("as_of"):
+            asofs.append(str(payload["as_of"]))
+    _write_json(
+        site / HISTORY_JSON,
+        sch.public_projection(today=max(asofs) if asofs else None),
+    )
+    return appended
 
 
 def _detail_key(g: dict) -> str:
@@ -179,6 +206,9 @@ def main() -> dict:
     subs, baskets = _build_payloads(site, generated)
     _write_json(site / BOARD_JSON, subs)
     _write_json(site / BASKET_JSON, baskets)
+    hist_n = _record_history(site, ("subsectors", subs), ("baskets", baskets))
+    if hist_n:
+        log.info("subsector_confluence history: appended %d first-seen rows", hist_n)
     # render the board + detail pages from the FRESH data (so the nightly desk-band run is
     # self-contained; build_site's render hook covers the render-only express lane separately)
     n = render_pages(site, _env(), generated)
@@ -386,6 +416,9 @@ def main_index(ns: str) -> dict:
         _emit_group_files(site, g, ohlc_dir=d["ohlc"], sig_dir=d["sig"])
     out["generated_utc"] = generated
     _write_json(site / d["board"], out)
+    hist_n = _record_history(site, (ns, out))
+    if hist_n:
+        log.info("subsector_confluence[%s] history: appended %d first-seen rows", ns.upper(), hist_n)
     n = render_index_pages(ns, site, _env(), generated)
     log.info("subsector_confluence[%s]: %d subsectors (%d entry-now), %d amalgamations, %d pages — as_of %s",
              ns.upper(), len(out.get("subsectors", [])), len(out.get("entry_now", [])),
