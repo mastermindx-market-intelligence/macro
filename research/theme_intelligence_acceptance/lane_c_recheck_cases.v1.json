@@ -1,0 +1,41 @@
+{
+  "schema": "theme_intelligence.lane_c_acceptance_cases.v1",
+  "operation_key": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "candidate_operation_key": "theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001",
+  "candidate_head": "d6495be43dfabe67ef6cc2a3627c3923d510583e",
+  "candidate_tree": "6e90955346c2c4dc47b562f3566ac767547d49c2",
+  "candidate_base": "ca7533a67670e0393728fda4b1633b56720aa1e0",
+  "implementation_commit": "d1727e80a8bead258a545ceb6d938286baf64d31",
+  "expected_positive_checks": [
+    "AGENTOS_VALIDATION",
+    "AUTHORITY_INVARIANCE",
+    "PARENT_SUBTHEME_SEPARATION",
+    "PY_COMPILE",
+    "SECTOR_PAGE_REGRESSION_SUITE",
+    "SUBSECTOR_REGRESSION_SUITE",
+    "THEMATIC_STATE_REGRESSION_SUITE",
+    "TRIAL_REGISTRATION"
+  ],
+  "expected_blockers": [
+    "DIFF_CHECK_FAILURE",
+    "NEW_TEST_SUITES_UNWIRED",
+    "PRODUCER_FAILURE_REASON_NOT_PROPAGATED_TO_HEALTH",
+    "REAL_PRICE_PROOF_NOT_REPRODUCIBLE_FROM_CARRIER",
+    "STALE_LEADERSHIP_OBSERVATION_NOT_PROPAGATED",
+    "STALE_MEMBER_RECLAIM_EVIDENCE_NOT_EXCLUDED",
+    "UNAVAILABLE_PRODUCER_RECEIPT_LOST_AT_SHARED_CONSUMER"
+  ],
+  "expected_dark_test_paths": [
+    "tests/test_build_subsector_closed_session_leadership.py",
+    "tests/test_subsector_closed_session_leadership.py",
+    "tests/test_thematic_state_leadership_receipt.py"
+  ],
+  "price_manifest_sha256": "7fbd80bc049fdaa934c5d86e3047d1a2b9d9f21f8af68e680280937445b2025c",
+  "authority_expected": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_escalate": false,
+    "may_trade": false
+  }
+}
