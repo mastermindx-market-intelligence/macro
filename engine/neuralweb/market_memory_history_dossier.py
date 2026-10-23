@@ -42,7 +42,7 @@ def build_daily_dossier(archive: Path, market_date: str, *, expected_manifest_sh
 
 
 def compose_daily_dossier(market: dict, macro: dict | None=None, filings: dict | None=None,
-                          transcripts: dict | None=None) -> dict:
+                          transcripts: dict | None=None, payems: dict | None=None) -> dict:
     """Shared projection of already-verified market/macro packets; no source I/O."""
     if (type(market) is not dict or market.get('mode')!='RETROSPECTIVE_EXPLORATORY'
             or market.get('pit_backtest_eligible') is not False):
@@ -92,6 +92,17 @@ def compose_daily_dossier(market: dict, macro: dict | None=None, filings: dict |
                     'publication_time_verified','historical_security_identity_proven',
                     'calendar_completeness_proven'))):
             raise HistoricalExperienceError('verified transcript date and qualification required')
+    if payems is not None:
+        from engine.neuralweb.market_memory_history_payems_vintage import SCHEMA as PAYEMS_SCHEMA
+        if (type(payems) is not dict or payems.get('schema') != PAYEMS_SCHEMA
+                or payems.get('calendar_date') != market_date
+                or payems.get('mode') != 'RETROSPECTIVE_EXPLORATORY'
+                or payems.get('source_sha256_verified_by_projection') is not True
+                or any(payems.get(k) is not False for k in (
+                    'point_in_time_trading_eligible', 'intraday_publication_time_verified',
+                    'source_units_independently_verified', 'full_historical_macro_universe',
+                    'source_current_to_selected_date_proven'))):
+            raise HistoricalExperienceError('verified date-scoped PAYEMS revision packet required')
     result = {'schema':SCHEMA,'market_date':market_date,'mode':market['mode'],
         'retrospective_only':True,'outcomes_revealed':'outcomes' in market,
         'market':market,'macro':macro,'summary':summary,
@@ -113,4 +124,7 @@ def compose_daily_dossier(market: dict, macro: dict | None=None, filings: dict |
     if transcripts is not None:
         result['transcripts'] = transcripts
         result['coverage']['earnings_call_records'] = 'RETAINED_REPORTED_DATE_METADATA_ONLY'
+    if payems is not None:
+        result['payems_vintage'] = payems
+        result['coverage']['payems_recorded_vintages'] = 'SELECTED_RECORDED_DATE_ONLY_NOT_INTRADAY'
     return result
