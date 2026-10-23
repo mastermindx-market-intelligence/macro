@@ -196,7 +196,8 @@ def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_
     monkeypatch.setattr(PACK,'_prepare_provided_actions',lambda *a,**k:None)
     monkeypatch.setattr(PACK,'_browser_dependency_diagnostic_commands',lambda:())
     monkeypatch.setattr(PACK,'_stream_command',lambda *a,**k:pytest.fail('no semantic assertion after dependency failure'))
-    job=PACK.LegacyJob('native-owner',{'if':PACK.DISABLED_IF,'runs-on':'ubuntu-latest','timeout-minutes':10,'steps':[
+    # Exercise the admitted owner; other job IDs must fail before execution.
+    job=PACK.LegacyJob('ontology-explorer',{'if':PACK.DISABLED_IF,'runs-on':'ubuntu-latest','timeout-minutes':10,'steps':[
         {'name':'browser','phase':'browser_setup','acquisition':'native_parallel','timeout-minutes':10,'run':'python -m playwright install --with-deps chromium'},
         {'name':'assertion','run':'must not execute'}]},0,1)
     result=PACK._run_job(job,base_ref='main',head_ref='',command_env={})
