@@ -1146,7 +1146,7 @@ def test_minimax_default_path_uses_the_anthropic_sdk_at_the_mode_base_url(receip
     assert receipt.ok is True
     assert receipt.text == "mm answer"
     assert (receipt.input_tokens, receipt.output_tokens) == (3, 4)
-    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic"}
+    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic", "max_retries": 0}
     assert captured["create"]["model"] == "MiniMax-M3"
     assert captured["create"]["max_tokens"] == 9
     assert captured["create"]["system"] == "SYS"
@@ -1478,3 +1478,146 @@ def test_legacy_helper_still_resolves_api_key_env_from_the_environment(monkeypat
 def test_the_merge_gate_step_still_names_this_suite():
     ci = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     assert "tests/test_provider_production_modes.py" in ci
+
+def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts, monkeypatch):
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: 0.00001)
+    transport = FakeTransport({
+        "content": [{"type": "text", "text": ppm.CANARY_EXPECTED_TEXT}],
+        "usage": {"input_tokens": 3, "output_tokens": 2},
+    })
+    result = ppm.run_minimax_canary(
+        armed_mode=ppm.CANARY_MODE_ID,
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+        source_path=CONFIG_PATH,
+    )
+    assert result["accepted"] is True
+    assert result["request_count_ceiling"] == 1
+    assert result["source_mode_enabled"] is False
+    assert result["production_activation"] is False
+    assert result["qualification_effect"] is False
+    assert result["effect_state"] == "EFFECT_CONFIRMED"
+    assert result["automatic_retry_allowed"] is False
+    assert result["same_operation_replay_allowed"] is False
+    assert result["activation_eligible"] is True
+    assert result["price_state"] == "known"
+    assert result["telemetry_lane"] == ppm.CANARY_LANE
+    assert result["fallback"] == "none"
+    assert len(transport.calls) == 1
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
+    assert transport.calls[0]["max_tokens"] == ppm.CANARY_MAX_TOKENS
+    assert json.loads(CONFIG_PATH.read_text(encoding="utf-8"))["modes"]["minimax_payg_api"]["enabled"] is False
+    assert SECRET_VALUE not in json.dumps(result, sort_keys=True)
+    assert "text" not in result
+
+
+def test_minimax_shadow_canary_refuses_before_provider_io_without_price_truth(
+    receipts, monkeypatch
+):
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: None)
+    transport = FakeTransport("must not run")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="CANARY_PRICING_UNAVAILABLE"):
+        ppm.run_minimax_canary(
+            armed_mode=ppm.CANARY_MODE_ID,
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=transport,
+            source_path=CONFIG_PATH,
+        )
+    assert transport.calls == []
+    assert receipts["health"] == []
+    assert receipts["usage"] == []
+
+
+
+def test_minimax_shadow_canary_timeout_is_effect_unknown_and_never_replayable(
+    receipts, monkeypatch
+):
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: 0.00001)
+    transport = FakeTransport(exc=TimeoutError("synthetic lost response"))
+    result = ppm.run_minimax_canary(
+        armed_mode=ppm.CANARY_MODE_ID,
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+        source_path=CONFIG_PATH,
+    )
+    assert result["accepted"] is False
+    assert result["activation_eligible"] is False
+    assert result["effect_state"] == "EFFECT_UNKNOWN"
+    assert result["automatic_retry_allowed"] is False
+    assert result["same_operation_replay_allowed"] is False
+    assert len(transport.calls) == 1
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+
+
+def test_minimax_shadow_canary_refuses_without_arm_and_if_source_is_enabled(tmp_path):
+    transport = FakeTransport("must not run")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="CANARY_NOT_ARMED"):
+        ppm.run_minimax_canary(armed_mode=None, env={"MINIMAX_API_KEY": SECRET_VALUE}, transport=transport)
+    assert transport.calls == []
+    raw = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    raw["modes"]["minimax_payg_api"]["enabled"] = True
+    enabled = tmp_path / "enabled.json"
+    enabled.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(ppm.ProductionCanaryRefusal, match="SHADOW_OFF"):
+        ppm.run_minimax_canary(
+            armed_mode=ppm.CANARY_MODE_ID,
+            env={"MINIMAX_API_KEY": SECRET_VALUE},
+            transport=transport,
+            source_path=enabled,
+        )
+    assert transport.calls == []
+
+
+def test_production_api_keys_use_existing_macro_api_secret_owner_only():
+    import yaml
+
+    workflow_text = (
+        ROOT / ".github" / "workflows" / "deploy-api-secrets.yml"
+    ).read_text(encoding="utf-8")
+    workflow = yaml.safe_load(workflow_text)
+    steps = workflow["jobs"]["deploy"]["steps"]
+
+    # Preserve the incumbent two-step credential owner: macro-api then admin.
+    assert len(steps) == 2
+    api_step, admin_step = steps
+    api_env = api_step["env"]
+    api_run = api_step["run"]
+
+    dispatch = workflow[True]["workflow_dispatch"]["inputs"]
+    assert dispatch["scope"]["default"] == "developer"
+    assert dispatch["scope"]["options"] == ["developer", "production", "all"]
+    assert dispatch["run_minimax_canary"]["default"] is False
+
+    # Production-only runs do not expose developer OAuth values to the first
+    # process and never execute the admin/OAuth step.
+    assert "inputs.scope != 'production'" in str(api_env["T1"])
+    assert "inputs.scope != 'production'" in str(api_env["METAB_KEYS_ENABLED"])
+    assert "inputs.scope != 'developer'" in str(api_env["MINIMAX_KEY"])
+    assert "inputs.scope != 'developer'" in str(api_env["ZAI_KEY"])
+    assert "inputs.scope != 'production'" in str(admin_step["if"])
+
+    # The one macro-api step selects what it strips/appends. Production scope
+    # therefore preserves every developer line while reconciling only PAYG keys.
+    assert 'if [ "$DEPLOY_SCOPE" != "production" ]; then' in api_run
+    assert '_add CLAUDE_CODE_OAUTH_TOKEN_1 "$T1"' in api_run
+    assert 'if [ "$DEPLOY_SCOPE" != "developer" ]; then' in api_run
+    assert '_add MINIMAX_API_KEY "$MINIMAX_KEY"' in api_run
+    assert '_add ZAI_API_KEY "$ZAI_KEY"' in api_run
+    assert 'grep -vE "^(MINIMAX_API_KEY|ZAI_API_KEY)="' in api_run
+
+    # Canary remains explicit and uses the deployed code path while mutable
+    # telemetry stays outside /opt/macro.
+    assert "RUN_MINIMAX_CANARY" in api_env
+    assert "MM_PROVIDER_CANARY_MODE=minimax_payg_api" in api_run
+    assert "AI_COSTS_STATE_ROOT=/var/lib/macro-api" in api_run
+    assert (
+        "/opt/macro/.venv/bin/python -m engine.provider_production_modes "
+        "--canary --execute"
+    ) in api_run
+
+    # Production keys never reach macro-admin.
+    assert "MINIMAX_API_KEY" not in str(admin_step.get("env", {}))
+    assert "ZAI_API_KEY" not in str(admin_step.get("env", {}))
+    assert "MINIMAX_API_KEY" not in admin_step["run"]
+    assert "ZAI_API_KEY" not in admin_step["run"]
