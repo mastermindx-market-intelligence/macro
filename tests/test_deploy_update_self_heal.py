@@ -27,7 +27,7 @@ SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
 MOVERS_GUARD_BEGIN = "# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_GUARD_END = "# END MOVERS_SEO_REDIRECT_CADDY_GUARD"
 MOVERS_MATCHER_NAME = "@movers_seo_redirect"
-CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then'
+CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then'
 CADDY_VALIDATE_LINE = 'caddy validate --config "$APP_DIR/app/deploy/Caddyfile"'
 CADDY_INSTALL_LINE = 'install -m 0644 "$APP_DIR/app/deploy/Caddyfile"'
 
@@ -148,6 +148,8 @@ def _run_caddy_block(
     generated_body: str | None,
     served_body: str | None,
     symlink_page: str | None = None,
+    autosave_mode: bool = False,
+    fresh_updater: bool = True,
 ):
     app = tmp_path / "opt" / "macro"
     for relative in ("app/deploy", "templates", "site", "site.served"):
@@ -177,6 +179,23 @@ def _run_caddy_block(
         .replace("__BLOCK__", block.replace("/etc/caddy/Caddyfile", str(etc_caddy)))
     )
     harness_path = tmp_path / "caddy_block_harness.sh"
+    if autosave_mode:
+        harness = harness.replace(
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; }',
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; '
+            'printf "%s\\n" "/usr/bin/caddy reload --config /var/lib/caddy/.config/caddy/autosave.json --force"; }',
+        )
+        # The shell boundary runs verbatim; only native side effects and its
+        # predecessor FD are controlled fixture capabilities.
+        harness = 'CADDY_RECONCILE_ARGS=()\n' + harness
+        harness = harness.replace(
+            'command cmp $flag "$left" "$right"',
+            'case "$left" in /proc/*/fd/255) return '
+            + ('0' if fresh_updater else '1') + ' ;; esac\n'
+            '\tcommand cmp $flag "$left" "$right"',
+        )
+        harness = harness.replace('caddy() {',
+            'python3() { printf \'API_PUBLICATION %s\\n\' "$*" >> "$FAKE_LOG"; }\ncaddy() {', 1)
     harness_path.write_text(harness, encoding="utf-8")
     completed = subprocess.run(
         ["bash", str(harness_path)],
@@ -186,6 +205,27 @@ def _run_caddy_block(
         check=False,
     )
     return completed, app, etc_caddy, log
+
+
+@pytest.mark.parametrize("fresh_updater", [True, False])
+def test_autosave_caddy_uses_publication_only_from_fresh_updater(tmp_path, fresh_updater):
+    completed, _, etc_caddy, log = _run_caddy_block(
+        tmp_path, _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY,
+        generated_body=COHERENT_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+        autosave_mode=True, fresh_updater=fresh_updater,
+    )
+    actions = _action_lines(log)
+    assert completed.returncode == (0 if fresh_updater else 1), completed.stderr
+    assert sum(line.startswith("API_PUBLICATION ") for line in actions) == int(fresh_updater)
+    assert not any(line.startswith(("caddy ", "install ", "systemctl reload", "systemctl restart"))
+                   for line in actions)
+    assert etc_caddy.read_text() == INSTALLED_BASELINE_CADDY
+    if not fresh_updater:
+        assert "predecessor updater inode" in completed.stderr
 
 
 def _action_lines(log: Path) -> list[str]:
@@ -262,6 +302,7 @@ def test_movers_caddy_guard_admits_matching_nonempty_triple_and_keeps_ordering(t
     assert completed.returncode == 0, completed.stderr
     candidate_path = f"{app}/app/deploy/Caddyfile"
     assert _action_lines(log) == [
+        "systemctl show caddy -p ExecReload --value",
         f"caddy validate --config {candidate_path} --adapter caddyfile",
         f"install {etc_caddy}",
         "systemctl reload caddy",
@@ -300,6 +341,7 @@ def test_movers_caddy_guard_is_inert_without_the_named_matcher(tmp_path):
         assert completed.returncode == 0, completed.stderr
         candidate_path = f"{app}/app/deploy/Caddyfile"
         assert _action_lines(log) == [
+            "systemctl show caddy -p ExecReload --value",
             f"caddy validate --config {candidate_path} --adapter caddyfile",
             f"install {etc_caddy}",
             "systemctl reload caddy",
@@ -751,7 +793,23 @@ def _matches(regex: str, path: str) -> bool:
 
 
 def _triggers_restart(path: str) -> bool:
-    return _matches(_api_restart_regex(), path)
+    """Exercise the complete production trigger, including separate conditions."""
+    trigger = SCRIPT.split("# BEGIN MACRO_API_RESTART_TRIGGER\n", 1)[1].split(
+        "# END MACRO_API_RESTART_TRIGGER", 1
+    )[0]
+    probe = (
+        "set -eu\n"
+        "API_RESTART_NEEDED=0\nAPI_UNIT_UPDATED=0\nAPI_DEPS_UPDATED=0\n"
+        "CHANGED=$1\nmm_api_fence_marker_ready() { return 0; }\n"
+        + trigger
+        + '\nprintf "%s" "$API_RESTART_NEEDED"\n'
+    )
+    result = subprocess.run(
+        ["bash", "-c", probe, "restart-contract", path],
+        text=True, capture_output=True, check=True,
+    )
+    assert result.stdout in {"0", "1"}, result.stdout
+    return result.stdout == "1"
 
 
 def _triggers_admin_restart(path: str) -> bool:
@@ -764,6 +822,44 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Native supplier conditional research imports and cached K3 validators.
+    'app/company_supplier_research.py',
+    'engine/company_intelligence/h20_reported_event.py',
+    'engine/earnings_release/__init__.py',
+    'engine/earnings_release/receipts.py',
+    'engine/theme_graph/native_disclosure_propagation.py',
+    'lib/economic_propagation.py',
+    'lib/economic_propagation_v2.py',
+    'contracts/economic_propagation/propagation_hypothesis.v1.schema.json',
+    'contracts/economic_propagation/propagation_hypothesis.v2.schema.json',
+    'contracts/economic_propagation/generator_registry.v1.json',
+    # F04 captured/native research and published Radar validation: request-time
+    # imports also stay cached. The three JSON resources have lru-cached readers.
+    'engine/entry_radar/c5_adapter.py',
+    'engine/entry_radar/challengers.py',
+    'engine/entry_radar/detectors.py',
+    'engine/entry_radar/earnings_context.py',
+    'engine/entry_radar/entry_events.py',
+    'engine/entry_radar/four_hour.py',
+    'engine/entry_radar/g0_adapter.py',
+    'engine/entry_radar/indicator_core.py',
+    'engine/entry_radar/indicator_ingest.py',
+    'engine/entry_radar/live_ledger.py',
+    'engine/entry_radar/live_pack.py',
+    'engine/entry_radar/quote_context.py',
+    'engine/entry_radar/readings.py',
+    'engine/entry_radar/replay/identity_observation_snapshot.py',
+    'engine/entry_radar/research_read.py',
+    'lib/quote_native_metadata.py',
+    'engine/price_pressure/__init__.py',
+    'engine/price_pressure/research.py',
+    'lib/evidence_foundation.py',
+    'lib/opportunity_case.py',
+    'lib/opportunity_evidence.py',
+    'contracts/opportunity_evidence/vector.v1.schema.json',
+    'contracts/opportunity_evidence/slot_registry.v1.json',
+    'contracts/evidence_foundation/reference.v1.schema.json',
+
     # Today contract validator caches the source schema across requests.
     "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
     # app/ routers (all import-cached by uvicorn)
@@ -939,6 +1035,18 @@ MUST_RESTART = [
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.
 MUST_NOT_RESTART = [
+    # Research readers do not import nightly/writer siblings; exact lookalikes
+    # and uncached vocabulary changes must not widen the serving-plane trigger.
+    'engine/price_pressure/pipeline.py',
+    'engine/price_pressure/artifact.py',
+    'engine/entry_radar/live_eval.py',
+    'engine/entry_radar/earnings_contexts.py',
+    'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
+    'scripts/entry_radar_live.py',
+    'contracts/opportunity_evidence/vector.v1.schema.json.bak',
+    'contracts/opportunity_evidence/slot_registry.v1.json.bak',
+    'contracts/evidence_foundation/vocabulary.v1.json',
+
     "site/macrodata/workspaces/manifest.json",
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
@@ -1360,6 +1468,24 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
         "Add them (or, if a path is genuinely content read per request, document "
         "the exemption in the comment above the regex)."
     )
+
+
+def test_radar_research_request_import_closure_is_covered_by_restart_regex():
+    """The reader's function imports execute in-process on actual requests."""
+    queue = deque(_all_imports(ROOT / "engine/entry_radar/research_read.py"))
+    seen, uncovered = set(), set()
+    while queue:
+        dotted = queue.popleft()
+        if dotted in seen:
+            continue
+        seen.add(dotted)
+        queue.extend(_ancestor_packages(dotted))
+        for path in _module_files(dotted):
+            rel = str(path.relative_to(ROOT))
+            if not _triggers_restart(rel) and not _is_inert_package_init(path):
+                uncovered.add(rel)
+            queue.extend(_module_level_imports(path))
+    assert not uncovered, sorted(uncovered)
 
 
 def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():

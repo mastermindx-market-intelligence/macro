@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-22T11:38:31.173926+00:00",
+  "generated_utc": "2026-10-23T12:37:43.123792+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -1352,12 +1352,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.1,
+      "alt_score": 4,
+      "alt_weighted": 1.25,
       "alt_channels": [
         "affiliation",
         "app_demand",
-        "special_situation"
+        "special_situation",
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "VOYA INVESTMENT MANAGEMENT LLC",
@@ -1676,6 +1677,14 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-10-22",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926033275/djt20261022_425.htm"
+    },
+    {
       "date": "2026-10-19",
       "form": "8-K",
       "company": "Curanex Pharmaceuticals Inc",
@@ -1717,11 +1726,11 @@
     },
     {
       "date": "2026-09-30",
-      "form": "425",
+      "form": "S-4",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/djt20260930_425.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
     },
     {
       "date": "2026-09-30",
@@ -1757,19 +1766,11 @@
     },
     {
       "date": "2026-09-30",
-      "form": "S-4",
+      "form": "8-K",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
+      "items": "1.01,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
     }
   ]
 }
