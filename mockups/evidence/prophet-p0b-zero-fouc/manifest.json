@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "c57aee8f2acfa965b9b3f51a3532facb98106ee9e46a1f956150f12a6161d40f",
+        "sha256": "2fcb68eaeb826826c4f42bafa97b5690400e16b8913f863d93465f58ff896a64",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "82bbcdc2187764d7f4bbd265896727f5aef2a7cfbfedef610117b252765787e5",
+        "sha256": "07020e9c60b88a991519dd64054fcf74ab2f35490c15c9af8ebcd70b75cf0110",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
