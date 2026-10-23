@@ -1,0 +1,6 @@
+sssssss                                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [5] tests/test_us_board_gate.py:468: us_stocks not yet rebaked in the gated shape (render.yml emits site/premiumdata/us_stocks.json)
+SKIPPED [1] tests/test_us_board_hydration_merge.py:273: us_stocks not yet rebaked in the gated shape
+SKIPPED [1] tests/test_us_board_hydration_merge.py:292: us_stocks not yet rebaked in the gated shape
+7 skipped, 50 deselected in 14.29s

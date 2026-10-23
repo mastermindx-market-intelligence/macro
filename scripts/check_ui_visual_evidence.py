@@ -1,10 +1,12 @@
 """scripts/check_ui_visual_evidence.py — TP-0 Task 3: theme-parity evidence gate.
 
-A material user-facing UI change (new lines in `templates/*.css`, a new inline
-`<style` in a template, or a new runtime-style-injection signature in a
-user-facing JS file under `templates/` or `site/`) must carry committed
-dark/light visual evidence in both languages, desktop and mobile, so a human or
-Opus reviewer can judge the design — not merely confirm the page opens.
+A material user-facing UI change (new lines in `templates/*.css`, changed CSS
+inside an existing template `<style>` block, a new inline `<style>`, or a new
+runtime-style-injection signature in a user-facing JS file under `templates/`
+or `site/`) must carry committed dark/light visual evidence in both languages,
+desktop and mobile, so a human or Opus reviewer can judge the design — not merely
+confirm the page opens. Added `:hover` or `:focus*` interaction selectors also
+require real browser interaction captures in both themes.
 
 THIS SCRIPT DOES NOT JUDGE TASTE. It checks two mechanical things only:
 
@@ -117,6 +119,16 @@ _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 #   2. an added inline <style in a template
 #   3. an added runtime-style-injection signature in a user-facing .js file
 STYLE_TAG_RE = re.compile(r"<style(?:\s|>)", re.IGNORECASE)
+STYLE_BLOCK_RE = re.compile(r"<style\b[^>]*>(.*?)</style>", re.DOTALL | re.IGNORECASE)
+TEMPLATE_STYLE_SUFFIXES: tuple[str, ...] = (".j2", ".html", ".htm")
+INTERACTION_SELECTOR_PATTERNS: dict[str, re.Pattern[str]] = {
+    "hover": re.compile(r":hover\b"),
+    "focus": re.compile(r":focus(?:-visible|-within)?\b"),
+}
+CSS_RULE_RE = re.compile(r"([^{}]+)\{([^{}]*)\}", re.DOTALL)
+CSS_SELECTOR_TOKEN_RE = re.compile(r"([.#][A-Za-z_][A-Za-z0-9_-]*)")
+CUSTOM_PROP_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:")
+CUSTOM_PROP_USE_RE = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)")
 # Duplicates scripts/check_runtime_style_injection.py's own PATTERNS (own copy
 # — this module owns no other file's constants, matching its self-contained
 # convention). tests/test_check_ui_visual_evidence.py pins the two in
@@ -249,8 +261,16 @@ def parse_added_lines(diff_text: str) -> dict[str, list[str]]:
     return out
 
 
-def material_paths(added_lines: dict[str, list[str]]) -> set[str]:
-    """Which touched paths carry a mechanically material UI change."""
+def material_paths(
+    added_lines: dict[str, list[str]], repo_root: Path | None = None
+) -> set[str]:
+    """Which touched paths carry a mechanically material UI change.
+
+    `repo_root` lets the guard recognize an added declaration inside an EXISTING
+    inline <style> block. The old diff-only rule saw only a newly-added <style>
+    tag, so editing a live template rule such as Forex's .tip-pop could bypass
+    evidence entirely.
+    """
 
     material: set[str] = set()
     for path, lines in added_lines.items():
@@ -258,7 +278,7 @@ def material_paths(added_lines: dict[str, list[str]]) -> set[str]:
             continue
         if _is_material_css(path, lines):
             material.add(path)
-        elif _is_material_inline_style(path, lines):
+        elif _is_material_inline_style(path, lines, repo_root):
             material.add(path)
         elif _is_material_runtime_js(path, lines):
             material.add(path)
@@ -343,10 +363,162 @@ def _is_material_css(path: str, lines: list[str]) -> bool:
     return _css_added_lines_have_substance(lines)
 
 
-def _is_material_inline_style(path: str, lines: list[str]) -> bool:
+def _candidate_css_text(path: str, repo_root: Path | None) -> str:
+    """CSS governed by one candidate path, without inventing an HTML parser."""
+
+    if repo_root is None or not path.startswith("templates/"):
+        return ""
+    candidate = repo_root / path
+    try:
+        source = candidate.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    if path.endswith(".css"):
+        return source
+    if path.endswith(TEMPLATE_STYLE_SUFFIXES):
+        return "\n".join(STYLE_BLOCK_RE.findall(source))
+    return ""
+
+
+def _template_inline_style_added_lines(
+    path: str, lines: list[str], repo_root: Path | None
+) -> list[str]:
+    """Return added lines that now live inside a template's inline <style>.
+
+    Unified diffs do not carry enough context to know whether a changed CSS
+    declaration sits inside a <style> opened hundreds of lines earlier. Reading
+    the candidate file is deterministic and avoids treating arbitrary Jinja/HTML
+    additions as CSS. Exact stripped-line membership is intentionally narrow.
+    """
+
+    if not path.startswith("templates/") or not path.endswith(TEMPLATE_STYLE_SUFFIXES):
+        return []
+    css = _candidate_css_text(path, repo_root)
+    if not css:
+        return []
+    style_lines = {line.strip() for line in css.splitlines() if line.strip()}
+    return [line for line in lines if line.strip() and line.strip() in style_lines]
+
+
+def _is_material_inline_style(
+    path: str, lines: list[str], repo_root: Path | None = None
+) -> bool:
     if not path.startswith("templates/"):
         return False
-    return any(STYLE_TAG_RE.search(line) for line in lines)
+    if any(STYLE_TAG_RE.search(line) for line in lines):
+        return True
+    inside = _template_inline_style_added_lines(path, lines, repo_root)
+    return _css_added_lines_have_substance(inside)
+
+
+def _interaction_kinds_in_css_lines(lines: list[str]) -> set[str]:
+    """Interaction pseudo-selectors in live CSS text, ignoring block comments."""
+
+    in_comment = False
+    live_parts: list[str] = []
+    for raw_line in lines:
+        text = raw_line
+        pos = 0
+        while pos < len(text):
+            if in_comment:
+                end = text.find("*/", pos)
+                if end == -1:
+                    pos = len(text)
+                else:
+                    in_comment = False
+                    pos = end + 2
+                continue
+            start = text.find("/*", pos)
+            if start == -1:
+                live_parts.append(text[pos:])
+                pos = len(text)
+            else:
+                live_parts.append(text[pos:start])
+                end = text.find("*/", start + 2)
+                if end == -1:
+                    in_comment = True
+                    pos = len(text)
+                else:
+                    pos = end + 2
+    live = "\n".join(live_parts)
+    return {kind for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items() if pattern.search(live)}
+
+
+def _interaction_dependency_kinds(
+    path: str, changed_css_lines: list[str], repo_root: Path
+) -> set[str]:
+    """Interaction states transitively affected by a changed rule or token.
+
+    The Forex incident was not a direct edit to its :hover selector. A theme
+    token changed, the hidden .tip-pop surface consumed that token, and a
+    separate :hover rule merely revealed the surface. Looking only for
+    ":hover" on the ADDED line would therefore repeat the same blind spot.
+
+    This bounded closure follows only two CSS relationships inside the same
+    governed file:
+      changed selector token -> interactive selector target
+      changed custom-property definition -> var() used by that target's rules
+    It is evidence routing, not a CSS cascade engine or a taste judgement.
+    """
+
+    css = _candidate_css_text(path, repo_root)
+    if not css or not changed_css_lines:
+        return set()
+
+    live_css = re.sub(r"/\*.*?\*/", " ", css, flags=re.DOTALL)
+    rules = CSS_RULE_RE.findall(live_css)
+    changed = "\n".join(changed_css_lines)
+    changed_selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(changed))
+    changed_defs = set(CUSTOM_PROP_DEF_RE.findall(changed))
+    affected: set[str] = set()
+
+    for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items():
+        targets: set[str] = set()
+        relevant_vars: set[str] = set()
+
+        for selector, body in rules:
+            if pattern.search(selector):
+                targets.update(CSS_SELECTOR_TOKEN_RE.findall(selector))
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if not targets:
+            continue
+
+        # Base-state rules for an element often own the material/token values,
+        # while a separate :hover/:focus rule only changes opacity/display.
+        for selector, body in rules:
+            selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(selector))
+            if selector_tokens & targets:
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if changed_selector_tokens & targets or changed_defs & relevant_vars:
+            affected.add(kind)
+
+    return affected
+
+
+def interaction_requirements(
+    added_lines: dict[str, list[str]], repo_root: Path
+) -> dict[str, set[str]]:
+    """Map material paths to real interaction states their CSS changes."""
+
+    out: dict[str, set[str]] = {}
+    for path, lines in added_lines.items():
+        relevant: list[str] = []
+        if _is_material_css(path, lines):
+            relevant = lines
+        elif _is_material_inline_style(path, lines, repo_root):
+            relevant = _template_inline_style_added_lines(path, lines, repo_root)
+            # A newly-added one-line <style> can contain the selector inside the
+            # tag itself rather than as a body line.
+            if any(STYLE_TAG_RE.search(line) for line in lines):
+                relevant = [*relevant, *lines]
+
+        kinds = _interaction_kinds_in_css_lines(relevant)
+        kinds.update(_interaction_dependency_kinds(path, relevant, repo_root))
+        if kinds:
+            out[path] = kinds
+    return out
 
 
 def _is_material_runtime_js(path: str, lines: list[str]) -> bool:
@@ -841,6 +1013,92 @@ def _validate_one_cell(receipt_path: Path, manifest_path: Path, manifest_rel: st
     return findings
 
 
+def validate_interaction_evidence(
+    record: ReceiptRecord, repo_root: Path, required_kinds: set[str]
+) -> list[str]:
+    """Require real hover/focus screenshots when the diff changes those states.
+
+    REST screenshots cannot reveal an overlay or focus treatment that only
+    exists after interaction. For each changed interaction kind, one owning
+    manifest must declare a canonical force-state of that kind and prove it
+    actually applied on desktop/en in BOTH dark and light.
+    """
+
+    if not required_kinds:
+        return []
+    assert record.data is not None
+    manifest_rel = record.data.get("manifest")
+    if not isinstance(manifest_rel, str):
+        return [f"{record.path}: interaction evidence has no usable manifest path"]
+    manifest_path = (repo_root / manifest_rel).resolve()
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{record.path}: interaction evidence manifest could not be read: {exc}"]
+    if not isinstance(manifest, dict):
+        return [f"{record.path}: interaction evidence manifest must be an object"]
+
+    axes = manifest.get("axes")
+    force_defs = axes.get("force_states") if isinstance(axes, dict) else None
+    if not isinstance(force_defs, list):
+        force_defs = []
+
+    names_by_kind: dict[str, set[str]] = {}
+    for item in force_defs:
+        if not isinstance(item, dict):
+            continue
+        kind = item.get("kind")
+        name = item.get("name")
+        if isinstance(kind, str) and isinstance(name, str) and name:
+            names_by_kind.setdefault(kind, set()).add(name)
+
+    pages = manifest.get("pages")
+    if not isinstance(pages, list):
+        pages = []
+
+    findings: list[str] = []
+    for kind in sorted(required_kinds):
+        names = names_by_kind.get(kind, set())
+        if not names:
+            syntax = "hover(.selector)" if kind == "hover" else "focus(.selector)"
+            findings.append(
+                f"{record.path}: material {kind} CSS changed, but manifest '{manifest_rel}' "
+                f"declares no --force-state NAME:{syntax}; REST screenshots cannot prove "
+                f"the {kind} presentation"
+            )
+            continue
+
+        themes_seen: set[str] = set()
+        for page in pages:
+            if not isinstance(page, dict):
+                continue
+            states = page.get("states")
+            if not isinstance(states, list):
+                continue
+            for state in states:
+                if not isinstance(state, dict):
+                    continue
+                name = state.get("force_state")
+                if name not in names:
+                    continue
+                if state.get("captured") is not True or state.get("applied_force_state") != name:
+                    continue
+                if state.get("viewport") != "desktop" or state.get("locale") != "en":
+                    continue
+                theme = state.get("theme")
+                if theme in REQUIRED_THEMES:
+                    themes_seen.add(theme)
+
+        missing = set(REQUIRED_THEMES) - themes_seen
+        if missing:
+            findings.append(
+                f"{record.path}: manifest '{manifest_rel}' does not prove applied {kind} "
+                f"interaction evidence on desktop/en for theme(s) {sorted(missing)}; "
+                "capture the real interaction in both dark and light"
+            )
+    return findings
+
+
 # ---------------------------------------------------------------------------
 # top-level evaluation
 # ---------------------------------------------------------------------------
@@ -850,9 +1108,10 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
     """Return the (deduped, order-preserving) list of red findings. Empty = pass."""
 
     added = parse_added_lines(diff_text)
-    material = material_paths(added)
+    material = material_paths(added, repo_root)
     if not material:
         return []
+    interactions = interaction_requirements(added, repo_root)
 
     # R9: refuse rather than false-red when this checkout cannot see
     # mockups/ at all (a sparse worktree). Scoped to the material-change
@@ -873,12 +1132,25 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
                 f"owning it in changed_paths (searched {', '.join(RECEIPT_DIRS)})"
             )
             continue
+
+        required_interactions = interactions.get(changed_path, set())
+        interaction_attempts: list[list[str]] = []
         for record in owners:
             shape_errors = validate_receipt_shape(record)
             if shape_errors:
                 findings.extend(shape_errors)
                 continue
             findings.extend(validate_manifest_evidence(record, repo_root))
+            if required_interactions:
+                interaction_attempts.append(
+                    validate_interaction_evidence(record, repo_root, required_interactions)
+                )
+
+        # A path may have multiple historical receipts. One valid owning manifest
+        # with the required interaction proof is sufficient; stale parallel
+        # receipts must not manufacture a false red merely by also naming the path.
+        if required_interactions and interaction_attempts and all(interaction_attempts):
+            findings.extend(interaction_attempts[0])
 
     seen: set[str] = set()
     deduped: list[str] = []

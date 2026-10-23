@@ -1,0 +1,93 @@
+{
+ "data_root": "/Users/chriswong/Documents/Cluade/macro-main/data",
+ "files_scanned": 64714,
+ "flow_ledger": {
+  "eligible": false,
+  "ineligible_reason": "print-level aggregate NBBO medians per flow event; no per-contract tick quote path, no entry/exit-window quotes, no OA-3 expression receipt",
+  "latest_session_date": "2026-09-25",
+  "microstructure_schemas": [
+   "options.trade_nbbo_microstructure/v1"
+  ],
+  "path": "flow_signals/ledger.parquet",
+  "rows": 92574,
+  "rows_with_nbbo_size_medians": 16052,
+  "sessions_with_nbbo_size_medians": 7,
+  "sha256": "c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62"
+ },
+ "gz_text_bytes_decompressed": 41355764,
+ "gz_text_files_scanned": 16,
+ "oa3_policy_files": [],
+ "outcome_ledgers": [
+  {
+   "option_complete_with_quote_basis": 0,
+   "option_status_reason": {
+    "unavailable/no_executable_nbbo_quote_path": 25338
+   },
+   "path": "options_signal_episode/outcomes_h60.jsonl",
+   "rows": 25338,
+   "sha256": "617039e5e1a45f9e9a70682060e156b8e778a49c58a85d0a96bd89f8f4c69fa4"
+  },
+  {
+   "option_complete_with_quote_basis": 0,
+   "option_status_reason": {
+    "unavailable/no_executable_nbbo_quote_path": 30327
+   },
+   "path": "options_signal_episode/outcomes_session.jsonl",
+   "rows": 30327,
+   "sha256": "fc02c3f6d224ada2179f89fcf09d63866567e4132d6d6738ccc90c012c9b6311"
+  },
+  {
+   "option_complete_with_quote_basis": 0,
+   "option_status_reason": {
+    "unavailable/no_executable_nbbo_quote_path": 28423
+   },
+   "path": "options_signal_campaign/outcomes.jsonl",
+   "rows": 28423,
+   "sha256": "bfde356d4e54265164840e46f06e391afbed3c35449cda4786013eb95f432160"
+  }
+ ],
+ "parquet_bid_ask_size_hits": [
+  {
+   "has_condition_column": false,
+   "has_exchange_column": false,
+   "path": "flow_signals/ledger.parquet",
+   "rows": 92574,
+   "sha256": "c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62",
+   "size_columns": [
+    "bid_size_median",
+    "ask_size_median"
+   ]
+  }
+ ],
+ "quote_endpoint_files": [],
+ "skipped_extension_counts": {
+  ".1": 1,
+  ".fired": 572,
+  ".html": 26,
+  ".lock": 2,
+  ".md": 107,
+  ".pdf": 1744,
+  ".png": 2010,
+  ".svg": 2453,
+  ".version": 1,
+  ".xls": 2,
+  ".xlsx": 12,
+  ".yml": 8,
+  "<none>": 20
+ },
+ "text_bytes_scanned": 2210000829,
+ "text_extensions_scanned": [
+  ".json",
+  ".jsonl",
+  ".ndjson",
+  ".csv",
+  ".txt",
+  ".json.gz",
+  ".jsonl.gz",
+  ".ndjson.gz",
+  ".csv.gz",
+  ".txt.gz"
+ ],
+ "text_needle_hits": [],
+ "unreadable": []
+}

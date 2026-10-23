@@ -2,107 +2,149 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
-      "as_of": "2026-09-16",
+      "as_of": "2026-10-23",
       "tickers": [
-        "AGNT",
-        "EZPW",
-        "MSFT",
-        "MU",
-        "PMTS",
-        "UTL",
-        "WING"
+        "BAC",
+        "BRX",
+        "CI",
+        "CRF",
+        "DD",
+        "DOLE",
+        "GF",
+        "GFI",
+        "GOOG",
+        "IDA",
+        "JOE",
+        "MIDD",
+        "NFG",
+        "NOKBF",
+        "PLG",
+        "SGML",
+        "VSAT",
+        "WMG"
       ]
     },
     {
-      "as_of": "2026-09-15",
+      "as_of": "2026-10-22",
       "tickers": [
-        "ALGT",
-        "DLTR",
-        "ECL",
-        "GMED",
-        "IPGP",
-        "LUMN",
-        "PWR",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-14",
-      "tickers": [
-        "BOC",
-        "CHRW",
-        "ETN",
-        "FWONK",
-        "GMED",
-        "GPI",
-        "HUBG",
-        "IPGP",
-        "NABL",
-        "NOVT",
-        "OKE",
-        "RBLX",
-        "VTR"
-      ]
-    },
-    {
-      "as_of": "2026-09-12",
-      "tickers": [
-        "CAVA",
-        "CWST",
-        "EZPW",
-        "GMED",
-        "RHP",
-        "SEDG"
-      ]
-    },
-    {
-      "as_of": "2026-09-11",
-      "tickers": [
-        "ALGM",
-        "ASTE",
-        "CHTR",
-        "MPT",
-        "PCG",
-        "POST",
-        "SIG",
-        "VTR",
-        "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-09-10",
-      "tickers": [
-        "ADM",
-        "ALV",
-        "BABA",
-        "DYN",
-        "EZPW",
-        "FN",
-        "KMT",
-        "LAUR",
-        "LILA",
-        "SEI"
-      ]
-    },
-    {
-      "as_of": "2026-09-09",
-      "tickers": [
-        "ABM",
-        "ACM",
-        "BABA",
-        "CARR",
-        "COIN",
-        "CRNX",
-        "FCFS",
-        "ITB",
-        "LZB",
-        "MPT",
-        "PRVA",
-        "SEDG",
+        "AA",
+        "AGYS",
+        "BILL",
+        "DDOG",
+        "EL",
+        "EPAM",
+        "EWT",
+        "FBK",
+        "GH",
+        "GOLF",
+        "IRT",
+        "JOE",
+        "KRC",
+        "KRG",
+        "MTUS",
+        "NFG",
+        "NI",
+        "NOKBF",
+        "NWSA",
+        "PBH",
+        "PPL",
+        "RAPP",
+        "SCHL",
         "SGI",
-        "VRSN",
-        "WERN",
-        "WFC"
+        "TREX",
+        "WLY",
+        "XLK",
+        "YELP",
+        "YOU"
+      ]
+    },
+    {
+      "as_of": "2026-10-20",
+      "tickers": [
+        "ELF",
+        "EPAM",
+        "ICHR",
+        "OKLO",
+        "RL",
+        "ULS",
+        "URI"
+      ]
+    },
+    {
+      "as_of": "2026-10-19",
+      "tickers": [
+        "AFG",
+        "INGR",
+        "LOPE",
+        "OMC",
+        "PINS",
+        "WWD"
+      ]
+    },
+    {
+      "as_of": "2026-10-18",
+      "tickers": [
+        "ATR",
+        "GFI",
+        "IFF",
+        "LLY",
+        "LOPE",
+        "OKLO",
+        "QDEL",
+        "SMR"
+      ]
+    },
+    {
+      "as_of": "2026-10-17",
+      "tickers": [
+        "ACMR",
+        "CACI",
+        "COKE",
+        "CVX",
+        "EMR",
+        "FMC",
+        "MRSH",
+        "NWS",
+        "PBR.A",
+        "POWI",
+        "PPLI",
+        "RRX",
+        "TGT",
+        "ULS",
+        "VNO",
+        "ZTS"
+      ]
+    },
+    {
+      "as_of": "2026-10-16",
+      "tickers": [
+        "AA",
+        "APG",
+        "CACI",
+        "DOCS",
+        "DVN",
+        "ELF",
+        "ESI",
+        "FG",
+        "FIBK",
+        "JLL",
+        "LOPE",
+        "MTZ",
+        "NWE",
+        "NWSA",
+        "ON",
+        "PSKY",
+        "PTON",
+        "RIG",
+        "SAR",
+        "SBRA",
+        "SFM",
+        "SW",
+        "WH",
+        "WMG",
+        "WWD",
+        "XOM",
+        "XPO"
       ]
     }
   ]

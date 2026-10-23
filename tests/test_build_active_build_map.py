@@ -22,6 +22,7 @@ Tests
 18. render_files_truncated_distinct — files_truncated renders "files-truncated", NOT "files:error".
 19. render_unknown_mergeability     — UNKNOWN annotation line rendered when PRs remain UNKNOWN.
 20. render_no_unknown_annotation    — UNKNOWN line absent when all PRs resolved.
+21. collect_null_files_typed_error  — explicit GitHub files:null degrades one PR without crashing.
 """
 from __future__ import annotations
 
@@ -37,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import scripts.build_active_build_map as active_build_map
 
 from scripts.build_active_build_map import (
+    _collect_pr_files,
     compute_collisions,
     is_protected_path,
     protected_paths_for_pr,
@@ -323,6 +325,19 @@ def test_render_no_unknown_annotation():
     assert "mergeability not yet computed by GitHub" not in md
 
 
+# ---------------------------------------------------------------------------
+# 21: Nullable GitHub file-list boundary regression
+# ---------------------------------------------------------------------------
+
+def test_collect_pr_files_treats_null_files_as_typed_error():
+    """An explicit files:null response degrades one PR instead of crashing the map."""
+    response = {"files": None, "mergeStateStatus": "UNKNOWN"}
+
+    with mock.patch("scripts.build_active_build_map._run_gh", return_value=response):
+        result = _collect_pr_files(123)
+
+    assert result == ([], False, True, "UNKNOWN")
+
 
 def test_open_pr_fetch_paginates_current_scale_without_truncation(monkeypatch):
     """The active-build join must not silently stop at the former 100-PR ceiling."""
@@ -363,3 +378,43 @@ def test_open_pr_fetch_refuses_malformed_pagination(monkeypatch):
     prs, truncated = active_build_map._collect_open_prs()
     assert prs is None
     assert truncated is False
+
+
+def test_open_prs_enrich_concurrently_with_stable_result_order(monkeypatch):
+    """Four simultaneous read-only probes must retain deterministic PR order."""
+    import threading
+
+    gate = threading.Barrier(4, timeout=4)
+    lock = threading.Lock()
+    active = 0
+    highwater = 0
+    prs = [{"number": n, "title": f"PR {n}", "head_ref": f"b{n}",
+            "merge_state": "", "updated_at": "", "is_draft": False}
+           for n in (21, 22, 23, 24, 25)]
+
+    def read_files(num):
+        nonlocal active, highwater
+        with lock:
+            active += 1
+            highwater = max(highwater, active)
+        if num != 25:
+            gate.wait()
+        with lock:
+            active -= 1
+        if num == 25:
+            return [], False, True, "BEHIND"
+        return [f"engine/{num}.py"], False, False, "CLEAN"
+
+    monkeypatch.setattr(active_build_map, "_collect_open_prs", lambda: (prs, False))
+    monkeypatch.setattr(active_build_map, "_collect_recent_merged", lambda days: ([], False))
+    monkeypatch.setattr(active_build_map, "_collect_pr_files", read_files)
+    monkeypatch.setattr(active_build_map, "_resolve_main_sha", lambda: "a" * 40)
+
+    payload = active_build_map.build_map()
+    assert highwater == active_build_map._OPEN_PR_ENRICH_CONCURRENCY == 4
+    assert [p["number"] for p in payload["open_prs"]] == [21, 22, 23, 24, 25]
+    assert [p["files_error"] for p in payload["open_prs"]] == [
+        False, False, False, False, True]
+    assert payload["open_prs"][-1]["merge_state"] == "BEHIND"
+    assert payload["collisions"] == []
+    assert payload["schema"] == "active_builds.v1"

@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-10-20T06:14:18.377188+00:00",
+  "mutation": false,
+  "pr": {
+    "exit": 0,
+    "data": {
+      "autoMergeRequest": null,
+      "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+      "labels": [
+        {
+          "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+          "name": "merge-on-green",
+          "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+          "color": "0e8a16"
+        }
+      ],
+      "mergeCommit": null,
+      "mergeStateStatus": "CLEAN",
+      "mergedAt": null,
+      "state": "OPEN"
+    },
+    "stderr": ""
+  },
+  "mog": {
+    "exit": 0,
+    "data": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-20T06:13:37Z",
+        "databaseId": 39379167719,
+        "event": "workflow_run",
+        "headSha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+        "status": "completed",
+        "updatedAt": "2026-10-20T06:13:58Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39379167719"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-20T06:12:12Z",
+        "databaseId": 39379037211,
+        "event": "workflow_dispatch",
+        "headSha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+        "status": "in_progress",
+        "updatedAt": "2026-10-20T06:12:18Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39379037211"
+      },
+      {
+        "conclusion": "cancelled",
+        "createdAt": "2026-10-20T06:11:44Z",
+        "databaseId": 39378992019,
+        "event": "workflow_run",
+        "headSha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+        "status": "completed",
+        "updatedAt": "2026-10-20T06:12:14Z",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39378992019"
+      }
+    ],
+    "stderr": ""
+  }
+}

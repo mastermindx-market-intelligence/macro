@@ -25,6 +25,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import fnmatch
 import json
 import logging
@@ -310,6 +311,7 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
 
 
 _OPEN_PR_PAGE_SIZE = 100
+_OPEN_PR_ENRICH_CONCURRENCY = 4
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
@@ -374,11 +376,13 @@ def _collect_pr_files(pr_number: int) -> tuple[list[str], bool, bool, str | None
     data = _run_gh(["pr", "view", str(pr_number), "--json", "files,mergeStateStatus"])
     if data is None:
         return [], False, True, None
-    raw_files = data.get("files", [])
+    resolved_merge_state = data.get("mergeStateStatus") or None
+    raw_files = data.get("files")
+    if not isinstance(raw_files, list):
+        return [], False, True, resolved_merge_state
     # gh caps the file list at 100; if exactly 100 assume truncation
     files = [f.get("path", "") for f in raw_files if isinstance(f, dict)]
     truncated = len(files) >= 100
-    resolved_merge_state = data.get("mergeStateStatus") or None
     return files, truncated, False, resolved_merge_state
 
 
@@ -463,20 +467,18 @@ def build_map(merged_days: int = 14) -> dict | None:
         return None
     recent_merged, merged_truncated = recent_merged_result
 
-    # Enrich each open PR with file data and resolved mergeability
-    enriched_prs: list[dict] = []
-    for pr in open_prs_raw:
+    # Per-PR GitHub reads are independent. Bound concurrency without inventing a
+    # queue or changing row order, failure semantics or the sole nightly writer.
+    def _enrich_pr(pr: dict[str, Any]) -> dict[str, Any]:
         num = pr["number"]
         files, files_truncated, files_error, resolved_merge_state = _collect_pr_files(num)
-        # Override list-level merge_state when the per-PR call resolves to
-        # something more specific than UNKNOWN
         list_merge_state = pr.get("merge_state", "")
         if resolved_merge_state and resolved_merge_state != "UNKNOWN":
             effective_merge_state = resolved_merge_state
         else:
             effective_merge_state = list_merge_state
         protected = [f for f in files if is_protected_path(f)]
-        enriched_prs.append({
+        return {
             **pr,
             "merge_state": effective_merge_state,
             "merge_state_raw": resolved_merge_state,
@@ -485,7 +487,10 @@ def build_map(merged_days: int = 14) -> dict | None:
             "files_error": files_error,
             "files": files,
             "protected_paths_touched": protected,
-        })
+        }
+
+    with ThreadPoolExecutor(max_workers=_OPEN_PR_ENRICH_CONCURRENCY) as pool:
+        enriched_prs = list(pool.map(_enrich_pr, open_prs_raw))
 
     collisions = compute_collisions(enriched_prs)
     base_sha = _resolve_main_sha()

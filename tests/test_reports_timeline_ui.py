@@ -555,3 +555,90 @@ def test_price_of_duration_generated_ids_and_internal_anchors_resolve() -> None:
     assert len(ids) == len(set(ids)), "duplicate DOM ids break TOC and SVG accessibility"
     assert internal_hrefs
     assert set(internal_hrefs).issubset(set(ids))
+
+# UIUX archive interaction contract: one native control/state owner.
+def test_archive_locale_event_updates_native_labels_without_click_dependency() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+    assert "document.addEventListener('langchange'" in source
+    assert "e.target.closest('.lang-toggle')" not in source
+    assert 'data-label-zh="搜索报告"' in source
+    assert 'data-label-zh="按主题筛选"' in source
+    assert 'id="repCount" role="status"' in source
+
+
+def test_archive_topic_filters_are_native_pressed_buttons() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+    assert '<button type="button" class="chip on" data-tag="all" aria-pressed="true">' in source
+    assert '<button type="button" class="chip tag-{{ tg.key }}"' in source
+    assert "x.setAttribute('aria-pressed',String(selected))" in source
+    assert "tagBar.addEventListener('keydown'" not in source
+
+
+def test_archive_controls_have_touch_and_focus_contracts() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+    assert "min-height:40px;touch-action:manipulation" in source
+    assert "#tagBar button.chip{min-width:44px" in source
+    assert "#tagBar .chip:focus-visible" in source
+    assert "writeURL(true); if(search) search.focus();" in source
+
+
+def test_archive_stylesheet_contains_the_canonical_control_css() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+    body = re.search(r"{% block base_css %}(.*?){% endblock %}", source, re.S)
+    assert body
+    html = PUBLISHED.read_text(encoding="utf-8")
+    digest = re.search(r'assets/css/([0-9a-f]{8})\.css\?v=\1', html).group(1)
+    css = (ROOT / "site" / "assets" / "css" / (digest + ".css")).read_text(encoding="utf-8")
+    assert body.group(1) in css
+    client = re.search(r"{% block body_scripts %}\s*<script>(.*?)</script>", source, re.S)
+    assert client and client.group(1) in html
+
+
+def test_archive_actual_client_keeps_query_order_and_filter_during_locale_change() -> None:
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required to execute the archive interaction contract"
+    source = TEMPLATE.read_text(encoding="utf-8")
+    client = re.search(r"{% block body_scripts %}\s*<script>(.*?)</script>", source, re.S).group(1)
+    harness = r'''
+let lang='en';
+function element(attrs={}) { const events={}, classes=new Set(); return {
+ attrs,events,value:'',textContent:'',placeholder:'',options:[],children:[],
+ getAttribute(k){return this.attrs[k]??null},setAttribute(k,v){this.attrs[k]=String(v)},
+ addEventListener(k,f){events[k]=f},focus(){document.activeElement=this},
+ classList:{toggle(k,on){if(on)classes.add(k);else classes.delete(k)},contains(k){return classes.has(k)}},
+ querySelectorAll(){return this.children},querySelector(sel){return this.children.find(c=>sel.includes('"'+c.attrs['data-tag']+'"'))||null},
+ appendChild(n){this.children=this.children.filter(c=>c!==n);this.children.push(n)}
+};}
+const ids={};['reportList','repSearch','repSort','tagBar','repCount','noResults','repClear','repClear2'].forEach(k=>ids[k]=element());
+ids.reportList.children=[element({'data-date':'2026-09-02','data-tags':'macro','data-search':'policy two'}),element({'data-date':'2026-09-01','data-tags':'macro','data-search':'policy one'}),element({'data-date':'2026-08-01','data-tags':'stocks','data-search':'stocks'})];
+ids.tagBar.children=[element({'data-tag':'all'}),element({'data-tag':'macro'}),element({'data-tag':'stocks'})];
+ids.tagBar.attrs={'data-label-en':'Filter by topic','data-label-zh':'按主题筛选'};
+ids.repSearch.attrs={'data-ph-en':'Search reports…','data-ph-zh':'搜索报告…','data-label-en':'Search reports','data-label-zh':'搜索报告'};
+ids.repSort.options=[element({'data-en':'Newest first','data-zh':'最新优先'}),element({'data-en':'Oldest first','data-zh':'最早优先'})];
+const events={},urls=[];
+global.document={activeElement:null,documentElement:{getAttribute(){return lang}},getElementById(id){return ids[id]||null},addEventListener(k,f){(events[k]??=[]).push(f)}};
+global.window={addEventListener(){}};
+global.location={search:'?q=policy&tag=macro&sort=old',pathname:'/reports.html',hash:'#archive'};
+global.history={pushState(a,b,u){urls.push(u)},replaceState(a,b,u){urls.push(u)}};
+'''
+    assertions = r'''
+const before={query:ids.repSearch.value,sort:ids.repSort.value,order:ids.reportList.children.map(n=>n.attrs['data-date']),url:urls.at(-1)};
+lang='zh';(events.langchange||[]).forEach(f=>f({type:'langchange'}));
+const after={query:ids.repSearch.value,sort:ids.repSort.value,order:ids.reportList.children.map(n=>n.attrs['data-date']),url:urls.at(-1),placeholder:ids.repSearch.placeholder,label:ids.repSearch.attrs['aria-label'],option:ids.repSort.options[0].textContent,count:ids.repCount.textContent,pressed:ids.tagBar.children.filter(n=>n.attrs['aria-pressed']==='true').map(n=>n.attrs['data-tag'])};
+ids.repClear2.events.click();
+console.log(JSON.stringify({before,after,reset:{query:ids.repSearch.value,focus:document.activeElement===ids.repSearch,pressed:ids.tagBar.children.filter(n=>n.attrs['aria-pressed']==='true').map(n=>n.attrs['data-tag'])}}));
+'''
+    result = subprocess.run([node, "-e", harness + client + assertions], capture_output=True, text=True, timeout=15, check=True)
+    data = json.loads(result.stdout)
+    for key in ("query", "sort", "order", "url"):
+        assert data["before"][key] == data["after"][key]
+    assert data["after"]["placeholder"] == "搜索报告…"
+    assert data["after"]["label"] == "搜索报告"
+    assert data["after"]["option"] == "最新优先"
+    assert data["after"]["count"] == "2 篇报告"
+    assert data["after"]["pressed"] == ["macro"]
+    assert data["reset"] == {"query": "", "focus": True, "pressed": ["all"]}

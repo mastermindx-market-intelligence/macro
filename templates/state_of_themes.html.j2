@@ -334,7 +334,7 @@ html[data-theme="dark"] body::before{
 </div>
 
 {% if research_priority %}
-<section class="rp">
+<section class="rp" id="research-reading-order">
   <div class="sec-head">{{ t('What to look at first', '先看哪些主题') }}</div>
   {% if research_priority.state == 'empty' %}
   <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in after the next update.', '目前还没有记录到任何主题的新证据。下一次更新后，这里会显示内容。') }}</p>
@@ -599,6 +599,9 @@ html[data-theme="dark"] body::before{
   </div>
 </section>
 {% endfor %}
+
+{# ── FINANCE T9 ENTRY POINT · Sector deep dives (link only, outside the lanes) ── #}
+{% include "_finance_sector_deep_dive.html.j2" %}
 
 {# ── STUDY SHELF (tier 3) ── #}
 <div class="sec-head" style="margin-top:40px"><span class="sh-dot" style="--sh-c:var(--quiet)"></span>{{ t('The fine print', '细则与依据') }}</div>

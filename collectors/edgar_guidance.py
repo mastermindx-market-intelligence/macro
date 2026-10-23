@@ -91,6 +91,14 @@ def _is_stale(p) -> bool:
         return True
 
 
+def _enrich_and_store(frame, path):
+    from collectors.guidance_source_context import enrich_guidance_hits
+    enriched = enrich_guidance_hits(frame)
+    if enriched is not None:
+        enriched.to_parquet(path, index=False)
+    return enriched
+
+
 def fetch_guidance_hits(force: bool = False,
                         phrases: list[str] | None = None) -> pd.DataFrame | None:
     """Sweep the directional lexicons over 8-K, filter to the theme universe, upsert the
@@ -98,8 +106,8 @@ def fetch_guidance_hits(force: bool = False,
     failure. Mirrors collectors/edgar_fts.fetch_bottleneck_hits."""
     p = _cache_path()
     if not force and not _is_stale(p):
-        log.info("edgar_guidance cache fresh; skipping refresh")
-        return pd.read_parquet(p) if p.exists() else None
+        log.info("edgar_guidance cache fresh; skipping search refresh")
+        return _enrich_and_store(pd.read_parquet(p), p) if p.exists() else None
 
     universe = _theme_universe()
     if not universe:
@@ -149,7 +157,7 @@ def fetch_guidance_hits(force: bool = False,
         except Exception:  # noqa: BLE001
             pass
     new = new.drop_duplicates(subset=["id", "phrase"]).reset_index(drop=True)
-    new.to_parquet(p, index=False)
+    new = _enrich_and_store(new, p)
     log.info("edgar_guidance: %d guidance-language hits cached -> %s", len(new), p)
     return new
 

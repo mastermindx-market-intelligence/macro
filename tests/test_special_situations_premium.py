@@ -348,3 +348,389 @@ def test_builder_tolerates_a_missing_or_corrupt_receipt(tmp_path):
     assert _featured_premium(tmp_path) is None
     (d / "premium_featured.json").write_text(json.dumps({"schema": "wrong"}), encoding="utf-8")
     assert _featured_premium(tmp_path) is None
+
+
+# ── nightly receipt path (MO-B F09-14, MO-PAID-064 live proof) ──────────────
+# On origin/main write_receipt() was reachable only from engine/special_situations.py
+# main(), which no workflow runs, so the capital-structure panel always printed its
+# no-receipt empty state. These tests pin the production shape: the nightly
+# build(refresh=True) writes the receipt, build(refresh=False) never does, and the
+# write lands after desk_payload() so it reflects tonight's sweep. No network, no
+# data/ or site/ writes — tmp_path only.
+
+
+class _Stop(Exception):
+    """Private: aborts build() right after the receipt call, before any render."""
+
+
+def test_nightly_build_path_writes_the_premium_receipt(tmp_path, monkeypatch, capsys):
+    from lib import config
+    import scripts.build_special_situations as bss
+    fx = _load("premium_computed_deal.json")
+    expected = prem.premium_for_event(
+        fx["event"], closes=_closes_series(fx["closes"]), lifecycle_row=fx["lifecycle_row"],
+        ledger=fx["ledger"], asof="2026-09-06 00:00 UTC")
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(prem, "featured_premium", lambda: expected)
+    out = bss._write_premium_receipt()
+    target = tmp_path / "data" / "special_situations" / "premium_featured.json"
+    assert out == target
+    assert out.exists()
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["schema"] == "special_situations.premium.v1"
+    assert payload["ticker"] == expected["ticker"]
+    lines = [ln for ln in capsys.readouterr().out.splitlines()
+             if ln.startswith("[premium-receipt]")]
+    assert len(lines) == 1 and lines[0].startswith("[premium-receipt] wrote ")
+
+
+def test_no_refresh_build_never_touches_the_receipt(tmp_path, monkeypatch):
+    from lib import config
+    import scripts.build_special_situations as bss
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    calls: list[int] = []
+
+    def _receipt_spy():
+        calls.append(1)
+        raise AssertionError("receipt must not be written on --no-refresh")
+
+    monkeypatch.setattr(bss, "_write_premium_receipt", _receipt_spy)
+    monkeypatch.setattr(bss.sse, "desk_payload",
+                        lambda *a, **k: {"situations": [], "built": "2026-09-06 00:00 UTC"})
+    monkeypatch.setattr(bss, "_prior_built", lambda: "2026-09-06 00:00 UTC")
+    monkeypatch.setattr(bss, "_would_thin_the_desk", lambda n: (True, 5))  # thin-guard exit
+    bss.build(refresh=False)
+    assert calls == []
+    assert not (tmp_path / "data" / "special_situations" / "premium_featured.json").exists()
+
+
+def test_refresh_build_writes_the_receipt_after_the_desk_payload(tmp_path, monkeypatch):
+    import collectors.special_intl as colintl
+    import collectors.special_news as colnews
+    import collectors.special_prices as colpx
+    import collectors.special_situations as col
+    import scripts.build_special_situations as bss
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    no_network = [(col, n) for n in ("fetch_events", "enrich_text", "enrich_filers",
+                                     "enrich_classify", "enrich_summaries", "enrich_extraction")]
+    no_network += [(colnews, "fetch_news_situations"), (colintl, "fetch_intl_situations"),
+                   (colpx, "fetch_arb_prices")]
+    for mod, name in no_network:
+        monkeypatch.setattr(mod, name, lambda *a, **k: None)
+    order: list[str] = []
+
+    def _desk_payload_spy(*a, **k):
+        order.append("desk_payload")
+        return {"situations": [], "built": "2026-09-06 00:00 UTC"}
+
+    def _receipt_spy():
+        order.append("receipt")
+        raise _Stop
+
+    monkeypatch.setattr(bss.sse, "desk_payload", _desk_payload_spy)
+    monkeypatch.setattr(bss, "_write_premium_receipt", _receipt_spy)
+    with pytest.raises(_Stop):
+        bss.build(refresh=True)
+    assert order == ["desk_payload", "receipt"]
+
+
+# ---------------------------------------------------------------------------
+# Nonfinite market-cap regressions: NaN / +Inf / -Inf market caps — as floats
+# and as numeric strings ("nan", "inf", "-inf", "Infinity", "1e999") — must
+# take the existing missing-value path everywhere:
+#   engine  _mc_bucket     -> None
+#   builder _mc_bucket     -> "unknown"
+#   builder _usd_m         -> em dash "—"
+#   engine  _compute_setup -> 0.9 missing-cap multiplier
+# None and unparseable strings stay missing; zero, negative, and finite
+# boundary values keep their ordinary treatment (300 / 2000 / 10000 bands).
+# ---------------------------------------------------------------------------
+
+_NONFINITE_MC_PARAMS = [
+    pytest.param(float("nan"), id="nan-float"),
+    pytest.param(float("inf"), id="inf-float"),
+    pytest.param(float("-inf"), id="neg-inf-float"),
+    pytest.param("nan", id="nan-str"),
+    pytest.param("NaN", id="NaN-str"),
+    pytest.param("inf", id="inf-str"),
+    pytest.param("-inf", id="neg-inf-str"),
+    pytest.param("Infinity", id="Infinity-str"),
+    pytest.param("-Infinity", id="neg-Infinity-str"),
+    pytest.param("1e999", id="overflow-1e999-str"),
+]
+
+_MISSING_MC_PARAMS = [
+    pytest.param(None, id="none"),
+    pytest.param("", id="empty-str"),
+    pytest.param("abc", id="invalid-str"),
+    pytest.param("N/A", id="na-str"),
+]
+
+# Grade-cross shape: raw=71 with a finite mc (grade A) vs 63.9 after the 0.9
+# missing-cap (grade B). Mirrors the retained 2026-10-13 Acquisitions record.
+_GRADE_CROSS_TECH  = {"tier": "T2", "tier_eligible": True, "tier_provisional": False,
+                      "washout_2w": True, "washout_1m": False,
+                      "w1_macd": "near", "w1_stoch": None}
+_GRADE_CROSS_FAVOR = {"sector_stance": "Neutral", "rotation": None,
+                      "theme_ready": None, "theme_score": None, "standout": None}
+_SIMPLE_TECH       = {"tier": None, "tier_eligible": True, "tier_provisional": False,
+                      "washout_2w": False, "washout_1m": False,
+                      "w1_macd": "near", "w1_stoch": None}
+
+
+def _grade_cross_sit(mc_musd):
+    return {
+        "ticker": "AAA", "company": "Test Co", "category": "Acquisitions",
+        "stage": "announced", "mc_musd": mc_musd, "confidence": "high",
+        "source_lane": "edgar", "live": True, "terminal": None,
+        "prior": {"win_20d_pct": 65.0, "med_ret_20d_pct": 2.5, "n": 50,
+                  "match_label": "Acquisitions"},
+    }
+
+
+# --- engine _mc_bucket -------------------------------------------------------
+
+@pytest.mark.parametrize("bad", _NONFINITE_MC_PARAMS)
+def test_engine_mc_bucket_nonfinite_is_missing(bad):
+    """NaN/+Inf/-Inf (scalar or numeric string) must bucket as missing (None)."""
+    from engine import special_sits_intel as ssi
+
+    assert ssi._mc_bucket(bad) is None
+
+
+@pytest.mark.parametrize("missing", _MISSING_MC_PARAMS)
+def test_engine_mc_bucket_missing_stays_missing(missing):
+    from engine import special_sits_intel as ssi
+
+    assert ssi._mc_bucket(missing) is None
+
+
+@pytest.mark.parametrize(
+    "mc,expected",
+    [
+        pytest.param(0, "micro", id="zero"),
+        pytest.param(-500, "micro", id="neg-finite"),
+        pytest.param(299.9, "micro", id="just-under-300"),
+        pytest.param(300, "small", id="at-300"),
+        pytest.param(1999.9, "small", id="just-under-2000"),
+        pytest.param(2000, "mid", id="at-2000"),
+        pytest.param(9999.9, "mid", id="just-under-10000"),
+        pytest.param(10000, "large", id="at-10000"),
+        pytest.param(250000, "large", id="large-cap"),
+        pytest.param("0", "micro", id="zero-str"),
+        pytest.param("-500", "micro", id="neg-finite-str"),
+        pytest.param("1e-999", "micro", id="underflow-to-zero-str"),
+    ],
+)
+def test_engine_mc_bucket_zero_and_finite_boundaries_preserved(mc, expected):
+    """Legitimate zero/negative/finite values keep the 300/2000/10000 bands."""
+    from engine import special_sits_intel as ssi
+
+    assert ssi._mc_bucket(mc) == expected
+
+
+# --- engine _compute_setup missing-cap ----------------------------------------
+
+@pytest.mark.parametrize("bad", _NONFINITE_MC_PARAMS)
+def test_engine_compute_setup_nonfinite_mc_takes_missing_cap(bad):
+    """Nonfinite mc must apply the 0.9 missing-cap: 71 raw -> 63.9 (A drops to B)."""
+    from engine import special_sits_intel as ssi
+
+    tech  = dict(_GRADE_CROSS_TECH)
+    ident = {"sector": None, "sub_industry": None, "themes": [], "mc_bucket": None}
+    favor = dict(_GRADE_CROSS_FAVOR)
+    setup = ssi._compute_setup(_grade_cross_sit(bad), tech, ident, favor)
+
+    assert setup["score"] == 63.9, f"Expected 63.9 (0.9 x 71), got {setup['score']}"
+    assert setup["grade"] == "B",  f"Expected grade B, got {setup['grade']}"
+
+
+def test_engine_compute_setup_finite_mc_keeps_full_score_and_grade():
+    from engine import special_sits_intel as ssi
+
+    ident = {"sector": None, "sub_industry": None, "themes": [], "mc_bucket": "large"}
+    setup = ssi._compute_setup(_grade_cross_sit(250000), dict(_GRADE_CROSS_TECH),
+                               ident, dict(_GRADE_CROSS_FAVOR))
+
+    assert setup["score"] == 71.0, f"Expected 71.0, got {setup['score']}"
+    assert setup["grade"] == "A",  f"Expected grade A, got {setup['grade']}"
+
+
+def test_engine_compute_setup_nonfinite_mc_matches_none_baseline():
+    """Flip ONLY mc_musd None -> nonfinite: every returned token must be unchanged.
+
+    Pins the retained 2026-10-13 record values (score 63.9 / grade B) through
+    the None-missing baseline without assuming any raw transport object.
+    """
+    from engine import special_sits_intel as ssi
+
+    ident = {"sector": None, "sub_industry": None, "themes": [], "mc_bucket": None}
+    base  = ssi._compute_setup(_grade_cross_sit(None), dict(_GRADE_CROSS_TECH),
+                               dict(ident), dict(_GRADE_CROSS_FAVOR))
+    assert base["score"] == 63.9 and base["grade"] == "B"
+
+    for bad in (float("nan"), float("inf"), float("-inf"), "nan", "-inf"):
+        got = ssi._compute_setup(_grade_cross_sit(bad), dict(_GRADE_CROSS_TECH),
+                                 dict(ident), dict(_GRADE_CROSS_FAVOR))
+        assert got == base, f"mc_musd={bad!r} diverged from None baseline: {got} vs {base}"
+
+
+def test_engine_compute_setup_simple_event_nonfinite_mc_takes_missing_cap():
+    """Simple untickered event: 15 raw -> 13.5 under the missing cap; why intact."""
+    from engine import special_sits_intel as ssi
+
+    favor = {"sector_stance": None, "rotation": None, "theme_ready": None,
+             "theme_score": None, "standout": None}
+    for bad in (None, float("nan"), float("inf"), float("-inf"), "nan"):
+        s = {"ticker": None, "company": "Beretta Holding", "category": "Tender Offers",
+             "stage": "announced", "mc_musd": bad, "confidence": None,
+             "source_lane": "newswire", "live": False, "terminal": None}
+        setup = ssi._compute_setup(s, dict(_SIMPLE_TECH),
+                                   {"sector": None, "sub_industry": None,
+                                    "themes": [], "mc_bucket": None}, dict(favor))
+
+        assert setup["score"] == 13.5, f"mc={bad!r}: expected 13.5, got {setup['score']}"
+        assert setup["grade"] is None
+        assert setup["why"] == ["Setup approaching entry level"]
+        assert setup["why_zh"] == ["设置趋近入场条件"]
+
+
+def test_engine_compute_setup_simple_event_finite_mc_keeps_full_score():
+    from engine import special_sits_intel as ssi
+
+    favor = {"sector_stance": None, "rotation": None, "theme_ready": None,
+             "theme_score": None, "standout": None}
+    s = {"ticker": None, "company": "Beretta Holding", "category": "Tender Offers",
+         "stage": "announced", "mc_musd": 1200, "confidence": None,
+         "source_lane": "newswire", "live": False, "terminal": None}
+    setup = ssi._compute_setup(s, dict(_SIMPLE_TECH),
+                               {"sector": None, "sub_industry": None,
+                                "themes": [], "mc_bucket": "micro"}, dict(favor))
+
+    assert setup["score"] == 15.0, f"Expected 15.0, got {setup['score']}"
+    assert setup["grade"] is None
+
+
+def test_engine_compute_setup_existing_caps_untouched_by_mc_fix():
+    """Low-confidence 0.75, terminal cap 25, and de-escalation cap 49 all still hold."""
+    from engine import special_sits_intel as ssi
+
+    tech  = {"tier": "T2", "tier_eligible": True, "tier_provisional": False,
+             "washout_2w": False, "washout_1m": True,
+             "w1_macd": None, "w1_stoch": None}
+    ident = {"sector": None, "sub_industry": None, "themes": [], "mc_bucket": None}
+    favor = {"sector_stance": None, "rotation": None, "theme_ready": None,
+             "theme_score": None, "standout": None}
+
+    low = ssi._compute_setup({"ticker": "L", "mc_musd": 5000, "confidence": "low",
+                              "source_lane": "newswire", "live": False, "terminal": None},
+                             dict(tech), dict(ident), dict(favor))
+    assert low["score"] == 31.5, f"low-confidence cap changed: {low['score']}"
+
+    term = ssi._compute_setup({"ticker": "T", "mc_musd": float("nan"), "confidence": "high",
+                               "source_lane": "edgar", "live": True, "terminal": "closed"},
+                              dict(tech), dict(ident), dict(favor))
+    assert term["score"] == 25.0 and term["grade"] is None
+
+    deesc = ssi._compute_setup(dict(_grade_cross_sit(250000), v1_direction=-1),
+                               dict(_GRADE_CROSS_TECH), dict(ident), dict(_GRADE_CROSS_FAVOR))
+    assert deesc["score"] == 49.0 and deesc["grade"] == "C"
+
+
+# --- engine enrich() end-to-end on the isolated tmp_path ----------------------
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), "-inf"])
+def test_enrich_nonfinite_mc_matches_none_baseline_end_to_end(tmp_path, bad):
+    """Real enrich() on an isolated store: nonfinite mc must equal the None run."""
+    from engine import special_sits_intel as ssi
+
+    def _run(mc_musd):
+        sits = [_grade_cross_sit(mc_musd)]
+        sits[0]["ticker"] = None          # keep it off the (empty) synthetic panel
+        ssi.enrich(sits, root=tmp_path)
+        return sits[0]
+
+    base = _run(None)
+    got  = _run(bad)
+
+    assert base["ident"]["mc_bucket"] is None
+    assert got["ident"]["mc_bucket"]  is None, (
+        f"nonfinite mc bucketed as {got['ident']['mc_bucket']!r}, must be missing")
+    assert got["setup"] == base["setup"], (
+        f"setup diverged from None baseline: {got['setup']} vs {base['setup']}")
+
+
+# --- builder _usd_m / fallback _mc_bucket --------------------------------------
+
+@pytest.mark.parametrize("bad", _NONFINITE_MC_PARAMS)
+def test_builder_usd_m_nonfinite_renders_emdash(bad):
+    """Nonfinite mc must render the em dash, never '$inf B' / '$-inf M'."""
+    from scripts.build_special_situations import _usd_m
+
+    assert _usd_m(bad) == "—"
+
+
+@pytest.mark.parametrize("missing", _MISSING_MC_PARAMS)
+def test_builder_usd_m_missing_stays_emdash(missing):
+    from scripts.build_special_situations import _usd_m
+
+    assert _usd_m(missing) == "—"
+
+
+@pytest.mark.parametrize(
+    "mc,expected",
+    [
+        pytest.param(0, "$0M", id="zero"),
+        pytest.param(-500, "$-500M", id="neg-finite"),
+        pytest.param(999, "$999M", id="just-under-1b"),
+        pytest.param(1000, "$1.0B", id="at-1b"),
+        pytest.param(1234.5, "$1.2B", id="above-1b"),
+        pytest.param(250000, "$250.0B", id="large-cap"),
+        pytest.param("0", "$0M", id="zero-str"),
+        pytest.param("-500", "$-500M", id="neg-finite-str"),
+        pytest.param("1e-999", "$0M", id="underflow-to-zero-str"),
+    ],
+)
+def test_builder_usd_m_zero_and_finite_values_preserved(mc, expected):
+    from scripts.build_special_situations import _usd_m
+
+    assert _usd_m(mc) == expected
+
+
+@pytest.mark.parametrize("bad", _NONFINITE_MC_PARAMS)
+def test_builder_mc_bucket_nonfinite_is_unknown(bad):
+    """Nonfinite mc must fall back to the 'unknown' bucket."""
+    from scripts.build_special_situations import _mc_bucket
+
+    assert _mc_bucket(bad) == "unknown"
+
+
+@pytest.mark.parametrize("missing", _MISSING_MC_PARAMS)
+def test_builder_mc_bucket_missing_stays_unknown(missing):
+    from scripts.build_special_situations import _mc_bucket
+
+    assert _mc_bucket(missing) == "unknown"
+
+
+@pytest.mark.parametrize(
+    "mc,expected",
+    [
+        pytest.param(0, "micro", id="zero"),
+        pytest.param(-500, "micro", id="neg-finite"),
+        pytest.param(49.9, "micro", id="just-under-50"),
+        pytest.param(50, "micro", id="at-50"),
+        pytest.param(299.9, "micro", id="just-under-300"),
+        pytest.param(300, "small", id="at-300"),
+        pytest.param(1999.9, "small", id="just-under-2000"),
+        pytest.param(2000, "mid", id="at-2000"),
+        pytest.param(9999.9, "mid", id="just-under-10000"),
+        pytest.param(10000, "large", id="at-10000"),
+        pytest.param("0", "micro", id="zero-str"),
+        pytest.param("-500", "micro", id="neg-finite-str"),
+    ],
+)
+def test_builder_mc_bucket_zero_and_finite_boundaries_preserved(mc, expected):
+    from scripts.build_special_situations import _mc_bucket
+
+    assert _mc_bucket(mc) == expected

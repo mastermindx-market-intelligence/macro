@@ -486,7 +486,7 @@ def main(alpha: dict | None = None) -> dict | None:
     # pooled alpha-led "standout individual stocks" shortlist (flags attached)
     setups = None
     if cand:
-        setups = rank_setups(cand, as_of=(alpha or {}).get("as_of"), rank_by="alpha", n_buy=60)
+        setups = rank_setups(cand, as_of=_session_asof, rank_by="alpha", n_buy=60)
         for r in (setups.get("buy") or []):
             t = r["ticker"]
             r["signal"] = signal_gate.compact(sig_verdict.get(t))   # confluence T1->T4 tier badge

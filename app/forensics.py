@@ -1,11 +1,13 @@
 """Authenticated serving route for the private Filing Forensics state."""
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 import re
 import threading
+import time
 from bisect import bisect_right
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
@@ -14,13 +16,109 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
 
 from engine.fundamental_forensics.health import evaluate_health
+from engine.fundamental_forensics.latency import RECORDER, evaluate_slo, load_slo_config
 from engine.fundamental_forensics.private_state import load_state_blob
 
-router = APIRouter()
+
+class _TimedRoute(APIRoute):
+    """FIF V0-a: time each real route's work and record the distribution.
+
+    The timed span is the whole route handler — dependency solving included
+    (FastAPI solves dependencies inside the handler), so an auth rejection is
+    timed too. Only success responses (2xx/3xx) enter the percentile window:
+    4xx responses raise the route template's ``client_error_n`` and 5xx
+    responses its ``error_n``, both outside the window, so a burst of fast
+    401/403/400 rejections can never drag p95 down to a stale green. The
+    dedicated method-not-allowed handlers never reach real handler work and
+    are not recorded at all. The ``Server-Timing`` header rides success
+    responses only, and never the file exports: A54 pins identical export
+    posts to byte-identical responses, headers included, so an export is
+    recorded but carries no per-request duration. An ``HTTPException`` (the
+    router's expected failure boundary) is counted under its own status and
+    re-raised unchanged, any
+    other exception is counted as a 500 and re-raised unchanged. Recording
+    itself can never alter a status, body or existing header: it sits inside
+    its own ``try/except Exception: pass``.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def timed_route_handler(request: Request) -> Response:
+            if self.endpoint in _METHOD_NOT_ALLOWED_ENDPOINTS:
+                # A private 405 answers before any real handler work runs:
+                # not a latency sample, not a client-error count.
+                return await original(request)
+            t0 = time.perf_counter()
+            try:
+                response = await original(request)
+            except HTTPException as exc:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, exc.status_code)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            except Exception:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, 500)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            duration_ms = (time.perf_counter() - t0) * 1000.0
+            if self.path not in _BYTE_IDENTICAL_EXPORT_PATHS:
+                response.headers["Server-Timing"] = f"fif;dur={duration_ms:.1f}"
+            try:
+                RECORDER.record(self.path, duration_ms, response.status_code)
+            except Exception:  # noqa: BLE001 - timing must never fail a request
+                pass
+            return response
+
+        return timed_route_handler
+
+
+router = APIRouter(route_class=_TimedRoute)
 log = logging.getLogger("fundamental_forensics.api")
 REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
+
+# ---------------------------------------------------------------------------
+# FIF D3 dataset-mode selection: explicit, documented, deny-by-default.
+#
+# FIF_FINANCIAL_DATASET_MODE is unset or "golden" (the default) = exactly the
+# pre-D3 wiring, byte for byte. "production" = the production providers over
+# the immutable dataset store, with NO fallback to the golden corpus. Any
+# other value is a configuration error: names-only log, typed refusal, and
+# the private 503 — an invalid mode must never degrade into an undocumented
+# selection. Documented in
+# research/financial_intelligence_fabric/FIF_3A3_REUSE_MAP.md (D3 section).
+# ---------------------------------------------------------------------------
+
+FIF_FINANCIAL_DATASET_MODE_ENV = "FIF_FINANCIAL_DATASET_MODE"
+_LAWFUL_FINANCIAL_DATASET_MODES = ("golden", "production")
+
+
+def _financial_dataset_mode() -> str:
+    raw = os.environ.get(FIF_FINANCIAL_DATASET_MODE_ENV)
+    if raw is None or raw == "":
+        return "golden"
+    if raw in _LAWFUL_FINANCIAL_DATASET_MODES:
+        return raw
+    # NAMES ONLY — never the value it rejected.
+    log.warning(
+        "%s holds an unsupported mode; refusing to select any dataset corpus",
+        FIF_FINANCIAL_DATASET_MODE_ENV,
+    )
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        ProductionDatasetModeError,
+    )
+
+    raise ProductionDatasetModeError(
+        f"{FIF_FINANCIAL_DATASET_MODE_ENV} is not a supported dataset mode"
+    )
 
 # The receipt API is an authenticated, private research surface even when it is
 # mounted by itself in a narrow test app (and therefore outside app.main's
@@ -36,6 +134,14 @@ _PRIVATE_HEADERS = {
 
 _SNAPSHOT_ID_RE = re.compile(r"\Affqsv2_[a-f0-9]{64}\Z")
 _ROOT_CELL_ID_RE = re.compile(r"\Ametric_cell_[a-f0-9]{64}\Z")
+# FIF PF-3: the optional health ``entity_id`` query parameter names the issuer
+# whose production generation headers are wanted. Only a full match may reach
+# a store key; anything else answers with no generation headers, never an
+# error and never the raw value in a log line.
+# FIF PF r1 (R3): the code tail follows the canonical issuer grammar
+# (lib/dataos/identity.py ``_CODE_RE`` — '.' and '-' are real US class
+# suffixes, 'BRK-B' included) and the length is bounded separately.
+_HEALTH_ENTITY_ID_RE = re.compile(r"ISS:[A-Z]{2}-[A-Z0-9]{4}-[A-Z0-9][A-Z0-9.\-]*")
 _MAX_QUERY_VALUE_BYTES = 128
 # Bounded receipt reads do not automatically bound response construction.  A
 # valid sealed receipt can name many selected leaves; never turn it into a
@@ -145,10 +251,148 @@ def forensics_state(_user: dict = Depends(require_site_full_user)) -> Response:
 
 
 @router.get("/api/forensics/health")
-def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
-    """Return operational/source freshness, never private rows or storage keys."""
+def forensics_health(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Return operational/source freshness, never private rows or storage keys.
+
+    FIF D3 adds names/ids-only dataset-mode reporting on the response HEADERS
+    (the schema'd payload contract is frozen with ``additionalProperties:
+    false``): ``X-FIF-Financial-Dataset-Mode`` always, plus
+    ``X-FIF-Dataset-Generation-Id`` and ``X-FIF-Dataset-Admitted-At`` when a
+    production generation exists. No object keys, no payloads, no values
+    beyond the mode name and the generation id.
+
+    FIF PF-3: the optional ``entity_id`` query parameter names the issuer the
+    generation headers describe. Absent, the pre-PF-3 behaviour is unchanged
+    byte for byte. Present and a full match of ``_HEALTH_ENTITY_ID_RE``, the
+    summary is looked up for exactly that issuer. Present but malformed, or a
+    matching issuer with no pointer: no generation headers, the same 200 body,
+    never a 4xx/5xx — and the raw value is never logged or passed anywhere
+    near a store key. Golden mode never emits generation headers.
+
+    FIF PF r1 (R2): with exactly one well-formed ``entity_id`` in production
+    mode the answer also carries ONE names-only pointer header,
+    ``X-FIF-Dataset-Pointer``: ``admitted`` (a summary was returned, headers as
+    today), ``none`` (the store was built, the lookup did not raise, and the
+    pointer is absent) or ``unavailable`` (the store is None, or building it
+    or reading the summary raised — the provider's own contract: a damaged
+    store is temporarily unavailable, not "not published"). A malformed,
+    repeated or over-length id gets no pointer header and no generation
+    headers. The absent-parameter path and golden mode stay byte for byte
+    unchanged; the JSON body is identical in every case.
+    """
+    headers = dict(_PRIVATE_HEADERS)
+    # A15: an invalid dataset mode refuses health with the same private 503
+    # the financial POSTs use — never a 500 and never a silent golden report.
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        ProductionDatasetModeError,
+    )
+
+    try:
+        mode = _financial_dataset_mode()
+    except ProductionDatasetModeError:
+        raise _private_error(503, "forensics health temporarily unavailable") from None
+    headers["X-FIF-Financial-Dataset-Mode"] = mode
+    if mode == "production":
+        # PF-3: an absent parameter keeps the D3 default issuer; a present
+        # parameter must be the ONLY value and full-match the entity grammar
+        # (under the byte bound) before it may name a store key; anything
+        # else simply reports no generation. R4: a repeated key is malformed
+        # — the module's own rule refuses duplicates rather than choosing one
+        # silently — and this route never raises because of the parameter.
+        values = request.query_params.getlist("entity_id")
+        summary_issuer: str | None = "ISS:US-XNAS-AAPL"
+        pointer_reported = False
+        if not values:
+            pass
+        elif len(values) == 1 and len(values[0].encode("utf-8")) <= _MAX_QUERY_VALUE_BYTES:
+            if _HEALTH_ENTITY_ID_RE.fullmatch(values[0]):
+                summary_issuer = values[0]
+                pointer_reported = True
+            else:
+                summary_issuer = None
+        else:
+            summary_issuer = None
+        if summary_issuer is not None:
+            from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+                build_production_dataset_store,
+                latest_generation_summary,
+            )
+
+            summary = None
+            store_readable = False
+            try:
+                store = build_production_dataset_store()
+                if store is not None:
+                    summary = latest_generation_summary(store, summary_issuer)
+                    store_readable = True
+            except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+                log.warning(
+                    "production dataset health summary unavailable (%s)", type(exc).__name__
+                )
+            if summary is not None:
+                headers["X-FIF-Dataset-Generation-Id"] = summary["dataset_generation_id"]
+                headers["X-FIF-Dataset-Admitted-At"] = summary["admitted_at"]
+                if pointer_reported:
+                    headers["X-FIF-Dataset-Pointer"] = "admitted"
+            elif pointer_reported:
+                headers["X-FIF-Dataset-Pointer"] = (
+                    "none" if store_readable else "unavailable"
+                )
     payload = evaluate_health(REPO, now=datetime.now(timezone.utc))
-    return JSONResponse(payload, headers=dict(_PRIVATE_HEADERS))
+    return JSONResponse(payload, headers=headers)
+
+
+# ---------------------------------------------------------------------------
+# FIF V0-a: the entitled latency report — measured distributions judged
+# against the DECLARED budgets in config/fundamental_forensics/slo.v1.json.
+# ---------------------------------------------------------------------------
+
+_SLO_CONFIG_LOCK = threading.Lock()
+_SLO_CONFIG_CACHE: dict | None = None
+
+
+@router.get("/api/forensics/slo")
+def forensics_slo(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    """Report measured per-route latency distributions against the SLO config.
+
+    Entitled exactly like health. The payload carries route templates and
+    measured aggregates only — never an issuer, tenant, query or user
+    identifier. The config is loaded once, at first use, from the repo path;
+    a config that cannot be read or parsed is a 503, never a fabricated
+    "within" — the report exists only against the real declared budgets. The
+    reported ``window`` is the recorder's actual sample window, not the
+    config's declared one, and the response carries the full private header
+    set with ``Cache-Control: no-store``.
+    """
+    global _SLO_CONFIG_CACHE
+    try:
+        with _SLO_CONFIG_LOCK:
+            if _SLO_CONFIG_CACHE is None:
+                _SLO_CONFIG_CACHE = load_slo_config(
+                    REPO / "config" / "fundamental_forensics" / "slo.v1.json"
+                )
+            config = _SLO_CONFIG_CACHE
+    except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+        log.warning("forensics SLO config unavailable (%s)", type(exc).__name__)
+        return JSONResponse(
+            {"error": "slo_config_unavailable"},
+            status_code=503,
+            headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+        )
+    evaluation = evaluate_slo(RECORDER.snapshot(), config)
+    return JSONResponse(
+        {
+            "schema": "fif_slo_report.v1",
+            "config_status": config["status"],
+            "window": RECORDER.window,
+            "routes": evaluation["routes"],
+            "unbudgeted": evaluation["unbudgeted"],
+        },
+        headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -727,18 +971,104 @@ def attested_history_private_not_found(
 # FIF-2A / FIF-2B / FIF-2C shared JSON admission
 # ---------------------------------------------------------------------------
 
+_PRODUCTION_PROVIDER_LOCK = threading.Lock()
+_PRODUCTION_QUERY_PROVIDER_CACHE: Any | None = None
+_PRODUCTION_PACKET_PROVIDER_CACHE: Any | None = None
+_PRODUCTION_STATEMENT_PROVIDER_CACHE: Any | None = None
+
+
+def _reset_production_provider_cache() -> None:
+    """Test/operator hook: drop the singleton production providers + store."""
+    global _PRODUCTION_QUERY_PROVIDER_CACHE
+    global _PRODUCTION_PACKET_PROVIDER_CACHE
+    global _PRODUCTION_STATEMENT_PROVIDER_CACHE
+    with _PRODUCTION_PROVIDER_LOCK:
+        _PRODUCTION_QUERY_PROVIDER_CACHE = None
+        _PRODUCTION_PACKET_PROVIDER_CACHE = None
+        _PRODUCTION_STATEMENT_PROVIDER_CACHE = None
+
+
+def _production_query_provider():
+    """Singleton production query provider (per-process store + dataset cache)."""
+    global _PRODUCTION_QUERY_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialQueryProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_QUERY_PROVIDER_CACHE is None:
+            _PRODUCTION_QUERY_PROVIDER_CACHE = ProductionFinancialQueryProvider(
+                build_production_dataset_store()
+            )
+        return _PRODUCTION_QUERY_PROVIDER_CACHE
+
+
+def _production_packet_provider():
+    """Singleton production packet provider (revisions + packet share one)."""
+    global _PRODUCTION_PACKET_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialPacketProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_PACKET_PROVIDER_CACHE is None:
+            _PRODUCTION_PACKET_PROVIDER_CACHE = ProductionFinancialPacketProvider(
+                build_production_dataset_store(),
+                repo_root=REPO,
+            )
+        return _PRODUCTION_PACKET_PROVIDER_CACHE
+
+
+def _production_statement_provider():
+    """Singleton production statement provider."""
+    global _PRODUCTION_STATEMENT_PROVIDER_CACHE
+    from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+        build_production_dataset_store,
+    )
+    from engine.fundamental_forensics.production_provider import (  # noqa: PLC0415
+        ProductionFinancialStatementProvider,
+    )
+
+    with _PRODUCTION_PROVIDER_LOCK:
+        if _PRODUCTION_STATEMENT_PROVIDER_CACHE is None:
+            _PRODUCTION_STATEMENT_PROVIDER_CACHE = ProductionFinancialStatementProvider(
+                build_production_dataset_store()
+            )
+        return _PRODUCTION_STATEMENT_PROVIDER_CACHE
+
 
 def _financial_query_provider():
-    """Golden AAPL query provider. Production attested issuer service stays unbuilt."""
+    """Query provider under the explicit dataset-mode selection.
+
+    ``golden`` (default) is exactly the pre-D3 wiring: the golden AAPL
+    provider over the two committed accessions. ``production`` constructs the
+    production provider over the immutable dataset store and NEVER falls back
+    to the golden corpus — a missing store or damaged generation is the
+    private 503.
+    """
+    if _financial_dataset_mode() == "production":
+        return _production_query_provider()
     from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: PLC0415
+        FIF3A4_LINEAGE_AVAILABLE_AT,
         GoldenAaplFinancialQueryProvider,
     )
 
-    return GoldenAaplFinancialQueryProvider(repo_root=REPO)
+    return GoldenAaplFinancialQueryProvider(
+        repo_root=REPO,
+        lineage_evidence_available_at=FIF3A4_LINEAGE_AVAILABLE_AT,
+    )
 
 
 def _financial_revision_provider():
-    """Test seam: monkeypatch this to inject a packet fixture provider in tests."""
+    """Revision provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_packet_provider()
     from engine.fundamental_forensics.revision_service import (  # noqa: PLC0415
         UnavailableFinancialPacketProvider,
     )
@@ -747,7 +1077,9 @@ def _financial_revision_provider():
 
 
 def _financial_packet_provider():
-    """Test seam: monkeypatch this to inject a packet fixture provider in tests."""
+    """Packet provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_packet_provider()
     from engine.fundamental_forensics.revision_service import (  # noqa: PLC0415
         UnavailableFinancialPacketProvider,
     )
@@ -756,7 +1088,9 @@ def _financial_packet_provider():
 
 
 def _financial_statement_provider():
-    """Golden AAPL 10-K fixture only. Production attested issuer service stays unbuilt."""
+    """Statement provider under the dataset-mode selection (no golden fallback)."""
+    if _financial_dataset_mode() == "production":
+        return _production_statement_provider()
     from engine.fundamental_forensics.statement_service import (  # noqa: PLC0415
         GoldenAaplStatementProvider,
     )
@@ -818,7 +1152,7 @@ async def _admit_json_post_body(request: Request) -> bytes:
 
 @router.api_route(
     "/api/forensics/v1/financial/query",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_query_method_not_allowed(
     response: Response,
@@ -842,9 +1176,11 @@ async def financial_query(
     )
 
     body = await _admit_json_post_body(request)
-    provider = _financial_query_provider()
 
     try:
+        # Provider construction sits inside the boundary so a refused dataset
+        # mode (typed error) is the same private 503 as any other unavailability.
+        provider = _financial_query_provider()
         result = execute_financial_query(body=body, provider=provider)
     except FinancialQueryAdmissionError as exc:
         raise _private_error(exc.status_code, exc.detail) from None
@@ -864,8 +1200,152 @@ async def financial_query(
 
 
 @router.api_route(
-    "/api/forensics/v1/financial/revisions",
+    "/api/forensics/v1/financial/query.xlsx",
     methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def financial_query_xlsx_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, "method not allowed")
+
+
+@router.post("/api/forensics/v1/financial/query.xlsx")
+async def financial_query_xlsx(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Same admission as the JSON query; return a deterministic .xlsx attachment."""
+    from engine.fundamental_forensics.excel_export import (  # noqa: PLC0415
+        XLSX_MEDIA_TYPE,
+        response_query_id,
+        to_xlsx_bytes,
+    )
+    from engine.fundamental_forensics.query_service import (  # noqa: PLC0415
+        FinancialQueryAdmissionError,
+        FinancialQueryUnavailableError,
+        execute_financial_query,
+    )
+
+    body = await _admit_json_post_body(request)
+
+    try:
+        provider = _financial_query_provider()
+        result = execute_financial_query(body=body, provider=provider)
+    except FinancialQueryAdmissionError as exc:
+        raise _private_error(exc.status_code, exc.detail) from None
+    except FinancialQueryUnavailableError:
+        raise _private_error(503, "financial query temporarily unavailable") from None
+    except Exception:  # noqa: BLE001
+        raise _private_error(503, "financial query temporarily unavailable") from None
+
+    envelope = dict(result.envelope)
+    envelope["sha256"] = result.sha256
+    payload = to_xlsx_bytes(envelope)
+    filename = f"{response_query_id(envelope)}.xlsx"
+    return Response(
+        content=payload,
+        media_type=XLSX_MEDIA_TYPE,
+        headers={
+            **_PRIVATE_HEADERS,
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-FIF-Response-SHA256": hashlib.sha256(payload).hexdigest(),
+            "X-FIF-Receipt-SHA256": result.sha256,
+        },
+    )
+
+
+async def _financial_query_export(request: Request, fmt: str) -> Response:
+    """Same admission as the JSON query; return a CSV or Parquet attachment."""
+    from engine.fundamental_forensics.excel_export import (  # noqa: PLC0415
+        response_query_id,
+    )
+    from engine.fundamental_forensics.query_exports import (  # noqa: PLC0415
+        QueryExportError,
+        export_query_envelope,
+    )
+    from engine.fundamental_forensics.query_service import (  # noqa: PLC0415
+        FinancialQueryAdmissionError,
+        FinancialQueryUnavailableError,
+        execute_financial_query,
+    )
+
+    body = await _admit_json_post_body(request)
+    try:
+        provider = _financial_query_provider()
+        result = execute_financial_query(body=body, provider=provider)
+        export = export_query_envelope(result.envelope, fmt)
+    except FinancialQueryAdmissionError as exc:
+        raise _private_error(exc.status_code, exc.detail) from None
+    except (FinancialQueryUnavailableError, QueryExportError):
+        raise _private_error(503, "financial query temporarily unavailable") from None
+    except Exception:  # noqa: BLE001
+        raise _private_error(503, "financial query temporarily unavailable") from None
+
+    envelope = dict(result.envelope)
+    envelope["sha256"] = result.sha256
+    filename = f"{response_query_id(envelope)}.{fmt}"
+    return Response(
+        content=export.payload,
+        media_type=export.media_type,
+        headers={
+            **_PRIVATE_HEADERS,
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-FIF-Response-SHA256": export.sha256,
+            "X-FIF-Receipt-SHA256": result.sha256,
+        },
+    )
+
+
+@router.api_route(
+    "/api/forensics/v1/financial/query.csv",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def financial_query_csv_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, "method not allowed")
+
+
+@router.post("/api/forensics/v1/financial/query.csv")
+async def financial_query_csv(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Same admission as the JSON query; return a deterministic CSV attachment."""
+    return await _financial_query_export(request, "csv")
+
+
+@router.api_route(
+    "/api/forensics/v1/financial/query.parquet",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def financial_query_parquet_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, "method not allowed")
+
+
+@router.post("/api/forensics/v1/financial/query.parquet")
+async def financial_query_parquet(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Same admission as the JSON query; return a deterministic Parquet attachment."""
+    return await _financial_query_export(request, "parquet")
+
+
+@router.api_route(
+    "/api/forensics/v1/financial/revisions",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_revisions_method_not_allowed(
     response: Response,
@@ -916,7 +1396,7 @@ async def financial_revisions(
 
 @router.api_route(
     "/api/forensics/v1/financial/packet",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_packet_method_not_allowed(
     response: Response,
@@ -967,7 +1447,7 @@ async def financial_packet(
 
 @router.api_route(
     "/api/forensics/v1/financial/statements",
-    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"],
 )
 def financial_statements_method_not_allowed(
     response: Response,
@@ -1015,6 +1495,32 @@ async def financial_statements(
             "X-FIF-Response-SHA256": result.sha256,
         },
     )
+
+
+# FIF V0-a MAJOR-1 fix: these handlers answer with the private 405 before any
+# real handler work runs, so the timed route does not record them at all — a
+# 405 is neither a latency sample nor a client-error count on the real route
+# template. (The alternative, keying the recorder by (method, path), would
+# break the SLO config's path-template keys.)
+_BYTE_IDENTICAL_EXPORT_PATHS = frozenset(
+    {
+        "/api/forensics/v1/financial/query.xlsx",
+        "/api/forensics/v1/financial/query.csv",
+        "/api/forensics/v1/financial/query.parquet",
+    }
+)
+
+_METHOD_NOT_ALLOWED_ENDPOINTS = frozenset(
+    {
+        financial_query_method_not_allowed,
+        financial_query_xlsx_method_not_allowed,
+        financial_query_csv_method_not_allowed,
+        financial_query_parquet_method_not_allowed,
+        financial_revisions_method_not_allowed,
+        financial_packet_method_not_allowed,
+        financial_statements_method_not_allowed,
+    }
+)
 
 
 __all__ = ["router", "require_site_full_user"]

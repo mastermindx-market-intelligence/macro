@@ -39,6 +39,9 @@ BUILT_AT = "2026-09-04T12:00:00Z"
 
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",
+    "_macro_command_macros.html.j2",
+    "_macro_command_figures.html.j2",
+    "_macro_command_fragment.html.j2",
     "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",
@@ -62,6 +65,13 @@ _TEMPLATE_NAMES = (
     "macro_suite_boot.js",
     "macro_suite.css",
     "macro_suite.js",
+    # F01 Macro Command P1: SHARED_ASSETS now also carries the page-level
+    # macro_command.css/.js (scripts/build_macro_suite_pages.py:52) — the
+    # isolated fixture root must carry both or `builder.render()`'s
+    # end-of-run `_atomic_copy` over every SHARED_ASSETS entry raises
+    # FileNotFoundError.
+    "macro_command.css",
+    "macro_command.js",
 )
 
 
@@ -470,8 +480,9 @@ def test_every_published_metric_id_has_a_reviewed_public_name() -> None:
 def test_a_percentile_is_never_silently_rescaled() -> None:
     """0.046 is a percentile on a 0-1 basis. Printing 4.6% would be a
     transformation the contract never declared."""
-    assert labels.fmt_number(0.046031746031746035) == "0.04603"
-    assert labels.fmt_ratio_pct(1.0) == "100%"
+    assert labels.fmt_number(0.046031746031746035) == "0.05"
+    assert "4.6%" not in (labels.fmt_number(0.046031746031746035) or "")
+    assert labels.fmt_ratio_pct(1.0) == "100.0%"
 
 
 # --------------------------------------------------------------------------
@@ -899,12 +910,14 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
-    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
+    """Neutralise the snapshot copy's contradiction and freshness so these tests exercise the boundary rule, not the precedence above it."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
-    # The shipped artifact currently carries a contradiction, which outranks
-    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    # A contradiction or a stale required source outranks a boundary watch, and
+    # the nightly artifact can carry either (2026-09-25: STALE_SOURCE). Clear
+    # both so this helper actually tests the 0.0 case.
     availability = snapshot.setdefault("availability", {})
     availability["contradiction"] = {"present": False}
+    availability["state"] = availability["worst_freshness"] = "CURRENT"
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}
@@ -965,3 +978,160 @@ def test_no_built_page_ever_emits_a_none_class_or_value(page: str, built_pages: 
     assert "mq-delta-None" not in html
     assert ">None<" not in html
     assert 'class="mq-delta mq-delta-"' not in html, "an empty sign class is the same bug"
+
+
+def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
+    """The bond desk's closed cycle-phase vocabulary renders reviewed EN/ZH (2026-10-02).
+
+    `scripts/build_bonds.py` PHASE emits {recession, early, mid, late}; the
+    national_debt workspace republishes the token as the categorical
+    `bond_desk_cycle_phase`. Without an OWNER_VALUE entry the token deslugs to
+    an ASCII ZH twin and the copy-law gate goes red (main, ci-pack-10).
+    """
+    expected = {
+        "recession": {"en": "Recession", "zh": "衰退"},
+        "early": {"en": "Early-cycle recovery", "zh": "周期早段复苏"},
+        "mid": {"en": "Mid-cycle", "zh": "周期中段"},
+        "late": {"en": "Late-cycle", "zh": "周期晚段"},
+    }
+    for token, pair in expected.items():
+        assert labels.value_pair(token) == pair, token
+
+
+def test_suite_section_navigation_uses_only_the_existing_shell_candidate() -> None:
+    """Execute the shipped IIFE, including initial boot and accepted-location events.
+
+    The small DOM supplies tab/section relationships and records effects; it does
+    not implement the resolver. Real geometry remains a browser acceptance check.
+    """
+    node = shutil.which("node")
+    assert node is not None, "the suite runtime regression requires Node"
+    harness = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync(process.argv[1], 'utf8');
+
+function mount(bridge, initial = '#history') {
+  const events = new Map(), scrolls = [], historyWrites = [];
+  let current = new URL('https://example.test/macro_liquidity_regime.html?scope=US' + initial);
+  let document;
+  function element(id, attrs = {}, parent = null) {
+    const listeners = new Map(), classes = new Set();
+    return {
+      id, attrs, parent, hidden: false, tabIndex: -1,
+      classList: {
+        toggle(name, on) { on ? classes.add(name) : classes.delete(name); },
+        add(name) { classes.add(name); }, remove(name) { classes.delete(name); },
+      },
+      getAttribute(name) { return Object.hasOwn(attrs, name) ? attrs[name] : null; },
+      setAttribute(name, value) { attrs[name] = String(value); },
+      removeAttribute(name) { delete attrs[name]; },
+      addEventListener(name, fn) { listeners.set(name, fn); },
+      fire(name, event = {}) { listeners.get(name)?.(event); },
+      focus() { document.activeElement = this; },
+      closest() { return Object.hasOwn(attrs, 'data-mq-panel') ? this : parent; },
+      scrollIntoView(options) {
+        assert.equal(this.closest().hidden, false, 'reveal before scrolling');
+        assert.equal(options.block, 'start');
+        scrolls.push(id);
+      },
+    };
+  }
+  const names = ['current', 'drivers', 'history'];
+  const panels = names.map(name => element('mq-panel-' + name, {'data-mq-panel': name}));
+  const tabs = names.map(name => element('tab-' + name, {'data-mq-tab': name}));
+  const target = element('mq-metrics-title', {}, panels[0]);
+  const outside = element('mq-shell');
+  const unknownPanel = element('unsupported', {'data-mq-panel': 'unsupported'});
+  const collision = element('current', {}, panels[2]);
+  const elements = new Map([...panels, ...tabs, target, outside, unknownPanel, collision].map(x => [x.id, x]));
+  document = {
+    readyState: 'complete', activeElement: null,
+    documentElement: element('html', {'data-lang': 'en'}),
+    getElementById(id) { return elements.get(id) || null; },
+    querySelector() { return null; },
+    querySelectorAll(selector) {
+      if (selector === '[data-mq-panel]') return panels;
+      if (selector === '[data-mq-tab]') return tabs;
+      return [];
+    },
+    addEventListener() {},
+  };
+  const window = {
+    get location() { return current; },
+    MMXSharedShell: bridge,
+    history: { replaceState(state, title, url) { historyWrites.push(url.toString()); current = new URL(url, current); } },
+    addEventListener(name, fn) { events.set(name, fn); },
+  };
+  vm.runInNewContext(source, {window, document, URL});
+  function check(name) {
+    assert.deepEqual(panels.filter(p => !p.hidden).map(p => p.attrs['data-mq-panel']), [name]);
+    for (const tab of tabs) {
+      const active = tab.attrs['data-mq-tab'] === name;
+      assert.equal(tab.attrs['aria-selected'], String(active));
+      assert.equal(tab.tabIndex, active ? 0 : -1);
+    }
+  }
+  function accept(hash, event = 'mmx:shell-location') {
+    current.hash = hash;
+    const before = current.href, writes = historyWrites.length;
+    events.get(event)();
+    assert.equal(current.href, before, 'resolution must preserve the exact URL');
+    assert.equal(historyWrites.length, writes, 'resolution must not publish history');
+  }
+  return {check, accept, scrolls, historyWrites, target, tabs, document, window};
+}
+
+// Standalone and an unrelated global retain their existing named-tab-only behavior.
+for (const bridge of [undefined, null, {}, {__mmxBridge: 'foreign', active: true}]) {
+  const page = mount(bridge);
+  for (const event of ['hashchange', 'mmx:shell-location']) {
+    page.accept('#mq-metrics-title', event); page.check('history');
+    page.accept('#drivers', event); page.check('drivers');
+    page.accept('#history', event);
+  }
+  assert.deepEqual(page.scrolls, []);
+  mount(bridge, '#mq-panel-history').check('current');
+}
+
+for (const active of [false, true]) {
+  const bridge = {__mmxBridge: 'mmx.shared-shell.v1', active};
+  for (const hash of ['#mq-metrics-title', '#mq%2Dmetrics%2Dtitle']) {
+    const page = mount(bridge, hash); page.check('current');
+    assert.deepEqual(page.scrolls, ['mq-metrics-title']);
+    assert.equal(page.window.location.hash, hash);
+    assert.equal(page.window.location.search, '?scope=US');
+    assert.deepEqual(page.historyWrites, []);
+  }
+  for (const name of ['current', 'drivers', 'history']) {
+    mount(bridge, '#' + name).check(name);
+    mount(bridge, '#mq-panel-' + name).check(name);
+  }
+  for (const event of ['hashchange', 'mmx:shell-location']) {
+    for (const from of ['drivers', 'history']) {
+      const page = mount(bridge, '#' + from);
+      page.accept('#mq-metrics-title', event); page.check('current');
+      assert.deepEqual(page.scrolls, ['mq-metrics-title']);
+    }
+    for (const hash of ['', '#missing', '#mq-shell', '#bad%ZZ', '#unsupported']) {
+      const page = mount(bridge); page.accept(hash, event); page.check('history');
+      assert.deepEqual(page.scrolls, []);
+    }
+    const precedence = mount(bridge);
+    precedence.accept('#current', event); precedence.check('current');
+    assert.deepEqual(precedence.scrolls, [], 'named tab wins over colliding section ID');
+  }
+  const keyboard = mount(bridge, '#current');
+  keyboard.tabs[1].fire('click'); keyboard.check('drivers');
+  keyboard.tabs[1].fire('keydown', {key: 'End', preventDefault() {}});
+  keyboard.check('history');
+  assert.equal(keyboard.document.activeElement, keyboard.tabs[2]);
+}
+console.log('suite candidate, standalone, fragment, history, scroll and keyboard controls passed');
+"""
+    result = subprocess.run(
+        [node, "-e", harness, str(TEMPLATES / "macro_suite.js")],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

@@ -1,0 +1,31 @@
+{
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-2-0",
+  "archive": "native/international-overview-mobile-light-en-zh-v1.zip",
+  "archive_sha256": "551cb8ea347c3b4837ccb5a84cf208037211ebe45667218cd1059c0dc4790c00",
+  "nodes": [
+    {
+      "node_id": "101-0",
+      "locale": "en",
+      "jsx_before_after_equal": true,
+      "jsx_sha256": "9c9bc4789ea2d1913c643b37e4e1afe0678205d63acff85e2f30e998c958a1f6",
+      "screenshot_sha256": "b13f1123a8fe66639e4f8242d980f9fc8f6391075b37a368b66ce5a54ca0e2d5",
+      "screenshot_bytes": 113364
+    },
+    {
+      "node_id": "14I-0",
+      "locale": "zh",
+      "jsx_before_after_equal": true,
+      "jsx_sha256": "ce436fb7687411b4da3af0f86b77e9aa6817a280e1e2c5e73fa038f43f711d39",
+      "screenshot_sha256": "128905dfe6152667726fbfb5a16b14d3b77a65d26d30258f66fad9c26ea5584a",
+      "screenshot_bytes": 96867
+    }
+  ],
+  "visual_review": "Astra inspected both native390px mobilelight screenshots; coolcanvas/whitepanels/hairlines and EN/ZH hierarchy",
+  "limits": [
+    "No desktop light named Overview artboard in the47-entry journey-page directory; not a whole-file absence claim",
+    "Target JSX unchanged before/after each screenshot; not an atomic whole-file snapshot",
+    "Illustrative values/TOPIX label are not production identities or qualification",
+    "No browser/actual data/rights/product acceptance or Paper edits; held targets untouched"
+  ]
+}

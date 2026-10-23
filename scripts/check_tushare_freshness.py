@@ -12,11 +12,14 @@ questions, but their authority differs:
   emits a warning and the lane continues.
 
 WHY THE ADVISORY EXISTS. ``collectors/tushare_client.py`` returns ``None`` — never
-raises — for no token, endpoint error, access denied, exhausted credits, or an
-empty response. Its callers omit the leg rather than fabricate a zero, and the
-multi-source collector normally degrades per source. Those individually-correct
-decisions let ``flow_hist.parquet`` and ``moneyflow.parquet`` freeze at
-2026-07-24 while pages kept rendering them through 2026-08-06.
+raises — for no token, pre-response transport failure, endpoint error, access
+denial, exhausted credits, or an empty response. Its callers omit the leg rather
+than fabricate a zero, and the multi-source collector normally degrades per
+source. Those individually-correct decisions let ``flow_hist.parquet`` and
+``moneyflow.parquet`` freeze at 2026-07-24 while pages kept rendering them through
+2026-08-06. The collector adapter now distinguishes auth rejection from transport
+failure, but store age alone still cannot: this advisory points operators to that
+existing per-run diagnosis rather than guessing from an old parquet date.
 
 Both checks are anchored to an exchange clock rather than to the store itself: a
 frozen store is perfectly self-consistent. The required broad close plane uses
@@ -200,9 +203,12 @@ def run(now: datetime | None = None) -> int:
     print(
         "::warning title=tushare plane cold::"
         + "; ".join(bad)
-        + ". The Tushare client returns None and never raises, so the collect step stays green "
-        "and pages keep rendering the old as-of date. Check TUSHARE_TOKEN is set and the "
-        "membership/积分 tier still covers moneyflow_dc (5000积分).",
+        + ". Store age alone cannot distinguish transport from credential/tier failure. "
+        "Inspect this asia-close run's china_tushare annotation or "
+        "data/run_status.json: tushare-transport-outage means verify runner DNS/network/TLS "
+        "and vendor reachability; tushare-auth-rejected means compare the vendor credential; "
+        "otherwise check endpoint entitlement/积分/plan coverage. Do not rotate TUSHARE_TOKEN "
+        "from store age alone.",
         flush=True,
     )
     return 0  # advisory: never red the collection lane over one gated source

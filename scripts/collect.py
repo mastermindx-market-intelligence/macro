@@ -144,6 +144,11 @@ def _run_one(key: str, cls, full_history: bool):
     return res, round(dt, 1)
 
 
+
+def _current_result_status(results: list[FetchResult], source: str) -> str | None:
+    """Status for one adapter in THIS invocation; never an older store receipt."""
+    return next((result.status for result in results if result.source == source), None)
+
 def all_adapters() -> dict:
     """Import lazily so one module's import-time failure can't kill the run."""
     registry = {}
@@ -243,6 +248,7 @@ def all_adapters() -> dict:
         ("china_qvix", "collectors.china_qvix", "ChinaQvixAdapter"),           # 300/50ETF option-implied vol ("China VIX") — fear/euphoria + drawdown
         ("china_credit", "collectors.china_credit", "ChinaCreditAdapter"),     # 社融 TSF (PBoC direct; mofcom mirror froze at 2026-04 — 2026-07 repair)
         ("china_tushare", "collectors.china_tushare", "ChinaTushareAdapter"),  # gated Tushare plane (mktcap/moneyflow/margin/chips) — never CI-invoked before, froze 2026-06-21
+        ("gold_china_basis", "collectors.china_gold_basis", "ChinaGoldBasisAdapter"),  # Gold product source: SGE Au99.99 vs licensed global XAU/CNY; US-nightly lane already carries both credentials
         ("china_property", "collectors.china_property", "ChinaPropertyAdapter"),  # 70-city price breadth + climate + CGB + rebar/iron-ore
         ("china_pboc", "collectors.china_pboc", "ChinaPbocAdapter"),           # PBoC corridor legs: FX reserves+gold / repo fixings FR007 / USD-CNY ref (engine/china_policy_watch.py)
         ("china_yield_spread", "collectors.china_yield_spread", "ChinaYieldSpreadAdapter"),  # CN vs US sovereign curve + slope + CN-US spread — ACCRUING (no engine consumer yet)
@@ -557,7 +563,8 @@ def _required_group_health(
     return check_china_search_core(now)
 
 
-def main() -> int:
+def _build_arg_parser() -> argparse.ArgumentParser:
+    """The scripts.collect CLI (main() and the nightly-path tests parse with this)."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--full-history", action="store_true")
     ap.add_argument("--only", default="")
@@ -573,7 +580,110 @@ def main() -> int:
                     help="skip the shadow_importance_v0 + _pit passes (~13-14 min); "
                          "daily.yml collect-core sets this — the passes run standalone "
                          "in the collect_tail job so the engine job starts earlier")
-    args = ap.parse_args()
+    return ap
+
+
+def _end_of_collect_quality(args: argparse.Namespace, registry: dict,
+                            results: list[FetchResult]) -> None:
+    """End-of-collect quality steps; main() calls this once, after every adapter ran.
+
+    1. U.S. structural-roster audit — OBSERVATIONAL (never mutates membership), so it is
+       NOT behind the all-universe gate: the ordinary nightly lane is a partial run
+       (--exclude-group asia) and must still refresh its receipt. It runs whenever this
+       shard's registry includes breadth, and audits only when breadth qualified in THIS
+       invocation (reconcile_membership.audit_us_sector_membership writes nothing otherwise).
+    2. DATA-QUALITY GATE — unchanged: skipped on a partial run (the universe/macro audits
+       would falsely flag the sources that run never refreshed) and behind an explicit
+       opt-out. The regional membership reconciler MUTATES basket files, so it stays here.
+       A >5% universe failure raises RuntimeError — the intended, conspicuous abort.
+    """
+    if not args.skip_quality and "breadth" in registry:
+        from scripts import reconcile_membership
+        try:
+            reconcile_membership.audit_us_sector_membership(
+                _current_result_status(results, "breadth"))
+        except Exception as e:  # noqa: BLE001 — an observational audit never aborts collect
+            log.error("[us-sector-audit] U.S. structural audit crashed (non-fatal): %s", e)
+
+    if args.skip_quality:
+        log.info("[quality] data-quality gate skipped (--skip-quality).")
+    elif args.only or args.group or args.exclude_group:
+        log.info("[quality] data-quality gate skipped on partial run "
+                 "(only=%s group=%s exclude=%s) — the all-universe audit would false-flag "
+                 "sources this shard did not refresh.", args.only or "-",
+                 args.group or "-", args.exclude_group or "-")
+    else:
+        # Regional membership↔cache reconciler runs before run_quality_audits(),
+        # not first overall: the observational U.S. structural audit above already
+        # ran. It may prune intl/china/canada/hk members that drifted off a rebuilt
+        # *_search close cache (dated changelog entry), so those read-only audits
+        # grade the healed state. SUITES is regional only, so the reconciler never
+        # touches data/baskets. Its guard refusals abort like the gate; its own
+        # crash is non-fatal like any audit's.
+        from scripts import reconcile_membership
+        try:
+            reconcile_membership.run()
+        except reconcile_membership.PruneGuardError:
+            raise
+        except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
+            log.error("[reconcile] membership reconciler crashed (non-fatal): %s", e)
+        run_quality_audits()
+
+
+def _run_shared_qledger_postcollect(root, *, only: str) -> None:
+    """Keep shared QLedger issuance out of narrow --only refreshes.
+
+    Weekly, Smart Money, Government Revenue and Intl ETF all invoke collect
+    with --only; those adapter-scoped calls must not implicitly register
+    Intel Hub claims or grade the full ledger. Full/region collection and
+    standalone grading keep their incumbent contracts. This does not fence
+    other explicit producers or qualify native storage activation.
+    """
+    if only:
+        log.info("[qledger] skip shared registrar and grader on partial "
+                 "--only=%s; full/region collection owns this work", only)
+        return
+
+    # qledger adapters — register today's claims from each desk so the nightly
+    # grader can grade them at maturity. Idempotent; non-fatal.
+    try:
+        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
+        _hub_result = _hub_backfill(root)
+        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
+                 _hub_result.get("n_registered", 0),
+                 _hub_result.get("n_blocked", 0),
+                 _hub_result.get("n_rejected", 0))
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("qledger intel_hub adapter failed: %s", e)
+
+    # qledger nightly grader — runs after quality audits so the parquet layer is
+    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
+    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
+    _grade_qledger()
+
+
+def _run_source_registry_postcollect(*, only: str) -> None:
+    """Keep extra narrative QLedger issuance out of targeted --only runs.
+
+    The original source_registry itself checks COLLECT_LANE=nightly, but that
+    clock is not evidence that an explicit --only adapter refresh owns its
+    other QLedger claim families. Preserve full nightly/Asia invocation and
+    the original nonfatal failure semantics; standalone source_registry is
+    unchanged. This is source safety, not full legacy-writer exclusion.
+    """
+    if only:
+        log.info("[qledger] source_registry skipped on scoped --only=%s", only)
+        return
+
+    try:
+        from engine.source_registry import run_as_collect_step as _src_reg_run
+        _src_reg_run()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("source_registry nightly_run step failed: %s", e)
+
+
+def main() -> int:
+    args = _build_arg_parser().parse_args()
 
     registry = all_adapters()
     if args.only:
@@ -1019,30 +1129,7 @@ def main() -> int:
     ok = sum(1 for r in results if r.status in ("ok", "stale"))
     log.info("collection done: %d/%d sources usable", ok, len(results))
 
-    # End-of-collection DATA-QUALITY GATE. Runs LAST so it audits everything just collected.
-    # Skipped on a partial `--only` run (the universe/macro audits would falsely flag the
-    # sources that run never refreshed) and behind an explicit opt-out. A >5% universe
-    # failure raises RuntimeError here — the intended, conspicuous abort.
-    if args.skip_quality:
-        log.info("[quality] data-quality gate skipped (--skip-quality).")
-    elif args.only or args.group or args.exclude_group:
-        log.info("[quality] data-quality gate skipped on partial run "
-                 "(only=%s group=%s exclude=%s) — the all-universe audit would false-flag "
-                 "sources this shard did not refresh.", args.only or "-",
-                 args.group or "-", args.exclude_group or "-")
-    else:
-        # Membership↔cache reconciler runs FIRST: it may prune basket members that drifted
-        # off a rebuilt *_search close cache (dated changelog entry), so the read-only
-        # audits grade the healed state. Its guard refusals abort like the gate; its own
-        # crash is non-fatal like any audit's.
-        from scripts import reconcile_membership
-        try:
-            reconcile_membership.run()
-        except reconcile_membership.PruneGuardError:
-            raise
-        except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
-            log.error("[reconcile] membership reconciler crashed (non-fatal): %s", e)
-        run_quality_audits()
+    _end_of_collect_quality(args, registry, results)
 
     # importance_v0 SHADOW lane (W3) — score the qbus store + register the
     # novelty-first challenger's HIGH/LOW band claims. Shadow-only; never rendered.
@@ -1134,22 +1221,7 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("europe_news_intel ingest step failed: %s", e)
 
-    # qledger adapters — register today's claims from each desk so the nightly
-    # grader can grade them at maturity. Idempotent; non-fatal.
-    try:
-        from scripts.backfill_qledger_intel_hub import run as _hub_backfill
-        _hub_result = _hub_backfill(config.ROOT)
-        log.info("qledger intel_hub adapter: +%d claims (blocked=%d rejected=%d)",
-                 _hub_result.get("n_registered", 0),
-                 _hub_result.get("n_blocked", 0),
-                 _hub_result.get("n_rejected", 0))
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("qledger intel_hub adapter failed: %s", e)
-
-    # qledger nightly grader — runs after quality audits so the parquet layer is
-    # fully refreshed. Non-fatal: a grader crash must not abort the collection run.
-    from scripts.grade_qledger import run_as_collect_step as _grade_qledger
-    _grade_qledger()
+    _run_shared_qledger_postcollect(config.ROOT, only=args.only)
 
     # CCTV 新闻联播 backfill-finalization watcher (W4/D5) — drives a three-state
     # machine (SCRAPING → FINALIZING → FINALIZED) that monitors the long-running
@@ -1352,14 +1424,10 @@ def main() -> int:
                   os.environ.get("COLLECT_LANE"))
 
     # ---- Narrative Ignition W4 — source_registry + qledger claim families (2026-07-10) ----
-    # Registers narrative_source_call + narrative_flare_state claims and resolves matured
-    # source_call claims (Beta-Bernoulli registry update). All writes nightly-gated.
-    # Runs AFTER W2 collectors so first_coverage.parquet is fresh. Non-fatal.
-    try:
-        from engine.source_registry import run_as_collect_step as _src_reg_run
-        _src_reg_run()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("source_registry nightly_run step failed: %s", e)
+    # Preserve the one nightly/full-collection owner of narrative claims and
+    # matured grading. A --only refresh is adapter-scoped even if COLLECT_LANE
+    # carries "nightly" (operator invocation or reused execution context).
+    _run_source_registry_postcollect(only=args.only)
 
     required_rc = _required_group_health(
         args.group, skip_quality=args.skip_quality, only=args.only)

@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/research_screener.html.j2
+  - templates/research_screener.css
+  - site/research_screener.css
+  - engine/research_screener.py
+  - scripts/build_research_screener.py
+  - tests/fixtures/research_screener/AAPL.json
+  - tests/fixtures/research_screener/MSFT.json
+manifest: mockups/evidence/b-f06-4-research-screener/manifest.json

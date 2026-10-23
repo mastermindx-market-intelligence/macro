@@ -1,0 +1,61 @@
+{
+  "synthetic": true,
+  "assertion": {
+    "assertion_ref": ""
+  },
+  "event_workspace": {
+    "fictional_issuer_only": true
+  },
+  "omissions": [],
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "domain": {
+    "anchor_theme_id": "theme:copper_steel_electrify",
+    "slice_key": "mining_copper_economics"
+  },
+  "account_generation": "synthetic-copper-page-1",
+  "revision_tuple": [
+    [
+      "account_generation",
+      "synthetic-copper-page-1"
+    ],
+    [
+      "source",
+      "synthetic-copper-source-1"
+    ]
+  ],
+  "expected": {
+    "signed_native_blocks": [
+      {
+        "measure": "reported operating income",
+        "value": 1250,
+        "basis": "fictional reported dollars"
+      }
+    ],
+    "reported_only_economics": []
+  },
+  "issuer": {
+    "name": "Ardent Copper Holdings",
+    "cik": "0000000421",
+    "fictional": true
+  },
+  "source": {
+    "url": "https://example.invalid/ardent-copper-synthetic.xhtml",
+    "rights_entitled": true,
+    "rights_revision": "synthetic-rights-copper-1",
+    "basis": "Ardent Copper Holdings fictional reported dollars.",
+    "digest": "synthetic-copper-source-1"
+  },
+  "economics": {
+    "measure": "reported operating income",
+    "value": 1250,
+    "basis": "fictional reported dollars",
+    "stream_threshold": 250,
+    "positive_witness": true
+  }
+}

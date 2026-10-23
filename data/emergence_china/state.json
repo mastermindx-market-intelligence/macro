@@ -1,32 +1,32 @@
 {
-  "1ae477edc89d": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 60.6
+  "2bc52f195aa4": {
+    "name_en": "Emerging Consumer Defensive cluster",
+    "name_zh": "\u65b0\u5174 Consumer Defensive \u96c6\u7fa4",
+    "score": 48.1
   },
-  "9625ac571c1c": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
-    "score": 58.4
+  "61a55f63f603": {
+    "name_en": "Emerging Basic Materials cluster",
+    "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
+    "score": 59.9
   },
-  "a1dbe6358f19": {
-    "name_en": "Emerging Utilities cluster",
-    "name_zh": "\u65b0\u5174 Utilities \u96c6\u7fa4",
-    "score": 48.0
-  },
-  "b347010c3cd9": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
-    "score": 56.8
-  },
-  "c00427ef8be6": {
-    "name_en": "Emerging Technology cluster",
-    "name_zh": "\u65b0\u5174 Technology \u96c6\u7fa4",
-    "score": 61.8
-  },
-  "f223cbb977ff": {
+  "bdde6e716db4": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 73.8
+    "score": 41.8
+  },
+  "bf5078f8b362": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 52.6
+  },
+  "c51315794b18": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Basic Materials",
+    "score": 42.0
+  },
+  "e3127bb5e85c": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 50.3
   }
 }
