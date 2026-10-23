@@ -122,3 +122,28 @@ def complete_archive_inventory(transaction: dict, raw_uris: bytes) -> tuple[Arch
     archives = tuple(found[key] for key in expected)
     make_download_plan(archives)
     return archives
+
+
+def trusted_package_indexes_argv() -> tuple[str, ...]:
+    # cmdline/apt-get.cc emits metaIndex::IsTrusted for existing targets.
+    # Fixed-format native output excludes origins/configuration/credentials.
+    return ('/usr/bin/apt-get','indextargets','--release-info','--format','$(TRUSTED)','Identifier: Packages')
+
+
+def require_trusted_package_indexes(raw: bytes) -> None:
+    if type(raw) is not bytes or not 0 < len(raw) <= 4096 or not raw.endswith(b'\n'):
+        raise AcquisitionRefused('NATIVE_INDEX_TRUST_UNPROVEN')
+    rows=raw.splitlines()
+    if not 1 <= len(rows) <= 256 or raw != b'yes\n' * len(rows):
+        raise AcquisitionRefused('NATIVE_INDEX_TRUST_UNPROVEN')
+
+
+def completion_download_argv(*, hook: str, cache: str) -> tuple[str, ...]:
+    hook, cache = _job_path(hook), _job_path(cache)
+    return ('/usr/bin/apt-get','--download-only','-o','APT::Sandbox::User=_apt','-o','APT::Get::Fix-Missing=false',
+            '-o','APT::Get::AllowUnauthenticated=false','-o','Debug::NoLocking=false',
+            '-o','Acquire::AllowInsecureRepositories=false',
+            '-o','Acquire::AllowDowngradeToInsecureRepositories=false',
+            '-o',f'Dir::Cache::Archives={cache}',
+            '-o',f'AptCli::Hooks::Install::={shlex.quote(hook)} json',
+            *INHERITED_INSTALL_FLAGS,*DIRECT_PACKAGES)

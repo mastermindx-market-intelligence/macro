@@ -145,6 +145,8 @@ class AcquisitionResult:
     installation: str  # never_started, passed, failed, timed_out, unknown
     reason: str
     observations: tuple[tuple[int, str, str], ...] = ()
+    initial_download_failure: str | None = None
+    completion: ChildResult | None = None
 
 
 class NativeBackend(Protocol):
@@ -162,6 +164,7 @@ class NativeBackend(Protocol):
     def verify_archive(self, index: int, archive: Archive) -> None: ...
     def install_frozen(self, original: tuple[Archive, ...], deadline: float) -> ChildResult: ...
     def cleanup_success(self) -> None: ...
+    def complete_native_transaction(self, original: tuple[Archive, ...], attempt: AcquisitionResult, deadline: float) -> ChildResult | None: ...
 
 
 def acquire_and_install(plan: DownloadPlan, backend: NativeBackend, *, deadline: float) -> AcquisitionResult:
@@ -226,25 +229,43 @@ def acquire_and_install(plan: DownloadPlan, backend: NativeBackend, *, deadline:
             break
     if uncertain:
         return AcquisitionResult("timed_out" if backend.now() >= deadline else "failed", "unknown", tuple(complete), tuple(active), "never_started", failed, tuple(history))
+    initial_failure = None
+    completion = None
     if failed:
-        return AcquisitionResult("failed", "settled", tuple(complete), (), "never_started", failed, tuple(history))
+        original = AcquisitionResult("failed", "settled", tuple(complete), (), "never_started", failed, tuple(history))
+        passed = {i for i, outcome, settlement in history if outcome == "passed" and settlement == "settled"}
+        handoff = getattr(backend, "complete_native_transaction", None)
+        if (failed != "NATIVE_DOWNLOAD_FAILED" or active or passed != set(complete) or
+                any(settlement != "settled" or outcome not in {"passed", "failed"} for _, outcome, settlement in history) or
+                not callable(handoff) or backend.now() >= deadline):
+            return original
+        try:
+            completion = handoff(plan.transaction, original, deadline)
+            if completion is None:  # explicit refusal before completion acquisition
+                return original
+            initial_failure = failed
+            if (not isinstance(completion, ChildResult) or completion.outcome != "passed" or completion.settlement != "settled"):
+                return AcquisitionResult("timed_out" if backend.now() >= deadline else "failed", "unknown", tuple(complete), (), "never_started", "NATIVE_COMPLETION_UNPROVEN", tuple(history), initial_failure, completion if isinstance(completion, ChildResult) else None)
+        except Exception:
+            return AcquisitionResult("timed_out" if backend.now() >= deadline else "failed", "unknown", tuple(complete), (), "never_started", "NATIVE_COMPLETION_RESPONSE_UNKNOWN", tuple(history), failed, ChildResult("failed", "unknown"))
+        complete = list(range(len(plan.transaction)))
     if backend.now() >= deadline:
-        return AcquisitionResult("timed_out", "settled", tuple(complete), (), "never_started", "TOTAL_DEADLINE", tuple(history))
+        return AcquisitionResult("timed_out", "settled", tuple(complete), (), "never_started", "TOTAL_DEADLINE", tuple(history), initial_failure, completion)
     try:
         result = backend.install_frozen(plan.transaction, deadline)
         if not isinstance(result, ChildResult) or result.settlement != "settled" or result.outcome not in {"passed", "failed"}:
-            return AcquisitionResult("timed_out" if isinstance(result, ChildResult) and result.outcome == "timed_out" else "failed", "unknown", tuple(complete), (), result.outcome if isinstance(result, ChildResult) else "unknown", "INSTALLATION_UNPROVEN", tuple(history))
+            return AcquisitionResult("timed_out" if isinstance(result, ChildResult) and result.outcome == "timed_out" else "failed", "unknown", tuple(complete), (), result.outcome if isinstance(result, ChildResult) else "unknown", "INSTALLATION_UNPROVEN", tuple(history), initial_failure, completion)
         if result.outcome != "passed":
-            return AcquisitionResult("failed", "settled", tuple(complete), (), "failed", "NATIVE_INSTALL_FAILED", tuple(history))
+            return AcquisitionResult("failed", "settled", tuple(complete), (), "failed", "NATIVE_INSTALL_FAILED", tuple(history), initial_failure, completion)
     except Exception:
-        return AcquisitionResult("failed", "unknown", tuple(complete), (), "unknown", "INSTALL_RESPONSE_UNKNOWN", tuple(history))
+        return AcquisitionResult("failed", "unknown", tuple(complete), (), "unknown", "INSTALL_RESPONSE_UNKNOWN", tuple(history), initial_failure, completion)
     if backend.now() >= deadline:
-        return AcquisitionResult("timed_out", "settled", tuple(complete), (), "passed", "TOTAL_DEADLINE_AFTER_INSTALL", tuple(history))
+        return AcquisitionResult("timed_out", "settled", tuple(complete), (), "passed", "TOTAL_DEADLINE_AFTER_INSTALL", tuple(history), initial_failure, completion)
     try:
         backend.cleanup_success()
     except Exception as error:
-        return AcquisitionResult("timed_out" if getattr(error, "outcome", None) == "timed_out" else "failed", "unknown", tuple(complete), (), "passed", "CLEANUP_RESPONSE_UNKNOWN", tuple(history))
-    return AcquisitionResult("passed", "settled", tuple(complete), (), "passed", "NATIVE_TRANSACTION_COMPLETE", tuple(history))
+        return AcquisitionResult("timed_out" if getattr(error, "outcome", None) == "timed_out" else "failed", "unknown", tuple(complete), (), "passed", "CLEANUP_RESPONSE_UNKNOWN", tuple(history), initial_failure, completion)
+    return AcquisitionResult("passed", "settled", tuple(complete), (), "passed", "NATIVE_TRANSACTION_COMPLETE", tuple(history), initial_failure, completion)
 
 
 def verify_payload(archive: Archive, payload: bytes) -> None:

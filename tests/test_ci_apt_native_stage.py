@@ -278,3 +278,169 @@ def test_native_reported_error_categories_are_finite_bounded_and_never_echo_priv
                                   ['AUTH',{'raw':'SECRET'}], ['UNCLASSIFIED','AUTH'], ['AUTH']*100])
 def test_native_diagnostic_boundary_rejects_malformed_or_untrusted_enum_payload(value):
     assert STAGE.sanitize_reported_errors(value) == ['UNCLASSIFIED']
+
+
+def completion_prepared(tmp_path,monkeypatch):
+    from dataclasses import replace
+    import hashlib
+    first=archive();second=replace(first,package='second-font',filename='second-font_1.0_all.deb',sha256=hashlib.sha256(b'next').hexdigest(),uri='http://azure.archive.ubuntu.com/ubuntu/pool/main/s/second-font/second-font_1.0_all.deb')
+    records=[first,second];tx=transaction();tx['packages'].append({**copy.deepcopy(tx['packages'][0]),'name':'second-font'})
+    STAGE.retain_once(tmp_path/'archives.json',[a.__dict__ for a in records]);STAGE.retain_once(tmp_path/'frozen-native.json',tx)
+    for i,outcome in enumerate(['passed','failed']):
+        d=tmp_path/f'download-{i}';d.mkdir()
+        if i==0:(d/first.filename).write_bytes(b'data')
+        row={'mode':'download','index':i,'outcome':outcome,'settlement':'settled','returncode':0 if i==0 else 100}
+        if i==1:row['reported_errors']=['FETCH']
+        STAGE.retain_once(tmp_path/f'download-result-{i}.json',row)
+    monkeypatch.setattr(STAGE.time,'monotonic',lambda:100)
+    monkeypatch.setattr(STAGE.pwd,'getpwnam',lambda _:SimpleNamespace(pw_uid=os.geteuid(),pw_gid=os.getegid()))
+    monkeypatch.setattr(STAGE.os,'chown',lambda *a:None)
+    verify=STAGE.verify_file
+    monkeypatch.setattr(STAGE,'verify_file',lambda path,expected,**kwargs:verify(path,expected,immutable=False))
+    monkeypatch.setattr(STAGE,'completion_download_argv',lambda **kw:('native-completion',kw['cache']))
+    return records,tx
+
+
+def test_native_completion_reuses_only_verified_archives_and_proves_entire_frozen_transaction(tmp_path,monkeypatch):
+    records,tx=completion_prepared(tmp_path,monkeypatch);events=[]
+    def native(argv,**kw):
+        events.append((argv,kw));assert kw['deadline']==600
+        if argv==STAGE.trusted_package_indexes_argv():return 0,b'yes\n'
+        cache=tmp_path/'completion-cache'
+        assert (cache/records[0].filename).read_bytes()==b'data' and not (cache/records[1].filename).exists()
+        (cache/records[1].filename).write_bytes(b'next');STAGE.retain_once(tmp_path/'completion-native.json',tx)
+        return 0,b'complete'
+    monkeypatch.setattr(STAGE,'observe_command',native)
+    with STAGE.acquisition_admission(tmp_path,'complete'):
+        result=STAGE.run_stage(tmp_path,'complete',None,600)
+    assert result=={'outcome':'passed','settlement':'settled','returncode':0}
+    assert len(events)==2 and STAGE.read_json(tmp_path/'completion-verified.json')==[a.__dict__ for a in records]
+    assert (tmp_path/'download-0'/records[0].filename).read_bytes()==b'data'
+    assert not (tmp_path/'download-1'/records[1].filename).exists()  # no failed selector replay/rewrite
+    assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'
+    with pytest.raises(STAGE.AcquisitionRefused,match='COMPLETION_ALREADY_ATTEMPTED'):
+        with STAGE.acquisition_admission(tmp_path,'complete'):pytest.fail('no repeat completion')
+    with pytest.raises(STAGE.AcquisitionRefused,match='COMPLETION_ALREADY_ATTEMPTED'):
+        with STAGE.acquisition_admission(tmp_path,'download'):pytest.fail('no later selector launch')
+
+
+@pytest.mark.parametrize('fault',['trust-no','trust-empty','trust-exit','missing','hash','transaction','response-loss','nonzero','sandbox','symlink'])
+def test_native_completion_faults_preserve_originals_and_refuse_install_cleanup_or_new_attempt(tmp_path,monkeypatch,fault):
+    records,tx=completion_prepared(tmp_path,monkeypatch);events=[]
+    def native(argv,**kw):
+        events.append(argv)
+        if argv==STAGE.trusted_package_indexes_argv():
+            return (100,b'') if fault=='trust-exit' else (0,b'no\n' if fault=='trust-no' else b'' if fault=='trust-empty' else b'yes\n')
+        if fault=='response-loss':raise STAGE.NativeUnknown('original uncertain',4242)
+        cache=tmp_path/'completion-cache'
+        if fault=='symlink':(cache/records[1].filename).symlink_to(cache/records[0].filename)
+        elif fault!='missing':(cache/records[1].filename).write_bytes(b'evil' if fault=='hash' else b'next')
+        actual=copy.deepcopy(tx)
+        if fault=='transaction':actual['packages'][0]['automatic']=True
+        STAGE.retain_once(tmp_path/'completion-native.json',actual)
+        return (100,b'') if fault=='nonzero' else (0,b'unsandboxed' if fault=='sandbox' else b'complete')
+    monkeypatch.setattr(STAGE,'observe_command',native)
+    with pytest.raises(Exception):
+        with STAGE.acquisition_admission(tmp_path,'complete'):STAGE.run_stage(tmp_path,'complete',None,600)
+    assert (tmp_path/'completion-attempt').is_dir() and not (tmp_path/'completion-verified.json').exists()
+    assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'
+    assert not (tmp_path/'install-attempt').exists()
+    assert len(events)==(1 if fault.startswith('trust-') else 2)
+
+
+@pytest.mark.parametrize('fault',['unknown','AUTH','HASH','PERMISSION','METHOD','MIRROR_LIST','UNCLASSIFIED','missing-receipt','partial','deadline'])
+def test_native_completion_admission_cannot_promote_unverified_inputs(tmp_path,monkeypatch,fault):
+    records,tx=completion_prepared(tmp_path,monkeypatch)
+    if fault=='deadline':monkeypatch.setattr(STAGE.time,'monotonic',lambda:600)
+    elif fault=='partial':(tmp_path/'download-0'/records[0].filename).write_bytes(b'bad')
+    else:
+        p=tmp_path/'download-result-1.json';row=STAGE.read_json(p);p.unlink()
+        if fault!='missing-receipt':
+            if fault=='unknown':row['settlement']='unknown'
+            else:row['reported_errors']=[fault]
+            STAGE.retain_once(p,row)
+    monkeypatch.setattr(STAGE,'observe_command',lambda *a,**k:pytest.fail('no native completion on unqualified input'))
+    with pytest.raises(Exception):
+        with STAGE.acquisition_admission(tmp_path,'complete'):STAGE.run_stage(tmp_path,'complete',None,600)
+    assert not (tmp_path/'completion-attempt').exists()
+
+
+def test_native_completion_admission_lock_refuses_existing_reader_and_symlink(tmp_path):
+    with STAGE.acquisition_admission(tmp_path,'download'):
+        with pytest.raises(BlockingIOError):
+            with STAGE.acquisition_admission(tmp_path,'complete'):pytest.fail('active native child')
+    (tmp_path/'acquisition.lock').unlink();(tmp_path/'acquisition.lock').symlink_to(tmp_path/'foreign')
+    with pytest.raises(OSError):
+        with STAGE.acquisition_admission(tmp_path,'complete'):pytest.fail('symlink lock')
+
+
+def test_native_completion_marker_sync_failure_precedes_any_native_effect(tmp_path,monkeypatch):
+    completion_prepared(tmp_path,monkeypatch)
+    monkeypatch.setattr(STAGE,'sync_directory',lambda *a:(_ for _ in ()).throw(OSError('sync unavailable')))
+    monkeypatch.setattr(STAGE,'observe_command',lambda *a,**k:pytest.fail('marker must be persisted before effect'))
+    with pytest.raises(OSError):
+        with STAGE.acquisition_admission(tmp_path,'complete'):STAGE.run_stage(tmp_path,'complete',None,600)
+    assert (tmp_path/'completion-attempt').is_dir()
+
+
+def test_original_native_download_result_survives_response_loss(tmp_path,monkeypatch):
+    monkeypatch.setattr(STAGE,'root_directory',lambda:tmp_path)
+    monkeypatch.setattr(STAGE.sys,'argv',['stage','download','600','0'])
+    result={'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+    monkeypatch.setattr(STAGE,'run_stage',lambda *a:copy.deepcopy(result))
+    class LostResponse:
+        def write(self,*a):raise OSError('response lost after result retention')
+    monkeypatch.setattr(STAGE.sys,'stdout',SimpleNamespace(buffer=LostResponse()))
+    with pytest.raises(OSError):STAGE.main()
+    retained=STAGE.read_json(tmp_path/'download-result-0.json')
+    assert retained=={**result,'mode':'download','index':0}
+
+
+@pytest.mark.parametrize('changed',[False,True])
+def test_completion_json_hook_preserves_frozen_transaction_and_requires_exact_actions(tmp_path,changed):
+    STAGE.json_hook(tmp_path,Duplex(hook_messages(transaction())))
+    original=(tmp_path/'frozen-native.json').read_bytes();(tmp_path/'completion-attempt').mkdir()
+    tx=transaction()
+    if changed:tx['packages'][0]['automatic']=True
+    if changed:
+        with pytest.raises(ValueError):STAGE.json_hook(tmp_path,Duplex(hook_messages(tx)))
+        assert not (tmp_path/'completion-native.json').exists()
+    else:
+        STAGE.json_hook(tmp_path,Duplex(hook_messages(tx)))
+        assert STAGE.read_json(tmp_path/'completion-native.json')==STAGE.read_json(tmp_path/'frozen-native.json')
+    assert (tmp_path/'frozen-native.json').read_bytes()==original and not (tmp_path/'actual-native.json').exists()
+
+
+@pytest.mark.parametrize('tampered',[False,True])
+def test_existing_no_download_install_requires_exact_completed_members(tmp_path,monkeypatch,tampered):
+    records,tx=completion_prepared(tmp_path,monkeypatch)
+    (tmp_path/'completion-attempt').mkdir();cache=tmp_path/'completion-verified-cache';cache.mkdir()
+    for archive,data in zip(records,[b'data',b'next']):(cache/archive.filename).write_bytes(data)
+    witness=[a.__dict__ for a in records]
+    if tampered:witness[0]={**witness[0],'sha256':'0'*64}
+    STAGE.retain_once(tmp_path/'completion-verified.json',witness)
+    monkeypatch.setattr(STAGE,'no_download_install_argv',lambda **kw:('existing-no-download-install',kw['cache']))
+    calls=[]
+    def native(argv,**kw):
+        calls.append(argv);assert kw['deadline']==600
+        for archive,data in zip(records,[b'data',b'next']):assert (tmp_path/'install-cache'/archive.filename).read_bytes()==data
+        STAGE.retain_once(tmp_path/'actual-native.json',tx);STAGE.retain_once(tmp_path/'preinstall-actions.json',[])
+        return 0,b''
+    monkeypatch.setattr(STAGE,'observe_command',native)
+    monkeypatch.setattr(STAGE,'validate_actions',lambda frozen,actions,inventory,path,**kw:None)
+    if tampered:
+        with pytest.raises(STAGE.AcquisitionRefused,match='COMPLETION_ARCHIVES_UNPROVEN'):STAGE.run_stage(tmp_path,'install',None,600)
+        assert not calls
+    else:
+        assert STAGE.run_stage(tmp_path,'install',None,600)['outcome']=='passed' and len(calls)==1
+    assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'
+
+
+def test_native_completion_privileged_stage_refuses_existing_install_attempt(tmp_path,monkeypatch):
+    completion_prepared(tmp_path,monkeypatch)
+    (tmp_path/'install-attempt').mkdir()
+    monkeypatch.setattr(STAGE,'observe_command',lambda *a,**k:pytest.fail('prior install cannot authorize new acquisition'))
+    with pytest.raises(STAGE.AcquisitionRefused,match='INSTALL_ALREADY_ATTEMPTED'):
+        with STAGE.acquisition_admission(tmp_path,'complete'):STAGE.run_stage(tmp_path,'complete',None,600)
+    assert (tmp_path/'install-attempt').is_dir() and not (tmp_path/'completion-attempt').exists()
+    assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'

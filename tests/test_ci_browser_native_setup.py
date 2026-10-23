@@ -210,3 +210,64 @@ def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_
     assert 'downloads[index,returncode,reported_errors]='+expected in inner['detail']
     assert 'SECRET' not in raw and 'private.invalid' not in raw
     assert 'cleanup' not in [event[0] for event in events]
+
+
+def actual_completion_backend(monkeypatch, *, diagnostic=None):
+    from scripts.ci_apt_cold_acquisition import ChildResult,AcquisitionResult
+    backend=SETUP.NativeAptBackend('/tmp/ci-apt-fixture',{},SimpleNamespace(transaction=('bound',)))
+    backend.records={0:{'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':diagnostic or ['FETCH']}}
+    attempt=AcquisitionResult('failed','settled',(),(),'never_started','NATIVE_DOWNLOAD_FAILED',((0,'failed','settled'),))
+    monkeypatch.setattr(SETUP.time,'monotonic',lambda:100)
+    return backend,attempt
+
+
+def test_native_owner_completion_uses_original_bound_attempt_same_deadline_and_keeps_staging(monkeypatch):
+    backend,attempt=actual_completion_backend(monkeypatch);calls=[]
+    monkeypatch.setattr(backend,'stage',lambda mode,deadline:calls.append((mode,deadline)) or {'outcome':'passed','settlement':'settled'})
+    result=backend.complete_native_transaction(('bound',),attempt,600)
+    assert result.outcome=='passed' and result.settlement=='settled' and calls==[('complete',600)]
+    assert backend.records[0]['outcome']=='failed'
+    backend.cleanup_success();assert calls==[('complete',600)]
+
+
+@pytest.mark.parametrize('fault',['AUTH','HASH','PERMISSION','METHOD','MIRROR_LIST','UNCLASSIFIED','mixed','wrong-plan','unknown','pending','installed','deadline'])
+def test_native_owner_cannot_promote_diagnostics_or_unknown_into_completion(monkeypatch,fault):
+    from dataclasses import replace
+    backend,attempt=actual_completion_backend(monkeypatch)
+    if fault in {'AUTH','HASH','PERMISSION','METHOD','MIRROR_LIST','UNCLASSIFIED'}:backend.records[0]['reported_errors']=[fault]
+    if fault=='mixed':backend.records[0]['reported_errors']=['FETCH','AUTH']
+    if fault=='unknown':attempt=replace(attempt,settlement='unknown')
+    if fault=='pending':attempt=replace(attempt,pending=(0,))
+    if fault=='installed':attempt=replace(attempt,installation='passed')
+    if fault=='deadline':monkeypatch.setattr(SETUP.time,'monotonic',lambda:600)
+    monkeypatch.setattr(backend,'stage',lambda *a:pytest.fail('no continuation'))
+    assert backend.complete_native_transaction(('wrong',) if fault=='wrong-plan' else ('bound',),attempt,600) is None
+
+
+def test_successful_browser_after_native_completion_retains_original_failure_in_owner_result(monkeypatch):
+    from scripts.ci_apt_cold_acquisition import ChildResult
+    events=runtime(monkeypatch)
+    def acquire(plan,backend,*,deadline):
+        backend.records[0]={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+        return AcquisitionResult('passed','settled',(0,),(),'passed','NATIVE_TRANSACTION_COMPLETE',((0,'failed','settled'),),'NATIVE_DOWNLOAD_FAILED',ChildResult('passed','settled'))
+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=lambda *a,**k:observed())
+    assert result['outcome']=='passed'
+    assert 'initial_download_failure=NATIVE_DOWNLOAD_FAILED' in result['detail'] and 'completion=passed/settled' in result['detail']
+    assert 'original_downloads=[[0,100,["FETCH"]]]' in result['detail'] and 'retained /tmp/ci-apt-fixture' in result['detail']
+    assert 'cleanup' not in [e[0] for e in events]
+
+
+def test_post_completion_browser_exception_preserves_applied_state_and_original_attempt(monkeypatch):
+    from scripts.ci_apt_cold_acquisition import ChildResult
+    events=runtime(monkeypatch)
+    def acquire(plan,backend,*,deadline):
+        backend.records[0]={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+        return AcquisitionResult('passed','settled',(0,),(),'passed','NATIVE_TRANSACTION_COMPLETE',((0,'failed','settled'),),'NATIVE_DOWNLOAD_FAILED',ChildResult('passed','settled'))
+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
+    def browser(*a,**k):raise OSError('unknown browser response')
+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)
+    assert result['timeout_settlement']=='unknown'
+    assert 'installation=passed' in result['detail'] and 'initial_download_failure=NATIVE_DOWNLOAD_FAILED' in result['detail']
+    assert 'completion=passed/settled' in result['detail'] and 'original_downloads=[[0,100,["FETCH"]]]' in result['detail']
+    assert 'cleanup' not in [e[0] for e in events]

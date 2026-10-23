@@ -201,7 +201,31 @@ class NativeAptBackend:
             return ChildResult(error.outcome, "unknown")
         return ChildResult(result["outcome"], result["settlement"])
 
+    def complete_native_transaction(self, original, attempt, deadline):
+        if (original != self.plan.transaction or attempt.reason != "NATIVE_DOWNLOAD_FAILED" or
+                attempt.outcome != "failed" or attempt.settlement != "settled" or attempt.pending or
+                attempt.installation != "never_started" or time.monotonic() >= deadline):
+            return None
+        failed = False
+        for index, outcome, settlement in attempt.observations:
+            row = self.records.get(index, {})
+            if row.get("mode") != "download" or type(row.get("index")) is not int or row["index"] != index or row.get("outcome") != outcome or row.get("settlement") != settlement:
+                return None
+            if outcome == "failed":
+                # Diagnostic exclusions only. Independent native index trust,
+                # fresh native CheckAuth and full frozen bytes remain required.
+                if type(row.get("returncode")) is not int or row["returncode"] != 100 or row.get("reported_errors") != ["FETCH"]:
+                    return None
+                failed = True
+        if not failed:
+            return None
+        self.completion_attempted = True
+        result = self.stage("complete", deadline)
+        return ChildResult(result["outcome"], result["settlement"])
+
     def cleanup_success(self):
+        if getattr(self, "completion_attempted", False):
+            return  # preserve original failed attempt and completion staging
         # Native children are settled. Keep the immutable transaction/install
         # result until browser acquisition also finishes affirmatively.
         result = self.stage("cleanup-downloads", self.deadline)
@@ -265,6 +289,8 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
     backend = None
     installation = "never_started"
     browser_outcome = "never_started"
+    original_detail = ""
+    original_attempt_detail = ""
     try:
         if type(deadline) not in {int, float} or not math.isfinite(deadline) or deadline <= time.monotonic():
             raise AcquisitionRefused("TOTAL_DEADLINE_BEFORE_LAUNCH")
@@ -296,33 +322,38 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved["archives"]))
         result = acquire_and_install(backend.plan, backend, deadline=deadline)
         installation = result.installation
+        if result.initial_download_failure is not None:
+            completion = result.completion
+            original_detail = (f"; initial_download_failure={result.initial_download_failure}; "
+                               f"completion={completion.outcome if completion else 'unknown'}/{completion.settlement if completion else 'unknown'}")
+            original_attempt_detail = original_detail + f"; original_downloads={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; retained {root}"
         if result.outcome != "passed":
             return {"outcome": result.outcome, "returncode": None if result.settlement == "unknown" or result.outcome == "timed_out" else 1, "failure_signature": None,
                     "timeout_settlement": "unknown" if result.settlement == "unknown" else None,
-                    "detail": f"native cold acquisition {result.reason}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}"}
+                    "detail": f"native cold acquisition {result.reason}{original_detail}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}"}
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return {"outcome": "timed_out", "returncode": None, "failure_signature": None,
-                    "timeout_settlement": "not_started", "detail": "native packages applied; original total exhausted before browser acquisition"}
+                    "timeout_settlement": "not_started", "detail": "native packages applied; original total exhausted before browser acquisition" + original_attempt_detail}
         observation = browser_stream("python -m playwright install chromium", env=command_env, timeout_seconds=remaining)
         browser_outcome = observation.outcome
-        if observation.outcome == "passed" and observation.timeout_settlement != "unknown":
+        if observation.outcome == "passed" and observation.timeout_settlement != "unknown" and result.initial_download_failure is None:
             cleaned = backend.stage("cleanup", deadline)
             if cleaned["outcome"] != "passed" or cleaned["settlement"] != "settled":
                 raise NativeUnknown("FINAL_CLEANUP_UNPROVEN")
         return {"outcome": observation.outcome, "returncode": observation.returncode,
                 "failure_signature": observation.failure_signature,
-                "detail": "native packages applied; " + (observation.detail or f"browser acquisition {observation.outcome}") +
+                "detail": "native packages applied" + original_attempt_detail + "; " + (observation.detail or f"browser acquisition {observation.outcome}") +
                           (f"; retained {root}" if observation.outcome != "passed" else ""),
                 "timeout_settlement": observation.timeout_settlement}
     except AcquisitionRefused as error:
         return {"outcome": "failed", "returncode": 1, "failure_signature": None,
                 "timeout_settlement": "unknown" if root is not None else None,
-                "detail": f"native cold acquisition refused {str(error)}; installation={installation}; browser={browser_outcome}; retained={root}"}
+                "detail": f"native cold acquisition refused {str(error)}; installation={installation}; browser={browser_outcome}; retained={root}{original_attempt_detail}"}
     except NativeUnknown as error:
         return {"outcome": error.outcome, "returncode": None, "failure_signature": None,
                 "timeout_settlement": "unknown",
-                "detail": f"native cold acquisition unproven; installation={installation}; browser={browser_outcome}; retained={root}; child_pid={error.child_pid}; handles={backend.handles if backend else {}}"}
+                "detail": f"native cold acquisition unproven; installation={installation}; browser={browser_outcome}; retained={root}{original_attempt_detail}; child_pid={error.child_pid}; handles={backend.handles if backend else {}}"}
     except Exception:
         return {"outcome": "failed", "returncode": None, "failure_signature": None,
-                "timeout_settlement": "unknown", "detail": f"native cold acquisition unproven; installation={installation}; browser={browser_outcome}; retained={root}; handles={backend.handles if backend else {}}"}
+                "timeout_settlement": "unknown", "detail": f"native cold acquisition unproven; installation={installation}; browser={browser_outcome}; retained={root}{original_attempt_detail}; handles={backend.handles if backend else {}}"}

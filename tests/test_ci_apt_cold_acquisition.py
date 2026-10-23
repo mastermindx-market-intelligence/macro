@@ -241,3 +241,49 @@ def test_retained_censored_largest_archive_retry_is_not_a_completion_rate_or_man
     assert result.outcome == "timed_out" and result.settlement == "unknown"
     assert result.installation == "never_started" and 0 in result.pending
     assert not any(event[0] in {"install", "cleanup"} for event in backend.events)
+
+
+class CompletionBackend(ModelBackend):
+    def complete_native_transaction(self, original, attempt, deadline):
+        self.events.append(('complete-native',attempt,deadline))
+        assert attempt.installation=='never_started' and attempt.settlement=='settled' and not attempt.pending
+        assert tuple(original)==self.records and self.time<deadline
+        fault=self.faults.get('completion')
+        if fault=='not-admitted':return None
+        if fault=='response-loss':raise OSError('original completion may exist')
+        if fault=='unknown':return CORE.ChildResult('failed','unknown')
+        if fault=='deadline':self.time=deadline;return CORE.ChildResult('timed_out','unknown')
+        self.verified=set(range(len(self.records)))
+        return CORE.ChildResult('passed','settled')
+
+
+def test_settled_native_completion_preserves_verified_progress_and_original_failure():
+    records=tuple(archive(i) for i in range(6))
+    backend=CompletionBackend(records,faults={0:'download_failure'})
+    result=CORE.acquire_and_install(CORE.make_download_plan(records),backend,deadline=600)
+    assert result.outcome=='passed' and result.installation=='passed'
+    assert result.initial_download_failure=='NATIVE_DOWNLOAD_FAILED'
+    assert result.completion==CORE.ChildResult('passed','settled')
+    event=next(e for e in backend.events if e[0]=='complete-native')
+    assert set(event[1].completed)=={1,2,3} and event[2]==600
+    assert (0,'failed','settled') in result.observations
+    assert len([e for e in backend.events if e[0]=='complete-native'])==1
+    assert len([e for e in backend.events if e[0]=='launch'])==4  # queued payloads go to native transaction, not selector retries
+
+
+@pytest.mark.parametrize('fault',['response_loss','hash','partial','conflict','launch_response_loss'])
+def test_native_completion_never_follows_unknown_or_validation_failure(fault):
+    records=tuple(archive(i) for i in range(6));backend=CompletionBackend(records,faults={0:'download_failure',1:fault})
+    result=CORE.acquire_and_install(CORE.make_download_plan(records),backend,deadline=600)
+    assert result.outcome!='passed'
+    assert not any(e[0] in {'complete-native','install','cleanup'} for e in backend.events)
+
+
+@pytest.mark.parametrize('fault',['not-admitted','response-loss','unknown','deadline'])
+def test_native_completion_refusal_loss_and_deadline_never_install_or_cleanup(fault):
+    records=tuple(archive(i) for i in range(6));backend=CompletionBackend(records,faults={0:'download_failure','completion':fault})
+    result=CORE.acquire_and_install(CORE.make_download_plan(records),backend,deadline=600)
+    assert result.outcome!='passed' and result.installation=='never_started'
+    assert not any(e[0] in {'install','cleanup'} for e in backend.events)
+    assert len([e for e in backend.events if e[0]=='complete-native'])==1
+    if fault!='not-admitted':assert result.settlement=='unknown' and result.initial_download_failure=='NATIVE_DOWNLOAD_FAILED'

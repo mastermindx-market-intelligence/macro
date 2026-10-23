@@ -181,3 +181,24 @@ def test_repo_uri_without_epoch_cannot_hide_misbound_cache_package_version_or_ar
     raw = ("'http://azure.archive.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7+6build3_amd64.deb' "
            + cache_name + " 100 SHA256:" + 'a' * 64 + '\n').encode()
     with pytest.raises(AcquisitionRefused): PLAN.complete_archive_inventory(tx, raw)
+
+
+def test_native_completion_uses_incumbent_full_transaction_and_no_package_apply():
+    args=PLAN.completion_download_argv(hook='/tmp/ci-apt-test/txn-hook',cache='/tmp/ci-apt-test/completion-cache')
+    assert args[0:2]==('/usr/bin/apt-get','--download-only')
+    assert args[-(len(PLAN.DIRECT_PACKAGES)+3):]==(*PLAN.INHERITED_INSTALL_FLAGS,*PLAN.DIRECT_PACKAGES)
+    assert '--no-download' not in args and not any('DPkg::Pre-Install' in x for x in args)
+    for value in ['APT::Sandbox::User=_apt','APT::Get::Fix-Missing=false','APT::Get::AllowUnauthenticated=false','Debug::NoLocking=false','Acquire::AllowInsecureRepositories=false','Acquire::AllowDowngradeToInsecureRepositories=false']:
+        assert value in args
+    assert not any('Retries' in x or 'Proxy' in x or 'Queue' in x or 'ForceIPv' in x for x in args)
+    assert PLAN.trusted_package_indexes_argv()==('/usr/bin/apt-get','indextargets','--release-info','--format','$(TRUSTED)','Identifier: Packages')
+
+
+@pytest.mark.parametrize('raw',[b'',b'no\n',b'yes\nno\n',b'yes',b'yes\nSECRET\n',b'yes\r\n',b'yes\n'*257,b'x'*4097,{},'yes\n'])
+def test_native_index_trust_is_independent_affirmative_and_fails_closed(raw):
+    with pytest.raises(PLAN.AcquisitionRefused): PLAN.require_trusted_package_indexes(raw)
+
+
+def test_native_index_trust_accepts_only_bounded_affirmative_native_targets():
+    PLAN.require_trusted_package_indexes(b'yes\n')
+    PLAN.require_trusted_package_indexes(b'yes\n'*256)

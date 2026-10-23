@@ -7,6 +7,8 @@ printed or persisted. No retry, transport override, shared cache or service.
 from __future__ import annotations
 
 import hashlib
+import fcntl
+from contextlib import contextmanager
 import json
 import math
 import os
@@ -24,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts.ci_apt_cold_acquisition import AcquisitionRefused, Archive
 from scripts.ci_apt_native_plan import complete_archive_inventory, DIRECT_PACKAGES
-from scripts.ci_apt_native_plan import no_download_install_argv, resolver_argv
+from scripts.ci_apt_native_plan import no_download_install_argv, resolver_argv, completion_download_argv, trusted_package_indexes_argv, require_trusted_package_indexes
 from scripts.ci_apt_cold_acquisition import download_argv
 from scripts.ci_apt_transaction_contract import normalize_transaction, assert_same_transaction, parse_preinstall_v3
 
@@ -235,6 +237,9 @@ def json_hook(root: Path, connection) -> None:
         if (root / "install-attempt").exists():
             assert_same_transaction(read_json(root / "frozen-native.json"), normalized)
             retain_once(root / "actual-native.json", normalized)
+        elif (root / "completion-attempt").exists():
+            assert_same_transaction(read_json(root / "frozen-native.json"), normalized)
+            retain_once(root / "completion-native.json", normalized)
         else:
             retain_once(root / "frozen-native.json", normalized)
     elif method not in {"org.debian.apt.hooks.install.statistics", "org.debian.apt.hooks.install.post", "org.debian.apt.hooks.install.fail"}:
@@ -317,6 +322,91 @@ def apt_directory(path: Path) -> None:
     os.chown(partial, pwd.getpwnam("_apt").pw_uid, pwd.getpwnam("_apt").pw_gid)
 
 
+
+def sync_directory(root: Path) -> None:
+    fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+@contextmanager
+def acquisition_admission(root: Path, mode: str):
+    """Job-local fence only; never hostwide or a restart/retry authority."""
+    if mode not in {"download", "complete"}:
+        yield
+        return
+    fd = os.open(root / "acquisition.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    try:
+        info = os.fstat(fd)
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.geteuid() or info.st_mode & 0o077):
+            raise AcquisitionRefused("ACQUISITION_LOCK_UNQUALIFIED")
+        fcntl.flock(fd, (fcntl.LOCK_EX if mode == "complete" else fcntl.LOCK_SH) | fcntl.LOCK_NB)
+        if (root / "completion-attempt").exists():
+            raise AcquisitionRefused("COMPLETION_ALREADY_ATTEMPTED")
+        yield
+    finally:
+        os.close(fd)
+
+
+def completion_inputs(root: Path, archives: tuple[Archive, ...]) -> tuple[int, ...]:
+    completed, failed = [], []
+    for index, archive in enumerate(archives):
+        directory = root / f"download-{index}"
+        receipt = root / f"download-result-{index}.json"
+        if not directory.exists() and not receipt.exists():
+            continue  # never launched: the whole native transaction may acquire it
+        row = read_json(receipt)  # missing/partial/unknown cannot become a new operation
+        if row.get("mode") != "download" or type(row.get("index")) is not int or row["index"] != index or row.get("settlement") != "settled":
+            raise AcquisitionRefused("ORIGINAL_DOWNLOAD_UNPROVEN")
+        if row.get("outcome") == "passed" and type(row.get("returncode")) is int and row["returncode"] == 0:
+            verify_file(directory / archive.filename, archive, immutable=False)
+            completed.append(index)
+        elif (row.get("outcome") == "failed" and type(row.get("returncode")) is int and row["returncode"] == 100 and row.get("reported_errors") == ["FETCH"]):
+            failed.append(index)
+        else:
+            raise AcquisitionRefused("ORIGINAL_DOWNLOAD_INELIGIBLE")
+    if not failed:
+        raise AcquisitionRefused("NO_SETTLED_NATIVE_DOWNLOAD_FAILURE")
+    return tuple(completed)
+
+
+def complete_native_transaction(root: Path, archives: tuple[Archive, ...], deadline: float) -> dict:
+    if (root / "install-attempt").exists():
+        raise AcquisitionRefused("INSTALL_ALREADY_ATTEMPTED")
+    completed = completion_inputs(root, archives)
+    # Atomic one-shot marker precedes every native qualification/acquisition
+    # call. It survives failed replies and is never removed or reset here.
+    (root / "completion-attempt").mkdir()
+    sync_directory(root)
+    code, output = observe_command(trusted_package_indexes_argv(), deadline=deadline)
+    if code != 0:
+        raise NativeUnknown("NATIVE_INDEX_TRUST_UNPROVEN")
+    require_trusted_package_indexes(output)
+    cache = root / "completion-cache"
+    apt_directory(cache)
+    for index in completed:
+        adopt_archive(root / f"download-{index}" / archives[index].filename, cache / archives[index].filename, archives[index])
+    code, output = observe_command(completion_download_argv(hook=str(root / "txn-hook"), cache=str(cache)), deadline=deadline)
+    # Download-only excludes dpkg/manual marking, but inherited hooks still
+    # run. Nonzero/response loss is not proof that every hook had no effect.
+    if code != 0:
+        raise NativeUnknown("NATIVE_COMPLETION_INCOMPLETE")
+    if b"unsandboxed" in output.lower():
+        raise NativeUnknown("NATIVE_SANDBOX_UNPROVEN")
+    assert_same_transaction(read_json(root / "frozen-native.json"), read_json(root / "completion-native.json"))
+    verified = root / "completion-verified-cache"
+    verified.mkdir(mode=0o755)
+    for archive in archives:
+        # Native sandbox output may be _apt-owned. Copy exact stable bytes
+        # into fresh root-owned immutable members before trusting them.
+        adopt_archive(cache / archive.filename, verified / archive.filename, archive)
+        verify_file(verified / archive.filename, archive, immutable=True)
+    retain_once(root / "completion-verified.json", [a.__dict__ for a in archives])
+    return {"outcome": "passed", "settlement": "settled", "returncode": 0}
+
+
 def run_stage(root: Path, mode: str, index: int | None, deadline: float) -> dict:
     if not math.isfinite(deadline) or time.monotonic() >= deadline:
         raise AcquisitionRefused("TOTAL_DEADLINE_BEFORE_LAUNCH")
@@ -349,12 +439,17 @@ def run_stage(root: Path, mode: str, index: int | None, deadline: float) -> dict
         else:
             return {"outcome": "failed", "settlement": "settled", "returncode": code,
                     "reported_errors": reported_download_errors(output)}
+    elif mode == "complete":
+        return complete_native_transaction(root, archives_at(root), deadline)
     elif mode == "install":
         (root / "install-attempt").mkdir()
         apt_directory(root / "install-cache")
         archives = archives_at(root)
+        completion = (root / "completion-attempt").exists()
+        if completion and read_json(root / "completion-verified.json") != [a.__dict__ for a in archives]:
+            raise AcquisitionRefused("COMPLETION_ARCHIVES_UNPROVEN")
         for i, archive in enumerate(archives):
-            source = root / f"download-{i}" / archive.filename
+            source = (root / "completion-verified-cache" if completion else root / f"download-{i}") / archive.filename
             destination = root / "install-cache" / archive.filename
             adopt_archive(source, destination, archive)
             verify_file(destination, archive, immutable=True)
@@ -400,7 +495,8 @@ def main() -> int:
             preinstall_hook(root, sys.stdin.buffer.read(LIMIT + 1))
             return 0
         deadline = float(sys.argv[2])
-        result = run_stage(root, mode, int(sys.argv[3]) if len(sys.argv) > 3 else None, deadline)
+        with acquisition_admission(root, mode):
+            result = run_stage(root, mode, int(sys.argv[3]) if len(sys.argv) > 3 else None, deadline)
     except NativeUnknown as error:
         result = {"outcome": error.outcome, "settlement": "unknown", "reason": "NATIVE_EFFECT_UNPROVEN", "child_pid": error.child_pid}
     except Exception:
@@ -411,6 +507,10 @@ def main() -> int:
     result["mode"] = sys.argv[1] if len(sys.argv) > 1 else None
     if len(sys.argv) > 3:
         result["index"] = int(sys.argv[3])
+    if result["mode"] in {"download", "complete"}:
+        target = root / f"download-result-{result['index']}.json" if result["mode"] == "download" else root / "completion-result.json"
+        retain_once(target, result)
+        sync_directory(root)
     sys.stdout.buffer.write(RESULT_PREFIX + canonical(result) + b"\n")
     return 73 if result["settlement"] == "unknown" else (0 if result["outcome"] == "passed" else 1)
 
