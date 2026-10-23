@@ -1,0 +1,82 @@
+{
+  "schema": "rates_aware_opportunity.leader_reset_context_prereg/v1",
+  "operation": "rates-entry-context-20260919-sol-006",
+  "status": "frozen_before_outcome_read",
+  "population": {
+    "owner": "Live Entry Radar replay",
+    "cohort": "leader_reset",
+    "cohort_definition": "trailing_120_session_return_gte_30pct",
+    "candidate_selection_changes": false,
+    "identity_fields": ["name", "session", "detector", "panel"],
+    "existing_era_and_holdout_law": true
+  },
+  "rates": {
+    "source_contract": "yield_momentum.v1",
+    "adapter": "engine.entry_radar.replay.rates_context",
+    "decision_join": "prior_dated_or_receipted_same_session",
+    "primary_tenors": ["2y", "10y"],
+    "primary_fact": "last_observed.change_bp",
+    "primary_states": [
+      "both_easing",
+      "both_rising",
+      "front_easing_long_rising",
+      "front_rising_long_easing",
+      "mixed_flat",
+      "unavailable"
+    ],
+    "diagnostic_fields": [
+      "5d_change_bp",
+      "22d_change_bp",
+      "63d_change_bp",
+      "acceleration_bp",
+      "all_tenor_direction_counts"
+    ],
+    "same_session_requires": [
+      "historical_availability_qualified",
+      "timezone_aware_available_at_lte_decision_at"
+    ],
+    "historical_availability_required_for_promotion": true
+  },
+  "primary": {
+    "horizon_sessions": 10,
+    "outcome": "excess_net",
+    "contrast": ["both_easing", "both_rising"],
+    "aggregation": "mean_within_decision_date_then_week_block_bootstrap",
+    "bootstrap_resamples": 5000,
+    "bootstrap_seed": 20260919,
+    "practical_margin": 0.005,
+    "min_distinct_dates_each_cell": 30,
+    "fit_test_sign_stability_required": true
+  },
+  "secondary": {
+    "outcomes": ["mae", "false_start", "time_to_positive", "fwd_ret_net"],
+    "mixed_front_long_states": "diagnostic_only",
+    "other_tenors_and_horizons": "diagnostic_only"
+  },
+  "interpretation": {
+    "supportive_for_prospective_followup": [
+      "primary_point_estimate_gt_0",
+      "primary_95pct_interval_lower_gt_0",
+      "primary_effect_gte_practical_margin",
+      "min_distinct_dates_each_cell_met",
+      "fit_and_test_primary_sign_same"
+    ],
+    "promotion_from_this_study": false,
+    "no_threshold_rescue": true,
+    "no_population_rescue": true
+  },
+  "authority": {
+    "rank": false,
+    "score": false,
+    "gate": false,
+    "size": false,
+    "trade": false
+  },
+  "registered_in_trial_ledger": false,
+  "outcomes_opened": false,
+  "notes": [
+    "leader_reset is an existing leader-like proxy, not sector-leadership proof",
+    "daily nominal rates cannot establish intraday FOMC turns",
+    "real rates and policy-expectation surprise remain separate future increments"
+  ]
+}
