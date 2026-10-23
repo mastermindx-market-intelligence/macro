@@ -1,0 +1,185 @@
+{
+  "source_scope": "Immutable source identity manifest; mirrors are disposable reproduction inputs and are not included in this packet.",
+  "sources": [
+    {
+      "file": "PB_A_METHOD_AND_FINDINGS.md",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "23881939d599a958608928d07d8f4573cd46bd47",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_METHOD_AND_FINDINGS.md",
+      "observed_git_blob_sha": "23881939d599a958608928d07d8f4573cd46bd47",
+      "local_sha256": "8581fdcf02e976226fe2587c7f6fce14004d711a8d0a69be8a75d07516c78036",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_BASELINE_PILOT.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "d050cf328c575965201c3ceca62f3545fece59ba",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_BASELINE_PILOT.json",
+      "observed_git_blob_sha": "d050cf328c575965201c3ceca62f3545fece59ba",
+      "local_sha256": "13a608725989e95bd5775dfc21b1f67c4319a82a60bdf99255cfefdf839bc62f",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_ANALYSIS_CONTRACT.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "abaadb82569ddefb22365626afd3e0fa8d344b2e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_ANALYSIS_CONTRACT.json",
+      "observed_git_blob_sha": "abaadb82569ddefb22365626afd3e0fa8d344b2e",
+      "local_sha256": "2006ab6ee855ab59ac3ed4ca3b6dda3a23261b0ce66e2a9fc45f0a9211604d17",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_CASEBOOK.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "ea1e9f500b711e41476c5de27964fd2e50e0c52e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_CASEBOOK.json",
+      "observed_git_blob_sha": "ea1e9f500b711e41476c5de27964fd2e50e0c52e",
+      "local_sha256": "421e02d5725f7ee5e07ac3815cf462071b1dbfa1c37ae9aa6edf01b197b66e9c",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_FORECAST_FREEZE.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "3f6dfad2eede8c4093f186d8c0d599e3c21192cf",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_FORECAST_FREEZE.json",
+      "observed_git_blob_sha": "3f6dfad2eede8c4093f186d8c0d599e3c21192cf",
+      "local_sha256": "2204fc89a45fa6cb3234762316ae63ffdd9f60daae631c799e2d0d5ac55e246a",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_OUTCOMES.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "702219edcb61916f72082504c6d3b1e3b059e95a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_OUTCOMES.json",
+      "observed_git_blob_sha": "702219edcb61916f72082504c6d3b1e3b059e95a",
+      "local_sha256": "257be1726d941ff0ae562eb1354ac9820c6abf02a26224b70cb62d544eb4fdfd",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_A_DECISION_INPUTS.json",
+      "lane": "PB-A",
+      "commit": "a60c620b2761db74070929068c969aac8c2cee57",
+      "git_blob_sha": "58cc02524f8cd347151a0f3e20766177befd0d4d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a60c620b2761db74070929068c969aac8c2cee57/research/policy_behavior/pro_returns/PB-A/PB_A_DECISION_INPUTS.json",
+      "observed_git_blob_sha": "58cc02524f8cd347151a0f3e20766177befd0d4d",
+      "local_sha256": "8235b465e9c0b05f23d499b849d74789d0ef40cb99885306295b92bdf5485ff5",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_B_RETURN.md",
+      "lane": "PB-B",
+      "commit": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "git_blob_sha": "58ee2905cca920dbe097b0c5c5af9671650cafc9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1604552006b7a91ed5d0fa89c785a983478866ea/research/policy_behavior/pro_returns/PB-B/PB_B_RETURN.md",
+      "observed_git_blob_sha": "58ee2905cca920dbe097b0c5c5af9671650cafc9",
+      "local_sha256": "d92427780e41da37c664981159cc59ef344f20db288914db31178247e7462fc2",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_B_VALIDATION.json",
+      "lane": "PB-B",
+      "commit": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "git_blob_sha": "51070a7386c16310dc21c1fdc96d0a4db097b730",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1604552006b7a91ed5d0fa89c785a983478866ea/research/policy_behavior/pro_returns/PB-B/PB_B_VALIDATION.json",
+      "observed_git_blob_sha": "51070a7386c16310dc21c1fdc96d0a4db097b730",
+      "local_sha256": "8f1f13a0802cdc518bfe91ca4b82ffeb5834cabca92e996d571f0228ec671a1d",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_B_CASEBOOK.json",
+      "lane": "PB-B",
+      "commit": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "git_blob_sha": "5b7eca2de357fa29a93c9124905581214802612b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1604552006b7a91ed5d0fa89c785a983478866ea/research/policy_behavior/pro_returns/PB-B/PB_B_CASEBOOK.json",
+      "observed_git_blob_sha": "5b7eca2de357fa29a93c9124905581214802612b",
+      "local_sha256": "50b807efddc840918e61e7a6e3d7c3455bda212d78b1b2ff80793d701fd588c4",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_B_EVENT_WINDOWS.json",
+      "lane": "PB-B",
+      "commit": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "git_blob_sha": "4e6d7e4eb4f12f70a6997b1c389ff92a0523418d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1604552006b7a91ed5d0fa89c785a983478866ea/research/policy_behavior/pro_returns/PB-B/PB_B_EVENT_WINDOWS.json",
+      "observed_git_blob_sha": "4e6d7e4eb4f12f70a6997b1c389ff92a0523418d",
+      "local_sha256": "f64c7e0683fe5fb96e67c909509818b5457cab8e95c496b1625faa53cddbfb07",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_E_NETWORK_CASEBOOK.md",
+      "lane": "PB-E",
+      "commit": "4720504205a7307630efe249a79c4bb02e5560da",
+      "git_blob_sha": "693f9b1b49b98ea8f2ee3d36f559d5d68536d08d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/4720504205a7307630efe249a79c4bb02e5560da/research/policy_behavior/pro_returns/PB-E/PB_E_NETWORK_CASEBOOK.md",
+      "observed_git_blob_sha": "693f9b1b49b98ea8f2ee3d36f559d5d68536d08d",
+      "local_sha256": "2fc161cead2edfb4ad272cca9214b84ee9e38686b1f465ee697033ccd1c5e302",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_E_VALIDATION.json",
+      "lane": "PB-E",
+      "commit": "4720504205a7307630efe249a79c4bb02e5560da",
+      "git_blob_sha": "f1a3cba1c40612667beb62791497cec695112ba5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/4720504205a7307630efe249a79c4bb02e5560da/research/policy_behavior/pro_returns/PB-E/PB_E_VALIDATION.json",
+      "observed_git_blob_sha": "f1a3cba1c40612667beb62791497cec695112ba5",
+      "local_sha256": "67be43c8f96189dd0eb9bbfdec7805f6a37a309fc2812692af90e2a6cbc2d4e9",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_E_NETWORK_EDGES.json",
+      "lane": "PB-E",
+      "commit": "4720504205a7307630efe249a79c4bb02e5560da",
+      "git_blob_sha": "411a528b8a78db6525cafce0e5bc22a9fea593b9",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/4720504205a7307630efe249a79c4bb02e5560da/research/policy_behavior/pro_returns/PB-E/PB_E_NETWORK_EDGES.json",
+      "observed_git_blob_sha": "411a528b8a78db6525cafce0e5bc22a9fea593b9",
+      "local_sha256": "5f7ec7a66cc98f0c9f1152a194649b042e08383e62e24661ac293597409c5c2a",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_F_REPLICATION_GAPS.md",
+      "lane": "PB-F",
+      "commit": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "git_blob_sha": "064196ceb03f49876f8f6a36fe0e6eddbac61a8c",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F/PB_F_REPLICATION_GAPS.md",
+      "observed_git_blob_sha": "064196ceb03f49876f8f6a36fe0e6eddbac61a8c",
+      "local_sha256": "91084e81a04b5d2caed3d76281ea1d2d5058cd557d20bbc659d219847a4ca010",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_F_INTEGRATOR_INSTRUCTIONS.md",
+      "lane": "PB-F",
+      "commit": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "git_blob_sha": "3924bc6c03d0157fc80430c03d95ba19d1f4ef66",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F/PB_F_INTEGRATOR_INSTRUCTIONS.md",
+      "observed_git_blob_sha": "3924bc6c03d0157fc80430c03d95ba19d1f4ef66",
+      "local_sha256": "240030048a92879d0df57bcafd266d546292b4fb93f541943a9a7df4f6298cf4",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_F_CLAIM_MATRIX.json",
+      "lane": "PB-F",
+      "commit": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "git_blob_sha": "bcd2a2d44d02b7796484f1bdc549a684816cc577",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F/PB_F_CLAIM_MATRIX.json",
+      "observed_git_blob_sha": "bcd2a2d44d02b7796484f1bdc549a684816cc577",
+      "local_sha256": "a3f7c0d67f077c4c8096f825b974a92a0e929d60b1205e4b9c3e8ce68a3eb4b4",
+      "exact_git_blob_match": true
+    },
+    {
+      "file": "PB_F_REVIEW_MANIFEST.json",
+      "lane": "PB-F",
+      "commit": "7458a5d9b8e507de435136560a5cf86cebb839b9",
+      "git_blob_sha": "c945474eb1e18da639ddf49eaf27fd7b2bd7fa8b",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7458a5d9b8e507de435136560a5cf86cebb839b9/research/policy_behavior/pro_returns/PB-F/PB_F_REVIEW_MANIFEST.json",
+      "observed_git_blob_sha": "c945474eb1e18da639ddf49eaf27fd7b2bd7fa8b",
+      "local_sha256": "cf6cfd254a44f2f7b7dad5efb4433d93a38c50422d0f2149d78ba4f68565b6fe",
+      "exact_git_blob_match": true
+    }
+  ]
+}
