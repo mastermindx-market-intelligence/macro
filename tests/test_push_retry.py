@@ -2958,3 +2958,88 @@ def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
     )
     assert r.returncode == 0, r.stderr
     assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]
+
+
+# Legacy GH001 final-tree size guard. Native format and issuer admission are
+# separate; all specimens here use controlled fake Git metadata.
+def _legacy_claims_size_guard_case(tmp_path: Path, entry: str, *, ls_tree_rc: int = 0):
+    # Materialize only a zero-byte fixture marker. Fake Git supplies the exact
+    # tracked object identity and size; there is no large file or real push.
+    claims = tmp_path / "data" / "qledger" / "claims.jsonl"
+    claims.parent.mkdir(parents=True, exist_ok=True)
+    claims.write_bytes(b"")
+    fake_env = {
+        "FAKE_CLAIMS_TREE_ENTRY": entry,
+        "FAKE_CLAIMS_TREE_RC": str(ls_tree_rc),
+    }
+    return run_sh(
+        r"""
+        push_retry_init "synthetic final-claims guard"
+        push_qledger_preflight() { return 0; }
+        git() {
+          case "$1" in
+            rev-parse) printf 'true\n'; return 0 ;;
+            ls-tree)
+              if [ "$FAKE_CLAIMS_TREE_RC" != 0 ]; then
+                printf 'synthetic missing tree\n' >&2
+                return "$FAKE_CLAIMS_TREE_RC"
+              fi
+              [ -z "$FAKE_CLAIMS_TREE_ENTRY" ] || printf '%s\n' "$FAKE_CLAIMS_TREE_ENTRY"
+              return 0 ;;
+            push) printf 'UNEXPECTED_OR_ALLOWED_NETWORK_PUSH\n'; return 0 ;;
+            *) printf 'unexpected git argument: %s\n' "$1" >&2; return 96 ;;
+          esac
+        }
+        if push_do origin HEAD:main; then
+          echo 'RESULT=OK'
+        else
+          printf 'RESULT=REFUSED rc=%s\n' "$?"
+        fi
+        printf 'STATE=%s;%s;%s\n' "${PUSH_TERMINAL_RC:-0}" "${PUSH_FAIL_CLASS:-}" "$PUSH_STOP"
+        """,
+        cwd=tmp_path,
+        env=fake_env,
+    )
+
+
+@pytest.mark.parametrize("size,blocked", [
+    (104_857_601, True),
+    (104_857_600, False),
+    (104_756_550, False),
+])
+def test_legacy_claims_head_blob_above_github_limit_is_refused_before_push(
+    tmp_path, size, blocked
+):
+    # Actual ls-tree -l syntax, not the working file size or parsed JSON rows.
+    entry = f"100644 blob {'0'*40} {size}\tdata/qledger/claims.jsonl"
+    result = _legacy_claims_size_guard_case(tmp_path, entry)
+    assert result.returncode == 0, result.stderr
+    if blocked:
+        assert "RESULT=REFUSED" in result.stdout
+        assert "UNEXPECTED_OR_ALLOWED_NETWORK_PUSH" not in result.stdout
+        assert "qledger-integrity" in result.stdout
+        assert "100 MiB" in result.stdout
+    else:
+        assert "RESULT=OK" in result.stdout
+        assert "UNEXPECTED_OR_ALLOWED_NETWORK_PUSH" in result.stdout
+
+
+@pytest.mark.parametrize("entry,git_rc", [
+    (f"100644 blob {'0'*40} -\tdata/qledger/claims.jsonl", 0),
+    ("", 2),
+])
+def test_legacy_claims_unverifiable_tracked_tree_size_fails_before_push(
+    tmp_path, entry, git_rc
+):
+    result = _legacy_claims_size_guard_case(tmp_path, entry, ls_tree_rc=git_rc)
+    assert result.returncode == 0, result.stderr
+    assert "RESULT=REFUSED" in result.stdout
+    assert "UNEXPECTED_OR_ALLOWED_NETWORK_PUSH" not in result.stdout
+    assert "qledger-integrity" in result.stdout
+
+
+def test_legacy_claims_absent_from_current_tree_keeps_other_lanes_unchanged(tmp_path):
+    result = _legacy_claims_size_guard_case(tmp_path, "")
+    assert result.returncode == 0, result.stderr
+    assert "RESULT=OK" in result.stdout
+    assert "UNEXPECTED_OR_ALLOWED_NETWORK_PUSH" in result.stdout
