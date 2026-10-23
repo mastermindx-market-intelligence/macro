@@ -286,8 +286,10 @@ def render(root: Path) -> None:
         encoding="utf-8",
     )
 
-    # Share card (only when combos present)
+    # Empty-source pages use the neutral SEO image, not an old signal card.
     combos = ctx.get("combos") or []
+    if not combos:
+        (root / "site" / "og" / "confluence_screener.png").unlink(missing_ok=True)
     if combos:
         try:
             from engine.marketing.share_cards import render_screener_card, save_card  # noqa: PLC0415
