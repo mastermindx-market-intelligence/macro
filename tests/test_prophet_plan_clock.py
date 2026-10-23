@@ -1926,9 +1926,18 @@ class TestPlanNativeSourceReadSameBuildLedger:
             "what_to_do_now_zh": ["突破触发价买入"],
             "recommended_action": "buy",
             "state": {"recommended_action": "buy", "phase": "triggered"},
+            "targets": [120.0, 140.0],
+            "profit_plan": [{
+                "level": 120.0, "label": "T1",
+                "action": "Scale out 40%", "status": "ACTIVE"
+            }],
+            "profit_plan_zh": [{
+                "level": 120.0, "label": "T1",
+                "action": "减仓 40%", "status": "ACTIVE"
+            }],
         }
 
-    def test_new_close_withholds_live_action_in_both_languages(self):
+    def test_new_close_withholds_all_live_action_in_both_languages(self):
         entry = self._open()
         bp._reconcile_same_build_closures([entry], {"A-20261023": "INVALIDATED"})
         assert entry["closed"] is True
@@ -1943,18 +1952,33 @@ class TestPlanNativeSourceReadSameBuildLedger:
         assert "Buy above" not in repr(entry)
         assert entry["recommended_action"] is None
         assert entry["state"]["recommended_action"] is None
+        assert entry["profit_plan"] == []
+        assert entry["profit_plan_zh"] == []
+        # Historical price levels remain available; no grading is rewritten.
+        assert entry["targets"] == [120.0, 140.0]
 
-    def test_open_and_previously_closed_rows_remain_unchanged(self):
+    def test_open_unchanged_and_previously_closed_actions_withheld(self):
         opened = self._open("OPEN")
         closed = self._open("ALREADY")
-        closed.update(closed=True, pulse="existing historical pulse",
-                      recommended_action=None)
-        before = (dict(opened), dict(closed))
+        closed.update(
+            closed=True,
+            pulse="existing historical pulse",
+            what_to_do_now=bp._closed_state_lines("T1_HIT")[0],
+            what_to_do_now_zh=bp._closed_state_lines("T1_HIT")[1],
+        )
+        opened_snapshot = json.loads(json.dumps(opened))
         bp._reconcile_same_build_closures(
             [opened, closed], {"ALREADY": "T1_HIT"}
         )
-        assert opened == before[0]
-        assert closed == before[1]
+        assert opened == opened_snapshot
+        assert closed["pulse"] == "existing historical pulse"
+        assert closed["closed"] is True
+        assert closed["what_to_do_now"] == bp._closed_state_lines("T1_HIT")[0]
+        assert closed["profit_plan"] == []
+        assert closed["profit_plan_zh"] == []
+        assert closed["recommended_action"] is None
+        assert closed["state"]["recommended_action"] is None
+        assert closed["targets"] == [120.0, 140.0]
 
     def test_missing_id_and_unnamed_outcome_withhold_action(self):
         missing = self._open("")
@@ -1967,3 +1991,13 @@ class TestPlanNativeSourceReadSameBuildLedger:
         assert fresh["what_to_do_now"] == bp._closed_state_lines("")[0]
         assert fresh["what_to_do_now_zh"] == bp._closed_state_lines("")[1]
         assert fresh["recommended_action"] is None
+        assert fresh["profit_plan"] == []
+
+    def test_no_entry_is_closed_without_suggesting_position_exits(self):
+        plan = self._open("NEVER-ENTERED")
+        bp._reconcile_same_build_closures([plan], {"NEVER-ENTERED": "NO_ENTRY"})
+        assert plan["closed"] is True
+        assert plan["profit_plan"] == []
+        assert plan["profit_plan_zh"] == []
+        assert plan["what_to_do_now"] == bp._closed_state_lines("NO_ENTRY")[0]
+        assert plan["recommended_action"] is None
