@@ -6876,7 +6876,7 @@ jobs:
           echo "::warning::could not push active build map after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 10
+        run: bash scripts/ci/nightly_timings_finish.sh 25
 
   # The `publish` GitHub Pages deploy job (needs: [et_gate, engine], deploy-pages@v4)
   # was RETIRED pre-private-cutover (DEC:B1-MACRO-PRIVATE-CUTOVER) — the Pages mirror

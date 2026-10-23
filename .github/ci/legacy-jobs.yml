@@ -12325,10 +12325,6 @@ jobs:
       - "scripts/check_runner_policy.py"
       - "scripts/check_skip_only_suites.py"
       - "scripts/check_workflow_yaml.py"
-      # MAS-6: this owning code-gate must actually run the Active Build Map
-      # regression on both generator and test edits, not merely trigger ci.yml.
-      - "scripts/build_active_build_map.py"
-      - "tests/test_build_active_build_map.py"
       - "scripts/nightly_backstop.py"
       - "tests/test_audit_unrun_tests.py"
       - "tests/test_check_conflict_markers.py"
@@ -12429,8 +12425,6 @@ jobs:
       # starts to skip for a package this line does not install.
       - name: install minimal deps
         run: pip install pytest pyyaml
-      - name: active-build-map pagination, null errors, bounded Markdown and four-reader contract
-        run: python -m pytest tests/test_build_active_build_map.py -q
       # ci.yml's Wave B job graph (2026-08-11), first wired in workflow-yaml beside
       # the workflow parse gate: both read .github/workflows/ as their subject. A
       # parse gate proves the file LOADS; this proves it still says what it has to say. `ci-plan` now emits
@@ -12864,6 +12858,11 @@ jobs:
         run: python scripts/check_dag_conformance.py --verbose
       - name: complete existing dag-conformance contracts
         run: python -m pytest tests/test_dag_conformance.py tests/test_tech_lab_offrender_budget.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py tests/test_daily_graph_shadow_state_step.py tests/test_nightly_liveness.py tests/test_runner_queue_hostage.py -q
+      # MAS-6 active-build-map generator/regression is a nightly contract. Keep
+      # this in the existing inferred-scope CODE gate, not the CI contracts
+      # exclusive import closure (which drags unrelated engine/data surfaces).
+      - name: active-build-map pagination, null errors, report and concurrency contract
+        run: python -m pytest tests/test_build_active_build_map.py -q
       # Same family, one layer down: dag.yml pins WHAT the nightly lane runs,
       # this pins that the lane's timeout still lets it finish. tech_lab_offrender
       # was cancelled at its 40m cap every night 2026-07-19→07-26 — the declared
