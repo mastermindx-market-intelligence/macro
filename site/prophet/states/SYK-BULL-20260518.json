@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SYK-BULL-20260518",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 25.5,
-  "raw_confidence": 25.3,
-  "delta_vs_base": -34.5,
+  "management_confidence": 29.2,
+  "raw_confidence": 31.4,
+  "delta_vs_base": -30.8,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 30.9,
+    "validity": 48.8,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.419,
+    "dist_to_stop_r": 0.588,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 197.8,
-    "p1": -0.3874,
-    "p2": -0.1937,
+    "horizon_pct_used": 200.0,
+    "p1": -0.2747,
+    "p2": -0.1374,
     "p3": null,
-    "move_r": -0.581,
+    "move_r": -0.412,
     "mfe_r": 0.393,
     "mae_r": -1.073
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Falling Behind Schedule",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 89,
-  "tau": 1.9778
+  "days_elapsed": 90,
+  "tau": 2.0
 }

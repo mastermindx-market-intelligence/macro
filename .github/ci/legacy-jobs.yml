@@ -359,6 +359,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -825,6 +830,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -2233,6 +2240,8 @@ jobs:
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
       - "app/integrated_answer.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "app/forensics.py"
       - "tests/test_integrated_answer_v0.py"
       - "tests/test_company_theme_exposure.py"
@@ -2304,6 +2313,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3219,6 +3233,11 @@ jobs:
       - "app/mailer.py"
       - "app/main.py"
       - "app/live_status_projection.py"
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
       - "app/observability.py"
@@ -3648,6 +3667,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -7311,6 +7332,11 @@ jobs:
       - "engine/baskets_intl.py"
       - "engine/beneficial_ownership.py"
       - "engine/btc_mtf.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/capital_allocation.py"
       - "engine/coiled.py"
       - "engine/composite_score.py"
@@ -8908,7 +8934,7 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
-    timeout-minutes: 8
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10041,6 +10067,12 @@ jobs:
       - "engine/intelligence_workspace/context_compiler.py"
       - "engine/intelligence_workspace/contracts.py"
       - "engine/intelligence_workspace/entity.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/projection.py"
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
@@ -10092,6 +10124,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -13265,6 +13299,8 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright
       - name: install ontology browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
@@ -21063,6 +21099,10 @@ jobs:
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_regime.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/narrative_rotation.py"
       - "engine/news_common.py"
       - "engine/news_events.py"
@@ -21756,6 +21796,11 @@ jobs:
       # Widening here per the guard's own remedy ("widening is always the safe
       # direction") rather than leaving the pack red.
       - "engine/oracle/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/pick_lab/**"
       - "engine/prophet_live/**"
       - "engine/activist.py"
@@ -22091,6 +22136,102 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: producer completion and atomic origin delivery
         run: python -m pytest tests/test_publish_ohlc.py -q
+
+  catalyst-opportunity:
+    if: ${{ false }}
+    gate: code
+    # The existing site-full auth dependency reaches these owner domains.
+    # Keep that closure covered, but do not run on unrelated page/free-content edits.
+    # Derived with infer_job_scopes for both suites; no packing ceilings changed.
+    scope: exclusive
+    paths:
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/test_catalyst_opportunity_api.py"
+      - "tests/__init__.py"
+      - "tests/test_catalyst_opportunity_projection.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+    # The pack runner owns execution; keep both new source/API suites in CI.
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Catalyst contract test dependencies
+        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
+      - name: Catalyst projection, reader and entitled API contracts
+        run: >
+          python -m pytest tests/test_catalyst_opportunity_projection.py
+          tests/test_catalyst_opportunity_api.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
@@ -24133,6 +24274,12 @@ jobs:
       - engine/intelligence_workspace/__init__.py
       - engine/intelligence_workspace/adapters/base.py
       - engine/intelligence_workspace/adapters/company_intelligence.py
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - engine/intelligence_workspace/adapters/earnings.py
       - engine/intelligence_workspace/adapters/industry.py
       - engine/intelligence_workspace/adapters/quote.py
@@ -24181,6 +24328,8 @@ jobs:
       - engine/neuralweb/brain_curve.py
       - engine/neuralweb/brain_gateway.py
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - engine/neuralweb/brain_market_intel.py
       - engine/neuralweb/brain_native_inputs.py
       - engine/neuralweb/brain_user_memory.py
@@ -25449,6 +25598,10 @@ jobs:
       - "engine/research_vault/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
       - "engine/theme_graph/**"
       # D5's app/prophet_lab route extends this curated app closure through the
       # canonical issuer reader. Keep the measured stock-identity package files
@@ -26409,6 +26562,11 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -30579,9 +30737,10 @@ jobs:
     # Its own install: the FastAPI route tests need fastapi + starlette's TestClient
     # (httpx). Kept off the shared unrun-* line so the other twenty jobs still share
     # one venv; execute_pack sorts by install string, so this costs one extra venv.
+    # Run 39768032122 spent 417s installing Chromium; preserve the full browser gate.
     if: ${{ false }}
     gate: code
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30591,7 +30750,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -30608,9 +30767,11 @@ jobs:
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
       - name: install Brain browser
+        phase: browser_setup
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -32117,6 +32278,11 @@ jobs:
       - "engine/basket_index.py"
       - "engine/basket_mtf.py"
       - "engine/basket_score.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/basket_tape.py"
       - "engine/baskets.py"
       - "engine/baskets_canada.py"
@@ -33004,6 +33170,12 @@ jobs:
       - "engine/intelligence_workspace/runtime.py"
       - "engine/intraday_greeks.py"
       - "engine/k3e_expectation_surface.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
       - "engine/liquidity_chip.py"
@@ -33038,6 +33210,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -35980,6 +36154,12 @@ jobs:
       - "engine/intelligence_workspace/adapters/industry.py"
       - "engine/intelligence_workspace/adapters/quote.py"
       - "engine/intelligence_workspace/adapters/stage.py"
+      # Catalyst route import closure; selection only, no test exemptions.
+      - "app/catalyst_opportunity.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "site/basketdata/sector_pulse.json"
       - "engine/intelligence_workspace/adapters/technicals.py"
       - "engine/intelligence_workspace/adapters/theme.py"
       - "engine/intelligence_workspace/consumers.py"
@@ -36024,6 +36204,8 @@ jobs:
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
       - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_financial_reader.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -39791,3 +39973,31 @@ jobs:
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas pyarrow
       - name: Options R1 W2A relative trend tests
         run: python -m pytest tests/test_rotation_relative_trend.py -q
+
+  bot-session-recovery-browser:
+    # Exercise the real shipped broker + vendored GoTrue lifecycle, with a
+    # synthetic provider and no live account or network. Browser absence is red.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "app/__init__.py"
+      - "app/paywall_pro_session_refresh.html"
+      - "templates/theme.js"
+      - "templates/terminal_overlay.js"
+      - "templates/supabase.js"
+      - "site/theme.js"
+      - "tests/__init__.py"
+      - "tests/test_bot_session_recovery_browser.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install browser test dependencies
+        run: pip install pytest playwright
+      - name: install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Bot recovery deadline, replay, cookie and cross-tab contracts
+        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
