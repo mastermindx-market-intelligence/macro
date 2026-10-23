@@ -5036,6 +5036,11 @@ CURATED_EXCLUSIVE = {
     "options-r1-rotation-relative-trend",
     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-sector-holdings-coverage",
+    # 2026-10-22 Market Navigator: the pure research/consumer suite has a
+    # measured exclusive import/read closure. Its previous opaque inference
+    # selected unrelated template and Prophet ordinary-change probes, exceeding
+    # the accepted pack ceilings. Keep the pinned curated-membership invariant.
+    "market-navigator-foundation",
 }
 
 
@@ -5047,6 +5052,23 @@ def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:
     lives in exactly one place (see the import block above).
     """
     return inferred_as_if_not_exclusive(MANIFEST)
+
+
+def test_market_navigator_fixture_only_edits_still_select_its_exclusive_job() -> None:
+    """Prevent fixture-only contract drift from skipping the owning tests."""
+    jobs = [job for job in PACK.load_legacy_jobs(MANIFEST)
+            if job.job_id == "market-navigator-foundation"]
+    assert len(jobs) == 1 and jobs[0].exclusive
+    for name in ("owner_context", "owner_snapshot", "raw_regime"):
+        path = f"tests/fixtures/market_navigator/{name}.synthetic.json"
+        selected, _reason = PACK.select_jobs(jobs, [path])
+        assert [job.job_id for job in selected] == ["market-navigator-foundation"], path
+    # Planner probes are named inputs, not files this test reads. Keep the
+    # current line-local ci-trigger-closure markers for every fixture literal.
+    for path in ("templates/index.html", "site/theme.css",  # ci-trigger-closure: data
+                 "engine/prophet/plan_book.py", "scripts/build_free_content.py"):  # ci-trigger-closure: data
+        selected, _reason = PACK.select_jobs(jobs, [path])
+        assert selected == [], path
 
 
 def test_the_curated_exclusive_set_is_actually_declared() -> None:

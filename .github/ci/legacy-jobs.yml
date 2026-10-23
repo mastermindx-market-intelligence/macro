@@ -1241,6 +1241,99 @@ jobs:
       - name: Private directory boundary and deployment refusal contracts
         run: python -m pytest tests/test_company_intelligence_private_roots.py -q
 
+  market-navigator-foundation:
+    # Pure consumer contracts and non-network research checks; no live API/corpus.
+    if: ${{ false }}
+    gate: code
+    # Curated actual import/read closure, not opaque whole-repo fallback.
+    # The unscoped job exceeded the protected ordinary-PR pack ceilings.
+    # Keep native tests, external imports and shared sources eligible when changed.
+    scope: exclusive
+    paths:
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/market_memory_canary.v1.json"
+      - "config/metabolism_budget.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/global_liquidity.py"
+      - "engine/greeks.py"
+      - "engine/indicators.py"
+      - "engine/llm_auth.py"
+      - "engine/market_navigator*.py"
+      - "engine/market_state.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "engine/neuralweb/market_memory_episode_features.py"
+      - "engine/neuralweb/market_memory_episode_retrieval.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_lineage.py"
+      - "engine/neuralweb/market_memory_operating_cortex_service.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/neuralweb/market_memory_projection.py"
+      - "engine/neuralweb/market_memory_retained_context_cohort.py"
+      - "engine/neuralweb/market_memory_trusted.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/ollama_provider.py"
+      - "engine/provider_health.py"
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "engine/research_vault/__init__.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/research_vault/source_layout.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "research/market_navigator/**"
+      - "scripts/research/market_navigator_*.py"
+      - "templates/market_navigator_client.js"
+      - "tests/__init__.py"
+      - "tests/fixtures/market_navigator/**"
+      - "tests/market_navigator_client_harness.js"
+      - "tests/test_market_navigator*.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - name: install pure foundation test dependencies
+        run: pip install pytest pyyaml
+      - name: explicit client and harness syntax ownership
+        run: node --check templates/market_navigator_client.js && node --check tests/market_navigator_client_harness.js
+      - name: Navigator clocks, owner binding, numerical audit and inert design study
+        run: python -m pytest tests/test_market_navigator.py tests/test_market_navigator_sources.py tests/test_market_navigator_model_audit.py tests/test_market_navigator_daily_audit.py tests/test_market_navigator_preview.py tests/test_market_navigator_memory.py tests/test_market_navigator_entrypoints.py tests/test_market_navigator_measurement.py tests/test_market_navigator_memory_cli.py tests/test_market_navigator_research.py tests/test_market_navigator_response.py -q
+
   microstructure-pressure-response-r0:
     if: ${{ false }}
     gate: code

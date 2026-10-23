@@ -1,0 +1,179 @@
+{
+  "assumptions": {
+    "benchmark_position": "one hypothetical long standard 100-unit contract",
+    "expiry_minutes": [
+      5,
+      15,
+      60,
+      390
+    ],
+    "iv_decimal": 0.2,
+    "iv_surface": "fixed",
+    "pricing_model": "European Black-Scholes",
+    "q": 0,
+    "r": 0,
+    "real_trade_costs": "not_modelled",
+    "roll_fractions": [
+      0.05,
+      0.25,
+      0.5,
+      0.9
+    ],
+    "spot": 775,
+    "strike_grid": [
+      770,
+      773,
+      774,
+      775,
+      776,
+      777,
+      780
+    ],
+    "time_basis": "calendar_year_365d"
+  },
+  "authority": {
+    "observed_dealer_inventory": false,
+    "predictive_edge": false,
+    "production_promotion": false,
+    "trading": false
+  },
+  "evidence_class": "SIMULATED_MODEL_AUDIT_NOT_MARKET_PERFORMANCE",
+  "finite_changes_within_unit_bound": true,
+  "interpretation": "A local derivative is not a bounded finite hedge forecast. Use the incumbent finite scenario owner, preserving model applicability and fixing refusal.",
+  "invalid_day_examples": [
+    {
+      "linear_one_calendar_day_delta_change": -13.51938243107807,
+      "minutes_to_expiry": 5,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "C",
+      "strike": 776
+    },
+    {
+      "linear_one_calendar_day_delta_change": -13.51938243107807,
+      "minutes_to_expiry": 5,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "P",
+      "strike": 776
+    },
+    {
+      "linear_one_calendar_day_delta_change": 13.439306720303186,
+      "minutes_to_expiry": 5,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "C",
+      "strike": 774
+    },
+    {
+      "linear_one_calendar_day_delta_change": 13.439306720303186,
+      "minutes_to_expiry": 5,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "P",
+      "strike": 774
+    },
+    {
+      "linear_one_calendar_day_delta_change": -11.168551526991411,
+      "minutes_to_expiry": 15,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "C",
+      "strike": 776
+    },
+    {
+      "linear_one_calendar_day_delta_change": -11.168551526991411,
+      "minutes_to_expiry": 15,
+      "reason": "crosses_expiry_and_exceeds_unit_delta_change_bound",
+      "right": "P",
+      "strike": 776
+    }
+  ],
+  "largest_pre_expiry_errors": [
+    {
+      "absolute_delta_error": 0.17513925017498666,
+      "finite_delta_change": -0.2516125087248553,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 17.513925017498664,
+      "linear_delta_change": -0.07647325854986863,
+      "minutes_to_expiry": 390,
+      "right": "C",
+      "strike": 777
+    },
+    {
+      "absolute_delta_error": 0.17513925017498666,
+      "finite_delta_change": -0.2516125087248553,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 17.513925017498664,
+      "linear_delta_change": -0.07647325854986863,
+      "minutes_to_expiry": 390,
+      "right": "P",
+      "strike": 777
+    },
+    {
+      "absolute_delta_error": 0.17440486382988835,
+      "finite_delta_change": 0.24995986532088954,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 17.440486382988833,
+      "linear_delta_change": 0.0755550014910012,
+      "minutes_to_expiry": 390,
+      "right": "C",
+      "strike": 773
+    },
+    {
+      "absolute_delta_error": 0.17440486382988835,
+      "finite_delta_change": 0.24995986532088954,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 17.440486382988833,
+      "linear_delta_change": 0.0755550014910012,
+      "minutes_to_expiry": 390,
+      "right": "P",
+      "strike": 773
+    },
+    {
+      "absolute_delta_error": 0.15474232313748942,
+      "finite_delta_change": -0.2452606859327926,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 15.474232313748942,
+      "linear_delta_change": -0.09051836279530316,
+      "minutes_to_expiry": 60,
+      "right": "P",
+      "strike": 776
+    },
+    {
+      "absolute_delta_error": 0.1547423231374893,
+      "finite_delta_change": -0.2452606859327925,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 15.474232313748931,
+      "linear_delta_change": -0.09051836279530316,
+      "minutes_to_expiry": 60,
+      "right": "C",
+      "strike": 776
+    },
+    {
+      "absolute_delta_error": 0.1543373781662972,
+      "finite_delta_change": 0.2444935530982768,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 15.43373781662972,
+      "linear_delta_change": 0.09015617493197961,
+      "minutes_to_expiry": 60,
+      "right": "C",
+      "strike": 774
+    },
+    {
+      "absolute_delta_error": 0.1543373781662972,
+      "finite_delta_change": 0.2444935530982768,
+      "fraction_elapsed": 0.9,
+      "hedge_error_units_per_long_standard_contract": 15.43373781662972,
+      "linear_delta_change": 0.09015617493197961,
+      "minutes_to_expiry": 60,
+      "right": "P",
+      "strike": 774
+    }
+  ],
+  "max_absolute_delta_error": 0.17513925017498666,
+  "max_hedge_error_units_per_contract": 17.513925017498664,
+  "max_relative_finite_difference_charm_error": 6.38193852078124e-08,
+  "median_absolute_delta_error": 0.00017156950215232135,
+  "n_one_day_cases": 56,
+  "n_one_day_extrapolations_violating_delta_bound": 20,
+  "n_pre_expiry_cases": 224,
+  "schema": "market_navigator.model_audit/v1",
+  "source_kernel": "engine/greeks.py:bs_greeks",
+  "source_sha256": "d471f5ed78183974171127050daae3c83b1438252c758b776394af0955ba8d9c"
+}

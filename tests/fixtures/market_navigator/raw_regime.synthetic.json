@@ -1,0 +1,54 @@
+{
+  "Prophet": {
+    "candidate": true,
+    "gate": true,
+    "size": 1.0
+  },
+  "asof": "2026-08-10",
+  "confidence": 0.2,
+  "cycle_tag": "late",
+  "date": "2026-08-10",
+  "freshness": {
+    "age_days": 0,
+    "age_sessions": 0,
+    "asof": "2026-08-10",
+    "built_at": "2026-08-10T09:55:00Z",
+    "max_age_sessions": 1,
+    "stale": false
+  },
+  "growth_confidence": 0.1,
+  "growth_score": 0.133,
+  "inflation_confidence": 0.3,
+  "inflation_score": 0.4,
+  "label": "must never enter trusted public objects",
+  "liquidity_overlay": "contracting",
+  "options": {
+    "H+60": {
+      "outcome": 0.9
+    },
+    "U-CHAIN": {
+      "rank": 1
+    },
+    "signal_episode": "forbidden"
+  },
+  "pending_days": 0,
+  "pending_need": 7,
+  "pending_quad": null,
+  "quad": "Q2",
+  "quad_name": "forbidden human label",
+  "raw_quad": "Q2",
+  "schema_version": 1,
+  "transition_dwell_remaining": 5,
+  "transition_flags": {
+    "flag_breadth_price": false,
+    "flag_confidence_decay": true,
+    "flag_credit_equity": false,
+    "flag_gex": false,
+    "flag_inflation_basket": false,
+    "flag_ratio_inflection": false,
+    "flag_rotation_persistence": true
+  },
+  "transition_ratcheted": true,
+  "transition_state": "TRANSITIONING",
+  "transition_state_raw": "WEAKENING"
+}

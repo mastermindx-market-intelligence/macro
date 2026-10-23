@@ -1,0 +1,13 @@
+{
+  "schema": "market_navigator.source_adapter/v1",
+  "source_admission": "receipt_missing",
+  "reported_state_date": "2026-10-09",
+  "expected_daily_session_floor": "2026-10-21",
+  "production_binding_proven": false,
+  "context_market": {
+    "status": "missing",
+    "verdict": null
+  },
+  "scope": "One local existing-owner snapshot; not a census of live production.",
+  "meaning": "No source availability receipt/verifier was supplied, so no current market verdict was promoted."
+}
