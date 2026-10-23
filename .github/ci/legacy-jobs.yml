@@ -28071,7 +28071,9 @@ jobs:
     scope: exclusive
     paths:
       - collectors/equity_revisions.py
+      - engine/__init__.py
       - engine/k3e_expectation_surface.py
+      - engine/k3e_eval1_source_adapter.py
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/identity.py
@@ -28079,6 +28081,9 @@ jobs:
       - research/alpha_intelligence/expectation_market_dynamics/EVAL1_PARTITION_CLOCK_*.json
       - research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py
       - research/alpha_intelligence/expectation_market_dynamics/eval1_challenger_trial_identity.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_owner_acceptance.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_activation_receipt.v1.json
       - research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py
       - research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py
       - research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py
@@ -28086,6 +28091,7 @@ jobs:
       - research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py
       - research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py
       - tests/test_eval1_challenger_identity.py
+      - tests/test_k3e_eval1_source_adapter.py
       - tests/test_eval1_partition_clock.py
       - tests/test_r4_v2_receipt.py
     timeout-minutes: 8
@@ -28129,6 +28135,9 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
           python -m pytest tests/test_eval1_challenger_identity.py -q
+
+      - name: EVAL-1 source-only receipt projection and execution refusals
+        run: python -m pytest tests/test_k3e_eval1_source_adapter.py -q
 
   unrun-factor-research:
     # factor registry + measurement disclosure + the study lanes behind them.
