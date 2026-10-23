@@ -1,26 +1,26 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PVH-BULL-20260925",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "at_t1",
   "detection_phase": "at_t1",
-  "management_confidence": 77.7,
-  "raw_confidence": 76.4,
-  "delta_vs_base": 17.7,
+  "management_confidence": 76.9,
+  "raw_confidence": 75.9,
+  "delta_vs_base": 16.9,
   "recommended_action": "hold",
   "human_state": "T1 Hit \u2014 Holding",
   "components": {
     "validity": 100.0,
     "progress": 60.9,
-    "pace": 88.8,
+    "pace": 85.5,
     "retention": 76.6,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
     "dist_to_stop_r": 2.255,
     "dist_to_t1_r": 0.245,
     "dist_to_t2_r": 1.745,
-    "horizon_pct_used": 48.9,
+    "horizon_pct_used": 51.1,
     "p1": 0.8368,
     "p2": 0.4184,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: between_t1_t2 \u2192 at_t1",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": "2026-10-21",
   "_first_t2_ts": null,
-  "days_elapsed": 22,
-  "tau": 0.4889
+  "days_elapsed": 23,
+  "tau": 0.5111
 }
