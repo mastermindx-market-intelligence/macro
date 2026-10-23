@@ -78,7 +78,14 @@ def _whole_numeric_occurrence(value: str, source: str) -> bool:
     source_tokens = [(m.start(), m.end()) for m in _NUMERIC_SOURCE_TOKEN.finditer(source)]
     value_tokens = [(m.start(), m.end()) for m in _NUMERIC_SOURCE_TOKEN.finditer(value)]
     for occurrence in re.finditer(re.escape(value), source):
-        start = occurrence.start()
+        start, end = occurrence.span()
+        # A matched numeric literal must not stop in the middle of an
+        # alphanumeric source token (e.g. $1M, $1,000USD, FY1).
+        # Word-only literals retain their existing exact-substring behavior.
+        if value_tokens and (
+                (start and (source[start - 1].isalnum() or source[start - 1] == '_'))
+                or (end < len(source) and (source[end].isalnum() or source[end] == '_'))):
+            continue
         if all((start + left, start + right) in source_tokens
                for left, right in value_tokens):
             return True
