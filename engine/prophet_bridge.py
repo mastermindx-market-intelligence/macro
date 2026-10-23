@@ -4622,6 +4622,16 @@ def originate_plans(
             )
             continue
 
+        # The originated management base is an ordinal, uncalibrated DISPLAY
+        # input; it is not a probability and has no pick-rank/trade authority.
+        # Reject non-finite/out-of-domain source input before minting a plan.
+        if not math.isfinite(confidence) or confidence < 0.0:
+            _record_failure(
+                ticker=ticker, plan_id=plan_id, stage="plan_inputs",
+                errors=[f"conviction.score {conv.get('score')!r} is not finite 0..100"],
+            )
+            continue
+
         # Price history for swing-level geometry fallback
         ph = _load_price_history(ticker)
 
@@ -4880,6 +4890,10 @@ def originate_plans(
             "horizon_days": plan_horizon_days,  # PSQ-TILT: 45 base × leash (45 or 56)
             "min_hold_days": MIN_HOLD_DAYS_DEFAULT,  # unchanged (10)
             "tranche": 1,
+            # WP04: pass the intended origination management base to the
+            # incumbent nightly management engine. Historic plans that lack
+            # this optional field retain the engine's 60.0 default.
+            "confidence": confidence,
             "option_contract": opt,
             # PSQ-TILT W1 provenance (provisional; display data field, not copy).
             "stage_tilt": stage_tilt,
