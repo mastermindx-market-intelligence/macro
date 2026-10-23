@@ -1115,32 +1115,41 @@ def _load_closed_outcomes() -> dict[str, str]:
 def _reconcile_same_build_closures(
     entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
 ) -> None:
-    """Align same-build index rows with the newly advanced canonical ledger.
+    """Align the published index with the just-advanced canonical ledger.
 
-    This is a display-only, in-memory projection; it does not advance the
-    ledger, edit immutable plans, or reinterpret a close. The prior index-row
-    assembly may have generated live instructions before today's close existed.
+    This is a display-only, in-memory projection. It never advances the ledger,
+    edits immutable plans, grades an outcome, or infers a close from phase. A
+    newly-closed row needs closed bilingual pulse/copy in THIS build.
+
+    A terminal row's profit-plan targets remain as historical geometry on the
+    immutable plan, but ACTIVE/PENDING profit-taking instructions must not
+    survive in the index -- including rows closed before this build.
     """
     for entry in entries:
         plan_id = str(entry.get("id") or "")
-        if not plan_id or plan_id not in closed_outcomes or entry.get("closed"):
+        if not plan_id or plan_id not in closed_outcomes:
             continue
-        outcome = closed_outcomes[plan_id]
-        entry["closed"] = True
-        entry["pulse"], entry["pulse_zh"] = _plan_pulse(
-            entry.get("clock_age_days"), entry.get("phase"), None,
-            closed=True, outcome=outcome,
-        )
-        entry["what_to_do_now"], entry["what_to_do_now_zh"] = (
-            _closed_state_lines(outcome)
-        )
-        # A plan closed by the canonical ledger must not leave a stale active
-        # management action in the same published index row. Retain historical
-        # phase/confidence for evidence, but explicitly withhold active guidance.
+        if not entry.get("closed"):
+            outcome = closed_outcomes[plan_id]
+            entry["closed"] = True
+            entry["pulse"], entry["pulse_zh"] = _plan_pulse(
+                entry.get("clock_age_days"), entry.get("phase"), None,
+                closed=True, outcome=outcome,
+            )
+            entry["what_to_do_now"], entry["what_to_do_now_zh"] = (
+                _closed_state_lines(outcome)
+            )
+        # Closed-state guidance is withheld even for a row already marked
+        # closed before today's advancement. Historical target levels stay on
+        # targets[] and the immutable original plan, never regraded here.
         entry["recommended_action"] = None
         state = entry.get("state")
         if isinstance(state, dict):
             state["recommended_action"] = None
+        if entry.get("profit_plan"):
+            entry["profit_plan"] = []
+        if entry.get("profit_plan_zh"):
+            entry["profit_plan_zh"] = []
 
 
 def _load_closed_ids() -> set[str]:
