@@ -1,0 +1,379 @@
+{
+  "kind": "reviewed_publication_allowlist",
+  "source_pin": "16b6c14cd4791dde7cd7217a6945987805b0fa16",
+  "files": [
+    {
+      "path": "research/grey_deer/RRU_COMPOSITION_ACCEPTANCE_2026_09_08.py",
+      "bytes": 9928,
+      "sha256": "44bb10f6640000191664672fbaf955d16ccf141c0df8e5bc16c6490d9fbc1a9f"
+    },
+    {
+      "path": "research/grey_deer/RRU_COMPOSITION_BUILD_BUNDLE_2026_09_08.py",
+      "bytes": 31135,
+      "sha256": "7ae9b4fc3bfa9bfa0d44d01c414f56d4601070cb13bc770edf0c32047370bc02"
+    },
+    {
+      "path": "research/grey_deer/RRU_FORCE_EXPORT_PATCH_2026_09_09.py",
+      "bytes": 3496,
+      "sha256": "51ab2b132fddaadb21c3f7dc9a492ae4629770d4e991aadb88f951b3e18562c9"
+    },
+    {
+      "path": "research/grey_deer/RRU_FORCE_VERIFY_2026_09_09.py",
+      "bytes": 2696,
+      "sha256": "0fa2f9523ed429b2dbcdecb2e0c8132f5535cebc5af2217debbc33c2ea5d09e0"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_FULL_JOURNEY_SCOPE_2026_09_09.md",
+      "bytes": 3425,
+      "sha256": "e2c37305a4e5ea292ae85f7c3a61bb6a69977290c20aed60d158fcd5d25067cf"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_JOURNEY_FAILURE_SUMMARY_2026_09_09.json",
+      "bytes": 30724,
+      "sha256": "23355f22b2fe472cbe0ccf5e8caf2b34187b2ee33e152921f99090bd5ac9be97"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_JOURNEY_REVIEW_2026_09_09.md",
+      "bytes": 9495,
+      "sha256": "84a8f5139c965e1c5a37a1e7f6b1a0fbacf5f7ef56ea391816184f52886428ec"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_JOURNEY_TESTS_2026_09_09.py",
+      "bytes": 7903,
+      "sha256": "6cfc17852c1c8e3424d2132695ab222bcaaabe8c964740d7cb7d3dcdede4c0e4"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_OWNING_PROFILES_2026_09_09.txt",
+      "bytes": 365,
+      "sha256": "1b1307fbedf4f4c4cb1f6c3b4d8ef52e1e16e6b6c066396608511d41ea1afe60"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_PAGE_BROWSER_2026_09_09.py",
+      "bytes": 6645,
+      "sha256": "89c99bde2068408fdc3556d22ec65f8162acaa98e6a016a0dc8aa54db59e4616"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_PRESENTATION_TEST_DRAFT_2026_09_09.txt",
+      "bytes": 2540,
+      "sha256": "e13b7f525257b042d4d7ea57fe017bc9e3ad8dcf5d47faa66749a0b295b5ef71"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_TEMPLATE_REGRESSION_2026_09_09.txt",
+      "bytes": 2676,
+      "sha256": "22db0c5c1006679dec153dc5517f0fe968d37825b5ad760c1fcc525a7a8cd20c"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_VM_COUNTEREXAMPLE_2026_09_09.json",
+      "bytes": 893,
+      "sha256": "44ebff10f43942df4cd7474a6fe02d0be4141aded7129e891d1bad098c749f6f"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_RESUMPTION_2026_09_10.md",
+      "bytes": 3819,
+      "sha256": "83a0ca7da3d294fd1012ac578be2d495d1fc0e0b2b74c23263e421d581353162"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_JOURNEY_GREEN_2026_09_10.txt",
+      "bytes": 925,
+      "sha256": "2c4ce6039e8248b42103c88c75d6548210f1c7c4dfd6bfe6980760cf9e5bf784"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILD_PROOF_2026_09_10.py",
+      "bytes": 7561,
+      "sha256": "9b5067b452b3f7257df80638ace55c0ceb6913f3fbe5da5d287c745f315f49ed"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILD_BASELINE_2026_09_10.txt",
+      "bytes": 5260,
+      "sha256": "b87bedd06f3f68c7afa5ced0db0388e7c3dac78de9d1eb57e7baece74e5c885a"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILD_CANDIDATE_V1_2026_09_10.txt",
+      "bytes": 984,
+      "sha256": "fbbf9e71f96cb740a78e48e022116cdccbe2cf8edef8b4ce482a0e2bfb275b9f"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILD_CANDIDATE_V2_2026_09_10.txt",
+      "bytes": 286,
+      "sha256": "f3bdc26da28a25dca9281d54d2c3d73dd73dac13b8009f6afa1a1e7dd8f2fa1f"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILD_CURRENT_2026_09_10.txt",
+      "bytes": 286,
+      "sha256": "bf760e5e3a878d19b397c5e8e5ef275c81d609fc7740aa4c82a3ea7a457ae927"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILT_BROWSER_2026_09_10.py",
+      "bytes": 6794,
+      "sha256": "3f6690e15c226a9866cf6ad6e032a005b9988484c584fad4b0aa002c6ca36a77"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_BUILT_BROWSER_RUN_2026_09_10.txt",
+      "bytes": 228,
+      "sha256": "9096895938cd1792121bb01e8fa00b8510a92e3a88b3e2d394572dd94b39d02a"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_CURRENT_COMBINED_2026_09_10.txt",
+      "bytes": 3045,
+      "sha256": "57e3f60bfb457edde2065abf91c8b16c6dbddb7b18a7b7f335de00cf5a70500e"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_CURRENT_SOURCE_RECONCILIATION_2026_09_10.md",
+      "bytes": 2034,
+      "sha256": "9364245f9b36e5d683005038a683f0d7952fba38a2b6d7be08361030bb15c662"
+    },
+    {
+      "path": "research/grey_deer/RRU_INTL_RECORDS_VALIDATION_2026_09_10.txt",
+      "bytes": 32697,
+      "sha256": "e2dcd52ad4b3694003b15eb2294dd8f28b6e7dc0250b33988cd3f3a602387bcc"
+    },
+    {
+      "path": "research/grey_deer/RRU_FULL_REVIEW_COMMISSION_2026_09_10.md",
+      "bytes": 5383,
+      "sha256": "018cbc8bf0391125fe48148dc84c1d5a1d3aeaf5f41ee2e8e12996997d314f70"
+    },
+    {
+      "path": "research/grey_deer/RRU_FULL_REVIEW_INVOCATION_2026_09_10.md",
+      "bytes": 3110,
+      "sha256": "8f347f8afc027690dead88f9f9098e91fec2d864810aa93a76031b61170391ad"
+    },
+    {
+      "path": "research/grey_deer/RRU_FULL_REVIEW_PACKET_MANIFEST_2026_09_10.json",
+      "bytes": 1445,
+      "sha256": "48d520faa91c02efd0da0abc9358c215ee9de60d79efb702a8d38ac0a6b20644"
+    },
+    {
+      "path": "agentos/discoveries/DSC-RRU-INTERNATIONAL-ADAPTER-DROPS-QUALIFIED-READING.md",
+      "bytes": 3460,
+      "sha256": "04488b2a21d68cc43b36e4f0898336d14f227c268826820e7f76495dbd03483c"
+    },
+    {
+      "path": "agentos/discoveries/DSC-RRU-INTERNATIONAL-VM-LOSES-QUALIFICATION.md",
+      "bytes": 2690,
+      "sha256": "13936d42439b60b5544227a3102a36b82d4731edbe8f514488606c37e766579f"
+    },
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-09-DOWNSTREAM.md",
+      "bytes": 22535,
+      "sha256": "7240006338ed0edd4d72ca8269cf54eb21c2299cf2db826461017c62c03f6cb9"
+    },
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-10-INTERNATIONAL.md",
+      "bytes": 6763,
+      "sha256": "fd20e0c24cf1292442a21de4dbc3cd84d07cffd1d7c15303d8348703b53b71af"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_build_20260910_baseline/receipt.json",
+      "bytes": 40347,
+      "sha256": "affa7fdfa664d36a3d5bdcf9b415e080b791a7a4e9faa600f9f565f0a70dcaf5"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_build_20260910_candidate-v1/receipt.json",
+      "bytes": 33863,
+      "sha256": "88f329e8526278c462d654172ab33bf401d186c0d24fb15dac5050e1c5b523f5"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_build_20260910_candidate-v2/receipt.json",
+      "bytes": 32711,
+      "sha256": "1cfa56704287c42fdfcfa0242bae6b71238750fdef95e20ed688937dc86a0b6b"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_build_20260910_current-16b6/receipt.json",
+      "bytes": 32711,
+      "sha256": "280075512ace03a19e5788f7ae5c7904c03713cc50400c5bed69a59a15e0b3ef"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_complete_patch_20260910_16b6c14cd479/candidate.patch",
+      "bytes": 31602,
+      "sha256": "83846c4e953fedd643e30953da14ee57907f477631d717a06ebef82b853f7108"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_complete_patch_20260910_16b6c14cd479/manifest.json",
+      "bytes": 4411,
+      "sha256": "1b9f92be43077aae7af73ce538addb2df3859d3bfd58a1d91f90d21101a80863"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_complete_patch_20260910_16b6c14cd479/replay-receipt.json",
+      "bytes": 991,
+      "sha256": "01cd9e7608bbf3599036dad3ec1338c74bed494caf4f841818e1b78a6c2ef2a2"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-dark-en-1440-settled.png",
+      "bytes": 142120,
+      "sha256": "e4256396cecfb9be69320a8c4ee3a01b3b8803a6922f98c628fad552c1a0e0f2"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-dark-en-390-settled.png",
+      "bytes": 71729,
+      "sha256": "c5fb3666262efe6c535aec51010a78ac3b579e913010e6b6893193c240114cce"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-dark-zh-1440-settled.png",
+      "bytes": 142306,
+      "sha256": "6c2ca5a5f30a06134e90a7efc3d2eee632159309430f901bbadd81829898e757"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-dark-zh-390-settled.png",
+      "bytes": 72505,
+      "sha256": "2a68452d72b6ac29e8cc261e895b5aae4551ecb7f9ad03b57ba7161b04affcd1"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-light-en-1440-settled.png",
+      "bytes": 162501,
+      "sha256": "1af05da65048fc3bef235bf4709e9c2845bb5feffc770b2a682fb259c849a879"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-light-en-390-settled.png",
+      "bytes": 72441,
+      "sha256": "70f789bd9eb7cb7a1469552f4e2c36e9c220f6fb8868a65028b437c0574a937a"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-light-zh-1440-settled.png",
+      "bytes": 161984,
+      "sha256": "f35fa53d70d7ce3a2df3701ea553a08421b6f45465087300f105e349e70acdb1"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/complete-light-zh-390-settled.png",
+      "bytes": 73375,
+      "sha256": "c1c4e2e98b33fc84bd949b5acbcc9f516b09199942c844cdff563b1ac5ee5cca"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-dark-en-1440-settled.png",
+      "bytes": 134696,
+      "sha256": "4364c670ad83c62c68e4a264b194b031e002b51493064547e079d4fa09f3da5a"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-dark-en-390-settled.png",
+      "bytes": 67401,
+      "sha256": "5da24d159bdea2ff6510dc9359a3752cdf51953e496839b79865a3636b7f8760"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-dark-zh-1440-settled.png",
+      "bytes": 134131,
+      "sha256": "17493a1bcfc37842bf59de8f44aa883d8e947343ea9a745fcb9db4571217136e"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-dark-zh-390-settled.png",
+      "bytes": 66415,
+      "sha256": "ea8a9edb8063aa4af7a8c09f1f237f686d54bafdcbe38ff2cb5a441a06320f2b"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-light-en-1440-settled.png",
+      "bytes": 156026,
+      "sha256": "72e08568c73b4deae637fd601d317cc223f139f03ec3ba5f5f8556379ca7f31c"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-light-en-390-settled.png",
+      "bytes": 69154,
+      "sha256": "b96da1aace8c8d72a0ccf75f283a8d2b8eb3b8a82f64cd901ece452bdd7c610f"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-light-zh-1440-settled.png",
+      "bytes": 154586,
+      "sha256": "30e64e5494caca45e18d8c9da90fcfca6849b7ad4374329b03122f357bc57789"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/legacy-light-zh-390-settled.png",
+      "bytes": 68594,
+      "sha256": "45cec319fa44fb29a7a0664b61ab2346fb72c4a5a9b4ad291427492be8f5f3a9"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-dark-en-1440-settled.png",
+      "bytes": 139546,
+      "sha256": "57e6d5cab19cd3bb7a785e6b808de72de0c4e85125e4a9a68cf975ece46c9cc8"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-dark-en-390-settled.png",
+      "bytes": 68572,
+      "sha256": "f91452b9852504f46eb0793ea812e2b05966698d05bfeebce24b9e7f2bfab887"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-dark-zh-1440-settled.png",
+      "bytes": 140576,
+      "sha256": "ba3d3bb7048a608bc4231d6235871f226229071b23505d57f344ecdeee97d618"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-dark-zh-390-settled.png",
+      "bytes": 70260,
+      "sha256": "cfcbeda6789150f5cdac1e7c75100984813a7815437b89a50fd015abaf154b52"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-light-en-1440-settled.png",
+      "bytes": 160265,
+      "sha256": "d2b23499469adceb2cc35ad5e1146753af6785dc80dc7cfcc3d3314642dc9c3b"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-light-en-390-settled.png",
+      "bytes": 69274,
+      "sha256": "81b88aac2d01f6247e5d44592a2be2e224c51e7da5d90ee80d54861a7bdb3607"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-light-zh-1440-settled.png",
+      "bytes": 160466,
+      "sha256": "83aa5fde1646ea2c41c5ded9bf2ab0714923b568b136951dbf51ba18b3b6b778"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/partial-light-zh-390-settled.png",
+      "bytes": 71215,
+      "sha256": "89b4bf682d87db3715a6011150b333ffcc22e7638f7e817c32a3081bb43a4841"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-dark-en-1440-settled.png",
+      "bytes": 134603,
+      "sha256": "a64de454f6d49cfb577b599280d2b99f6fce1506694d14b151d3880c19b90927"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-dark-en-390-settled.png",
+      "bytes": 67578,
+      "sha256": "122a2c14f6137ac7db437be7a6b4e86b7836f3d369c307878bad454384daa420"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-dark-zh-1440-settled.png",
+      "bytes": 131965,
+      "sha256": "6a02be44818d826cc87e619f0e7cd01167300f7005a678e62c30c20ff860e8a1"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-dark-zh-390-settled.png",
+      "bytes": 66113,
+      "sha256": "ec05014ff35d5531b4eae6d0ea2f92273dca34b3b06bbe1e9c6b2202930c8088"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-light-en-1440-settled.png",
+      "bytes": 155804,
+      "sha256": "74d77461ee9db932aa8d23ff95b5e8e3473a0531f365203f3679013d00560f7a"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-light-en-390-settled.png",
+      "bytes": 69150,
+      "sha256": "bc803cfc74f5237e788a1e4260d2c4c7dbf48a050c28d456bf056d567ff13968"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-light-zh-1440-settled.png",
+      "bytes": 152376,
+      "sha256": "7ccadfb9c734c1033bc889111d3777ebb97804790fdcb210a5ce727804d8ff29"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/unavailable-light-zh-390-settled.png",
+      "bytes": 68056,
+      "sha256": "60666d7dc0b64d7d2e0ea9eb6d59c806ce09f7b81b390fdf266ba48384e737fc"
+    },
+    {
+      "path": "research/grey_deer/rru_intl_built_browser_20260910/receipt.json",
+      "bytes": 202537,
+      "sha256": "18f8c25d188b7c4c8bd125f86d7659f929f80045a23f1a5f26fa06d3b6b87885"
+    },
+    {
+      "path": "research/grey_deer/RRU_FULL_REVIEW_PACKET_2026_09_10.md.gz",
+      "bytes": 150199,
+      "sha256": "369c72fa4dbebab31359e23699ecba330a76342180bdb9b82f4734565bd0fbae"
+    }
+  ],
+  "excluded": [
+    "raw denied-inspection review output",
+    "old unread real-data output",
+    "large repeated-HTML failure logs",
+    "private generated page/template trees",
+    "all font files"
+  ],
+  "production": false
+}

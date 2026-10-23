@@ -1,0 +1,11 @@
+--- a/engine/risk_radar_intl.py
++++ b/engine/risk_radar_intl.py
+@@ -267,7 +267,7 @@
+     # blended composite → trailing percentile → 0-1 risk score
+     num = den = None
+     for ser, w in comp_series_parts.values():
+-        col = ser.fillna(0.5) * w
++        col = ser.fillna(0.0) * w
+         av = ser.notna().astype(float) * w
+         num = col if num is None else num + col
+         den = av if den is None else den + av

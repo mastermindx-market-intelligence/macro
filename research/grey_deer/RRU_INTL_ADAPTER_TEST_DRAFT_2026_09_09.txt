@@ -1,0 +1,57 @@
+"""Actual international adapter plus its exact card/fallback template sections."""
+from __future__ import annotations
+import json
+import unittest
+from unittest.mock import patch
+from jinja2 import Environment, ChainableUndefined
+import RRU_COMPOSITION_ACCEPTANCE_2026_09_08 as a
+import RRU_COMPOSITION_BUILD_BUNDLE_2026_09_08 as candidate
+from scripts import build_international_macro as builder
+
+PATH = 'templates/international_macro.html.j2'
+def adapt(snapshot):
+    with patch.object(a.market_state, '_rr_scorecard_track', return_value=None):
+        return builder._radar_display(dict(cc='CN', risk_radar=snapshot))
+
+def outer_render(rd):
+    text = a.RENDER_SOURCES.get(PATH) or a.committed(PATH)
+    tile = text[text.index('    {% if not RADAR %}'):]
+    tile = tile.split('    <div class="imd-card imd-trust-item"><div class="imd-trust-label">{{ t(\'Source state\'',1)[0]
+    section = text[text.index('  {% if RADAR %}'):]
+    section = section.split('\n\n  <section class="imd-section">',1)[0]
+    env = Environment(autoescape=True, undefined=ChainableUndefined)
+    env.globals['t'] = lambda en, zh: en + ' | ' + zh
+    env.globals['rrc'] = env.from_string(a.TEMPLATE).module
+    return env.from_string(tile + section).render(RADAR=rd, D=dict(risk=dict(h21=.42)))
+
+class AdapterTests(unittest.TestCase):
+    pass
+
+def case_test(profile, case):
+    def test(self):
+        sub = a.fixture(profile)
+        if case == 'partial': next(iter(sub.values())).iloc[-1] = a.np.nan
+        if case == 'unavailable':
+            for values in sub.values(): values.iloc[-1] = a.np.nan
+        snapshot = a.compute(profile, sub)
+        self.assertIsNone(snapshot.get('drawdown_prob'))
+        rd = adapt(snapshot)
+        self.assertIsNotNone(rd, 'Builder adapter dropped the explicit assessment before rendering')
+        self.assertEqual(rd['composition'], snapshot['composition'])
+        html = outer_render(rd)
+        self.assertIn('Risk Radar', html)
+        self.assertIn('Input coverage', html)
+        self.assertNotIn('42.0%', html, 'Fallback tile must not replace the qualified modern assessment')
+        self.assertNotIn("Odds measured on this market", html)
+        if case == 'unavailable': self.assertIn('Reading unavailable', html)
+    return test
+
+for profile in a.radar.PROFILES.values():
+    for case in ('complete', 'partial', 'unavailable'):
+        setattr(AdapterTests, f'test_{profile.key}_{case}', case_test(profile, case))
+
+def legacy_test(self):
+    self.assertIsNone(adapt({}))
+    self.assertIsNone(adapt(dict(state='calm')))
+    self.assertIsNotNone(adapt(dict(state='calm', drawdown_prob=dict(h21=.1))))
+AdapterTests.test_legacy_empty_and_numeric_controls = legacy_test

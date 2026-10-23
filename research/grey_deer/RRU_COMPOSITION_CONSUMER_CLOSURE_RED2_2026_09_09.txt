@@ -1,0 +1,61 @@
+test_actual_sleeve_consumer_withholds_unreviewed_sizing (__main__.ConsumerClosure.test_actual_sleeve_consumer_withholds_unreviewed_sizing) ... FAIL
+test_incomparable_recovery_preserves_independent_catalysts (__main__.ConsumerClosure.test_incomparable_recovery_preserves_independent_catalysts) ... FAIL
+test_legacy_us_projection_still_preserves_existing_fields (__main__.ConsumerClosure.test_legacy_us_projection_still_preserves_existing_fields) ... ok
+test_raw_forecast_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_forecast_is_not_current_under_unreviewed_calibration) ... FAIL
+test_raw_sizing_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_sizing_is_not_current_under_unreviewed_calibration) ... FAIL
+test_raw_trajectory_does_not_publish_unreviewed_forecast_odds (__main__.ConsumerClosure.test_raw_trajectory_does_not_publish_unreviewed_forecast_odds) ... FAIL
+
+======================================================================
+FAIL: test_actual_sleeve_consumer_withholds_unreviewed_sizing (__main__.ConsumerClosure.test_actual_sleeve_consumer_withholds_unreviewed_sizing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py", line 35, in test_actual_sleeve_consumer_withholds_unreviewed_sizing
+    self.assertIsNone(chip.get('sleeve_factor'))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1.0 is not None
+
+======================================================================
+FAIL: test_incomparable_recovery_preserves_independent_catalysts (__main__.ConsumerClosure.test_incomparable_recovery_preserves_independent_catalysts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py", line 48, in test_incomparable_recovery_preserves_independent_catalysts
+    self.assertEqual(view.get('catalysts'), cats)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != [{'key': 'fixture_liquidity', 'fresh': True}]
+
+======================================================================
+FAIL: test_raw_forecast_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_forecast_is_not_current_under_unreviewed_calibration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py", line 20, in test_raw_forecast_is_not_current_under_unreviewed_calibration
+    self.assertFalse(self.out.get('drawdown_prob'),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     'Active forecast field must not carry the old calibration')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'h5': 0.06, 'h10': 0.13, 'h21': 0.27, 'base_h5': 0.072, 'base_h10': 0.16, 'base_h21': 0.305, 'lift_h21': 0.89, 'measure': ">=5% index pullback within h business days (measured on this market's own history)"} is not false : Active forecast field must not carry the old calibration
+
+======================================================================
+FAIL: test_raw_sizing_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_sizing_is_not_current_under_unreviewed_calibration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py", line 24, in test_raw_sizing_is_not_current_under_unreviewed_calibration
+    self.assertIsNone(self.out.get('gross_factor'),
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      'Old sizing cannot be hidden only in the card projection')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1.0 is not None : Old sizing cannot be hidden only in the card projection
+
+======================================================================
+FAIL: test_raw_trajectory_does_not_publish_unreviewed_forecast_odds (__main__.ConsumerClosure.test_raw_trajectory_does_not_publish_unreviewed_forecast_odds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py", line 30, in test_raw_trajectory_does_not_publish_unreviewed_forecast_odds
+    self.assertIsNone(trajectory.get('odds_now'))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.27 is not None
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.072s
+
+FAILED (failures=5)
+{"tests": 6, "failures": 5, "errors": 0, "source_unchanged": true, "synthetic_only": true, "candidate_not_installed": true}

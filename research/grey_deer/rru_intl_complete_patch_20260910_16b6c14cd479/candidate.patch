@@ -1,0 +1,471 @@
+--- a/engine/international_macro_dashboard.py
++++ b/engine/international_macro_dashboard.py
+@@ -804 +804 @@
+-        radar.get("state"),
++        radar.get("state") if "composition" not in radar else None,
+@@ -950 +950,4 @@
+-    drawdown_prob = radar.get("drawdown_prob") or {}
++    modern = "composition" in radar
++    drawdown_prob = {} if modern else (radar.get("drawdown_prob") or {})
++    from copy import deepcopy
++    composition_fields = {"composition": deepcopy(radar["composition"])} if modern else {}
+@@ -1071,2 +1074,2 @@
+-            "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
+-            "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。",
++            "method_en": ("Growth, inflation, recession stress and liquidity. Risk observations remain separate; no calibrated forecast is available." if modern else "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast."),
++            "method_zh": ("综合增长、通胀、衰退压力与流动性；风险观测单独呈现，当前不提供经校准的预测。" if modern else "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"),
+@@ -1095,0 +1099 @@
++            **composition_fields,
+--- a/engine/intl_run.py
++++ b/engine/intl_run.py
+@@ -118 +118 @@
+-                        rec["risk_radar"]["can_force"] = bool(rec["risk_radar"]["forward_log"].get("can_force"))
++                        rec["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(rec["risk_radar"], bool(rec["risk_radar"]["forward_log"].get("can_force")))
+@@ -143 +143 @@
+-                        rec["risk_radar"]["can_force"] = bool(sc.get("can_force"))
++                        rec["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(rec["risk_radar"], bool(sc.get("can_force")))
+--- a/engine/market_state.py
++++ b/engine/market_state.py
+@@ -588,0 +589,8 @@
++    composition = rr.get("composition")
++    if "composition" in rr and not isinstance(composition, dict):
++        composition = {"status": "UNAVAILABLE", "score_current": False,
++                       "calibration_status": "unreviewed_corrected_construction"}
++    reference_only = "composition" in rr
++    legacy_dp = ((rr.get("legacy_calibration_reference") or {}).get("drawdown_prob", dp) if reference_only else None)
++    if reference_only:
++        dp = {}
+@@ -594,0 +603,3 @@
++    _reported_can_force = _can_force
++    from engine.risk_radar_intl_audit import force_applicable_for_snapshot
++    _can_force = force_applicable_for_snapshot(rr, _reported_can_force)
+@@ -603,0 +615,5 @@
++    if "composition" in rr:
++        _authority = {"tier": "descriptive", "can_force": False,
++                      "reason": "construction_not_promoted",
++                      "note_en": "Descriptive context; no forecast, sizing or binding permission.",
++                      "note_zh": "描述性背景；不提供预测、仓位指令或约束权限。"}
+@@ -609,2 +625,2 @@
+-        "label_en": rr.get("dominant_label_en") or "calm",
+-        "label_zh": rr.get("dominant_label_zh") or "平静",
++        "label_en": ("Current reading unavailable" if composition and not composition.get("score_current") else ("Partial-input risk reading" if composition and composition.get("status") == "PARTIAL" else ("Input-based reading; forecast calibration under review" if reference_only else rr.get("dominant_label_en") or "calm"))),
++        "label_zh": ("当前读数暂缺" if composition and not composition.get("score_current") else ("输入不完整的风险读数" if composition and composition.get("status") == "PARTIAL" else ("输入驱动的读数；预测校准待核验" if reference_only else rr.get("dominant_label_zh") or "平静"))),
+@@ -612,3 +628,5 @@
+-        "do_en": _RADAR_DO.get(state, ("", ""))[0],
+-        "do_zh": _RADAR_DO.get(state, ("", ""))[1],
+-        "gross": _num(rr.get("gross_factor")),
++        "do_en": "Review price and breadth alongside this reading." if reference_only else _RADAR_DO.get(state, ("", ""))[0],
++        "do_zh": "结合价格与市场广度观察此读数。" if reference_only else _RADAR_DO.get(state, ("", ""))[1],
++        "gross": None if reference_only else _num(rr.get("gross_factor")),
++        "composition": composition,
++        "legacy_drawdown_prob": legacy_dp,
+@@ -622,0 +641 @@
++        **({"reported_can_force": _reported_can_force} if "composition" in rr else {}),
+@@ -682 +701 @@
+-    if rr.get("can_force") and state in ("caution", "elevated", "risk-off"):
++    if out.get("can_force") and state in ("caution", "elevated", "risk-off"):
+--- a/engine/risk_radar_intl.py
++++ b/engine/risk_radar_intl.py
+@@ -245,0 +246,71 @@
++def _composition_coverage(profile, sub, comp, index):
++    """Availability of derived inputs, not feed freshness or forecast confidence."""
++    index = pd.Index(index)
++    current = index[-1] if len(index) else None
++    complete = pd.Series(True, index=index, dtype=bool)
++    raw_available = pd.Series(False, index=index, dtype=bool)
++    groups, members_available, members_expected = [], 0, 0
++    available_weight = total_weight = 0.0
++    legs = tuple(getattr(profile, "comp_legs", ()) or ())
++    for key, codes, weight in legs:
++        masks = {}
++        for code in codes:
++            values = (sub or {}).get(code)
++            values = (values.reindex(index) if values is not None else
++                      pd.Series(np.nan, index=index, dtype=float))
++            masks[code] = pd.Series(np.isfinite(values), index=index)
++        frame = pd.DataFrame(masks, index=index)
++        present = [code for code in codes if current is not None and bool(frame.at[current, code])]
++        complete &= frame.all(axis=1) if len(codes) else False
++        if weight > 0 and len(codes):
++            raw_available |= frame.any(axis=1)
++        groups.append({"key": key, "expected": list(codes), "present": present,
++                       "missing": [c for c in codes if c not in present], "weight": weight})
++        members_available += len(present)
++        members_expected += len(codes)
++        total_weight += weight
++        available_weight += weight if present else 0.0
++    finite_comp = (comp[np.isfinite(comp)] if comp is not None else pd.Series(dtype=float))
++    if current is not None:
++        finite_comp = finite_comp.loc[finite_comp.index <= current]
++    current_score = bool(current is not None and current in finite_comp.index)
++    score_asof = str(pd.Timestamp(finite_comp.index[-1]).date()) if len(finite_comp) else None
++    recent = finite_comp.tail(30)
++    window = index[(index >= recent.index[0]) & (index <= current)] if len(recent) else index[:0]
++    incomplete_sessions = int((~complete.reindex(window, fill_value=False)).sum())
++    # _pct drops null raw rows before its trailing _PCT_WIN-observation rank.
++    # Cover the union feeding the compared ranks, including benchmark gaps in it.
++    reference_observations = index[raw_available]
++    reference_window = index[:0]
++    if len(recent) and current is not None:
++        first = int(reference_observations.searchsorted(recent.index[0]))
++        first = max(0, first - _PCT_WIN + 1)
++        reference_observations = reference_observations[first:]
++        reference_observations = reference_observations[reference_observations <= current]
++        if len(reference_observations):
++            reference_window = index[(index >= reference_observations[0]) & (index <= current)]
++    else:
++        reference_observations = reference_observations[:0]
++    reference_incomplete = int((~complete.reindex(reference_window, fill_value=False)).sum())
++    status = ("UNAVAILABLE" if not members_available else
++              "COMPLETE" if members_available == members_expected else "PARTIAL")
++    return {
++        "status": status, "freshness": "not_assessed",
++        "asof": str(pd.Timestamp(current).date()) if current is not None else None,
++        "score_asof": score_asof, "score_current": current_score,
++        "groups_expected": len(legs),
++        "groups_available": sum(bool(g["present"]) for g in groups),
++        "members_expected": members_expected, "members_available": members_available,
++        "group_weight_coverage": available_weight / total_weight if total_weight else None,
++        "groups": groups, "comparison_sessions": len(window),
++        "comparison_incomplete_sessions": incomplete_sessions,
++        "comparison_reference_sessions": len(reference_window),
++        "comparison_reference_observations": len(reference_observations),
++        "comparison_reference_incomplete_sessions": reference_incomplete,
++        "comparison_reference_rank_window": _PCT_WIN,
++        "comparison_comparable": bool(current_score and status == "COMPLETE"
++                                      and len(recent) >= 10 and not incomplete_sessions
++                                      and not reference_incomplete),
++        "calibration_status": "unreviewed_corrected_construction",
++        "method": "available_group_weight.v1",
++    }
+@@ -254 +325,2 @@
+-    sub = _sub_legs(idx, profile)
++    sub = {c: s.reindex(idx).replace([np.inf, -np.inf], np.nan)
++           for c, s in (_sub_legs(idx, profile) or {}).items() if s is not None}
+@@ -270 +342 @@
+-        col = ser.fillna(0.5) * w
++        col = ser.fillna(0.0) * w
+@@ -314,0 +387,23 @@
++def _qualify_composition_inference(result):
++    """Separate unreviewed legacy lookups from current forecasts and sizing."""
++    quality = result.get("composition") or {}
++    status = quality.get("calibration_status")
++    if status != "unreviewed_corrected_construction":
++        return result
++    reference = dict(result.get("legacy_calibration_reference") or {})
++    reference.setdefault("kind", "unreviewed_legacy_surface_lookup")
++    reference.setdefault("drawdown_prob", result.get("drawdown_prob"))
++    reference.setdefault("gross_factor", result.get("gross_factor"))
++    trajectory = result.get("trajectory")
++    if trajectory:
++        trajectory = dict(trajectory)
++        keys = ("odds_now", "odds_peak", "odds_delta")
++        reference.setdefault("trajectory_odds", {k: trajectory.get(k) for k in keys})
++        trajectory.update({k: None for k in keys})
++        trajectory["calibration_status"] = status
++        result["trajectory"] = trajectory
++    result["legacy_calibration_reference"] = reference
++    result["drawdown_prob"] = None
++    result["gross_factor"] = None
++    return result
++
+@@ -322 +417,3 @@
+-    if B is None:
++    coverage = _composition_coverage(profile, sub, comp, B.index if B is not None else [])
++    null.update(composition=coverage, asof=coverage["asof"])
++    if B is None or sub is None or comp is None or gate is None:
+@@ -324 +421,2 @@
+-    if sub is None or comp is None or gate is None:
++    if not coverage["score_current"]:
++        null["degraded_reason"] = "no_current_composite"
+@@ -335,3 +433,3 @@
+-        comp_last[comp_key] = _last(ser)
+-
+-    top = _last(comp)
++        comp_last[comp_key] = _last(ser.reindex([B.index[-1]]))
++
++    top = float(comp.loc[B.index[-1]])
+@@ -360 +458 @@
+-                  if (sub_latest := _last(sub.get(c))) is not None and sub_latest >= 0.55]
++                  if c in sub and (sub_latest := _last(sub[c].reindex([B.index[-1]]))) is not None and sub_latest >= 0.55]
+@@ -390 +488 @@
+-    return {
++    return _qualify_composition_inference({
+@@ -393,0 +492 @@
++        "composition": coverage,
+@@ -410 +509 @@
+-    }
++    })
+@@ -421,0 +521 @@
++                "composition": _composition_coverage(profile, {}, None, []),
+@@ -441,0 +542,16 @@
++        quality = r.get("composition") or {}
++        if quality.get("calibration_status") == "unreviewed_corrected_construction":
++            return {
++                "sleeve_factor": None, "sleeve_status": "unavailable",
++                "radar_state": r.get("state"), "radar_as_of": r.get("asof"),
++                "can_force": bool(r.get("can_force", False)),
++                "composition": quality,
++                "legacy_calibration_reference": r.get("legacy_calibration_reference"),
++                "label_en": "Sizing unavailable — forecast calibration under review",
++                "label_zh": "仓位建议暂缺 — 预测校准待核验",
++                "dominant_driver_en": r.get("dominant_label_en"),
++                "dominant_driver_zh": r.get("dominant_label_zh"),
++                "passport": {"basis": "descriptive", "validation": None,
++                    "display_only": True, "degraded": True,
++                    "note": "Descriptive context only; not a current sizing instruction."},
++            }
+--- a/engine/risk_radar_intl_audit.py
++++ b/engine/risk_radar_intl_audit.py
+@@ -103 +103,11 @@
+-    return {
++    if "composition" in snap:
++        composition = snap["composition"]
++        if (not isinstance(composition, dict) or composition.get("score_current") is not True
++                or composition.get("status") not in ("COMPLETE", "PARTIAL")):
++            return None
++        import json
++        try:
++            json.dumps(composition, allow_nan=False)
++        except (TypeError, ValueError):
++            return None
++    entry = {
+@@ -121,0 +132,4 @@
++    if "composition" in snap:
++        from copy import deepcopy
++        entry["composition"] = deepcopy(snap["composition"])
++    return entry
+@@ -208,0 +223,10 @@
++def _legacy_graded_cohort(rows):
++    """One legacy-only evidence selection; never rewrites or promotes issued rows.
++
++    Explicit composition, even null or malformed, is not the pre-migration schema.
++    Selecting legacy rows does not certify their data quality or authorize a new
++    construction to inherit this cohort's resulting grant.
++    """
++    graded = [row for row in rows if row.get("graded")]
++    legacy = [row for row in graded if "composition" not in row]
++    return legacy, len(graded) - len(legacy)
+@@ -212 +236 @@
+-    rows = [r for r in _read(_path(market, root)) if r.get("graded")]
++    rows, _excluded = _legacy_graded_cohort(_read(_path(market, root)))
+@@ -307,0 +332,13 @@
++def force_applicable_for_snapshot(snap: dict, proposed: bool) -> bool:
++    """Qualify this snapshot's legacy force grant; never transition a capital policy.
++
++    No composition-bearing construction is promoted in this release. Declared
++    calibration/status labels cannot grant authority. A future promotion must
++    change this owner under reviewed construction-compatible evidence, not by
++    changing producer prose or reusing the legacy scorecard.
++    """
++    if not isinstance(snap, dict) or "composition" in snap:
++        return False
++    return bool(proposed)
++
++
+@@ -325 +362 @@
+-        rows = [r for r in _read(_path(market, root)) if r.get("graded")]
++        rows, excluded = _legacy_graded_cohort(_read(_path(market, root)))
+@@ -327 +364 @@
+-        rows = []
++        rows, excluded = [], 0
+@@ -329,0 +367 @@
++                "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded,
+@@ -405,0 +444,2 @@
++        "evidence_construction": "legacy_implicit",
++        "excluded_composition_rows": excluded,
+--- a/engine/risk_radar_intl_tune.py
++++ b/engine/risk_radar_intl_tune.py
+@@ -122 +122 @@
+-        rows = [r for r in A._read(A._path(key, root)) if r.get("graded")]
++        rows, excluded = A._legacy_graded_cohort(A._read(A._path(key, root)))
+@@ -124 +124,2 @@
+-            return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRADED}
++            return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRADED,
++                    "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded}
+@@ -157,0 +159 @@
++                "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded,
+--- a/engine/risk_radar_recovery.py
++++ b/engine/risk_radar_recovery.py
+@@ -311,0 +312,11 @@
++        composition = rr.get("composition")
++        if composition and not composition.get("comparison_comparable"):
++            market = rr.get("market") or "us"
++            cats = _liquidity_catalysts(latest, market)
++            mkt = _market_catalysts(latest) if market == "us" else None
++            return {"present": False, "assessment_status": "unavailable",
++                    "degraded_reason": "composition_not_comparable",
++                    "catalysts": cats, "market": mkt,
++                    "n_catalysts": len(cats), "n_fresh": sum(bool(c.get("fresh")) for c in cats),
++                    "receding": False, "turn_confirmed": False,
++                    "turn_confirmed_full": False if market == "us" else None}
+@@ -436,0 +448,11 @@
++        if composition and composition.get("calibration_status") == "unreviewed_corrected_construction":
++            odds_now = odds_peak = odds_delta = None
++            if not suppressed:
++                head_en = "Risk reading easing" if receding else "Risk reading stabilizing"
++                head_zh = "风险读数回落" if receding else "风险读数趋稳"
++                sub_en = "The input-based reading changed; forecast calibration remains under review."
++                sub_zh = "输入驱动的读数出现变化；预测校准仍待核验。"
++                do_en = "Watch price and participation; this does not confirm a market low."
++                do_zh = "观察价格与参与广度；此读数不能确认市场低点。"
++            turn_confirmed = False
++            turn_confirmed_full = False if market == "us" else None
+--- a/scripts/build_canada.py
++++ b/scripts/build_canada.py
+@@ -1333 +1333 @@
+-                    latest["risk_radar"]["can_force"] = bool(latest["risk_radar"]["forward_log"].get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(latest["risk_radar"]["forward_log"].get("can_force")))
+@@ -1339 +1339 @@
+-                    latest["risk_radar"]["can_force"] = bool(_sc.get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(_sc.get("can_force")))
+--- a/scripts/build_china.py
++++ b/scripts/build_china.py
+@@ -1448 +1448 @@
+-                    latest["risk_radar"]["can_force"] = bool(latest["risk_radar"]["forward_log"].get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(latest["risk_radar"]["forward_log"].get("can_force")))
+@@ -1454 +1454 @@
+-                    latest["risk_radar"]["can_force"] = bool(_sc.get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(_sc.get("can_force")))
+--- a/scripts/build_china_risk_state.py
++++ b/scripts/build_china_risk_state.py
+@@ -65 +65 @@
+-from engine import live_overlay, live_quotes, market_state, risk_radar_intl  # noqa: E402
++from engine import live_overlay, live_quotes, market_state, risk_radar_intl, risk_radar_intl_audit  # noqa: E402
+@@ -291 +291 @@
+-        _latest_nightly["risk_radar"]["can_force"] = can_force
++        _latest_nightly["risk_radar"]["can_force"] = risk_radar_intl_audit.force_applicable_for_snapshot(_latest_nightly["risk_radar"], can_force)
+@@ -332 +332 @@
+-        latest_live["risk_radar"]["can_force"] = can_force
++        latest_live["risk_radar"]["can_force"] = risk_radar_intl_audit.force_applicable_for_snapshot(latest_live["risk_radar"], can_force)
+--- a/scripts/build_hk.py
++++ b/scripts/build_hk.py
+@@ -1368 +1368 @@
+-                    latest["risk_radar"]["can_force"] = bool(latest["risk_radar"]["forward_log"].get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(latest["risk_radar"]["forward_log"].get("can_force")))
+@@ -1374 +1374 @@
+-                    latest["risk_radar"]["can_force"] = bool(_sc.get("can_force"))
++                    latest["risk_radar"]["can_force"] = _rra.force_applicable_for_snapshot(latest["risk_radar"], bool(_sc.get("can_force")))
+--- a/scripts/build_international_macro.py
++++ b/scripts/build_international_macro.py
+@@ -60 +60 @@
+-    if not radar.get("state"):
++    if not isinstance(radar, dict):
+@@ -62,3 +62,6 @@
+-    if (radar.get("drawdown_prob") or {}).get("h21") is None:
+-        # No calibrated odds -> the card would carry less than the tile it replaces.
+-        return None
++    if "composition" not in radar:
++        if not radar.get("state"):
++            return None
++        if (radar.get("drawdown_prob") or {}).get("h21") is None:
++            return None
++    # Explicit input quality is a displayable assessment, not a promise of odds.
+--- a/templates/_risk_radar_card.html.j2
++++ b/templates/_risk_radar_card.html.j2
+@@ -82 +82,6 @@
+-{%- set rc = 'var(--act)' if rd.state=='risk-off' else ('var(--orange)' if rd.state=='elevated' else ('var(--warn)' if rd.state=='caution' else ('var(--info)' if rd.state=='watch' else 'var(--ok)'))) -%}
++{%- set _q = rd.composition if rd.composition is defined else none -%}
++{%- set _unreviewed = (rd.authority and rd.authority.reason == 'construction_not_promoted') or (_q and _q.calibration_status == 'unreviewed_corrected_construction') -%}
++{%- set _unknown = _unreviewed and (_q is not mapping or _q.score_current is not sameas true or _q.status not in ['COMPLETE', 'PARTIAL']) -%}
++{%- set _partial = not _unknown and _q and _q.status == 'PARTIAL' -%}
++{%- set _limited = _unknown or _partial or _unreviewed -%}
++{%- set rc = 'var(--muted)' if _limited else 'var(--act)' if rd.state=='risk-off' else ('var(--orange)' if rd.state=='elevated' else ('var(--warn)' if rd.state=='caution' else ('var(--info)' if rd.state=='watch' else 'var(--ok)'))) -%}
+@@ -86 +91 @@
+-{%- set ic = '🛑' if rd.state=='risk-off' else ('🚨' if rd.state=='elevated' else ('⚠️' if rd.state=='caution' else ('🌤️' if (rd.state=='watch' and _rec_receding) else ('📡' if rd.state=='watch' else '✅')))) -%}
++{%- set ic = '—' if _limited else '🛑' if rd.state=='risk-off' else ('🚨' if rd.state=='elevated' else ('⚠️' if rd.state=='caution' else ('🌤️' if (rd.state=='watch' and _rec_receding) else ('📡' if rd.state=='watch' else '✅')))) -%}
+@@ -95 +100 @@
+-<div class="rrx rrx-{{ rd.state }}{{ ' rrx-loud' if rd.is_loud }}" style="--rc:{{ rc }}">
++<div class="rrx rrx-{{ 'unavailable' if _unknown else ('partial' if _partial else ('descriptive' if _unreviewed else rd.state)) }}{{ ' rrx-loud' if rd.is_loud }}" style="--rc:{{ rc }}">
+@@ -103,2 +108,2 @@
+-        <span class="rrx-badge">{{ t(rd.state|upper, rd.state_zh) }}{% if rd.top_score is defined and rd.top_score is not none %} · {{ rd.top_score }}/100{% endif %}</span>
+-        {{ help('Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.', '回撤风险仪表。高读数用于降风险，不用于选股。') }}
++        <span class="rrx-badge">{{ t('Reading unavailable','读数暂缺') if _unknown else (t('Partial reading','输入不完整') if _partial else (t('Descriptive reading','描述性读数') if _unreviewed else t(rd.state|upper, rd.state_zh))) }}{% if rd.top_score is defined and rd.top_score is not none %} · {{ rd.top_score }}/100{% endif %}</span>
++        {{ help('Descriptive input-based reading; not a calibrated forecast or sizing instruction.' if _unreviewed else 'Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.', '输入驱动的描述性读数，并非经校准的预测或仓位指令。' if _unreviewed else '回撤风险仪表。高读数用于降风险，不用于选股。') }}
+@@ -109,0 +115,15 @@
++      </div>
++      {% endif %}
++      {% if _q %}
++      <div class="rrx-authority is-advisory" data-composition-status="{{ _q.status }}">
++        {{ t('Input coverage','输入覆盖') }}: {{ _q.members_available|default('—') }} / {{ _q.members_expected|default('—') }}.
++        {% if _q.status != 'COMPLETE' %}{{ t('Some inputs unavailable.','部分输入暂缺。') }}{% endif %}
++        {% if not _q.comparison_comparable %}{{ t('Recovery comparison unavailable.','复苏对比暂不可用。') }}{% endif %}
++        <details><summary>{{ t('Data details','数据详情') }}</summary>
++          <div>{{ t('Groups available','可用输入组') }}: {{ _q.groups_available|default('—') }} / {{ _q.groups_expected|default('—') }}.</div>
++          {% for group in _q.groups %}
++          <div>{% for code in group.expected %}{{ rr_leg(code) }}: {{ t('Available','可用') if code in group.present else t('Unavailable','暂缺') }}{{ '; ' if not loop.last }}{% endfor %}</div>
++          {% endfor %}
++          <div>{{ t('Availability does not establish freshness.','输入可用不代表来源及时。') }}</div>
++        </details>
++        {% if _q.calibration_status == 'unreviewed_corrected_construction' %}<div>{{ t('Forecast calibration under review.','预测校准待核验。') }}</div>{% endif %}
+@@ -542 +562,3 @@
+-    {%- if _fl_n > 0 %}
++    {%- if rd.authority and rd.authority.reason == 'construction_not_promoted' %}
++    <span data-record-applicability="earlier-construction">{{ t('Earlier construction record; not current validation.','旧构造往绩；不构成当前读数的验证。') }}{% if _fl_n > 0 %} {{ _fl_n }} {{ t('graded','已评分') }}.{% endif %}</span>
++    {%- elif _fl_n > 0 %}
+--- a/templates/baskets_desk.js
++++ b/templates/baskets_desk.js
+@@ -549 +549,11 @@
+-  if(!sc||sc.sleeve_factor==null){ host.innerHTML=''; return; }
++  if(!sc){ host.innerHTML=''; return; }
++  if(sc.sleeve_status==='unavailable'||sc.sleeve_factor==null){
++    const explained=sc.sleeve_status==='unavailable';
++    const en=explained?(sc.label_en||'Sizing unavailable'):'Sizing unavailable';
++    const zh=explained?(sc.label_zh||'仓位建议暂缺'):'仓位建议暂缺';
++    host.innerHTML=`<div class="sleeve-chip" data-sleeve-status="unavailable" style="border-left:3px solid var(--muted)">
++      <span class="sl-main"><b>${L(esc(en),esc(zh))}</b></span>
++      <span class="sl-tag muted">${L('No current sizing instruction.','当前不提供仓位指令。')}</span>
++    </div>`;
++    return;
++  }
+--- a/templates/china.html.j2
++++ b/templates/china.html.j2
+@@ -1690 +1690,6 @@
+-    {% if _sc and _sc.radar_state and _sc.radar_state != 'None' %}
++    {% if _sc and _sc.sleeve_status == 'unavailable' %}
++    <div class="muted" data-sleeve-status="unavailable">
++      <span>{{ t('Risk backdrop', '风险背景') }}: {{ t(_sc.label_en, _sc.label_zh) }}</span>
++      {% if _sc.radar_as_of %}<small> · {{ t('as of', '截至') }} {{ _sc.radar_as_of }}</small>{% endif %}
++    </div>
++    {% elif _sc and _sc.radar_state and _sc.radar_state != 'None' %}
+--- a/templates/cn_reversal_sleeve.html.j2
++++ b/templates/cn_reversal_sleeve.html.j2
+@@ -106,0 +107,6 @@
++{% if d.sizing.sleeve_factor is not number %}
++<div class="sleeve-chip" data-state="unavailable" data-sleeve-status="unavailable">
++  <span>{{ t(d.sizing.label_en or 'Sizing unavailable', d.sizing.label_zh or '仓位建议暂缺') }}</span>
++  {% if d.sizing.radar_as_of %}<span class="prov">{{ d.sizing.radar_as_of }}</span>{% endif %}
++</div>
++{% else %}
+@@ -113,0 +120 @@
++{% endif %}
+--- a/templates/international_macro.html.j2
++++ b/templates/international_macro.html.j2
+@@ -5,0 +6 @@
++{% set _qualified_radar = RADAR and RADAR.authority and RADAR.authority.reason == 'construction_not_promoted' %}
+@@ -278 +279 @@
+-    <div class="imd-section-head"><h2>{{ t('Pullback risk','回撤风险') }}</h2><p>{{ t("Odds measured on this market's own history — windows, not certainties, re-drawn nightly.",'概率基于本市场自身历史测算 — 是概率窗口而非定论，每晚重算。') }}</p></div>
++    <div class="imd-section-head"><h2>{{ t('Pullback risk','回撤风险') }}</h2><p>{{ t('Read the inputs; a calibrated forecast is not available.','观察输入；当前不提供经校准的预测。') if _qualified_radar else t("Odds measured on this market's own history — windows, not certainties, re-drawn nightly.",'概率基于本市场自身历史测算 — 是概率窗口而非定论，每晚重算。') }}</p></div>
+@@ -314 +315 @@
+-        <h3>{{ t('Calibrated risk monitor','校准风险监测') }}</h3><p>{{ t('Forward pullback odds stay separate from the descriptive macro score.','前瞻回撤概率与描述性宏观分数严格分开。') }}</p>
++        <h3>{{ t('Risk evidence','风险证据') if _qualified_radar else t('Calibrated risk monitor','校准风险监测') }}</h3><p>{{ t('Check the observations and what remains unknown.','查看已观测的信息与仍未知的部分。') if _qualified_radar else t('Forward pullback odds stay separate from the descriptive macro score.','前瞻回撤概率与描述性宏观分数严格分开。') }}</p>
+@@ -324 +325,3 @@
+-        {% if RADAR %}
++        {% if _qualified_radar %}
++        <div class="imd-face-kpi"><strong>{{ RADAR.composition.members_available|default('—') }} / {{ RADAR.composition.members_expected|default('—') }}</strong><span>{{ t('Input coverage','输入覆盖') }}</span></div>
++        {% elif RADAR %}
+@@ -440 +443 @@
+-{% call dialog('dlg-risk','Calibrated risk receipt','校准风险凭证') %}
++{% call dialog('dlg-risk','Risk evidence' if _qualified_radar else 'Calibrated risk receipt','风险证据' if _qualified_radar else '校准风险凭证') %}
+@@ -441,0 +445,4 @@
++  {% if _qualified_radar %}
++  <div class="imd-receipt"><h3>{{ t('Forecast not available','预测暂不可用') }}</h3><p>{{ t('The current inputs do not provide a calibrated pullback forecast.','当前输入不提供经校准的回撤预测。') }}</p></div>
++  <div class="imd-receipt"><h3>{{ t('Input reading','输入读数') }}</h3><p><b>{{ t('Reading unavailable','读数暂缺') if not RADAR.composition.score_current else (t('Partial reading','输入不完整') if RADAR.composition.status == 'PARTIAL' else t('Descriptive reading','描述性读数')) }}</b><br>{{ t(RADAR.label_en,RADAR.label_zh) }}</p></div>
++  {% else %}
+@@ -443,0 +451 @@
++  {% endif %}
+@@ -445,2 +453,2 @@
+-<h3 style="margin-top:18px">{{ t('Active scare families','活跃风险类别') }}</h3>
+-<div class="imd-cols">{% for scare in D.risk.scares %}<div class="imd-receipt"><h3>{{ t(scare.label_en,scare.label_zh) }}</h3><p>{{ t('Score','分数') }} {{ scare.score }} · {{ scare.band }}{% if scare.firing_legs %}<br>{{ scare.firing_legs|length }} {{ t('confirming legs','项确认指标') }}{% endif %}</p></div>{% else %}<div class="imd-receipt na">{{ t('No calibrated scare data','无校准风险数据') }}</div>{% endfor %}</div>
++<h3 style="margin-top:18px">{{ t('Risk drivers','风险驱动') if _qualified_radar else t('Active scare families','活跃风险类别') }}</h3>
++<div class="imd-cols">{% for scare in D.risk.scares %}<div class="imd-receipt"><h3>{{ t(scare.label_en,scare.label_zh) }}</h3><p>{{ t('Score','分数') }} {{ scare.score }} · {{ scare.band }}{% if scare.firing_legs %}<br>{{ scare.firing_legs|length }} {{ t('confirming legs','项确认指标') }}{% endif %}</p></div>{% else %}<div class="imd-receipt na">{{ t('Risk observations unavailable','风险观测暂缺') if _qualified_radar else t('No calibrated scare data','无校准风险数据') }}</div>{% endfor %}</div>

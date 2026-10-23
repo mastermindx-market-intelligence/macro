@@ -1,0 +1,71 @@
+def _composition_coverage(profile, sub, comp, index):
+    """Availability of derived inputs, not feed freshness or forecast confidence."""
+    index = pd.Index(index)
+    current = index[-1] if len(index) else None
+    complete = pd.Series(True, index=index, dtype=bool)
+    raw_available = pd.Series(False, index=index, dtype=bool)
+    groups, members_available, members_expected = [], 0, 0
+    available_weight = total_weight = 0.0
+    legs = tuple(getattr(profile, "comp_legs", ()) or ())
+    for key, codes, weight in legs:
+        masks = {}
+        for code in codes:
+            values = (sub or {}).get(code)
+            values = (values.reindex(index) if values is not None else
+                      pd.Series(np.nan, index=index, dtype=float))
+            masks[code] = pd.Series(np.isfinite(values), index=index)
+        frame = pd.DataFrame(masks, index=index)
+        present = [code for code in codes if current is not None and bool(frame.at[current, code])]
+        complete &= frame.all(axis=1) if len(codes) else False
+        if weight > 0 and len(codes):
+            raw_available |= frame.any(axis=1)
+        groups.append({"key": key, "expected": list(codes), "present": present,
+                       "missing": [c for c in codes if c not in present], "weight": weight})
+        members_available += len(present)
+        members_expected += len(codes)
+        total_weight += weight
+        available_weight += weight if present else 0.0
+    finite_comp = (comp[np.isfinite(comp)] if comp is not None else pd.Series(dtype=float))
+    if current is not None:
+        finite_comp = finite_comp.loc[finite_comp.index <= current]
+    current_score = bool(current is not None and current in finite_comp.index)
+    score_asof = str(pd.Timestamp(finite_comp.index[-1]).date()) if len(finite_comp) else None
+    recent = finite_comp.tail(30)
+    window = index[(index >= recent.index[0]) & (index <= current)] if len(recent) else index[:0]
+    incomplete_sessions = int((~complete.reindex(window, fill_value=False)).sum())
+    # _pct drops null raw rows before its trailing _PCT_WIN-observation rank.
+    # Cover the union feeding the compared ranks, including benchmark gaps in it.
+    reference_observations = index[raw_available]
+    reference_window = index[:0]
+    if len(recent) and current is not None:
+        first = int(reference_observations.searchsorted(recent.index[0]))
+        first = max(0, first - _PCT_WIN + 1)
+        reference_observations = reference_observations[first:]
+        reference_observations = reference_observations[reference_observations <= current]
+        if len(reference_observations):
+            reference_window = index[(index >= reference_observations[0]) & (index <= current)]
+    else:
+        reference_observations = reference_observations[:0]
+    reference_incomplete = int((~complete.reindex(reference_window, fill_value=False)).sum())
+    status = ("UNAVAILABLE" if not members_available else
+              "COMPLETE" if members_available == members_expected else "PARTIAL")
+    return {
+        "status": status, "freshness": "not_assessed",
+        "asof": str(pd.Timestamp(current).date()) if current is not None else None,
+        "score_asof": score_asof, "score_current": current_score,
+        "groups_expected": len(legs),
+        "groups_available": sum(bool(g["present"]) for g in groups),
+        "members_expected": members_expected, "members_available": members_available,
+        "group_weight_coverage": available_weight / total_weight if total_weight else None,
+        "groups": groups, "comparison_sessions": len(window),
+        "comparison_incomplete_sessions": incomplete_sessions,
+        "comparison_reference_sessions": len(reference_window),
+        "comparison_reference_observations": len(reference_observations),
+        "comparison_reference_incomplete_sessions": reference_incomplete,
+        "comparison_reference_rank_window": _PCT_WIN,
+        "comparison_comparable": bool(current_score and status == "COMPLETE"
+                                      and len(recent) >= 10 and not incomplete_sessions
+                                      and not reference_incomplete),
+        "calibration_status": "unreviewed_corrected_construction",
+        "method": "available_group_weight.v1",
+    }
