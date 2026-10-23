@@ -1,0 +1,354 @@
+{# INTL-GS shared primitives — spec R14 §7/§8, DEC:INTL-GS-R14-DESIGN-FREEZE ruling 2.
+   Consumers: W2A (IM13 scanner/coverage) and W2B (IM14 dossier) view templates
+   plus the state-matrix fixture. Every user-visible string is passed through
+   t('EN','中文') by the CALLER (compose the plain string first, then wrap once —
+   engine.i18n.t rejects nested twins). No hex and no colour ever enters an
+   inline style; signed-bar geometry is computed here and emitted as plain SVG
+   attributes, so the stylesheet stays the single colour authority. #}
+
+{# ---- numerals (§3.1/§6.8): typed sign, U+2212 minus, caller picks ink class ---- #}
+{% macro gs_signed(value, dp=2, unit='', ink='') -%}
+{%- if value is none -%}<span class="intl-gs__num intl-gs__num--muted">—</span>{%- else -%}<span class="intl-gs__num{% if ink %} intl-gs__num--{{ ink }}{% endif %}">{{ '+' if value > 0 else ('−' if value < 0 else '') }}{{ ('%.' ~ dp ~ 'f')|format(value|abs) }}{{ unit }}</span>{%- endif -%}
+{%- endmacro %}
+
+{# ---- chips (§7/§8) ---- #}
+{% macro gs_chip(label, kind='') -%}
+<span class="intl-gs__chip{% if kind %} intl-gs__chip--{{ kind }}{% endif %}">{{ label }}</span>
+{%- endmacro %}
+
+{% macro gs_tier_chip(label) -%}
+{%- set copy = {'T1': ('T1', 'T1'), 'T2': ('T2', 'T2'), 'T3': ('T3', 'T3'), 'Proxy': ('Proxy', '代理'), 'Restricted': ('Restricted', '受限')}.get(label, (label, label)) -%}
+{{ gs_chip(t(copy[0], copy[1]), {'T1': 'tier', 'T2': 'tier', 'T3': 'tier', 'Proxy': 'prov', 'Restricted': 'warn-dashed'}.get(label, 'tier')) }}
+{%- endmacro %}
+
+{% macro gs_stance_chip(stance) -%}
+{%- set copy = {'get_ready': ('Get ready', '准备'), 'watch': ('Watch', '观察'), 'stand_aside': ('Stand aside', '回避')} -%}
+{%- set pair = copy.get(stance, copy['stand_aside']) -%}
+{{ gs_chip(t(pair[0], pair[1]), {'get_ready': 'get-ready', 'watch': 'watch'}.get(stance, 'stand-aside')) }}
+{%- endmacro %}
+
+{% macro gs_specimen_chip() -%}
+<span class="intl-gs__chip intl-gs__chip--specimen">{{ t('Specimen values · not live', '示例数值 · 非实时') }}</span>
+{%- endmacro %}
+
+{% macro gs_eyebrow(text) -%}
+<p class="intl-gs__eyebrow">{{ text }}</p>
+{%- endmacro %}
+
+{# ---- §1.3 visible honesty: a number prints only with all five parts.
+      parts: {label, unit, basis, clock, tier} (+ optional ink: up|down|muted, dp).
+      Any missing part renders the Abstain state with reason missing_<part>. ---- #}
+{% macro gs_value(value, parts) -%}
+{%- set missing = [] -%}
+{%- for part in ['label', 'unit', 'basis', 'clock', 'tier'] -%}
+{%- if not parts.get(part) %}{% if missing.append(part) %}{% endif %}{% endif -%}
+{%- endfor -%}
+{%- if missing -%}
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="missing_{{ missing[0] }}">{{ t('Abstain', '弃权') }}</span> <span class="intl-gs__statecell__reason">missing_{{ missing[0] }}</span>
+{%- else -%}
+{#- F3: exactly ONE .intl-gs__num element — the ink modifier rides gs_signed,
+    so a full five-part value never nests a second num span. -#}
+{{ gs_signed(value, parts.dp|default(2, true), parts.unit, parts.ink|default('', true)) }}
+{%- endif -%}
+{%- endmacro %}
+
+{# ---- §7 state grammar ---- #}
+{% macro gs_state_chip(state, note='') -%}
+{%- set pair = {'complete': ('Complete', '完整'), 'loading': ('Loading', '加载中'), 'qualified': ('Qualified', '有条件'), 'abstain': ('Abstain', '弃权'), 'empty': ('No data', '无数据'), 'partial': ('Partial', '部分'), 'stale': ('Stale', '过期'), 'closed': ('Closed', '休市'), 'suspended': ('Suspended', '停牌'), 'restricted': ('Restricted', '受限'), 'corrected': ('Corrected', '已更正'), 'recovered': ('Recovered', '已恢复')}.get(state, ('No data', '无数据')) -%}
+{%- set kind = {'complete': 'ok', 'loading': 'loading', 'qualified': 'warn-dashed', 'abstain': 'muted-dashed', 'empty': 'empty', 'partial': 'warn', 'stale': 'warn', 'closed': '', 'suspended': 'warn', 'restricted': 'warn-dashed', 'corrected': 'info', 'recovered': 'ok'}.get(state, '') -%}
+{{ gs_chip(t(pair[0], pair[1]) ~ note if note else t(pair[0], pair[1]), kind) }}
+{%- endmacro %}
+
+{# Precedence (§7): Restricted > Loading > Abstain > Stale > Suspended/Closed >
+   Corrected > Qualified > Partial > [W2F extension: Recovered > Empty] > Complete.
+   The two bracketed ranks are where §7 is silent; Recovered/Empty sit directly
+   above Complete so any flag still beats the plain default. Renders the winning
+   state key as plain text. #}
+{% macro gs_winning_state(states) -%}
+{%- set order = ['restricted', 'loading', 'abstain', 'stale', 'suspended', 'closed', 'corrected', 'qualified', 'partial', 'recovered', 'empty', 'complete'] -%}
+{%- set ns = namespace(winner='') -%}
+{%- for candidate in order -%}
+{%- if not ns.winner and candidate in states %}{% set ns.winner = candidate %}{% endif -%}
+{%- endfor -%}
+{{- ns.winner -}}
+{%- endmacro %}
+
+{# state cell (§7 anatomy: h92, pad 10/12, --r-card, --panel, 1px --line).
+   EXACTLY THREE rows (VF2): (1) market 11/600 --muted + state chip;
+   (2) one flex row — value numeral 17/700 with the basis label inline on the
+   same baseline (Abstain/Empty put the reason in the basis slot; Corrected
+   puts the struck old value inline before the new one; Restricted shows the
+   dashed rights slot with its entitlement note);
+   (3) clock numeral 10 --muted, with the Partial missing-leg text after it.
+   dir: 'up'|'down'|'' drives §6 ink (never applied to stale/closed/suspended,
+   which are always muted). No state adds a fourth row at 1440. #}
+{% macro gs_state_cell(state, market, value=none, unit='', basis='', clock='', reason='', note='', old='', dir='') -%}
+<div class="intl-gs__statecell intl-gs__statecell--{{ state }}" data-state="{{ state }}"{% if dir %} data-dir="{{ dir }}"{% endif %}>
+  <div class="intl-gs__statecell__top">
+    <span class="intl-gs__statecell__market">{{ market }}</span>
+    {{ gs_state_chip(state, note) }}
+  </div>
+  <div class="intl-gs__statecell__mainrow">
+  {%- if state == 'restricted' %}
+    <span class="intl-gs__rights-slot" role="img" aria-label="Value withheld · rights restricted · 数值保留 · 权限受限"></span>
+    {%- if reason %}<span class="intl-gs__statecell__basis">{{ reason }}</span>{% endif %}
+  {%- elif state == 'loading' %}
+    <span class="intl-gs__skel" aria-hidden="true"></span>
+    <span class="intl-gs__skel intl-gs__skel--sm" aria-hidden="true"></span>
+  {%- elif state == 'corrected' %}
+    {#- FX7: a numeric `old` formats through gs_signed with the SAME decimals
+        and unit as the new value (spec §8 "5.712 → 5.698": old and new share
+        precision). A pre-formatted string is no longer accepted: gs_signed's
+        numeric comparison raises instead of echoing it into markup. An absent
+        old (none/'') renders no struck numeral. -#}
+    {%- if old is not none and old != '' %}<span class="intl-gs__old">{{ gs_signed(old, 2, unit) }}</span>{% endif %}<span class="intl-gs__statecell__value intl-gs__num">{{ gs_signed(value, 2, unit) }}</span>
+  {%- elif state in ['abstain', 'empty'] %}
+    <span class="intl-gs__statecell__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__statecell__basis">{{ reason }}</span>
+  {%- else %}
+    <span class="intl-gs__statecell__value intl-gs__num{% if state in ['stale', 'closed', 'suspended'] %} intl-gs__num--muted{% elif dir %} intl-gs__num--{{ dir }}{% endif %}">{{ gs_signed(value, 2, unit) }}</span>
+    {%- if basis %}<span class="intl-gs__statecell__basis">{{ basis }}</span>{% endif %}
+  {%- endif %}
+  </div>
+  <div class="intl-gs__statecell__metarow">
+    <span class="intl-gs__statecell__clock intl-gs__num">{% if state == 'loading' %}{{ t('Acquiring…', '获取中…') }}{% else %}{{ clock }}{% endif %}</span>
+    {%- if reason and state not in ['abstain', 'empty', 'restricted'] %}<span class="intl-gs__statecell__reason">{{ reason }}</span>{% endif %}
+  </div>
+</div>
+{%- endmacro %}
+
+{# ---- six-question strip (§1.2/§8) ---- #}
+{% macro gs_question_card(n, title, answer='', answered=false, active=false) -%}
+<div class="intl-gs__qcard{% if answered %} is-answered{% endif %}{% if active %} is-active{% endif %}">
+  <span class="intl-gs__qcard__n intl-gs__num">{{ n }}</span>
+  <span class="intl-gs__qcard__body">
+    <span class="intl-gs__qcard__title">{{ title }}</span>
+    {%- if answer %}<span class="intl-gs__qcard__answer">{{ answer }}</span>{% endif %}
+  </span>
+</div>
+{%- endmacro %}
+
+{% macro gs_question_strip(questions) -%}
+<div class="intl-gs__qstrip">
+{%- for q in questions %}{{ gs_question_card(q.n, q.title, q.answer|default(''), q.answered|default(false)) }}{% endfor -%}
+</div>
+{%- endmacro %}
+
+{# W2F-X X5: the shared chrome strip — the six spec §1.2 questions with their
+   frozen EN/ZH labels; `active` rings the board's current question. #}
+{% macro gs_questions(active=none) -%}
+{%- set labels = [('What changed globally?', '全球发生了什么变化？'),
+                  ('Local, FX, common or divergent?', '本地、汇率、共同还是背离？'),
+                  ('Credit, funding, liquidity?', '信用、融资、流动性？'),
+                  ('Transmission into the US?', '如何传导至美国？'),
+                  ('Eligible US corroboration?', '合格的美国佐证？'),
+                  ('What resolves the thesis?', '什么能验证或推翻论点？')] -%}
+<div class="intl-gs__qstrip">
+{%- for pair in labels %}{{ gs_question_card(loop.index, t(pair[0], pair[1]), '', false, loop.index == active) }}{% endfor -%}
+</div>
+{%- endmacro %}
+
+{# W2F-X X5: §10.0 page header — eyebrow · H1 · lede, with the specimen chip
+   beside the title when the page shows specimen values. #}
+{% macro gs_page_header(eyebrow, title, lede, specimen=false) -%}
+<header class="intl-gs__pagehead">
+  {{ gs_eyebrow(eyebrow) }}
+  <h1 class="intl-gs__pagehead__title">{{ title }}</h1>
+  <p class="intl-gs__pagehead__lede">{{ lede }}</p>
+  {%- if specimen %}{{ gs_specimen_chip() }}{% endif %}
+</header>
+{%- endmacro %}
+
+{# W2F-X X5: the §10.0 snapshot bar bound to one basis — four contract clock
+   cells (label + the latest qualified clock instant, or "—" plus the no-
+   qualified-observation copy), the Mode | Basis | Horizon read-out as
+   segmented read-only labels, and the alignment note. The usd_hedged basis
+   shows the Abstain state instead of a basis label. snapshot is the mount's
+   workspace['surveillance']['snapshot'][basis] block, composed through
+   lib.intl_gs_display.snapshot_display: only the clock_display entries are
+   printed (FX1 — the machine instant lives in <time datetime>, the visible
+   value is the §13.3 form; a raw `clocks` value is never printed). horizon
+   is {"id","en","zh"} built by horizon_label (FX5 — one vocabulary shared
+   with the fixture segmented control and IM13). #}
+{% macro gs_snapshot(snapshot, basis, horizon) -%}
+{%- set entry = (snapshot or {}).get(basis, {}) -%}
+{%- set display_clocks = entry.get('clock_display') or {} -%}
+{%- set clock_labels = [('observation', ('Reference period', '参考区间')),
+                        ('source_publication', ('Source available', '来源可得')),
+                        ('ingestion', ('Acquired + qualified', '采集并合格')),
+                        ('computation', ('Published', '发布'))] -%}
+{%- set basis_copy = {'local': ('Local', '本币'),
+                      'usd_unhedged': ('USD · Unhedged', '美元 · 未对冲'),
+                      'usd_hedged': ('USD · Hedged', '美元 · 已对冲')}.get(basis, (basis, basis)) -%}
+<div class="intl-gs__snapshot">
+  {%- for key, pair in clock_labels %}
+  {%- set shown = display_clocks.get(key) %}
+  <span class="intl-gs__snapclock">
+    <span class="intl-gs__snapclock__label">{{ t(pair[0], pair[1]) }}</span>
+    {%- if shown %}<time class="intl-gs__snapclock__value intl-gs__num" datetime="{{ shown.datetime }}">{{ t(shown.en, shown.zh) }}</time>
+    {%- else %}<span class="intl-gs__snapclock__value intl-gs__num intl-gs__num--muted">—</span><span class="intl-gs__snapclock__empty">{{ t('No qualified observation', '无合格观测') }}</span>{% endif %}
+  </span>
+  {% endfor -%}
+  <span class="intl-gs__snapcontrols">
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Mode', '模式') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t('Price', '价格') }}</span></span></span>
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Basis', '口径') }}</span>{% if basis == 'usd_hedged' %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt">{{ t(basis_copy[0], basis_copy[1]) }}</span></span> {{ gs_chip(t('Hedged basis not supported', '不支持对冲口径'), 'muted-dashed') }}{% else %}<span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active">{{ t(basis_copy[0], basis_copy[1]) }}</span></span>{% endif %}</span>
+    <span class="intl-gs__snapctl"><span class="intl-gs__snapctl__label">{{ t('Horizon', '区间') }}</span><span class="intl-gs__seg intl-gs__seg--readonly"><span class="intl-gs__seg__opt is-active intl-gs__num">{{ t(horizon.en, horizon.zh) }}</span></span></span>
+  </span>
+  <span class="intl-gs__snapshot__note">{{ t('Clocks follow the four-clock observation contract; each cell is the latest qualified observation of this basis.', '时钟遵循四时钟观测合同；每个单元格均为该口径最近一次合格观测。') }}</span>
+</div>
+{%- endmacro %}
+
+{# ---- band head / featured ring / panel ----
+   id='' (FX2) sets the h2 id so a wrapping container can point
+   aria-labelledby at the VISIBLE title — an accessible name may never be
+   built from t() markup (engine.i18n.t emits language spans). ---- #}
+{% macro gs_bandhead(title, qnum='', sub='', clock='', id='') -%}
+<div class="intl-gs__bandhead">
+  {%- if qnum %}<span class="intl-gs__eyebrow">{{ qnum }}</span>{% endif %}
+  <h2 class="intl-gs__bandhead__title"{% if id %} id="{{ id }}"{% endif %}>{{ title }}</h2>
+  {%- if sub %}<span class="intl-gs__bandhead__sub">{{ sub }}</span>{% endif %}
+  {%- if clock %}<span class="intl-gs__bandhead__clock intl-gs__num">{{ clock }}</span>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro gs_featured() -%}
+<div class="intl-gs__panel intl-gs__featured">{{ caller() }}</div>
+{%- endmacro %}
+
+{# ---- controls ---- #}
+{% macro gs_btn(label, kind='secondary', disabled=false, extra_attrs='') -%}
+<button type="button" class="intl-gs__btn{% if kind == 'primary' %} intl-gs__btn--primary{% endif %}"{% if disabled %} disabled{% endif %}{{ extra_attrs }}>{{ label }}</button>
+{%- endmacro %}
+
+{% macro gs_segmented(options, active='') -%}
+<div class="intl-gs__seg" role="group">
+{%- for opt in options %}
+  <button type="button" class="intl-gs__seg__opt{% if opt.value == active %} is-active{% endif %}" aria-pressed="{{ 'true' if opt.value == active else 'false' }}" data-value="{{ opt.value|e }}">{{ opt.label }}</button>
+{%- endfor %}
+</div>
+{%- endmacro %}
+
+{# ---- snapshot bar (§10.0): clocks are {label, value}; chips are {label, kind} ---- #}
+{% macro gs_snapshot_bar(clocks, chips, note='') -%}
+<div class="intl-gs__snapshot">
+{%- for c in clocks %}<span class="intl-gs__snapclock"><span class="intl-gs__snapclock__label">{{ c.label }}</span><span class="intl-gs__snapclock__value intl-gs__num">{{ c.value }}</span></span>{% endfor %}
+{%- for chip in chips %}{{ gs_chip(chip.label, chip.kind|default('', true)) }}{% endfor %}
+{%- if note %}<span class="intl-gs__snapshot__note">{{ note }}</span>{% endif %}
+{%- if caller is defined %}{{ caller() }}{% endif %}
+</div>
+{%- endmacro %}
+
+{# ---- KPI card (§8) ---- count=true renders an unsigned integer (VF10: counts
+   are never signed and never carry decimals; only returns carry a sign, dp and
+   direction ink per §6). The tier chip sits in the card's header ROW (VF11),
+   so a long label wraps beside it instead of colliding with it. #}
+{% macro gs_kpi(label, value, unit, basis, clock, tier, ink='', count=false) -%}
+<div class="intl-gs__kpi">
+  <div class="intl-gs__kpi__head">
+    <span class="intl-gs__kpi__label">{{ label }}</span>
+    <span class="intl-gs__kpi__tier">{{ gs_tier_chip(tier) }}</span>
+  </div>
+  <span class="intl-gs__kpi__value intl-gs__num{% if ink %} intl-gs__num--{{ ink }}{% endif %}">{% if count %}{{ value|int }}{% else %}{{ gs_signed(value, 2, unit) }}{% endif %}</span>
+  <span class="intl-gs__kpi__meta">{{ basis }} · <span class="intl-gs__num">{{ clock }}</span></span>
+</div>
+{%- endmacro %}
+
+{# ---- session hand-off strip (h56); steps are {name, chip_html, clock} ---- #}
+{% macro gs_handoff(steps) -%}
+<div class="intl-gs__handoff">
+{%- for step in steps %}{% if not loop.first %}<span class="intl-gs__handoff__arrow" aria-hidden="true">→</span>{% endif %}
+  <span class="intl-gs__handoff__step">{{ step.name }}{{ step.chip_html|default('') }} <span class="intl-gs__num">{{ step.clock }}</span></span>
+{%- endfor %}
+</div>
+{%- endmacro %}
+
+{# ---- signed bars and sparkline (§8/§9; geometry computed here, colour in CSS) ---- #}
+{% macro gs_minibar(local_pct, fx_pct) -%}
+{%- set lw = ((local_pct|abs) / 5 * 44)|round(1) -%}
+{%- set fw = ((fx_pct|abs) / 5 * 44)|round(1) -%}
+<svg class="intl-gs__minibar" width="88" height="12" viewBox="0 0 88 12" role="img" aria-label="Local and FX legs around a zero tick · ±5% full scale · 围绕零刻度的本币与汇率贡献 · ±5% 满量程">
+  <line class="intl-gs__zero-tick" x1="44" y1="0" x2="44" y2="12"></line>
+  {%- if local_pct and local_pct > 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--local" x="44" y="2" width="{{ lw }}" height="8" rx="2"></rect>{% endif %}
+  {%- if local_pct and local_pct < 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--local" x="{{ 44 - lw }}" y="2" width="{{ lw }}" height="8" rx="2"></rect>{% endif %}
+  {%- if fx_pct and fx_pct > 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--fx" x="44" y="2" width="{{ fw }}" height="8" rx="2"></rect>{% endif %}
+  {%- if fx_pct and fx_pct < 0 %}<rect class="intl-gs__minibar__leg intl-gs__minibar__leg--fx" x="{{ 44 - fw }}" y="2" width="{{ fw }}" height="8" rx="2"></rect>{% endif %}
+</svg>
+{%- endmacro %}
+
+{% macro gs_divergence(z) -%}
+{%- set len = (([z|abs, 3]|min) / 3 * 40)|round(1) -%}
+<svg class="intl-gs__divbar" width="80" height="14" viewBox="0 0 80 14" role="img" aria-label="Signed divergence from a centred zero · ±2σ ticks · 相对中心零位的带符号背离 · ±2σ 刻度">
+  <line class="intl-gs__zero-tick" x1="40" y1="0" x2="40" y2="14"></line>
+  <line class="intl-gs__divbar__tick" x1="13.3" y1="3" x2="13.3" y2="11"></line>
+  <line class="intl-gs__divbar__tick" x1="66.7" y1="3" x2="66.7" y2="11"></line>
+  {%- if z >= 0 %}<rect class="intl-gs__divbar__fill intl-gs__divbar__fill--up" x="40" y="3" width="{{ len }}" height="8" rx="2"></rect>
+  {%- else %}<rect class="intl-gs__divbar__fill intl-gs__divbar__fill--down" x="{{ 40 - len }}" y="3" width="{{ len }}" height="8" rx="2"></rect>{% endif %}
+</svg>
+{%- endmacro %}
+
+{# sparkline: points are plain numbers (own scale mapped to 0–24, 24 = bottom);
+   gap_before_index breaks the line; the tail after the gap renders dashed. #}
+{% macro gs_sparkline(points, gap_before_index=none) -%}
+{%- set n = points|length -%}
+{%- set step = (88 / [n - 1, 1]|max)|round(2) -%}
+{%- set head = [] -%}{%- set tail = [] -%}
+{%- for y in points -%}
+{%- set x = ((loop.index0) * step)|round(1) -%}
+{%- if gap_before_index is not none and loop.index0 >= gap_before_index %}{% if tail.append(x ~ ',' ~ y) %}{% endif %}
+{%- else %}{% if head.append(x ~ ',' ~ y) %}{% endif %}{% endif -%}
+{%- endfor -%}
+<svg class="intl-gs__spark" width="88" height="24" viewBox="0 0 88 24" role="img" aria-label="20-session path, no smoothing, gap breaks the line · 20 个交易日的走势，无平滑，缺口断线">
+  <line class="intl-gs__spark__baseline" x1="0" y1="{{ points[0] }}" x2="88" y2="{{ points[0] }}"></line>
+  {%- if head|length > 1 %}<polyline class="intl-gs__spark__line" points="{{ head|join(' ') }}"></polyline>{% endif %}
+  {%- if tail|length > 1 %}<polyline class="intl-gs__spark__tail" points="{{ tail|join(' ') }}"></polyline>{% endif %}
+  <circle class="intl-gs__spark__dot" cx="{{ ((n - 1) * step)|round(1) }}" cy="{{ points[-1] }}" r="2"></circle>
+</svg>
+{%- endmacro %}
+
+{# typed-edge glyphs (§8): colour + dash, always paired with the type word #}
+{% macro gs_typed_edge(kind) -%}
+<svg class="intl-gs__edge intl-gs__edge--{{ kind }}" width="28" height="10" viewBox="0 0 28 10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5"></line></svg>
+{%- endmacro %}
+
+{# coverage glyphs (§7, 12×12, inline before a clock) #}
+{% macro gs_glyph(state) -%}
+<svg class="intl-gs__glyph intl-gs__glyph--{{ state }}" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+{%- if state == 'complete' %}<circle cx="6" cy="6" r="4"></circle>
+{%- elif state == 'qualified' %}<rect x="2" y="2" width="8" height="8"></rect>
+{%- elif state == 'partial' %}<circle cx="6" cy="6" r="4"></circle>
+{%- elif state == 'stale' %}<rect x="2" y="2" width="8" height="8"></rect>
+{%- elif state == 'abstain' %}<line x1="1" y1="6" x2="11" y2="6"></line>
+{%- elif state == 'closed' %}<circle cx="6" cy="6" r="4"></circle>
+{%- elif state == 'restricted' %}<rect x="2" y="2" width="8" height="8"></rect>
+{%- elif state == 'corrected' %}<circle cx="6" cy="6" r="4"></circle>
+{%- else %}<circle cx="6" cy="6" r="4"></circle>{% endif %}
+</svg>
+{%- endmacro %}
+
+{# ---- rights slot / skeleton / correction note / footnote ---- #}
+{% macro gs_rights_slot() -%}
+<span class="intl-gs__rights-slot" role="img" aria-label="Restricted · value withheld · 受限 · 数值保留"></span>
+{%- endmacro %}
+
+{% macro gs_correction_note(old, new, clock) -%}
+<p class="intl-gs__corr">{{ gs_chip(t('Corrected', '已更正'), 'info') }} <span class="intl-gs__old intl-gs__num">{{ old }}</span> → <span class="intl-gs__num">{{ new }}</span> · <span class="intl-gs__num">{{ clock }}</span></p>
+{%- endmacro %}
+
+{% macro gs_footnote(text) -%}
+<p class="intl-gs__footnote">{{ text }}</p>
+{%- endmacro %}
+
+{# ---- panel root contract (mission 4.4) ----
+   W2A/W2B view templates open their panel with:
+     {% call gs.gs_panel_root(view='scanner', panel=gs_panel) %} …body… {% endcall %}
+   panel is the gs_panel dict the shell loop passes:
+     {view, context_id, context: {horizon, currency_basis, return_basis,
+      source_reference}, generation, payload}.
+   Emits exactly the attributes templates/intl_workspace.js panelValid() needs
+   for a view panel: data-im-panel (controller discovery), data-view, data-horizon
+   and data-basis (must match workspace config), data-source (always present),
+   plus data-im-generation (binding v2: must equal the disclosed source) and
+   data-return-basis for the view contract. data-market/data-pins are optional
+   and appended by the caller through extra_attrs when a view is market-scoped. #}
+{% macro gs_panel_root(view, panel, extra_attrs='') -%}
+<section class="intl-gs__panel intl-gs__view intl-gs__view--{{ view }}" data-im-panel data-gs-panel data-view="{{ view|e }}" data-horizon="{{ panel.context.horizon|e }}" data-basis="{{ panel.context.currency_basis|e }}" data-return-basis="{{ panel.context.return_basis|default('price')|e }}" data-source="{{ (panel.context.source_reference if panel.context.source_reference is not none else '')|e }}"{% if panel.generation %} data-im-generation="{{ panel.generation|e }}"{% endif %}{{ extra_attrs }} id="{{ panel.context_id|e }}-{{ view|e }}" aria-labelledby="{{ panel.context_id|e }}-{{ view|e }}-title">{{ caller() }}</section>
+{%- endmacro %}

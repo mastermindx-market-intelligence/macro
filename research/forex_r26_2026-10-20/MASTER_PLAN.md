@@ -1,3 +1,39 @@
+## Recovery and CI integration checkpoint — 2026-10-23
+
+The browser/session restart left the existing source workspaces intact. Forex
+local HEAD is `92f6ff5131adc96bc85f3075a2239f2d109f449a`; the normal merge of
+`7f57e913a5fa17e11001564a31c4c70a425cb102` is clean and remains uncommitted at
+this observation. Remote #10052 remains `0a71e8cac5620593975b741abdf8d798900452fd`.
+No prior acquisition, materialization, census, migration, render or refused
+Terminal deployment is repeated by this recovery.
+
+The retained CI run `39835608703` completed: 11 packs, contract-delta and ci-plan
+passed; pack 0 and the aggregate gate failed. Pack-0 job `120025103535` found the
+same ownership-inventory assertion failure on the candidate and exact base.
+Merged Caddy #10080 (`8fda9075961737aab7539f585f40bc4bb4ca4bef`) deliberately
+assigned three suites to the existing `biocatalyst-deploy-integration` lane but
+left its cross-lane expected inventory stale. The local repair adds only those
+three entries. Exact-set equality, duplicate-owner rejection, lane names, gates
+and time limits remain in force. Qualification and source publication follow
+on the completed composition; this checkpoint does not call the repaired head
+or its hosted CI green.
+
+The successful USDJPY /2 observation remains historical evidence as assessed
+at 2026-10-22 19:15 UTC. Its fixed latest-slot freshness expired at 20:00 UTC on
+October 22. No reread or later documentation clock extends that expiry. Source
+policy remains unadopted and all admission/publication flags remain false.
+
+Current protected Skillpack pin is `b61ab772a88c68c97bd6931a5698708909c9320c`,
+protected master, schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap
+major 1. The nine required procedures/laws were loaded at that pin and compared
+byte-identical to the previously verified `05a9eb52a54e29fb7bbd0d40813ed12623b176c7`.
+The independent Terminal/Fabric, source-admission and browser/production gates
+remain as recorded below. Next: commit this fixed-main composition, run the two
+ownership checks plus existing curation and differential contract gates, then
+push normally to the same #10052 branch and consume its actual CI result.
+
+---
+
 # Current owner checkpoint — real USDJPY version 2 readback, 22 October 2026
 
 **The existing owner completed one bounded USDJPY capture, exact materialization and observed census on source `0a71e8cac5620593975b741abdf8d798900452fd`. Both required adjacent slots passed the batch candidate checks at 19:15:19 UTC. Source admission, account activation and release remain held by their existing gates.**

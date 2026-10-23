@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en" data-gmi-lens="coverage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMI Explorer — Coverage &amp; receipts (reference)</title>
+<!-- REFERENCE SPECIMEN (mockups/refs/gmi_explorer). Not product code. -->
+<link rel="stylesheet" href="../../../templates/theme.css">
+<link rel="stylesheet" href="../../../templates/navigation-refresh.css">
+<link rel="stylesheet" href="gmi_explorer.css">
+<script>(function(){var h=new URLSearchParams(location.hash.slice(1)),r=document.documentElement;
+var th=h.get('theme'),lg=h.get('lang'),ln=h.get('lens');
+if(th)r.setAttribute('data-theme',th);
+if(lg){r.setAttribute('data-lang',lg);r.setAttribute('lang',lg==='zh'?'zh-Hans':'en');}
+if(ln)r.setAttribute('data-gmi-lens',ln);})();</script>
+</head>
+<body class="gmi-page">
+<nav class="site-nav">
+
+<div class="nav-links">
+<a aria-label="MASTERMINDX — Home" class="nav-brand" href="start.html">
+<svg aria-hidden="true" class="brand-glyph" height="29" viewbox="0 0 40 40" width="29" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="mbTile" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#5b9dff"></stop><stop offset=".42" stop-color="#3b82f6"></stop>
+<stop offset=".74" stop-color="#6366f1"></stop><stop offset="1" stop-color="#7c5cff"></stop></lineargradient>
+<lineargradient id="mbSheen" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity=".34"></stop><stop offset=".55" stop-color="#ffffff" stop-opacity="0"></stop></lineargradient>
+<radialgradient cx=".5" cy=".4" id="mbGlow" r=".65">
+<stop offset="0" stop-color="#ffffff" stop-opacity=".22"></stop><stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop></radialgradient>
+<lineargradient id="mbInk" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#dbe7ff"></stop></lineargradient>
+</defs>
+<rect fill="url(#mbTile)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="url(#mbGlow)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="url(#mbSheen)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="none" height="32.6" rx="9.9" stroke="#ffffff" stroke-opacity=".28" width="32.6" x="3.7" y="3.7"></rect>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.3">
+<path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="#15205a" stroke-opacity=".30" transform="translate(0,1.1)"></path>
+<path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="url(#mbInk)"></path>
+</g>
+</svg>
+<span class="brand-word">MASTERMINDX</span>
+</a>
+<div class="nav-dd">
+<a class="nav-link" href="macro.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-us"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="china.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-cn"></span><span class="l-en">China</span><span class="l-zh">中国</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="hk.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-hk"></span><span class="l-en">Hong Kong</span><span class="l-zh">香港</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="canada.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-ca"></span><span class="l-en">Canada</span><span class="l-zh">加拿大</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="intl.html"><span aria-hidden="true" class="menu-icon menu-icon-intl"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="javascript:void(0)"><span aria-hidden="true" class="menu-icon menu-icon-assets"></span><span class="l-en">Other Assets</span><span class="l-zh">其他资产</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd nav-mega-dd">
+<a class="nav-link" href="intelligence_hub.html"><span aria-hidden="true" class="menu-icon menu-icon-research"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
+
+</div>
+</div>
+
+
+
+
+<div class="nav-search">
+<span aria-hidden="true" class="mag"><svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 20 20" width="14"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
+<input aria-label="Search stocks" autocomplete="off" data-ph-zh="搜索任意股票 — 美股、A 股、港股、加股等…" placeholder="Search any stock — US, China, HK, Canada &amp; more…" type="text"/>
+<div class="nav-sugg"></div>
+</div>
+<div class="nav-ctrls">
+<a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" rel="noopener" target="_blank"><span aria-hidden="true" class="product-icon product-icon-terminal"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
+<button aria-label="Toggle dark / light mode" class="theme-switch">
+<span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
+</button>
+<div aria-label="Language" class="lang-toggle" role="group">
+<span class="pill"></span>
+<span class="opt en-opt" data-l="en">EN</span>
+<span class="opt zh-opt" data-l="zh">中文</span>
+</div>
+</div>
+</nav>
+<main class="gmi-wrap" id="main">
+<header class="gmi-head">
+  <div class="gmi-head-main">
+    <nav class="gmi-crumb" aria-label="Breadcrumb"><span class="l-en">Research</span><span class="l-zh">研究</span><i aria-hidden="true">›</i><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></nav>
+    <h1 class="gmi-h1"><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>
+    <p class="gmi-sub"><span class="l-en">No company is admitted to a theme yet. Here is why.</span><span class="l-zh">尚无公司获准纳入任何主题。原因如下。</span></p>
+  </div>
+  <div class="gmi-head-side"><span class="gmi-asof"><span class="l-en">Read as of 22 Oct 2026</span><span class="l-zh">数据截至2026年10月22日</span></span></div>
+</header>
+<section class="gmi-band" aria-labelledby="cov-h"><div class="gmi-band-card">
+<div class="gmi-big0"><span class="gmi-mag-num" id="cov-h">0</span><span class="gmi-mag-cap" style="max-width:none"><span class="l-en">companies admitted to any theme</span><span class="l-zh">家公司获准纳入任何主题</span></span><button class="lens-q gmi-tip" type="button" data-tip-en="A company joins a micro-theme only after a curator admits it from its own filings. None has been admitted yet." data-tip-zh="公司须经审核员依据其自身申报文件批准后才纳入细分主题。目前尚无公司获准纳入。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<div class="gmi-cov"><div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt"><span class="l-en">US</span><span class="l-zh">美国</span></span>
+<span class="gmi-cov-num">0</span><span class="gmi-cov-den"><span class="l-en">of 1,926–1,931 companies</span><span class="l-zh">/ 共 1,926–1,931 家公司</span></span><button class="lens-q gmi-tip" type="button" data-tip-en="The count is a range because 6 listed securities are not yet matched to a company." data-tip-zh="该数字为区间，因为有6只上市证券尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<div class="gmi-track"><span class="gmi-track-zero"></span></div>
+<p class="gmi-note" style="margin-top:4px"><span class="l-en">Why none is admitted yet</span><span class="l-zh">尚无公司纳入的原因</span></p><div class="gmi-stack" aria-hidden="true"><i class="s1" style="flex:726 1 0"></i><i class="s2" style="flex:1201 1 0"></i><i class="s3" style="flex:4 1 0"></i></div><div class="gmi-legend"><span><i class="s1" style="display:inline-block"></i><b>726</b><span class="l-en">company identity not confirmed</span><span class="l-zh">公司身份尚未确认</span></span><span><i class="s2" style="display:inline-block"></i><b>1,201</b><span class="l-en">only on a third-party list</span><span class="l-zh">仅见于第三方名单</span></span><span><i class="s3" style="display:inline-block"></i><b>4</b><span class="l-en">no activity evidence</span><span class="l-zh">无业务活动证据</span></span></div></div><div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt"><span class="l-en">China</span><span class="l-zh">中国</span></span>
+<span class="gmi-cov-num">0</span><span class="gmi-cov-den"><span class="l-en">of 1–1,019 companies</span><span class="l-zh">/ 共 1–1,019 家公司</span></span><button class="lens-q gmi-tip" type="button" data-tip-en="The range is wide because none of the 1,019 listed securities is matched to a company yet." data-tip-zh="区间较宽，因为1,019只上市证券均尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<div class="gmi-track"><span class="gmi-track-zero"></span></div>
+<p class="gmi-note" style="margin-top:4px"><span class="l-en">Why none is admitted yet</span><span class="l-zh">尚无公司纳入的原因</span></p><div class="gmi-stack" aria-hidden="true"><i class="s1" style="flex:1019 1 0"></i></div><div class="gmi-legend"><span><i class="s1" style="display:inline-block"></i><b>1,019</b><span class="l-en">company identity not confirmed</span><span class="l-zh">公司身份尚未确认</span></span></div></div></div>
+</div></section>
+<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">What is measured</span><span class="l-zh">衡量范围</span></h2></div>
+<div class="gmi-tally-lab" style="color:var(--text)"><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><b class="tnum">68</b>&nbsp;<span class="l-en">core micro-themes</span><span class="l-zh">个核心细分主题</span><button class="lens-q gmi-tip" type="button" data-tip-en="The original 68 micro-themes. Coverage and accuracy are measured on this set only." data-tip-zh="最初的68个细分主题。覆盖率与准确性仅在此集合上衡量。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<div class="gmi-strip68" aria-hidden="true"><span class="gmi-sm gmi-sm--held" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span><span class="gmi-sm gmi-sm--acc" aria-hidden="true"></span></div>
+<p class="gmi-note"><span class="l-en">67 have no admitted company. 1 has a link held for review.</span><span class="l-zh">67个尚无获准纳入的公司；1个有待审核的关联。</span></p>
+<div class="gmi-tally-lab gmi-tally-lab--wrap"><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><b class="tnum" style="color:var(--text)">303</b>&nbsp;<span class="l-en">extended micro-themes are shown on the map but not counted.</span><span class="l-zh">个扩展细分主题在地图上显示，但不计入。</span><button class="lens-q gmi-tip" type="button" data-tip-en="303 micro-themes added on 21 Oct 2026 to help you find your way around. They are shown but not counted in coverage." data-tip-zh="2026年10月21日新增的303个细分主题，用于帮助浏览。予以显示，但不计入覆盖率。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+</section><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Corrections log</span><span class="l-zh">更正记录</span></h2></div>
+<dl class="gmi-dl"><div><dt><span class="l-en">30 Jan 2026</span><span class="l-zh">2026年1月30日</span></dt><dd><span class="l-en">Skyworks 10-K/A amends its 10-K. The Apple revenue share is unchanged.</span><span class="l-zh">思佳讯10-K/A修订其10-K，来自苹果的营收占比未变。</span></dd></div>
+<div><dt><span class="l-en">Theme links</span><span class="l-zh">主题关联</span></dt><dd class="gmi-muted"><span class="l-en">Changes are not tracked yet.</span><span class="l-zh">变更尚未跟踪。</span></dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Accuracy check</span><span class="l-zh">准确性抽查</span></h2></div>
+<div class="mx-empty" style="padding:8px 0;text-align:left"><div class="mx-empty-line"><span class="l-en">Not measured yet</span><span class="l-zh">尚未衡量</span></div>
+<div class="mx-empty-why"><span class="l-en">Needs 200 admitted links (100 US, 100 China) before a sample is drawn. Now 0.</span><span class="l-zh">需要200条获准纳入的关联（美国100条、中国100条）后才会抽样。目前为0。</span></div></div></section></div></div>
+<p class="gmi-foot"><span class="l-en">Sources: company filings; exchange symbol directory, 21 Oct 2026; review ledger, 22 Oct 2026.</span><span class="l-zh">来源：公司申报文件；交易所证券代码目录（2026年10月21日）；审核记录（2026年10月22日）。</span></p>
+</main>
+<script>(function(){var r=document.documentElement,bs=[].slice.call(document.querySelectorAll('[data-gmi-set-lens]'));
+function sync(){bs.forEach(function(b){b.setAttribute('aria-selected',String(r.getAttribute('data-gmi-lens')===b.getAttribute('data-gmi-set-lens')));});}
+bs.forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-gmi-set-lens');r.setAttribute('data-gmi-lens',v);sync();
+var h=new URLSearchParams(location.hash.slice(1));h.set('lens',v);history.replaceState(null,'','#'+h.toString());});});sync();})();</script>
+</body>
+</html>
