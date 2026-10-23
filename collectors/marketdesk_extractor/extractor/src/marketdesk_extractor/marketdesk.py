@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator, NoReturn
 
 from tenacity import (
     retry, retry_if_exception_type, stop_after_attempt, wait_exponential,
@@ -47,8 +47,9 @@ def _as_id_list(payload: Any, what: str) -> list[str]:
     plausible one-item feed. That is exactly how a lapsed login went unnoticed
     for four days (2026-08-07 → 08-11): the log read ``latest=1 picks=1 saved=1``
     where healthy is ``latest=25 picks=80``, and discovery reported an honest-
-    looking ``scanned=0 new=0`` every quarter hour. Anything that is not a list
-    is a dead session, not an empty feed.
+    looking ``scanned=0 new=0`` every quarter hour. This pure legacy validator
+    raises on a non-list; the client boundary uses a fresh authentication control
+    to distinguish endpoint rejection from a negative session result.
     """
     if payload is None:
         return []
@@ -168,31 +169,60 @@ class MarketDeskClient:
             log.warning("session probe failed: %s", e)
             return False
 
+    def _raise_array_error(
+        self, payload: Any, what: str, expired: SessionExpired,
+    ) -> NoReturn:
+        """Classify a rejected array with one fresh, raw authentication control."""
+        if self.session_alive():
+            raise MarketDeskError(
+                f"{what}: expected a JSON array, got {type(payload).__name__} "
+                f"({str(payload)[:60]}) while the session control probe succeeds "
+                "— endpoint failure"
+            ) from expired
+        raise expired
+
+    def _read_id_list(self, what: str, fetch: Callable[[], Any]) -> list[str]:
+        """Preserve strict feed validation without guessing why an endpoint failed."""
+        payload = fetch()
+        try:
+            return _as_id_list(payload, what)
+        except SessionExpired as exc:
+            self._raise_array_error(payload, what, exc)
+
     # --- feeds -------------------------------------------------------------
     def latest(self, institutions: list[str] | None = None) -> list[str]:
         body: dict[str, Any] = {}
         if institutions:
             body["institutions"] = institutions
-        return _as_id_list(self._post(self.cfg.api("latest/latest"), body), "latest")
+        return self._read_id_list(
+            "latest", lambda: self._post(self.cfg.api("latest/latest"), body)
+        )
 
     def picks(self) -> list[str]:
-        return _as_id_list(self._get(self.cfg.api("latest/picks")), "picks")
+        return self._read_id_list(
+            "picks", lambda: self._get(self.cfg.api("latest/picks"))
+        )
 
     def saved(self) -> list[str]:
-        return _as_id_list(self._get(self.cfg.api("latest/saved")), "saved")
+        return self._read_id_list(
+            "saved", lambda: self._get(self.cfg.api("latest/saved"))
+        )
 
     def viewed(self) -> list[str]:
-        return _as_id_list(self._get(self.cfg.api("latest/viewed")), "viewed")
+        return self._read_id_list(
+            "viewed", lambda: self._get(self.cfg.api("latest/viewed"))
+        )
 
     # --- tree --------------------------------------------------------------
     def browse_current(self) -> list[str]:
-        return _as_id_list(
-            self._get(self.cfg.api("library/browse/current")), "browse/current"
+        return self._read_id_list(
+            "browse/current", lambda: self._get(self.cfg.api("library/browse/current"))
         )
 
     def browse(self, path_id: str) -> list[str]:
-        return _as_id_list(
-            self._get(self.cfg.api(f"library/browse/{path_id}")), f"browse/{path_id}"
+        return self._read_id_list(
+            f"browse/{path_id}",
+            lambda: self._get(self.cfg.api(f"library/browse/{path_id}")),
         )
 
     # --- items -------------------------------------------------------------
@@ -201,8 +231,15 @@ class MarketDeskClient:
         out: list[dict] = []
         for chunk in chunked(path_ids, _PROVISION_CHUNK):
             res = self._post(self.cfg.api("items/provision"), {"pathIds": chunk})
-            if isinstance(res, list):
-                out.extend(res)
+            if not isinstance(res, list):
+                self._raise_array_error(
+                    res, "items/provision",
+                    SessionExpired(
+                        "items/provision: rejected metadata response and no "
+                        "authenticated session control"
+                    ),
+                )
+            out.extend(res)
             jitter_sleep()
         return out
 
@@ -285,8 +322,23 @@ class MarketDeskClient:
     def download_blob(self, blob_id: str) -> bytes:
         """GET the authenticated blob URL, follow redirects, return PDF bytes."""
         url = self.cfg.blob_url(blob_id)
-        resp = self.req.get(url, headers={"Referer": self._headers["Referer"]},
-                            timeout=120_000)
+        try:
+            resp = self.req.get(url, headers={"Referer": self._headers["Referer"]},
+                                timeout=120_000)
+        except Exception as error:
+            # A Playwright HTTP request that never established TLS could not
+            # have delivered PDF bytes. This is an infrastructure failure, NOT
+            # evidence that the paper is unsupported or has consumed a PDF.
+            # Only this exact observed pre-handshake failure is reclassified;
+            # post-handshake/ambiguous provider effects stay fail-closed.
+            if (
+                "client network socket disconnected before secure tls "
+                "connection was established"
+            ) in str(error).lower():
+                raise TransientHTTPError(
+                    f"blob {blob_id}: connection lost before TLS establishment"
+                ) from error
+            raise
         if resp.status >= 500:
             raise TransientHTTPError(f"blob {blob_id} -> {resp.status}")
         if not resp.ok:

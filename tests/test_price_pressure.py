@@ -1107,6 +1107,33 @@ def test_display_order_is_recency_then_ticker_never_magnitude():
     assert out.iloc[0]["resid_z"] != df["resid_z"].min()
 
 
+def test_event_view_preserves_native_session_and_engine_version():
+    row = {"ticker": "AAA", "date": "2026-01-02", "side": "down",
+           "harvested_asof": "2026-01-05", "engine_version": "historical-engine",
+           "generated_utc": "2026-01-06T12:00:00Z", "evaluated_through": "2026-01-06"}
+    view = pp_artifact.event_view(row)
+    assert view["date"] == "2026-01-02"
+    assert view["harvested_asof"] == "2026-01-05"
+    assert view["engine_version"] == "historical-engine"
+    assert view["engine_version"] != ENGINE_VERSION
+
+
+@pytest.mark.parametrize("native_fields", [
+    {},
+    {"harvested_asof": None, "engine_version": None},
+    {"harvested_asof": "", "engine_version": ""},
+    {"harvested_asof": np.nan, "engine_version": np.nan},
+])
+def test_event_view_never_invents_missing_native_provenance(native_fields):
+    view = pp_artifact.event_view({
+        "date": "2026-01-02", "era": "forward",
+        "generated_utc": "2026-01-06T12:00:00Z", "evaluated_through": "2026-01-06",
+        **native_fields,
+    })
+    assert view["harvested_asof"] is None
+    assert view["engine_version"] is None
+
+
 def test_artifact_shape_authority_and_ordering(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
@@ -1156,6 +1183,15 @@ def test_artifact_shape_authority_and_ordering(tmp_path):
         # SPOKEN, and "peers" is never the word on a market-basis row.
         assert e["comparison"] == ("sector peers" if e["peer_basis"] == "sector"
                                    else "the market")
+
+    # Both open and resolved projections retain the frozen row provenance.
+    native = {(str(pd.Timestamp(r["date"]).date()), r["ticker"], r["side"]): r
+              for r in res["ledger"].to_dict("records")}
+    assert payload["recently_resolved"]
+    for event in payload["open_events"] + payload["recently_resolved"]:
+        row = native[(event["date"], event["ticker"], event["side"])]
+        assert event["harvested_asof"] == row["harvested_asof"]
+        assert event["engine_version"] == row["engine_version"]
 
     txt = json.dumps(payload, ensure_ascii=False).lower()
     assert "validated" not in txt
@@ -1527,3 +1563,193 @@ def test_up_side_terminal_slots_are_mirrored_not_renamed(tmp_path):
     assert labels["up"]["recovered"] == "GAVE_BACK"
     assert labels["down"]["accepted_lower"] == "ACCEPTED_LOWER"
     assert labels["up"]["accepted_lower"] == "KEPT"
+
+
+# ── K3E MKT-1 owner-native response export ──────────────────────────────────
+# These tests pin the versioned read-only projection of existing LSR/DRL owner
+# state.  Numeric context is allowed while identity/currency/basis/clock/rights
+# qualification remains explicitly unavailable.
+
+def _k3e_mkt1_owner_state(*, residual_end=0.05):
+    import pandas as pd
+
+    idx = pd.to_datetime(["2026-09-29", "2026-09-30", "2026-10-01"])
+    close = pd.DataFrame({"AAPL": [100.0, 105.0, 110.0]}, index=idx)
+    cum = pd.DataFrame({"AAPL": [0.0, 0.02, residual_end]}, index=idx)
+    return {"f": {"close": close}, "cum": cum}
+
+
+def test_k3e_mkt1_export_uses_owner_close_and_cum_and_never_self_qualifies():
+    import math
+
+    import pytest
+
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["schema"] == "price_pressure.market_response_export.v1"
+    assert out["owner"] == "engine.price_pressure"
+    assert out["response_model"] == "lsr_p0"
+    assert out["tier"] == "display"
+    assert out["authority"] == "context_only"
+    assert out["financial_influence"] is False
+    assert out["status"] == "RAW_AND_RESIDUAL_CONTEXT"
+    assert out["window"] == {
+        "start_session": "2026-09-29",
+        "end_session": "2026-10-01",
+        "owner_observation_steps": 2,
+        "session_steps": None,
+    }
+    assert out["raw_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["raw_response"]["simple_return"] == pytest.approx(0.10)
+    assert out["raw_response"]["log_return"] == pytest.approx(math.log(1.10))
+    assert out["residual_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["residual_response"]["log_residual"] == pytest.approx(0.05)
+    assert out["residual_response"]["simple_equivalent"] == pytest.approx(math.expm1(0.05))
+    assert out["residual_response"]["construction"] == "LSR_P0_CUM_LOG1P_RESIDUAL_DELTA"
+
+    qualification = out["qualification"]
+    assert qualification["state"] == "NOT_QUALIFIED"
+    assert qualification["k3e_admissible"] is False
+    assert set(qualification["missing"]) == {
+        "canonical_security_identity_receipt",
+        "currency_receipt",
+        "price_basis_vintage_receipt",
+        "availability_clock_receipt",
+        "source_use_receipt",
+        "calendar_session_receipt",
+        "residual_baseline_receipt",
+    }
+
+
+def test_k3e_mkt1_raw_only_preserves_subject_return_when_residual_is_missing():
+    import pytest
+
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(residual_end=float("nan")),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "RAW_ONLY"
+    assert out["raw_response"]["simple_return"] == pytest.approx(0.10)
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["log_residual"] is None
+    assert "RESIDUAL_ENDPOINT_UNAVAILABLE" in out["residual_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_mkt1_missing_exact_endpoint_refuses_instead_of_widening():
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-02",
+    )
+
+    assert out["status"] == "UNAVAILABLE"
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert "EXACT_ENDPOINT_MISSING" in out["refusals"]
+    assert out["window"]["owner_observation_steps"] is None
+    assert out["window"]["session_steps"] is None
+
+
+def test_k3e_mkt1_missing_ticker_refuses_without_cross_name_fallback():
+    from engine.price_pressure.response_export import export_market_response
+
+    out = export_market_response(
+        _k3e_mkt1_owner_state(),
+        ticker="MSFT",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "UNAVAILABLE"
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert "TICKER_NOT_IN_OWNER_STATE" in out["refusals"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_mkt1_gapped_owner_rows_never_claim_calendar_session_distance():
+    import pandas as pd
+
+    from engine.price_pressure.response_export import export_market_response
+
+    idx = pd.to_datetime(["2026-09-29", "2026-10-01"])
+    state = {
+        "f": {"close": pd.DataFrame({"AAPL": [100.0, 110.0]}, index=idx)},
+        "cum": pd.DataFrame({"AAPL": [0.0, 0.05]}, index=idx),
+    }
+    out = export_market_response(
+        state,
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["window"]["owner_observation_steps"] == 1
+    assert out["window"]["session_steps"] is None
+    assert "calendar_session_receipt" in out["qualification"]["missing"]
+
+
+def test_k3e_mkt1_numpy_boolean_endpoints_are_not_numeric_prices():
+    import numpy as np
+    import pandas as pd
+
+    from engine.price_pressure.response_export import export_market_response
+
+    idx = pd.to_datetime(["2026-09-29", "2026-10-01"])
+    state = {
+        "f": {"close": pd.DataFrame({"AAPL": [np.bool_(True), np.bool_(True)]}, index=idx)},
+        "cum": pd.DataFrame({"AAPL": [0.0, 0.01]}, index=idx),
+    }
+    out = export_market_response(
+        state,
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["raw_response"]["state"] == "UNAVAILABLE"
+    assert out["raw_response"]["simple_return"] is None
+    assert "RAW_ENDPOINT_UNAVAILABLE" in out["raw_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False
+
+
+def test_k3e_mkt1_extreme_residual_delta_degrades_instead_of_raising():
+    import pandas as pd
+
+    from engine.price_pressure.response_export import export_market_response
+
+    idx = pd.to_datetime(["2026-09-29", "2026-10-01"])
+    state = {
+        "f": {"close": pd.DataFrame({"AAPL": [100.0, 110.0]}, index=idx)},
+        "cum": pd.DataFrame({"AAPL": [0.0, 1000.0]}, index=idx),
+    }
+    out = export_market_response(
+        state,
+        ticker="AAPL",
+        start_session="2026-09-29",
+        end_session="2026-10-01",
+    )
+
+    assert out["status"] == "RAW_ONLY"
+    assert out["raw_response"]["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["residual_response"]["state"] == "UNAVAILABLE"
+    assert out["residual_response"]["log_residual"] is None
+    assert out["residual_response"]["simple_equivalent"] is None
+    assert "RESIDUAL_NUMERIC_OVERFLOW" in out["residual_response"]["reasons"]
+    assert out["qualification"]["k3e_admissible"] is False

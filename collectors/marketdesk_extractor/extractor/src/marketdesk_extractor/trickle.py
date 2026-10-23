@@ -32,7 +32,7 @@ from __future__ import annotations
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 
 from . import allocator, db
@@ -45,6 +45,7 @@ from .marketdesk import (
     MarketDeskClient,
     MarketDeskError,
     SessionExpired,
+    TransientHTTPError,
 )
 from .pipeline import publish_vault_pending, upload_pending
 from .schemas import Status
@@ -56,6 +57,11 @@ log = get_logger("trickle")
 # Backstop only: the token-bucket pace in run_tick is the real rate governor;
 # this just caps a single tick's drain so nothing runs away.
 DOWNLOADS_PER_ACCOUNT_PER_TICK = 15
+
+# A failed PDF response is not proof of a bad document. Keep exactly one
+# attempt per failed tick and delay re-selection of the same provider account.
+# This does not add quota or bypass the existing token bucket/rolling ledger.
+TRANSIENT_PDF_RETRY_DELAY = timedelta(minutes=5)
 
 # ---------------------------------------------------------------------------
 # Dead-driver watchdog
@@ -114,19 +120,27 @@ class AccountState:
     client: MarketDeskClient | None = None
     authed: bool = False
     cooldown_until: datetime | None = None  # cap-bounce backoff
+    transient_retry_after: datetime | None = None  # transport/5xx backoff
     tokens: float = 0.0                      # pacing token bucket (see _refill_tokens)
     last_refill: datetime | None = None
     # dead-driver watchdog: consecutive ticks whose every download attempt died on
     # the driver, and consecutive failed session re-opens.
     driver_dead_ticks: int = 0
     reopen_failures: int = 0
+    browser_start_failed: bool = False
 
     @property
     def name(self) -> str:
         return self.profile.name
 
     def in_cooldown(self, now: datetime) -> bool:
-        return self.cooldown_until is not None and now < self.cooldown_until
+        return (
+            (self.cooldown_until is not None and now < self.cooldown_until)
+            or (
+                self.transient_retry_after is not None
+                and now < self.transient_retry_after
+            )
+        )
 
 
 @dataclass
@@ -144,13 +158,23 @@ class AccountPlan:
     new_pending: int
     backfill_pending: int
     cooldown_until: datetime | None = None
+    transient_retry_after: datetime | None = None
+    browser_start_failed: bool = False
 
     def describe(self) -> str:
         if not self.authed:
+            if self.browser_start_failed:
+                return (
+                    f"[{self.account}] UNKNOWN — BROWSER_START_FAILED "
+                    "(browser session could not be started; auth state "
+                    "undetermined, account skipped)"
+                )
             return f"[{self.account}] NOT AUTHENTICATED — skipped"
         cd = ""
         if self.cooldown_until is not None:
             cd = f" cooldown_until={self.cooldown_until.isoformat()}"
+        if self.transient_retry_after is not None:
+            cd += f" transient_retry_after={self.transient_retry_after.isoformat()}"
         nxt = self.next_blob_id or "(none eligible)"
         return (
             f"[{self.account}] quota={self.available_quota} "
@@ -166,6 +190,7 @@ class TickResult:
     downloaded_new: int = 0
     downloaded_backfill: int = 0
     cap_bounces: int = 0
+    transient_errors: int = 0  # safely requeued provider TLS/HTTP 5xx
     unsupported: int = 0
     errors: int = 0
     driver_dead: int = 0  # attempts that died on the Playwright transport
@@ -174,7 +199,8 @@ class TickResult:
     def summary(self) -> str:
         return (
             f"downloaded new={self.downloaded_new} backfill={self.downloaded_backfill} "
-            f"cap_bounces={self.cap_bounces} unsupported={self.unsupported} "
+            f"cap_bounces={self.cap_bounces} transient_errors={self.transient_errors} "
+            f"unsupported={self.unsupported} "
             f"errors={self.errors} driver_dead={self.driver_dead} "
             f"session_expired={self.session_expired}"
         )
@@ -216,6 +242,12 @@ def plan_account(
         new_pending=new_pending,
         backfill_pending=backfill_pending,
         cooldown_until=state.cooldown_until,
+        transient_retry_after=(
+            state.transient_retry_after
+            if state.transient_retry_after is not None
+            and now < state.transient_retry_after else None
+        ),
+        browser_start_failed=state.browser_start_failed,
     )
 
 
@@ -355,6 +387,23 @@ def run_tick(
                     free_at.isoformat() if free_at else "next tick",
                 )
                 break
+            except TransientHTTPError as e:
+                # A server-side 5xx or a request that never established TLS is
+                # NOT a bad PDF. Keep the source row eligible for later retry,
+                # spend this tick's pacing token (no speculative extra request),
+                # and delay this ACCOUNT rather than hammering the same blob.
+                # The confirmed download ledger remains untouched, so the
+                # existing 70/24h cap and quota accounting stay authoritative.
+                res.transient_errors += 1
+                db.set_status(conn, blob_id, Status.DISCOVERED,
+                              error_message=None)
+                state.transient_retry_after = now + TRANSIENT_PDF_RETRY_DELAY
+                log.warning(
+                    "[%s] transient PDF failure on %s: %s — requeued with "
+                    "account retry after %s", state.name, blob_id, e,
+                    state.transient_retry_after.isoformat(),
+                )
+                break
             except MarketDeskError as e:
                 # A non-cap blob that isn't a PDF (ZIP/XLSX/data attachment). The
                 # vault is PDF-only, so this is terminal: mark SKIPPED_UNSUPPORTED
@@ -407,29 +456,51 @@ def run_tick(
 # Session lifecycle
 # ---------------------------------------------------------------------------
 def _open_session(cfg: Config, state: AccountState) -> bool:
-    """Open + auth-probe ONE account's persistent session. Returns whether the
-    account came up authenticated. Non-fatal on failure: a broken/unauthenticated
-    profile is logged, marked not-authed, and skipped by the loop."""
+    """Open one profile and distinguish browser startup from authentication."""
     acct_cfg = _profile_cfg(cfg, state.profile)
+
+    def _release(sess: BrowserSession | None) -> None:
+        if sess is None:
+            return
+        try:
+            sess.__exit__(None, None, None)
+        except Exception as e:  # noqa: BLE001 - preserve the original failure
+            log.warning("[%s] session teardown failed: %s", state.name, e)
+
+    sess: BrowserSession | None = None
     try:
         sess = BrowserSession(acct_cfg)
         sess.__enter__()
-        state.session = sess
+    except Exception as e:  # noqa: BLE001 - only construction/entry is startup
+        log.error("[%s] failed to start browser session: %s", state.name, e)
+        _release(sess)
+        state.session = None
+        state.client = None
+        state.authed = False
+        state.browser_start_failed = True
+        return False
+
+    state.session = sess
+    state.browser_start_failed = False
+    try:
         state.authed = sess.is_authenticated()
         if state.authed:
             state.client = MarketDeskClient(sess.context, acct_cfg)
             log.info("[%s] session ready (%s)", state.name, state.profile.path)
         else:
+            state.client = None
             log.warning(
                 "[%s] NOT authenticated (%s) — skipping this account. "
                 "Run `MARKETDESK_PROFILE_DIR=%s marketdesk auth` to log in.",
                 state.name, state.profile.path, state.profile.path,
             )
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 - post-start probe/client failure
         log.error("[%s] failed to open session: %s", state.name, e)
+        _release(sess)
         state.session = None
         state.client = None
         state.authed = False
+        return False
     return state.authed
 
 
@@ -454,6 +525,34 @@ def _close_session(state: AccountState) -> None:
 def _close_sessions(states: list[AccountState]) -> None:
     for state in states:
         _close_session(state)
+
+
+def _record_producer_auth_health(conn, states: list[AccountState], observed_at: datetime) -> None:
+    """Project aggregate auth truth into the existing MarketDesk meta table.
+
+    Process presence is not authentication, and positive authentication does not
+    establish successful discovery. A browser startup failure or an empty profile
+    set is UNKNOWN; other unauthenticated fallbacks retain AUTH_REQUIRED.
+    """
+    stamp = observed_at.isoformat()
+    if not states:
+        state = db.AUTH_UNKNOWN
+        reason = "NO_CONFIGURED_PROFILE"
+    elif any(item.authed for item in states):
+        state = db.AUTHENTICATED
+        reason = ""
+    elif any(item.browser_start_failed for item in states):
+        state = db.AUTH_UNKNOWN
+        reason = "BROWSER_START_FAILED"
+    else:
+        state = db.AUTH_REQUIRED
+        reason = "NO_AUTHENTICATED_PROFILE"
+    db.set_producer_auth_health(
+        conn,
+        state=state,
+        observed_at=stamp,
+        reason=reason,
+    )
 
 
 def _recycle_dead_sessions(cfg: Config, states: list[AccountState]) -> None:
@@ -532,7 +631,10 @@ def _refresh_queue(
         return
     if since_hours is None:
         since_hours = cfg.new_window_hours + 24  # a little older than the new window
-    kwargs = {} if heal_limit is None else {"heal_limit": heal_limit}
+    # Only the explicit wide healing pass opts into bounded optional work.
+    kwargs = {} if heal_limit is None else {
+        "heal_limit": heal_limit, "heal_budget_s": 60.0,
+    }
     if limit is not None:
         kwargs["limit"] = limit
     try:
@@ -651,8 +753,11 @@ def run_trickle(
                             profile=profile, per_tick_cap=per_tick_cap)
             results.append(tick)
             if not dry_run:
-                # may sys.exit(1) when an account's session cannot be re-opened
+                # May sys.exit(1) when a dead transport cannot be re-opened. A
+                # failed transport restart is not an auth verdict; when recycle
+                # returns normally, project the final per-account auth state.
                 _recycle_dead_sessions(cfg, states)
+                _record_producer_auth_health(conn, states, now)
 
             # per-tick log line + dry-run plan print
             for plan in tick.plans:

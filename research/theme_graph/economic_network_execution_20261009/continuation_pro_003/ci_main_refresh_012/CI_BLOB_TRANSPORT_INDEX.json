@@ -1,0 +1,238 @@
+{
+  "archive_byte_length": 7225728,
+  "archive_member_verifiers_rerun": 0,
+  "archive_sha256": "879929aec7b02314bd2840d62d4e866f44b0af9db55e5b4411c1250051cf5e20",
+  "binary_readback": {
+    "attempts": [
+      {
+        "receipt": "receipts/readback-001-fetch-blob.json",
+        "result": {
+          "error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte",
+          "error_code": "UNKNOWN"
+        },
+        "sha256": "7f4bc4ed73be3baf48f00c5a8d8a90c81929c53c4204e84f443d33d118f11e67"
+      },
+      {
+        "receipt": "receipts/readback-001-fetch.json",
+        "result": {
+          "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "sha256": "0b764dc1a51eadb4b0cf7613cec4267f6d6473de36e887fdf0d89871e33433b3"
+      }
+    ],
+    "reason": "Both helpers require UTF-8/decode blob content as UTF-8; first binary chunk rejected.",
+    "remaining_owner_check": "Fetch/decode every binary blob through native owner carrier; verify lengths, Git blob SHA1, SHA256 and final archive SHA256 before actual commit.",
+    "status": "UNAVAILABLE_THROUGH_BOTH_CONNECTOR_ROUTES"
+  },
+  "concatenation": {
+    "all_chunks_equal_exact_source_byte_ranges": true,
+    "full_concatenation_equals_original_bytes": true,
+    "full_concatenation_sha256_matches": true,
+    "ordered_contiguous_nonoverlapping": true
+  },
+  "durability": "GitHub acknowledged unreferenced content-addressed blob writes. No branch references or commit were created. Reachability/retention and durable branch publication are not claimed.",
+  "github_calls": {
+    "binary_get_successes": 0,
+    "create_blob": 14,
+    "create_blob_successes": 14,
+    "create_ref_commit_tree_pr_calls": 0,
+    "get_readback_attempts": 2,
+    "write_retries": 0
+  },
+  "native_operations": 0,
+  "original_archive_unchanged": true,
+  "part_count": 14,
+  "parts": [
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/9c29f5529416a1120138101477209624f7e40539",
+      "byte_end_exclusive": 524288,
+      "byte_length": 524288,
+      "byte_start_inclusive": 0,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-001.json",
+      "create_receipt_sha256": "c9a979b1633b8a2c3cd15829198fd794085e66dc9749b8620adf2322f5da9ac1",
+      "git_blob_sha1": "9c29f5529416a1120138101477209624f7e40539",
+      "ordinal": 1,
+      "path": "parts/part-001.bin",
+      "sha256": "7d1980d3c744b453dc621a9e34a019d15981ad73aabb91d057a7ee417e97c3cf"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/3e55e2146f8cb97056cf6e4dd651f02da9fd7303",
+      "byte_end_exclusive": 1048576,
+      "byte_length": 524288,
+      "byte_start_inclusive": 524288,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-002.json",
+      "create_receipt_sha256": "8971759208e71391d7348917a940044f9bdf59811241d4d55366f6c0040c4b5e",
+      "git_blob_sha1": "3e55e2146f8cb97056cf6e4dd651f02da9fd7303",
+      "ordinal": 2,
+      "path": "parts/part-002.bin",
+      "sha256": "c41fbdf263816f0a71e8b00077b685ba6a66901daf85655e48351051b2106c04"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/844b0d4931bdbec5f11a4ea7baa14297c4c39d0e",
+      "byte_end_exclusive": 1572864,
+      "byte_length": 524288,
+      "byte_start_inclusive": 1048576,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-003.json",
+      "create_receipt_sha256": "b8543582231b757cd022e8f37ffcc5d34a929b8af41ea5a032083630f1634495",
+      "git_blob_sha1": "844b0d4931bdbec5f11a4ea7baa14297c4c39d0e",
+      "ordinal": 3,
+      "path": "parts/part-003.bin",
+      "sha256": "cd29f5341e08e22b2b30fb5ed4428fdf9a38089bd2e4b5c7e17f3d22baed0037"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/76396020d1a4529e38422580e9c89d52989c86a7",
+      "byte_end_exclusive": 2097152,
+      "byte_length": 524288,
+      "byte_start_inclusive": 1572864,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-004.json",
+      "create_receipt_sha256": "5fb81209a31d9c0215905646edd45fdf7a0cd553ffc0cf07361bc91d6b9afd3c",
+      "git_blob_sha1": "76396020d1a4529e38422580e9c89d52989c86a7",
+      "ordinal": 4,
+      "path": "parts/part-004.bin",
+      "sha256": "ea409e621b443ac40a2710fa539bf1a749621b487e53a363541f7487464900bc"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/5e4b5966dc81e91b214bfecd0301f463811704ba",
+      "byte_end_exclusive": 2621440,
+      "byte_length": 524288,
+      "byte_start_inclusive": 2097152,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-005.json",
+      "create_receipt_sha256": "46aaeb5a5a41f22510f1825b305ffa79c0f4b35add738a5c15fc21d53fdad602",
+      "git_blob_sha1": "5e4b5966dc81e91b214bfecd0301f463811704ba",
+      "ordinal": 5,
+      "path": "parts/part-005.bin",
+      "sha256": "f7d25054d2d51a1491b34dbe8621064fc59bcb714b65e0ed5893d59cbe12787a"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/8916f9ff03bc8368d9f1de004ca8a8d1d05519f8",
+      "byte_end_exclusive": 3145728,
+      "byte_length": 524288,
+      "byte_start_inclusive": 2621440,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-006.json",
+      "create_receipt_sha256": "e23399e0d8bf379aad964ee02def9ed584523b19a021f0648fa8beef2ba56b0a",
+      "git_blob_sha1": "8916f9ff03bc8368d9f1de004ca8a8d1d05519f8",
+      "ordinal": 6,
+      "path": "parts/part-006.bin",
+      "sha256": "d5bfceb47eea719d73e7cf90ee740b8571ba0da0ea40d82e4a2a017d5eb53389"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/db521d2fae6bfac2a2c417931b392d86e34164a4",
+      "byte_end_exclusive": 3670016,
+      "byte_length": 524288,
+      "byte_start_inclusive": 3145728,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-007.json",
+      "create_receipt_sha256": "1d3f54fd16d219b70fa46bdb5ffdbeb44ba7556b494cae464f24fa4e375748e6",
+      "git_blob_sha1": "db521d2fae6bfac2a2c417931b392d86e34164a4",
+      "ordinal": 7,
+      "path": "parts/part-007.bin",
+      "sha256": "7bc260eb91f76cbd734534d8b0f19da0a79be2736dbc38066575ff79c7168da3"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/db037ca5b10ba12513ccc942ee534c684ac5ebc2",
+      "byte_end_exclusive": 4194304,
+      "byte_length": 524288,
+      "byte_start_inclusive": 3670016,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-008.json",
+      "create_receipt_sha256": "20ef304c16afa890631f1da644db8bc7b2744ec9dd226819ff63bd4dd0543cf9",
+      "git_blob_sha1": "db037ca5b10ba12513ccc942ee534c684ac5ebc2",
+      "ordinal": 8,
+      "path": "parts/part-008.bin",
+      "sha256": "27fffe01a80b5fdd27eef7370d0fd04cd33ad5bcd23be2c5e136864dab1e2275"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/5ff89888ae5e330996614678afa6b2941e5db3a4",
+      "byte_end_exclusive": 4718592,
+      "byte_length": 524288,
+      "byte_start_inclusive": 4194304,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-009.json",
+      "create_receipt_sha256": "f928c795b4c38a212980407761bb6599aa5b2ad0e8909050cd97b3a5c30d152d",
+      "git_blob_sha1": "5ff89888ae5e330996614678afa6b2941e5db3a4",
+      "ordinal": 9,
+      "path": "parts/part-009.bin",
+      "sha256": "1ca6d3b04df082734cab6151522a04d2d56d163b437c2dc750394a8c4a867043"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/f308aab4664e9b322f981661704d8ad27310a6e7",
+      "byte_end_exclusive": 5242880,
+      "byte_length": 524288,
+      "byte_start_inclusive": 4718592,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-010.json",
+      "create_receipt_sha256": "fd2e8240fd3daeeb8672522f8abee389b8939af306929dd89ca7f3fefeb8da49",
+      "git_blob_sha1": "f308aab4664e9b322f981661704d8ad27310a6e7",
+      "ordinal": 10,
+      "path": "parts/part-010.bin",
+      "sha256": "382ee1fd48d6b6b2c341743562265d10154d679dc0616915fd602da4daa08aa8"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/ec33ba220cbe3fb4e9d04b3ea6d2de53ac8190d3",
+      "byte_end_exclusive": 5767168,
+      "byte_length": 524288,
+      "byte_start_inclusive": 5242880,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-011.json",
+      "create_receipt_sha256": "037b933f05aa67e64fc4aa33f4762315244b4ef7c388bf6eaf330811c621693b",
+      "git_blob_sha1": "ec33ba220cbe3fb4e9d04b3ea6d2de53ac8190d3",
+      "ordinal": 11,
+      "path": "parts/part-011.bin",
+      "sha256": "8edeaee13ae048f3b60919be660298aa79dcd440625b5a493c4064feaa2230f5"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/ced82aad953c5068f1e40522f999c0a62405d7bf",
+      "byte_end_exclusive": 6291456,
+      "byte_length": 524288,
+      "byte_start_inclusive": 5767168,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-012.json",
+      "create_receipt_sha256": "f1e0a8fb221d88226e9963654b256bca0a3e04de3c8cea5bdf317ff21f0da2aa",
+      "git_blob_sha1": "ced82aad953c5068f1e40522f999c0a62405d7bf",
+      "ordinal": 12,
+      "path": "parts/part-012.bin",
+      "sha256": "1edb8304f1ae9ca61329590abdf7f64076a1543720b7ffc99f2fa9898b62e40f"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/bc2bf721b12818fea1ff3f79d1d95b053da555f7",
+      "byte_end_exclusive": 6815744,
+      "byte_length": 524288,
+      "byte_start_inclusive": 6291456,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-013.json",
+      "create_receipt_sha256": "b07191ff50e0ec5cf12bf69153cf5bed280337437d0de89ba1fe0d86bfee82f9",
+      "git_blob_sha1": "bc2bf721b12818fea1ff3f79d1d95b053da555f7",
+      "ordinal": 13,
+      "path": "parts/part-013.bin",
+      "sha256": "711e6e68f8b694f42116660852c4011b28370f34083f220de442980627b2e1ff"
+    },
+    {
+      "blob_api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/5862f0dd13dad5d3e7c4de206b9d151424ab983e",
+      "byte_end_exclusive": 7225728,
+      "byte_length": 409984,
+      "byte_start_inclusive": 6815744,
+      "create_blob_verified": true,
+      "create_receipt": "receipts/create-014.json",
+      "create_receipt_sha256": "547aa24b254a2e268fd6e716aadc835b9d9605a150e47ef1df3c7a19eaa81380",
+      "git_blob_sha1": "5862f0dd13dad5d3e7c4de206b9d151424ab983e",
+      "ordinal": 14,
+      "path": "parts/part-014.bin",
+      "sha256": "23f75eeaaacefe6a22326ab916cf54eda70aefb8fe989cfdc4096b1ab471b1a9"
+    }
+  ],
+  "prepared_ci_v3_unchanged": {
+    "PREPARATION_SCOPE_V3.json": "2651f18e0c1d86f885850179a4a82b05635095b58c20923da1c120176d012ebe",
+    "verify_combined_candidate_ci_v3.py": "967c63de9e7270860a024e3168d8d0249a9bb0189d52f552aaa6e40132375df2"
+  },
+  "repository": "mastermindx-market-intelligence/macro",
+  "repository_scripts_tests_executed": 0,
+  "schema": "economic_network.ci_archive_unreferenced_blob_transport/v1",
+  "status": "ALL_CREATE_BLOB_IDS_VERIFIED_UNREFERENCED_NOT_BRANCH_PUBLISHED"
+}

@@ -1,0 +1,668 @@
+{
+  "axes": {
+    "widths": [
+      "1",
+      "1.25",
+      "1.5"
+    ],
+    "dark_opacities": [
+      ".7",
+      ".85",
+      "1"
+    ],
+    "light_opacities": [
+      ".55",
+      ".7",
+      ".85",
+      "1"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en"
+    ],
+    "viewport": [
+      390,
+      844
+    ],
+    "device_scale_factor": 1
+  },
+  "rows": [
+    {
+      "theme": "dark",
+      "width": "1",
+      "opacity": ".7",
+      "uk_box_blue_px": 1,
+      "mark_mean_chroma": 13.709750566893424,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1",
+      "opacity": ".85",
+      "uk_box_blue_px": 5,
+      "mark_mean_chroma": 14.473922902494332,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1",
+      "opacity": "1",
+      "uk_box_blue_px": 13,
+      "mark_mean_chroma": 15.013605442176871,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1",
+      "opacity": ".55",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 8.197278911564625,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.55",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.55",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1",
+      "opacity": ".7",
+      "uk_box_blue_px": 2,
+      "mark_mean_chroma": 9.802721088435375,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1",
+      "opacity": ".85",
+      "uk_box_blue_px": 6,
+      "mark_mean_chroma": 11.27437641723356,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1",
+      "opacity": "1",
+      "uk_box_blue_px": 12,
+      "mark_mean_chroma": 12.383219954648526,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": true,
+      "gbr_stroke_width": "1px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.25",
+      "opacity": ".7",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 15.399092970521542,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.25",
+      "opacity": ".85",
+      "uk_box_blue_px": 20,
+      "mark_mean_chroma": 16.766439909297052,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.25",
+      "opacity": "1",
+      "uk_box_blue_px": 33,
+      "mark_mean_chroma": 18.070294784580497,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.25",
+      "opacity": ".55",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 10.675736961451246,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.55",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.55",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.25",
+      "opacity": ".7",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 13.430839002267573,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.25",
+      "opacity": ".85",
+      "uk_box_blue_px": 22,
+      "mark_mean_chroma": 16.156462585034014,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.25",
+      "opacity": "1",
+      "uk_box_blue_px": 27,
+      "mark_mean_chroma": 18.807256235827666,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.25px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.5",
+      "opacity": ".7",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 16.392290249433106,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.5",
+      "opacity": ".85",
+      "uk_box_blue_px": 33,
+      "mark_mean_chroma": 17.979591836734695,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "dark",
+      "width": "1.5",
+      "opacity": "1",
+      "uk_box_blue_px": 41,
+      "mark_mean_chroma": 19.5124716553288,
+      "rung3_mean_chroma": 9.140589569160998,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.4386444091797,
+        "y": 480.5283203125,
+        "w": 8.018402099609375,
+        "h": 7.516082763671875
+      },
+      "rung3_bbox": {
+        "x": 39,
+        "y": 460.92535400390625,
+        "w": 312,
+        "h": 34.753662109375
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.5",
+      "opacity": ".55",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 12.369614512471655,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.55",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.55",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.5",
+      "opacity": ".7",
+      "uk_box_blue_px": 0,
+      "mark_mean_chroma": 15.571428571428571,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.7",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.7",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.5",
+      "opacity": ".85",
+      "uk_box_blue_px": 30,
+      "mark_mean_chroma": 18.793650793650794,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "0.85",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "0.85",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    },
+    {
+      "theme": "light",
+      "width": "1.5",
+      "opacity": "1",
+      "uk_box_blue_px": 41,
+      "mark_mean_chroma": 21.8843537414966,
+      "rung3_mean_chroma": 0.5328798185941043,
+      "key_mark_parity": false,
+      "gbr_stroke_width": "1.5px",
+      "gbr_stroke_dasharray": "none",
+      "gbr_stroke_opacity": "1",
+      "legend_news_i_border_width": "1px",
+      "legend_news_i_opacity": "1",
+      "legend_news_i_border_style": "solid",
+      "gbr_bbox": {
+        "x": 188.48069763183594,
+        "y": 481.35406494140625,
+        "w": 7.967010498046875,
+        "h": 7.4678955078125
+      },
+      "rung3_bbox": {
+        "x": 40,
+        "y": 461.8767395019531,
+        "w": 310,
+        "h": 34.530914306640625
+      },
+      "data_news_gbr": "1",
+      "is_hi_count": 0,
+      "scroll_w_le_viewport": true
+    }
+  ],
+  "source_commit": "da1f7730b84a7f8758e5b1e81ed0de8e0718a9a0",
+  "page_sha256": "240f6321298ce20c48f6b0304ece9980a4f9c28857b3ce6b613f872ee9df6d19",
+  "generated_at": "2026-10-03T04:20:15Z",
+  "capture_tool_module_sha256": "75d6e65de40cf80bd06c821c4506f2856751f79cebe644310a1cf087f4776290"
+}

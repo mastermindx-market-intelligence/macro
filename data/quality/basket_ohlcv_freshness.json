@@ -1,179 +1,229 @@
 {
   "status": "stale",
-  "checked_at": "2026-10-02T03:02:22.656480+00:00",
+  "checked_at": "2026-10-23T03:19:29.759974+00:00",
   "threshold_sessions": 3,
-  "store_max": "2026-10-01",
+  "store_max": "2026-10-22",
   "n_members": 702,
-  "n_stale": 2,
-  "n_behind_within_threshold": 2,
+  "n_stale": 1,
+  "n_behind_within_threshold": 0,
   "stale": {
-    "EA": {
-      "last": "2026-08-10",
-      "sessions_behind": 37
-    },
-    "WBS": {
-      "last": "2026-08-20",
-      "sessions_behind": 29
+    "PSKY": {
+      "last": "2026-10-16",
+      "sessions_behind": 4
     }
   },
   "missing": [],
   "inactive": {
     "BLD": {
       "last": "2026-07-02",
-      "sessions_behind": 63,
+      "sessions_behind": 78,
       "removed": "2026-07-01",
       "rationale": "TopBuild \u2014 insulation distribution/installation scale. DELISTED: acquired by QXO, merger completed 2026-07-01, NYSE trading suspended before the open that day; renamed QXO Insulation, LLC (SEC CIK 1633931 formerNames; Form 15-12G deregistra"
+    },
+    "EA": {
+      "last": "2026-08-10",
+      "sessions_behind": 52,
+      "removed": "2026-08-05",
+      "rationale": "S&P 500 Communication Services constituent; S&P 500 deletion effective 2026-08-05 after the acquisition closed; last regular trading session 2026-08-04."
     }
   },
   "absent_all_rungs": [],
   "n_absent_all_rungs": 0,
-  "n_store_files": 2812,
-  "n_sponsored": 2622,
+  "n_store_files": 2815,
+  "n_sponsored": 700,
   "n_sponsored_no_file": 0,
   "unsponsored": {
     "SEM": {
       "last": "2026-06-30",
-      "sessions_behind": 65
+      "sessions_behind": 80
     },
     "SILA": {
       "last": "2026-06-30",
-      "sessions_behind": 65
+      "sessions_behind": 80
     },
     "STEL": {
       "last": "2026-06-30",
-      "sessions_behind": 65
+      "sessions_behind": 80
     },
     "BLD": {
       "last": "2026-07-02",
-      "sessions_behind": 63
+      "sessions_behind": 78
     },
     "ESPR": {
       "last": "2026-07-13",
-      "sessions_behind": 57
+      "sessions_behind": 72
     },
     "OLPX": {
       "last": "2026-07-13",
-      "sessions_behind": 57
+      "sessions_behind": 72
     },
     "TBRG": {
       "last": "2026-07-13",
-      "sessions_behind": 57
+      "sessions_behind": 72
     },
     "WSR": {
       "last": "2026-07-13",
-      "sessions_behind": 57
+      "sessions_behind": 72
     },
     "EEX": {
       "last": "2026-07-14",
-      "sessions_behind": 56
+      "sessions_behind": 71
     },
     "GTLS": {
       "last": "2026-07-16",
-      "sessions_behind": 54
+      "sessions_behind": 69
     },
     "ATLN": {
       "last": "2026-07-17",
-      "sessions_behind": 53
+      "sessions_behind": 68
     },
     "CPRX": {
       "last": "2026-07-21",
-      "sessions_behind": 51
+      "sessions_behind": 66
     },
     "NUVL": {
       "last": "2026-07-21",
-      "sessions_behind": 51
+      "sessions_behind": 66
     },
     "XOMA": {
       "last": "2026-07-21",
-      "sessions_behind": 51
+      "sessions_behind": 66
     },
     "KORE": {
       "last": "2026-07-23",
-      "sessions_behind": 49
+      "sessions_behind": 64
     },
     "TMHC": {
       "last": "2026-07-23",
-      "sessions_behind": 49
+      "sessions_behind": 64
     },
     "AVNS": {
       "last": "2026-07-24",
-      "sessions_behind": 48
+      "sessions_behind": 63
     },
     "CCRN": {
       "last": "2026-07-28",
-      "sessions_behind": 46
+      "sessions_behind": 61
     },
     "NFBK": {
       "last": "2026-07-28",
-      "sessions_behind": 46
+      "sessions_behind": 61
     },
     "GAMB": {
       "last": "2026-07-29",
-      "sessions_behind": 45
+      "sessions_behind": 60
     },
     "LPRO": {
       "last": "2026-08-07",
-      "sessions_behind": 38
+      "sessions_behind": 53
     },
     "SKYT": {
       "last": "2026-08-07",
-      "sessions_behind": 38
+      "sessions_behind": 53
+    },
+    "EA": {
+      "last": "2026-08-10",
+      "sessions_behind": 52
     },
     "TOI": {
       "last": "2026-08-11",
-      "sessions_behind": 36
+      "sessions_behind": 51
     },
     "MDV": {
       "last": "2026-08-12",
-      "sessions_behind": 35
+      "sessions_behind": 50
     },
     "TALK": {
       "last": "2026-08-18",
-      "sessions_behind": 31
+      "sessions_behind": 46
     },
     "RMAX": {
       "last": "2026-08-24",
-      "sessions_behind": 27
+      "sessions_behind": 42
     },
     "HLX": {
       "last": "2026-09-01",
-      "sessions_behind": 21
+      "sessions_behind": 36
     },
     "CRNX": {
       "last": "2026-09-02",
-      "sessions_behind": 20
+      "sessions_behind": 35
     },
     "APGE": {
       "last": "2026-09-03",
-      "sessions_behind": 19
+      "sessions_behind": 34
     },
     "AREN": {
       "last": "2026-09-11",
-      "sessions_behind": 14
-    },
-    "ATAI": {
-      "last": "2026-09-11",
-      "sessions_behind": 14
+      "sessions_behind": 29
     },
     "TBPH": {
       "last": "2026-09-25",
+      "sessions_behind": 19
+    },
+    "GBTG": {
+      "last": "2026-09-29",
+      "sessions_behind": 17
+    },
+    "DOMO": {
+      "last": "2026-10-01",
+      "sessions_behind": 15
+    },
+    "BLFS": {
+      "last": "2026-10-07",
+      "sessions_behind": 11
+    },
+    "SLP": {
+      "last": "2026-10-07",
+      "sessions_behind": 11
+    },
+    "CCO": {
+      "last": "2026-10-15",
+      "sessions_behind": 5
+    },
+    "WALD": {
+      "last": "2026-10-15",
+      "sessions_behind": 5
+    },
+    "ACVA": {
+      "last": "2026-10-16",
+      "sessions_behind": 4
+    },
+    "ATKR": {
+      "last": "2026-10-16",
       "sessions_behind": 4
     }
   },
-  "n_unsponsored_stale": 32,
-  "n_unsponsored_fresh": 154,
+  "n_unsponsored_stale": 40,
+  "n_unsponsored_fresh": 2067,
   "retired": {
+    "ATAI": {
+      "last": "2026-09-11",
+      "sessions_behind": 29,
+      "last_session": "2026-09-10",
+      "delisted_on": "2026-09-11",
+      "reason": "acquisition",
+      "successor_ticker": null
+    },
     "AVB": {
       "last": "2026-08-19",
-      "sessions_behind": 30,
+      "sessions_behind": 45,
       "last_session": "2026-08-14",
       "delisted_on": "2026-08-17",
       "reason": "acquisition",
       "successor_ticker": null
     },
+    "DBRG": {
+      "last": "2026-09-29",
+      "sessions_behind": 17,
+      "last_session": "2026-09-29",
+      "delisted_on": "2026-09-30",
+      "reason": "acquisition",
+      "successor_ticker": null
+    },
     "FBRX": {
       "last": "2026-08-28",
-      "sessions_behind": 23,
+      "sessions_behind": 38,
       "last_session": "2026-08-26",
       "delisted_on": "2026-08-27",
       "reason": "acquisition",
@@ -181,7 +231,7 @@
     },
     "LEG": {
       "last": "2026-08-27",
-      "sessions_behind": 24,
+      "sessions_behind": 39,
       "last_session": "2026-08-26",
       "delisted_on": "2026-08-27",
       "reason": "acquisition",
@@ -189,17 +239,36 @@
     },
     "TWO": {
       "last": "2026-08-24",
-      "sessions_behind": 27,
+      "sessions_behind": 42,
       "last_session": "2026-08-24",
       "delisted_on": "2026-08-25",
       "reason": "acquisition",
       "successor_ticker": null
+    },
+    "WBD": {
+      "last": "2026-10-06",
+      "sessions_behind": 12,
+      "last_session": "2026-10-05",
+      "delisted_on": "2026-10-06",
+      "reason": "acquisition",
+      "successor_ticker": null
+    },
+    "WBS": {
+      "last": "2026-08-20",
+      "sessions_behind": 44,
+      "last_session": "2026-08-19",
+      "delisted_on": "2026-08-20",
+      "reason": "acquisition",
+      "successor_ticker": null
     }
   },
-  "n_retired": 4,
+  "n_retired": 8,
   "maintained_finviz_filters": [
     "idx_ndx",
     "idx_rut"
   ],
-  "finviz_unresolved": []
+  "finviz_unresolved": [
+    "idx_ndx",
+    "idx_rut"
+  ]
 }

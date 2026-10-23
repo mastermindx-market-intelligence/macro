@@ -54,9 +54,10 @@ from engine.company_intelligence.event_workspace import (
     FLAGSHIP_EVENT_ID,
     LIVE_NARRATIVE_ALIAS,
     MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     apple_registry,
     flagship_fiscal_period,
-    preview_generation_identity,
+    preview_generation_identity_v3,
     production_registry,
     write_workspace_generation,
 )
@@ -169,8 +170,16 @@ def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
     prefixed = [name for kind, name in textish if _EX99_TYPE.match(kind)]
     if prefixed:
         return prefixed[0]
+    # RTX/NOC publish their Item-2.02 earnings release as a generic EX-99.
+    # Multiple generic exhibits remain ambiguous even when a filename hints
+    # at 99.1; document order or name similarity cannot resolve them.
+    generic = [name for kind, name in textish if kind == "EX-99"]
+    if len(generic) > 1:
+        return None
     hinted = [name for _, name in textish if _EX99_NAME.search(name)]
-    return hinted[0] if hinted else None
+    if hinted:
+        return hinted[0]
+    return generic[0] if len(generic) == 1 else None
 
 
 def _parallel_row(block: Mapping[str, Any], accession: str, *, cik: str) -> dict[str, Any] | None:
@@ -381,7 +390,7 @@ def _manifest_exhibit_count(header_body: bytes) -> int:
     manifest = _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
     return sum(
         1 for kind, filename in manifest
-        if filename.lower().endswith((".htm", ".html", ".txt")) and _EX99_TYPE.match(kind)
+        if filename.lower().endswith((".htm", ".html", ".txt")) and (_EX99_TYPE.match(kind) or kind == "EX-99")
     )
 
 
@@ -955,7 +964,10 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
     # genuine fetch failure — into this module's own
     # ``PriorWorkspaceFetchFailed`` with the same line-start ``::warning``,
     # preserving the exact NEW-6/NEW-7 anomaly discipline byte-for-byte.
-    issuer = issuer_for_ticker(ticker)
+    # Discovery already admits this cohort through its registered source owner.
+    # The same identity must seed quiet cycles, even when no new filing exists.
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, source_owner_issuer
+    issuer = source_owner_issuer(ticker) if ticker in SOURCE_OWNER_TICKERS else issuer_for_ticker(ticker)
     if issuer is None:
         return None
 
@@ -1288,13 +1300,43 @@ def discover_new_homebuilder_revisions(
     fail — B4) via a bare line-start ``::warning``, without orphaning any
     later row.
     """
-    issuer = issuer_for_ticker(ticker)
-    profile = profile_for_ticker(ticker)
+    from engine.company_intelligence.industrial_sources import (
+        SOURCE_OWNER_TICKERS, source_owner_issuer, source_owner_profile, source_owner_fiscal_period,
+    )
+    is_defense = ticker in SOURCE_OWNER_TICKERS
+    issuer = source_owner_issuer(ticker) if is_defense else issuer_for_ticker(ticker)
+    profile = source_owner_profile(ticker) if is_defense else profile_for_ticker(ticker)
     if issuer is None or profile is None:
-        raise RefreshError(f"{ticker} has no registered A5A homebuilder identity/profile")
+        raise RefreshError(f"{ticker} has no registered issuer identity/profile")
 
     loader = chain_state_loader or (lambda event_id: _event_known_revisions(event_id, base_url=base_url))
     candidates = _fetch_submissions_candidates(issuer.cik, http_get=http_get)
+
+    initial_resolved = {}
+    if is_defense and discovery_boundary is None:
+        # Initial context means the newest QUALIFIED release revision. A
+        # newer Item-2.02 filing without an addressable segment/period must
+        # not hide the latest usable results exhibit. No historical backfill.
+        from engine.earnings_release.binding import bind_release_document
+        selected_candidates = []
+        for candidate in reversed(candidates):
+            try:
+                resolved = _resolve_exhibit_for_row(candidate, cik=issuer.cik, http_get=http_get)
+                if resolved is None:
+                    continue
+                bound = bind_release_document(body=str(resolved['exhibit_body']),
+                    **{k:resolved[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                period = source_owner_fiscal_period(bound, ticker)
+                current_year = (today if today is not None else datetime.now(timezone.utc).date()).year
+                if period.year not in {current_year-1,current_year}:
+                    continue
+            except Exception as exc:
+                print(f"::warning title=event-workspaces-discovery-skip::{ticker}: candidate did not qualify ({type(exc).__name__})", flush=True)
+                continue
+            selected_candidates = [candidate]
+            initial_resolved[str(candidate.get('accessionNumber') or '')] = resolved
+            break
+        candidates = selected_candidates
 
     resolved_today = today if today is not None else datetime.now(timezone.utc).date()
     # First-ever-discovery bound: current + immediately prior fiscal year,
@@ -1332,8 +1374,19 @@ def discover_new_homebuilder_revisions(
             if row_accepted_normalized <= discovery_boundary:
                 continue  # outside the discovery window BY LAW -- not a fail, no warning
 
+        resolved_row = initial_resolved.get(row_accession)
         try:
-            fiscal_period = fiscal_period_for_report_date(report_date, issuer.fiscal_year_end_month)
+            if is_defense:
+                resolved_row = resolved_row or _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
+                if resolved_row is None:
+                    print(f"::warning title=event-workspaces-discovery-skip::{ticker}: no usable primary exhibit", flush=True)
+                    continue
+                from engine.earnings_release.binding import bind_release_document
+                bound = bind_release_document(body=str(resolved_row['exhibit_body']),
+                    **{k:resolved_row[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                fiscal_period = source_owner_fiscal_period(bound, ticker)
+            else:
+                fiscal_period = fiscal_period_for_report_date(report_date, issuer.fiscal_year_end_month)
         except Exception as exc:  # noqa: BLE001 - an unresolvable period is a per-row skip, not a refusal
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1362,7 +1415,8 @@ def discover_new_homebuilder_revisions(
         if row_accession in represented_accessions:
             continue  # B2: already represented in the chain
 
-        resolved_row = _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
+        if resolved_row is None:
+            resolved_row = _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
         if resolved_row is None:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1372,7 +1426,7 @@ def discover_new_homebuilder_revisions(
             continue
 
         stated_end = _stated_period_end(str(resolved_row["exhibit_body"]))
-        if stated_end != fiscal_period.calendar_end:
+        if not is_defense and stated_end != fiscal_period.calendar_end:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
                 f"{ticker}: accession {row_accession} computed fiscal quarter end "
@@ -1762,7 +1816,9 @@ def refresh(
     # unchanged.
     discover = homebuilder_discovery or discover_new_homebuilder_revisions
     sequences: dict[str, list[tuple[str, dict[str, Any]]]] = {}
-    for ticker in HOMEBUILDER_TICKERS:
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, refresh_lhx_supplements
+    refresh_tickers = (*HOMEBUILDER_TICKERS, *SOURCE_OWNER_TICKERS)
+    for ticker in refresh_tickers:
         try:
             current_prior = homebuilder_carry_forward_loader(ticker)
         except Exception as carry_exc:  # noqa: BLE001
@@ -1815,6 +1871,23 @@ def refresh(
             log.info("%s: discovery failed; carry-forward already applied above (%s)", ticker, exc)
             continue
 
+        if ticker == 'LHX':
+            # Supplemental source observation can advance a generation even
+            # when no NEW EX99 revision exists. Original EX99 clocks remain.
+            target_revision = new_revisions[-1] if new_revisions else None
+            supplement_base = target_revision[1] if target_revision else current_prior
+            if supplement_base is not None:
+                try:
+                    enriched = refresh_lhx_supplements(supplement_base, http_get=http_get, prior=current_prior)
+                    if enriched != supplement_base:
+                        if target_revision:
+                            new_revisions[-1] = (target_revision[0], enriched)
+                        else:
+                            new_revisions = [(enriched['event_id'], enriched)]
+                except Exception as exc:
+                    print(f"::warning title=event-workspaces-supplement::LHX: qualified source carry-forward preserved ({type(exc).__name__})", flush=True)
+                    if current_prior and not new_revisions:
+                        workspaces[current_prior['event_id']] = dict(current_prior)
         if new_revisions:
             sequences[ticker] = new_revisions
 
@@ -1829,13 +1902,12 @@ def refresh(
     # OTHER ticker's slot, the very FIRST write below already contains a
     # complete nest — no promoted marker can ever transiently omit a
     # ticker Phase 1 has already resolved (NEW-BLOCKER-16).
-    for ticker in HOMEBUILDER_TICKERS:
+    for ticker in refresh_tickers:
         for event_id, hb_payload in sequences.get(ticker, []):
             workspaces[event_id] = hb_payload
             generation_dir = write_workspace_generation(
                 target,
                 dict(workspaces),
-                generated_at=source_clock,
                 previous_generation_id=chain_previous_id,
                 previous_manifest_sha256=chain_previous_sha,
             )
@@ -1880,12 +1952,12 @@ def refresh(
     if (
         chain_previous_id == original_current_generation_id
         and current_marker is not None
-        and current_marker.get("schema") == MANIFEST_SCHEMA_V2
+        and current_marker.get("schema") in (MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3)
     ):
         candidate_previous_id = current_marker.get("previous_generation_id")
         candidate_previous_sha = current_marker.get("previous_manifest_sha256")
-        candidate_id = preview_generation_identity(
-            workspaces, source_clock, previous_generation_id=candidate_previous_id,
+        candidate_id = preview_generation_identity_v3(
+            workspaces, previous_generation_id=candidate_previous_id,
         )
         if candidate_id == original_current_generation_id:
             final_previous_id, final_previous_sha = candidate_previous_id, candidate_previous_sha
@@ -1893,7 +1965,6 @@ def refresh(
     generation_dir = write_workspace_generation(
         target,
         workspaces,
-        generated_at=source_clock,
         previous_generation_id=final_previous_id,
         previous_manifest_sha256=final_previous_sha,
     )

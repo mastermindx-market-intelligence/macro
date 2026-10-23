@@ -1,0 +1,255 @@
+{
+  "as_of": "2026-10-03",
+  "coverage": {
+    "end": "2026-10-02",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-21 to 2026-10-02; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-21"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": []
+    },
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": [
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-b96ba253cfc9",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-0dbwi42hukc-02d7ff",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Markets Daily Re Assessing the Value of Duration for Balanced Portfolios",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-b9f324ef3d17",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-p4v4kvr4gic-f15b6e",
+          "tickers": [],
+          "title": "Goldman Sachs: US Week Ahead September 21 September 27",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-ca976eb7aae5",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hkwwlrogdln-f5e2cd",
+          "tickers": [],
+          "title": "S&T: GS MidDay Color US Equities Mid Day Color 21 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-ccc737b0bfc3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ldpmm95uzrm-f305aa",
+          "tickers": [],
+          "title": "S&T: GS Fishman HUF thoughts into a critical MNB meeting 21 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-cce72b5c14ed",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-d9wlrptz1ig-fa2675",
+          "tickers": [],
+          "title": "S&T: GS Ranganath Share Repurchase Weekly Recap 21Sep2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-d43c8f14054f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ujjixbqlnkj-b68158",
+          "tickers": [],
+          "title": "S&T: GS Garrett weekend prep 20 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-d4b385c5043c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-r4nsqixlmi5-8f5433",
+          "tickers": [],
+          "title": "S&T: GS Johnstone GS TMT SPEC SALES AI & Semis Security debate Classified names make a comeback Consumer Agents ACN & Anthropic 21 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-d95071fe3619",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-obonfieqjt6-1a6678",
+          "tickers": [],
+          "title": "Goldman Sachs: Central Bank Policy Tracker September 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-da5b2d40409b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-gax2op1lx0w-39b0db",
+          "tickers": [],
+          "title": "Societe Generale: On Our Minds Midterms A Blue House, a Coin Flip Senate",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-e12132e61512",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-t7tlo5rhaek-93b770",
+          "tickers": [],
+          "title": "Goldman Sachs: The Credit Line Banks and AI A Credit Positive Outlook",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-e402151a6b2a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-6goqfhrgvdz-b29611",
+          "tickers": [],
+          "title": "Goldman Sachs: This Week in Asia Pacific Macro 21 27 September (Audio)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-e51045b5dc0f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yc06vleil7t-8d907a",
+          "tickers": [],
+          "title": "Goldman Sachs: YETI Holdings (YETI) Investor Day Takeaways",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-ead1a04b9d35",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wkbzwf6mbxv-7b4e77",
+          "tickers": [],
+          "title": "Week Ahead: Weekly US Earnings Estimates 21st 25th September 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-effdf17e670e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-vktjbarox9i-d495c0",
+          "tickers": [],
+          "title": "Goldman Sachs: Wiwynn (6669)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-f619b3ae3b3c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pww9eod4fgq-febf19",
+          "tickers": [],
+          "title": "Vanda Research: Vanda Research Retail Waiting For Macro Risks To Clear 21Sep2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-f82ab66ab6c0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-f4gxuf5mmau-53a7ed",
+          "tickers": [],
+          "title": "Vanda Research: Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-21",
+          "id": "cev-research_vault-f884b6b5f8a0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-kvmrapjzy2n-b92194",
+          "tickers": [],
+          "title": "S&T: GS Pasquariello markets macro 21 Sep 2026",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

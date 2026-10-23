@@ -64,7 +64,7 @@
       <p class="pvs-availability">{{ t('Target and holding period unavailable in this view. Reward/risk and win probability are not calculated.','此视图暂无目标价与持有周期，不计算收益风险比或成功概率。') }}</p>
       <details class="pvs-audit"><summary>{{ t('Evidence & source details','证据与来源详情') }}</summary>
         <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3>
-        <p class="pvs-status-read">{{ status_name(row.get('stage'), {'setting_up': ('Developing','形态形成中')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底')}) }}</p>
+        <p class="pvs-status-read">{{ status_name(row.get('stage'), {'live': ('Active setups','活跃形态'), 'setting_up': ('Developing','形态形成中'), 'ran': ('Ran — don’t chase','已启动 — 勿追'), 'basing': ('Basing','筑底中'), 'blocked': ('Blocked','受阻')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底'), 'continuation': ('Continuation','延续'), 'trend': ('Trend','趋势'), 'recovery': ('Recovery','复苏'), 'watch': ('Watch','观察')}) }}</p>
         <dl class="pvs-facts">
           {{ field('Source setup type','来源形态类别',row.get('lane') if kind == 'board' else none,'lane') }}
           {{ field('Source stage','来源阶段',row.get('stage'),'stage') }}

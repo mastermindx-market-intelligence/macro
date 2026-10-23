@@ -660,7 +660,7 @@
     // On touch the card is a tap-preview: a tap anywhere on it opens the full read
     // (Terminal / analyzer). _cardTapHref is set only in that mode, so desktop hover
     // cards stay inert.
-    _card.addEventListener('click', function () { if (_cardTapHref) window.location.href = _cardTapHref; });
+    _card.addEventListener('click', function () { if (_cardTapHref) { var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_cardTapHref, 'push'); } else { window.location.href = _cardTapHref; } } });
     document.body.appendChild(_card);
     return _card;
   }
@@ -1693,7 +1693,7 @@
       var el = e.target.closest && e.target.closest('.hm-tile');
       if (!el) return;
       var rec = tileEls[+el.getAttribute('data-i')];
-      if (rec) window.location.href = STOCK_URL + encodeURIComponent(rec.t.t);
+      if (rec) { var _d = STOCK_URL + encodeURIComponent(rec.t.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; } }
     }
     function onLeave() { hideCard(); scheduleMemHide(); }
     tm.addEventListener('mousemove', onMove);
@@ -2153,7 +2153,7 @@
         e.preventDefault(); e.stopPropagation();
         return;
       }
-      window.location.href = scUrl + encodeURIComponent(rec.t.t);
+      var _d = scUrl + encodeURIComponent(rec.t.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; }
     }
     tm.addEventListener('mousemove', onMove);
     tm.addEventListener('mouseleave', onLeave);
@@ -2279,7 +2279,7 @@
       + '.hm-read{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap;}'
       + '.hm-read-br{font-variant-numeric:tabular-nums;font-weight:700;}'
       + '.hm-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;}'
-      + '.hm-dot.live{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 24%,transparent);}'
+      + '.hm-dot.live{background:var(--ok);box-shadow:0 0 0 3px var(--ring-ok);}'
       + '.hm-sort{display:none;align-items:center;gap:6px;margin:-2px 0 12px;font-size:11px;}'
       + '.hm-sort-lab{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;font-size:10px;}'
       + '.hm-sortb{font:600 12px Inter,sans-serif;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:5px 11px;border-radius:8px;cursor:pointer;}'

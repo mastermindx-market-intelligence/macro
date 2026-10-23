@@ -3,8 +3,8 @@
   "tier": "display",
   "display_only": true,
   "authority": "states_only",
-  "generated_at": "2026-10-02T04:23:28.042694+00:00",
-  "as_of": "2026-10-01",
+  "generated_at": "2026-10-23T07:46:02.228727+00:00",
+  "as_of": "2026-10-23",
   "assets": {
     "ETH": {
       "symbol": "ETH",
@@ -12,37 +12,37 @@
       "authority": "states_only",
       "allocation": null,
       "recommendation": null,
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-23",
       "coverage": {
         "available": true,
-        "observations": 3775,
+        "observations": 3797,
         "first_date": "2016-06-01",
-        "last_date": "2026-10-01",
+        "last_date": "2026-10-23",
         "source": "coinbase",
-        "note_en": "3,775 daily observations from Coinbase daily OHLCV.",
-        "note_zh": "Coinbase 日频 OHLCV已积累 3,775 个日频观测。"
+        "note_en": "3,797 daily observations from Coinbase daily OHLCV.",
+        "note_zh": "Coinbase 日频 OHLCV已积累 3,797 个日频观测。"
       },
-      "price": 2685.51,
-      "change_30d_pct": 11.1,
+      "price": 2395.56,
+      "change_30d_pct": -10.74,
       "trend": {
-        "state": "Advancing",
-        "state_zh": "上行",
-        "votes": "4/4"
+        "state": "Range",
+        "state_zh": "震荡",
+        "votes": "2/4"
       },
       "risk": {
         "state": "Stressed",
         "state_zh": "承压",
-        "drawdown_pct": -42.69,
-        "realized_vol_30d_pct": 42.9
+        "drawdown_pct": -42.4,
+        "realized_vol_30d_pct": 32.3
       },
       "relative": {
-        "state": "Leading Bitcoin",
-        "state_zh": "领先比特币",
-        "change_90d_pct": 14.47
+        "state": "Tracking Bitcoin",
+        "state_zh": "跟随比特币",
+        "change_90d_pct": 0.99
       },
-      "summary_en": "Advancing; stressed risk; leading bitcoin over 90 days.",
-      "summary_zh": "上行；风险承压；90 日内领先比特币。",
-      "tone": "bull"
+      "summary_en": "Range; stressed risk; tracking bitcoin over 90 days.",
+      "summary_zh": "震荡；风险承压；90 日内跟随比特币。",
+      "tone": "neutral"
     },
     "SOL": {
       "symbol": "SOL",
@@ -50,37 +50,37 @@
       "authority": "states_only",
       "allocation": null,
       "recommendation": null,
-      "as_of": "2026-10-01",
+      "as_of": "2026-10-23",
       "coverage": {
         "available": true,
-        "observations": 1933,
+        "observations": 1955,
         "first_date": "2021-06-17",
-        "last_date": "2026-10-01",
+        "last_date": "2026-10-23",
         "source": "coinbase",
-        "note_en": "1,933 daily observations from Coinbase daily OHLCV.",
-        "note_zh": "Coinbase 日频 OHLCV已积累 1,933 个日频观测。"
+        "note_en": "1,955 daily observations from Coinbase daily OHLCV.",
+        "note_zh": "Coinbase 日频 OHLCV已积累 1,955 个日频观测。"
       },
-      "price": 117.82,
-      "change_30d_pct": 17.89,
+      "price": 104.14,
+      "change_30d_pct": -9.44,
       "trend": {
-        "state": "Advancing",
-        "state_zh": "上行",
-        "votes": "4/4"
+        "state": "Range",
+        "state_zh": "震荡",
+        "votes": "2/4"
       },
       "risk": {
         "state": "Stressed",
         "state_zh": "承压",
-        "drawdown_pct": -49.84,
-        "realized_vol_30d_pct": 62.6
+        "drawdown_pct": -47.95,
+        "realized_vol_30d_pct": 39.6
       },
       "relative": {
         "state": "Leading Bitcoin",
         "state_zh": "领先比特币",
-        "change_90d_pct": 7.19
+        "change_90d_pct": 10.44
       },
-      "summary_en": "Advancing; stressed risk; leading bitcoin over 90 days.",
-      "summary_zh": "上行；风险承压；90 日内领先比特币。",
-      "tone": "bull"
+      "summary_en": "Range; stressed risk; leading bitcoin over 90 days.",
+      "summary_zh": "震荡；风险承压；90 日内领先比特币。",
+      "tone": "neutral"
     }
   }
 }

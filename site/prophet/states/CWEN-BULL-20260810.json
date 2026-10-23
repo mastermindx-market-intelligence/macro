@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CWEN-BULL-20260810",
-  "asof": "2026-10-01",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.7,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.3,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-23",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 23.4,
+  "raw_confidence": 25.5,
+  "delta_vs_base": -36.6,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 29.8,
     "progress": 0.0,
-    "pace": 0.0,
+    "pace": 0.7,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.138,
+    "dist_to_stop_r": 0.408,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 100.0,
-    "p1": -0.7584,
-    "p2": -0.3792,
+    "horizon_pct_used": 148.9,
+    "p1": -0.3947,
+    "p2": -0.1974,
     "p3": null,
-    "move_r": -1.138,
+    "move_r": -0.592,
     "mfe_r": 0.0,
-    "mae_r": -1.156
+    "mae_r": -1.168
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5258789076710855e-06,
-  "_mae": -4.959999465942381,
+  "_mae": -5.010000610351561,
   "_max_p1": 2.3712181937390597e-07,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 45,
-  "tau": 1.0
+  "days_elapsed": 67,
+  "tau": 1.4889
 }

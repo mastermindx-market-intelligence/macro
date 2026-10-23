@@ -150,14 +150,16 @@ def _enriched_subset():
 def test_cos_render_linked_anchor_and_not_ranked():
     html = _render(_enriched_subset())
     seg = _monitor_segment(html)
-    # Linked anchor href contains the Terminal analysis URL with the canonical six keys.
+    # Linked anchor href contains the Terminal analysis URL with the canonical seven keys.
     assert "https://app.mastermind-x.com/analysis" in seg
     assert "symbol=AAPL" in seg
     assert "page=intelligence" in seg
     assert "mo_chain=" in seg
     assert "mo_channel=" in seg
     assert "mo_asof=" in seg
-    assert "mo_security_id=" in seg
+    assert "mo_from=transmission" in seg
+    assert "mo_security=" in seg
+    assert "mo_security_id=" not in seg
     # "not ranked" + zh token surface in the page (Tier-1 plain-language).
     assert "not ranked" in seg
     assert "非排名" in seg
@@ -363,3 +365,21 @@ def test_cos_aliases_none_renders_unavailable_state_with_zero_company_anchors():
         assert "今晚无法提供公司链接" in b
         assert "company links unavailable tonight" in b
         assert not _re.search(r"<a\b[^>]*href=", b), b[:240]
+
+
+def test_monitor_rows_carry_the_chain_landing_anchor():
+    """Every Cascade Monitor row is the landing target of the A/B context contract's
+    `transmission` return link (`#tx-chain-<mo_chain>`, chain id verbatim) — the id the
+    continuation publisher emits as `mo_chain` is the same `id` the row renders, so a
+    Terminal return lands on the chain it left from. One anchor per armed chain, none
+    elsewhere in the segment, and the id is never case-folded or re-punctuated."""
+    import re
+    subset = _subset()
+    seg = _monitor_segment(_render(subset))
+    armed = [c for c in subset["chains"] if c["state"] in ("arming", "propagating", "expressed")]
+    assert armed, "fixture must carry at least one armed chain"
+    anchors = re.findall(r'<div class="cm-main" id="tx-chain-([^"]+)"', seg)
+    assert sorted(anchors) == sorted(c["id"] for c in armed), (anchors, [c["id"] for c in armed])
+    assert seg.count('id="tx-chain-') == len(armed)
+    for c in armed:
+        assert f'id="tx-chain-{c["id"]}"' in seg

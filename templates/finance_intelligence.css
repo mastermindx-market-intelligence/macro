@@ -80,6 +80,7 @@ html[data-theme="light"] .fi-macro-card,
 html[data-theme="light"] .fi-exposure-card,
 html[data-theme="light"] .fi-falsifier,
 html[data-theme="light"] .fi-constraint-row,
+html[data-theme="light"] .fi-hint-row,
 html[data-theme="light"] .fi-conflict-side {
   background: color-mix(in srgb, var(--panel) 92%, var(--bg));
   border: 1px solid var(--fi-line);
@@ -217,6 +218,14 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-disc > table, .fi-disc > ul { margin-top: 8px; }
 /* Cards-more disclosure is now visible at every viewport by default; §C.10 hides it at ≥768. */
 .fi-exposure-cards-more { display: block; }
+
+/* W10-FIN-2 hint roster (#company-exposure): eleven RESEARCH_HINT_UNVALIDATED
+   citation rows. Tier-2 surface in both themes; each row wraps instead of
+   overflowing a 390px viewport. */
+.fi-hint-roster { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.fi-hint-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 10px; font-size: var(--fs-sm); background: var(--fi-panel2); border: 1px solid var(--fi-line); border-radius: var(--r-ctl, 8px); }
+.fi-hint-symbol { color: var(--fi-text); font-weight: 600; min-width: 3.5em; }
+.fi-hint-record { margin-left: auto; min-width: 0; color: var(--fi-muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* Per-state colour map (§C.7/§C.8/D.36) — every spec-named chip carries its own selector.
    Spec covers ONLY step, slice, membership, posture, and macro-cell-state chips;

@@ -58,6 +58,19 @@ def test_story_packet_projection_workflow_is_scheduled_and_serialized() -> None:
     assert body.count("github.ref == 'refs/heads/main'") == 3
 
 
+def test_full_audit_retains_discovery_only_after_success() -> None:
+    workflow = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    steps = workflow["jobs"]["audit"]["steps"]
+    audit = next(step for step in steps if step.get("name") == "replay public packets against immutable evidence")
+    assert '--discovery-out "$RUNNER_TEMP/earnings-story-discovery.json"' in audit["run"]
+    upload = next(step for step in steps if step.get("uses") == "actions/upload-artifact@v4")
+    assert upload.get("if", "success()") == "success()"
+    assert upload["with"]["path"] == "${{ runner.temp }}/earnings-story-discovery.json"
+    assert upload["with"]["if-no-files-found"] == "error"
+    assert "${{ github.run_id }}" in upload["with"]["name"]
+    assert "${{ github.run_attempt }}" in upload["with"]["name"]
+
+
 def test_story_packet_projection_accepts_no_tier_and_uses_only_deterministic_transport() -> None:
     body = WORKFLOW.read_text(encoding="utf-8")
     assert "      promote:" in body
