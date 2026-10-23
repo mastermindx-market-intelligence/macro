@@ -645,11 +645,59 @@ def test_later_unresolved_observation_is_never_skipped_for_an_older_known_one() 
     assert schedule.periods[0].opening_balance.status == "unknown"
 
 
-def test_measurement_before_the_horizon_names_the_interim_flows() -> None:
-    schedule = run(start="2026-07-31", end=H1)
-    assert dec(schedule.periods[0].opening_balance) == Decimal("5000000")
-    assert "measured 2026-06-30" in schedule.periods[0].opening_balance.note
+@pytest.mark.parametrize("reported", ["0", "5000000"])
+def test_measurement_before_the_horizon_withholds_opening_dependent_projections(reported: str) -> None:
+    # Deliberate owner-contract change: a dated observation is still visible,
+    # but it is not known cash at a later horizon with unobserved interim flows.
+    facts = [cash(reported), ocf()]
+    before = json.dumps(facts, sort_keys=True)
+    floor = UnknownResolution("unknown:minimum_liquidity", usd("1000000"), "synthetic scenario floor")
+    schedule = run(
+        facts, start="2026-07-31", end=H1, burn="fixed_usd_per_day:0",
+        resolutions=(floor,),
+    )
+    assert json.dumps(facts, sort_keys=True) == before
+    assert facts[0]["amount"]["value"] == reported
+    assert facts[0]["amount"]["status"] == "known"
+    opening = schedule.periods[0].opening_balance
+    assert opening.status == "unknown" and opening.value is None
+    assert f"reported {reported} usd measured 2026-06-30" in opening.note
+    assert opening.provenance.generation_id == "fin-gen-1"
     assert "unknown:interim_flows" in unknown_ids(schedule)
+    assert schedule.periods[0].minimum_liquidity.status == "known"
+    for period in schedule.periods:
+        for quantity in (period.opening_balance, period.closing_balance, period.gap):
+            assert quantity.status == "unknown" and quantity.value is None
+
+
+def test_historical_scenario_starting_on_observation_date_retains_exact_arithmetic() -> None:
+    # The later then-known cutoff does not turn a matching historical horizon
+    # into a current-cash request; its measured opening remains admissible.
+    facts = base_facts()
+    before = json.dumps(facts, sort_keys=True)
+    schedule = run(facts, start=H0, end=H1, as_of=AS_OF)
+    assert json.dumps(facts, sort_keys=True) == before
+    assert "unknown:interim_flows" not in unknown_ids(schedule)
+    assert dec(schedule.periods[0].opening_balance) == Decimal("5000000")
+    assert dec(schedule.periods[0].closing_balance) == Decimal("4080000")
+    assert dec(schedule.periods[1].closing_balance) == Decimal("3160000")
+    assert_identity(schedule)
+
+
+def test_interim_flow_assumption_cannot_manufacture_a_current_opening() -> None:
+    resolution = UnknownResolution(
+        "unknown:interim_flows", usd("5000000"),
+        "synthetic unsupported assumption that reported cash was unchanged",
+    )
+    schedule = run(
+        start="2026-07-31", end=H1, burn="fixed_usd_per_day:0",
+        resolutions=(resolution,),
+    )
+    assert "unknown:interim_flows" in unknown_ids(schedule)
+    assert assumption(schedule, "unhonored_resolution:unknown:interim_flows").value == "ignored"
+    assert all(period.opening_balance.status == "unknown" for period in schedule.periods)
+    assert all(period.closing_balance.status == "unknown" for period in schedule.periods)
+    assert all(period.gap.status == "unknown" for period in schedule.periods)
 
 
 def test_non_usd_basis_member_is_excluded_not_converted() -> None:

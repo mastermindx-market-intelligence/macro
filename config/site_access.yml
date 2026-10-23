@@ -275,6 +275,7 @@ public:
     - /intl_workspace_macro.css
     - /intl_workspace_risk.css
     - /intl_workspace_history.css
+    - /intl_workspace_surveillance.css
     - /intl_workspace_state.js
     - /intl_library_search.js
     - /intl_workspace_scenario.js

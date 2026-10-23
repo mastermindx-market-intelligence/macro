@@ -1696,3 +1696,135 @@ class TestBoundedInstrumentHistory:
                    for row in payload["observations"])
         assert receipt["input_binding"]["instrument_history"]["convention_verified_rows"] == 3
         assert receipt["input_binding"]["instrument_history"]["unmapped_latest_rows"] == 0
+
+
+class TestExplicitValidationSampleAsOf:
+    """The file-generation date cannot replace the holdings as-of date."""
+
+    @pytest.mark.parametrize(("reported", "expected"), [
+        (b"Jul 13, 2026", "2026-07-13"),
+        (b"2026-10-15", "2026-10-15"),
+        (b"February 29, 2024", "2024-02-29"),
+    ])
+    def test_valid_explicit_date_is_preserved(self, reported, expected):
+        content = TestSpreadsheetMLParser()._build_xml().replace(b"Jul 13, 2026", reported)
+        frame, observed = parse_spreadsheetml(content, "LQD")
+        assert observed == expected
+        assert frame["as_of"].unique().tolist() == [expected]
+
+    def test_missing_label_does_not_use_file_or_collection_day(self):
+        content = TestSpreadsheetMLParser()._build_xml().replace(
+            b"Fund Holdings as of", b"Holdings date unavailable")
+        # The fixture still has its file-generation date and inception date.
+        with pytest.raises(ValueError, match="as-of date"):
+            parse_spreadsheetml(content, "LQD")
+
+    @pytest.mark.parametrize("reported", [
+        b"", b"not-a-date", b"NaT", b"today", b"Jul 13", b"Feb 29, 2026",
+    ])
+    def test_malformed_partial_or_relative_date_refuses(self, reported):
+        content = TestSpreadsheetMLParser()._build_xml().replace(b"Jul 13, 2026", reported)
+        with pytest.raises(ValueError, match="as-of date"):
+            parse_spreadsheetml(content, "LQD")
+
+
+@pytest.fixture
+def validation_sample_files(tmp_path, monkeypatch):
+    import scripts.fetch_ishares_validation_sample as sample
+
+    def no_network(*_args, **_kwargs):
+        raise AssertionError("synthetic validation sample must not acquire data")
+
+    monkeypatch.setattr(sample, "_fetch_fund_workbook", no_network)
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    raw_path = raw_dir / "LQD_fixture.xml"
+    raw_path.write_bytes(TestSpreadsheetMLParser()._build_xml())
+    return sample, raw_dir, raw_path, tmp_path / "out"
+
+
+class TestValidationSampleKeepFirst:
+    def test_same_date_changed_response_keeps_first_bytes(self, validation_sample_files):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        written = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        target = out_dir / "LQD_2026-07-13.parquet"
+        assert written == str(target)
+        original = target.read_bytes()
+        content = raw_path.read_bytes()
+        changed = content.replace(b">89.05<", b">90.05<")
+        assert changed != content
+        raw_path.write_bytes(changed)
+
+        result = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert result is None  # The new response was not published or certified equal.
+        assert target.read_bytes() == original
+        assert pd.read_parquet(target)["clean_price"].iloc[0] == pytest.approx(89.05)
+        assert sorted(path.name for path in out_dir.iterdir()) == [target.name]
+
+    def test_later_source_date_adds_file_preserving_first(self, validation_sample_files):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        first = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        assert first is not None
+        original = Path(first).read_bytes()
+        raw_path.write_bytes(raw_path.read_bytes().replace(b"Jul 13, 2026", b"Jul 14, 2026"))
+
+        later = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert later == str(out_dir / "LQD_2026-07-14.parquet")
+        assert Path(first).read_bytes() == original
+        assert pd.read_parquet(later)["as_of"].unique().tolist() == ["2026-07-14"]
+        assert sorted(path.name for path in out_dir.iterdir()) == [
+            "LQD_2026-07-13.parquet", "LQD_2026-07-14.parquet",
+        ]
+
+    def test_concurrent_first_writer_is_not_replaced(self, validation_sample_files, monkeypatch):
+        import os
+        sample, raw_dir, _raw_path, out_dir = validation_sample_files
+        target = out_dir / "LQD_2026-07-13.parquet"
+        original_link = os.link
+        winner = b"original concurrent sample bytes"
+        calls = []
+
+        def publish_competing_first(source, destination, *args, **kwargs):
+            assert Path(destination) == target
+            target.write_bytes(winner)
+            calls.append(target)
+            # A real no-replace primitive must fail against the installed winner.
+            return original_link(source, destination, *args, **kwargs)
+
+        monkeypatch.setattr(os, "link", publish_competing_first)
+        result = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert result is None
+        assert calls == [target]
+        assert target.read_bytes() == winner
+        assert sorted(path.name for path in out_dir.iterdir()) == [target.name]
+
+    def test_failed_encoding_does_not_publish_partial_sample(self, validation_sample_files, monkeypatch):
+        sample, raw_dir, _raw_path, out_dir = validation_sample_files
+
+        def partial_then_error(_frame, destination, **_kwargs):
+            if hasattr(destination, "write"):
+                destination.write(b"incomplete parquet")
+            else:
+                Path(destination).write_bytes(b"incomplete parquet")
+            raise OSError("controlled encoding failure")
+
+        monkeypatch.setattr(pd.DataFrame, "to_parquet", partial_then_error)
+        with pytest.raises(OSError, match="controlled encoding failure"):
+            sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        assert list(out_dir.iterdir()) == []
+
+    @pytest.mark.parametrize("missing_label", [False, True])
+    def test_unqualified_date_never_writes_sample(self, validation_sample_files, missing_label):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        content = raw_path.read_bytes()
+        if missing_label:
+            content = content.replace(b"Fund Holdings as of", b"Holdings date unavailable")
+        else:
+            content = content.replace(b"Jul 13, 2026", b"not-a-date")
+        raw_path.write_bytes(content)
+
+        assert sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir) is None
+        assert list(out_dir.iterdir()) == []

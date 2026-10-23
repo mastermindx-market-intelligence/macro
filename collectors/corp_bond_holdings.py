@@ -26,7 +26,7 @@ import json
 import logging
 import re as _re
 import time
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -369,44 +369,41 @@ def _find_col(df: pd.DataFrame, tokens: list[str]) -> str | None:
 
 
 def _extract_asof(raw: pd.DataFrame, hdr_idx: int, fund: str) -> str:
-    """Scan preamble rows for an as-of date cell.
+    """Read an explicit sponsor as-of date; never infer it from collection time.
 
-    SSGA bond files carry:  'Holdings:' | 'As of DD-Mon-YYYY'
+    SSGA bond files carry: 'Holdings:' | 'As of DD-Mon-YYYY'
     or a cell containing 'As of ...' anywhere in the first 4 columns.
-    Fallback: today-1 business day with a WARNING (masterplan §2.1).
+    A missing, partial, relative or malformed date refuses the snapshot.
     """
+    def explicit_date(value: str) -> str | None:
+        # All supported forms carry day, month and four-digit year. In
+        # particular, pandas' "today"/"now"/year-only inference is not evidence.
+        for fmt in ("%d-%b-%Y", "%d-%B-%Y", "%m/%d/%Y", "%Y-%m-%d",
+                    "%b %d, %Y", "%B %d, %Y"):
+            try:
+                return datetime.strptime(value, fmt).date().isoformat()
+            except ValueError:
+                pass
+        return None
+
     for j in range(hdr_idx):
         for c in range(min(4, raw.shape[1])):
             cell = str(raw.iloc[j, c]).strip()
             if "as of" in cell.lower():
-                # Try to parse the date from this cell
                 date_str = _re.sub(r"(?i)as of\s*[:：]?\s*", "", cell).strip()
                 date_str = _re.sub(r"(?i)holdings\s*[:：]?\s*", "", date_str).strip()
-                if date_str:
-                    try:
-                        return str(pd.to_datetime(date_str).date())
-                    except Exception:  # noqa: BLE001 — try next cell
-                        pass
-                # Try the adjacent cell (col 1 when col 0 says 'Holdings:')
+                parsed = explicit_date(date_str)
+                if parsed is not None:
+                    return parsed
                 if c + 1 < raw.shape[1]:
                     neighbor = str(raw.iloc[j, c + 1]).strip()
                     if "as of" in neighbor.lower():
                         inner = _re.sub(r"(?i)as of\s*[:：]?\s*", "", neighbor).strip()
-                        try:
-                            return str(pd.to_datetime(inner).date())
-                        except Exception:  # noqa: BLE001
-                            pass
+                        parsed = explicit_date(inner)
+                        if parsed is not None:
+                            return parsed
 
-    # Fallback: most-recent prior business day
-    today = pd.Timestamp(date.today())
-    prior = today - pd.tseries.offsets.BDay(1)
-    asof = str(prior.date())
-    log.warning(
-        "corp_bond_holdings %s: 'As of' cell not found in preamble; "
-        "falling back to prior business day %s",
-        fund, asof,
-    )
-    return asof
+    raise ValueError(f"{fund}: valid explicit sponsor as-of date not found")
 
 
 def _parse_maturities(series: pd.Series) -> pd.Series:

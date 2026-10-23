@@ -6,11 +6,12 @@ into a :class:`FundingSchedule` on the frozen C0 contract.
 
 The schedule is deliberately narrow:
 
-* An opening balance is the exact sum of every member of the named cash basis,
-  measured on one date at or before the horizon start.  A missing member makes
-  the opening unknown — never a partial sum — and members measured on
-  different dates refuse.  Receivables, revolver availability and registered
-  capacity belong to no basis.
+* A known opening balance is the exact sum of every member of the named cash
+  basis measured on the horizon start date. Earlier reported amounts remain
+  observations; unobserved interim flows make the horizon opening and its
+  dependent projections unknown. A missing member makes the opening unknown
+  — never a partial sum — and members measured on different dates refuse.
+  Receivables, revolver availability and registered capacity belong to no basis.
 * Net loss is never burn (A29).  Burn enters only through an explicit
   ``burn_basis`` assumption naming an operating-cash-flow period or a scenario
   rate.  A non-negative operating cash flow models no burn and implies no
@@ -70,7 +71,7 @@ __all__ = [
 ]
 
 FINANCIAL_ITEM_SCHEMA = "capital_structure.financial_item_observation.v1"
-IMPLEMENTATION = "engine.capital_structure.funding.project_funding/1"
+IMPLEMENTATION = "engine.capital_structure.funding.project_funding/2"
 
 
 class FundingInputError(ValueError):
@@ -189,7 +190,9 @@ RULES: dict[str, Any] = {
     "opening_balance": (
         "exact sum of every basis member's latest known fact measured at or before horizon_start; "
         "a missing member, a same-date disagreement or members on different dates make the opening unknown; "
-        "a later non-known observation of a member is never skipped in favor of an older known one"
+        "a later non-known observation of a member is never skipped in favor of an older known one; "
+        "a measurement before horizon_start remains an observation, but unobserved interim flows "
+        "make the horizon opening and its dependent projections unknown"
     ),
     "burn_basis_forms": ["unknown", "operating_cash_flow:<start>:<end>", "fixed_usd_per_day:<non-negative decimal>"],
     "burn_basis_refused": "any value starting net_loss: net loss is not burn",
@@ -503,18 +506,29 @@ def _opening(
         return _usd_unknown(f"{basis} members measured on different dates"), None
     measured = next(iter(dates))
     total = sum((entry[1] for entry in chosen.values()), Decimal(0))
-    if measured < horizon_start:
-        unknowns.add(
-            "unknown:interim_flows",
-            f"cash flows between the basis measurement ({measured.isoformat()}) and the horizon start ({horizon_start.isoformat()}) are not observed",
-            f"a {basis} measurement at {horizon_start.isoformat()}",
-            ("opening_balance", "closing_balance"),
-        )
     provenance = Provenance(
         input_family="financials",
         generation_id=generation_id,
         available_at=max(entry[2] for entry in chosen.values()),
     )
+    if measured < horizon_start:
+        unknowns.add(
+            "unknown:interim_flows",
+            f"cash flows between the basis measurement ({measured.isoformat()}) and the horizon start ({horizon_start.isoformat()}) are not observed",
+            f"a {basis} measurement at {horizon_start.isoformat()}",
+            ("opening_balance", "closing_balance", "gap"),
+        )
+        # The dated reported value remains in financials.facts and this note.
+        # No admitted resolution bridges this interval; horizon assumptions
+        # describe later flows and cannot roll historical cash forward.
+        return Quantity(
+            unit="usd", status="unknown", value=None,
+            note=(
+                f"{basis} reported {_fmt(total)} usd measured {measured.isoformat()}; "
+                f"opening at {horizon_start.isoformat()} unknown because interim flows are unobserved"
+            ),
+            provenance=provenance,
+        ), None
     return _usd(total, note=f"{basis} measured {measured.isoformat()}", provenance=provenance), total
 
 

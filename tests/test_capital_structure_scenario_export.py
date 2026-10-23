@@ -75,12 +75,25 @@ class _Envelopes(NamedTuple):
 
 
 def _entries(as_of: str, cash_value: str) -> dict[str, Any]:
-    """The U1B suite's own per-issuer families, with the cash constant free."""
+    """U1B families with synthetic cash measured at this suite's horizon."""
     instruments = dataclasses.replace(
         inputs_suite._fixture_instruments(), issuer_id=evaluate_suite.ISSUER_ONE, as_of=as_of
     )
     basis = dataclasses.replace(SS.basis(), issuer_id=evaluate_suite.ISSUER_ONE, as_of=as_of)
-    financials = F.financials(F.cash(cash_value), F.ocf())
+    # The fixture's horizon and cutoff both start at 2026-10-14T00:00:00Z.
+    # Declare an observation there so exports exercise known and deficit money
+    # without treating the funding suite's June measurement as current cash.
+    cash_available_at = f"{evaluate_suite.HORIZON_START}T00:00:00Z"
+    assert cash_available_at == as_of
+    financials = F.financials(
+        F.cash(
+            cash_value,
+            measured=evaluate_suite.HORIZON_START,
+            item_id="cash-at-horizon",
+            available_at=cash_available_at,
+        ),
+        F.ocf(),
+    )
     commitments = F.covenants(
         F.covenant("cov-min-1", "2000000", available_at="2026-10-01T00:00:00Z")
     )

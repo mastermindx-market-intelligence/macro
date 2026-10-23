@@ -1,3 +1,31 @@
+## Owner update — 23 October 2026, 05:57 UTC
+
+[Theme binding evidence](evidence/theme_asset_binding_20261023.json) records the root-verified diagnosis and artifact-only correction. The original finished `theme.js` was the pinned raw template admitted by the fixed input manifest as a site asset. Canonical `lib.site_assets.emit_theme_js` with pinned `rjsmin==1.2.5` produced exactly the existing 271,335-byte index asset, SHA-256 `a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6`, with no remaining Supabase/brain placeholders. PID10615 completed at 05:57:36.555074 UTC: the existing optimizer changed exactly one `theme.js?v=4403e51f` to `theme.js?v=a46f6677`. Corrected HTML remains 727,897 bytes, SHA-256 `77ce3a305172dae6f034694db38e9f0785320b01b326c40863841a54e354f54f`. All 28 nonpage assets now match the fixed merged index; the page is still unresolved. The original 29-file artifact remains bytewise preserved. No producer/CDI/native or CSS/JS externalization rerun, browser, review or release proof follows.
+
+Current owner-observed HEAD `d67c40527801925ab3323310f72e2cbf070a4ead`, MERGE_HEAD `7f57e913a5fa17e11001564a31c4c70a425cb102` and remote `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba` remained unchanged on 23 October. Main fetched at 05:57:08.726034 UTC is `afcedb87dd6c6ccaccf53ed14261c69d9333a89e`, with changes to shared theme/mm_brain, CI and generated Bonds. Next: curate and commit the preserved 7f57e913 merge, then merge current upstream normally before final qualification. No final composition is established. The three-entry CI inventory repair was applied at 05:50:29.751072 UTC (PID93121), exact Forex-fix SHA-256 `9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf`; this records a source repair, not a CI pass.
+
+The original timezone-failure receipt digest is now root-verified: `4c2b85b72ae71fb5a83286b59179fc53409ebb4fa50366b0a72fef691c00b37e`. At 05:45 UTC on 23 October, the original Fabric status/result remained terminal, rc1, unverified, continuation evidence unqualified, retry false; response SHA-256 `610b5ddef9d7dd6a55841c0ff2b45928a68b1906000d341b5fab0e130c99dfc7`. No new review occurred. All prior holds remain. The earlier 27/29 comparison and theme-diagnosis next steps below are preserved historical checkpoints, superseded only by this bounded update.
+
+## Recorded progress — 23 October reconciliation of 22 October evidence
+
+**Engineering evidence has advanced; final composition and release remain gated.**
+
+| Area | Recorded state |
+|---|---|
+| W4 native/asset chain | One actual retained producer/validation/native chain; validation PASS. Original timezone stop and R33 selector failure preserved. Artifact-only continuation: 14/14 native checks. Read-only supplement: 29 files, six Inter fonts, no missing assets. |
+| Available history | 10,376 canonical rows; 311 mapped history rows, 18 issuers, one source date each. Source October 15 remains stale, age 5 sessions at the run; zero eligible 5/21-session history/pairs. |
+| W5 | Initial 443 passes/15 failures; focused three-suite resolution 106 passes. Separate runs, no pooled final-head total. Existing factory locally unconfigured, with zero pointer/manifest/role/query reads. |
+| Sponsor dates/keep-first | RED 19 failures/7 passes; post-repair 133 passes/9 registry setup errors; exact registry materialization then 11 focused passes. 142 unique resolved across runs, including two overlapping cases whose node IDs remain unenumerated. |
+| Source/page curation | d67c4052 with pending 7f57e913 merge; remote cf9ac2b2. Twenty-seven of 29 recorded output files match index hashes, including all seven generated CSS files. Page merge conflict and candidate/index theme.js bundle difference remain unresolved in this record. No completed final tree/CI claim. |
+
+[W4 evidence](evidence/native_w4_20261022.json) · [W5 evidence](evidence/governed_cash_w5_20261022.json) · [holdings recovery](evidence/holdings_source_date_recovery_20261022.json)
+
+Native evidence is a snapshot before the collector repair. Its private-image closure is not merged-index equality. No current-price, independent historical-pricing, complete-history, prospective-outcome, scoring, visual, signed-in-persistence, publication or release claim is added.
+
+All MASTER_PLAN proof gates and original refusal/unknown-effect custody remain: R33 review; full R11/CDI/R33 browser scope; Terminal #1106 Draft/HOLD until its original operation yields qualified continuation/review (last observed unqualified at 17:47 UTC on 22 October); no 429/deployment workaround or 0038 replay; #804 historical-body caveat and W6 access/parity contract. Preserve Macro #9996 accepted evidence, held work and original raw workspaces. Licensing is COMPLETE by Chairman special-license attestation; no Tiingo licensing/product-use outreach or new execution/publication plane. The USDJPY observation’s fixed 20:00 UTC expiry on 22 October remains expired. The owner applied the F1 implementation-/2 source-document supersession at 2026-10-23T05:15:30.517210Z (PID99701), preserving historical author/date/answer; source SHA-256 `d36673a21e5657d7dca578701a540cb8a279d704ee67483d387cc399070d3cdd`. This follows the earlier absent interrupted private prefix write; overall merge and final qualification remain pending.
+
+---
+
 # Current implementation status — bounded W4 history, 22 October 2026
 
 **W4 source and existing contract qualification are complete; real retained-input/native, candidate visual, review and production acceptance remain open.** Optional history uses the existing CCW panel and validation receipt, capped at 22 actual common-session records/16,384 UTF-8 bytes per mapped instrument. CDI emits compact separately qualified 5/21 summaries through its existing inspector. Population/levels and incumbent numeric/seasoning guards stay intact. No new artifact, writer, job or lifecycle.

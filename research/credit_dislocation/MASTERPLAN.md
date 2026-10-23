@@ -1,3 +1,44 @@
+## Owner update — 23 October 2026, 05:57 UTC
+
+[Theme binding evidence](evidence/theme_asset_binding_20261023.json) records the root-verified diagnosis and artifact-only correction. The original finished `theme.js` was the pinned raw template admitted by the fixed input manifest as a site asset. Canonical `lib.site_assets.emit_theme_js` with pinned `rjsmin==1.2.5` produced exactly the existing 271,335-byte index asset, SHA-256 `a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6`, with no remaining Supabase/brain placeholders. PID10615 completed at 05:57:36.555074 UTC: the existing optimizer changed exactly one `theme.js?v=4403e51f` to `theme.js?v=a46f6677`. Corrected HTML remains 727,897 bytes, SHA-256 `77ce3a305172dae6f034694db38e9f0785320b01b326c40863841a54e354f54f`. All 28 nonpage assets now match the fixed merged index; the page is still unresolved. The original 29-file artifact remains bytewise preserved. No producer/CDI/native or CSS/JS externalization rerun, browser, review or release proof follows.
+
+Current owner-observed HEAD `d67c40527801925ab3323310f72e2cbf070a4ead`, MERGE_HEAD `7f57e913a5fa17e11001564a31c4c70a425cb102` and remote `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba` remained unchanged on 23 October. Main fetched at 05:57:08.726034 UTC is `afcedb87dd6c6ccaccf53ed14261c69d9333a89e`, with changes to shared theme/mm_brain, CI and generated Bonds. Next: curate and commit the preserved 7f57e913 merge, then merge current upstream normally before final qualification. No final composition is established. The three-entry CI inventory repair was applied at 05:50:29.751072 UTC (PID93121), exact Forex-fix SHA-256 `9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf`; this records a source repair, not a CI pass.
+
+The original timezone-failure receipt digest is now root-verified: `4c2b85b72ae71fb5a83286b59179fc53409ebb4fa50366b0a72fef691c00b37e`. At 05:45 UTC on 23 October, the original Fabric status/result remained terminal, rc1, unverified, continuation evidence unqualified, retry false; response SHA-256 `610b5ddef9d7dd6a55841c0ff2b45928a68b1906000d341b5fab0e130c99dfc7`. No new review occurred. All prior holds remain. The earlier 27/29 comparison and theme-diagnosis next steps below are preserved historical checkpoints, superseded only by this bounded update.
+
+## Recovery continuation — 23 October 2026, preserving the 22 October evidence
+
+This block records completed engineering evidence and remaining work. It does not declare final-head, browser, independent-review or release completion. Preserve the historical receipts below.
+
+**Last supplied source identity (22 October; reconcile before effects):** local HEAD `d67c40527801925ab3323310f72e2cbf070a4ead`; pending MERGE_HEAD `7f57e913a5fa17e11001564a31c4c70a425cb102`; remote `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba`. W5 and sponsor-date repairs are subsequent pending-worktree changes. No final composed commit/tree or its CI is established here.
+
+| Work | Recorded progress | Limits retained |
+|---|---|---|
+| W4 history/native integration | One actual producer → incumbent validation → CDI → native chain from 561 fixed files; validation PASS. Artifact-only finishing corrected the demonstrated R33 selector false-negative: 14/14 native checks. A separate read-only supplement verified 29 recorded files and six Inter fonts. | 311 registry-mapped history rows across 18 issuers have one source date each. No eligible 5/21-session history or pairs. October 15 remains stale, age 5 sessions at the run. |
+| W5 governed cash/funding | Initial affected-owner run: 443 passed, 15 failed. Corrected scenario-input/export/composition follow-up: 106 passed. Funding withholds current opening and dependent projections across unobserved interim flows. | Separate runs, no aggregate final-head pass. Existing factory exited 4 before any pointer/manifest/role/query read on this unconfigured carrier; no admitted live generation. |
+| Sponsor dates/keep-first | RED: 19 failures/7 passes. Post-repair: 133 passes/9 registry setup errors. Exact tracked registry materialization followed by 11 focused passes resolves 142 unique cases with two overlaps. | No single final-head run or new provider observation. W4 native evidence predates this collector/sample repair. |
+
+Evidence: [W4](evidence/native_w4_20261022.json), [W5](evidence/governed_cash_w5_20261022.json), [holdings recovery](evidence/holdings_source_date_recovery_20261022.json). Preserve the original timezone failure and original selector-failed report.
+
+### Next owner work
+
+1. Finish pending page/source curation. Of 29 recorded output files, 27 match the merged index by hash, including all seven generated CSS files. The page remains the sole merge conflict; candidate `theme.js` is 387,822 bytes versus 271,335 in the index, and its existing helper-generated bundle is under owner diagnosis. The accepted asset supplement qualifies the private image, not equality with the index. Preserve that image; do not claim seven new repository files or a completed tree.
+2. Reconcile actual changed-path/source closure, record the final composed commit/tree, qualify only concrete remaining deltas, and consume ordinary exact-head CI through the existing carrier. Preserve current writer custody and every original/raw/untracked/ignored input.
+3. The explicit implementation-/2 supersession in `agentos/decisions/DEC-CS-V2-FUNDING-F1.md` was applied by owner PID99701 at 2026-10-23T05:15:30.517210Z, preserving its historical author/date/answer. Owner-supplied receipt: `.cdi-proof/integration-20261022/funding-f1-2-decision-20261023.result.json`; resulting source SHA-256 `d36673a21e5657d7dca578701a540cb8a279d704ee67483d387cc399070d3cdd`. This later source-document completion follows the earlier absent interrupted private prefix write; overall merge and final qualification remain pending. Continue W5 through the incumbent factory once its actual configuration/input binding is established. Local zero reads do not prove global absence or authorize invented cash. Continue W6's real subject/reference/current-access and TS/Python/persistence parity contract through the existing Investigation owner.
+4. Keep prospective research separate: one source date cannot satisfy real 5/21-session comparisons or 21/63/126-session outcomes. The h21/h63 logger remains ungraded; no accepted issuer-CDI cohort anchor or ready grader is established here.
+
+### Gates retained
+
+R33 source review and all existing owner proof gates remain. The refused Terminal deployment and the separately identified original browser actions retain their action-specific fences. Candidate loopback access failed with `ERR_SOCKET_NOT_CONNECTED`; no supported Studio-to-browser transport was established. That technical result is not a blanket browser refusal. Independent authorized browser evidence may continue, with no refused-effect workaround. This block adds no visual proof.
+
+R11 retains desktop/tablet/mobile, the 1440/390 × EN/ZH × dark/light minimum matrix, original tablet geometry, contrast/overflow, reduced motion, keyboard/Escape, invalid-then-corrected/fractional inputs, edit/reset, close/reopen and focus return. CDI hover/expansion/history/stale semantics and R33 protected inspector/access/source-clock obligations remain.
+
+Terminal #1106 stays Draft/HOLD until the original repair-review operation yields qualified continuation/review. Its last recorded canonical observation at 17:47 UTC on 22 October was terminal/unqualified, with retry disallowed. This documentation reconciliation adds no fresh Fabric status. Never replay the 429, substitute a provider or review, or retry the refused deployment. Migration 0038 remains applied once. Terminal #804's historical T03j body is not cutover authority; preserve T03k fifth-case EFFECT_UNKNOWN/Candidate CLOSED and original unknown-effect custody.
+
+Preserve Macro #9996's immutable head, green CI and covering render 39688064251, held carry/COT/RiskRadar work, and original workspaces. Tiingo licensing/intended use is COMPLETE by the Chairman’s special-license attestation; no licensing or product-use outreach. The recorded USDJPY observation expired at its fixed 20:00 UTC boundary on 22 October; it remains historical evidence and must not regain freshness from a read or documentation update. No new lifecycle, account, watch, evaluator, queue, retry or publication plane.
+
+---
+
 # Current recovery checkpoint — bounded instrument history, 22 October 2026
 
 **W4's source and existing owner contracts are qualified; the actual retained-input chain, current candidate visual proof, qualified review and release remain open.** This increment descends from published `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba` on existing Draft/HOLD #9590. That head contains the accepted 206-pass seasoning/composition repair. All earlier CI, native, browser, source and failure evidence retains its original identity.
