@@ -1,0 +1,957 @@
+{
+  "schema": "policy_behavior_pb_b_event_windows_v1",
+  "as_of_date_utc": "2026-10-07",
+  "market_data_basis": "Public primary operational reports and contemporary/reconstructed wire observations; no licensed tick/OIS history.",
+  "causal_estimation_status": "NOT_IDENTIFIED",
+  "global_missingness": {
+    "raw_ois_curves": true,
+    "synchronized_ust_control": true,
+    "jpy_trade_weighted_index": true,
+    "sector_event_study": true,
+    "us_intervention_size": true
+  },
+  "windows": [
+    {
+      "window_id": "EW01",
+      "title": "July2024 BOJ hike and simultaneous QT",
+      "event_date": "2024-07-31",
+      "episode_ids": [
+        "PB-B-01"
+      ],
+      "source_ids": [
+        "RX_2024_07_PRE",
+        "RX_2024_07_POST",
+        "BOJ_2024_07"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 153.29,
+          "unit": "JPY_per_USD",
+          "phase": "prior July30 reported quote",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2024_07_PRE"
+        },
+        {
+          "instrument": "JGB_2Y",
+          "value": 0.455,
+          "unit": "yield_percent",
+          "phase": "July31 reported maximum",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2024_07_POST"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "value": 1.06,
+          "unit": "yield_percent",
+          "phase": "July31 reported level",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2024_07_POST"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 150.61,
+          "unit": "JPY_per_USD",
+          "phase": "later July31 reported low after guidance",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2024_07_POST"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "JGB_2Y",
+          "change": 8.5,
+          "unit": "basis_points",
+          "basis": "reported maximum rise"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "change": 6.5,
+          "unit": "basis_points",
+          "basis": "reported rise"
+        }
+      ],
+      "confounders": [
+        "JGB purchase-reduction plan",
+        "Pre-announcement leaks",
+        "Ueda guidance",
+        "Same-day Fed decision"
+      ],
+      "identification_limit": "Domestic-policy positive control. Quoted FX endpoints differ in day and information set; do not fit a U.S.-pressure coefficient.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW02",
+      "title": "January2025 anticipated hike and guidance reversal",
+      "event_date": "2025-01-24",
+      "episode_ids": [
+        "PB-B-02"
+      ],
+      "source_ids": [
+        "RX_2025_01_PRE",
+        "RX_2025_01_POST",
+        "BOJ_2025_01"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "BOJ_HIKE_25BP_PROBABILITY",
+          "value": 95,
+          "unit": "percent",
+          "phase": "January23 market commentary",
+          "observation_time_utc": null,
+          "clock_note": "Publication timestamp; exact underlying quote minute not supplied.",
+          "source_id": "RX_2025_01_PRE",
+          "source_publication_time_utc": "2025-01-23T21:48:00Z"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 154.845,
+          "unit": "JPY_per_USD",
+          "phase": "initial intraday low",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_01_POST"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 155.56,
+          "unit": "JPY_per_USD",
+          "phase": "later quote after press conference",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_01_POST"
+        },
+        {
+          "instrument": "JGB_2Y",
+          "value": 0.725,
+          "unit": "yield_percent",
+          "phase": "maximum",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_01_POST"
+        },
+        {
+          "instrument": "JGB_2Y",
+          "value": 0.715,
+          "unit": "yield_percent",
+          "phase": "later quote",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_01_POST"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "JGB_2Y",
+          "change": 3,
+          "unit": "basis_points",
+          "basis": "maximum reported rise"
+        }
+      ],
+      "confounders": [
+        "Expected rate level",
+        "Subsequent no-rush guidance",
+        "U.S./China headlines"
+      ],
+      "identification_limit": "Announcement and press-conference effects differ. Numeric 10y cash yield unavailable.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW03",
+      "title": "May2025 hold and growth forecast cuts",
+      "event_date": "2025-05-01",
+      "episode_ids": [
+        "PB-B-03"
+      ],
+      "source_ids": [
+        "BOJ_2025_05",
+        "OUTLOOK_2025_04",
+        "RX_2025_05_POST"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "JGB_10Y",
+          "value": 1.26,
+          "unit": "yield_percent",
+          "phase": "post-decision reported level",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_05_POST"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "JPY_vs_USD",
+          "change": -0.6,
+          "unit": "percent",
+          "basis": "maximum reported yen decline; not close-to-close"
+        }
+      ],
+      "confounders": [
+        "Simultaneous forecast revisions",
+        "Trade-policy uncertainty",
+        "Global dollar move"
+      ],
+      "identification_limit": "Pre-event OIS and 2y cash quote are null. This is evidence of a conditional domestic reaction, not an isolated tariff coefficient.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW04",
+      "title": "Bessent August2025 comments and next-session JGB reaction",
+      "event_date": "2025-08-13",
+      "episode_ids": [
+        "PB-B-06"
+      ],
+      "source_ids": [
+        "RX_2025_08_PRESSURE",
+        "RX_2025_08_JGB",
+        "MUFG_2025_08"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "JGB_5Y",
+          "value": 1.1,
+          "unit": "yield_percent",
+          "phase": "August14 reported level",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_08_JGB"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "value": 1.545,
+          "unit": "yield_percent",
+          "phase": "August14 reported level",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_08_JGB"
+        },
+        {
+          "instrument": "BOJ_DECEMBER_25BP_HIKE_PROBABILITY",
+          "value": 62,
+          "unit": "percent",
+          "phase": "post-remark swaps proxy",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_08_JGB"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "JGB_5Y",
+          "change": 3.5,
+          "unit": "basis_points",
+          "basis": "reported session rise"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "change": 3,
+          "unit": "basis_points",
+          "basis": "reported session rise"
+        }
+      ],
+      "confounders": [
+        "Weak JGB auction",
+        "Thin Obon liquidity",
+        "Existing BOJ hawkish discussion",
+        "U.S. easing expectations"
+      ],
+      "identification_limit": "No same-contract pre-remark probability: 62% is a level, not a 62pp or measured probability increase. No exact broadcast clock or causal OIS shock.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW05",
+      "title": "October2025 pressure followed by hold",
+      "event_date": "2025-10-30",
+      "episode_ids": [
+        "PB-B-08"
+      ],
+      "source_ids": [
+        "RX_2025_10_PRE",
+        "RX_2025_10_PRESSURE",
+        "RX_2025_10_POST",
+        "BOJ_2025_10"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "BOJ_YEAR_END_HIKE_PROBABILITY",
+          "value": 40,
+          "unit": "percent",
+          "phase": "October22 reported market probability",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_10_PRE"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 151.59,
+          "unit": "JPY_per_USD",
+          "phase": "October29 report",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_10_PRESSURE"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 153.56,
+          "unit": "JPY_per_USD",
+          "phase": "October30 report after BOJ guidance",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_10_POST"
+        }
+      ],
+      "reported_or_derived_changes": [],
+      "confounders": [
+        "Prior-day Fed guidance",
+        "Domestic government preferences",
+        "Ueda wage-evidence requirement"
+      ],
+      "identification_limit": "A meaningful noncompliance case for a simplistic next-meeting hike claim. Multi-session FX endpoints are not attributable solely to Bessent.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW06",
+      "title": "December2025 expected hike with weaker yen",
+      "event_date": "2025-12-19",
+      "episode_ids": [
+        "PB-B-09"
+      ],
+      "source_ids": [
+        "RX_2025_12_PRE",
+        "RX_2025_12_POST",
+        "BOJ_2025_12"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "BOJ_DECEMBER_HIKE_PROBABILITY",
+          "value": 90,
+          "unit": "percent",
+          "phase": "December10 report",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_12_PRE"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 157.69,
+          "unit": "JPY_per_USD",
+          "phase": "December19 session wrap",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2025_12_POST"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "USD_vs_JPY",
+          "change": 1.38,
+          "unit": "percent",
+          "basis": "reported full-session dollar gain"
+        }
+      ],
+      "confounders": [
+        "Anticipated hike",
+        "Future-rate guidance",
+        "Global dollar conditions"
+      ],
+      "identification_limit": "Delivery of an expected hike need not strengthen the yen. Exact 2y/10y/OIS event changes are null.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW07",
+      "title": "January2026 rate-check signal, Tokyo and New York separated",
+      "event_date": "2026-01-23",
+      "episode_ids": [
+        "PB-B-10"
+      ],
+      "source_ids": [
+        "BOJ_2026_01",
+        "RX_2026_01_CHECK",
+        "RX_2026_01_FX",
+        "NYFED_2026_Q1"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 157.3,
+          "unit": "JPY_per_USD",
+          "phase": "Tokyo move after BOJ press conference",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_01_FX"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 157.5,
+          "unit": "JPY_per_USD",
+          "phase": "around New York midday before quoted later leg",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_01_CHECK"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 155.66,
+          "unit": "JPY_per_USD",
+          "phase": "New York afternoon low",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_01_CHECK"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 155.85,
+          "unit": "JPY_per_USD",
+          "phase": "later reported quote",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_01_CHECK"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "USDJPY",
+          "change": -1.1683,
+          "unit": "percent",
+          "basis": "arithmetic between approximate reported NY-leg endpoints; descriptive only",
+          "formula": "100*(155.66/157.50-1)"
+        },
+        {
+          "instrument": "JPY_vs_USD",
+          "change": 1.7,
+          "unit": "percent",
+          "basis": "NYFed retrospective whole-day summary, not the same endpoint convention"
+        }
+      ],
+      "confounders": [
+        "Earlier BOJ statement and guidance",
+        "Separate Tokyo yen spike",
+        "Broad dollar weakness",
+        "Fiscal/JGB stress and position unwinds"
+      ],
+      "identification_limit": "Strong evidence of news value for a U.S. operational signal; no funded January intervention. Cannot allocate the whole-day yen change or a BOJ rate-probability change to the check.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW08",
+      "title": "April–May2026 Japan intervention and quarter-end reversal",
+      "event_date": "2026-04-30",
+      "episode_ids": [
+        "PB-B-11"
+      ],
+      "source_ids": [
+        "RX_2026_04_ACTION",
+        "MOF_2026_Q2",
+        "NYFED_2026_Q2"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 160.725,
+          "unit": "JPY_per_USD",
+          "phase": "earlier April30",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_04_ACTION"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 155.5,
+          "unit": "JPY_per_USD",
+          "phase": "April30 low",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_04_ACTION"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 156.355,
+          "unit": "JPY_per_USD",
+          "phase": "later April30",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_04_ACTION"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "USD_vs_JPY",
+          "change": -3.5,
+          "unit": "percent",
+          "basis": "NYFed Q2 up-to peak-to-trough dollar decline associated with interventions; later more than fully retraced"
+        }
+      ],
+      "confounders": [
+        "Oil shock",
+        "U.S. rate expectations",
+        "Japan/U.S. yield spread",
+        "Repeated May4/6 operations"
+      ],
+      "identification_limit": "Longer follow-through is a null for a durable FX floor, not proof that short-run disorder was unaffected. Official day amounts were first public August7.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW09",
+      "title": "July30 Japanese leg and July31 joint intervention cluster",
+      "event_date": "2026-07-31",
+      "episode_ids": [
+        "PB-B-12"
+      ],
+      "source_ids": [
+        "RX_2026_08_ORIGIN",
+        "RX_2026_08_JOINT",
+        "BOJ_2026_07",
+        "MOF_2026_08"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 162.8,
+          "unit": "JPY_per_USD",
+          "phase": "reported before July30 Japanese leg",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_ORIGIN"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 157.8,
+          "unit": "JPY_per_USD",
+          "phase": "reported after July30 Japanese leg",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_ORIGIN"
+        }
+      ],
+      "reported_or_derived_changes": [],
+      "confounders": [
+        "Japanese solo trading before joint action",
+        "July31 BOJ hold and hawkish guidance",
+        "Oil and global dollar moves",
+        "Unknown U.S. size and exact execution time"
+      ],
+      "identification_limit": "Do not label the July30 price change a U.S. joint-intervention effect. No clean marginal U.S. contribution or July31 daily amount can be computed.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW10",
+      "title": "Composite September-hike repricing July30–August13",
+      "event_date": "2026-08-13",
+      "episode_ids": [
+        "PB-B-12",
+        "PB-B-13",
+        "PB-B-14"
+      ],
+      "source_ids": [
+        "RX_2026_08_PRICING"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "BOJ_SEPTEMBER_HIKE_PROBABILITY",
+          "value": 24,
+          "unit": "percent",
+          "phase": "July30 Tokyo Tanshi reported retrospectively",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_PRICING"
+        },
+        {
+          "instrument": "BOJ_SEPTEMBER_HIKE_PROBABILITY",
+          "value": 76,
+          "unit": "percent",
+          "phase": "August13 Tokyo Tanshi",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_PRICING"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "BOJ_SEPTEMBER_HIKE_PROBABILITY",
+          "change": 52,
+          "unit": "percentage_points",
+          "basis": "source-reported probability levels, simple difference",
+          "formula": "76-24"
+        }
+      ],
+      "confounders": [
+        "July31 BOJ guidance",
+        "Joint and unilateral FX intervention",
+        "August2/4 U.S. comments",
+        "August10 BOJ opinions",
+        "Domestic data and energy"
+      ],
+      "identification_limit": "A substantial composite repricing, not 52pp caused by Bessent. July30 is after earlier U.S. involvement, so not a pre-treatment baseline for cumulative influence.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW11",
+      "title": "August4 support remarks and FIMA proposal reiteration",
+      "event_date": "2026-08-04",
+      "episode_ids": [
+        "PB-B-13"
+      ],
+      "source_ids": [
+        "RX_2026_08_FIMA_FIRST",
+        "RX_2026_08_FIMA_REPEAT",
+        "RX_2026_08_SUPPORT",
+        "H41_2026_08_06"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 158,
+          "unit": "JPY_per_USD",
+          "phase": "approximately before remarks",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_SUPPORT"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 157.55,
+          "unit": "JPY_per_USD",
+          "phase": "after remarks",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_SUPPORT"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "USDJPY",
+          "change": -0.2848,
+          "unit": "percent",
+          "basis": "approximate reported endpoints; not a measured causal shock",
+          "formula": "100*(157.55/158-1)"
+        }
+      ],
+      "confounders": [
+        "First proposal already on August2 X / August3 wire",
+        "Repeated intervention assurances",
+        "Oil and positioning"
+      ],
+      "identification_limit": "Rhetorical salience is distinct from approval, borrowed dollars or BOJ rate change. No verified enlargement; H.4.1 later rejects material reported borrowing during intervention week.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW12",
+      "title": "August31 words and September1 readout amid global bond sell-off",
+      "event_date": "2026-09-01",
+      "episode_ids": [
+        "PB-B-14"
+      ],
+      "source_ids": [
+        "RX_2026_08_31",
+        "TREASURY_2026_08_READOUT",
+        "RX_2026_09_READOUT",
+        "RX_2026_09_BONDS"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "USDJPY",
+          "value": 159.75,
+          "unit": "JPY_per_USD",
+          "phase": "August31 report after remarks",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_08_31"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "value": 3,
+          "unit": "yield_percent",
+          "phase": "September1 reported threshold, exact quote clock unavailable",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_09_BONDS"
+        }
+      ],
+      "reported_or_derived_changes": [],
+      "confounders": [
+        "Public August31 remarks precede September1 readout",
+        "Prior May–July involvement already embedded",
+        "Global bond/energy shock",
+        "Domestic fiscal concerns"
+      ],
+      "identification_limit": "Near-full September pricing limits the incremental late public-news shock. The initial bond-report timestamp07:27UTC precedes readout-wire16:18UTC, but no synchronized quote/news tape survives; do not assign the bond sell-off to that readout. UST quote omitted because updated-body clock is unmatched.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    },
+    {
+      "window_id": "EW13",
+      "title": "September18 expected hike, two dissents and pre-presser reaction",
+      "event_date": "2026-09-18",
+      "episode_ids": [
+        "PB-B-15"
+      ],
+      "source_ids": [
+        "BOJ_2026_09",
+        "RX_2026_09_MARKET"
+      ],
+      "design": "retrospective_descriptive_window",
+      "raw_tick_data": false,
+      "causal_effect_estimate": null,
+      "statistical_significance": null,
+      "observations": [
+        {
+          "instrument": "BOJ_POLICY_RATE",
+          "value": 1.25,
+          "unit": "percent",
+          "phase": "official announcement",
+          "observation_time_utc": "2026-09-18T02:54:00Z",
+          "clock_note": "",
+          "source_id": "BOJ_2026_09"
+        },
+        {
+          "instrument": "JGB_2Y",
+          "value": 1.835,
+          "unit": "yield_percent",
+          "phase": "early post-decision",
+          "observation_time_utc": "2026-09-18T04:42:00Z",
+          "clock_note": "",
+          "source_id": "RX_2026_09_MARKET"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "value": 2.985,
+          "unit": "yield_percent",
+          "phase": "early report, not necessarily same tick",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_09_MARKET"
+        },
+        {
+          "instrument": "USDJPY",
+          "value": 157.085,
+          "unit": "JPY_per_USD",
+          "phase": "early report, exact FX quote minute unspecified",
+          "observation_time_utc": null,
+          "clock_note": "",
+          "source_id": "RX_2026_09_MARKET"
+        }
+      ],
+      "reported_or_derived_changes": [
+        {
+          "instrument": "JGB_2Y",
+          "change": -2.5,
+          "unit": "basis_points",
+          "basis": "reported early move"
+        },
+        {
+          "instrument": "JGB_10Y",
+          "change": -0.5,
+          "unit": "basis_points",
+          "basis": "reported early move"
+        },
+        {
+          "instrument": "JPY_vs_USD",
+          "change": -0.7,
+          "unit": "percent",
+          "basis": "approximately reported early yen decline"
+        }
+      ],
+      "confounders": [
+        "Expected rate increase",
+        "Unexpected distribution of dissent and future-path implications",
+        "Later Ueda press conference must be separated"
+      ],
+      "identification_limit": "Official announcement02:54UTC; 2y observation04:42UTC; presser06:30UTC. Syndicated page posted06:57UTC but preserves earlier text. Reject mechanical expected-hike-to-stronger-yen rule; no clean coefficient for earlier U.S. pressure.",
+      "missing_series": [
+        "Full timestamped BOJ OIS curve",
+        "Synchronized UST control",
+        "JPY trade-weighted index"
+      ],
+      "interpretive_rule": "An observed price move is not an estimate of incremental U.S. influence. Source time, quote time and event time are distinct."
+    }
+  ],
+  "operational_reconciliation": {
+    "january_2026": {
+      "japan_amount_in_mof_dec29_jan28_period_jpy_billion": 0,
+      "us_q1_intervention": false,
+      "source_ids": [
+        "MOF_2026_01",
+        "NYFED_2026_Q1"
+      ],
+      "rate_check_is_intervention": false
+    },
+    "q2_2026": {
+      "japan_daily_jpy_billion": {
+        "2026-04-30": 6278.7,
+        "2026-05-04": 780.2,
+        "2026-05-06": 4675.9
+      },
+      "japan_official_total_jpy_billion": 11734.9,
+      "sum_rounded_daily_jpy_billion": 11734.8,
+      "rounding_difference_jpy_billion": 0.1,
+      "us_intervention": false,
+      "daily_amounts_first_public_date": "2026-08-07",
+      "source_ids": [
+        "MOF_2026_Q2",
+        "NYFED_2026_Q2"
+      ]
+    },
+    "july_2026": {
+      "joint_operation_date": "2026-07-31",
+      "execution_date_timezone": "U.S. Eastern, indexed MOF primary; full access unavailable",
+      "us_executed_amount_usd_equivalent": null,
+      "japan_july31_amount_jpy": null,
+      "japan_reporting_period": [
+        "2026-07-30",
+        "2026-08-26"
+      ],
+      "japan_reporting_period_total_jpy_billion": 15399.3,
+      "us_asset_sold": "Euros, attributed Reuters reporting; later reported ESF letter supports foreign-currency assets",
+      "us_asset_bought": "JPY",
+      "source_ids": [
+        "RX_2026_08_JOINT",
+        "MOF_2026_08_STATEMENT",
+        "MOF_2026_08",
+        "RX_2026_08_LETTER"
+      ],
+      "photographed_5_to_10_billion_note_is_execution_receipt": false
+    },
+    "fima": {
+      "verified_enlargement": null,
+      "verified_japan_draw_exact_usd": null,
+      "reported_foreign_official_asset_repo_usd_million": {
+        "week_ending_2026-07-29": {
+          "daily_average": 0,
+          "wednesday": 0
+        },
+        "week_ending_2026-08-05": {
+          "daily_average": 0,
+          "wednesday": 0
+        },
+        "week_ending_2026-08-12": {
+          "daily_average": 0,
+          "wednesday": 0
+        }
+      },
+      "rounding_unit": "USD million",
+      "baseline_counterparty_limit_usd_billion": 60,
+      "limit_basis": "total outstanding at any given time; not per day",
+      "delegated_limit_change_authority": "FOMC Foreign Currency Subcommittee, keeping FOMC informed",
+      "directive_role": "as-of mechanism audit; publication clock not sufficient for certified earlier input",
+      "source_ids": [
+        "H41_2026_07_30",
+        "H41_2026_08_06",
+        "H41_2026_08_13",
+        "FOMC_2026_DIRECTIVE",
+        "FIMA_FAQ"
+      ]
+    }
+  }
+}
