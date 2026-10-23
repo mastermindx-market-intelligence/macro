@@ -3249,8 +3249,8 @@ def test_non_native_owner_total_remains900_or_international720(monkeypatch, minu
     assert calls == [("before",minutes*60), ("after",minutes*60-650)]
 
 
-@pytest.mark.parametrize("job_id", ["unrun-brain-gateway", "ordinary-browser"])
-def test_ontology_only_native_opt_in_refuses_every_other_job(job_id, tmp_path):
+@pytest.mark.parametrize("job_id", ["unrun-brain-gateway-copy", "ordinary-browser"])
+def test_native_opt_in_refuses_jobs_outside_closed_owner_set(job_id, tmp_path):
     job = _job(job_id, [{**_browser_setup_step(), "acquisition": "native_parallel"},
                         {"name": "assertion", "run": "true"}], timeout=15)
     with pytest.raises(PACK.ManifestError, match="restricted to ontology-explorer"):
@@ -3335,13 +3335,162 @@ def test_unmarked_brain_unknown_installer_preserves_settlement_fence(monkeypatch
     assert result.steps[0]["outcome"] == "infrastructure_blocked"
 
 
-def test_ontology_only_manifest_activation_keeps_protected_brain_and_international():
+def test_explicit_owner_manifest_activation_keeps_brain900_and_international720():
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
     native = [job.job_id for job in jobs.values()
               if any(spec.get("acquisition") == "native_parallel" for spec in PACK._browser_setup_contract(job))]
-    assert native == ["ontology-explorer"]
+    assert native == ["ontology-explorer", "unrun-brain-gateway"]
     assert jobs["unrun-brain-gateway"].definition["timeout-minutes"] == 15
     assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 12
-    assert set(PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]) == {
-        "phase", "command", "timeout_minutes", "budget", "step_index",
-    }
+    brain = PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]
+    assert brain["activation_job_id"] == "unrun-brain-gateway"
+    assert brain["logical_job_timeout_minutes"] == 15 and brain["timeout_minutes"] == 10
+    assert len(brain["native_source_sha256"]) == 7
+
+
+# Explicit Brain activation preserves its own original total, not Ontology's.
+def test_native_brain900_keeps_prior_python_and_setup_inside_original_deadline(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job("unrun-brain-gateway", [
+        {"name": "prior Python", "run": "before"},
+        {**_browser_setup_step(), "acquisition": "native_parallel"},
+        {"name": "financial assertion one", "run": "after-one"},
+        {"name": "financial assertion two", "run": "after-two"},
+    ], timeout=15)
+    clock = [1000.0]
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: clock[0])
+    calls = []
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        clock[0] += {"before": 200, "capture apt": 40, "capture playwright": 60,
+                     "after-one": 90}.get(command, 0)
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    def setup(**kwargs):
+        assert kwargs["deadline"] == 1800  # min(original1900, setup1200+600)
+        assert len(kwargs["expected_sources"]) == 7
+        calls.append(("native once", kwargs["deadline"]))
+        clock[0] = 1790
+        return dict(outcome="passed", returncode=0, failure_signature=None,
+                    timeout_settlement=None, detail="native and browser setup passed")
+    monkeypatch.setattr(native, "run_native_setup", setup)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    assert result.failure is None
+    assert calls == [("before", 900), ("capture apt", 600), ("capture playwright", 560),
+                     ("native once", 1800), ("after-one", 110), ("after-two", 20)]
+    assert [s["outcome"] for s in result.steps] == ["passed"] * 3
+
+
+@pytest.mark.parametrize("prior_elapsed", [550, 899, 900])
+def test_native_brain_late_setup_cannot_reset_original900(monkeypatch, prior_elapsed):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job("unrun-brain-gateway", [{"name": "prior", "run": "before"},
+        {**_browser_setup_step(), "acquisition": "native_parallel"},
+        {"name": "financial assertion", "run": "after"}], timeout=15)
+    clock = [0.0]
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: clock[0])
+    calls = []
+    def stream(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        clock[0] += prior_elapsed if command == "before" else 1 if prior_elapsed == 899 else 10 if command.startswith("capture") else 0
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    def setup(**kwargs):
+        assert prior_elapsed == 550
+        calls.append(("native once", kwargs["deadline"]))
+        assert kwargs["deadline"] == 900  # remaining350, no new setup grant
+        clock[0] = 899
+        return dict(outcome="passed", returncode=0, failure_signature=None,
+                    timeout_settlement=None, detail="setup completed")
+    monkeypatch.setattr(native, "run_native_setup", setup)
+    result = PACK._run_job(job, base_ref="main", head_ref="", command_env={})
+    if prior_elapsed == 550:
+        assert calls == [("before",900),("capture apt",350),("capture playwright",340),("native once",900),("after",1)]
+        assert result.failure is None
+    else:
+        assert calls == [("before",900)] + ([("capture apt",1)] if prior_elapsed == 899 else [])
+        assert result.failure is not None and result.timeout_settlement is None
+        assert result.steps[-1]["outcome"] == "infrastructure_blocked"
+
+
+@pytest.mark.parametrize("helper", [
+    "ci_apt_cold_acquisition.py", "ci_apt_native_plan.py", "ci_apt_native_stage.py",
+    "ci_browser_native_setup.py", "ci_apt_transaction_contract.py",
+    "ci_browser_dependency_capture.py", "ci_browser_dependency_inputs.py",
+])
+def test_native_brain_binds_each_helper_and_its_explicit_owner_total(monkeypatch, helper):
+    native = _job("unrun-brain-gateway", [{**_browser_setup_step(), "acquisition":"native_parallel"}, {"run":"true"}], timeout=15)
+    ordinary = _job("unrun-brain-gateway", [_browser_setup_step(), {"run":"true"}], timeout=15)
+    contract = PACK._browser_setup_contract(native)[0]
+    assert contract["activation_job_id"] == "unrun-brain-gateway"
+    assert contract["logical_job_timeout_minutes"] == 15
+    assert contract["timeout_minutes"] == 10 and len(contract["native_source_sha256"]) == 7
+    before = PACK.semantic_job_digest(native), PACK.semantic_job_digest(ordinary)
+    read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda p: read(p) + b"# source changed" if p.name == helper else read(p))
+    assert PACK.semantic_job_digest(native) != before[0]
+    assert PACK.semantic_job_digest(ordinary) == before[1]
+
+def test_native_brain_total_is_digest_bound_without_changing_other_owners(monkeypatch):
+    setup = {**_browser_setup_step(), "acquisition": "native_parallel"}
+    brain = _job("unrun-brain-gateway", [setup, {"run":"true"}], timeout=15)
+    ontology = _job("ontology-explorer", [setup, {"run":"true"}], timeout=15)
+    unmarked = _job("unrun-brain-gateway", [_browser_setup_step(), {"run":"true"}], timeout=15)
+    before = tuple(PACK.semantic_job_digest(job) for job in [brain, ontology, unmarked])
+    assert before[0] != before[1]
+    monkeypatch.setattr(PACK, "NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES", 14)
+    assert PACK.semantic_job_digest(brain) != before[0]
+    assert PACK.semantic_job_digest(ontology) == before[1]
+    assert PACK.semantic_job_digest(unmarked) == before[2]
+
+
+def test_native_brain_setup600_exhausts_before_its_job900(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job("unrun-brain-gateway", [{**_browser_setup_step(), "acquisition":"native_parallel"},
+                {"name":"financial assertion","run":"after"}], timeout=15)
+    clock = [0.0]
+    monkeypatch.setattr(PACK.time, "monotonic", lambda:clock[0])
+    calls = []
+    def stream(command, **kwargs):
+        calls.append((command,kwargs["timeout_seconds"]))
+        clock[0] = 600
+        return PACK.CommandObservation(outcome="passed",returncode=0)
+    monkeypatch.setattr(PACK,"_stream_command",stream)
+    monkeypatch.setattr(native,"run_native_setup",lambda **_k:pytest.fail("setup cannot restart after its original600"))
+    result = PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert calls == [("capture apt",600)]
+    assert result.failure is not None and result.timeout_settlement is None
+    assert result.steps[0]["outcome"] == "infrastructure_blocked"
+
+
+def test_native_brain_postsetup_assertions_stop_at_original900(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job = _job("unrun-brain-gateway", [
+        {"name":"prior Python","run":"before"},
+        {**_browser_setup_step(),"acquisition":"native_parallel"},
+        {"name":"financial one","run":"after-one"},
+        {"name":"financial two","run":"after-two"},
+        {"name":"financial three","run":"after-three"}],timeout=15)
+    clock = [0.0]
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:clock[0])
+    calls=[]
+    def stream(command,**kwargs):
+        calls.append((command,kwargs["timeout_seconds"]))
+        clock[0] += 200 if command=="before" else 101 if command=="after-one" else 0
+        return PACK.CommandObservation(outcome="passed",returncode=0)
+    monkeypatch.setattr(PACK,"_stream_command",stream)
+    def setup(**kwargs):
+        assert kwargs["deadline"]==800
+        calls.append(("native once",kwargs["deadline"]))
+        clock[0]=799
+        return dict(outcome="passed",returncode=0,failure_signature=None,timeout_settlement=None,detail="setup completed")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert calls==[("before",900),("capture apt",600),("capture playwright",600),("native once",800),("after-one",101)]
+    assert [s["outcome"] for s in result.steps]==["passed","passed","timed_out","not_run_prior_failure"]
+    assert "after 15 minutes" in result.failure
+    assert result.timeout_settlement is None

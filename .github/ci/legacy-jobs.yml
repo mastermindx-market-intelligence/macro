@@ -31798,6 +31798,7 @@ jobs:
 
       - name: install Brain browser
         phase: browser_setup
+        acquisition: native_parallel
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
