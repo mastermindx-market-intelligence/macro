@@ -4388,6 +4388,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # F04 exact import/read closure; all suites retained, no homepage fallback.
+    "ontology-explorer",
+
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
@@ -5021,6 +5024,8 @@ CURATED_EXCLUSIVE = {
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    "k3d-economic-propagation-contracts",  # K3-D must execute in the PR code gate.
+
     # 2026-10-20 W28D-L35: the China strategies income-tile suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5036,6 +5041,9 @@ CURATED_EXCLUSIVE = {
     "options-r1-rotation-relative-trend",
     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-sector-holdings-coverage",
+    # Synthetic OHLC delivery has an exact import/read closure; preserve every
+    # packing ceiling and keep this new code gate off unrelated render probes.
+    "ohlc-origin-delivery",
 }
 
 
@@ -5171,6 +5179,52 @@ def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None
     assert match and match[1] == "declared", match
 
 
+@pytest.mark.parametrize("dependency", [
+    'app/ontology_explorer.py',  # ci-trigger-closure: data — a changed path name, not a read
+    'engine/price_pressure/research.py',  # ci-trigger-closure: data — selection probe
+    'data/price_pressure/latest.json',  # ci-trigger-closure: data — native dynamic read
+    'templates/ontology-research.js',  # ci-trigger-closure: data — browser module
+    'site/ontology-research.js',  # ci-trigger-closure: data — emitted browser module
+    'engine/transmission_company_continuation.py',  # ci-trigger-closure: data — a changed path name, not a read
+    'knowledge/transmission/dollar_spike_em_multinational.yaml',  # ci-trigger-closure: data — a changed path name, not a read
+    'config/theme_sources.yml',  # ci-trigger-closure: data — a changed path name, not a read
+    'data/transmission/chain_state.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'data/reference/vendor_aliases.parquet',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/_site_nav.html.j2',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/data_base.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'templates/ontology-company-controller.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/theme.css',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/mm_brain.js',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/fonts/Inter-400.woff2',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/policy_watch.html',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/ontology-new-consumer.map',  # ci-trigger-closure: data — a changed path name, not a read
+    'site/premiumdata/ontology_future.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'tests/fixtures/evidence_foundation/new_native_event.json',  # ci-trigger-closure: data — a changed path name, not a read
+    'tests/ontology_company_controller.test.mjs',  # ci-trigger-closure: data — a changed path name, not a read
+])
+def test_ontology_explorer_exclusive_scope_keeps_runtime_inputs(dependency: str) -> None:
+    """Dynamic browser, native data and Jinja reads remain explicit CI owners.
+
+    This includes new files matched by the existing artifact families and a
+    linked page deletion: the closure analyzer alone cannot see those inputs.
+    """
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "ontology-explorer")
+    assert job.exclusive
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [j.job_id for j in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, [dependency])
+    assert match and match[1] == "declared", match
+
+
+def test_ontology_explorer_does_not_claim_unrelated_homepage_bytes() -> None:
+    """Homepage source is neither imported nor loaded by the Ontology tests."""
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "ontology-explorer")
+    selected, _reason = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected
+
+
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     """Every job the curation stops selecting was selected by smear, not evidence.
 
@@ -5203,9 +5257,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_634),
+    ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_858),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5213,6 +5267,11 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-23 F11 selected-version composition on protected f564c087:
+    the one existing Brain invocation gains test_research_thesis_read.py.
+    Preserve canonical job/pack ceilings, selectors and all measurement history;
+    fund only its previously qualified two estimator units per probe.
 
     2026-10-23 Catalyst PR #9552 current-main integration: separate exact-tree
     canonical planner runs on main9732eb9f and merge9c1262d6 preserve
@@ -8202,6 +8261,43 @@ def test_ancestor_init_census_does_not_grow() -> None:
         )
     )
 
+
+@pytest.mark.parametrize("changed_path", [
+    "tests/test_economic_propagation_hypothesis_contract.py",
+    "tests/test_economic_propagation_source_grain.py",
+    "tests/test_economic_propagation_v2.py",
+    "tests/test_economic_propagation_v2_semantics.py",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "tests/fixtures/economic_propagation/golden_supported_hypothesis.json",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json",
+])
+def test_k3d_all_native_suites_execute_in_pr_code_gate(changed_path, real_manifest_scopes):
+    """A suite in the data gate is not a PR check; keep one actual execution home."""
+    manifest = _yaml(MANIFEST)
+    owner_id = "k3d-economic-propagation-contracts"
+    owner = manifest["jobs"][owner_id]
+    suites = (
+        "tests/test_economic_propagation_hypothesis_contract.py",
+        "tests/test_economic_propagation_source_grain.py",
+        "tests/test_economic_propagation_v2.py",
+        "tests/test_economic_propagation_v2_semantics.py",
+    )
+    assert owner["gate"] == "code" and owner["scope"] == "exclusive"
+    assert {"pytest", "jsonschema"} <= _job_pip_packages(owner)
+    for suite in suites:
+        actual_owners = [
+            job_id for job_id, job in manifest["jobs"].items()
+            if any(suite in str(step.get("run") or "").split() for step in job["steps"])
+        ]
+        assert actual_owners == [owner_id], (suite, actual_owners)
+        assert suite in owner["paths"]
+    assert manifest["jobs"]["signal-contract"]["gate"] == "data"
+    jobs, _ = real_manifest_scopes
+    selected, reason = PACK.select_jobs([job for job in jobs if job.gate == "code"], [changed_path])
+    assert owner_id in {job.job_id for job in selected}, (changed_path, reason)
+    assert "unowned path" not in reason, (changed_path, reason)
 
 def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes():
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}

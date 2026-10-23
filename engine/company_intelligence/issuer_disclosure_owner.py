@@ -36,6 +36,8 @@ AUDIENCE = 'company_intelligence_entitled'
 DATASET = 'company_intelligence.issuer_disclosure_generations'
 PRODUCER = 'scripts/publish_company_disclosure.py'
 MANIFEST_SCHEMA = 'company_intelligence.issuer_disclosure_generation/v1'
+COLLECTION_SCHEMA = 'company_intelligence.issuer_disclosure_collection/v1'
+MAX_CURRENT_MEMBERS = 16
 POINTER_SCHEMA = 'company_intelligence.issuer_disclosure_current/v1'
 BASE = 'research/theme_graph/issuer_disclosures_20261011/'
 SPEC_PATH = BASE + 'C01_NATIVE_OWNER.json'
@@ -163,7 +165,7 @@ def _validate_identity_receipt(receipt: dict) -> None:
     native._require(valid_date, 'IDENTITY_RECEIPT_INVALID')
 
 
-def _validate_continuity(policy: dict) -> None:
+def _validate_continuity(policy: dict, parties: tuple[str, ...] = IDENTITY_PARTIES) -> None:
     """The policy is literal: no free-form fields, no other policy name."""
     native._require(type(policy) is dict and set(policy) == {'schema', 'policy', 'semantic_fields', 'provenance_fields', 'parties'},
                     'IDENTITY_CONTINUITY_POLICY_INVALID')
@@ -174,7 +176,7 @@ def _validate_continuity(policy: dict) -> None:
                     and type(policy['provenance_fields']) is list
                     and policy['provenance_fields'] == list(PROVENANCE_IDENTITY_FIELDS)
                     and type(policy['parties']) is list
-                    and policy['parties'] == list(IDENTITY_PARTIES),
+                    and policy['parties'] == list(parties),
                     'IDENTITY_CONTINUITY_POLICY_INVALID')
 
 
@@ -284,11 +286,16 @@ class OwnerSnapshot:
 
 
 def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
-                    registry_raw: bytes, identities: dict) -> OwnerSnapshot:
+                    registry_raw: bytes, identities: dict, *, theme_sources_raw: bytes | None = None) -> OwnerSnapshot:
     """Interpret original records, never an Admission or grant from a caller."""
     import yaml
     native._require(re.fullmatch('[0-9a-f]{40}', code_version) is not None, 'CODE_VERSION_INVALID')
     spec, ruling = _json(spec_raw), _json(ruling_raw)
+    if spec.get('schema') == 'company_intelligence.sec_supplier_owner_decision/v1':
+        from . import sec_supplier_adoption as supplier
+        native._require(type(theme_sources_raw) is bytes, 'SEC_FACT_POLICY_NOT_QUALIFIED')
+        return supplier.qualify_records(code_version, spec_raw, ruling_raw, registry_raw, identities,
+                                        theme_sources_raw=theme_sources_raw)
     continuity = spec.get('identity_continuity')
     closed = {'schema', 'case_id', 'ruling_reference', 'edition', 'fact', 'identities',
               'temporal_decision', 'correction_decision', 'semantic_review'}
@@ -347,9 +354,15 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
 
 class CommittedDisclosureSource:
     """Fresh installed protected decisions plus the incumbent identity owner."""
-    def __init__(self, repo: Path, identity_owner=None):
+    def __init__(self, repo: Path, identity_owner=None, *, sec_supplier_paths: tuple[str, str, str] | None = None):
         self.git = CommittedCompanyContextOwner(repo)
         self.identity_owner = identity_owner or self.git
+        # Optional deployment-owned exact protected paths: spec, source-purpose
+        # basis, theme_sources. No discovery, URL allowance or default activation.
+        native._require(sec_supplier_paths is None or (type(sec_supplier_paths) is tuple
+            and len(sec_supplier_paths) == 3 and all(type(p) is str and p and not p.startswith('/')
+                and '..' not in p.split('/') for p in sec_supplier_paths)), 'SOURCE_PATH_INVALID')
+        self.sec_supplier_paths = sec_supplier_paths
 
     def accepts_revision(self, revision: str) -> bool:
         native._require(re.fullmatch('[0-9a-f]{40}', revision) is not None, 'CODE_VERSION_INVALID')
@@ -359,10 +372,16 @@ class CommittedDisclosureSource:
     def snapshot(self) -> OwnerSnapshot:
         head = self.git._head()
         self.git._git('merge-base', '--is-ancestor', head, 'refs/remotes/origin/main')
-        blobs = self.git._read(self.git._objects(head, (SPEC_PATH, RULING_PATH, REGISTRY_PATH)))
-        identities = {symbol: context.read_company_context(self.identity_owner, symbol,
-            purpose=PURPOSE, audience=AUDIENCE)['identity_receipt'] for symbol in IDENTITY_PARTIES}
-        result = qualify_records(head, blobs[SPEC_PATH], blobs[RULING_PATH], blobs[REGISTRY_PATH], identities)
+        spec_path, ruling_path, theme_path = (SPEC_PATH, RULING_PATH, None) if self.sec_supplier_paths is None else self.sec_supplier_paths
+        paths = (spec_path, ruling_path, REGISTRY_PATH) + (() if theme_path is None else (theme_path,))
+        blobs = self.git._read(self.git._objects(head, paths))
+        queries = {symbol: symbol for symbol in IDENTITY_PARTIES} if theme_path is None else _json(blobs[spec_path])['identity_queries']
+        if theme_path is not None:
+            native._closed(queries, {'subject', 'object'})
+        identities = {role: context.read_company_context(self.identity_owner, symbol,
+            purpose=PURPOSE, audience=AUDIENCE)['identity_receipt'] for role, symbol in queries.items()}
+        result = qualify_records(head, blobs[spec_path], blobs[ruling_path], blobs[REGISTRY_PATH], identities,
+            theme_sources_raw=None if theme_path is None else blobs[theme_path])
         native._require(self.git._head() == head, 'SOURCE_GENERATION_CHANGED')
         return result
 
@@ -380,6 +399,103 @@ def make_manifest(snapshot: OwnerSnapshot, computed_at: str) -> dict:
             'fact': native.validate_fact(spec['fact']).payload()}
 
 
+def _manifest_reference(value):
+    native._closed(value, {'sha256', 'byte_length'})
+    native._digest(value['sha256'])
+    native._integer(value['byte_length'], 1, native.MAX_OBJECT_BYTES)
+    return value
+
+
+def read_generation(state, reference):
+    """One exact bounded immutable metadata object; never follow a pointer."""
+    ref = _manifest_reference(reference)
+    raw = state.get_bytes_strict_bounded('generations/' + ref['sha256'] + '.json',
+        expected_byte_length=ref['byte_length'], max_byte_length=native.MAX_OBJECT_BYTES)
+    native._require(raw is not None and object_ref(raw) == ref, 'CURRENT_MANIFEST_MISMATCH')
+    return native._decode(raw)
+
+
+def validate_component(manifest):
+    native._closed(manifest, {'schema', 'dataset_id', 'temporal_profile', 'computed_at', 'code_version',
+        'input_cutoffs', 'decisions', 'edition', 'fact'})
+    native._require(manifest['schema'] == MANIFEST_SCHEMA and manifest['dataset_id'] == DATASET
+        and manifest['temporal_profile'] == 'DERIVED', 'CURRENT_COMPONENT_INVALID')
+    native._require(type(manifest['code_version']) is str
+        and re.fullmatch('[0-9a-f]{40}', manifest['code_version']) is not None, 'GENERATION_CODE_INVALID')
+    cutoffs = native._closed(manifest['input_cutoffs'], {'source_known_at', 'fact_known_at'})
+    native._require(native._instant(cutoffs['source_known_at']) <= native._instant(cutoffs['fact_known_at'])
+        <= native._instant(manifest['computed_at']) <= datetime.now(timezone.utc), 'GENERATION_TIME_INVALID')
+    native._closed(manifest['decisions'], {'spec', 'purpose', 'adoption'})
+    for value in manifest['decisions'].values():
+        native._digest(value)
+    fact = native.Reference(**native._closed(manifest['fact'], {'schema', 'sha256', 'byte_length'}))
+    native._require(fact.schema in native.FACT_SCHEMAS, 'CURRENT_COMPONENT_INVALID')
+    native._reference(manifest['edition'], native.SEC_EDITION_SCHEMA
+        if fact.schema == native.SUPPLIER_FACT_SCHEMA else native.EDITION_SCHEMA)
+
+
+def validate_members(members):
+    native._require(type(members) is list and 1 <= len(members) <= MAX_CURRENT_MEMBERS, 'CURRENT_MEMBER_LIMIT')
+    ids, references = [], []
+    for member in members:
+        native._closed(member, {'fact_id', 'subject_id', 'fact_schema', 'manifest'})
+        native._require(type(member['fact_id']) is str and re.fullmatch('integration:[0-9a-f]{64}', member['fact_id']) is not None,
+                        'CURRENT_MEMBER_INVALID')
+        from .issuer_disclosure_selection import issuer_identity
+        issuer_identity(member['subject_id'])
+        native._require(type(member['fact_schema']) is str and member['fact_schema'] in native.FACT_SCHEMAS, 'CURRENT_MEMBER_INVALID')
+        _manifest_reference(member['manifest'])
+        ids.append(member['fact_id']); references.append(member['manifest']['sha256'])
+    native._require(ids == sorted(set(ids)) and len(references) == len(set(references)), 'CURRENT_MEMBER_DUPLICATE_OR_UNORDERED')
+
+
+def validate_collection(collection):
+    native._closed(collection, {'schema', 'computed_at', 'members'})
+    native._require(collection['schema'] == COLLECTION_SCHEMA, 'CURRENT_COLLECTION_INVALID')
+    native._require(native._instant(collection['computed_at']) <= datetime.now(timezone.utc), 'GENERATION_TIME_INVALID')
+    validate_members(collection['members'])
+
+
+def collection_components(state, collection):
+    """One layer only. A component can never be another collection."""
+    validate_collection(collection)
+    result = []
+    for member in collection['members']:
+        manifest = read_generation(state, member['manifest'])
+        validate_component(manifest)
+        native._require(manifest['fact']['schema'] == member['fact_schema']
+            and native._instant(manifest['computed_at']) <= native._instant(collection['computed_at']), 'CURRENT_MEMBER_MISMATCH')
+        result.append((member, manifest))
+    return result
+
+
+def read_current_manifest(state, *, pointer_raw=None):
+    raw = state.get_bytes_strict_bounded(CURRENT_KEY, native.MAX_OBJECT_BYTES) if pointer_raw is None else pointer_raw
+    pointer = native._decode(raw)
+    native._closed(pointer, {'schema', 'manifest'})
+    native._require(pointer['schema'] == POINTER_SCHEMA, 'CURRENT_POINTER_INVALID')
+    reference = _manifest_reference(pointer['manifest'])
+    manifest = read_generation(state, reference)
+    return raw, reference, manifest
+
+
+def member_descriptor(snapshot, reference):
+    fact = snapshot.spec['fact']
+    return {'fact_id': fact['fact_id'], 'subject_id': fact['subject_id'], 'fact_schema': fact['schema'],
+            'manifest': dict(_manifest_reference(reference))}
+
+
+def qualify_component(source, manifest):
+    """Original per-source qualification, retaining the component generation."""
+    validate_component(manifest)
+    snapshot = source.snapshot()
+    native._require(snapshot.dataset_status == 'PRODUCED', 'DATASET_NOT_PRODUCED')
+    native._require(source.accepts_revision(manifest['code_version']), 'GENERATION_CODE_INVALID')
+    expected = make_manifest(replace(snapshot, code_version=manifest['code_version']), manifest['computed_at'])
+    native._require(manifest == expected, 'CURRENT_DECISION_CHANGED')
+    return snapshot
+
+
 def admission(snapshot: OwnerSnapshot, manifest: dict, request: native.Request,
               operation: str = 'read') -> native.Admission:
     spec, fact = snapshot.spec, snapshot.spec['fact']
@@ -389,39 +505,54 @@ def admission(snapshot: OwnerSnapshot, manifest: dict, request: native.Request,
     # revision stays the original recorded fact identity. The aggregate
     # identity revision binds both full current receipts plus the protected
     # continuity policy, separately from the manifest's protected decisions.
-    identity = snapshot.current_identities['MU']
+    supplier = fact['schema'] == native.SUPPLIER_FACT_SCHEMA
+    identity = snapshot.current_identities['subject' if supplier else 'MU']
     raw_identity = native._canonical(identity)
-    return native.Admission(request, native.validate_fact(fact), native.validate_edition(spec['edition']),
+    result = native.Admission(request, native.validate_fact(fact), native.validate_edition(spec['edition']),
         digest(native._canonical(manifest)), DATASET, 'DERIVED', snapshot.adoption_revision,
         snapshot.ruling_revision, snapshot.identity_binding,
         digest(native._canonical(spec['temporal_decision'])), digest(native._canonical(spec['correction_decision'])),
         fact['known_at'], spec['edition']['publication_precision'], 'current', native._FIELDS,
         operation, native.SubjectIdentityBinding(identity['issuer_id'], identity['evidenced_cik'],
             identity['schema'], digest(raw_identity), len(raw_identity), fact['subject_identity']))
+    if supplier:
+        other = snapshot.current_identities['object']; raw_other = native._canonical(other)
+        result = replace(result, object_binding=native.SubjectIdentityBinding(other['issuer_id'], other['evidenced_cik'],
+            other['schema'], digest(raw_other), len(raw_other), fact['object_identity']))
+    return result
 
 
 class CurrentDisclosureOwner:
     """Metadata-only resolver. It has no publication capability or artifact Store."""
-    def __init__(self, source, state):
+    def __init__(self, source, state, *, supplier_sources=None):
         self.source, self.state = source, state
+        native._require(supplier_sources is None or (type(supplier_sources) is dict
+            and set(supplier_sources) <= native.FACT_SCHEMAS), 'SOURCE_SCHEMA_NOT_CONFIGURED')
+        self.supplier_sources = {} if supplier_sources is None else dict(supplier_sources)
 
-    def _current(self):
-        snapshot = self.source.snapshot()
-        native._require(snapshot.dataset_status == 'PRODUCED', 'DATASET_NOT_PRODUCED')
-        pointer_raw = self.state.get_bytes_strict_bounded(CURRENT_KEY, native.MAX_OBJECT_BYTES)
-        pointer = native._decode(pointer_raw)
-        native._closed(pointer, {'schema', 'manifest'})
-        native._require(pointer['schema'] == POINTER_SCHEMA, 'CURRENT_POINTER_INVALID')
-        ref = native._closed(pointer['manifest'], {'sha256', 'byte_length'})
-        native._digest(ref['sha256']); native._integer(ref['byte_length'], 1, native.MAX_OBJECT_BYTES)
-        raw = self.state.get_bytes_strict_bounded('generations/' + ref['sha256'] + '.json',
-            expected_byte_length=ref['byte_length'], max_byte_length=native.MAX_OBJECT_BYTES)
-        native._require(raw is not None and object_ref(raw) == ref, 'CURRENT_MANIFEST_MISMATCH')
-        manifest = native._decode(raw)
-        native._require(self.source.accepts_revision(manifest['code_version']), 'GENERATION_CODE_INVALID')
-        expected = make_manifest(replace(snapshot, code_version=manifest['code_version']), manifest['computed_at'])
-        native._require(manifest == expected, 'CURRENT_DECISION_CHANGED')
-        later = self.source.snapshot()
+    def _current(self, *, fact_id=None, issuer_id=None):
+        pointer_raw, _, manifest = read_current_manifest(self.state)
+        member = None
+        if manifest.get('schema') == COLLECTION_SCHEMA:
+            components = collection_components(self.state, manifest)
+            selected = [(m, c) for m, c in components if (fact_id is not None and m['fact_id'] == fact_id)
+                        or (issuer_id is not None and m['subject_id'] == issuer_id)]
+            native._require(len(selected) <= 1, 'CURRENT_SELECTION_AMBIGUOUS')
+            if not selected:
+                return None
+            member, manifest = selected[0]
+            schema = member['fact_schema']
+            source = self.supplier_sources.get(schema, self.source if schema == native.FACT_SCHEMA else None)
+            native._require(source is not None, 'SOURCE_SCHEMA_NOT_CONFIGURED')
+        else:
+            # Preserve the legacy explicit single-owner API, including callers
+            # holding only a supplier source and its original v1 manifest.
+            validate_component(manifest)
+            source = self.supplier_sources.get(manifest['fact']['schema'], self.source)
+        snapshot = qualify_component(source, manifest)
+        if member is not None:
+            native._require(member == member_descriptor(snapshot, object_ref(native._canonical(manifest))), 'CURRENT_MEMBER_MISMATCH')
+        later = source.snapshot()
         native._require(later.bindings == snapshot.bindings
                         and later.identity_binding == snapshot.identity_binding
                         and self.state.get_bytes_strict_bounded(CURRENT_KEY, native.MAX_OBJECT_BYTES) == pointer_raw,
@@ -432,7 +563,10 @@ class CurrentDisclosureOwner:
         if (type(request) is not native.Request or request.mode != 'current'
                 or (request.purpose, request.audience) != (PURPOSE, AUDIENCE)):
             return None
-        snapshot, manifest = self._current()
+        current = self._current(fact_id=request.fact_id)
+        if current is None:
+            return None
+        snapshot, manifest = current
         return admission(snapshot, manifest, request)
 
     def authorize_publication(self, request, candidate):
@@ -441,7 +575,10 @@ class CurrentDisclosureOwner:
     def resolve_issuer(self, issuer_id, purpose, audience):
         if (purpose, audience) != (PURPOSE, AUDIENCE):
             return None
-        snapshot, manifest = self._current()
+        current = self._current(issuer_id=issuer_id)
+        if current is None:
+            return None
+        snapshot, manifest = current
         fact = snapshot.spec['fact']
         if issuer_id != fact['subject_id']:
             return None
