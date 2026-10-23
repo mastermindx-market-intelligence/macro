@@ -1,0 +1,101 @@
+{
+  "computed_at_utc": "2026-10-07T03:02:23.098640+00:00",
+  "source_documentation_url": "https://home.treasury.gov/treasury-daily-interest-rate-xml-feed",
+  "source_receipts": [
+    {
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2024",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-07T03:02:10.241925+00:00",
+      "response_bytes": 284423,
+      "response_sha256": "05c084374e02149994af6ca3dee225f3bc8ed7d662d23714b52896ad70fdc367",
+      "instrument": "nominal2y",
+      "field": "BC_2YEAR",
+      "xml_entries": 250,
+      "first_date": "2024-01-02",
+      "last_date": "2024-12-31"
+    },
+    {
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2025",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-07T03:02:13.482069+00:00",
+      "response_bytes": 345104,
+      "response_sha256": "9de79baddd55ee58dd74a3bc1191d5c90f00b222bea40fa54c061f8cdeadfb62",
+      "instrument": "nominal2y",
+      "field": "BC_2YEAR",
+      "xml_entries": 249,
+      "first_date": "2025-01-02",
+      "last_date": "2025-12-31"
+    },
+    {
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_real_yield_curve&field_tdr_date_value=2024",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-07T03:02:19.218328+00:00",
+      "response_bytes": 166440,
+      "response_sha256": "b60175e9f61e91932e190954ddcd562b3072325bb7bb10e070f2f08e1814e1e8",
+      "instrument": "real10y",
+      "field": "TC_10YEAR",
+      "xml_entries": 250,
+      "first_date": "2024-01-02",
+      "last_date": "2024-12-31"
+    },
+    {
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_real_yield_curve&field_tdr_date_value=2025",
+      "http_status": 200,
+      "retrieved_at_utc": "2026-10-07T03:02:23.086155+00:00",
+      "response_bytes": 226335,
+      "response_sha256": "cdb3f71eae2d68cae936684385fcb0fb6f7a05ea3fc3cc227f28b18ba8b48ec3",
+      "instrument": "real10y",
+      "field": "TC_10YEAR",
+      "xml_entries": 249,
+      "first_date": "2025-01-02",
+      "last_date": "2025-12-31"
+    }
+  ],
+  "derived_calendar_days": 365,
+  "nyse_sessions_2025": 250,
+  "aggregates": {
+    "nominal2y": {
+      "shock_sessions": 2,
+      "episode_onset_sessions": [
+        "2025-04-11",
+        "2025-05-14"
+      ],
+      "prior5_exposed_calendar_days": 17,
+      "prior10_exposed_calendar_days": 32,
+      "prior5_exposed_nyse_sessions": 10,
+      "prior10_exposed_nyse_sessions": 20,
+      "equity_session_dates_using_prior_treasury_date": [
+        "2025-10-13",
+        "2025-11-11"
+      ]
+    },
+    "real10y": {
+      "shock_sessions": 2,
+      "episode_onset_sessions": [
+        "2025-04-10"
+      ],
+      "prior5_exposed_calendar_days": 11,
+      "prior10_exposed_calendar_days": 24,
+      "prior5_exposed_nyse_sessions": 6,
+      "prior10_exposed_nyse_sessions": 14,
+      "equity_session_dates_using_prior_treasury_date": [
+        "2025-10-13",
+        "2025-11-11"
+      ]
+    }
+  },
+  "raw_market_values_in_published_outputs": false,
+  "fred_nasdaq_cboe_raw_fetched_by_this_script": false,
+  "limitations": [
+    "Rates are separate sensitivity exposures; Nasdaq and VIX primary/secondary equity exposures remain unmeasured.",
+    "Original release timestamps and source vintages are not certified; this is a prior-date retrospective proxy.",
+    "Bank holidays and equity holidays differ: explicitly carried observations are listed, not silently filled with zero.",
+    "Calendar-day flags repeat information across weekends. They are not independent stress episodes.",
+    "No issuer event or equity-return outcome is estimated by this script."
+  ],
+  "artifact_sha256": {
+    "treasury_stress_spec.json": "7f1cf8243416a03920c88b374733d92a1e9f61b50f32d044f72d6c94059dffa6",
+    "rates_sensitivity_stress_calendar.json": "aa22fbd14ed51c52538b1b88e802cb0230028c75bef376d594ab3c38e0cfd28d",
+    "nyse_calendar_2025.csv": "353fb01f959e10edd568e67c0b339c1ac5c4b33827e905bb59d996b6f830e396"
+  }
+}
