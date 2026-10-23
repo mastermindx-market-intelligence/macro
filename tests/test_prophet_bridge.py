@@ -77,7 +77,7 @@ from engine.prophet_bridge import (
     _build_thesis,
     _build_thesis_zh,
 )
-from engine.options_structure import validate_trade_plan
+from engine.options_structure import ProphetTradePlan, validate_trade_plan
 
 
 # ---------------------------------------------------------------------------
@@ -1172,6 +1172,23 @@ def test_optional_plan_confidence_legacy_and_invalid_values():
     for invalid in (float("nan"), float("inf"), -0.1, 100.1, True, "70"):
         errors = validate_trade_plan({**base, "confidence": invalid})
         assert any("confidence must be" in error for error in errors)
+
+
+def test_optional_management_base_is_append_only_in_plan_constructor():
+    """A new optional field cannot move legacy positional argument slots."""
+    fields = list(ProphetTradePlan.__dataclass_fields__)
+    assert fields[-1] == "confidence"
+    assert fields.index("option_contract") < fields.index("confidence")
+
+
+def test_origination_refuses_out_of_range_source_conviction(tmp_path):
+    """An impossible board score must not silently cap into a valid plan."""
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False, buys=[_make_buy("AAPL", score=101, act_level=3)],
+    )), encoding="utf-8")
+    plans = originate_plans(path, "2026-07-02", set(), None)
+    assert plans == []
 
 
 def test_exact_earnings_evidence_only_annotates_after_prophet_selection(tmp_path):
