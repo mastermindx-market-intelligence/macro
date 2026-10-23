@@ -26,7 +26,9 @@ import re
 import subprocess
 from pathlib import Path
 
-from engine.signal_foundry.spec import construction_hash
+from engine.signal_foundry.spec import (
+    CONSTRUCTION_HASH_VERSION, construction_hash, _legacy_construction_hash,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -72,28 +74,52 @@ def _check_blocklist(candidate: dict, entries: list[dict]) -> tuple[bool, str, s
 # Prior spec dedup helpers
 # ---------------------------------------------------------------------------
 
-def _load_prior_hashes(repo_root: Path) -> set[str]:
-    """Load construction_hash values from data/signal_foundry/candidates.jsonl."""
-    candidates_path = repo_root / "data" / "signal_foundry" / "candidates.jsonl"
-    hashes: set[str] = set()
-    if not candidates_path.exists():
-        return hashes
+def _load_prior_hashes(repo_root: Path) -> tuple[set[str], set[str]]:
+    """Project complete historical definitions; retain opaque legacy collisions.
+
+    No mutation/migration of the candidate ledger. Corrupt rows or incompatible
+    identity versions are an unavailable novelty check, not an empty history.
+    Old name-only screen rejections contain no runnable definition and no tested
+    evidence; retain their existing name-dedup handling without inventing a hash.
+    """
+    path = repo_root / "data" / "signal_foundry" / "candidates.jsonl"
+    exact: set[str] = set()
+    opaque: set[str] = set()
     try:
-        with candidates_path.open(encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    row = json.loads(line)
-                    h = row.get("construction_hash")
-                    if h:
-                        hashes.add(str(h))
-                except Exception:
-                    continue
-    except OSError:
-        pass
-    return hashes
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return exact, opaque
+    for line_no, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"invalid prior candidate JSON at line {line_no}") from exc
+        if not isinstance(row, dict):
+            raise ValueError(f"prior candidate line {line_no} is not an object")
+        version = row.get("construction_hash_version")
+        if version is not None and (type(version) is not int or version not in (1, CONSTRUCTION_HASH_VERSION)):
+            raise ValueError(f"unsupported prior identity version at line {line_no}")
+        data = row.get("data")
+        complete = (isinstance(row.get("market"), str) and isinstance(data, list) and bool(data)
+                    and all(isinstance(x, dict) and all(k in x for k in ("path", "column", "pit")) for x in data)
+                    and isinstance(row.get("feature"), dict) and "pipeline" in row["feature"]
+                    and isinstance(row.get("target"), dict)
+                    and all(k in row["target"] for k in ("path", "kind", "horizon_d")))
+        stored = row.get("construction_hash")
+        if complete:
+            computed = construction_hash(row)
+            if version == CONSTRUCTION_HASH_VERSION and stored != computed:
+                raise ValueError(f"prior v2 identity disagrees with its definition at line {line_no}")
+            exact.add(computed)
+        elif isinstance(stored, str) and stored:
+            exact.add(stored)  # retains conservative compatibility with hash-only rows
+            if version in (None, 1):
+                opaque.add(stored)
+        elif row.get("status") != "screen_rejected":
+            raise ValueError(f"incomplete prior candidate identity at line {line_no}")
+    return exact, opaque
 
 
 def _normalize_name(name: str) -> str:
@@ -334,36 +360,27 @@ def screen_candidate(
     # ------------------------------------------------------------------ #
     # Gate 5: novelty (construction_hash dedup + name dedup)               #
     # ------------------------------------------------------------------ #
-    prior_hashes = _load_prior_hashes(repo_root)
     registry_names = _load_registry_names(repo_root)
     frontier_names = _load_frontier_names(repo_root)
-
-    # Compute construction_hash if possible
-    c_hash = None
-    try:
-        c_hash = construction_hash(candidate)
-    except Exception:
-        pass
-
     name = str(candidate.get("name", "")).strip()
     norm_name = _normalize_name(name) if name else ""
-
-    novelty_ok = True
-    if c_hash and c_hash in prior_hashes:
-        reasons.append(
-            f"Gate 5 FAIL: construction_hash {c_hash!r} already in "
-            "data/signal_foundry/candidates.jsonl (SF-R8 dedup)"
-        )
-        novelty_ok = False
+    c_hash = None
+    novelty_error = None
+    try:
+        c_hash = construction_hash(candidate)
+        prior_hashes, opaque_legacy = _load_prior_hashes(repo_root)
+        if c_hash in prior_hashes:
+            novelty_error = f"construction_hash {c_hash!r} already in data/signal_foundry/candidates.jsonl (SF-R8 dedup)"
+        elif _legacy_construction_hash(candidate) in opaque_legacy:
+            novelty_error = "incomplete legacy identity collision; recover the prior definition before claiming novelty"
+        elif norm_name and (norm_name in registry_names or norm_name in frontier_names):
+            novelty_error = f"name '{name}' (normalized: '{norm_name}') already in REGISTRY or CANDIDATES (SF-R8 dedup)"
+    except (ValueError, TypeError, OSError, UnicodeError) as exc:
+        novelty_error = f"identity evidence unavailable: {type(exc).__name__}: {exc}"
+    if novelty_error is not None:
+        reasons.append(f"Gate 5 FAIL: {novelty_error}")
         gates_failed.append("novelty")
-    elif norm_name and (norm_name in registry_names or norm_name in frontier_names):
-        reasons.append(
-            f"Gate 5 FAIL: name '{name}' (normalized: '{norm_name}') already in "
-            "REGISTRY or CANDIDATES (SF-R8 dedup)"
-        )
-        novelty_ok = False
-        gates_failed.append("novelty")
-    if novelty_ok:
+    else:
         gates_passed.append("novelty")
 
     # ------------------------------------------------------------------ #
@@ -404,4 +421,5 @@ def screen_candidate(
         "gates_passed": gates_passed,
         "gates_failed": gates_failed,
         "construction_hash": c_hash,
+        "construction_hash_version": CONSTRUCTION_HASH_VERSION if c_hash is not None else None,
     }
