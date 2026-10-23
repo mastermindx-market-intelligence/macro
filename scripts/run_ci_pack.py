@@ -593,45 +593,22 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     )
 
 
-# Exact alternate to Playwright's system-package installer, used where the
-# hosted apt dependency acquisition stalled for the full logical-job deadline.
-# The Python smoke is part of the same bounded setup operation: it proves a real
-# Chromium process can launch and render before any product/browser test runs.
-# Do not allow an arbitrary setup shell: source selection is a closed contract.
-_BROWSER_SETUP_VERIFIED_CHROMIUM = (
-    "set -euo pipefail\n"
-    "python -m playwright install chromium\n"
-    "python - <<'PY'\n"
-    "from playwright.sync_api import sync_playwright\n"
-    "with sync_playwright() as playwright:\n"
-    "    browser = playwright.chromium.launch(headless=True)\n"
-    "    try:\n"
-    "        page = browser.new_page()\n"
-    '        page.goto("data:text/html,<main>ontology-browser-ready</main>")\n'
-    '        assert page.locator("main").inner_text() == "ontology-browser-ready"\n'
-    "    finally:\n"
-    "        browser.close()\n"
-    "PY"
-)
-_BROWSER_SETUP_ALLOWED = frozenset((
-    "python -m playwright install --with-deps chromium",
-    _BROWSER_SETUP_VERIFIED_CHROMIUM,
-))
-
-
 def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     from scripts.ci_browser_dependency_capture import capture_commands
 
     return capture_commands()
 
 
-# Ontology-only TOTAL native deadline. Hosted CI 39988474287 completed
-# browser acquisition and reached 84% of real browser assertions before its
-# prior 10-minute cap; two further minutes are measured/explicit, not a
-# general browser_setup exception. Native setup remains <=10 minutes and
-# every assertion consumes this same finite 12-minute total.
+# Native activation is closed to these existing owners and their scoped
+# TOTAL grants. Each setup shares that total and its finite setup bound.
+# Prospective Ontology-only720 grant: portfolio ruling6375835730.
+# Its setup still receives min(original job deadline, setup start+600).
 NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 12
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 
 
 def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
@@ -644,11 +621,11 @@ def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | N
         step.get("phase") != "browser_setup"
         or set(step) - {"name", "phase", "timeout-minutes", "run"}
         or not isinstance(step.get("run"), str)
-        or step["run"].strip() not in _BROWSER_SETUP_ALLOWED
+        or step["run"].strip() != "python -m playwright install --with-deps chromium"
         or type(step.get("timeout-minutes")) is not int
         or not 1 <= step["timeout-minutes"] <= 10
     ):
-        raise ManifestError("browser setup requires an approved exact installer or verified installer+smoke with a finite <=10 minute bound")
+        raise ManifestError("browser setup must be the exact standalone installer with a finite <=10 minute bound")
     return {
         "phase": "browser_setup", "command": step["run"],
         "timeout_minutes": step["timeout-minutes"],
@@ -668,8 +645,6 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         **incumbent,
         "acquisition": "native_parallel",
         "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
-        "logical_job_timeout_minutes": NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
-        "activation_job_id": NATIVE_BROWSER_LOGICAL_JOB_ID,
         "native_source_sha256": {
             name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
         },
@@ -684,7 +659,7 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
 def _run_native_browser_setup(
     setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
 ) -> CommandObservation:
-    """Ontology-only capture/acquisition consumes one original logical deadline."""
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
     commands = (*setup["diagnostics"], setup["command"])
     setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
     for command_index, command in enumerate(commands):
@@ -724,8 +699,20 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
-    if any(spec.get("acquisition") == "native_parallel" for spec in contract) and job.job_id != NATIVE_BROWSER_LOGICAL_JOB_ID:
-        raise ManifestError("native browser acquisition is restricted to ontology-explorer")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
     return contract
 
 
@@ -3719,8 +3706,10 @@ def _run_job(
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
-    if any(spec.get("acquisition") == "native_parallel" for spec in setups.values()):
-        timeout_minutes = min(timeout_minutes, NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES)
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
         timeout_seconds = int(timeout_minutes) * 60
         job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []

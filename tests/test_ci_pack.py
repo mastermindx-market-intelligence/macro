@@ -5273,8 +5273,8 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Preserve canonical job/pack ceilings, selectors and all measurement history;
     fund only its previously qualified two estimator units per probe.
 
-    2026-10-23 Research Desk #10088 integrates the accepted bounded, real
-    Chromium smoke and fail-closed International fetch with protected main
+    Historical e276 predecessor only (superseded by ruling6375835730):
+    Research Desk #10088 used the following smoke/fetch composition on main
     f564c087, including main's newer ontology native-acquisition closure.
     The canonical combined-tree packing probe passes under main's existing
     136/136/130 job and 5,884/5,856/5,634 weight limits, ten packs each;
@@ -5290,8 +5290,8 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every existing selected job and weight remains unchanged; all probes
     retain ten packs. Fund only this measured six-unit excess, preserving
     current-main job limits, other weight limits, timeouts and selectors.
-    2026-10-22 Research Desk CI reliability repair on the exact current Macro
-    composition: the approved no-apt Ontology Chromium installer adds one
+    Historical 2026-10-22 predecessor measurement, not the current native
+    branch or a current budget grant: its no-apt Chromium installer added one
     real smoke command inside its existing 10-minute, digest-bound browser
     setup phase. This is not a new job, retry, test bypass or higher runtime
     grant. The canonical planner raised precisely one weight unit in each

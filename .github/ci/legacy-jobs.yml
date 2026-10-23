@@ -1240,6 +1240,9 @@ jobs:
       - name: Install hermetic GMI source/read-gate tests
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
       - name: Install Chromium for the actual browser contract
+        phase: browser_setup
+        acquisition: native_parallel
+        timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: GMI source and client contract parity
         run: PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bea_gvc_current_descriptive.py tests/test_bea_gvc_view_contract.py -q
@@ -14533,11 +14536,9 @@ jobs:
       - "tests/test_dataos_identity.py"
       - "engine/neuralweb/market_memory_retained_cohort_cache.py"
       - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
-    # Hosted 39988474287: verified Chromium setup and source suites passed,
-    # but 84% of real browser checks took the unchanged 10-minute TOTAL to
-    # expiry. Fund only two additional measured minutes for this ONE logical
-    # job; browser_setup itself stays capped at 10 minutes and every original
-    # browser/semantic assertion stays mandatory and fail-closed.
+    # Prospective Ontology-only grant: portfolio ruling6375835730.
+    # Setup stays <=600 inside this original absolute720 total; every
+    # existing semantic/browser assertion remains required.
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -14551,23 +14552,7 @@ jobs:
         phase: browser_setup
         acquisition: native_parallel
         timeout-minutes: 10
-        # Exact reviewed no-apt variant: actual Chromium smoke still runs
-        # inside the same bounded phase. The runner must whitelist precisely
-        # this installer+smoke shape; arbitrary setup shell remains refused.
-        run: |
-          set -euo pipefail
-          python -m playwright install chromium
-          python - <<'PY'
-          from playwright.sync_api import sync_playwright
-          with sync_playwright() as playwright:
-              browser = playwright.chromium.launch(headless=True)
-              try:
-                  page = browser.new_page()
-                  page.goto("data:text/html,<main>ontology-browser-ready</main>")
-                  assert page.locator("main").inner_text() == "ontology-browser-ready"
-              finally:
-                  browser.close()
-          PY
+        run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
@@ -28099,7 +28084,9 @@ jobs:
     scope: exclusive
     paths:
       - collectors/equity_revisions.py
+      - engine/__init__.py
       - engine/k3e_expectation_surface.py
+      - engine/k3e_eval1_source_adapter.py
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/identity.py
@@ -28107,6 +28094,9 @@ jobs:
       - research/alpha_intelligence/expectation_market_dynamics/EVAL1_PARTITION_CLOCK_*.json
       - research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py
       - research/alpha_intelligence/expectation_market_dynamics/eval1_challenger_trial_identity.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_owner_acceptance.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_activation_receipt.v1.json
       - research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py
       - research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py
       - research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py
@@ -28114,6 +28104,7 @@ jobs:
       - research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py
       - research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py
       - tests/test_eval1_challenger_identity.py
+      - tests/test_k3e_eval1_source_adapter.py
       - tests/test_eval1_partition_clock.py
       - tests/test_r4_v2_receipt.py
     timeout-minutes: 8
@@ -28157,6 +28148,9 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
           python -m pytest tests/test_eval1_challenger_identity.py -q
+
+      - name: EVAL-1 source-only receipt projection and execution refusals
+        run: python -m pytest tests/test_k3e_eval1_source_adapter.py -q
 
   unrun-factor-research:
     # factor registry + measurement disclosure + the study lanes behind them.
@@ -31906,6 +31900,7 @@ jobs:
 
       - name: install Brain browser
         phase: browser_setup
+        acquisition: native_parallel
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls

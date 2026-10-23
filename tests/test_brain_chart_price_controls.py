@@ -107,10 +107,6 @@ def test_weekly_and_monthly_contract_aggregate_real_daily_bars(page):
     expect(first.locator(".mmb-cx-tf")).to_have_text("weekly")
     expect(first.locator("svg")).to_have_attribute("data-bars", "8")
     expect(first.locator(".mmb-cx-src")).to_contain_text("Aggregated from daily data")
-    # The initial ResizeObserver schedules a 120ms SVG redraw. Hover the
-    # settled SVG; otherwise the redraw can reset the OHLC header while the
-    # pointer remains motionless (a real browser race on slower CI runners).
-    page.wait_for_timeout(250)
     bounds = first.locator("svg").bounding_box()
     first.locator("svg").hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
     # Oct 19-21: first open 103.4, max high 105.6, min low 102.4, last close 104.6.
@@ -124,6 +120,56 @@ def test_weekly_and_monthly_contract_aggregate_real_daily_bars(page):
     expect(last.locator(".mmb-cx-tf")).to_have_text("monthly")
     expect(last.locator("svg")).to_have_attribute("data-bars", "2")
     assert page.evaluate("window.__barCalls") == 1
+
+
+def test_unchanged_width_resize_notification_keeps_hovered_aggregation(page):
+    # ResizeObserver sends an initial notification and can later report height
+    # changes. Neither changes the chart's horizontal drawing geometry.
+    page.evaluate("""() => {
+      const NativeObserver = window.ResizeObserver;
+      window.ResizeObserver = class extends NativeObserver {
+        constructor(callback) {
+          super(callback);
+          window.__chartResizeNotification = callback;
+        }
+      };
+    }""")
+    rows = bars(date(2026, 9, 1))
+    rows[-1][5] = None
+    source(page, rows)
+    chart(page, "WEEKLY")
+    svg = page.locator(".mmb-cx-body > svg")
+    expect(svg).to_have_attribute("data-bars", "8")
+    bounds = svg.bounding_box()
+    svg.hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
+    read = page.locator(".mmb-cx-read")
+    expect(read).to_contain_text("O 103.4")
+    page.evaluate("window.__hoveredChart = document.querySelector('.mmb-cx-body > svg')")
+    page.clock.install()
+    page.evaluate("""() => {
+      const box = document.querySelector('.mmb-cx');
+      box.style.paddingBottom = '1px';
+      window.__chartResizeNotification([{target: box, contentRect: box.getBoundingClientRect()}]);
+    }""")
+    page.clock.run_for(121)  # deliver the existing 120ms relayout debounce
+    assert svg.evaluate("node => node === window.__hoveredChart")
+    for value in ["O 103.4", "H 105.6", "L 102.4", "C 104.6"]:
+        expect(read).to_contain_text(value)
+    expect(page.locator(".mmb-cx-vol")).to_have_text("V —")
+    # A real pointer exit still restores the ordinary last-close readout.
+    page.mouse.move(0, 0)
+    expect(read).to_have_text("104.6+0.29%")
+    # A genuine width change still rebuilds at the new geometry.
+    page.evaluate("""() => {
+      const box = document.querySelector('.mmb-cx');
+      box.style.width = '600px';
+      window.__chartResizeNotification([{target: box, contentRect: box.getBoundingClientRect()}]);
+    }""")
+    page.clock.run_for(121)
+    assert svg.evaluate("node => node !== window.__hoveredChart")
+    assert svg.evaluate("""node => node.viewBox.baseVal.width ===
+        Math.max(280, Math.min(1100, Math.round(node.parentNode.clientWidth)))""")
+    expect(svg).to_have_attribute("data-bars", "8")
 
 
 def test_failed_fetch_is_retryable_and_cache_expires(page):
