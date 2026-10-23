@@ -167,3 +167,67 @@ def resolve_authenticated_option_selection(
             request, access_token=access_token),
         source_use_decision=source_use_decision,
     )
+
+
+@dataclass(frozen=True)
+class AuthorizedMatrixDisplay:
+    """One exact response body plus its fresh selection authorization.
+
+    An HTTP caller must emit body verbatim. Parsing/reserializing, adding stale
+    flags, caching this authorization or using it for Save/export is unsupported.
+    No HTTP route is enabled by this value or by the helper below.
+    """
+
+    body: bytes
+    authorization: Any
+
+
+def resolve_authenticated_matrix_display(
+    ref, matrix, selection, *, release_body: bytes, access_token: str,
+    vendor: str, aliases, security_master, root_evidence, source=None, clock=None,
+):
+    """Compose the native metadata/contracts and rights adapter with real auth.
+
+    source is trusted server configuration, never a browser-provided object.
+    Missing native contracts refuse before authentication. The exact handler
+    body is checked before any upstream call, then again by the existing context
+    resolver. This is a source interface, not registration of a new HTTP route.
+    """
+    from datetime import datetime, timezone
+    from engine.intelligence_workspace.entity import IdentityArtifactRead
+    from engine.intelligence_workspace.options_identity import resolve_option_matrix_selection
+    from engine.intelligence_workspace.options_matrix_delivery import (
+        MatrixDisplaySource, capture_matrix_provenance, bind_matrix_contracts,
+    )
+
+    if (type(source) is not MatrixDisplaySource
+            or type(matrix) is not IdentityArtifactRead
+            or type(release_body) is not bytes or release_body != matrix.body):
+        raise OptionUseRefused("rights_unavailable")
+    try:
+        provenance = capture_matrix_provenance(ref, matrix.body)
+        bind_matrix_contracts(provenance, source.binding, source.inputs, source.registry)
+    except Exception:
+        raise OptionUseRefused("rights_unavailable") from None
+    clock = clock if clock is not None else lambda: datetime.now(timezone.utc)
+    principal = resolve_options_principal(access_token)
+
+    def decision(request):
+        identity = resolve_option_matrix_selection(
+            ref, matrix, selection, vendor=vendor, decision_at=clock(),
+            aliases=aliases, security_master=security_master, root_evidence=root_evidence,
+        )
+        return source.decision(
+            request, principal=principal, identity=identity, matrix=matrix,
+            selection=selection, release_body=release_body, clock=clock,
+        )
+
+    authorization = resolve_authorized_option_selection(
+        ref, matrix, selection, vendor=vendor, action="display",
+        principal_id=principal.principal_id, principal_issuer=principal.principal_issuer,
+        auth_epoch=principal.auth_epoch, aliases=aliases, security_master=security_master,
+        root_evidence=root_evidence, clock=clock,
+        fresh_entitlement=lambda request: fresh_options_entitlement(request, access_token=access_token),
+        source_use_decision=decision,
+    )
+    return AuthorizedMatrixDisplay(release_body, authorization)

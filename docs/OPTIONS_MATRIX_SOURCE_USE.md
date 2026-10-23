@@ -261,3 +261,40 @@ absent/wrong snapshot-dataset/version/family/mapping inputs, unsupported export,
 source-layer relabel, complete/missing/ambiguous/cyclic/unproduced DAG, explicit
 composite policy success, no inherited grant, raw-L3 refusal and incomplete field
 scope. Positive synthetic tests establish engineering behavior only.
+
+## Native producer and response-body composition (source only)
+
+`engine.intelligence_workspace.options_matrix_delivery` reads the exact retained
+Matrix's native `_build_meta.source_dates` and history window. It keeps the selected
+OI/EOD/Greeks session distinct from a later observed OI publication. Top-level
+`asof` is a build timestamp, never an invented source publication or known-at
+clock. Null EOD/Greeks and an empty history window remain explicitly absent.
+
+`MatrixInputContract` binds each native role (`oi`, `eod`, `greeks`) to an explicit
+existing produced dataset/version; EOD includes the unusual-volume history.
+The captured composite must be L3, with exactly those three distinct direct
+inputs. The existing registry validates the reachable DAG. There is no fuzzy
+dataset-name lookup, default ID, registry write, or inheritance of input grants.
+Missing native enrollment refuses. Source-family and rights determinations still
+come from audited server configuration, independently of the policy under test.
+These caller-supplied bindings establish consistency only: the integration owner
+must establish their actual native provenance. Matrix does not currently emit
+input-artifact hashes, source known-at clocks or dataset IDs; this adapter does
+not manufacture them or claim reproducible input-byte/PIT lineage.
+
+`app.options_auth.resolve_authenticated_matrix_display` composes those native
+checks with the existing fresh authentication, entitlement, identity/selection
+and pinned source-use policy consumer. On success it returns
+`AuthorizedMatrixDisplay(body, authorization)`. The body is the exact captured
+bytes; the intended HTTP caller must emit it verbatim. Any reserialization or
+`stale` augmentation refuses. Each call obtains fresh authentication and rights
+observations; the returned object is not a reusable bearer capability.
+
+This source helper **does not register or change an HTTP route**. The current
+Terminal `/api/flow` parses/caches/reserializes JSON, and is not silently adopted
+as this exact-byte consumer. Wiring that route requires its incumbent writer and
+qualified genuine native contracts/policy, with appropriate review and release.
+No production dataset/policy enrollment, rights grant, export, Save, database or
+publisher effect is performed. Tests use synthetic contracts and policy, the
+actual existing identity/auth/source-use code, and one actual Matrix builder
+invocation over synthetic local Parquets. They are not production acceptance.

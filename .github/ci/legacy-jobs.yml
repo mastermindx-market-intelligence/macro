@@ -22468,6 +22468,9 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_auth.py
+          tests/test_options_source_use.py
+          tests/test_options_matrix_context.py
+          tests/test_options_matrix_delivery.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
       # authenticated operator identity, a fixed admin iframe, Caddy's real
