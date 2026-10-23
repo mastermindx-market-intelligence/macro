@@ -1,0 +1,254 @@
+{
+  "schema": "mastermind.rotation_intelligence.mtf_signal_contract_diagnostic.v1",
+  "original_operation": "rotation-intelligence-architecture-20261012",
+  "source_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/9035",
+  "date_utc": "2026-10-18",
+  "effect": "RESEARCH_ONLY / PRODUCTION_RUN_OBSERVED / SOURCE_READ_ONLY",
+  "production": {
+    "daily_run": 39081858131,
+    "engine_job": 117575031870,
+    "job_status_at_read": "IN_PROGRESS_STEP_26",
+    "runner": "mac-builder-5",
+    "original_runner_workspace": "/Users/chriswong/actions-runner-2/_work/macro/macro",
+    "actual_checkout_sha": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
+    "checkout_log_utc": "2026-10-18T03:27:07.285871Z",
+    "checkout_reflog_bound": true,
+    "checkout_includes_merged_turnwatch_9568": true,
+    "exact_russell_cache": {
+      "key": "russell-closes-39081858131",
+      "producer_saved_at_utc": "2026-10-18T03:06:49.417325Z",
+      "cache_hit_at_utc": "2026-10-18T03:27:42.019864Z",
+      "restore_completed_at_utc": "2026-10-18T03:27:43.605103Z",
+      "restored_key_confirmed_at_utc": "2026-10-18T03:27:43.622873Z",
+      "transport_bytes": 3734274,
+      "archive_content_sha256": null
+    },
+    "signal_job_step": {
+      "number": 18,
+      "name": "MTF buy-filter signals + §7 contract gate",
+      "outer_step_conclusion": "success (fail-soft gate wrapper)",
+      "actual_validator": "FAILED",
+      "reported_errors": 7,
+      "files_scanned": 253,
+      "generated_tickers": 250,
+      "generated_asof": "2026-10-05",
+      "fallback": "tracked signal leaf and site/signals files restored to last-good committed copies; no bad write accepted",
+      "issues": [
+        {
+          "path": "site/signals/AMZN.json",
+          "marker_index": 175,
+          "reason": "failed next-bar hold",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "site/signals/EQIX.json",
+          "marker_index": 149,
+          "reason": "failed next-bar hold",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "site/signals/GOOGL.json",
+          "marker_index": 132,
+          "reason": "failed next-bar hold",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "site/signals/HST.json",
+          "marker_index": 278,
+          "reason": "held confirmation",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "site/signals/KMI.json",
+          "marker_index": 107,
+          "reason": "held confirmation",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "site/signals/MU.json",
+          "marker_index": 265,
+          "reason": "held confirmation",
+          "reasons_first": "veto: bearish divergence"
+        },
+        {
+          "path": "data/signal_archive/mtf_signals_latest.json",
+          "scope": "signal HST.last markers[0]",
+          "reason": "held confirmation",
+          "reasons_first": "veto: bearish divergence"
+        }
+      ]
+    }
+  },
+  "source_boundaries": {
+    "engine/signal_quality.py": "5ce36ebf40066363f542db0e67be9772dca0927b",
+    "engine/marker_integrity.py": "9ef1e9931585da69a11c3f93aeb0994baf47663e",
+    "scripts/build_signal_quality.py": "d3b62fe2d12bebfba2f4111e2f1b6677955540dc",
+    "scripts/validate_signals.py": "b4a97c8b086d23480cd21e33ccdec8de5b19e5bc",
+    "tests/test_gate_reasons_exhaustive.py": "8fc609e0b1cd1831a02d7b4cfd6b52e36dbede84",
+    "tests/test_validate_signals.py": "8abe630f4a1a0cfa289c80df3e7c58b729443021"
+  },
+  "producer_consumer_trace": [
+    "signal_quality._buy_filter_full produces matching reason/reasons where reasons[0]==reason",
+    "build_signal_quality.py calls marker_integrity.merge_payload(prev, new, run_stamp) for as-issued persistence",
+    "marker_integrity.merge_markers lines206-214 considers only quality/reason changes. On a fresh allowed relabel it updates reason but leaves prior reasons list unchanged; under same reason it fails to incorporate or explicitly refuse changed exhaustive companion facts.",
+    "validate_signals.check_markers lines93-99 requires reasons[0]==reason, correctly blocking divergent paired fields",
+    "daily.yml step18 deliberately returns success after restoring the bad signal writes to last-good; job-success is not signal-production acceptance"
+  ],
+  "red_first_repro": {
+    "pin": "4f52d22596545cbd67b5143e188baf5660237024",
+    "method": "Execute exact immutable engine/marker_integrity.py source in an isolated in-memory module with synthetic old/new markers; no checked-out files or Git refs modified.",
+    "all_inputs_individually_valid": true,
+    "synthetic_cases": [
+      {
+        "case": "fresh_reason_changed_new_single",
+        "prior_reason": "veto: bearish divergence",
+        "new_reason": "failed next-bar hold",
+        "merged_reason": "failed next-bar hold",
+        "merged_reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "merged_invariant": false,
+        "stats": {
+          "refined": 1
+        }
+      },
+      {
+        "case": "fresh_reason_changed_new_multi",
+        "new_reason": "held confirmation",
+        "merged_reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "merged_invariant": false,
+        "stats": {
+          "refined": 1
+        }
+      },
+      {
+        "case": "fresh_reason_same_secondary_changed",
+        "new_reasons": [
+          "veto: bearish divergence",
+          "failed reclaim-and-hold"
+        ],
+        "merged_reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "merged_invariant": true,
+        "secondary_account_stale": true
+      },
+      {
+        "case": "fresh_reason_same_new_drops_secondary",
+        "new_reasons": null,
+        "merged_reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "merged_invariant": true,
+        "secondary_account_stale": true
+      },
+      {
+        "case": "frozen_old_marker_reason_changed",
+        "prior_asof": "2026-11-10",
+        "merged_reason": "veto: bearish divergence",
+        "merged_invariant": true,
+        "stats": {
+          "relabel_blocked": 1
+        },
+        "preserve_as_issued": true
+      },
+      {
+        "case": "fresh_legacy_reason_only_new_multi",
+        "prior_reasons": null,
+        "new_reasons": [
+          "veto: bearish divergence",
+          "failed next-bar hold"
+        ],
+        "merged_reasons": null,
+        "merged_invariant": true,
+        "secondary_account_missing": true
+      }
+    ],
+    "all_recorded_at_provenance_preserved": true
+  },
+  "implementation_acceptance": [
+    "Use the existing engine/marker_integrity and its already accepted marker schema/validator; do not add a new history, grading, signal or publication plane.",
+    "On a permitted fresh refinement of first-match reason, update the exhaustive reason account atomically, including removing an obsolete list when the new account is singular. Invariant reasons[0]==reason must remain true.",
+    "For unchanged first-match reason with changed secondary legs, obtain source-owner adjudication on whether existing 21-day refinement law allows updating as-issued supplementary facts or instead records typed unavailable/preserved history. Do not silently relabel.",
+    "Preserve immutable dates/types/first recorded_at stamps and reason history outside FRESH_DAYS; no global historical clean/reissue or unapproved era reset.",
+    "Red-first regression on synthetic individually valid prior/recomputed markers, finite fresh/frozen and date-family cases, plus schema integration and actual no-network 250-ticker fixture where available. Do not repeat unrelated accepted checks.",
+    "After admitted implementation and independent review, prove normal scheduled production signal builder plus validator success and downstream reader behavior. A green outer Step18 is not an acceptance signal.",
+    "Any previously accepted but internally inconsistent historical marker, if discovered, needs an independently authorized explicit correction or typed read-only refusal; do not mutate old source silently."
+  ],
+  "source_workspace": {
+    "operation_id": "rotation-mtf-reasons-atomic-20261018",
+    "repository": "macro",
+    "base_sha": "4f52d22596545cbd67b5143e188baf5660237024",
+    "acquire_tool_result": "PARTIAL / EFFECT_UNKNOWN / WORKSPACE_ACQUISITION_UNQUALIFIED",
+    "original_same_operation_worktree": "/Volumes/Mastermind 2/agent-workspaces/macro/web/rotation-mtf-reasons-atomic-20261018",
+    "actual_git_worktree": "present, locked, branch sol/web-rotation-mtf-reasons-atomic-20261018, HEAD=base SHA, git status clean",
+    "owner_publish_status": "publication_state=NOT_APPLIED; ready_to_push=false; remote_head_sha=null; clean=false per owner status, notwithstanding clean Git read",
+    "admission_status": "UNQUALIFIED / EFFECT_UNKNOWN",
+    "required_action": "Original workspace owner must reconcile this exact operation and qualify admission. No acquire retry, source edit, code-write migration, push, release, or replacement workspace until it does."
+  },
+  "unverified": [
+    "No normal signal validator pass on this actual natural run",
+    "No repair source written, tested, reviewed or published",
+    "No correction of historical accepted rows",
+    "No Prophet B4/Plan/current trade authority or customer effect",
+    "No engine/Prophet nightly successful publication"
+  ],
+  "deep_price_input_sample": {
+    "source_commit": "4f52d22596545cbd67b5143e188baf5660237024",
+    "store": "data/stocks/<ticker>.parquet",
+    "method": "Read-only git show + pandas on six implicated committed source files; not the live in-progress runner.",
+    "last_index_by_ticker": {
+      "AMZN": "2026-10-14",
+      "EQIX": "2026-10-14",
+      "GOOGL": "2026-10-14",
+      "HST": "2026-10-14",
+      "KMI": "2026-10-14",
+      "MU": "2026-10-14"
+    },
+    "explanation": "Each sampled committed deep store tip is October 14, two sessions behind the expected Oct16. The signal builder's 'asof 2026-10-05' is the 3D bucket label and MUST NOT be equated to the deep OHLC last session; signal_date and confirmed_date are separately defined knowability clocks.",
+    "source_coverage_limit": "Only six implicated tickers; no universe-wide or real nightly runner store completeness claim."
+  },
+  "in_memory_candidate_comparison": {
+    "purpose": "Pure dynamic source-string variant evaluation, no repo file, worker, original workspace, branch, signal store, or publication mutation. Proposed semantics remain subject to real source owner admission and historical contract adjudication.",
+    "source_commit": "4f52d22596545cbd67b5143e188baf5660237024",
+    "original_fragment_occurrences": {
+      "changed_condition": 1,
+      "reason_refinement_body": 1
+    },
+    "minimal_atomic": {
+      "only_existing_changed_check": "quality or reason",
+      "on_permitted_refinement": "When new.reason is not null, replace reason and exact new.reasons as a unit; remove old reasons key when new has no list. Preserve all other source behavior and keep schema validator active.",
+      "outcomes": [
+        "primary_to_single PASS",
+        "primary_to_multi PASS",
+        "secondary_changed valid but unchanged/stale",
+        "secondary_removed valid but unchanged/stale",
+        "frozen_history PASS/PRESERVED",
+        "legacy_secondary_added valid but missing/stale"
+      ],
+      "first_published_stamp_preserved_all_cases": true,
+      "risk": "Solves the exact seven validation mismatch class without adding secondary-account-only historical refinements, but may preserve stale exhaustive explanations on first-match unchanged rows."
+    },
+    "optional_extended_refinement": {
+      "changed_check": "quality or reason or reasons",
+      "on_permitted_refinement": "Atomic primary and secondary update under existing FRESH_DAYS; preserve frozen history and first-publication identity.",
+      "outcomes": [
+        "primary_to_single PASS",
+        "primary_to_multi PASS",
+        "secondary_changed PASS",
+        "secondary_removed PASS",
+        "frozen_history PASS/PRESERVED",
+        "legacy_secondary_added PASS"
+      ],
+      "first_published_stamp_preserved_all_cases": true,
+      "risk": "Broadens the historical refinement condition to secondary explanations; original source owner must adjudicate whether that is authorized point-in-time revision or requires a typed correction record."
+    },
+    "do_not_claim": "Neither variant is installed or executed in production; these are deterministic in-memory candidate simulations and not an independent code review."
+  }
+}
