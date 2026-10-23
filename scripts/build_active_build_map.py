@@ -370,8 +370,10 @@ def _collect_open_prs() -> tuple[list[dict] | None, bool]:
 
     prs: list[dict] = []
     for item in rows:
-        if not isinstance(item, dict):
-            log.warning("paginated open-PR response contains a non-object row")
+        if (not isinstance(item, dict)
+                or type(item.get("number")) is not int
+                or item["number"] <= 0):
+            log.warning("paginated open-PR response contains an invalid PR row")
             return None, False
         head = item.get("head")
         head_ref = head.get("ref", "") if isinstance(head, dict) else ""

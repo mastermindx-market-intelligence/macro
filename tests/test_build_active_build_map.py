@@ -465,6 +465,6 @@ def test_markdown_collision_budget_retains_raw_inventory_and_priority():
     assert f"Showing {_MAX_MARKDOWN_COLLISION_ROWS} highest-risk collision pairs " in section
     assert f"of {count} total" in section
     assert "| #9898 | #9899 | 1 ⚠ |" in section
-    assert section.count("| #") == _MAX_MARKDOWN_COLLISION_ROWS
+    assert sum(line.startswith("| #") for line in section.splitlines()) == _MAX_MARKDOWN_COLLISION_ROWS
     assert len(payload["collisions"]) == count
     assert "data/governance/active_builds.json" in section
