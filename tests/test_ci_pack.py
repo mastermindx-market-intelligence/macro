@@ -5202,9 +5202,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_870),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_842),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_614),
+    ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_628),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5212,6 +5212,42 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-22 recovered final composition joins featurece4664f6 and
+    protected main7a8f690d. Canonical measurements on this actual merged
+    tree (124.44s): index136/5884, free-content135/5856, Prophet128/5628;
+    ten packs each, with no breaches. Fund exactly these measured weights:
+    +8 versus feature5876/5848/5620 and +14 versus main5870/5842/5614.
+    Incoming main contributes live-status projection and Caddy autosave
+    coverage; the feature retains seven Brain suites. Parsed three-way
+    comparison preserves all349 jobs and both ordered path lists in seven
+    combined fields. All test commands, job limits136/136/130, ten-pack
+    bounds and timeouts remain intact. Both parents' histories follow.
+
+    2026-10-22 final Brain/Movers composition joins feature4fa3705 and
+    protected main7abe860. Canonical measurements on the actual merged tree
+    (103.32s): index136/5876, free-content135/5848, Prophet128/5620; ten packs
+    each. Set only weight ceilings to the observed 5876/5848/5620. These are
+    +14 versus incoming main5862/5834/5606, and +6/+5/+6 versus the prior
+    feature ceilings5870/5843/5614. The free-content net change is measured,
+    not inferred from one job's weight. Retain both coverage histories below,
+    every suite/command/selector/timeout, job limits136/136/130 and ten packs.
+
+    2026-10-22 Brain financial-output coverage adds seven pytest suite paths
+    to the existing unrun-brain-gateway code/browser commands (+14 estimator
+    units). Hosted contract-delta job119780696050, candidate ce012c36 versus
+    base c0031bbc, measured the same selected jobs and ten packs on both sides:
+
+        templates/index.html          136 jobs, 5,856 -> 5,870 weight
+        scripts/build_free_content.py 135 jobs, 5,824 -> 5,838 weight
+        engine/prophet/plan_book.py    128 jobs, 5,600 -> 5,614 weight
+
+    Fund exactly +14 on each existing weight ceiling, retaining free-content's
+    five-unit headroom. No new job is selected, no suite/command is removed,
+    and every job-count bound, pack bound, selector and timeout stays fixed.
+    These are planner estimates, not measured execution times. The added
+    suites cover Fast presentation, financial source/assets, responsive and
+    shared-widget rendering, and actual legacy chart price controls.
 
     2026-10-22 merge protected D04-A2 source-clock coverage (dc3a) and
     autosave adoption: actual compiler measures index136/5870, free135/5842,
