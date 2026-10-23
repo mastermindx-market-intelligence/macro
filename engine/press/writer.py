@@ -454,7 +454,7 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     # every evidence line as untrusted data at the final prompt boundary; the
     # shared sanitizer is intentionally narrower than rewriting the evidence.
     from engine.chronicle.earnings_calls import sanitize_untrusted_prose  # noqa: PLC0415
-    from engine.press.native_plan_scope import receipt_facts, scope_fragments  # noqa: PLC0415
+    from engine.press.native_plan_scope import receipt_facts, required_dossier, scope_fragments  # noqa: PLC0415
 
     facts_lines: list[str] = []
     for f in receipt_facts(slot):
@@ -530,23 +530,47 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     parts.append("")
 
     native_disclosures = scope_fragments(slot)
+    native_records = None
     if native_disclosures:
+        # Reuse the gate's bound clauses, clocks, quantities and dossier checks.
+        # No partial prompt is returned for an invalid native binding.
+        from engine.press.validators import _native_receipt_records  # noqa: PLC0415
+        native_records = _native_receipt_records(slot, cfg)
+        dossier = required_dossier(slot)
+        # Invocation cardinality is not a property of the desk. Remove the
+        # generic retry promise here without changing actual retry behavior.
+        system_prompt = system_prompt.replace(
+            "  A draft that breaks one is regenerated at most twice and then dropped.",
+            "", 1,
+        )
         parts.append(
             "NATIVE PLAN SCOPE: only the bound story lead and historical plan "
-            "can support this story's receipts or anchored share. Unrelated "
-            "context earns no receipt credit, including coincidentally equal "
-            "numbers. Receipt-bearing quantitative clauses must match the "
-            "visible bound source clauses exactly; surrounding commentary "
-            "does not create additional receipts. Keep the following short source-derived disclosures "
-            "visible in the body, integrated into your own prose; do not "
-            "merge them into a boilerplate paragraph:")
+            "can support receipts or anchored share. Unrelated context, dates, "
+            "aliases and repeated rounded values do not create extra receipts. "
+            "Keep each disclosure below as one contiguous run of visible words. "
+            "Case and whitespace are normalized; words must not be inserted, "
+            "removed or reordered inside it (including 'was'). Surrounding "
+            "original prose is allowed; do not hide or split the fragment:")
         parts.extend(f"  - {fragment}" for fragment in native_disclosures)
         parts.append(
-            "CONTINUATION: include an actual link to the plan asset's exact "
-            "existing stock dossier under LINKING. A bare URL is insufficient. "
-            "Do not invent a dossier, execution, achieved target, confirmation "
-            "or issuer-event cause. The plan is historical; this is not a "
-            "new signal or trading instruction.")
+            "RECEIPT MATCHING: the final receipt count requires a whole clause "
+            "matching a BOUND RECEIPT CLAUSES key. Clauses end at sentence, "
+            "semicolon or colon boundaries; case, whitespace and edge . ; : "
+            "are normalized, not wording. Adding 'of' or 'was' changes a key. "
+            "This differs from the numeric sentence-level share test: a sentence "
+            "can earn share while earning no exact-clause receipt. Identity "
+            "values in the listing only identify distinct receipts; they are "
+            "not additional publishable figures or permission to add precision. "
+            "Use the visible source clause's numbers, units and precision. "
+            "Copying a clause grants no exemption from close-paraphrase, quote "
+            "or self-similarity checks; long copied clauses are not automatically "
+            "safe. Do not shorten clauses or stuff numbers into unsupported "
+            "explanation to evade any gate.")
+        parts.append(
+            "CONTINUATION: link the plan asset's exact existing dossier under "
+            "LINKING with a visible anchor label. Do not invent a dossier, "
+            "execution, achieved target, confirmation or issuer-event cause. "
+            "The plan is historical, not a new signal or trading instruction.")
 
     # SOURCE LAW (masterplan §0 W1 gate 2, amended at W1 review). Only an
     # EXTERNAL source gets the above-the-fold named+linked treatment; a
@@ -609,6 +633,15 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     )
     parts.append("SOURCE FACTS — the complete set of numbers you may use:")
     parts.extend(facts_lines or ["- (none supplied)"])
+    if native_records is not None:
+        # Clause keys remain source data inside the existing evidence fence.
+        parts.append("BOUND RECEIPT CLAUSES — clause to distinct receipt identity values:")
+        listing = json.dumps(native_records, ensure_ascii=False, sort_keys=True, indent=1)
+        # Escape fence markers inside JSON strings without changing their
+        # decoded source keys or the surrounding evidence boundary.
+        listing = listing.replace("[BEGIN UNTRUSTED EVIDENCE DATA", "\\u005bBEGIN UNTRUSTED EVIDENCE DATA")
+        listing = listing.replace("[END UNTRUSTED EVIDENCE DATA", "\\u005bEND UNTRUSTED EVIDENCE DATA")
+        parts.append(listing)
     if ctx_lines:
         parts.append("")
         parts.append("MARKET CONTEXT (background only — cite a number from here "
@@ -617,6 +650,25 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     if ctx_note:
         parts.append(f"  context coverage: {ctx_note}")
     parts.append("[END UNTRUSTED EVIDENCE DATA]")
+
+    if native_disclosures:
+        minimum = int(slot.get("min_anchored_receipts")
+                      or v.get("min_anchored_receipts") or 0)
+        parts.append(
+            "FINAL SELF-CHECK before returning JSON: "
+            f"body {int(slot.get('min_words') or 300)}–"
+            f"{int(slot.get('max_words') or 900)} words, excluding genuine byline/footer; "
+            f"at least {_pct_text(float(v.get('our_value_min') or .40))} of words "
+            "in sentences carrying a supported bound quantity; "
+            f"at least {minimum} distinct values earned by whole matching clauses; "
+            f"all {len(native_disclosures)} disclosures above contiguous and visible; "
+            f"an actual anchor to {dossier}. "
+            "Headings count as body words; dates and nonnumeric explanation do "
+            "not earn numeric share. Keep recorded, price-basis, confirmation "
+            "and close clocks distinct, with historical simulation/status limits. "
+            "Every explanation must remain supported by the bound facts. "
+            "No numerical padding, invented observation or copying exemption; "
+            "all unchanged paraphrase, quote and similarity gates still apply.")
 
     if attempt and prior_failures:
         parts.append("")
