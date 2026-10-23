@@ -1,3 +1,27 @@
+## Current implementation status — 23 October 2026, after observed-SPY qualification
+
+| Area | Actual result and next gate |
+| --- | --- |
+| Upstream composition |Normal merge f633cb9c has parents qualified623 and locked88b5;351 jobs and all suite commands remain. Combined probes135/5874,135/5856,130/5640, ten packs. Only the measured Prophet weight limit previously increased to5640. |
+| Exact CI closure repair |f633 official contract failed1 introduced/0 inherited solely for `site/basketdata/sector_pulse.json`. Only that path is appended to existing W4 ownership. The normal child's exact official contract remains required; previous failures stay retained. |
+| New SPY observation |Completed one incumbent source-function invocation08:49:34–35 UTC; full8,491 rows throughOctober22, all prior dates retained, actual Adj Close, overlap within existing basis tolerance. No splice, outer retry, fallback or production-store write. |
+| Private native composition |New immutable562-file image, only SPY bytes changed. Unchanged runner/helpers and56 source pins;14/14 native checks, zero denials, all old/new inputs and sources preserved. Completed08:58:45 UTC. |
+| Actual market artifact |New private native dateOctober22, health76, MOVE106.8388; upstream pagehealth75 remains intact. This closes the bounded SPY date limitation without claiming original-content equivalence or current production freshness. |
+| Literal assets |30 site files verified;29 nonpage assets match index. Script/style/CSS closure24 assets/28 edges, six fonts,11 stylesheets, no missing/unsupported references; exact known R11 module. No browser proof. |
+| Credit/history limits |CDI sourceOctober15 stale six sessions;311 one-date histories, zero five-/21-session comparisons. September10 current credit withheld; all rank/size/gate/escalate authority false. |
+| Source publication |Normal child commit, exact-head contract, normal existing-branch push and ordinary hosted CI must be consumed under the [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). Draft/HOLD remains. |
+| Generated-page adoption |Pending: this source child retains the upstream page. The qualified private candidate requires its own explicit adoption and existing proof gates. |
+| Browser / R11 / CDI visual evidence |Open: the new candidate has no genuine admitted browser capture or interaction proof. Empty restarted tab inventory and earlier loopback failure do not clear the original capture/admission gate. |
+| Review / production |Open: source admission, independent review and final production proof remain. Original Fabric result is terminal/unqualified, consumed, retry=false; Terminal#1106 stays Draft/HOLD. No refused deployment workaround,0038 replay or new render. |
+| Forex continuation |227735dc published and green under CI39918612998/fences39918612860; policy/admission and activation remain held. |
+| Licensing / product use |COMPLETE by Chairman attestation; no Tiingo/support outreach. |
+
+[MASTERPLAN.md](MASTERPLAN.md) and [CONTINUATION.md](CONTINUATION.md) contain exact receipt hashes, custody and ordered continuation. Every earlier accepted result and failed phase below remains preserved.
+
+---
+
+### Preserved earlier status
+
 ## Current implementation status — 23 October 2026
 
 | Area | Qualified result and remaining gate |

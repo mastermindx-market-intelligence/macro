@@ -1,3 +1,26 @@
+## Current continuation — 23 October 2026, after observed-SPY native qualification
+
+Read [MASTERPLAN.md](MASTERPLAN.md) and the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) before any effect. The dated entries below are retained history, not instructions to replay completed work.
+
+Normal merge f633cb9c844f2022729bb03e947b26ce330398a5 composes qualified623 and locked88b5. Its official contract failed1 introduced/0 inherited solely for W4's undeclared `site/basketdata/sector_pulse.json`. That exact path is now added, with no other manifest field changed; manifest SHA-256 f481c1f1efd6c658ac0414d79f978c2fd6063ae3cc4fe2437bf54c8e878e9aa0. Preserve f633 and its failed receipt. The next source result must belong to the normal child containing this repair.
+
+The single actual SPY acquisition is complete. Its full8,491-row frame extends throughOctober22; all8,490 earlier dates remain, with adjusted-price differences below the existing basis tolerance. A new562-file private image changed only SPY content. The unchanged runner and56 source pins passed14/14 native checks at08:58:45.688683 UTC with zero denials and all integrity checks preserved. The new private HTML is728,050 bytes, SHA-256 be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c. Literal asset availability passed separately, with six fonts and29 nonpage assets identical to the current index.
+
+The new native date isOctober22, health76; preserved upstream health75 remains unchanged. Do not call this recovered original-close content or current production acceptance. CDI remains October15/stale-six-sessions with311 one-date histories and zero eligible five-/21-session comparisons. September10 credit remains withheld and all action authority false. No browser proof exists for this new candidate. Generated-page adoption remains pending; this source child preserves the upstream page and records the qualified private artifact separately.
+
+Ordered next actions:
+
+1. Consume any active recorded result before another call. Read HEAD/index/remote, then make the normal child commit with the CI path and updated plans. Qualify its exact head against locked88b5 using the existing official contract and CONTRACT_DELTA_NO_REAP=1. Retain every failed and passing phase separately.
+2. If that gate passes and existing remote ancestry is intact, normally push to `claude/ssd-ccw-dislocation-v1-cc87720e59421398`; consume ordinary CI/fences and update the canonical checkpoint/PR body. Keep Draft/HOLD and auto-merge off. No force push, optional rerun or manual render.
+3. Continue genuine source adoption and original product/browser capture through incumbent owners. A real connection/admission change is required before another preview attempt. R11 and CDI need their actual owning visual evidence; historical or synthetic captures do not qualify.
+4. Keep the original Terminal review/deployment/0038/render boundaries, Forex227735 green evidence, all previous sponsor-date/native/asset/page results and original private workspaces intact. The original Fabric result is consumed, terminal/unqualified and retry=false; no replacement review. Licensing/product-use remains Chairman-COMPLETE; no outreach.
+
+Exact receipt names, hashes, workspace paths and remaining proof gates are in the current master plan. The source acquisition, private-input preparation, native run and asset inspection are all complete; no replay is needed to resume.
+
+---
+
+### Preserved earlier continuation
+
 ## Current continuation — 23 October 2026
 
 The current source composition is the normal merge of qualified parent6232497709d98560539f132cacc5f8c6464e0669 and locked main88b5bc86a234a74fd526f974288ef39a33170289. See [the current master-plan checkpoint](MASTERPLAN.md) for exact source hashes, measured CI bounds and retained evidence.

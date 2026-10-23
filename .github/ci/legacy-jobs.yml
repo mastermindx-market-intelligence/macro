@@ -19927,6 +19927,7 @@ jobs:
       - app/catalyst_opportunity.py
       - engine/catalyst_opportunity/projection.py
       - engine/catalyst_opportunity/reader.py
+      - site/basketdata/sector_pulse.json
 
 
   quant-q12-parity-forward:

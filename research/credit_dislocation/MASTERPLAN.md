@@ -1,3 +1,65 @@
+## Current source and observed-input checkpoint — 23 October 2026
+
+The existing recovery owner continues Draft/HOLD PR #9590. This child records the exact CI dependency repair and a completed private native qualification of newly observed SPY data. Its source publication, exact final commit and hosted-CI results are maintained in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). The previous dated entries below remain historical evidence; their pending-action wording must not cause completed operations to be replayed.
+
+### Exact CI dependency repair
+
+Normal merge `f633cb9c844f2022729bb03e947b26ce330398a5` has parents `6232497709d98560539f132cacc5f8c6464e0669` and locked main `88b5bc86a234a74fd526f974288ef39a33170289`. Its official contract ran08:43:01–08:48:45 UTC,343.95 seconds, with `CONTRACT_DELTA_NO_REAP=1`. It failed **1 introduced /0 inherited** because the existing W4 owner omitted the reached data dependency `site/basketdata/sector_pulse.json`. The sparse local closure check had not exposed that data file; the official exact-tree inventory did. Preserve this failed result rather than relabeling the previous local pass.
+
+The failed contract result SHA-256 is `9114fffd31151dfebc7c1f11ddc57e0aa249dd445283189e838eb89341498ba5`; log SHA-256 `0e85a493f42f6045c95fc5770be20b4c848e61af05881a901d970e8eb490eb97`. All three packing probes passed and all897 baseline worktree registrations and existing directories remained.
+
+At08:51:35 UTC, only that exact JSON path was appended to W4's existing path list. Manifest SHA-256 is now `f481c1f1efd6c658ac0414d79f978c2fd6063ae3cc4fe2437bf54c8e878e9aa0`; repair receipt `16753bb6275520ce544545044770c72a265dd4d2b28e5b4f280beb5aff169947`. This edit expands dependency selection without changing jobs, suite commands, timeouts, gates or limits. The preceding three Catalyst-import repair and its separate pass remain documented below. The sole earlier measured limit adjustment, Prophet5634→5640, remains scoped to the combined351-job composition.
+
+This is a normal child of f633, not an amendment. The child requires its own official exact-head contract against locked88b5 before normal push. Passing probes on f633 or623 are not substituted for that child result.
+
+### Actual source observation and immutable input composition
+
+The incumbent `scripts/backfill_yahoo_universe.download_batch(["SPY"], "max")` function was invoked once, at **08:49:34.972591–08:49:35.687374 UTC**. Its returned frame was normalized through the existing Yahoo extraction/schema/basis functions. Actual vendor Adj Close was present; no adjusted-close fallback or short-window splice occurred. The earlier import-name preparation error happened before any acquisition and remains a separate retained failure. The completed actual acquisition must not be repeated.
+
+The full normalized frame contains **8,491 rows,1993-01-29 through2026-10-22**,244,177 bytes, SHA-256 `37f2039c84cc9225be48863a9f9aee32e1d1813d96a75e4051fe0948cdce0beb`. It covers all8,490 retained dates, with October22 the sole additional date. Split-adjusted `close_price` overlap is exact. Total-return `close` differs on some historical rows: maximum relative difference1.255959948609468e-6, with zero rows above the incumbent0.001 tolerance. Schema, finite-positive prices, date uniqueness and basis diagnostics passed.
+
+Observation receipt SHA-256: `309f123315ccc32a84db8e7ba0390828b7a5876b07e282cfbdc363ef6d8413d1`. The vendor-return Parquet is a DataFrame representation, not raw HTTP bytes. One repository-function invocation may include the dependency's cookie/bootstrap HTTP behavior; it is not a claim of one HTTP request. No outer retry, fallback, bulk heal, production-store write or new source lifecycle was introduced.
+
+The new private input image has **562 files /58,465,909 bytes**. Only SPY's complete content differs from the retained afc composition; all561 other inputs retain exact bytes. Its manifest SHA-256 is `2476f90920fc3a04e77013e5fc4279b9248867dbc1f90afe2b1dceadbd52b0e7`; preparation receipt `3e4322c94925968e85fa0fd3442dcbcd34ffdd811839c25193aa72a84235e51f`. All original inputs, metadata and receipts remain unchanged.
+
+This is historical vendor data actually observed on October23. It does not recover the original closing-bell bytes or establish historical availability at an earlier cutoff. Source, native and production admission remain distinct.
+
+### Completed native result and its limits
+
+PID65628 ran the **unchanged** qualified runner, guard and observers against the new image, with the exact56 existing source pins. It completed **08:58:45.688683 UTC**,21.92 seconds, rc0: **14/14 native checks passed, zero effect-guard denials**. Original and private input hashes, all56 source pins, runner/helper hashes, the old afc inputs and Git state remained unchanged. No provider call or publication occurred in this native run.
+
+| Receipt or artifact | Exact SHA-256 |
+| --- | --- |
+| Native wrapper result | `1643796ad1d3cb75350dcc7f7c10da8f50b071aee2945d2c5e8d3e29465bc362` |
+| Qualification report | `f2a8aac3c0a7ad9e33913406752761dacf507b1410f7c9135a4efeccf490740e` |
+| Private native HTML,728,050 bytes | `be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c` |
+| Read-only literal asset closure | `3a6f745e37fd6db7c677f3d5b915874cd7f26f482e7adf5f4304541553ef1c39` |
+
+The generated market date is now **October22**, with health score **76** and MOVE106.83879852294922 (displayed107.0). The preserved upstream page has health75. The SPY date limitation is resolved for this newly observed input image; the score difference is recorded, not overwritten to imitate the older page. Identical original market content and current production freshness are not established. Generated-page adoption remains pending: this source child contains the exact CI path and three plan updates; the new private page remains a separately qualified candidate. The committed upstream-derived page remains unchanged at SHA-256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`.
+
+The read-only asset check at09:01:03 UTC verified30 recorded site files; all29 nonpage assets match the current Git index. Its script/style/CSS scope contains24 unique local assets across28 edges, six WOFF2 fonts and11 stylesheets; missing and unsupported lists are empty. The exact self-contained R11 module is unchanged. The earlier27-reference counter had a different root scope and remains separately preserved. Literal file availability is not browser execution, font rendering or interaction proof.
+
+The actual run clock is October23. CDI correctly remains stale: source October15, age six sessions,18 issuers,311 one-date instrument histories, zero eligible five- or21-session comparisons. The retained October15 LQD sample passes its existing price validation; it does not supply missing history. September10 corporate-credit currentness remains blind/withheld, and rank/size/gate/escalate authority remains false. Native generation does not promote these sources.
+
+### Exact custody and continuation
+
+Existing workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001`.
+
+Local branch: `sol/web-ccw-cdi-source-integration-20261022-sol-001`. Existing PR branch: `claude/ssd-ccw-dislocation-v1-cc87720e59421398`. Remote before the pending normal push is `cf9ac2b2c03f3f4f7be429f87483c1281ba784ba`.
+
+Private receipts live under `.cdi-proof/integration-20261022/`: `catalyst-f633cb9c-contract-20261023.*`, `catalyst-sector-pulse-ownership-repair-20261023.*`, `spy-source-observation-20261023/first-call-result.json`, `w4-spy-current-input-preparation-20261023.*`, `w4-spy-current-fixed-input-manifest-20261023.json`, `w4-spy-current-native-execution-20261023.*` and `w4-spy-current-literal-asset-closure-20261023.json`. The immutable source image is `.cdi-proof/w4-spy-current-fixed-input-source-20261023/`; the completed native output is `.cdi-proof/w4-spy-current-retained-native-20261023/`. Never publish private provider/cache material.
+
+1. Read the canonical checkpoint and actual HEAD/index/remote before effects. Consume any already-recorded result. The SPY acquisition, input preparation, native run and asset check above are complete; do not repeat them.
+2. Commit this exact source/documentation child, run `scripts/check_contract_delta.py --base 88b5bc86a234a74fd526f974288ef39a33170289` with `CONTRACT_DELTA_NO_REAP=1`, and preserve its actual outcome. After a pass and remote-ancestry verification, normally push only the existing9590 branch. No force push, main chase, merge through HOLD or new render dispatch.
+3. Consume ordinary hosted CI and fences on the exact published head. Diagnose actual failures; do not waive design-governance or fabricate visual receipts. Record completion and source hashes in the canonical comment and PR description.
+4. The incumbent product/capture owner must establish the original admitted browser operation and accepting operator, then capture the genuine current candidate and all required viewport, language, theme, focus and interaction states. R11's receipt must own the actual duration template; CDI requires its own genuine evidence. The restarted browser inventory was empty, and the earlier loopback preview failed ERR_SOCKET_NOT_CONNECTED. No screenshot or interaction proof resulted; no unchanged route retry or alternate carrier is authorized by these source results.
+5. Source adoption, independent review and final production acceptance remain open. Native advisory review is not the original Fabric repair-review. That original operation is already terminal/unqualified with retry=false; do not poll, replay, replace it or switch provider/session to evade429. Terminal#1106 remains Draft/HOLD; the safety-refused deployment stays refused. Migration0038 stays applied once; covering render39688064251 is consumed.
+6. Preserve Macro#9996's immutable green/live inactive CRUD, Forex#10052's published227735dc green CI39918612998/fences39918612860, the earlier sponsor-date qualification and all earlier native/page/asset results, original workspaces/private data and held carry/COT/RiskRadar. Forex policy/admission and activation remain separate holds. Tiingo licensing/product-use is COMPLETE by Chairman attestation; no outreach.
+
+---
+
+### Preserved earlier checkpoint
+
 ## Current Catalyst integration checkpoint — 23 October 2026
 
 This entry records the qualified source composition for existing Draft/HOLD PR #9590. Final commit, contract, push and hosted-CI identities are maintained in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277); a local source result does not establish current-market or production acceptance.
