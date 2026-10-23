@@ -6929,6 +6929,38 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/sponsors.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "engine/etf_flows.py"
+      - "engine/exposure_math.py"
+      - "engine/grading_stats.py"
+      - "engine/intelligence_workspace/options_contract_identity.py"
+      - "engine/intraday_greeks.py"
+      - "engine/levels_engine.py"
+      - "engine/levels_grade.py"
+      - "engine/levels_publish.py"
+      - "engine/moves_engine.py"
+      - "engine/options_exposure_projection.py"
+      - "engine/options_hub.py"
+      - "engine/options_scenario_capture.py"
+      - "engine/vex_engine.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/options_source_receipts.py"
+      - "lib/stooq.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/build_options_hub_nightly.py"
+      - "tests/test_options_scenario_capture.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
       - "engine/options_hub_retention.py"
       - "tests/test_options_hub_retention.py"
@@ -7070,7 +7102,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -24765,7 +24797,6 @@ jobs:
           tests/test_options_auth.py
           tests/test_options_scenarios.py
           tests/test_scenario_initial_capture.py
-          tests/test_options_scenario_capture.py
           tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
