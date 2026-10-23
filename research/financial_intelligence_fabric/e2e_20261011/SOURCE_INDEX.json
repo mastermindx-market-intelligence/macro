@@ -1,0 +1,474 @@
+{
+  "document_type": "research_source_catalog",
+  "commission_date": "2026-10-11",
+  "not_runtime_state": true,
+  "pins": {
+    "Mastermind": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+    "macro": "44a45369617dbbd0afdcf161682679640352a554",
+    "terminal": "8520e5d77e9f0b83973a988cf4f4adff300994cf"
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Protected procedural pin",
+      "evidence_class": "protected_procedure",
+      "note": "Protected master verified. Skillpack 1.0.1/bootstrap major 1; unchanged companions reused after exact-blob comparison and changed sections read. No new bootstrap per task.",
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "commit": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+      "paths": [
+        "docs/sol_skills/INDEX.md",
+        "docs/sol_skills/ACTIVE_EXECUTION.md",
+        "docs/sol_skills/SESSION_RELIABILITY.md",
+        "docs/sol_skills/WEB_CEO_DELEGATION.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/Mastermind/blob/85807cf48e29e2fe5df19534d6b181fc25b9746f/docs/sol_skills/INDEX.md",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/blob/85807cf48e29e2fe5df19534d6b181fc25b9746f/docs/sol_skills/ACTIVE_EXECUTION.md",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/blob/85807cf48e29e2fe5df19534d6b181fc25b9746f/docs/sol_skills/SESSION_RELIABILITY.md",
+        "https://github.com/mastermindx-market-intelligence/Mastermind/blob/85807cf48e29e2fe5df19534d6b181fc25b9746f/docs/sol_skills/WEB_CEO_DELEGATION.md"
+      ]
+    },
+    {
+      "id": "S02",
+      "title": "Existing FIF workstream",
+      "evidence_class": "dated_owner_record",
+      "note": "Active coo-fable; fundamental-forensics. FIF-3A4 NOT_BUILT prose is stale relative to merged #7518; broad production still unproven.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "Original FIF-0 through FIF-11 masterplan",
+      "evidence_class": "existing_architecture",
+      "note": "2,253 lines; blob61ac3b360be155a512f81d66e3175a4ccb80b48c. Golden five,12 packs,250/1000 goals and SLOs are plan targets. Old stop-after-PR and Prophet scope do not govern this new commission.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "research/MASTERMIND_FINANCIAL_INTELLIGENCE_FABRIC_MASTERPLAN_2026-08-16.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/research/MASTERMIND_FINANCIAL_INTELLIGENCE_FABRIC_MASTERPLAN_2026-08-16.md"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "Merged FIF-3A4 implementation",
+      "evidence_class": "current_carrier_metadata",
+      "note": "Merged2026-10-04T10:43:55Z; head07426932618a3458388baa735f7da793fdef82ff; merge4294fd498e8c31cb72424e34b8769a48b1f0afd2. Historical27/611-test claims not re-run in this assessment.",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7518"
+    },
+    {
+      "id": "S05",
+      "title": "Existing postmerge repair contract",
+      "evidence_class": "owner_repair_request",
+      "note": "One canonical positive-evidence builder and semantic equality proposed; earlier reproduction5983145862. Not a custody transfer or production incident claim.",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7518#issuecomment-5983210205"
+    },
+    {
+      "id": "S06",
+      "title": "Current query kernel",
+      "evidence_class": "inspected_source",
+      "note": "6,283 lines; blob529d9e7df8e6183848fea0a37280e938c0bd9238. Partial proof function5150–5224 remains unchanged from the reported seam.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/query.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/query.py"
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "Current lineage evidence builder",
+      "evidence_class": "inspected_source",
+      "note": "638 lines; blob2aaac83a73121e55e38f07c1a7b8228691875149. Receipt323ff; canonical positive-evidence helper487–519; eighteen required fields.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/lineage_evidence.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/lineage_evidence.py"
+      ]
+    },
+    {
+      "id": "S08",
+      "title": "Actual API provider binding and authorization",
+      "evidence_class": "inspected_source",
+      "note": "Blob345fcb00877820ae891f5916e47853bcb099bf75.731–778 bind golden AAPL query/statements and unavailable revision/packet providers. Query841–873 depends on require_site_full_user, admits bytes then accesses provider, private response.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "app/forensics.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/app/forensics.py"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "Financial query and packet provider interfaces",
+      "evidence_class": "inspected_source",
+      "note": "Existing FinancialQueryDataset/Provider and FinancialPacketDataset/Provider. Keep domain adapters; add accepted production dataset provider, not a second kernel.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/query_service.py",
+        "engine/fundamental_forensics/revision_service.py",
+        "engine/fundamental_forensics/packet_service.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/query_service.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/revision_service.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/packet_service.py"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "Immutable occurrence and mapping owners",
+      "evidence_class": "inspected_source",
+      "note": "Existing raw facts, versioned semantic policy and canonical packet. Preserve explicit byte-frozen boundaries unless current owner accepts a scoped successor.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/raw_ledger.py",
+        "engine/fundamental_forensics/metric_registry.py",
+        "engine/fundamental_forensics/financial_intelligence_packet.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/raw_ledger.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/metric_registry.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/financial_intelligence_packet.py"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "Statement construction and service",
+      "evidence_class": "inspected_source",
+      "note": "Golden provider only; statement service321lines. Preserve source layout, dimensional scope, periods and Data OS identity.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/statement_graph.py",
+        "engine/fundamental_forensics/statement_service.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/statement_graph.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/statement_service.py"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "Golden source-package converter",
+      "evidence_class": "inspected_source",
+      "note": "Golden provider497–565 supports AAPL only. Existing converter/parser/spine reused; do not widen GOLDEN fixture constants as a production shortcut.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/ixbrl_raw_ledger.py",
+        "engine/fundamental_forensics/sec_document_spine.py",
+        "collectors/sec_filing_parser.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/ixbrl_raw_ledger.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/sec_document_spine.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/collectors/sec_filing_parser.py"
+      ]
+    },
+    {
+      "id": "S13",
+      "title": "Accepted cross-filing protocol",
+      "evidence_class": "accepted_protocol",
+      "note": "700-line protocol; #6382 accepted research. Lineage eligibility differs from metric eligibility; v1 exact two-accession law, not unrestricted chain union.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "research/financial_intelligence_fabric/FIF_3A4R_CROSS_FILING_LINEAGE_PROTOCOL.md",
+        "research/financial_intelligence_fabric/FIF_3A4R_AAPL_OVERLAP_CENSUS.json"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/research/financial_intelligence_fabric/FIF_3A4R_CROSS_FILING_LINEAGE_PROTOCOL.md",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/research/financial_intelligence_fabric/FIF_3A4R_AAPL_OVERLAP_CENSUS.json"
+      ]
+    },
+    {
+      "id": "S14",
+      "title": "Existing focused lineage tests",
+      "evidence_class": "inspected_source",
+      "note": "27-test historical PR claim; test source read, not complete pytest rerun. Frozen A1/A2 source hashes and cutoff cases retained.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "tests/test_fundamental_forensics_cross_filing_lineage.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/tests/test_fundamental_forensics_cross_filing_lineage.py"
+      ]
+    },
+    {
+      "id": "S15",
+      "title": "Broad SEC source owner",
+      "evidence_class": "dated_owner_record",
+      "note": "FF-1/current-quarter and historical recovery have separate receipts/backlogs. Old next_action not a fresh instruction to dispatch or reprocess.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md"
+      ]
+    },
+    {
+      "id": "S16",
+      "title": "Legacy attested-history parity owner",
+      "evidence_class": "dated_owner_record",
+      "note": "Legacy production-attestation gate must be reconciled, not used to stall independent authorized source/research work or bypass required trust.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-CALCBENCH-FILING-FORENSICS-PARITY.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-CALCBENCH-FILING-FORENSICS-PARITY.md"
+      ]
+    },
+    {
+      "id": "S17",
+      "title": "Existing disclosure and finding implementations",
+      "evidence_class": "inspected_source",
+      "note": "2,801/442 lines respectively. Existing owners; current behavior not comprehensively tested here.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "engine/fundamental_forensics/disclosure_diff.py",
+        "engine/fundamental_forensics/detectors.py"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/disclosure_diff.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/engine/fundamental_forensics/detectors.py"
+      ]
+    },
+    {
+      "id": "S18",
+      "title": "Existing customer route and source files",
+      "evidence_class": "architecture_reuse_targets",
+      "note": "Identified by original architecture; action-time inspect implementation and route before changes. Preserve fundamental_forensics.html rather than a rival product.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "scripts/build_fundamental_forensics.py",
+        "templates/fundamental_forensics.html.j2",
+        "templates/fundamental_forensics.js",
+        "templates/fundamental_forensics.css"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/scripts/build_fundamental_forensics.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/templates/fundamental_forensics.html.j2",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/templates/fundamental_forensics.js",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/templates/fundamental_forensics.css"
+      ]
+    },
+    {
+      "id": "S19",
+      "title": "Terminal source census",
+      "evidence_class": "bounded_path_census",
+      "note": "No tracked path matching forensic/financialstatement/financial-statement in terminal subtree at this pin. This is not proof of no generic reuse. Existing Company Intelligence is candidate integration seam, not a verified FIF implementation.",
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "8520e5d77e9f0b83973a988cf4f4adff300994cf",
+      "paths": [
+        "terminal/components/fin/CompanyIntelligencePage.tsx"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8520e5d77e9f0b83973a988cf4f4adff300994cf/terminal/components/fin/CompanyIntelligencePage.tsx"
+      ]
+    },
+    {
+      "id": "S20",
+      "title": "Current native orchestration route",
+      "evidence_class": "execution_configuration",
+      "note": "orchestrator route supports explicit Opus plus fable-mode; required MISSION/WHY/SCOPE/OUT OF SCOPE/NOT DONE UNLESS/RETURN. Source configuration not live native/Fabric proof.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        ".claude/agent-routing.json",
+        ".claude/skills/fable-mode/references/harness-adapters.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/.claude/agent-routing.json",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/.claude/skills/fable-mode/references/harness-adapters.md"
+      ]
+    },
+    {
+      "id": "S21",
+      "title": "BioCatalyst V3 incumbent carrier",
+      "evidence_class": "current_carrier_metadata",
+      "note": "OPEN at ec5c2e2544576f20348c6eadf834fe3cefae8039; delegated Fable scope and Oct4 repair. Not selected because incumbent end-to-end program already exists; no liveness transfer inferred.",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6712"
+    },
+    {
+      "id": "S22",
+      "title": "Market Memory incumbent",
+      "evidence_class": "dated_owner_record",
+      "note": "Broader recharter and recent #8841/#8830/#8818/#8819 activity make a new rival masterplan undesirable.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-MARKET-MEMORY-W2C.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-MARKET-MEMORY-W2C.md"
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6528"
+    },
+    {
+      "id": "S23",
+      "title": "Research Vault incumbent",
+      "evidence_class": "dated_owner_record",
+      "note": "Existing Fable delivery with many accepted phases; not vacant program.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md"
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8438"
+    },
+    {
+      "id": "S24",
+      "title": "Earnings alternatives and event owner",
+      "evidence_class": "dated_owner_record",
+      "note": "Narrow AAPL product acceptance and later format-generalization refusal; a FIF event-link dependency, not takeover.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-EARNINGS-INTELLIGENCE-OS.md",
+        "agentos/workstreams/WS-EARNINGS-EVENT-INTELLIGENCE-COMPILER.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-EARNINGS-INTELLIGENCE-OS.md",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-EARNINGS-EVENT-INTELLIGENCE-COMPILER.md"
+      ]
+    },
+    {
+      "id": "S25",
+      "title": "Capital Structure alternative/owner",
+      "evidence_class": "dated_owner_record",
+      "note": "Financing state owned here. Accounting-source disclosure packs must not create competing capital truth.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-CAPITAL-STRUCTURE-INTELLIGENCE-V2.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-CAPITAL-STRUCTURE-INTELLIGENCE-V2.md"
+      ]
+    },
+    {
+      "id": "S26",
+      "title": "Other candidates inspected",
+      "evidence_class": "candidate_comparison",
+      "note": "Focused read within92-filename census; China overlaps excluded Prophet/GMI; Defense/rates have existing scoped owners. Not a universal code audit.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "agentos/workstreams/WS-RATES-INFLATION-COMMAND.md",
+        "agentos/workstreams/WS-DEFENSE-PROCUREMENT-V3.md",
+        "agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md",
+        "agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-RATES-INFLATION-COMMAND.md",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-DEFENSE-PROCUREMENT-V3.md",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md"
+      ]
+    },
+    {
+      "id": "S27",
+      "title": "Data OS identity seam",
+      "evidence_class": "inspected_source",
+      "note": "Canonical issuer/security IDs; CIK mapping is evidence/owner binding, not a new issuer allocator.",
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "44a45369617dbbd0afdcf161682679640352a554",
+      "paths": [
+        "lib/dataos/identity.py",
+        "config/identity_seams.yml"
+      ],
+      "urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/lib/dataos/identity.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/44a45369617dbbd0afdcf161682679640352a554/config/identity_seams.yml"
+      ]
+    },
+    {
+      "id": "S28",
+      "title": "Fresh diagnostic experiment",
+      "evidence_class": "executed_isolated_probe",
+      "note": "Fourteen independent rehashed evidence mutations. Nine accepted+disclosed; five controls refused/not_evaluable.1722events/130receipts. Exact raw-result SHA2567f8043dda147551e103ad87340ba08c7d2a389addd291728ce65169c4e066bb7. Summary in PROBE_RESULTS.json. No source patch/full test suite/production request."
+    },
+    {
+      "id": "E01",
+      "title": "SEC EDGAR data APIs",
+      "evidence_class": "public_primary_source",
+      "note": "CompanyFacts aggregates non-custom entire-entity facts; frame periods may differ. Discovery/acceleration, not complete dimensional filing-package truth.",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    },
+    {
+      "id": "E02",
+      "title": "SEC Financial Statement Data Sets",
+      "evidence_class": "public_primary_source",
+      "note": "December2024 reprocessing uses rendered primary statements; NUM segments field. Do not falsely apply CompanyFacts whole-entity restriction to all SEC datasets. These sets are not substitutes for full filings.",
+      "url": "https://www.sec.gov/data-research/sec-markets-data/financial-statement-data-sets"
+    },
+    {
+      "id": "E03",
+      "title": "SEC Developer Resources",
+      "evidence_class": "public_primary_source",
+      "note": "Fair-access request ceiling is shared across machines for the user, not one budget per worker. Reuse existing ingestion limiter.",
+      "url": "https://www.sec.gov/about/developer-resources"
+    },
+    {
+      "id": "E04",
+      "title": "XBRL duplicate-fact guidance",
+      "evidence_class": "public_primary_source",
+      "note": "Complete/consistent/inconsistent duplicate semantics and precision; not permission to erase source occurrences or reinterpret reprints as restatements.",
+      "url": "https://www.xbrl.org/WGN/xbrl-duplicates/WGN-2025-01-14/xbrl-duplicates-2025-01-14.html"
+    },
+    {
+      "id": "E05",
+      "title": "XBRL Open Information Model",
+      "evidence_class": "public_primary_source",
+      "note": "Structured facts/aspects and precision consistency; do not assume transitive equality from compatible rounded intervals.",
+      "url": "https://www.xbrl.org/Specification/oim/REC-2021-10-13%2Berrata-PER-2023-02-15/oim-REC-2021-10-13%2Bcorrected-errata-PER-2023-02-15.html"
+    },
+    {
+      "id": "E06",
+      "title": "Arelle reference validation",
+      "evidence_class": "public_primary_source",
+      "note": "Candidate independent validation oracle with pinned version/taxonomy/configuration; not a replacement canonical financial model or automatic proof of economic mappings.",
+      "url": "https://arelle.org/arelle/documentation/"
+    },
+    {
+      "id": "E07",
+      "title": "Calcbench benchmark jobs",
+      "evidence_class": "vendor_primary_claim",
+      "note": "Benchmark as-reported/PIT financial research, notes, source trace, API/Excel jobs. Vendor marketing is not independent performance proof or permission to copy proprietary data/code.",
+      "url": "https://www.calcbench.com/home/our_data"
+    },
+    {
+      "id": "S29",
+      "title": "Fresh bounded repair-hypothesis experiment",
+      "evidence_class": "executed_process_local_hypothesis",
+      "note": "Existing proof plus canonical positive-evidence semantic equality, installed only in one isolated process. All14 mutations refused; latest/as-reported/latest-restated/pre-lineage result hashes identical. No source files changed/full suite/production calls. Raw report SHA2562ea142fdedb20e3cf39f57ccaa1315a6e746ecf6dc4ecd6c3cb00f7f91761305."
+    }
+  ]
+}
