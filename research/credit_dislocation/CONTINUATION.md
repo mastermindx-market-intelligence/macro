@@ -1,3 +1,19 @@
+## Resume here — exact generated-page source adoption
+
+The existing owner copied the completed private candidate into `site/bonds.html` without regeneration: 728,050 bytes, SHA-256 `be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c`. The prior page remains in parent 9291 and the exact private preimage. All56 source pins and 29 nonpage asset identities matched. The 29 sparse omissions were restored from exact Git bytes; no asset source changed.
+
+PID75979 completed 23 October 09:33:42 UTC: the two existing committed-page/content and fingerprinted-stylesheet tests passed, pytest 1.36 seconds, subprocess 2.02 seconds. Adoption receipt `aa960d02325edd28e6db613048f5b777de23fafd24b5ae9da3cbf751b0be1e96`; log `6265b7dc32dba77c83bc2122ef5ee39d73e7b7299ea1aff306427621bf34c360`. The initial physical-file assertion failed before any write and is separately retained. See [compact evidence](evidence/page_adoption_20261023.json) and the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) for actual commit/push/CI state.
+
+1. Consume recorded effects before a new call. Commit only the exact page, compact evidence and three recovery plans as a normal child; run the official exact-head contract against locked 88b5 with CONTRACT_DELTA_NO_REAP=1.
+2. Consume parent CI 39930172875 to its terminal result before pushing the child. Its contract passed; three pre-test artifact-download failures have unknown underlying cause because log retrieval failed. Do not patch or retry from an assumed cause.
+3. After the child gate and original remote ancestry qualify, normally push the existing 9590 branch and consume its ordinary CI/fences. Keep Draft/HOLD and auto-merge off; no new render.
+4. The candidate is a source artifact, with October 22/health 76 and explicit stale/missing credit evidence. Original closing-bell identity, historical availability, current-market acceptance, genuine browser/interaction proof and original independent review are not established.
+5. Keep every prior native/assets/source result and original workspace. Do not repeat acquisition/native/copy work, the original Fabric operation, migration 0038 or the refused deployment. Original capture admission/restoration and accepting operator remain unresolved. No alternate carrier or new execution/publication plane. Forex 227735 remains green; licensing remains Chairman-COMPLETE.
+
+---
+
+### Preserved earlier checkpoint
+
 ## Current continuation — 23 October 2026, after observed-SPY native qualification
 
 Read [MASTERPLAN.md](MASTERPLAN.md) and the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) before any effect. The dated entries below are retained history, not instructions to replay completed work.

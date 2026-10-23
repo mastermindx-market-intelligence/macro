@@ -1,3 +1,44 @@
+## Current source candidate adoption — 23 October 2026
+
+The existing recovery owner has adopted the already-qualified private Bonds HTML into `site/bonds.html` for the same Draft/HOLD PR #9590. This is source-candidate adoption. Genuine browser, independent-review and production acceptance remain open. Final commit, exact-head contract, normal-push and hosted-CI results belong in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277).
+
+### Exact artifact and qualification
+
+The adopted page is **728,050 bytes**, SHA-256 `be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c`, copied without regeneration from `.cdi-proof/w4-spy-current-retained-native-20261023/site/bonds.html`. The previous 254,664-byte upstream-derived page remains preserved in parent `9291e3b91eb64743bb0d2e4514818898bc931acd` and the private preimage receipt, SHA-256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`.
+
+Before the copy, all 56 native producer pins matched the exact source head, and all 29 nonpage candidate assets matched Git. Those assets were absent from the sparse working copy with skip-worktree flags. The initial extra physical-file assertion stopped before any write; its failed preflight is retained. The corrected preparation restored only those 29 existing files from their exact Git bytes. No asset source changed and no native build, provider observation or browser action was repeated.
+
+PID75979 completed at **09:33:42.170499 UTC**. The two existing tests passed: `test_committed_bonds_page_matches_contract` and `test_committed_bonds_stylesheet_is_fingerprinted`, both in `tests/test_bonds_glance_copy.py`. Pytest reported **2 passed in 1.36 seconds**; the recorded subprocess wall time was 2.02 seconds. The old private page, new candidate, source report, input manifest and all nonpage assets remained exact. Only the owned page changed before documentation.
+
+| Retained proof | SHA-256 |
+| --- | --- |
+| Page adoption and contract receipt | `aa960d02325edd28e6db613048f5b777de23fafd24b5ae9da3cbf751b0be1e96` |
+| Page-contract log | `6265b7dc32dba77c83bc2122ef5ee39d73e7b7299ea1aff306427621bf34c360` |
+| Pre-effect sparse-file failure receipt | `624f8983c41d9674dd85df0fd6a52ea0348a9a4fcb494529755bdbaf98280554` |
+| Prior native qualification report | `f2a8aac3c0a7ad9e33913406752761dacf507b1410f7c9135a4efeccf490740e` |
+| Immutable 562-input manifest | `2476f90920fc3a04e77013e5fc4279b9248867dbc1f90afe2b1dceadbd52b0e7` |
+
+Compact source evidence is in [page_adoption_20261023.json](evidence/page_adoption_20261023.json). Full effect records remain under `.cdi-proof/integration-20261022/w4-spy-current-page-adoption-20261023.*`; provider inputs and caches remain private and unstaged.
+
+### Preserved meaning and remaining gates
+
+The page carries the actual newly observed October 22 generation, health 76 and displayed MOVE 107.0. The retained health 75 page remains a distinct historical artifact. The SPY observation was acquired on October 23; original closing-bell bytes, historical first availability and current production freshness are not inferred. CDI remains sourced to October 15, stale by six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit remains withheld and every action-authority flag stays false.
+
+The existing 14/14 native result and literal asset closure remain attributed to their completed operations. Copying their exact output does not create a new native qualification, visual receipt or original-review verdict. R11/CDI genuine owning capture and the complete interaction/viewport/accessibility scope remain required.
+
+### Ordered continuation
+
+1. Read the canonical checkpoint and actual HEAD/index/remote. This page copy, sparse materialization and two-test qualification are complete; consume their receipts rather than replaying them.
+2. Make the normal source child containing the exact page and these evidence/plans. Qualify its committed head against locked main `88b5bc86a234a74fd526f974288ef39a33170289` using the official contract with `CONTRACT_DELTA_NO_REAP=1`. Parent9291's zero/zero result is not the child result.
+3. Consume the existing parent CI 39930172875 terminal result before the next normal push. Its hosted contract passed; three packs failed before tests while acquiring artifacts. Both artifacts exist, but each failed-job log read returned a connector error, so the underlying downloader cause is unproven. Preserve all results; no speculative workflow patch, retry, bypass or optional dispatch.
+4. After the child's exact-head gate and existing remote ancestry qualify, push normally to the same PR branch and consume its ordinary hosted checks. Keep Draft/HOLD and auto-merge off. This child carries a real source-artifact delta; no render is dispatched.
+5. Continue source/provenance and genuine product proof through existing owners. A real connection/admission change is required before another candidate browser attempt. Do not fabricate evidence or use an alternate carrier to evade a refusal.
+6. Preserve original Terminal #1106 Draft/HOLD, its consumed terminal/unqualified Fabric result with retry=false, the safety-refused deployment, once-applied 0038 and consumed covering render 39688064251. Preserve Macro #9996's immutable green/live inactive CRUD, Forex 227735's green results, all prior failures/passes, original workspaces and held carry/COT/RiskRadar. Tiingo licensing/product-use stays Chairman-COMPLETE; no outreach.
+
+---
+
+### Preserved earlier checkpoint
+
 ## Current source and observed-input checkpoint — 23 October 2026
 
 The existing recovery owner continues Draft/HOLD PR #9590. This child records the exact CI dependency repair and a completed private native qualification of newly observed SPY data. Its source publication, exact final commit and hosted-CI results are maintained in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). The previous dated entries below remain historical evidence; their pending-action wording must not cause completed operations to be replayed.
