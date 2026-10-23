@@ -39,7 +39,7 @@
       hypothesis: hypotheses.has(candidate.hypothesis) ? candidate.hypothesis : "unresolved",
       view: candidate.view === "universe" ? "universe" : "detail",
       query: typeof candidate.query === "string" ? candidate.query.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, 80) : "",
-      family: data.assets.some(a => a.family === candidate.family) ? candidate.family : "all",
+      family: (Array.isArray(data.families) ? data.families.some(f => f.id === candidate.family) : data.assets.some(a => a.family === candidate.family)) ? candidate.family : "all",
       sort: ["source","name","return_asc","return_desc"].includes(candidate.sort) ? candidate.sort : "source",
       trend: ["up","down","flat","unknown"].includes(candidate.trend) ? candidate.trend : "all",
       momentum: ["bull","bear","neutral","unknown"].includes(candidate.momentum) ? candidate.momentum : "all",
@@ -82,6 +82,37 @@
       return (state.sort === "return_asc" ? 1 : -1) * (av-bv);
     });
     return rows;
+  }
+  function coverageReading(data, family, language) {
+    const zh=language==="zh", pick=(en,cn)=>zh?cn:en;
+    const record=family==="all"?null:(data.families || []).find(row=>row.id===family);
+    const raw=family==="all"?(data.universe || {}).coverage:record && record.coverage;
+    const c=raw && typeof raw==="object" && !Array.isArray(raw)?raw:{};
+    const observations=data.assets.filter(a=>family==="all" || a.family===family);
+    const states=["complete","partial","missing","inconsistent","unknown","invalid"];
+    let state=states.includes(c.state)?c.state:"unknown";
+    const expected=Number.isInteger(c.expected_n)&&c.expected_n>0?c.expected_n:null;
+    const counts=expected!==null && [c.present_n,c.matched_n,c.price_1m_known_n].every(n=>Number.isInteger(n)&&n>=0&&n<=expected)
+      && c.matched_n<=c.present_n && c.price_1m_known_n<=c.matched_n;
+    const configured=["complete","partial","missing","inconsistent"].includes(state);
+    if(configured && !counts && !(state==="inconsistent" && c.expected_n===0))state="invalid";
+    const known=configured && counts && state!=="invalid";
+    const complete=known && state==="complete" && c.price_1m_state==="complete" && c.present_n===expected && c.matched_n===expected && c.price_1m_known_n===expected;
+    const missing=known && state==="missing" && c.present_n===0;
+    const scope=record && record.label?record.label[zh?"zh":"en"]:pick("Snapshot","快照");
+    let detail="";
+    if(state==="unknown")detail=pick("This publication does not provide a usable configured roster. Observed members do not establish complete coverage.","本发布未提供可用的品种配置范围，已有品种不能证明覆盖完整。");
+    else if(state==="invalid")detail=pick("The configured roster is invalid. Read available observations individually; completeness cannot be confirmed.","品种配置范围无效，请逐项阅读已有观察；无法确认覆盖完整。");
+    else if(state==="inconsistent")detail=pick("Member identities disagree with the configured roster. Coverage and family breadth remain unconfirmed.","品种标识与配置范围不一致，覆盖及类别涨跌分布仍未确认。");
+    else if(missing)detail=pick("Missing observations are neither zero performance nor a neutral state.","缺失观察不代表零涨跌，也不代表中性状态。");
+    else if(state==="partial")detail=pick("Some configured members are missing. Available readings cannot establish a complete family conclusion.","部分已配置品种缺失，已有读数不能支持完整的类别判断。");
+    else if(!complete)detail=pick("Some one-month values are unavailable. Missing prices are not counted as flat.","部分一个月读数不可用，缺失价格不计为持平。");
+    return {state,complete,missing,expected:known?expected:null,observed:observations.length,
+      title:scope+pick(" coverage","覆盖"),detail,
+      members:known?pick(c.present_n+" of "+expected+" configured members present",expected+"个已配置品种中已有"+c.present_n+"个"):
+        pick(observations.length+" observed members · expected membership unconfirmed","已记录"+observations.length+"个品种 · 预期品种范围尚未确认"),
+      prices:known?pick(c.price_1m_known_n+" of "+expected+" identity-matched one-month values",expected+"个预期一个月读数中有"+c.price_1m_known_n+"个通过身份核验"):
+        pick("One-month price coverage cannot be verified against configuration","无法按配置核实一个月价格覆盖")};
   }
   function comparisonReading(assets, selected, window, language) {
     const zh=language === "zh", chosen=assets.filter(a=>selected.includes(a.id));
@@ -216,7 +247,7 @@
       snapshot_fingerprint: data.fingerprint, ...semantics
     }};
   }
-  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics, returnScale, returnGeometry, filterAssets, comparisonReading, metricReceipt, physicalReceipt, metricInterpretation, physicalInterpretation};
+  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics, returnScale, returnGeometry, filterAssets, coverageReading, comparisonReading, metricReceipt, physicalReceipt, metricInterpretation, physicalInterpretation};
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof document === "undefined") return;
   const root = document.getElementById("commodity-workspace");
@@ -299,8 +330,22 @@
     for(const [selector,key] of [["[data-cw-search]","query"],["[data-cw-sort]","sort"],["[data-cw-trend]","trend"],["[data-cw-momentum]","momentum"]]){
       const el=root.querySelector(selector); if(el.value!==state[key])el.value=state[key];
     }
-    root.querySelector("[data-cw-results-count]").textContent=text("Showing ","显示 ")+rows.length+text(" of "," / ")+data.assets.length+text(" · analysis dated "," · 研究日期 ")+(data.as_of||text("unavailable","不可用"));
-    root.querySelector("[data-cw-universe-empty]").hidden=rows.length>0;
+    root.querySelector("[data-cw-results-count]").textContent=text("Showing ","显示 ")+rows.length+text(" of "," / ")+data.assets.length+text(" available observations · analysis dated ","个已有观察 · 研究日期 ")+(data.as_of||text("unavailable","不可用"));
+    const coverage=coverageReading(data,state.family,lang()), coveragePanel=root.querySelector("[data-cw-browse-coverage]");
+    if(coveragePanel){
+      coveragePanel.dataset.coverageState=coverage.state;
+      coveragePanel.querySelector("[data-cw-coverage-title]").textContent=coverage.title;
+      coveragePanel.querySelector("[data-cw-coverage-members]").textContent=coverage.members;
+      coveragePanel.querySelector("[data-cw-coverage-prices]").textContent=coverage.prices;
+      const context=coveragePanel.querySelector("[data-cw-coverage-context]");context.textContent=coverage.detail;context.hidden=!coverage.detail;
+    }
+    const empty=root.querySelector("[data-cw-universe-empty]");empty.hidden=rows.length>0;
+    empty.querySelector("h3").textContent=coverage.missing?text("Configured members are missing from this snapshot","本快照缺少已配置品种"):
+      coverage.observed===0?text("Observations are unavailable for this selection","此选择的观察不可用"):text("No commodities match","没有符合条件的品种");
+    empty.querySelector("p").textContent=coverage.missing?
+      text(coverage.expected+" configured members have no published observations. Missing data does not imply zero performance or a neutral state.",coverage.expected+"个已配置品种没有发布观察。缺失数据不代表零涨跌或中性状态。"):
+      coverage.observed===0?coverage.detail:text("Your search and filters are combined. Clear them to see available observations.","搜索与筛选共同生效，清除条件即可查看已有观察。");
+    empty.querySelector("button").textContent=text("Show available commodities","显示已有商品");
     root.querySelector("[data-cw-table-view]").hidden=state.layout!=="table" || !rows.length;
     root.querySelector("[data-cw-map-view]").hidden=state.layout!=="map" || !rows.length;
     all("[data-cw-map-trend]").forEach(cell=>{
@@ -310,7 +355,7 @@
       cell.disabled=members.length===0;
     });
     const unknown=rows.filter(a=>!a.trend || !a.momentum);
-    root.querySelector("[data-cw-map-unknown]").textContent=unknown.length ?
+    root.querySelector("[data-cw-map-unknown]").textContent=!rows.length?text("No observations are displayed.","当前未显示观察。"):unknown.length ?
       unknown.map(a=>a.label[lang()]).join(" · ") : text("Every displayed commodity has both recorded states.","显示的品种均有这两项记录。");
     all("[data-cw-selection-count]").forEach(el=>{el.textContent=state.compare.length+" / 4";});
     const labels=state.compare.map(id=>data.assets.find(a=>a.id===id).label[lang()]);
@@ -441,6 +486,7 @@
   function render() {
     renderBrowse();
     renderInspection();
+    all("[data-cw-brief-compare-status]").forEach(el => { el.textContent=""; });
     all("[data-cw-overview-only]").forEach(el => { el.hidden=state.tab !== "overview"; });
     all("[data-cw-panel]").forEach(el => { el.hidden = el.dataset.cwPanel !== state.tab; });
     all("[data-cw-tab]").forEach(el => {
@@ -592,7 +638,10 @@
   }));
   all("[data-cw-select]").forEach(button => button.addEventListener("click", () => update({asset: button.dataset.cwSelect,view:"detail"})));
   all("[data-cw-universe-open]").forEach(button=>button.addEventListener("click",()=>update({tab:"explore",view:"universe"})));
-  all("[data-cw-family-open]").forEach(button=>button.addEventListener("click",()=>update({tab:"explore",view:"universe",family:button.dataset.cwFamilyOpen,query:"",trend:"all",momentum:"all",layout:"table"})));
+  all("[data-cw-family-open]").forEach(button=>button.addEventListener("click",()=>{
+    update({tab:"explore",view:"universe",family:button.dataset.cwFamilyOpen,query:"",trend:"all",momentum:"all",layout:"table"});
+    const selected=all("[data-cw-family]").find(el=>el.dataset.cwFamily===state.family);if(selected)selected.focus();
+  }));
   all("[data-cw-family]").forEach(button=>button.addEventListener("click",()=>update({family:button.dataset.cwFamily})));
   all("[data-cw-layout]").forEach(button=>button.addEventListener("click",()=>update({layout:button.dataset.cwLayout})));
   all("[data-cw-reset-filters]").forEach(button=>button.addEventListener("click",()=>{
@@ -678,6 +727,9 @@
       const message=text("Choose up to four. Remove one to add another.", "最多比较四个品种，请先取消一个。");
       compareStatus.textContent=message;
       const visibleStatus=root.querySelector("[data-cw-results-count]");if(visibleStatus && state.tab==="explore")visibleStatus.textContent=message;
+      const briefHead=input.closest(".cw-brief-head");
+      const briefStatus=briefHead && briefHead.querySelector("[data-cw-brief-compare-status]");
+      if(briefStatus)briefStatus.textContent=message;
       return;
     }
     update({compare:input.checked ? state.compare.concat(input.value) : state.compare.filter(id => id !== input.value)});

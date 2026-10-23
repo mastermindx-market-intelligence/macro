@@ -10,10 +10,33 @@ from copy import deepcopy
 import json
 import logging
 from pathlib import Path
+from typing import Any
 
 from engine.commodity_decision_workspace import build_workspace, fingerprint
 
 log = logging.getLogger(__name__)
+
+
+def configured_members_from_config(commodity_config: Any) -> Any:
+    """Project the existing complex_members owner, without reading any files.
+
+    Missing configuration stays unknown. Malformed containers return a non-list
+    marker so the pure projector reports invalid_roster_type, rather than
+    accepting a caller-supplied list as an authoritative configured universe.
+    Invalid member specifications retain their ID with an invalid family; the
+    projector owns validation and never infers a denominator from observations.
+    """
+    if commodity_config is None:
+        return None
+    if not isinstance(commodity_config, dict):
+        return {}
+    members = commodity_config.get("complex_members")
+    if members is None:
+        return None
+    if not isinstance(members, dict):
+        return {}
+    return [{"id": key, "family": spec[2] if isinstance(spec, (list, tuple)) and len(spec) >= 3 else None}
+            for key, spec in members.items()]
 
 
 def read_publication(path: Path) -> dict | None:
@@ -69,12 +92,14 @@ def attach_company_continuations(workspace: dict, chain_state: dict | None, root
 
 
 def workspace_from_publications(snapshot: dict, *, root: Path, data_root: Path | None = None,
-                                physical_context: dict | None = None) -> dict:
+                                physical_context: dict | None = None,
+                                commodity_config: Any = None) -> dict:
     data_root = data_root if data_root is not None else root / "data"
     chains = read_publication(data_root / "transmission" / "chain_state.json")
     workspace = build_workspace(snapshot,
         transmission=read_publication(data_root / "transmission" / "latest.json"),
         fx=read_publication(data_root / "forex" / "latest.json"), chain_state=chains,
         commodity_latest=read_publication(data_root / "commodity" / "latest.json"),
-        physical_context=physical_context)
+        physical_context=physical_context,
+        expected_members=configured_members_from_config(commodity_config))
     return attach_company_continuations(workspace, chains, root)

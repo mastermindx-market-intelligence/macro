@@ -1,0 +1,32 @@
+[
+  {
+    "name": "unscoped-full-estate-design",
+    "returncode": 1,
+    "tail": "teral: colour function color-mix(\ntemplates/winner_health.html.j2:577: radius-literal: border-radius: 10px\ntemplates/winner_health.html.j2:579: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:580: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:589: radius-literal: border-radius: 3px\ntemplates/winner_health.html.j2:606: radius-literal: border-radius: 0 0 9px 9px\ntemplates/winner_health.html.j2:610: radius-literal: border-radius: 11px\ntemplates/winner_health.html.j2:611: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:612: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:615: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:616: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:618: radius-literal: border-radius: 14px\ntemplates/winner_health.html.j2:619: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:625: color-literal: colour function rgba(\ntemplates/winner_health.html.j2:625: color-literal: colour function rgba(\ntemplates/winner_health.html.j2:636: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:680: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:685: radius-literal: border-radius: 50%\ntemplates/winner_health.html.j2:691: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:714: radius-literal: border-radius: 1.5px\ntemplates/winner_health.html.j2:715: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:719: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:725: color-literal: colour function color-mix(\ntemplates/winner_health.html.j2:1050: literal-custom-property: --w: %\">\ntemplates/winner_health.html.j2:408: inline-style-bytes: 23429 bytes of inline <style>\ntemplates/winner_health.html.j2:422: parallel-token-root: :root block declares a custom property outside theme.css\n",
+    "applicability": "diagnostic invocation omitted registry; inherited estate census, not candidate ratchet"
+  },
+  {
+    "name": "runtime",
+    "returncode": 0,
+    "tail": "runtime style injection guard OK (255 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+  },
+  {
+    "name": "asset-refs",
+    "returncode": 0,
+    "tail": "check_site_asset_refs: OK \u2014 every template-decided href/src under site resolves (0 pre-existing gap(s) pinned, 0 unrendered ticker link(s) reported).\n"
+  },
+  {
+    "name": "candidate-design-ratchet",
+    "returncode": 0,
+    "comparison_base": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "command": [
+      "python3",
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/tmp/commodities-final-design-diff-20261023.patch"
+    ],
+    "result": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25376 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25376)"
+  }
+]

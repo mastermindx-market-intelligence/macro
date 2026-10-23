@@ -33,11 +33,41 @@ def verify(receipt: Path) -> None:
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
     checks, errors = [], []
+    network_failures, expected_network_failures, unavailable_local_services = [], [], []
+    expected_aborts = {}
+    local_origin = f"http://127.0.0.1:{server.server_address[1]}"
+
+    def observe_network(context):
+        def failed_response(response):
+            if response.url.startswith(local_origin + "/") and response.status >= 400:
+                detail = {"url": response.url, "status": response.status}
+                # The static file server does not implement this account API.
+                # Record its absence separately; never fabricate an auth reply
+                # or allow a missing script/stylesheet to use this exception.
+                if (urlsplit(response.url).path == "/api/brain/me" and response.status == 404
+                        and response.request.resource_type in {"fetch", "xhr"}):
+                    unavailable_local_services.append(detail)
+                else:
+                    network_failures.append(detail)
+
+        def failed_request(request):
+            if not request.url.startswith(local_origin + "/"):
+                return
+            detail = {"url": request.url, "failure": request.failure}
+            if expected_aborts.get(request.url, 0):
+                expected_aborts[request.url] -= 1
+                expected_network_failures.append(detail)
+            else:
+                network_failures.append(detail)
+
+        context.on("response", failed_response)
+        context.on("requestfailed", failed_request)
     result = {"scope": "anonymous local rendered page", "production_verified": False}
     try:
         with tempfile.TemporaryDirectory(prefix="commodity-browser-") as folder, sync_playwright() as browser_api:
             browser = browser_api.chromium.launch(headless=True)
             context = browser.new_context(viewport={"width": 1440, "height": 900}, accept_downloads=True)
+            observe_network(context)
             context.add_init_script("localStorage.setItem('theme','dark');localStorage.setItem('lang','en');localStorage.removeItem('themeAuto');")
             page = context.new_page()
             page.on("pageerror", lambda error: errors.append(str(error)))
@@ -75,7 +105,10 @@ def verify(receipt: Path) -> None:
             assert not page.locator("#mmb-boot").is_visible()
             brain_requests = []
             page.on("request", lambda request: brain_requests.append(request.url) if urlsplit(request.url).path.endswith("/mm_brain.js") else None)
-            page.route("**/mm_brain.js*", lambda route: route.abort())
+            def abort_brain_once(route):
+                expected_aborts[route.request.url] = expected_aborts.get(route.request.url, 0) + 1
+                route.abort()
+            page.route("**/mm_brain.js*", abort_brain_once)
             entry.focus()
             page.keyboard.press("Enter")
             page.wait_for_function("document.querySelector('#cw-brain-status').textContent.includes('Could not open')")
@@ -244,7 +277,7 @@ def verify(receipt: Path) -> None:
             expect(page.locator("#cw-tab-overview")).to_be_focused()
             checks.append("browser Back dismisses an open receipt and restores focus to the current visible route")
             page.locator('#cw-panel-overview .cw-focus[data-cw-open="oil"]').click()
-            primary_number = page.locator('[data-cw-asset="oil"] .cw-detail-price strong .cw-number')
+            primary_number = page.locator('[data-cw-asset="oil"] .cw-brief-return .cw-number')
             assert primary_number.evaluate("(el)=>parseFloat(getComputedStyle(el).fontSize)") >= 30
             return_number = page.locator('[data-cw-asset="oil"] .cw-return strong .cw-number').first
             assert return_number.evaluate("(el)=>parseFloat(getComputedStyle(el).fontSize)") >= 22
@@ -253,9 +286,9 @@ def verify(receipt: Path) -> None:
             assert physical.is_visible()
             assert data["physical"]["headline"]["en"] in page.locator("#cw-physical-title").inner_text()
             assert data["physical"]["clock"]["en"] in physical.locator(".cw-physical-clock").inner_text()
-            assert data["physical"]["downstream"]["en"] in physical.locator(".cw-physical-consequences").inner_text()
             assert physical.locator(".cw-stock").count() == len(data["physical"]["stocks"]) > 0
             physical.locator("summary").click()
+            assert data["physical"]["downstream"]["en"] in physical.locator(".cw-physical-consequences").inner_text()
             for stock in data["physical"]["stocks"]:
                 for date in (stock["anomaly"]["reference"]["start"], stock["change_4w"]["window_start"], stock["change_4w"]["window_end"]):
                     if date:
@@ -360,6 +393,7 @@ def verify(receipt: Path) -> None:
             # A separate browser context has no page-local draft map or prior storage.
             fresh_context = browser.new_context(viewport={"width": 1440, "height": 900}, accept_downloads=True)
             fresh_context.add_init_script("localStorage.setItem('theme','dark');localStorage.setItem('lang','en');")
+            observe_network(fresh_context)
             fresh = fresh_context.new_page()
             fresh.on("pageerror", lambda error: errors.append(str(error)))
             fresh.goto(f"http://127.0.0.1:{server.server_address[1]}/commodities.html", wait_until="load")
@@ -539,6 +573,9 @@ def verify(receipt: Path) -> None:
             checks.append("320px and 768px Overview, universe, Compare and source dialog fit in both themes and languages")
             assert not errors, errors
             checks.append("no uncaught browser errors")
+            assert not network_failures, network_failures
+            assert len(expected_network_failures) == 1, expected_network_failures
+            checks.append("all same-origin page assets load; the one intentional assistant abort is isolated")
             context.close()
 
             # A separate intercepted origin tests the existing cross-product URL contract.
@@ -600,6 +637,9 @@ def verify(receipt: Path) -> None:
         server.server_close()
         result["checks"] = checks
         result["browser_errors"] = errors
+        result["same_origin_network_failures"] = network_failures
+        result["expected_network_failures"] = expected_network_failures
+        result["unavailable_local_services"] = unavailable_local_services
         receipt.parent.mkdir(parents=True, exist_ok=True)
         receipt.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
         print(json.dumps(result, ensure_ascii=False))

@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.commodity_decision_workspace import SOURCE_PATHS, build_workspace
-from engine.commodity_workspace_adapter import attach_company_continuations
+from engine.commodity_workspace_adapter import attach_company_continuations, configured_members_from_config
 from engine.commodity_supply_context import SERIES, build_physical_context
 
 
@@ -80,7 +80,10 @@ def render_review(base: str) -> tuple[str, dict, str]:
     import yaml
 
     config_raw = git_bytes(base, "config.yml")
-    supply_cfg = yaml.safe_load(config_raw)["eia"]["supply"]
+    configuration = yaml.safe_load(config_raw)
+    supply_cfg = configuration["eia"]["supply"]
+    identities["universe"] = {"repository": "mastermindx-market-intelligence/macro", "commit": base,
+                              "path": "config.yml", "file_sha256": sha256(config_raw).hexdigest()}
     physical_series, physical_identities = {}, {}
     for name in SERIES:
         path = f"data/eia/{name}.parquet"
@@ -107,7 +110,8 @@ def render_review(base: str) -> tuple[str, dict, str]:
     }
     workspace = build_workspace(docs["commodities"], transmission=docs["rates"], fx=docs["fx"],
                                 chain_state=docs["chains"], commodity_latest=docs["ratios"],
-                                source_identities=identities, physical_context=physical)
+                                source_identities=identities, physical_context=physical,
+                                expected_members=configured_members_from_config(configuration.get("commodities")))
     # Materialize only this exact immutable input, independently of sparse checkout.
     with TemporaryDirectory(prefix="commodity-review-aliases-") as folder:
         alias_root = Path(folder)
@@ -125,36 +129,43 @@ def render_review(base: str) -> tuple[str, dict, str]:
 <p class="cw-legacy-note">{{ t('These are the existing publishers’ detailed readings. Their dates, horizons and model judgements remain distinct from the research interpretation above.','以下为现有发布来源的详细判断；其日期、时间窗口及模型结论，与上方研究解释分别呈现。') }}</p>''').render()
     html = git_bytes(base, "site/commodities.html").decode("utf-8")
     original_sha = sha256(html.encode()).hexdigest()
-    # Frozen CSS assets were pruned before this new consumer existed. Restore the
-    # exact canonical theme before those assets, matching the normal template order.
-    theme_path = "templates/theme.css"
-    theme_bytes = git_bytes(base, theme_path)
-    theme_css = theme_bytes.decode("utf-8")
-    if "</style" in theme_css.lower():
-        raise ValueError("Canonical theme cannot be embedded safely")
-    first_style = re.search(r'<style\b|<link\b[^>]*rel=[\"\']stylesheet[\"\']', html, re.I)
-    if first_style is None:
-        raise ValueError("Accepted page has no stylesheet anchor")
-    html = html[:first_style.start()] + "<style data-cw-canonical-theme>\n" + theme_css + "\n</style>\n" + html[first_style.start():]
-    identities["canonical_theme"] = {"repository": "mastermindx-market-intelligence/macro", "commit": base,
-                                     "path": theme_path, "file_sha256": sha256(theme_bytes).hexdigest()}
-    span = WrapSpan(html)
-    if span.start is None or span.end is None:
-        raise ValueError("Accepted page has no unique main wrap")
-    html = html[:span.start] + component + opening + html[span.start:span.end] + "</details>" + html[span.end:]
-    html = html.replace('<body class="page-commod">', '<body class="page-commod cw-enabled">', 1)
-    legacy_h1 = re.search(r"<h1>.*?</h1>", html[html.index(opening) + len(opening):], re.S)
-    if legacy_h1 is None:
-        raise ValueError("Accepted legacy heading not found")
-    html = html.replace(legacy_h1.group(), '<h2><span class="l-en">Detailed commodity analytics</span><span class="l-zh">商品详细分析</span></h2>', 1)
-    html = html.replace('<div class="section-title"><span class="l-en">Upcoming events', '<div class="section-title" id="commodity-catalysts"><span class="l-en">Upcoming events', 1)
-    # Drop whitespace-only template lines without changing meaningful text nodes.
-    html = re.sub(r"(?m)^[ \t]+$", "", html)
-    css = (ROOT / "templates/commodity-workspace.css").read_text()
-    js = (ROOT / "templates/commodity-workspace.js").read_text()
-    html = html.replace("</head>", f"<style>\n{css}\n</style></head>", 1)
-    html = html.replace("</body>", f"<script>\n{js}\n</script></body>", 1)
+    if 'id="commodity-workspace"' in html:
+        html = _replace_published_workspace(base, html, component)
+    else:
+        # Frozen CSS assets were pruned before this new consumer existed. Restore the
+        # exact canonical theme before those assets, matching the normal template order.
+        theme_path = "templates/theme.css"
+        theme_bytes = git_bytes(base, theme_path)
+        theme_css = theme_bytes.decode("utf-8")
+        if "</style" in theme_css.lower():
+            raise ValueError("Canonical theme cannot be embedded safely")
+        first_style = re.search(r'<style\b|<link\b[^>]*rel=[\"\']stylesheet[\"\']', html, re.I)
+        if first_style is None:
+            raise ValueError("Accepted page has no stylesheet anchor")
+        html = html[:first_style.start()] + "<style data-cw-canonical-theme>\n" + theme_css + "\n</style>\n" + html[first_style.start():]
+        identities["canonical_theme"] = {"repository": "mastermindx-market-intelligence/macro", "commit": base,
+                                         "path": theme_path, "file_sha256": sha256(theme_bytes).hexdigest()}
+        span = WrapSpan(html)
+        if span.start is None or span.end is None:
+            raise ValueError("Accepted page has no unique main wrap")
+        html = html[:span.start] + component + opening + html[span.start:span.end] + "</details>" + html[span.end:]
+        html = html.replace('<body class="page-commod">', '<body class="page-commod cw-enabled">', 1)
+        legacy_h1 = re.search(r"<h1>.*?</h1>", html[html.index(opening) + len(opening):], re.S)
+        if legacy_h1 is None:
+            raise ValueError("Accepted legacy heading not found")
+        html = html.replace(legacy_h1.group(), '<h2><span class="l-en">Detailed commodity analytics</span><span class="l-zh">商品详细分析</span></h2>', 1)
+        html = html.replace('<div class="section-title"><span class="l-en">Upcoming events', '<div class="section-title" id="commodity-catalysts"><span class="l-en">Upcoming events', 1)
+        # Drop whitespace-only template lines without changing meaningful text nodes.
+        html = re.sub(r"(?m)^[ \t]+$", "", html)
+        css = (ROOT / "templates/commodity-workspace.css").read_text()
+        js = (ROOT / "templates/commodity-workspace.js").read_text()
+        html = html.replace("</head>", f"<style>\n{css}\n</style></head>", 1)
+        html = html.replace("</body>", f"<script>\n{js}\n</script></body>", 1)
+    if html.count('id="commodity-workspace"') != 1 or html.count('id="cw-data"') != 1:
+        raise ValueError("Review created duplicate workspace mounts")
     report = {"schema": "mmx.commodities.review_receipt.v1", "accepted_base": base,
+              "mode": "pinned_publications_new_projection", "projection_revision": workspace["projection_revision"],
+              "normal_publication_renderer_qualified": False,
               "research_as_of": workspace["as_of"], "workspace_fingerprint": workspace["fingerprint"],
               "accepted_page_sha256": original_sha, "review_page_sha256": sha256(html.encode()).hexdigest(),
               "assets": len(workspace["assets"]), "chains": len(workspace["chains"]),
@@ -185,24 +196,8 @@ class WorkspaceSpan(WrapSpan):
                 self.end = self.absolute_offset() + len("</section>")
 
 
-def render_published_workspace(base: str) -> tuple[str, dict, str]:
-    """Recompose only presentation from a published workspace; never recompute data."""
-    from jinja2 import Environment, FileSystemLoader, StrictUndefined
-
-    if not re.fullmatch(r"[0-9a-f]{40}", base):
-        raise ValueError("Review base must be an exact 40-character Git commit")
-    original = git_bytes(base, "site/commodities.html").decode("utf-8")
-    data_pattern = r'<script\b[^>]*\bid="cw-data"[^>]*>(.*?)</script>'
-    payloads = re.findall(data_pattern, original, re.S)
-    if len(payloads) != 1 or original.count('id="commodity-workspace"') != 1:
-        raise ValueError("Accepted page must contain exactly one published workspace")
-    workspace = json.loads(payloads[0])
-    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True, undefined=StrictUndefined)
-    macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
-    component = env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(commodity_workspace=workspace)
-    generated_payloads = re.findall(data_pattern, component, re.S)
-    if len(generated_payloads) != 1 or generated_payloads[0] != payloads[0]:
-        raise ValueError("Presentation review changed the published payload bytes")
+def _replace_published_workspace(base: str, original: str, component: str) -> str:
+    """Replace the existing mount and its exact consumer assets, preserving siblings."""
     span = WorkspaceSpan(original)
     if span.start is None or span.end is None:
         raise ValueError("Published workspace section could not be bounded")
@@ -238,6 +233,28 @@ def render_published_workspace(base: str) -> tuple[str, dict, str]:
     html = html[:match.start()] + "<style>\n" + css + "\n</style>" + html[match.end():]
     if html.count('id="commodity-workspace"') != 1 or html.count('id="cw-data"') != 1:
         raise ValueError("Review created duplicate workspace mounts")
+    return html
+
+
+def render_published_workspace(base: str) -> tuple[str, dict, str]:
+    """Recompose only presentation from a published workspace; never recompute data."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    if not re.fullmatch(r"[0-9a-f]{40}", base):
+        raise ValueError("Review base must be an exact 40-character Git commit")
+    original = git_bytes(base, "site/commodities.html").decode("utf-8")
+    data_pattern = r'<script\b[^>]*\bid="cw-data"[^>]*>(.*?)</script>'
+    payloads = re.findall(data_pattern, original, re.S)
+    if len(payloads) != 1 or original.count('id="commodity-workspace"') != 1:
+        raise ValueError("Accepted page must contain exactly one published workspace")
+    workspace = json.loads(payloads[0])
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True, undefined=StrictUndefined)
+    macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+    component = env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(commodity_workspace=workspace)
+    generated_payloads = re.findall(data_pattern, component, re.S)
+    if len(generated_payloads) != 1 or generated_payloads[0] != payloads[0]:
+        raise ValueError("Presentation review changed the published payload bytes")
+    html = _replace_published_workspace(base, original, component)
     report = {
         "schema": "mmx.commodities.review_receipt.v1", "accepted_base": base,
         "mode": "published_payload_presentation_only", "research_as_of": workspace["as_of"],

@@ -1,0 +1,177 @@
+{
+  "schema": "mmx.commodities.review_receipt.v1",
+  "accepted_base": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "mode": "pinned_publications_new_projection",
+  "projection_revision": 7,
+  "normal_publication_renderer_qualified": false,
+  "research_as_of": "2026-10-21",
+  "workspace_fingerprint": "a628704b869e0eadb0faf00955319fbfd21c6de1ee5fb223891d2d5dfb53e56d",
+  "accepted_page_sha256": "eaee7b8fbaabd3aaa0da90a7b688aba5dfc90ecd265dca0059f2619f0f97f7b3",
+  "review_page_sha256": "0b064299d472ec034d7640228be1ae3c14b5d740fc0f068d81bfae026e7cabbc",
+  "assets": 17,
+  "chains": 3,
+  "source_files": {
+    "commodities": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/commodity/complex_latest.json",
+      "file_sha256": "01d69dc4d4d1ca421d2fbf6bd960dad4a99858f16f4ba85607c75abe6c092479"
+    },
+    "rates": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/transmission/latest.json",
+      "file_sha256": "556bb1ebb1928b4580b4cdd48198cc01ef1704be01bb20abb0997f06d92bc9c9"
+    },
+    "fx": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/forex/latest.json",
+      "file_sha256": "04ae82e5218fdf58a615afa97f8c7bc962d75be5168d5e11c05b1f56bab3485d"
+    },
+    "chains": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/transmission/chain_state.json",
+      "file_sha256": "a2ca4cd461b4af4d1a94bfefda828eecd083e583172be6899377be075958e694"
+    },
+    "ratios": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/commodity/latest.json",
+      "file_sha256": "ecfd83f63d69294c16570c253478261a958cda0b77be2f7cf1dfd3fcea53d4a4"
+    },
+    "company_aliases": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "data/reference/vendor_aliases.parquet",
+      "file_sha256": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306"
+    },
+    "universe": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "path": "config.yml",
+      "file_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    },
+    "physical": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "files": {
+        "crude_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/crude_stocks.parquet",
+          "file_sha256": "01ec9fb7c45f7a868c48564d399fcdabea6025c991b3f9c6e5f800d99d5ca279"
+        },
+        "cushing_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/cushing_stocks.parquet",
+          "file_sha256": "b71f1b4056ab4c4f5832bdad39d6d0a575e61cc2f9268333c699c8fffd334c4e"
+        },
+        "gasoline_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/gasoline_stocks.parquet",
+          "file_sha256": "f6d36d5a5fc2c15c429346aa45d2d155f2a5a794b1893f18d66fa8984d8b228b"
+        },
+        "distillate_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/distillate_stocks.parquet",
+          "file_sha256": "d991c5c65c9aa230aec77626999d79a5ac80cf6fb2b2666401ea2a7a5887ae3b"
+        },
+        "refinery_inputs": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/refinery_inputs.parquet",
+          "file_sha256": "9e09bc436c8861a32100f7a56dec0045c911bef4ef24a32142fd3562ebe898fd"
+        },
+        "gasoline_supplied": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/gasoline_supplied.parquet",
+          "file_sha256": "bea2ce5937b3ba46f90afb0b5b3f3bf6f6df6b924d98af4db90b848e48aa2484"
+        },
+        "distillate_supplied": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/distillate_supplied.parquet",
+          "file_sha256": "86988ab0a26b85033d2d130c00def21e2c7a1ecf863475202750e81ab93ba263"
+        },
+        "crude_production": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/crude_production.parquet",
+          "file_sha256": "edad52ab7d28e277f83937215d856e1df59f0e1989bf627bf4dba96d414cc163"
+        },
+        "refinery_util": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/refinery_util.parquet",
+          "file_sha256": "11a3e12f90821cd43f649b4de3b07aa1bf46d239b7e5f5d3edd85a98ee363e9f"
+        },
+        "spr_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+          "path": "data/eia/spr_stocks.parquet",
+          "file_sha256": "2a7ac20ac7f03013f0811db52bde07a4c53093b83d26476dac043386f8da96e3"
+        }
+      },
+      "configuration": {
+        "path": "config.yml",
+        "file_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      "method_revision": "eia-seasonal-balance-20261020-r2",
+      "reconstruction": "display_only_from_accepted_series",
+      "release_vintage_verified": false
+    }
+  },
+  "economic_recomputation": true,
+  "recomputation_scope": "display_only_petroleum_balance_from_accepted_EIA_series",
+  "collectors_run": false,
+  "scoring_run": false,
+  "forecasts_run": false,
+  "release_vintage_verified": false,
+  "physical_classification": "broad_tightness",
+  "production_acceptance": false,
+  "frozen_page_sha256": "43f5a7581ff5b01cf8a8152159fc845230b3d5133e5b23975f05c334354fde21",
+  "payload_sha256": "79dbf681c95717079bfb1d03db2992278c9cb06cd197d2288bfbea5998861978",
+  "assets_generated": [
+    {
+      "path": "site/assets/css/1ab6790e.css",
+      "sha256": "1ab6790e9517f8e7ea76a74ed2e62749d58a5806d40feadc38c27f805ca43b73"
+    }
+  ],
+  "asset_freezer": "scripts.externalize_css.externalize",
+  "configured_coverage": {
+    "expected_n": 17,
+    "issues": [],
+    "matched_n": 17,
+    "missing_ids": [],
+    "present_n": 17,
+    "price_1m_known_n": 17,
+    "price_1m_state": "complete",
+    "price_1m_unavailable_ids": [],
+    "state": "complete",
+    "unqualified_ids": []
+  },
+  "source_date_disagreement": {
+    "accepted_page_analysis_as_of": "2026-10-22",
+    "pinned_publication_input_as_of": "2026-10-21",
+    "freshness_verified": false
+  },
+  "source_sha256": {
+    "engine/commodity_decision_workspace.py": "0765eaaa059e253536c859a92fa210c900a6825c86cc7e5c146a04adf956f674",
+    "engine/commodity_workspace_adapter.py": "f1e22114179c4e610e0fb8331342ed05446ed07c466e7f93a56cdbc58e5dd76f",
+    "scripts/build_commodities.py": "7bfa23a6353968c9ec2259bac72417eeb38493d64a0f35b073c0f1501ae6bcf0",
+    "scripts/render_commodity_workspace_review.py": "f671dcd74798cbcd514276777d4626a0a1d7a100065364a7dd620de678711540",
+    "scripts/verify_commodity_workspace_browser.py": "745c2376a51fc3583957263a1b26decb37dbc734342318c123b7a2de0b54a5e8",
+    "templates/_commodity_decision_workspace.html.j2": "5a4a650813f67c88c9bfb29876d9d17b82ae5aa8812e0bce583e89825a072d8e",
+    "templates/commodity-workspace.js": "8770d7daa252a1d5ab9ff47e91beed8b4fdea90c64331efd0fe7a84f0fea1a9a",
+    "templates/commodity-workspace.css": "a54a082a5a2c342a960fd6356892c60c0285a5048695ca0385e901608515468d",
+    "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
+    "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21",
+    "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1"
+  }
+}

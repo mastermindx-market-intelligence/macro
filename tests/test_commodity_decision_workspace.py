@@ -1,14 +1,21 @@
 """Decision-workspace boundary tests. No collectors, production writes or model runs."""
 from copy import deepcopy
 from datetime import date
+import ast
+from hashlib import sha256
+import importlib.util
 import json
+import logging
 import re
 from pathlib import Path
+import subprocess
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from engine.commodity_decision_workspace import build_workspace, validate_condition, number
-from engine.commodity_workspace_adapter import read_publication
+from engine.commodity_workspace_adapter import read_publication, workspace_from_publications
 
 
 def snapshot():
@@ -47,9 +54,10 @@ class WorkspaceBoundaries(unittest.TestCase):
 
     def test_no_blanket_metals_headline_from_partial_or_undated_coverage(self):
         s = snapshot()
-        self.assertEqual(build_workspace(s)["headline"]["en"], "Oil holds. Metals retreat.")
+        roster = configured_roster_fixture()
+        self.assertEqual(build_workspace(s, expected_members=roster)["headline"]["en"], "Oil holds. Metals retreat.")
         s["members"].pop()
-        self.assertNotIn("Metals retreat", build_workspace(s)["headline"]["en"])
+        self.assertNotIn("Metals retreat", build_workspace(s, expected_members=roster)["headline"]["en"])
         self.assertIsNone(build_workspace(s)["breadth"]["n"])
         s = snapshot(); s["asof"] = None
         self.assertEqual(build_workspace(s)["headline"]["en"], "Read each commodity")
@@ -400,6 +408,691 @@ class GoldPhysicalInterpretation(unittest.TestCase):
         self.assertIn("snapshot_fingerprint", validate_condition(saved, revised)[1])
 
 
+def configured_roster_fixture():
+    """Synthetic caller input shaped from config.yml complex_members at 96883381.
+
+    The mapping is a test fixture, not a second production universe owner. No
+    return or state in configured_snapshot_fixture is an observed market fact.
+    """
+    families = {
+        "energy": ("oil", "natgas", "gasoline", "heating_oil"),
+        "precious": ("gold", "silver", "platinum", "palladium"),
+        "industrial": ("copper",), "grain": ("corn", "wheat", "soybeans"),
+        "soft": ("coffee", "sugar", "cocoa", "cotton"), "livestock": ("live_cattle",),
+    }
+    return [{"id": key, "family": family} for family, members in families.items() for key in members]
+
+
+def configured_snapshot_fixture():
+    roster = configured_roster_fixture()
+    return {"asof": "2026-10-16", "index": {"chg_1m_pct": 0},
+            "breadth": {"n_members": len(roster), "n_up_trend": len(roster)},
+            "members": [{"name": row["id"], "class": row["family"], "chg_1m_pct": 0,
+                         "velocity": {"r5": 0, "r20": -2, "r60": None, "r252": 3},
+                         "ts_trend": "up", "momentum_state": "neutral"} for row in roster]}
+
+
+class ConfiguredUniverseCoverage(unittest.TestCase):
+    """Pure publication coverage; no collection, economic recalculation or UI proof."""
+
+    @staticmethod
+    def family(workspace, key="energy"):
+        return next(row for row in workspace["families"] if row["id"] == key)
+
+    def test_complete_roster_counts_and_order_independence(self):
+        raw, roster = configured_snapshot_fixture(), configured_roster_fixture()
+        w = build_workspace(raw, expected_members=roster)
+        self.assertEqual(w["projection_revision"], 7)
+        universe = w["universe"]
+        self.assertEqual(universe["state"], "known")
+        self.assertEqual(universe["owner"]["key"], "commodities.complex_members")
+        self.assertIsNone(universe["owner"]["immutable_source"])
+        self.assertEqual(universe["issues"], [])
+        coverage = universe["coverage"]
+        self.assertEqual((coverage["expected_n"], coverage["present_n"], coverage["matched_n"],
+                          coverage["price_1m_known_n"]), (17, 17, 17, 17))
+        self.assertEqual(coverage["state"], "complete")
+        self.assertEqual(coverage["price_1m_state"], "complete")
+        self.assertEqual({row["id"]: row["coverage"]["expected_n"] for row in w["families"]},
+                         {"energy": 4, "precious": 4, "industrial": 1, "grain": 3, "soft": 4, "livestock": 1})
+        reordered = build_workspace(raw, expected_members=list(reversed(roster)))
+        self.assertEqual(reordered["universe"], universe)
+        self.assertEqual(reordered["fingerprint"], w["fingerprint"])
+
+    def test_missing_member_does_not_shrink_expected_family(self):
+        raw = configured_snapshot_fixture()
+        raw["members"] = [row for row in raw["members"] if row["name"] != "gasoline"]
+        w = build_workspace(raw, expected_members=configured_roster_fixture())
+        energy = self.family(w)
+        self.assertEqual(len(w["assets"]), 16)
+        self.assertEqual(len(energy["assets"]), 3)
+        self.assertEqual(energy["coverage"]["expected_n"], 4)
+        self.assertEqual(energy["coverage"]["present_n"], 3)
+        self.assertEqual(energy["coverage"]["matched_n"], 3)
+        self.assertEqual(energy["coverage"]["state"], "partial")
+        self.assertEqual(energy["coverage"]["price_1m_state"], "partial")
+        self.assertEqual(energy["coverage"]["missing_ids"], ["gasoline"])
+        self.assertEqual(energy["coverage"]["price_1m_unavailable_ids"], [])
+        self.assertNotIn("gasoline", [asset["id"] for asset in w["assets"]])
+
+    def test_absent_family_remains_without_synthetic_assets(self):
+        raw, roster = configured_snapshot_fixture(), configured_roster_fixture()
+        complete = build_workspace(raw, expected_members=roster)
+        raw["members"] = [row for row in raw["members"] if row["class"] != "energy"]
+        w = build_workspace(raw, expected_members=roster)
+        energy = self.family(w)
+        self.assertEqual(len(w["families"]), 6)
+        self.assertEqual(len(w["assets"]), 13)
+        self.assertEqual(energy["assets"], [])
+        coverage = energy["coverage"]
+        self.assertEqual((coverage["expected_n"], coverage["present_n"], coverage["price_1m_known_n"]), (4, 0, 0))
+        self.assertEqual(coverage["state"], "missing")
+        self.assertEqual(coverage["price_1m_state"], "unavailable")
+        self.assertEqual(coverage["missing_ids"], ["gasoline", "heating_oil", "natgas", "oil"])
+        for family in w["families"]:
+            if family["id"] != "energy":
+                self.assertEqual(family, self.family(complete, family["id"]))
+
+    def test_present_null_and_actual_zero_have_separate_coverage(self):
+        raw = configured_snapshot_fixture()
+        next(row for row in raw["members"] if row["name"] == "gasoline")["chg_1m_pct"] = None
+        w = build_workspace(raw, expected_members=configured_roster_fixture())
+        coverage = self.family(w)["coverage"]
+        self.assertEqual((coverage["present_n"], coverage["matched_n"], coverage["price_1m_known_n"]), (4, 4, 3))
+        self.assertEqual(coverage["state"], "complete")
+        self.assertEqual(coverage["price_1m_state"], "partial")
+        self.assertEqual(coverage["missing_ids"], [])
+        self.assertEqual(coverage["price_1m_unavailable_ids"], ["gasoline"])
+        self.assertEqual(next(asset for asset in w["assets"] if asset["id"] == "oil")["change_1m_pct"], 0)
+
+    def test_unknown_and_invalid_rosters_never_infer_a_denominator(self):
+        cases = [(None, "unknown", "roster_unavailable"), ({}, "invalid", "invalid_roster_type"),
+                 ([], "invalid", "empty_roster"), ("oil", "invalid", "invalid_roster_type"),
+                 ([None], "invalid", "invalid_roster_entry"),
+                 ([{"id": [], "family": "energy"}], "invalid", "invalid_roster_entry"),
+                 ([{"id": "oil", "family": {}}], "invalid", "invalid_roster_entry"),
+                 ([{"id": "oil", "family": "unowned"}], "invalid", "unsupported_family"),
+                 ([{"id": "oil", "family": "energy"}] * 2, "invalid", "duplicate_expected_member")]
+        raw = configured_snapshot_fixture()
+        baseline = build_workspace(raw)
+        for roster, state, code in cases:
+            with self.subTest(roster=roster):
+                w = build_workspace(raw, expected_members=roster)
+                self.assertEqual(w["universe"]["state"], state)
+                self.assertIn(code, [issue["code"] for issue in w["universe"]["issues"]])
+                self.assertEqual(w["assets"], baseline["assets"])
+                for coverage in [w["universe"]["coverage"]] + [row["coverage"] for row in w["families"]]:
+                    self.assertEqual(coverage["state"], state)
+                    self.assertIsNone(coverage["expected_n"])
+                    self.assertIsNone(coverage["present_n"])
+                    self.assertIsNone(coverage["price_1m_known_n"])
+                json.dumps(w, allow_nan=False)
+
+    def test_unsupported_expected_member_is_retained_and_not_fabricated(self):
+        raw, roster = configured_snapshot_fixture(), configured_roster_fixture()
+        roster.append({"id": "aluminium_fixture", "family": "industrial"})
+        for present in (False, True):
+            with self.subTest(present=present):
+                if present:
+                    raw["members"].append({"name": "aluminium_fixture", "class": "industrial", "chg_1m_pct": 8})
+                w = build_workspace(raw, expected_members=roster)
+                coverage = self.family(w, "industrial")["coverage"]
+                self.assertEqual(w["universe"]["state"], "known")
+                self.assertEqual(w["universe"]["coverage"]["expected_n"], 18)
+                self.assertEqual(coverage["expected_n"], 2)
+                self.assertEqual(coverage["present_n"], 2 if present else 1)
+                self.assertEqual(coverage["matched_n"], 1)
+                self.assertEqual(coverage["state"], "inconsistent")
+                self.assertEqual(coverage["missing_ids"], [] if present else ["aluminium_fixture"])
+                self.assertEqual(coverage["unqualified_ids"], ["aluminium_fixture"] if present else [])
+                self.assertIn("unsupported_expected_member", [issue["code"] for issue in coverage["issues"]])
+                self.assertEqual(len(w["assets"]), 17)
+
+    def test_duplicate_and_mismatched_observations_cannot_certify_completeness(self):
+        for kind in ("duplicate", "mismatch"):
+            with self.subTest(kind=kind):
+                raw = configured_snapshot_fixture()
+                oil = next(row for row in raw["members"] if row["name"] == "oil")
+                if kind == "duplicate":
+                    raw["members"].append(dict(oil, chg_1m_pct=99))
+                else:
+                    oil["class"] = "precious"
+                w = build_workspace(raw, expected_members=configured_roster_fixture())
+                coverage = self.family(w)["coverage"]
+                self.assertEqual((coverage["expected_n"], coverage["present_n"], coverage["matched_n"]), (4, 4, 3))
+                self.assertEqual(coverage["state"], "inconsistent")
+                self.assertEqual(coverage["price_1m_state"], "inconsistent")
+                self.assertEqual(coverage["missing_ids"], [])
+                self.assertEqual(coverage["unqualified_ids"], ["oil"])
+                code = "duplicate_observation" if kind == "duplicate" else "family_mismatch"
+                self.assertIn(code, [issue["code"] for issue in coverage["issues"]])
+                projected = next(asset for asset in w["assets"] if asset["id"] == "oil")
+                self.assertEqual(projected["change_1m_pct"], 0)
+                self.assertEqual(projected["family"], "energy" if kind == "duplicate" else "precious")
+
+    def test_unexpected_observation_does_not_expand_the_owned_denominator(self):
+        roster = [row for row in configured_roster_fixture() if row["id"] != "gold"]
+        w = build_workspace(configured_snapshot_fixture(), expected_members=roster)
+        self.assertEqual(len(w["assets"]), 17)
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 16)
+        self.assertEqual(w["universe"]["coverage"]["present_n"], 16)
+        self.assertEqual(w["universe"]["coverage"]["state"], "inconsistent")
+        self.assertEqual(self.family(w, "precious")["coverage"]["expected_n"], 3)
+        self.assertIn({"code": "unexpected_member", "id": "gold", "observed_family": "precious"}, w["universe"]["issues"])
+
+    def test_malformed_observations_are_explicit_and_json_safe(self):
+        cases = [(None, "invalid_observation"), ({"name": []}, "invalid_observation"),
+                 ({"name": "oil", "class": {}}, "invalid_observation_family")]
+        for row, code in cases:
+            with self.subTest(row=row):
+                raw = configured_snapshot_fixture()
+                raw["members"].append(row)
+                w = build_workspace(raw, expected_members=configured_roster_fixture())
+                self.assertIn(code, [issue["code"] for issue in w["universe"]["issues"]])
+                self.assertEqual(w["universe"]["coverage"]["state"], "inconsistent")
+                json.dumps(w, allow_nan=False)
+        raw = configured_snapshot_fixture()
+        raw["members"] = {"oil": {"chg_1m_pct": 4}}
+        w = build_workspace(raw, expected_members=configured_roster_fixture())
+        self.assertIn({"code": "invalid_observations_type"}, w["universe"]["issues"])
+        self.assertEqual(w["assets"], [])
+
+    def test_empty_publication_keeps_all_expected_families(self):
+        for raw in ({}, {"members": []}):
+            with self.subTest(raw=raw):
+                w = build_workspace(raw, expected_members=configured_roster_fixture())
+                self.assertEqual(w["assets"], [])
+                self.assertEqual(len(w["families"]), 6)
+                self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+                self.assertEqual(w["universe"]["coverage"]["present_n"], 0)
+                for family in w["families"]:
+                    self.assertEqual(family["assets"], [])
+                    self.assertEqual(family["coverage"]["state"], "missing")
+                    self.assertEqual(family["coverage"]["price_1m_state"], "unavailable")
+
+    def test_roster_revision_changes_evidence_identity_without_rebinding(self):
+        raw, roster = configured_snapshot_fixture(), configured_roster_fixture()
+        w = build_workspace(raw, expected_members=roster)
+        saved, errors = validate_condition(condition(w), w)
+        self.assertEqual(errors, [])
+        original = deepcopy(saved)
+        changed = [row for row in roster if row["id"] != "gasoline"]
+        revised = build_workspace(raw, expected_members=changed)
+        self.assertNotEqual(revised["fingerprint"], w["fingerprint"])
+        self.assertNotEqual(revised["universe"]["roster_fingerprint"], w["universe"]["roster_fingerprint"])
+        self.assertIn("snapshot_fingerprint", validate_condition(saved, revised)[1])
+        self.assertEqual(saved, original)
+        self.assertEqual(validate_condition(saved, w), (saved, []))
+
+    def test_addition_preserves_observed_r3_fields_and_does_not_mutate_inputs(self):
+        raw = snapshot()
+        roster = [{"id": row["name"], "family": row["class"]} for row in raw["members"]]
+        identity = {"repository": "fixture", "commit": "f" * 40, "path": "config.yml", "file_sha256": "a" * 64}
+        kwargs = {"physical_context": physical_fixture(), "commodity_latest": gold_publication(),
+                  "chain_state": {"asof": "2026-10-16", "chains": [chain(True)]},
+                  "transmission": {"asof": "2026-10-16", "state": {"rates": {"real_10y_chg_22d_bp": -1}}},
+                  "source_identities": {"universe": identity}}
+        original = deepcopy((raw, roster, kwargs))
+        before = build_workspace(raw, **kwargs)
+        after = build_workspace(raw, expected_members=roster, **kwargs)
+        # The revision-seven collective hero now requires configured coverage;
+        # all individual R3 readings and their evidence remain untouched.
+        self.assertEqual(before["headline"]["en"], "Read each commodity")
+        self.assertEqual(after["headline"]["en"], "Oil holds. Metals retreat.")
+        for key in before.keys() - {"universe", "families", "fingerprint", "headline"}:
+            self.assertEqual(after[key], before[key], key)
+        strip_coverage = lambda families: [{key: value for key, value in family.items() if key != "coverage"}
+                                           for family in families]
+        self.assertEqual(strip_coverage(after["families"]), strip_coverage(before["families"]))
+        self.assertEqual((raw, roster, kwargs), original)
+        self.assertEqual(after["universe"]["owner"]["immutable_source"], identity)
+        after["universe"]["owner"]["immutable_source"]["commit"] = "changed"
+        after["universe"]["expected_members"][0]["family"] = "changed"
+        self.assertEqual((raw, roster, kwargs), original)
+
+
+class ConfiguredUniverseHeadline(unittest.TestCase):
+    """Collective hero language is bounded to the configured oil + metals scope."""
+
+    @staticmethod
+    def raw():
+        raw = configured_snapshot_fixture()
+        for row in raw["members"]:
+            if row["name"] == "oil":
+                row["chg_1m_pct"] = 1
+            elif row["class"] in ("precious", "industrial"):
+                row["chg_1m_pct"] = -1
+        return raw
+
+    def test_valid_scope_preserves_headline_and_individual_interpretations(self):
+        raw = self.raw()
+        qualified = build_workspace(raw, expected_members=configured_roster_fixture())
+        unknown = build_workspace(raw)
+        self.assertEqual(qualified["headline"]["en"], "Oil holds. Metals retreat.")
+        self.assertEqual(qualified["headline"]["zh"], "油价坚挺，金属回落。")
+        self.assertEqual(qualified["assets"], unknown["assets"])
+
+    def test_unknown_invalid_and_duplicate_rosters_withhold_collective_claim(self):
+        duplicate = configured_roster_fixture() + [{"id": "gold", "family": "precious"}]
+        for roster in (None, {}, [], duplicate):
+            with self.subTest(roster=roster):
+                w = build_workspace(self.raw(), expected_members=roster)
+                self.assertEqual(w["projection_revision"], 7)
+                self.assertEqual(w["headline"]["en"], "Read each commodity")
+
+    def test_duplicate_mismatched_missing_and_null_metals_withhold_collective_claim(self):
+        for case in ("duplicate", "mismatch", "missing", "null"):
+            with self.subTest(case=case):
+                raw = self.raw()
+                gold = next(row for row in raw["members"] if row["name"] == "gold")
+                if case == "duplicate":
+                    raw["members"].append(deepcopy(gold))
+                elif case == "mismatch":
+                    gold["class"] = "energy"
+                elif case == "missing":
+                    raw["members"].remove(gold)
+                else:
+                    gold["chg_1m_pct"] = None
+                self.assertEqual(build_workspace(raw, expected_members=configured_roster_fixture())[
+                    "headline"]["en"], "Read each commodity")
+
+    def test_additional_configured_metal_does_not_shrink_to_supported_subset(self):
+        roster = configured_roster_fixture() + [{"id": "aluminium_fixture", "family": "industrial"}]
+        for present in (False, True):
+            with self.subTest(present=present):
+                raw = self.raw()
+                if present:
+                    raw["members"].append({"name": "aluminium_fixture", "class": "industrial", "chg_1m_pct": -1})
+                w = build_workspace(raw, expected_members=roster)
+                self.assertEqual(w["headline"]["en"], "Read each commodity")
+                self.assertEqual(ConfiguredUniverseCoverage.family(w, "industrial")["coverage"]["expected_n"], 2)
+
+    def test_missing_nonmetal_does_not_invalidate_qualified_narrow_observation(self):
+        raw = self.raw()
+        raw["members"] = [row for row in raw["members"] if row["name"] not in ("gasoline", "corn")]
+        w = build_workspace(raw, expected_members=configured_roster_fixture())
+        self.assertEqual(w["universe"]["coverage"]["state"], "partial")
+        self.assertEqual(w["headline"]["en"], "Oil holds. Metals retreat.")
+
+    def test_oil_identity_must_also_match_its_configuration(self):
+        for case in ("duplicate", "observed_mismatch", "configured_mismatch"):
+            with self.subTest(case=case):
+                raw, roster = self.raw(), configured_roster_fixture()
+                oil = next(row for row in raw["members"] if row["name"] == "oil")
+                if case == "duplicate":
+                    raw["members"].append(deepcopy(oil))
+                elif case == "observed_mismatch":
+                    oil["class"] = "precious"
+                else:
+                    next(row for row in roster if row["id"] == "oil")["family"] = "precious"
+                self.assertEqual(build_workspace(raw, expected_members=roster)["headline"]["en"], "Read each commodity")
+
+
+class ConfiguredUniverseWiring(unittest.TestCase):
+    """Real adapter/helper wiring with synthetic inputs; no market/live proof.
+
+    The review tests replace only pinned-byte retrieval and the UI template. They
+    run the actual renderer, pure projection and physical owner on unavailable
+    series. They qualify configuration custody, not the real page's appearance.
+    """
+
+    @staticmethod
+    def configuration():
+        return {"complex_members": {row["id"]: ["FIXTURE-" + row["id"], None, row["family"]]
+                                    for row in configured_roster_fixture()}}
+
+    @staticmethod
+    def publications(root):
+        data = root / "fixture-publications"
+        for path, value in {
+            "transmission/chain_state.json": {},
+            "transmission/latest.json": {"asof": "2026-10-16", "state": {"rates": {"real_10y_chg_22d_bp": 0}}},
+            "forex/latest.json": {"asof": "2026-10-16", "transmission": {"usd_dir": "flat"}},
+            "commodity/latest.json": {"asof": "2026-10-16"},
+        }.items():
+            target = data / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(value), encoding="utf-8")
+        # The adapter must use the supplied owner, never read this competing file.
+        (root / "config.yml").write_text('{"commodities":{"complex_members":{}}}', encoding="utf-8")
+        return data
+
+    def test_adapter_preserves_absent_family_using_supplied_configuration(self):
+        raw, cfg = configured_snapshot_fixture(), self.configuration()
+        raw["members"] = [row for row in raw["members"] if row["class"] != "energy"]
+        before = deepcopy((raw, cfg))
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = self.publications(root)
+            w = workspace_from_publications(raw, root=root, data_root=data, commodity_config=cfg)
+            changed_cfg = deepcopy(cfg)
+            del changed_cfg["complex_members"]["gasoline"]
+            revised = workspace_from_publications(raw, root=root, data_root=data, commodity_config=changed_cfg)
+        self.assertEqual((raw, cfg), before)
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+        self.assertEqual(w["universe"]["coverage"]["present_n"], 13)
+        self.assertIsNone(w["universe"]["owner"]["immutable_source"])
+        energy = ConfiguredUniverseCoverage.family(w)
+        self.assertEqual(energy["assets"], [])
+        self.assertEqual(energy["coverage"]["state"], "missing")
+        self.assertEqual(energy["coverage"]["expected_n"], 4)
+        self.assertEqual(len(w["assets"]), 13)
+        self.assertEqual(w["rates"]["real_10y_chg_22d_bp"], 0)
+        self.assertEqual(w["fx"]["direction"], "flat")
+        self.assertEqual(w["projection_revision"], 7)
+        self.assertEqual(revised["universe"]["coverage"]["expected_n"], 16)
+        self.assertEqual(ConfiguredUniverseCoverage.family(revised)["coverage"]["expected_n"], 3)
+        self.assertNotEqual(revised["fingerprint"], w["fingerprint"])
+
+    def test_adapter_never_accepts_malformed_config_as_an_observed_roster(self):
+        cases = [(None, "unknown"), ({}, "unknown"), ({"complex_members": None}, "unknown"),
+                 ([], "invalid"), ({"complex_members": configured_roster_fixture()}, "invalid"),
+                 ({"complex_members": {}}, "invalid"), ({"complex_members": {"oil": "bad"}}, "invalid"),
+                 ({"complex_members": {"oil": ["FIXTURE-OIL", None]}}, "invalid"),
+                 ({"complex_members": {"oil": ["FIXTURE-OIL", None, "unowned"]}}, "invalid")]
+        raw = configured_snapshot_fixture()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = self.publications(root)
+            for cfg, expected in cases:
+                with self.subTest(config=cfg):
+                    w = workspace_from_publications(raw, root=root, data_root=data, commodity_config=cfg)
+                    self.assertEqual(w["universe"]["state"], expected)
+                    self.assertIsNone(w["universe"]["coverage"]["expected_n"])
+                    self.assertEqual(len(w["assets"]), 17)
+                    self.assertTrue(w["universe"]["issues"])
+                    self.assertIsNone(w["universe"]["owner"]["immutable_source"])
+
+    def test_complete_membership_does_not_repair_publisher_breadth(self):
+        raw = configured_snapshot_fixture()
+        raw["breadth"] = {"n_members": 12, "n_up_trend": 8}
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            w = workspace_from_publications(raw, root=root, data_root=self.publications(root),
+                                            commodity_config=self.configuration())
+        self.assertEqual(w["universe"]["coverage"]["state"], "complete")
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+        self.assertEqual(w["breadth"], {"n": None, "up": None, "state": "inconsistent_or_missing"})
+        self.assertEqual(raw["breadth"], {"n_members": 12, "n_up_trend": 8})
+
+    def test_normal_builder_helper_passes_loaded_configuration(self):
+        # Execute the exact render-only helper without importing collector-capable
+        # main-module dependencies or calling build_commodities.main().
+        source = Path(__file__).resolve().parents[1] / "scripts/build_commodities.py"
+        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+        helper = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_decision_workspace")
+        raw, cfg = configured_snapshot_fixture(), self.configuration()
+        raw["members"] = [row for row in raw["members"] if row["class"] != "energy"]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = self.publications(root)
+            owner = SimpleNamespace(ROOT=root, data_dir=lambda: data, load=lambda: {"commodities": cfg})
+            namespace = {"config": owner, "log": logging.getLogger(__name__)}
+            exec(compile(ast.Module(body=[helper], type_ignores=[]), str(source), "exec"), namespace)
+            w = namespace["_decision_workspace"](raw, raw["asof"], physical_fixture())
+        self.assertIsNotNone(w)
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+        self.assertEqual(ConfiguredUniverseCoverage.family(w)["coverage"]["state"], "missing")
+        self.assertEqual(w["physical"]["classification"], build_workspace(raw, physical_context=physical_fixture())["physical"]["classification"])
+        self.assertIsNone(w["universe"]["owner"]["immutable_source"])
+
+    @staticmethod
+    def renderer():
+        path = Path(__file__).resolve().parents[1] / "scripts/render_commodity_workspace_review.py"
+        spec = importlib.util.spec_from_file_location("commodity_coverage_review_fixture", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    @staticmethod
+    def review_templates(root):
+        templates = root / "templates"
+        templates.mkdir()
+        (templates / "_commodity_decision_workspace.html.j2").write_text(
+            '<section id="commodity-workspace"><script id="cw-data" type="application/json">'
+            '{{ commodity_workspace|tojson }}</script></section>', encoding="utf-8")
+        (templates / "commodity-workspace.css").write_text(".fixture { display: block; }", encoding="utf-8")
+        (templates / "commodity-workspace.js").write_text("window.coverageFixture = 1;", encoding="utf-8")
+
+    @unittest.skipUnless(importlib.util.find_spec("jinja2") is not None, "renderer integration requires Jinja2")
+    def test_review_renderer_uses_same_pinned_config_bytes_and_real_content_hash(self):
+        review = self.renderer()
+        # This is a mocked retrieval address, not a claimed production commit.
+        base = "f" * 40
+        raw = configured_snapshot_fixture()
+        raw["members"] = [row for row in raw["members"] if row["class"] != "energy"]
+        config_raw = json.dumps({"commodities": self.configuration(), "eia": {"supply": {}}}).encode()
+        files = {path: json.dumps(raw if key == "commodities" else {}).encode()
+                 for key, path in review.SOURCE_PATHS.items()}
+        files.update({"config.yml": config_raw, "data/reference/vendor_aliases.parquet": b"fixture-not-read",
+                      "site/commodities.html": b'<html><head><style>body{}</style></head><body class="page-commod"><div class="wrap"><h1>Fixture legacy heading</h1><p id="fixture-legacy">Retained legacy analysis.</p></div></body></html>',
+                      "templates/theme.css": b"body { color: black; }"})
+        requests = []
+
+        def pinned_bytes(commit, path):
+            requests.append((commit, path))
+            if path not in files:
+                raise subprocess.CalledProcessError(128, ["fixture-git-show", path])
+            return files[path]
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.review_templates(root)
+            (root / "config.yml").write_text('{"commodities":{"complex_members":{}}}', encoding="utf-8")
+            with patch.object(review, "ROOT", root), patch.object(review, "git_bytes", side_effect=pinned_bytes):
+                html, report, component = review.render_review(base)
+        w = json.loads(re.search(r'<script id="cw-data"[^>]*>(.*?)</script>', component, re.S).group(1))
+        identity = {"repository": "mastermindx-market-intelligence/macro", "commit": base,
+                    "path": "config.yml", "file_sha256": sha256(config_raw).hexdigest()}
+        self.assertEqual(w["universe"]["owner"]["immutable_source"], identity)
+        self.assertEqual(report["source_files"]["universe"], identity)
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+        self.assertEqual(ConfiguredUniverseCoverage.family(w)["coverage"]["state"], "missing")
+        self.assertNotIn("universe", w["sources"])
+        self.assertTrue(all(commit == base for commit, _ in requests))
+        self.assertEqual(requests.count((base, "config.yml")), 1)
+        self.assertFalse(report["production_acceptance"])
+        self.assertIn('<p id="fixture-legacy">Retained legacy analysis.</p>', html)
+        self.assertIn("Detailed commodity analytics", html)
+
+    @unittest.skipUnless(importlib.util.find_spec("jinja2") is not None, "renderer integration requires Jinja2")
+    def test_pinned_renderer_replaces_existing_workspace_and_preserves_legacy(self):
+        review = self.renderer()
+        base = "f" * 40
+        raw = configured_snapshot_fixture()
+        files = {path: json.dumps(raw if key == "commodities" else {}).encode()
+                 for key, path in review.SOURCE_PATHS.items()}
+        legacy = '<details id="commodity-advanced"><p>Retained legacy analysis.</p></details>'
+        old_payload = '{"projection_revision": 6, "fixture": "old payload"}'
+        files.update({
+            "config.yml": json.dumps({"commodities": self.configuration(), "eia": {"supply": {}}}).encode(),
+            "data/reference/vendor_aliases.parquet": b"fixture-not-read",
+            "templates/commodity-workspace.js": b"window.oldWorkspace = true;",
+            "templates/commodity-workspace.css": b".old-workspace { color: black; }",
+            "site/assets/css/old.css": b".old-workspace { color: black; }",
+            "site/commodities.html": ('<html><head><link rel="stylesheet" href="assets/css/old.css"></head><body>'
+                '<div class="wrap"><section id="commodity-workspace"><section>Old composition</section>'
+                '<script id="cw-data" type="application/json">' + old_payload + '</script></section>'
+                + legacy + '</div><script>window.oldWorkspace = true;</script>'
+                '<script>window.sharedOwner = true;</script></body></html>').encode(),
+        })
+
+        def pinned_bytes(commit, path):
+            self.assertEqual(commit, base)
+            if path not in files:
+                raise subprocess.CalledProcessError(128, ["fixture-git-show", path])
+            return files[path]
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.review_templates(root)
+            with patch.object(review, "ROOT", root), patch.object(review, "git_bytes", side_effect=pinned_bytes):
+                html, report, component = review.render_review(base)
+        w = json.loads(re.search(r'<script id="cw-data"[^>]*>(.*?)</script>', component, re.S).group(1))
+        self.assertEqual(w["projection_revision"], 7)
+        self.assertEqual(w["universe"]["coverage"]["expected_n"], 17)
+        self.assertEqual(html.count('id="commodity-workspace"'), 1)
+        self.assertEqual(html.count('id="cw-data"'), 1)
+        self.assertIn(legacy, html)
+        self.assertIn('<script>window.sharedOwner = true;</script>', html)
+        self.assertIn("window.coverageFixture = 1;", html)
+        self.assertNotIn("window.oldWorkspace", html)
+        self.assertNotIn("assets/css/old.css", html)
+        self.assertNotIn(old_payload, html)
+        self.assertEqual(report["mode"], "pinned_publications_new_projection")
+        self.assertFalse(report["normal_publication_renderer_qualified"])
+        self.assertFalse(report["production_acceptance"])
+
+    @unittest.skipUnless(importlib.util.find_spec("jinja2") is not None, "renderer integration requires Jinja2")
+    def test_presentation_only_renderer_does_not_upgrade_revision_six_payload(self):
+        review = self.renderer()
+        base = "f" * 40
+        w = {"as_of": "2026-10-16", "assets": [], "chains": [], "fingerprint": "fixture-revision-six",
+             "projection_revision": 6}
+        payload = json.dumps(w, sort_keys=True)
+        previous_js, previous_css = b"window.coverageFixture = 0;", b".old-fixture { display: block; }"
+        original = ('<html><head><link rel="stylesheet" href="assets/workspace.css"></head><body>'
+                    '<section id="commodity-workspace"><script id="cw-data" type="application/json">' + payload +
+                    '</script></section><script>' + previous_js.decode() + '</script></body></html>')
+        files = {"site/commodities.html": original.encode(), "templates/commodity-workspace.js": previous_js,
+                 "templates/commodity-workspace.css": previous_css, "site/assets/workspace.css": previous_css}
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.review_templates(root)
+            with patch.object(review, "ROOT", root), patch.object(review, "git_bytes", side_effect=lambda commit, path: files[path]), \
+                 patch.object(review, "build_workspace", side_effect=AssertionError("presentation-only must not reproject")), \
+                 patch.object(review, "configured_members_from_config", side_effect=AssertionError("presentation-only must not add configuration")):
+                html, report, component = review.render_published_workspace(base)
+        serialized = re.search(r'<script id="cw-data"[^>]*>(.*?)</script>', component, re.S).group(1)
+        self.assertEqual(serialized, payload)
+        self.assertEqual(json.loads(serialized)["projection_revision"], 6)
+        self.assertNotIn("universe", json.loads(serialized))
+        self.assertTrue(report["payload_bytes_unchanged"])
+        self.assertFalse(report["economic_recomputation"])
+        self.assertIn("window.coverageFixture = 1;", html)
+
+
+def coverage_presentation_fixture(case):
+    """Synthetic renderer inputs; none is an observed production publication."""
+    raw, roster = configured_snapshot_fixture(), configured_roster_fixture()
+    if case == "absent_gasoline":
+        raw["members"] = [row for row in raw["members"] if row["name"] != "gasoline"]
+        for row in raw["members"]:
+            if row["class"] == "energy":
+                row["chg_1m_pct"] = 2
+    elif case == "absent_energy":
+        raw["members"] = [row for row in raw["members"] if row["class"] != "energy"]
+    elif case == "null_gasoline":
+        next(row for row in raw["members"] if row["name"] == "gasoline")["chg_1m_pct"] = None
+    elif case == "invalid_roster":
+        roster = {}
+    elif case in ("unknown_roster", "revision_six"):
+        roster = None
+    elif case == "misclassified_oil":
+        raw["members"] = [{"name": "oil", "class": "precious", "chg_1m_pct": 0}]
+        roster = [{"id": "oil", "family": "energy"}]
+    elif case == "unexpected_family":
+        raw["members"] = [{"name": "gold", "class": "precious", "chg_1m_pct": 0}]
+        roster = [{"id": "oil", "family": "energy"}]
+    elif case != "zero":
+        raise ValueError("Unknown synthetic coverage case")
+    w = build_workspace(raw, expected_members=roster)
+    if case == "revision_six":
+        # An explicit old-shape fixture, not a new published revision-six identity.
+        w.pop("universe")
+        for family in w["families"]:
+            family.pop("coverage")
+        w["projection_revision"] = 6
+    return w
+
+
+class ConfiguredUniversePresentation(unittest.TestCase):
+    @staticmethod
+    def render(workspace):
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / "templates"),
+                          autoescape=True, undefined=StrictUndefined)
+        macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+        return env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(
+            commodity_workspace=workspace)
+
+    @classmethod
+    def energy(cls, case):
+        return re.findall(r'<article class="panel cw-panel cw-family-reading">(.*?)</article>',
+                          cls.render(coverage_presentation_fixture(case)), re.S)[0]
+
+    def test_absent_member_keeps_expected_denominator_and_withholds_complete_verdict(self):
+        energy = self.energy("absent_gasoline")
+        self.assertRegex(energy, r'data-cw-members-present>\s*3 / 4')
+        self.assertRegex(energy, r'data-cw-prices-available>\s*3 / 4')
+        self.assertIn("Coverage is incomplete.", energy)
+        self.assertIn("覆盖不完整", energy)
+        self.assertNotIn("Every tracked member rose", energy)
+        self.assertNotIn("3 / 3", energy)
+        self.assertNotIn('data-cw-open="gasoline"', energy)
+
+    def test_absent_family_is_visible_without_zero_breadth_or_fake_assets(self):
+        w = coverage_presentation_fixture("absent_energy")
+        html, energy = self.render(w), self.energy("absent_energy")
+        self.assertIn("This family is missing from the snapshot.", energy)
+        self.assertIn("本快照缺少这一类别", energy)
+        self.assertRegex(energy, r'data-cw-members-present>\s*0 / 4')
+        self.assertRegex(energy, r'data-cw-prices-available>\s*0 / 4')
+        self.assertIn("Price evidence unavailable", energy)
+        self.assertIn("Review family coverage", energy)
+        self.assertIn('data-cw-family="energy"', html)
+        self.assertNotIn("0 / 0", html)
+        self.assertNotIn("All recorded changes are flat", energy)
+        self.assertNotIn('data-cw-open="oil"', html)
+        self.assertNotRegex(html, r'<input[^>]*value="oil"[^>]*data-cw-(?:pick|compare)')
+        self.assertEqual(len(w["assets"]), 13)
+
+    def test_present_null_and_real_zero_have_distinct_price_qualification(self):
+        partial, zero = self.energy("null_gasoline"), self.energy("zero")
+        self.assertRegex(partial, r'data-cw-members-present>\s*4 / 4')
+        self.assertRegex(partial, r'data-cw-prices-available>\s*3 / 4')
+        self.assertIn("Coverage is incomplete.", partial)
+        self.assertNotIn("All recorded changes are flat", partial)
+        self.assertRegex(zero, r'data-cw-prices-available>\s*4 / 4')
+        self.assertIn("All recorded changes are flat.", zero)
+        self.assertIn("+0.0%", zero)
+
+    def test_unknown_invalid_and_old_payloads_never_assert_observed_only_completeness(self):
+        for case, expected in (("unknown_roster", "Configured membership is unavailable"),
+                               ("invalid_roster", "Configured membership is invalid"),
+                               ("revision_six", "Configured membership is unavailable")):
+            with self.subTest(case=case):
+                w = coverage_presentation_fixture(case)
+                before = deepcopy(w)
+                html, energy = self.render(w), self.energy(case)
+                self.assertIn(expected, energy)
+                self.assertNotIn("All recorded changes are flat", energy)
+                self.assertNotIn("Every tracked member", energy)
+                self.assertNotIn("0 / 0", html)
+                self.assertEqual(w, before)
+                payload = json.loads(re.search(r'<script\b[^>]*id="cw-data"[^>]*>(.*?)</script>', html, re.S).group(1))
+                self.assertEqual(payload, before)
+
+    def test_misclassified_member_is_unconfirmed_not_falsely_absent(self):
+        energy = self.energy("misclassified_oil")
+        self.assertIn("Member identities disagree with the configured roster", energy)
+        self.assertNotIn("This family is missing from the snapshot", energy)
+        self.assertRegex(energy, r'data-cw-members-present>\s*1 / 1')
+        self.assertRegex(energy, r'data-cw-prices-available>\s*0 / 1')
+        self.assertIn("Identity-matched 1-month values", energy)
+        self.assertIn("身份核验通过的一个月读数", energy)
+        html = self.render(coverage_presentation_fixture("misclassified_oil"))
+        self.assertNotIn("0 / 0", html)
+
+    def test_unexpected_family_never_renders_zero_denominator(self):
+        html = self.render(coverage_presentation_fixture("unexpected_family"))
+        precious = re.findall(r'<article class="panel cw-panel cw-family-reading">(.*?)</article>', html, re.S)[1]
+        self.assertIn("Member identities disagree", precious)
+        self.assertIn("Expected membership unconfirmed", precious)
+        self.assertNotIn("0 / 0", html)
+        self.assertNotIn("All recorded changes are flat", precious)
+
+
 class PresentationSemantics(unittest.TestCase):
     """Synthetic source scenarios; they are not observed market or missing-universe proof."""
 
@@ -410,7 +1103,7 @@ class PresentationSemantics(unittest.TestCase):
                           autoescape=True, undefined=StrictUndefined)
         macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
         return env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(
-            commodity_workspace=build_workspace(raw))
+            commodity_workspace=build_workspace(raw, expected_members=configured_roster_fixture()))
 
     def test_oil_question_tracks_positive_negative_flat_unknown_and_absent_evidence(self):
         for value, expected in [(4, "Is oil strength confirmed?"), (-4, "Does the physical market explain weaker oil?"),

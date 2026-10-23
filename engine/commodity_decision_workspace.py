@@ -16,7 +16,7 @@ from typing import Any
 
 SCHEMA = "mmx.commodities.workspace.v1"
 CONDITION_SCHEMA = "mmx.commodities.research_condition.v1"
-PROJECTION_REVISION = 6
+PROJECTION_REVISION = 7
 HYPOTHESIS_REVISION = "commodity-mechanisms-20261018-r3"
 
 LABELS = {
@@ -146,6 +146,124 @@ def _safe_json(value: Any) -> Any:
 
 def fingerprint(value: Any) -> str:
     return sha256(json.dumps(_safe_json(value), ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def _configured_universe(expected_members: Any, raw_members: Any, assets: list[dict],
+                         owner_identity: Any = None) -> tuple[dict, dict]:
+    """Compare a caller-supplied configuration roster with this publication.
+
+    The caller projects config.yml commodities.complex_members to a list of
+    {id, family} records. This function never reads configuration or infers an
+    expected roster from observed assets. Unknown labels remain expected members
+    with an explicit unsupported issue; they never shrink the denominator.
+
+    Coverage.state concerns member identity, while price_1m_state separately
+    concerns finite one-month values. Neither qualifies other metrics, source
+    freshness, physical coverage, historical availability, or a trading action.
+    """
+    roster, roster_issues = [], []
+    roster_state = "known"
+    if expected_members is None:
+        roster_state = "unknown"
+        roster_issues.append({"code": "roster_unavailable"})
+    elif not isinstance(expected_members, list):
+        roster_state = "invalid"
+        roster_issues.append({"code": "invalid_roster_type"})
+    elif not expected_members:
+        roster_state = "invalid"
+        roster_issues.append({"code": "empty_roster"})
+    else:
+        seen = set()
+        for index, raw in enumerate(expected_members):
+            row = _dict(raw)
+            key, family = row.get("id"), row.get("family")
+            if (not isinstance(key, str) or not key or key != key.strip()
+                or not isinstance(family, str) or not family or family != family.strip()):
+                roster_state = "invalid"
+                roster_issues.append({"code": "invalid_roster_entry", "index": index})
+                continue
+            roster.append({"id": key, "family": family})
+            if key in seen:
+                roster_state = "invalid"
+                roster_issues.append({"code": "duplicate_expected_member", "id": key})
+            seen.add(key)
+            if family not in FAMILIES:
+                roster_state = "invalid"
+                roster_issues.append({"code": "unsupported_family", "id": key, "family": family})
+            if key not in LABELS:
+                roster_issues.append({"code": "unsupported_expected_member", "id": key, "family": family})
+    roster.sort(key=lambda row: (row["id"], row["family"]))
+    roster_issues.sort(key=lambda issue: json.dumps(issue, sort_keys=True))
+    expected = {row["id"]: row["family"] for row in roster} if roster_state == "known" else {}
+
+    observations, observation_issues = {}, []
+    if raw_members is not None and not isinstance(raw_members, list):
+        observation_issues.append({"code": "invalid_observations_type"})
+    for index, raw in enumerate(raw_members if isinstance(raw_members, list) else []):
+        row = _dict(raw)
+        key, family = row.get("name"), row.get("class")
+        if not isinstance(key, str) or not key or key != key.strip():
+            observation_issues.append({"code": "invalid_observation", "index": index})
+            continue
+        observations.setdefault(key, []).append(row)
+        if not isinstance(family, str) or family not in FAMILIES:
+            observation_issues.append({"code": "invalid_observation_family", "id": key,
+                                       "observed_family": _safe_json(family)})
+        if key not in LABELS:
+            observation_issues.append({"code": "unsupported_observed_member", "id": key,
+                                       "observed_family": _safe_json(family)})
+        if roster_state == "known":
+            if key not in expected:
+                observation_issues.append({"code": "unexpected_member", "id": key,
+                                           "observed_family": _safe_json(family)})
+            elif family != expected[key]:
+                observation_issues.append({"code": "family_mismatch", "id": key,
+                                           "expected_family": expected[key], "observed_family": _safe_json(family)})
+    for key, rows in observations.items():
+        if len(rows) > 1:
+            observation_issues.append({"code": "duplicate_observation", "id": key, "count": len(rows)})
+    observation_issues.sort(key=lambda issue: json.dumps(issue, sort_keys=True))
+    issues = roster_issues + observation_issues
+    by_id = {asset["id"]: asset for asset in assets}
+    matched = {key for key, family in expected.items()
+               if key in by_id and len(observations.get(key, [])) == 1
+               and observations[key][0].get("class") == family}
+
+    def coverage(family: str | None = None) -> dict:
+        ids = {key for key, value in expected.items() if family is None or value == family}
+        observed_ids = {asset["id"] for asset in assets if family is None or asset["family"] == family}
+        relevant = issues if family is None else [issue for issue in issues
+            if issue.get("id") in ids | observed_ids
+            or any(issue.get(key) == family for key in ("family", "expected_family", "observed_family"))]
+        result = {"state": roster_state, "expected_n": None, "present_n": None, "matched_n": None,
+                  "price_1m_state": roster_state, "price_1m_known_n": None,
+                  "missing_ids": [], "unqualified_ids": [], "price_1m_unavailable_ids": [],
+                  "issues": deepcopy(relevant)}
+        if roster_state != "known":
+            return result
+        present = ids & observations.keys()
+        qualified = ids & matched
+        price_known = {key for key in qualified if by_id[key]["change_1m_pct"] is not None}
+        state = ("inconsistent" if relevant else "missing" if not present else
+                 "partial" if qualified != ids else "complete")
+        price_state = ("inconsistent" if relevant else "unavailable" if not price_known else
+                       "partial" if price_known != ids else "complete")
+        result.update(state=state, expected_n=len(ids), present_n=len(present), matched_n=len(qualified),
+                      price_1m_state=price_state, price_1m_known_n=len(price_known),
+                      missing_ids=sorted(ids - observations.keys()), unqualified_ids=sorted(present - qualified),
+                      price_1m_unavailable_ids=sorted(qualified - price_known))
+        return result
+
+    universe = {"schema": "mmx.commodities.configured_universe.v1", "state": roster_state,
+                "owner": {"path": "config.yml", "key": "commodities.complex_members",
+                          "immutable_source": _safe_json(owner_identity) if isinstance(owner_identity, dict) else None},
+                "expected_members": roster,
+                "roster_fingerprint": fingerprint({"state": roster_state, "members": roster, "issues": roster_issues})
+                    if roster_state != "unknown" else None,
+                "coverage": coverage(), "issues": issues}
+    families = {family: coverage(family) for family in FAMILY_ORDER
+                if any(asset["family"] == family for asset in assets) or family in expected.values()}
+    return universe, families
 
 
 def source_receipt(key: str, doc: Any, cutoff: str | None) -> dict:
@@ -531,8 +649,14 @@ def _gold_physical_view(publication: dict, cutoff: str | None, parent: dict) -> 
 
 def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
                     chain_state: Any = None, commodity_latest: Any = None, source_identities: Any = None,
-                    physical_context: Any = None) -> dict:
-    """Project immutable publisher artifacts. Missing context degrades only its own panel."""
+                    physical_context: Any = None, expected_members: Any = None) -> dict:
+    """Project immutable artifacts, optionally with the caller's configured roster.
+
+    expected_members is a list of {id, family} records projected by the caller
+    from config.yml commodities.complex_members. Omission means expected coverage
+    is unknown. source_identities['universe'] may identify the exact configuration
+    artifact; it is provenance, never an observation or publication timestamp.
+    """
     snapshot, transmission, fx, chain_state = map(_dict, (snapshot, transmission, fx, chain_state))
     commodity_latest = _dict(commodity_latest)
     physical_context = _dict(physical_context)
@@ -550,7 +674,8 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
     for member in raw_members:
         m = _dict(member)
         key, family = m.get("name"), m.get("class")
-        if key not in LABELS or family not in FAMILIES or key in seen:
+        if (not isinstance(key, str) or not isinstance(family, str)
+            or key not in LABELS or family not in FAMILIES or key in seen):
             continue
         seen.add(key)
         velocity = _dict(m.get("velocity"))
@@ -563,8 +688,10 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
                        "identity_basis": "existing_commodity_name", "contract": None,
                        "return_basis": "publisher_price_series", "deep_coverage": key in FOCUS})
     by_id = {a["id"]: a for a in assets}
-    families = [{"id": k, "label": bil(*FAMILIES[k]), "assets": [a for a in assets if a["family"] == k]}
-                for k in FAMILY_ORDER if any(a["family"] == k for a in assets)]
+    universe, family_coverage = _configured_universe(
+        expected_members, snapshot.get("members"), assets, _dict(source_identities).get("universe"))
+    families = [{"id": k, "label": bil(*FAMILIES[k]), "assets": [a for a in assets if a["family"] == k],
+                 "coverage": family_coverage[k]} for k in FAMILY_ORDER if k in family_coverage]
     index = _dict(snapshot.get("index"))
     breadth = _dict(snapshot.get("breadth"))
     n_members, n_up = number(breadth.get("n_members")), number(breadth.get("n_up_trend"))
@@ -572,9 +699,22 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
                      0 <= n_up <= n_members and n_members == len(assets))
     headline = bil("Read each commodity", "逐品种判断")
     oil = by_id.get("oil", {}).get("change_1m_pct")
-    metal_ids = ("gold", "silver", "platinum", "palladium", "copper")
+    # This narrow oil + metals observation needs qualified identities and prices
+    # for its own configured scope, not complete coverage of unrelated families.
+    # Revision-six presentation consumes its frozen headline without reprojecting.
+    expected_families = {row["id"]: row["family"] for row in universe["expected_members"]}
+    oil_qualified = (universe["state"] == "known" and expected_families.get("oil") == "energy"
+                     and by_id.get("oil", {}).get("family") == "energy"
+                     and not any(issue.get("id") == "oil" for issue in universe["issues"]))
+    metal_families = ("precious", "industrial")
+    metals_qualified = all(
+        family_coverage.get(family, {}).get("state") == "complete"
+        and family_coverage[family]["price_1m_state"] == "complete"
+        and family_coverage[family]["expected_n"] > 0 for family in metal_families)
+    metal_ids = [key for key, family in expected_families.items() if family in metal_families]
     metals = [by_id.get(k, {}).get("change_1m_pct") for k in metal_ids]
-    if cutoff and oil is not None and oil > 0 and all(x is not None and x < 0 for x in metals):
+    if (cutoff and oil_qualified and metals_qualified and oil is not None and oil > 0
+        and metals and all(x is not None and x < 0 for x in metals)):
         headline = bil("Oil holds. Metals retreat.", "油价坚挺，金属回落。")
     chains = []
     for raw in chain_state.get("chains", []) if isinstance(chain_state.get("chains"), list) else []:
@@ -634,7 +774,7 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
                         "window_fast": method["window_fast"], "window_slow": method["window_slow"],
                         "claim_type": "statistical", "causal": False})
     return {"schema": SCHEMA, "as_of": cutoff, "display_only": True, "live": False,
-            "headline": headline, "assets": assets, "families": families,
+            "headline": headline, "assets": assets, "families": families, "universe": universe,
             "attention": [key for key in FOCUS if key in by_id],
             "attention_basis": bil("Three fixed research lenses; no opportunity ranking.", "三个固定研究视角，不构成机会排名。"),
             "breadth": {"n": n_members if breadth_valid else None, "up": n_up if breadth_valid else None,
@@ -650,7 +790,10 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
             "research": {"effect": "export_only", "monitoring_active": False, "schema": CONDITION_SCHEMA},
             "projection_revision": PROJECTION_REVISION,
             "fingerprint": fingerprint({"snapshot": snapshot, "transmission": transmission, "fx": fx, "chains": chain_state,
-                                        "ratios": commodity_latest, "physical": physical_context, "projection_revision": PROJECTION_REVISION, "hypotheses": HYPOTHESES})}
+                                        "ratios": commodity_latest, "physical": physical_context,
+                                        "configured_universe": {"state": universe["state"], "members": universe["expected_members"],
+                                                                "roster_fingerprint": universe["roster_fingerprint"]},
+                                        "projection_revision": PROJECTION_REVISION, "hypotheses": HYPOTHESES})}
 
 
 def condition_semantics(workspace: dict, asset: str, window: int, hypothesis: str) -> dict:

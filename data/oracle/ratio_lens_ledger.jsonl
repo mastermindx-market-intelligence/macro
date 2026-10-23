@@ -939,3 +939,5 @@
 {"date": "2026-10-22", "pair_id": "software_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.07021, "leg_den_ret_1w": -0.024331, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-10-22", "pair_id": "cyber_vs_software", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.003492, "leg_den_ret_1w": 0.07021, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-10-22", "pair_id": "mag7_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.000344, "leg_den_ret_1w": -0.024331, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-10-22", "pair_id": "igv_vs_smh", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.01081, "leg_den_ret_1w": -0.014339, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-10-22", "pair_id": "igv_vs_qqq", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.01081, "leg_den_ret_1w": -0.005158, "state": "NO_ANCHOR", "kind": "etf"}

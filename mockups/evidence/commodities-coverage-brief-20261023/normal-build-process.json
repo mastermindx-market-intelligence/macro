@@ -1,0 +1,47 @@
+{
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-light/bin/python",
+    "-u",
+    "-m",
+    "scripts.build_commodities"
+  ],
+  "head_before": "82766f6fcea1f2db807830c370f1a03222965ece",
+  "pending_merge": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "source_sha256": {
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "engine/commodity_decision_workspace.py": "0765eaaa059e253536c859a92fa210c900a6825c86cc7e5c146a04adf956f674",
+    "engine/commodity_workspace_adapter.py": "f1e22114179c4e610e0fb8331342ed05446ed07c466e7f93a56cdbc58e5dd76f",
+    "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
+    "scripts/build_commodities.py": "7bfa23a6353968c9ec2259bac72417eeb38493d64a0f35b073c0f1501ae6bcf0",
+    "scripts/render_commodity_workspace_review.py": "f671dcd74798cbcd514276777d4626a0a1d7a100065364a7dd620de678711540",
+    "scripts/verify_commodity_workspace_browser.py": "745c2376a51fc3583957263a1b26decb37dbc734342318c123b7a2de0b54a5e8",
+    "templates/commodities.html.j2": "be740470943c0692f05573ac0f65da6dd9e622b8fbd5ee6c186d7b8f8413bb45",
+    "templates/_commodity_decision_workspace.html.j2": "ef978eeb6d7f367f72c138d8ea987456a0602b1800a3ac7a59e4aa7b4a44343c",
+    "templates/commodity-workspace.js": "8770d7daa252a1d5ab9ff47e91beed8b4fdea90c64331efd0fe7a84f0fea1a9a",
+    "templates/commodity-workspace.css": "a54a082a5a2c342a960fd6356892c60c0285a5048695ca0385e901608515468d",
+    "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
+    "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1",
+    "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21"
+  },
+  "input_receipt": "normal-inputs.json",
+  "input_receipt_sha256": "ef8d46d73b5d461910825932de9d4cbf63c6f1497d8d6541c3a84a22b983027c",
+  "accepted_research_cutoff": "2026-10-22",
+  "pre_build_page_sha256": "43f5a7581ff5b01cf8a8152159fc845230b3d5133e5b23975f05c334354fde21",
+  "runtime_versions": {
+    "pandas": "3.0.6",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "jinja2": "3.1.6",
+    "yfinance": "1.7.0",
+    "scipy": "1.18.1"
+  },
+  "started_at": "2026-10-23T06:54:15.649640+00:00",
+  "normal_entrypoint_invoked": true,
+  "production_acceptance": false,
+  "returncode": 0,
+  "finished_at": "2026-10-23T06:54:48.062657+00:00",
+  "elapsed_seconds": 32.411,
+  "log_sha256": "e607908a18cf6e593fecbdb3c99ed9d756748ad49c8fae2e4894101dcfb15e8c",
+  "source_unchanged": true,
+  "post_build_page_sha256": "18d82c5d8e7d8e5d31e4ea9dd65751e7544367c0dff880206a59bb4d6440ed12"
+}

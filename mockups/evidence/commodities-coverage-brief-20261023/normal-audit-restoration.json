@@ -1,0 +1,34 @@
+{
+  "restored": [
+    {
+      "path": "data/regime/cycle_bands_fit.json",
+      "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "blob": "3ce669911749072cd21a9b9450c7190d1d526e0c",
+      "sha256": "712074725c35fec247c9e9dc4fde9eb271c5f85af06e7d8c50b871f722e558cf",
+      "bytes": 797
+    },
+    {
+      "path": "data/vol_regime/basket_overlay_gate.json",
+      "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "blob": "d3afd589ec992382af9fc5b586c2e2171eba651e",
+      "sha256": "90761f20b7a7cd280aab912a758a779f2fc7dc9c5a178e39f0979870245d807c",
+      "bytes": 651
+    },
+    {
+      "path": "data/regime/ladder_risk_calibration.json",
+      "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "blob": "aa05c6e890cc11e48c95b01f1bea89bac87666ae",
+      "sha256": "614da90a0cd2eb72f9d6b228ee2989d32ee3cef99d1eb006e60a03b7332e4efb",
+      "bytes": 35060
+    },
+    {
+      "path": "data/eia/crude_imports.parquet",
+      "source_commit": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+      "blob": "0cad1849ef766c2ae81b545076052ba1bbaa4129",
+      "sha256": "d9f8179501546e6e590463380de6704f0646c1a2e2b592036f897897598930ae",
+      "bytes": 32821
+    }
+  ],
+  "absent_in_pinned_source": [],
+  "reason": "Actual normal-publisher input-read audit identified sparse omissions; no synthetic sources"
+}
