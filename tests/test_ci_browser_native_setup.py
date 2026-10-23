@@ -134,3 +134,78 @@ def test_platform_override_cannot_silently_change_the_qualified_native_dependenc
     monkeypatch.setattr(SETUP.subprocess,"Popen",lambda *a,**k:pytest.fail("platform refusal before effects"))
     result=SETUP.run_native_setup(deadline=600,command_env={"PLAYWRIGHT_HOST_PLATFORM_OVERRIDE":"foreign"},expected_sources=sources(),browser_stream=None)
     assert result["outcome"]=="failed" and "DEPENDENCY_PLATFORM_OVERRIDE_UNQUALIFIED" in result["detail"]
+
+
+def test_failed_native_download_code_and_fixed_errors_reach_existing_owner_detail(monkeypatch):
+    events=runtime(monkeypatch)
+    def acquire(plan,backend,*,deadline):
+        backend.records[4]={'mode':'download','index':4,'outcome':'failed','settlement':'settled','returncode':100,
+                            'reported_errors':['PERMISSION','FETCH'],'raw':'SECRET:credential','child_pid':'SECRET pid'}
+        return AcquisitionResult('failed','settled',(),(),'never_started','NATIVE_DOWNLOAD_FAILED')
+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=lambda *a,**k:pytest.fail('no browser after failed download'))
+    assert result['outcome']=='failed' and result['returncode']==1 and result['timeout_settlement'] is None
+    assert 'downloads[index,returncode,reported_errors]=[[4,100,["PERMISSION","FETCH"]]]' in result['detail']
+    assert 'SECRET' not in result['detail'] and 'credential' not in result['detail']
+    assert 'installation=never_started' in result['detail']
+    assert 'cleanup' not in [event[0] for event in events]
+
+
+@pytest.mark.parametrize('code,reported,expected_code,expected_reported', [
+    (100,['AUTH','FETCH'],100,['AUTH','FETCH']),
+    (-9,['UNCLASSIFIED'],-9,['UNCLASSIFIED']),
+    ('SECRET',['SECRET'],None,['UNCLASSIFIED']),
+    (True,{'raw':'SECRET'},None,['UNCLASSIFIED']),
+    (0,['AUTH','AUTH'],None,['UNCLASSIFIED']),
+    (100000,['UNCLASSIFIED','AUTH'],None,['UNCLASSIFIED']),
+])
+def test_owner_sanitizes_native_diagnostics_without_changing_original_failed_status(code,reported,expected_code,expected_reported):
+    native={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':code,
+            'reported_errors':reported,'raw':'SECRET password https://private.invalid'}
+    parsed=SETUP.parsed_result(1,SETUP.RESULT_PREFIX+json.dumps(native).encode()+b'\n',mode='download',index=0)
+    assert parsed['outcome']=='failed' and parsed['settlement']=='settled'
+    assert SETUP.failed_download_summaries({0:parsed}) == [[0,expected_code,expected_reported]]
+    assert 'SECRET' not in json.dumps(SETUP.failed_download_summaries({0:parsed}))
+
+
+def test_owner_summary_is_bounded_and_cannot_expose_foreign_index_or_unsettled_returncode():
+    failed={'mode':'download','outcome':'failed','settlement':'settled','returncode':100,
+            'reported_errors':['FETCH'],'raw':'SECRET'}
+    records={i:copy.deepcopy(failed) for i in range(1000)}
+    assert SETUP.failed_download_summaries(records)==[[i,100,['FETCH']] for i in range(4)]
+    assert SETUP.failed_download_summaries({'SECRET':failed,-1:failed,128:failed})==[]
+    records={0:{**failed,'settlement':'unknown'},1:{**failed,'outcome':'passed'}}
+    assert SETUP.failed_download_summaries(records)==[]
+
+
+@pytest.mark.parametrize('maximal', [False, True])
+def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_raw_body(monkeypatch,maximal):
+    from scripts import run_ci_pack as PACK
+    events=runtime(monkeypatch)
+    reported = list(SETUP.sanitize_reported_errors(['PERMISSION','SELECTION','AUTH','MIRROR_LIST','HASH','FETCH','METHOD'])) if maximal else ['PERMISSION','FETCH']
+    indices = range(124,128) if maximal else [4]
+    def acquire(plan,backend,*,deadline):
+        for index in indices:
+            backend.records[index]={'mode':'download','outcome':'failed','settlement':'settled','returncode':100,
+                                    'reported_errors':reported,'raw':'SECRET http://private.invalid','child_pid':'SECRET'}
+        return AcquisitionResult('failed','settled',(),(),'never_started','NATIVE_DOWNLOAD_FAILED')
+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
+    retained=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=None)
+    monkeypatch.setattr(SETUP,'run_native_setup',lambda **kwargs:retained)
+    monkeypatch.setattr(PACK,'_restore_workspace',lambda *a:None)
+    monkeypatch.setattr(PACK,'_prepare_provided_actions',lambda *a,**k:None)
+    monkeypatch.setattr(PACK,'_browser_dependency_diagnostic_commands',lambda:())
+    monkeypatch.setattr(PACK,'_stream_command',lambda *a,**k:pytest.fail('no semantic assertion after dependency failure'))
+    job=PACK.LegacyJob('native-owner',{'if':PACK.DISABLED_IF,'runs-on':'ubuntu-latest','timeout-minutes':10,'steps':[
+        {'name':'browser','phase':'browser_setup','acquisition':'native_parallel','timeout-minutes':10,'run':'python -m playwright install --with-deps chromium'},
+        {'name':'assertion','run':'must not execute'}]},0,1)
+    result=PACK._run_job(job,base_ref='main',head_ref='',command_env={})
+    assert result.infrastructure['outcome']=='dependency_failed'
+    assert result.timeout_settlement is None and result.steps[0]['outcome']=='infrastructure_blocked'
+    raw=result.infrastructure['detail'];assert len(raw.encode())<=1024
+    inner=json.loads(raw)
+    assert inner['outcome']=='failed' and inner['returncode']==1
+    expected=json.dumps([[index,100,reported] for index in indices],separators=(',',':'))
+    assert 'downloads[index,returncode,reported_errors]='+expected in inner['detail']
+    assert 'SECRET' not in raw and 'private.invalid' not in raw
+    assert 'cleanup' not in [event[0] for event in events]

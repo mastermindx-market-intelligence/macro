@@ -31,6 +31,41 @@ from scripts.ci_apt_transaction_contract import normalize_transaction, assert_sa
 LIMIT = 1024 * 1024
 RESULT_PREFIX = b"CI_APT_NATIVE_RESULT="
 
+# Reported native text categories only: never a cause, authority, retry grant
+# or semantic/settlement classifier. Raw output and matched text stay private.
+REPORTED_ERROR_CODES = ("PERMISSION", "SELECTION", "AUTH", "MIRROR_LIST", "HASH", "FETCH", "METHOD", "UNCLASSIFIED")
+
+
+def sanitize_reported_errors(value) -> list[str]:
+    if (type(value) is not list or not 1 <= len(value) <= len(REPORTED_ERROR_CODES) or
+            any(type(code) is not str or code not in REPORTED_ERROR_CODES for code in value) or
+            len(set(value)) != len(value) or ("UNCLASSIFIED" in value and len(value) != 1)):
+        return ["UNCLASSIFIED"]
+    return [code for code in REPORTED_ERROR_CODES if code in value]
+
+
+def reported_download_errors(output) -> list[str]:
+    """Bounded private inspection; return ONLY fixed enum values, never text."""
+    if type(output) is not bytes or len(output) > LIMIT or b"\x00" in output:
+        return ["UNCLASSIFIED"]
+    try:
+        output.decode("utf-8", errors="strict")
+    except UnicodeError:
+        return ["UNCLASSIFIED"]
+    text = output.lower()
+    patterns = (
+        ("PERMISSION", (b"permission denied",)),
+        ("SELECTION", (b"unable to locate package", b"has no installation candidate", b"can't find a source to download version")),
+        ("AUTH", (b"could not be authenticated", b"cannot be authenticated", b"unauthenticated packages")),
+        ("MIRROR_LIST", (b"couldn't determine mirror list to query for",)),
+        ("HASH", (b"hash sum mismatch", b"size mismatch")),
+        ("FETCH", (b"failed to fetch",)),
+        ("METHOD", (b"method driver", b"method has died unexpectedly")),
+    )
+    found = [code for code, phrases in patterns if any(phrase in text for phrase in phrases)]
+    return sanitize_reported_errors(found)
+
+
 
 class NativeUnknown(RuntimeError):
     def __init__(self, reason: str, child_pid: int | None = None, outcome: str = "failed"):
@@ -311,6 +346,9 @@ def run_stage(root: Path, mode: str, index: int | None, deadline: float) -> dict
             if b"unsandboxed" in output.lower():
                 raise AcquisitionRefused("NATIVE_SANDBOX_UNPROVEN")
             verify_file(directory / archives[index].filename, archives[index], immutable=False)
+        else:
+            return {"outcome": "failed", "settlement": "settled", "returncode": code,
+                    "reported_errors": reported_download_errors(output)}
     elif mode == "install":
         (root / "install-attempt").mkdir()
         apt_directory(root / "install-cache")

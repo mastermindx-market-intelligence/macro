@@ -23,7 +23,7 @@ import time
 
 from scripts.ci_apt_cold_acquisition import AcquisitionRefused, Archive, ChildResult, acquire_and_install, make_download_plan
 from scripts.ci_apt_native_plan import qualified_direct_packages
-from scripts.ci_apt_native_stage import LIMIT, NativeUnknown, RESULT_PREFIX, observe_command
+from scripts.ci_apt_native_stage import LIMIT, NativeUnknown, RESULT_PREFIX, observe_command, sanitize_reported_errors
 
 ROOT_FILES = ("ci_apt_cold_acquisition.py", "ci_apt_native_plan.py", "ci_apt_native_stage.py", "ci_apt_transaction_contract.py")
 BOUND_FILES = (*ROOT_FILES, "ci_browser_native_setup.py", "ci_browser_dependency_capture.py", "ci_browser_dependency_inputs.py")
@@ -85,6 +85,29 @@ def parsed_result(code: int, raw: bytes, *, mode: str, index=None) -> dict:
     if (code == 0) != (result["outcome"] == "passed" and result["settlement"] == "settled"):
         raise NativeUnknown("NATIVE_RESPONSE_UNPROVEN")
     return result
+
+
+def failed_download_summaries(records) -> list[list]:
+    """Bounded [archive index, native returncode, reported enums] only.
+
+    The core stops new launches on failure and drains at most four children.
+    These diagnostics never alter its original outcome/settlement decisions.
+    """
+    rows = []
+    if type(records) is not dict:
+        return rows
+    for index in range(128):
+        result = records.get(index)
+        if (type(result) is not dict or result.get("mode") != "download" or
+                result.get("outcome") != "failed" or result.get("settlement") != "settled"):
+            continue
+        code = result.get("returncode")
+        if type(code) is not int or not -255 <= code <= 255 or code == 0:
+            code = None  # absent/untrusted is not an observed native exit code
+        rows.append([index, code, sanitize_reported_errors(result.get("reported_errors"))])
+        if len(rows) == 4:
+            break
+    return rows
 
 
 @dataclass
@@ -276,7 +299,7 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if result.outcome != "passed":
             return {"outcome": result.outcome, "returncode": None if result.settlement == "unknown" or result.outcome == "timed_out" else 1, "failure_signature": None,
                     "timeout_settlement": "unknown" if result.settlement == "unknown" else None,
-                    "detail": f"native cold acquisition {result.reason}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if r.get('child_pid')]}"}
+                    "detail": f"native cold acquisition {result.reason}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}"}
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return {"outcome": "timed_out", "returncode": None, "failure_signature": None,

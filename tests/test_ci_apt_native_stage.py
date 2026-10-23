@@ -235,3 +235,46 @@ def test_native_successful_postinstall_archive_removal_preserves_actual_hook_pro
     monkeypatch.setattr(STAGE.time,'monotonic',lambda:0)
     assert STAGE.run_stage(tmp_path,'install',None,600)['outcome']=='passed'
     assert len(STAGE.read_json(tmp_path/'preinstall-actions.json'))==2
+
+
+def test_failed_native_download_retains_only_fixed_reported_errors_and_actual_code(tmp_path, monkeypatch):
+    item = archive()
+    STAGE.retain_once(tmp_path / 'archives.json', [item.__dict__])
+    monkeypatch.setattr(STAGE.time, 'monotonic', lambda:0)
+    monkeypatch.setattr(STAGE.pwd, 'getpwnam', lambda _:SimpleNamespace(pw_uid=501,pw_gid=20))
+    monkeypatch.setattr(STAGE.os, 'chown', lambda *a:None)
+    calls = []
+    def native(argv, **kwargs):
+        calls.append((argv,kwargs))
+        return 100, b'E: Failed to fetch https://SECRET:credential@private.invalid/archive.deb Permission denied\n'
+    monkeypatch.setattr(STAGE, 'observe_command', native)
+    result = STAGE.run_stage(tmp_path, 'download', 0, 600)
+    assert result == {'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['PERMISSION','FETCH']}
+    assert len(calls)==1 and calls[0][1]['deadline']==600
+    assert b'SECRET' not in STAGE.canonical(result) and b'private.invalid' not in STAGE.canonical(result)
+    assert (tmp_path/'download-0').is_dir()  # no cleanup, install or retry
+
+
+@pytest.mark.parametrize('output,expected', [
+    (b'E: Unable to locate package SECRET', ['SELECTION']),
+    (b'E: Some packages could not be authenticated SECRET', ['AUTH']),
+    (b"E: Couldn't determine mirror list to query for SECRET", ['MIRROR_LIST']),
+    (b'E: Failed to fetch SECRET Hash Sum mismatch', ['HASH','FETCH']),
+    (b'E: The method driver SECRET could not be found', ['METHOD']),
+    (b'opaque SECRET failure', ['UNCLASSIFIED']),
+    (b'\xff Permission denied SECRET', ['UNCLASSIFIED']),
+    (b'\x00 Permission denied SECRET', ['UNCLASSIFIED']),
+    ('Permission denied SECRET', ['UNCLASSIFIED']),
+    (b'x' * (STAGE.LIMIT+1), ['UNCLASSIFIED']),
+])
+def test_native_reported_error_categories_are_finite_bounded_and_never_echo_private_output(output,expected):
+    result = STAGE.reported_download_errors(output)
+    assert result == expected
+    assert set(result) <= set(STAGE.REPORTED_ERROR_CODES)
+    assert 'SECRET' not in json.dumps(result)
+
+
+@pytest.mark.parametrize('value', [None,[], 'AUTH', {'AUTH':'SECRET'}, ['SECRET'], ['AUTH','AUTH'],
+                                  ['AUTH',{'raw':'SECRET'}], ['UNCLASSIFIED','AUTH'], ['AUTH']*100])
+def test_native_diagnostic_boundary_rejects_malformed_or_untrusted_enum_payload(value):
+    assert STAGE.sanitize_reported_errors(value) == ['UNCLASSIFIED']
