@@ -57,6 +57,18 @@
   "page_sha256": "19bc315458d83f384e4b3080b408b53ee25abc9e0c4a7d4c9c73f6d4cbe2db55",
   "payload_bytes_preserved": true,
   "payload_sha256": "b26ef7a04b0e91e197ddd362adb96df8bcf942b99b463a2f0b353f0460b535b7",
+  "post_qualification_integration": {
+    "bound_source_and_page_unchanged": true,
+    "exact_commit_publication_guard_passed": true,
+    "incoming_non_commodity_paths": 29,
+    "integration_commit": "381ca77e4a3e344ec5a2d8f3e0d1b8e3dd8d70c6",
+    "latest_main": "044eba3d856b47100601576a33f5b984345ead80",
+    "pending_merge_completed_commit": "0acf98fc79b079e4002a8310fc97655d43572759",
+    "pending_merge_tree_unchanged": true,
+    "source_commit": "40aa7c1a32c4b408d7a8913f2f88db22cb42c8c1",
+    "state_contracts_rerun_passed": 10,
+    "unresolved_merge": false
+  },
   "principal_visual_inspection": {
     "inspected": [
       "final/49c60c82a6df458b.png",
@@ -116,5 +128,17 @@
     "tests/test_commodity_coverage_browser.py": "e4c4b857a84d53bf510ac8a00ded8869358b0bc32885568d880f3512fd024fe1",
     "tests/test_commodity_decision_workspace.py": "be1af97bf24ca1ac3df57da787e0c351994d0ba9760777816a235fe0ad980e60",
     "tests/test_commodity_workspace_contracts.js": "b5789beebfd2f8fcdd3afe64b73133e0c1f5aed9170e6263433a4147f6b56b21"
+  },
+  "visual_evidence_gate": {
+    "command": [
+      "python3",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/tmp/commodities-final-ui-diff-20261023.patch",
+      "--repo-root",
+      "."
+    ],
+    "comparison_base": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+    "passed": true
   }
 }
