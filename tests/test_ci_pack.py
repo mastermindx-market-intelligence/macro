@@ -4388,6 +4388,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # F09 petroleum: native builder imports have opaque whole-root fallbacks.
+    # Keep its complete measured closure; do not widen ordinary packing probes.
+    "market-ontology-f09-petroleum-flow",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
 
