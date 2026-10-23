@@ -1139,6 +1139,41 @@ def test_originate_plans_passes_validate_trade_plan(tmp_path):
         assert errs == [], f"Plan {plan['id']} failed validation: {errs}"
 
 
+@pytest.mark.parametrize(("score", "expected_base"), [
+    (70, 70.0), (99, 92.0), (0, 0.0),
+])
+def test_origination_carries_display_confidence_to_management_base(
+    tmp_path, score, expected_base,
+):
+    """WP04: pass the already-computed, capped descriptive score; no rank change."""
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False,
+        buys=[_make_buy("AAPL", score=score, act_level=3)],
+    )), encoding="utf-8")
+    [plan] = originate_plans(path, "2026-07-02", set(), None)
+    assert plan["confidence"] == expected_base
+    assert plan["_conviction_score"] == score
+    assert plan["authority_tier"] == "display"
+    assert validate_trade_plan(plan) == []
+
+
+def test_optional_plan_confidence_legacy_and_invalid_values():
+    """Missing/None legacy field valid; explicit zero valid; unsafe values refused."""
+    base = {
+        "schema": "prophet.trade_plan/v1", "id": "TEST-PLAN",
+        "asof": "2026-07-02", "asset": "TEST",
+        "direction": "BULL", "tranche": 1,
+        "source_engines": ["neural_web"],
+    }
+    assert validate_trade_plan(base) == []
+    assert validate_trade_plan({**base, "confidence": None}) == []
+    assert validate_trade_plan({**base, "confidence": 0}) == []
+    for invalid in (float("nan"), float("inf"), -0.1, 100.1, True, "70"):
+        errors = validate_trade_plan({**base, "confidence": invalid})
+        assert any("confidence must be" in error for error in errors)
+
+
 def test_exact_earnings_evidence_only_annotates_after_prophet_selection(tmp_path):
     """Evidence presence cannot change candidate identity, order, or plan geometry."""
     standouts_path = tmp_path / "us_standouts.json"
