@@ -840,6 +840,13 @@ lanes:
           duplicate ticker or a non-closing sum emits no receipt rather than a
           wrong one. Writes no data/ path; grading the record by writing to it
           would be marking its own homework.
+      - id: publish_native_divergence_capture
+        module: scripts.publish_native_divergence_capture
+        note: >
+          Retains only this ordinary nightly's already-staged divergence capture
+          in the existing private Research store, after close_pass_reconcile.
+          Missing capture stays unavailable; uncertain effects are not retried.
+          The Actions artifact contains metadata only, not source payloads.
       - id: backfill_regime_stamps
         module: scripts.backfill_regime_stamps
         note: "nw-macro-rail R5 PR-C — regime stamp backfill on qledger rows (non-fatal); near-term yield ≈ 2 rows from regime_vector.parquet coverage"

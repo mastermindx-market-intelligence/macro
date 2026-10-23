@@ -6,7 +6,7 @@
 (function(){
   "use strict";
   window.MARKET_META = {
-  "asOf": "2026-10-22",
+  "asOf": "2026-10-23",
   "today": 2026.48,
   "xDomain": [
     2000,
@@ -209,11 +209,11 @@
       }
     ],
     "now": {
-      "level": 7757.17,
-      "asOf": "2026-10-21",
+      "level": 7663.43,
+      "asOf": "2026-10-22",
       "ath": 7818.93,
       "athDate": "2026-10",
-      "pctFromATH": -0.8,
+      "pctFromATH": -2.0,
       "ytd": 10.9,
       "ret1y": 25,
       "pos": 82,
@@ -541,11 +541,11 @@
       }
     ],
     "now": {
-      "level": 10741.43,
+      "level": 10725.0,
       "asOf": "2026-10-22",
       "ath": 10910.6,
       "athDate": "2026-02",
-      "pctFromATH": -1.6,
+      "pctFromATH": -1.7,
       "ytd": 6,
       "ret1y": 20.5,
       "pos": 68,
@@ -736,11 +736,11 @@
       }
     ],
     "now": {
-      "level": 640.21,
+      "level": 637.74,
       "asOf": "2026-10-22",
       "ath": 660.51,
       "athDate": "2026-08",
-      "pctFromATH": -3.1,
+      "pctFromATH": -3.4,
       "ytd": 7.4,
       "ret1y": 13,
       "pos": 78,
@@ -891,11 +891,11 @@
       }
     ],
     "now": {
-      "level": 62907.84,
-      "asOf": "2026-10-22",
+      "level": 61647.45,
+      "asOf": "2026-10-23",
       "ath": 72366.34,
       "athDate": "2026-06",
-      "pctFromATH": -13.1,
+      "pctFromATH": -14.8,
       "ytd": 43.8,
       "ret1y": 85,
       "pos": 93,
@@ -1075,11 +1075,11 @@
       }
     ],
     "now": {
-      "level": 8793.2,
-      "asOf": "2026-10-22",
+      "level": 8757.7,
+      "asOf": "2026-10-23",
       "ath": 9271.6,
       "athDate": "2026-08",
-      "pctFromATH": -5.2,
+      "pctFromATH": -5.5,
       "ytd": 1.3,
       "ret1y": 3.1,
       "pos": 80,
@@ -1397,11 +1397,11 @@
       }
     ],
     "now": {
-      "level": 5533.77,
-      "asOf": "2026-10-22",
+      "level": 5458.47,
+      "asOf": "2026-10-23",
       "ath": 9114.55,
       "athDate": "2026-06",
-      "pctFromATH": -39.3,
+      "pctFromATH": -40.1,
       "ytd": 62.5,
       "ret1y": 124.2,
       "pos": 97,
