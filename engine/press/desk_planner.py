@@ -1654,12 +1654,16 @@ def plan(desks=None, *, as_of=None, root=None, cfg: dict | None = None,
     return slots
 
 
-def plan_external_candidate(**inputs) -> dict:
+def plan_external_candidate(*, source_kind="whitehouse", **inputs) -> dict:
     """Opt-in retained-source planning only; never included in ordinary slots.
 
     The envelope is a validation context, not writer/provider admission. The
     ordinary Brief cadence and publication gates remain with run_press.
     """
-    from engine.press.external_candidate import plan_whitehouse_candidate
-
-    return plan_whitehouse_candidate(**inputs)
+    if source_kind == "whitehouse":
+        from engine.press.external_candidate import plan_whitehouse_candidate
+        return plan_whitehouse_candidate(**inputs)
+    if source_kind == "sec_issuer_release":
+        from engine.press.issuer_release_candidate import plan_issuer_release_candidate
+        return plan_issuer_release_candidate(**inputs)
+    raise ValueError("unsupported retained external source kind")
