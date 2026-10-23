@@ -257,7 +257,7 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if code != 0 or not raw.startswith(prefix):
             raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED")
         source = json.loads(raw[len(prefix):])
-        host = os.freedesktop_os_release()
+        host = platform.freedesktop_os_release()
         qualified_direct_packages(distribution_version=source["observed_version"], driver_version=source["driver_version"],
                                   bundle_sha256=source["input_sha256"]["driver_bundle"], os_id=host.get("ID"),
                                   os_version=host.get("VERSION_ID"), machine=platform.machine())

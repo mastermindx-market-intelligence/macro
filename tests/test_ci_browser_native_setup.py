@@ -26,7 +26,7 @@ def observed(outcome='passed', settlement=None):
 def runtime(monkeypatch):
     monkeypatch.setattr(SETUP.time, 'monotonic', lambda:100)
     monkeypatch.setattr(SETUP.shutil, 'which', lambda *_a, **_k:'/isolated/bin/python')
-    monkeypatch.setattr(SETUP.os, 'freedesktop_os_release', lambda:{'ID':'ubuntu','VERSION_ID':'24.04'}, raising=False)
+    monkeypatch.setattr(SETUP.platform, 'freedesktop_os_release', lambda:{'ID':'ubuntu','VERSION_ID':'24.04'})
     monkeypatch.setattr(SETUP.platform, 'machine', lambda:'x86_64')
     source = {'observed_version':'1.64.1','driver_version':'1.64.0-beta-1791568591000',
               'input_sha256':{'driver_bundle':QUALIFIED_DRIVER}}
