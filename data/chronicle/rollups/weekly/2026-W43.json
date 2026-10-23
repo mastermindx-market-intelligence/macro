@@ -1,15 +1,27 @@
 {
-  "as_of": "2026-10-20",
+  "as_of": "2026-10-23",
   "coverage": {
-    "end": "2026-10-20",
+    "end": "2026-10-23",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W43; 14 week(s) have events so far; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-07-21"
+    "start": "2026-07-24"
   },
   "iso_week": "2026-W43",
   "schema": "chronicle.rollup.weekly/v1",
   "weeks": [
     {
       "clusters": [
+        {
+          "n_events": 106,
+          "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 37,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
         {
           "n_events": 1,
           "source": "research_vault",
@@ -28,15 +40,15 @@
           "top_events": []
         },
         {
-          "n_events": 46,
-          "source": "earnings_call",
-          "theme": "earnings",
+          "n_events": 57,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
-          "n_events": 35,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 48,
+          "source": "earnings_call",
+          "theme": "earnings",
           "top_events": []
         },
         {
@@ -128,7 +140,7 @@
           "top_events": []
         },
         {
-          "n_events": 25,
+          "n_events": 26,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -269,7 +281,7 @@
           "top_events": []
         },
         {
-          "n_events": 59,
+          "n_events": 61,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -446,7 +458,7 @@
           "top_events": []
         },
         {
-          "n_events": 112,
+          "n_events": 113,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -499,7 +511,7 @@
     {
       "clusters": [
         {
-          "n_events": 488,
+          "n_events": 513,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -564,7 +576,7 @@
     {
       "clusters": [
         {
-          "n_events": 1199,
+          "n_events": 1234,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -629,7 +641,7 @@
           "top_events": []
         },
         {
-          "n_events": 121,
+          "n_events": 132,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -676,26 +688,10 @@
     {
       "clusters": [
         {
-          "n_events": 239,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 166,
+          "n_events": 163,
           "source": "research_vault",
           "theme": null,
           "top_events": [
-            {
-              "date": "2026-07-26",
-              "id": "cev-research_vault-1b1a30ca03e5",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-5jjtogk3lv8-5fdba8",
-              "tickers": [],
-              "title": "S&T: GS Brian Garrett Weekend Prep July 26",
-              "weight_hint": 3
-            },
             {
               "date": "2026-07-24",
               "id": "cev-research_vault-8d6e3ee6806a",
@@ -709,27 +705,27 @@
           ]
         },
         {
-          "n_events": 10,
-          "source": "earnings_call",
+          "n_events": 18,
+          "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 2,
-          "source": "risk_band",
-          "theme": "risk",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
+          "n_events": 5,
+          "source": "earnings_call",
+          "theme": "earnings",
           "top_events": []
         },
         {
           "n_events": 1,
           "source": "prophet_ledger",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "risk_band",
+          "theme": "risk",
           "top_events": []
         }
       ],

@@ -21,6 +21,8 @@
 {% include "_seo_head.html.j2" %}
 {# Plotly deliberately NOT loaded: this page renders zero Plotly charts.
    Re-include '_plotly_head.html.j2' only if a real chart returns. #}
+{# Keep the canonical theme at its own URL so relative imports survive publication. #}
+<link rel="stylesheet" href="theme.css">
 <style>
 /* ── base vars — dark-default ──────────────────────────────── */
 :root {
@@ -673,7 +675,11 @@ html[data-theme="light"] :is(
 {% if commodity_workspace %}<style>{% include "commodity-workspace.css" %}</style>{% endif %}
 </head>
 <body class="page-commod{% if commodity_workspace %} cw-enabled{% endif %}">
+{# Logo configuration is injected at deployment; its Git placeholder is not a cache key.
+   Keep this exception local: shared navigation is pinned by other product receipts. #}
+{% filter replace('<script src="logo_config.js"></script>', '<script src="logo_config.js?runtime-config" defer></script>' | safe) %}
 {% include "_site_nav.html.j2" %}
+{% endfilter %}
 
 {# Aurora layer — class keyed to stance tone; protect=red wins, watch=amber, else blank #}
 {% if vm and vm.stance %}
@@ -1355,6 +1361,7 @@ html[data-theme="light"] :is(
     <p class="cov-foot">{{ t('Coverage is read from this build, not hand-listed. A balance read, never a price call.',
                              '覆盖状态由本次构建实时读取，非人工登记。仅为供需背景，不构成价格判断。') }}</p>
   </div>
+  {% include "_petroleum_flow_context.html.j2" %}
 </section>
 {# ── coverage-matrix:end ── #}
 

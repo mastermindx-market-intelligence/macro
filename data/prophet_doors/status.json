@@ -1,21 +1,21 @@
 {
-  "appended": 37,
-  "asof": "2026-10-19",
+  "appended": 23,
+  "asof": "2026-10-22",
   "candidates": {
-    "R": 1,
-    "T": 22,
-    "W": 23
+    "R": 2,
+    "T": 23,
+    "W": 34
   },
   "deduped": {
-    "R": 0,
-    "T": 3,
-    "W": 6
+    "R": 2,
+    "T": 15,
+    "W": 19
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-20",
+      "asof": "2026-10-21",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -32,36 +32,26 @@
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Aging Population & Longevity": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
         "Consumer Goods": {
-          "theme_thrust_frac": 0.0938,
+          "theme_thrust_frac": 0.3125,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Defense & Aerospace": {
-          "theme_thrust_frac": 0.0,
+        "Environmental Sustainability": {
+          "theme_thrust_frac": 0.619,
           "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
+          "theme_thrust_state": "thrusting"
         },
-        "E-commerce": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Healthy Food & Nutrition": {
-          "theme_thrust_frac": 0.0556,
+        "Real Estate & REITs": {
+          "theme_thrust_frac": 0.2941,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 103,
-      "tickers_read": 135
+      "tickers_ok": 86,
+      "tickers_read": 118
     },
     "keys": [
       "relay_count_3d",
@@ -81,14 +71,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 134,
-      "n_covered": 99,
+      "members_indexed": 157,
+      "n_covered": 125,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-19",
+      "last_session": "2026-10-22",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -102,8 +92,8 @@
       "direction": "bull",
       "grid": "W",
       "horizon": "13w",
-      "n_asked": 17,
-      "n_covered": 17,
+      "n_asked": 15,
+      "n_covered": 15,
       "reason": null,
       "source": "engine.event_atlas.receipt"
     },
@@ -126,48 +116,33 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "CLF"
-    ],
+    "R": [],
     "T": [
-      "CELH",
-      "HXL",
-      "LMT",
-      "NOC",
-      "TXT",
-      "CHWY",
-      "HD",
-      "LULU",
-      "UPS",
-      "CVS",
-      "ENSG",
-      "GEHC",
-      "MDT",
-      "PFE",
-      "BSX",
-      "SYK",
-      "ALRM",
-      "PEP",
-      "MNST"
+      "AWK",
+      "WTRG",
+      "CLH",
+      "PNR",
+      "OHI",
+      "AMH",
+      "HR",
+      "RH"
     ],
     "W": [
-      "ATO",
-      "TJX",
-      "NI",
-      "CNP",
-      "HII",
-      "SRE",
-      "WEC",
-      "XEL",
-      "AEP",
-      "CMS",
-      "NRG",
-      "APTV",
-      "NOC",
-      "SO",
-      "PEG",
-      "PPL",
-      "TSN"
+      "LHX",
+      "LNT",
+      "MCD",
+      "NEE",
+      "PNR",
+      "MLM",
+      "AEE",
+      "ETR",
+      "VMC",
+      "DOV",
+      "FE",
+      "DUK",
+      "EXC",
+      "PEP",
+      "LOW"
     ]
   },
   "n_universe": 1491,
@@ -176,39 +151,39 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-20 21:27:07",
-  "runtime_s": 117.7,
+  "run_utc": "2026-10-23 21:25:15",
+  "runtime_s": 102.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-10-20",
-    "n_members": 134,
+    "asof": "2026-10-23",
+    "n_members": 157,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.328,
+        "emerging_score": 4.239,
         "rank": 1,
-        "theme": "Healthy Food & Nutrition"
+        "theme": "Biometrics"
       },
       {
-        "emerging_score": 2.954,
+        "emerging_score": 1.399,
         "rank": 2,
-        "theme": "Defense & Aerospace"
+        "theme": "Environmental Sustainability"
       },
       {
-        "emerging_score": 2.614,
+        "emerging_score": 1.391,
         "rank": 3,
-        "theme": "E-commerce"
+        "theme": "Real Estate & REITs"
       },
       {
-        "emerging_score": 2.394,
+        "emerging_score": 1.315,
         "rank": 4,
-        "theme": "Aging Population & Longevity"
+        "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 2.106,
+        "emerging_score": 1.169,
         "rank": 5,
         "theme": "Consumer Goods"
       }
@@ -219,19 +194,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 23,
-    "asof_max": "2026-10-20",
-    "asof_mismatch": 23,
-    "asof_run": "2026-10-19",
+    "aligned": 34,
+    "asof_max": "2026-10-23",
+    "asof_mismatch": 34,
+    "asof_run": "2026-10-22",
     "evaluated": 712,
-    "fresh": 26,
+    "fresh": 36,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.8,
+    "runtime_s": 19.1,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 66,
+    "state_turn": 63,
     "universe_n": 717
   }
 }

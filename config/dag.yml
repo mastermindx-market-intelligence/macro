@@ -651,6 +651,13 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: capture_stock_liquidity_currency
+        module: scripts.capture_stock_liquidity_currency
+        note: >
+          Bounded MU dated trading-currency intake in the same existing
+          stocks-reference binding; follows the cap refresh before stock-library
+          build. No bar collection or site publication; incomplete input preserves
+          the retained receipt and the native liquidity projection stays unknown.
       - id: build_leader_pullback_coverage
         module: scripts.build_leader_pullback_coverage
         note: >
@@ -833,6 +840,13 @@ lanes:
           duplicate ticker or a non-closing sum emits no receipt rather than a
           wrong one. Writes no data/ path; grading the record by writing to it
           would be marking its own homework.
+      - id: publish_native_divergence_capture
+        module: scripts.publish_native_divergence_capture
+        note: >
+          Retains only this ordinary nightly's already-staged divergence capture
+          in the existing private Research store, after close_pass_reconcile.
+          Missing capture stays unavailable; uncertain effects are not retried.
+          The Actions artifact contains metadata only, not source payloads.
       - id: backfill_regime_stamps
         module: scripts.backfill_regime_stamps
         note: "nw-macro-rail R5 PR-C — regime stamp backfill on qledger rows (non-fatal); near-term yield ≈ 2 rows from regime_vector.parquet coverage"
@@ -1077,6 +1091,9 @@ lanes:
       - id: checkpoint_core_gold_render_audit
         module: scripts.audit_china_gold_premium
         args: [--strict-render]
+      - id: checkpoint_core_commodity_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
       - id: checkpoint_core_postrebase_inject_data_base
         module: scripts.inject_data_base
       - id: checkpoint_core_postrebase_externalize_css
@@ -1086,6 +1103,9 @@ lanes:
       - id: checkpoint_core_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_commodity_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
       - id: check_builder_failstreaks
         module: scripts.check_builder_failstreaks
         note: >
@@ -1803,21 +1823,45 @@ lanes:
       - id: build_options_flow_attention
         module: scripts.build_options_flow_attention
         note: non-fatal reflex; neural-web W-D — direction-free options-flow attention trigger (nightly EOD fold)
-      - id: check_template_site_sync_fix
+      # The final publisher invokes the same helper as the core checkpoint.
+      # Declare each invocation, including both normalization passes and guards.
+      - id: publish_final_precommit_inject_data_base
+        module: scripts.inject_data_base
+      - id: publish_final_precommit_externalize_css
+        module: scripts.externalize_css
+      - id: publish_final_precommit_optimize_assets
+        module: scripts.optimize_assets
+      - id: publish_final_precommit_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
-        note: >
-          non-fatal (|| true); ui.template_site_sync self-heal inside the "commit engine
-          outputs" push retry loop (post-rebase, pre-push) — re-copies plain-copy page
-          assets from post-rebase templates/ so `git pull --rebase -X theirs` can never
-          resurrect this run's checkout-time template copies over a reword merged
-          mid-nightly (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      - id: publish_final_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+      - id: publish_final_commodity_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: publish_final_postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: publish_final_postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: publish_final_postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: publish_final_postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: publish_final_commodity_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
       - id: build_feeds
         module: scripts.build_feeds
         note: non-fatal; per-ticker JSON feeds
       - id: publish_r2
         module: scripts.publish_r2
         note: non-fatal; uploads OHLC + stockdata stores to Cloudflare R2
+      - id: publish_ohlc
+        module: scripts.publish_ohlc
+        args: [publish]
+        note: fail-closed; delivers only the completed main daily US OHLC generation to the existing VPS origin
       - id: audit_r2
         module: scripts.audit_r2
         note: non-fatal; data-plane freshness check
@@ -2249,6 +2293,16 @@ lanes:
           step timeout 12 min, continue-on-error; committed by the oracle Time
           Machine commit step.
           outputs: [data/theme_graph/shadow_theme_state.v1.json]
+      - id: build_activity_membership_state
+        module: scripts.build_thematic_state
+        note: >
+          GMI M2 — `--mode ACTIVITY_MEMBERSHIP_STATE`: the A2 activity-membership history fold +
+          edges.v1 projection over data/theme_graph/probation/activity_history_events.jsonl (absent =
+          honest empty state), atomic write of data/theme_graph/activity_membership_state.v1.json ONLY.
+          NOT_QUALIFIED by construction (D2E unsealed); authority all-false. Fail-open: one
+          ::warning title=gmi-activity-membership-state:: and the prior artifact stands; step
+          timeout 5 min, continue-on-error; committed by the oracle Time Machine commit step.
+          outputs: [data/theme_graph/activity_membership_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -2905,6 +2959,31 @@ lanes:
           post-rebase templates/ so `git pull --rebase -X theirs` can never resurrect this
           run's checkout-time template copies over a reword merged mid-render
           (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      # Explicit publication re-invocations preserve order and multiplicity.
+      - id: precommit_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_postrebase_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: postrebase_build_government_revenue
+        module: scripts.build_government_revenue
+        args: [--site-only]
+      - id: postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: postrebase_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: prepush_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_committed_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
 
   # ── render.yml / render ─────────────────────────────────────────────────
   # NOTE: scope=all path.
@@ -3165,6 +3244,17 @@ lanes:
           Insider+ payload site/premiumdata/china_special_situations.json
           (docs/TIER_PREVIEW_PATTERN.md) — they must never be rebuilt apart.
           Display-only; CONST-ART2 authority: false.
+      - id: build_baskets_china_redirect_stub
+        module: scripts.build_baskets_china
+        args: [--page-only]
+        note: >
+          Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
+          Returns before collectors, market computation, session clocks or payload
+          writes; the full China basket build remains in its existing daily lane.
+      - id: build_movers_redirect_stub
+        module: scripts.build_ticker_pages
+        args: [--movers-page-only]
+        note: Fixed zero-data legacy notice in the existing stubs lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -3214,6 +3304,36 @@ lanes:
           post-rebase templates/ so `git pull --rebase -X theirs` can never resurrect this
           run's checkout-time template copies over a reword merged mid-render
           (2026-07-07 incident: 2ae709f9f0 vs #1793).
+      # Explicit publication re-invocations preserve order and multiplicity.
+      - id: precommit_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_metadata_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$PUBLISH_COMMIT"]
+      - id: metadata_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_postrebase_recovery
+        module: scripts.check_commodity_publication
+        args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: postrebase_build_government_revenue
+        module: scripts.build_government_revenue
+        args: [--site-only]
+      - id: postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: postrebase_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: prepush_government_revenue_projection
+        module: scripts.check_government_revenue_projection
+      - id: commodity_committed_candidate
+        module: scripts.check_commodity_publication
+        args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
 
   # ── intraday.yml / bars ─────────────────────────────────────────────────
   - workflow: .github/workflows/intraday.yml
@@ -4633,6 +4753,17 @@ modules:
       - site/feeds/
     impure: false
     needs_secrets: false
+    event_driven: false
+
+  - module: scripts.publish_ohlc
+    reads:
+      - site/ohlc/
+      - site/_tmp/ohlc-complete.json
+      - app/deploy/ohlc_origin_known_hosts
+    writes:
+      - Existing VPS OHLC generation store (no git writes)
+    impure: true
+    needs_secrets: true
     event_driven: false
 
   - module: scripts.publish_r2

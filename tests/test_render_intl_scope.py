@@ -18,8 +18,8 @@ def test_full_render_includes_international_dashboard():
     # `optionscmd` (options.html) joined the composition 2026-07-29, OIP E8 — it must sit
     # immediately after `flowleaders`, which rewrites one of the six stores it
     # re-serialises. tests/test_render_options_workspace_scope.py owns that ordering law;
-    # this assertion only pins that intl/canada/hub/sits/csits kept their places around it.
+    # this assertion pins intl/canada/hub/sits/csits and the fixed redirect pass in order.
     assert (
         "spine; intl; canada; band; central; flowleaders; optionscmd; leaderradar; "
-        "foresightpage; hub; crypto; us_pages; libs; sits; csits ;;"
+        "foresightpage; hub; crypto; us_pages; libs; sits; csits; stubs ;;"
     ) in WORKFLOW
