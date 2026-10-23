@@ -4612,7 +4612,8 @@ def originate_plans(
 
         # Confidence from conviction score (0-100 → capped at 92 in engine)
         try:
-            confidence = min(float(conv.get("score", 60)), 92.0)
+            _raw_management_base = float(conv.get("score", 60))
+            confidence = min(_raw_management_base, 92.0)
         except (TypeError, ValueError):
             _record_failure(
                 ticker=ticker,
@@ -4624,8 +4625,9 @@ def originate_plans(
 
         # The originated management base is an ordinal, uncalibrated DISPLAY
         # input; it is not a probability and has no pick-rank/trade authority.
-        # Reject non-finite/out-of-domain source input before minting a plan.
-        if not math.isfinite(confidence) or confidence < 0.0:
+        # Reject non-finite/out-of-domain SOURCE scores before capping; otherwise
+        # a malformed >100 score could silently turn into an acceptable 92.
+        if not math.isfinite(_raw_management_base) or not 0.0 <= _raw_management_base <= 100.0:
             _record_failure(
                 ticker=ticker, plan_id=plan_id, stage="plan_inputs",
                 errors=[f"conviction.score {conv.get('score')!r} is not finite 0..100"],
