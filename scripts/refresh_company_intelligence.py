@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import closing
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import json
 from pathlib import Path
 import sys
@@ -42,10 +42,21 @@ from scripts.publish_company_intelligence_r2 import PUBLISH_CONFLICT, publish
 
 
 DEFAULT_TX_INDEX_URL = "https://app.mastermind-x.com/data/tx/index.json"
+# The standalone earnings worker runs three times after the close and can drain
+# hundreds of calls per invocation. A >3-calendar-day gap between Terminal's
+# causal call tape and the newest healthy Terminal-linked score is therefore a
+# producer outage, not ordinary scheduling jitter. Keep this deliberately much
+# looser than the worker's expected same-evening cadence to avoid weekend noise.
+DEFAULT_SCORE_MAX_LAG_DAYS = 3
+SCORE_FRESHNESS_STALE = 3
 
 
 class RefreshError(RuntimeError):
     """A source is unavailable or invalid; retaining the last root marker is safer."""
+
+
+class ScoreFreshnessError(RefreshError):
+    """The score plane is structurally valid but too stale to advance v1."""
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -122,6 +133,140 @@ def ensure_earnings_inputs(data_dir: Path) -> dict[str, Any]:
     return manifest
 
 
+
+def _parse_as_of_day(value: str | date) -> date:
+    if isinstance(value, date):
+        return value
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except ValueError as exc:
+        raise RefreshError(f"invalid freshness as_of date: {value!r}") from exc
+
+
+def _context_only_true(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y"}
+
+
+def assert_earnings_score_freshness(
+    data_dir: Path,
+    terminal_index: Mapping[str, Any],
+    *,
+    as_of: str | date,
+    max_lag_days: int = DEFAULT_SCORE_MAX_LAG_DAYS,
+) -> dict[str, Any]:
+    """Refuse a silently dead qualitative-score producer before publication.
+
+    Integrity alone is insufficient: a byte-valid R2 score generation can stay
+    frozen for weeks while Terminal continues publishing transcripts. Compare
+    only causal Terminal dates (never future-labelled rows) with healthy
+    *Terminal-linked transcript* scores. Degraded provider receipts, 8-K rows,
+    and legacy rows without a stable Terminal record id cannot make the producer
+    look fresh.
+
+    This is intentionally a coarse dead-producer tripwire, not a coverage SLA.
+    It does not require every recent transcript to have scored; that remains the
+    worker queue/retry owner's job.
+    """
+
+    if max_lag_days < 0:
+        raise ValueError("max_lag_days must be >= 0")
+    as_of_day = _parse_as_of_day(as_of)
+    try:
+        refs, metadata = parse_global_index(terminal_index)
+    except Exception as exc:  # noqa: BLE001 - same strict source contract
+        raise RefreshError(f"terminal transcript index invalid for freshness check: {exc}") from exc
+
+    terminal_days = [
+        date.fromisoformat(ref.call_date)
+        for ref in refs
+        if ref.call_date and date.fromisoformat(ref.call_date) <= as_of_day
+    ]
+    if not terminal_days:
+        report = {
+            "state": "not_observed",
+            "as_of": as_of_day.isoformat(),
+            "terminal_generated_at": metadata.get("generated_at") or None,
+            "terminal_latest_call_date": None,
+            "score_latest_call_date": None,
+            "lag_days": None,
+            "max_lag_days": int(max_lag_days),
+        }
+        print("company intelligence: earnings score freshness " + json.dumps(report, sort_keys=True))
+        return report
+
+    scores_path = Path(data_dir) / "earnings_calls" / "scores.parquet"
+    try:
+        import pandas as pd  # noqa: PLC0415
+
+        scores = pd.read_parquet(scores_path)
+    except Exception as exc:  # noqa: BLE001
+        raise RefreshError(f"earnings score freshness unreadable: {exc}") from exc
+
+    required = {"call_date", "source", "source_record_id", "sentiment", "performance", "confidence"}
+    missing = sorted(required - set(scores.columns))
+    if missing:
+        raise RefreshError(
+            "earnings score freshness missing required column(s): " + ", ".join(missing)
+        )
+
+    healthy = scores.copy()
+    if "degraded_reason" in healthy.columns:
+        healthy = healthy[
+            healthy["degraded_reason"].fillna("").astype(str).str.strip().eq("")
+        ]
+    if "is_context_only" in healthy.columns:
+        healthy = healthy[healthy["is_context_only"].map(_context_only_true)]
+    healthy = healthy[
+        healthy["source"].fillna("").astype(str).str.strip().str.lower().eq("transcript")
+    ]
+    healthy = healthy[
+        healthy["source_record_id"].fillna("").astype(str).str.startswith("defeatbeta:")
+    ]
+    for field in ("sentiment", "performance", "confidence"):
+        healthy = healthy[pd.to_numeric(healthy[field], errors="coerce").notna()]
+
+    score_days = pd.to_datetime(healthy["call_date"], errors="coerce", utc=True)
+    causal_score_days = score_days[
+        score_days.notna() & score_days.dt.date.le(as_of_day)
+    ]
+    terminal_latest = max(terminal_days)
+    score_latest = (
+        causal_score_days.max().date()
+        if len(causal_score_days)
+        else None
+    )
+    lag_days = (
+        max(0, (terminal_latest - score_latest).days)
+        if score_latest is not None
+        else None
+    )
+    report = {
+        "state": "fresh" if lag_days is not None and lag_days <= max_lag_days else "stale",
+        "as_of": as_of_day.isoformat(),
+        "terminal_generated_at": metadata.get("generated_at") or None,
+        "terminal_latest_call_date": terminal_latest.isoformat(),
+        "score_latest_call_date": score_latest.isoformat() if score_latest else None,
+        "lag_days": lag_days,
+        "max_lag_days": int(max_lag_days),
+    }
+    print("company intelligence: earnings score freshness " + json.dumps(report, sort_keys=True))
+    if score_latest is None:
+        raise ScoreFreshnessError(
+            "earnings score freshness stale: Terminal has causal calls but no "
+            "healthy Terminal-linked transcript score is observable"
+        )
+    if lag_days is not None and lag_days > max_lag_days:
+        raise ScoreFreshnessError(
+            "earnings score freshness stale: newest healthy Terminal-linked score "
+            f"{score_latest.isoformat()} lags newest causal Terminal call "
+            f"{terminal_latest.isoformat()} by {lag_days} calendar days "
+            f"(max {max_lag_days})"
+        )
+    return report
+
+
 def refresh(
     work_dir: Path,
     *,
@@ -153,7 +298,19 @@ def refresh(
             raise RefreshError(f"earnings fetch failed with exit code {rc}")
         ensure_earnings_inputs(source_dir)
         tx_index = scratch / "tx-index.json"
-        fetch_transcript_index(tx_index_url, tx_index)
+        tx_payload = fetch_transcript_index(tx_index_url, tx_index)
+        score_freshness_error: ScoreFreshnessError | None = None
+        try:
+            assert_earnings_score_freshness(
+                source_dir,
+                tx_payload,
+                as_of=run_as_of,
+            )
+        except ScoreFreshnessError as exc:
+            # Keep building the validated output tree so the workflow can still
+            # advance its path-independent event-workspace sibling before it
+            # reports the stale score lane. The v1 marker itself remains held.
+            score_freshness_error = exc
         earnings_dir = source_dir / "earnings_calls"
         build_rc = build_company_intelligence([
             "--scores", str(earnings_dir / "scores.parquet"),
@@ -175,6 +332,13 @@ def refresh(
             "company intelligence: validated "
             f"generation={health.get('generation_id')} companies={health['company_count']} events={health['event_count']}"
         )
+        if score_freshness_error is not None:
+            print(
+                "company intelligence: v1 root held for stale earnings score plane: "
+                + str(score_freshness_error),
+                file=sys.stderr,
+            )
+            return SCORE_FRESHNESS_STALE
         publish_rc = publish_generation(output_dir, dry_run=dry_run)
         if publish_rc == PUBLISH_CONFLICT:
             print("company intelligence: root-manifest promotion lost a safe compare-and-swap race")
