@@ -1,0 +1,92 @@
+{
+  "scope": "R12 offline research verification; not native product, shared compatibility or prediction acceptance.",
+  "date": "2026-09-24",
+  "procedure_commit": "4fe4d25e3ee268e24162f33c35d176ebf9ab02e6",
+  "entry_head": "6e491ad86d9cd9fd9ee08d11952d865b16426eaa",
+  "intermediate_checkpoint": "a438e34864b7f379b94840db856183f2c9033d57",
+  "case_count": 48,
+  "reference_matches": 48,
+  "required_refusals": 18,
+  "answer_corruption_canaries_detected": 8,
+  "input_guards_rejected": 7,
+  "initial_test": "FAILED FileNotFoundError (reference checker absent); exit1",
+  "final_test": "unittest wrapper PASS,48 subcases; separate checker rerun identical JSON",
+  "model_answers_evaluated": 0,
+  "native_product_tests": 0,
+  "forecast_outcomes_scored": 0,
+  "independent_semantic_review": false,
+  "artifacts": [
+    {
+      "path": "research/basic_materials/BASIC_MATERIALS_R12_ECONOMIC_ANSWERS_AND_EVALUATION_2026-09-24.md",
+      "bytes": 27109,
+      "git_blob": "04fb6fc739fa0cfa1333503a0fc35bfc6db6ed5a",
+      "sha256": "3dcfd0cfa17ba8f45f86334665ed49bb8185074aa2ed2a93e9f72f1650dbbcfc"
+    },
+    {
+      "path": "research/basic_materials/R12_ECONOMIC_REFERENCE_CASES_2026-09-24.json",
+      "bytes": 27777,
+      "git_blob": "fc2921d32ffac1a48847ecf0971db30e453ef917",
+      "sha256": "c0894c75b1ab814f39862a4fae9611e49e16fd30a6bd90fb13e92ed481106fac"
+    },
+    {
+      "path": "research/basic_materials/R12_ECONOMIC_REFERENCE_CHECKER_2026-09-24.py",
+      "bytes": 12898,
+      "git_blob": "f706b5225f1c28f6c05abed62cc540bdc69a58da",
+      "sha256": "805df81f0f5219a1ad28a0985d5e91feee9fcb827ab8340122b36da07dce7cc4"
+    },
+    {
+      "path": "research/basic_materials/R12_REFERENCE_RESULTS_2026-09-24.json",
+      "bytes": 8991,
+      "git_blob": "910b713a32e540e0675afebd4da21167d101429e",
+      "sha256": "ddbc9b01576fe5296bbba08468c6ba7115bfec786c51a590621c137999072575"
+    }
+  ],
+  "input_guard_results": [
+    {
+      "id": "duplicate_json_key",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "duplicate JSON key: can_rank"
+    },
+    {
+      "id": "nonfinite_json",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "non-finite JSON constant: NaN"
+    },
+    {
+      "id": "oversize_json",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "research input exceeds size limit"
+    },
+    {
+      "id": "authority_true",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "research must retain false can_rank"
+    },
+    {
+      "id": "authority_numeric_zero",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "research must retain false can_rank"
+    },
+    {
+      "id": "duplicate_case_id",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "duplicate case id"
+    },
+    {
+      "id": "unknown_source",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "unknown source reference"
+    }
+  ],
+  "prior_r11_matrix_blob": "443a29e64069c029e48aed14a2ea11f51e705257",
+  "prior_r8_manifest_blob": "7aabc80d34278609e717fcbdfef56c080bfc9dce",
+  "shared_amendment_status": "No newer reply in one bounded same-discussion read; not a runtime observation. No duplicate request.",
+  "effects": "No product code, native data, rights, identifiers, page, shared writer or worker changed."
+}
