@@ -1,0 +1,44 @@
+name: mtf-eta-client
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "templates/mtf.js"
+      - "site/mtf.js"
+      - "tests/mtf_eta_client.test.cjs"
+      - "tests/fixtures/mtf_eta/**"
+      - ".github/workflows/mtf-eta-client.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  mtf-eta-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /templates/mtf.js
+            /site/mtf.js
+            /tests/mtf_eta_client.test.cjs
+            /tests/fixtures/mtf_eta/512980.SS-mtf.json
+            /tests/fixtures/mtf_eta/XIT.TO-mtf.json
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+      - name: Verify template and site syntax
+        run: |
+          node --check templates/mtf.js
+          node --check site/mtf.js
+      - name: Verify template ETA contract
+        run: node --test tests/mtf_eta_client.test.cjs
+      - name: Verify published-copy ETA contract
+        env:
+          SOURCE_COPY: site
+        run: node --test tests/mtf_eta_client.test.cjs
