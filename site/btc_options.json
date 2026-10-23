@@ -3,7 +3,7 @@
   "tier": "display",
   "display_only": true,
   "as_of": "2026-10-23",
-  "generated_at": "2026-10-23T14:55:52.983088+00:00",
+  "generated_at": "2026-10-23T19:36:49.014134+00:00",
   "coverage": {
     "available": true,
     "observations": 104,
@@ -12,37 +12,37 @@
     "note_en": "104 daily point-in-time chain snapshots accrued since 2026-06-13.",
     "note_zh": "自 2026-06-13 起已积累 104 个每日链上快照。"
   },
-  "spot": 81865.26,
+  "spot": 81989.8,
   "volatility": {
-    "dvol": 37.99,
-    "atm_iv_7d": 32.29684016988345,
-    "atm_iv_30d": 36.600085124735315,
-    "atm_iv_90d": 37.39447458019528,
-    "atm_iv_180d": 38.387646471296364,
-    "term_slope_30_90": 0.7943894554599638,
-    "rr_25d": -3.974460360939574,
-    "skew_25d": 0.10885950043658105,
-    "skew_term": -0.03785158749937102
+    "dvol": 37.22,
+    "atm_iv_7d": 30.68810221373838,
+    "atm_iv_30d": 35.57100512676974,
+    "atm_iv_90d": 36.87281942566724,
+    "atm_iv_180d": 38.06096955196666,
+    "term_slope_30_90": 1.3018142988974972,
+    "rr_25d": -2.825653244948441,
+    "skew_25d": 0.07952865873764259,
+    "skew_term": -0.04477091748667284
   },
   "positioning": {
-    "put_call_oi_ratio": 0.6048528542023078,
-    "put_call_vol_ratio": 0.7848235286658931,
+    "put_call_oi_ratio": 0.5941404155895678,
+    "put_call_vol_ratio": 0.7336881299101311,
     "max_pain": 78000.0,
-    "max_pain_expiry_d": 7.254965609560185,
-    "total_oi_btc": 394277.19999999995
+    "max_pain_expiry_d": 6.783931456469907,
+    "total_oi_btc": 380923.20000000007
   },
   "gamma": {
-    "gex_per_1pct_usd": 122240849.45456102,
-    "gamma_concentration_usd": 591682042.7230344,
-    "flip": 79905.71577782469,
-    "distance_pct": 2.39,
+    "gex_per_1pct_usd": 134731570.05739403,
+    "gamma_concentration_usd": 512860102.68570364,
+    "flip": 78740.66351970354,
+    "distance_pct": 3.96,
     "regime": "long",
     "assumption_en": "Dealer sign assumes long calls and short puts.",
     "assumption_zh": "交易商符号假设为多头看涨、空头看跌。"
   },
   "basis": {
-    "annualized_pct": 5.475198257501225,
-    "front_annualized_pct": 5.706249442294404,
-    "slope_pct": -0.33648568025885073
+    "annualized_pct": 5.464648024705865,
+    "front_annualized_pct": 5.684353271236818,
+    "slope_pct": -0.28766067034456366
   }
 }
