@@ -104,6 +104,92 @@ class TestEstimateCostUsd:
         cost = estimate_cost_usd("claude-sonnet-4-6", 100, 100, root=tmp_path)
         assert cost is None
 
+    def test_model_specific_absolute_cache_rate_overrides_legacy_multiplier(
+        self, tmp_path: Path
+    ) -> None:
+        pricing = _write_pricing(tmp_path)
+        text = pricing.read_text(encoding="utf-8")
+        text = text.replace(
+            "    output: 15.00\n",
+            "    output: 15.00\n    cache_read: 0.45\n",
+            1,
+        )
+        pricing.write_text(text, encoding="utf-8")
+        from lib.ai_costs import estimate_cost_usd
+
+        cost = estimate_cost_usd(
+            "claude-sonnet-4-6", 0, 0, cache_read_tokens=1_000_000, root=tmp_path
+        )
+        assert cost == 0.45
+
+    def test_context_tier_selects_by_total_input_side_tokens(self, tmp_path: Path) -> None:
+        pricing = _write_pricing(tmp_path)
+        text = pricing.read_text(encoding="utf-8")
+        text = text.replace(
+            "  claude-haiku-4-5:\n    input: 1.00\n    output: 5.00\n",
+            "  tiered-model:\n"
+            "    context_tiers:\n"
+            "      - max_context_tokens: 100000\n"
+            "        input: 1.00\n"
+            "        output: 2.00\n"
+            "        cache_read: 0.20\n"
+            "        cache_write: null\n"
+            "      - max_context_tokens: 200000\n"
+            "        input: 3.00\n"
+            "        output: 4.00\n"
+            "        cache_read: 0.60\n"
+            "        cache_write: null\n"
+            "  claude-haiku-4-5:\n    input: 1.00\n    output: 5.00\n",
+            1,
+        )
+        pricing.write_text(text, encoding="utf-8")
+        from lib.ai_costs import estimate_cost_usd
+
+        assert estimate_cost_usd("tiered-model", 100_000, 0, root=tmp_path) == 0.10
+        assert estimate_cost_usd("tiered-model", 100_001, 0, root=tmp_path) == 0.300003
+        assert estimate_cost_usd("tiered-model", 200_001, 0, root=tmp_path) is None
+
+    def test_explicit_unknown_cache_write_fails_only_when_creation_tokens_exist(
+        self, tmp_path: Path
+    ) -> None:
+        pricing = _write_pricing(tmp_path)
+        text = pricing.read_text(encoding="utf-8")
+        text = text.replace(
+            "    output: 5.00\n",
+            "    output: 5.00\n    cache_write: null\n",
+            1,
+        )
+        pricing.write_text(text, encoding="utf-8")
+        from lib.ai_costs import estimate_cost_usd
+
+        assert estimate_cost_usd("claude-haiku-4-5", 1_000, 1_000, root=tmp_path) is not None
+        assert estimate_cost_usd(
+            "claude-haiku-4-5", 1_000, 1_000, cache_creation_tokens=1, root=tmp_path
+        ) is None
+
+    def test_current_economical_provider_rate_cards(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        # MiniMax M3 <=512K tier: $0.30 input, $1.20 output, $0.06 cache read / MTok.
+        assert estimate_cost_usd(
+            "MiniMax-M3", 100_000, 10_000, cache_read_tokens=20_000
+        ) == 0.0432
+        # Above 512K: the published M3 long-context tier doubles all three rates.
+        assert estimate_cost_usd("MiniMax-M3", 600_000, 10_000) == 0.384
+        # Z.AI GLM-5.3-Flash list rate after its launch promotion: 0.15 / 0.50 / 0.03.
+        assert estimate_cost_usd(
+            "glm-5.3-flash", 1_000_000, 1_000_000, cache_read_tokens=1_000_000
+        ) == 0.68
+        # Neither current public rate card publishes a cache-write token price.
+        # If a transport ever reports one, dollars stay UNKNOWN instead of using
+        # the legacy Claude write multiplier.
+        assert estimate_cost_usd(
+            "MiniMax-M3", 1_000, 0, cache_creation_tokens=1
+        ) is None
+        assert estimate_cost_usd(
+            "glm-5.3-flash", 1_000, 0, cache_creation_tokens=1
+        ) is None
+
 
 # ── record_usage ──────────────────────────────────────────────────────────────
 

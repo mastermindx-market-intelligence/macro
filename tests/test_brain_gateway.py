@@ -68,6 +68,27 @@ def _ai_costs_ledger_to_tmp(tmp_path, monkeypatch):
     )
 
 
+def test_brain_cost_meter_binds_economical_provider_rate_cards() -> None:
+    """PR-gated consumer proof for the central AI cost estimator.
+
+    The dedicated ai_costs suite also covers the resolver exhaustively, but its
+    legacy owner currently runs in the data gate.  Brain is a real consumer of
+    this ledger and already owns a pull-request code gate, so this compact test
+    prevents a pricing/config change from shipping with only local evidence.
+    """
+    from lib.ai_costs import estimate_cost_usd
+
+    # Existing simple rows keep their historical global-cache behavior.
+    assert estimate_cost_usd("claude-sonnet-4-6", 1_000_000, 1_000_000) == 18.0
+    # MiniMax M3 crosses from the <=512K standard rate to the long-context rate.
+    assert estimate_cost_usd("MiniMax-M3", 100_000, 10_000, cache_read_tokens=20_000) == 0.0432
+    assert estimate_cost_usd("MiniMax-M3", 600_000, 10_000) == 0.384
+    # GLM Flash uses its published absolute cached-input price, not Claude's 10%.
+    assert estimate_cost_usd(
+        "glm-5.3-flash", 1_000_000, 1_000_000, cache_read_tokens=1_000_000
+    ) == 0.68
+
+
 def _make_temp_root() -> pathlib.Path:
     """Minimal repo root with world_state + cortex memo for fallback tests."""
     d = pathlib.Path(tempfile.mkdtemp())
